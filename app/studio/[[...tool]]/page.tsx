@@ -7,13 +7,22 @@
  * https://github.com/sanity-io/next-sanity
  */
 
-import { NextStudio } from 'next-sanity/studio'
-import config from '../../../sanity.config'
+import { NextStudio } from "next-sanity/studio";
+import config from "../../../sanity.config";
 
-export const dynamic = 'force-static'
+export const dynamic = "force-static";
 
-export { metadata, viewport } from 'next-sanity/studio'
+export const metadata = {
+  title: "Sanity Studio",
+  description: "Sanity Studio for Olgish Cakes",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export default function StudioPage() {
-  return <NextStudio config={config} />
+  return <NextStudio config={config} />;
 }
