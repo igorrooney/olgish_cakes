@@ -1,49 +1,87 @@
-import { Container, Typography, Box, Button, Grid } from "@mui/material";
-import { Cake } from "@mui/icons-material";
+import { Container, Typography, Grid, Box } from "@mui/material";
+import { client } from "@/lib/sanity";
+import { CakeCard } from "./components/CakeCard";
+import { Cake } from "@/types/cake";
+import { Header } from "./components/Header";
 
-export default function Home() {
+async function getCakes(): Promise<Cake[]> {
+  const query = `*[_type == "cake"] | order(_createdAt desc) {
+    _id,
+    _createdAt,
+    name,
+    slug,
+    description,
+    price,
+    image,
+    category,
+    ingredients,
+    allergens
+  }`;
+
+  return client.fetch(query);
+}
+
+export default async function Home() {
+  const cakes = await getCakes();
+
   return (
-    <Container maxWidth="lg">
+    <>
+      <Header />
       <Box
         sx={{
-          my: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 4,
+          bgcolor: "background.paper",
+          pt: { xs: 6, md: 12 },
+          pb: { xs: 8, md: 16 },
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
-        <Typography variant="h1" component="h1" gutterBottom>
-          Welcome to Olgish Cakes
-        </Typography>
-        <Typography variant="h2" component="h2" color="primary">
-          Delicious Homemade Treats
-        </Typography>
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} md={4}>
-            <Box
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 3,
+              textAlign: "center",
+              mb: { xs: 6, md: 10 },
+            }}
+          >
+            <Typography
+              component="h1"
               sx={{
-                p: 3,
-                textAlign: "center",
-                bgcolor: "background.paper",
-                borderRadius: 2,
-                boxShadow: 1,
+                fontSize: { xs: "2.5rem", md: "4rem" },
+                fontFamily: "var(--font-playfair-display)",
+                fontWeight: 600,
+                color: "text.primary",
+                maxWidth: "800px",
+                lineHeight: 1.2,
               }}
             >
-              <Cake sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
-              <Typography variant="h3" gutterBottom>
-                Custom Cakes
-              </Typography>
-              <Typography variant="body1" paragraph>
-                Beautiful and delicious custom cakes for any occasion
-              </Typography>
-              <Button variant="contained" color="primary">
-                Order Now
-              </Button>
-            </Box>
+              Authentic Ukrainian Cakes in Leeds
+            </Typography>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                color: "text.secondary",
+                maxWidth: "600px",
+                mb: 2,
+              }}
+            >
+              Handcrafted with love by Olga Ieromenko
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4}>
+            {cakes.map(cake => (
+              <Grid item key={cake._id} xs={12} sm={6} md={4}>
+                <CakeCard cake={cake} />
+              </Grid>
+            ))}
           </Grid>
-        </Grid>
+        </Container>
       </Box>
-    </Container>
+    </>
   );
 }
