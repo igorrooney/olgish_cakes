@@ -11,6 +11,7 @@ async function getCakes(): Promise<Cake[]> {
     name,
     slug,
     description,
+    size,
     price,
     image,
     category,

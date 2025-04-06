@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "seed": "ts-node scripts/seed-cakes.ts"
+    "seed": "ts-node scripts/seed-cakes.ts",
+    "update-cakes": "ts-node scripts/update-cakes.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

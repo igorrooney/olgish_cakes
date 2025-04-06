@@ -26,6 +26,20 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: "size",
+      title: "Size",
+      type: "string",
+      options: {
+        list: [
+          { title: "6 inch", value: "6" },
+          { title: "8 inch", value: "8" },
+          { title: "10 inch", value: "10" },
+          { title: "12 inch", value: "12" },
+        ],
+      },
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
       name: "price",
       title: "Price",
       type: "number",
@@ -46,9 +60,9 @@ export default {
       type: "string",
       options: {
         list: [
-          { title: "Traditional Ukrainian", value: "traditional" },
-          { title: "Custom", value: "custom" },
+          { title: "Traditional", value: "traditional" },
           { title: "Seasonal", value: "seasonal" },
+          { title: "Custom", value: "custom" },
         ],
       },
       validation: (Rule: any) => Rule.required(),
@@ -58,6 +72,7 @@ export default {
       title: "Ingredients",
       type: "array",
       of: [{ type: "string" }],
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: "allergens",
