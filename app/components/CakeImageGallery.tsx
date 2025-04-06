@@ -5,15 +5,26 @@ import { Box, IconButton, ImageList, ImageListItem, Typography } from "@mui/mate
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
-import { CakeImage } from "@/types/cake";
+import { CakeDesigns } from "@/types/cake";
+import { DesignSelector, DesignType } from "./DesignSelector";
 
 interface CakeImageGalleryProps {
-  images: CakeImage[];
+  designs: CakeDesigns;
   name: string;
+  designType: DesignType;
+  onDesignTypeChange: (type: DesignType) => void;
 }
 
-export function CakeImageGallery({ images, name }: CakeImageGalleryProps) {
+export function CakeImageGallery({
+  designs,
+  name,
+  designType,
+  onDesignTypeChange,
+}: CakeImageGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const hasIndividualDesigns = Boolean(designs?.individual?.length);
+  const images = designType === "standard" ? designs?.standard || [] : designs?.individual || [];
 
   const handlePrevious = () => {
     setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
@@ -23,7 +34,12 @@ export function CakeImageGallery({ images, name }: CakeImageGalleryProps) {
     setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  if (!images || images.length === 0) {
+  const handleDesignChange = (newDesign: DesignType) => {
+    onDesignTypeChange(newDesign);
+    setCurrentImageIndex(0); // Reset to first image when changing design type
+  };
+
+  if (!designs?.standard || designs.standard.length === 0) {
     return (
       <Box
         sx={{
@@ -48,6 +64,15 @@ export function CakeImageGallery({ images, name }: CakeImageGalleryProps) {
 
   return (
     <>
+      {hasIndividualDesigns && (
+        <Box sx={{ mb: 3 }}>
+          <DesignSelector
+            hasIndividualDesigns={hasIndividualDesigns}
+            onChange={handleDesignChange}
+            value={designType}
+          />
+        </Box>
+      )}
       <Box
         sx={{
           position: "relative",

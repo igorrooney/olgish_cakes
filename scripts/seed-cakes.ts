@@ -37,7 +37,14 @@ const cakes = [
     description:
       "The legendary Kyiv Cake - a beloved Ukrainian dessert featuring crispy meringue layers with hazelnuts, filled with a rich chocolate-buttercream frosting. Each bite is a perfect harmony of crunchy and creamy textures.",
     size: "8",
-    price: 45,
+    pricing: {
+      standard: 45,
+      individual: 55,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
     category: "traditional",
     ingredients: ["Meringue", "Hazelnuts", "Chocolate", "Buttercream", "Eggs", "Sugar"],
     allergens: ["eggs", "nuts", "milk"],
@@ -52,7 +59,14 @@ const cakes = [
     description:
       "Traditional Ukrainian Honey Cake (Medovik) with delicate honey-infused layers and smooth sour cream filling. This cake is known for its melt-in-your-mouth texture and rich honey flavor.",
     size: "8",
-    price: 40,
+    pricing: {
+      standard: 40,
+      individual: 50,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
     category: "traditional",
     ingredients: ["Honey", "Flour", "Sour Cream", "Butter", "Eggs", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],
@@ -67,7 +81,14 @@ const cakes = [
     description:
       "A Ukrainian take on the classic Napoleon cake with multiple layers of flaky puff pastry and rich vanilla custard cream. Each slice reveals beautiful layers that tell a story of culinary craftsmanship.",
     size: "8",
-    price: 42,
+    pricing: {
+      standard: 42,
+      individual: 52,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
     category: "traditional",
     ingredients: ["Puff Pastry", "Milk", "Vanilla", "Eggs", "Butter", "Flour"],
     allergens: ["gluten", "eggs", "milk"],
@@ -82,7 +103,14 @@ const cakes = [
     description:
       "Traditional Ukrainian Poppy Seed Roll (Makivnyk) - a soft yeast dough filled with a generous layer of sweetened poppy seed filling. A perfect balance of soft bread and rich filling.",
     size: "8",
-    price: 35,
+    pricing: {
+      standard: 35,
+      individual: 45,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
     category: "traditional",
     ingredients: ["Poppy Seeds", "Yeast Dough", "Milk", "Butter", "Eggs", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],
@@ -97,7 +125,14 @@ const cakes = [
     description:
       "A delightful Ukrainian Cherry Cake featuring layers of soft sponge cake filled with sweet-tart cherry filling and topped with vanilla cream. Made with fresh Ukrainian cherries when in season.",
     size: "8",
-    price: 38,
+    pricing: {
+      standard: 38,
+      individual: 48,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
     category: "traditional",
     ingredients: ["Cherries", "Sponge Cake", "Vanilla Cream", "Eggs", "Flour", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],

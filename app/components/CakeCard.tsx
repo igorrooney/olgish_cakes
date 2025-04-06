@@ -27,7 +27,10 @@ interface CakeCardProps {
 export function CakeCard({ cake }: CakeCardProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const mainImage = cake.images && (cake.images.find(img => img.isMain) || cake.images[0]);
+
+  const mainImage = cake.designs?.standard
+    ? cake.designs.standard.find(img => img.isMain) || cake.designs.standard[0]
+    : undefined;
 
   const handleViewDetails = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -154,96 +157,55 @@ export function CakeCard({ cake }: CakeCardProps) {
               </Typography>
             </Box>
 
-            <Box sx={{ mt: "auto" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Chip
-                    label={`${cake.size} inch`}
-                    size="small"
-                    color="primary"
-                    sx={{
-                      fontWeight: 500,
-                    }}
-                  />
-                </Box>
-                <Tooltip
-                  title={tooltipContent}
-                  placement="top-end"
-                  arrow
-                  componentsProps={{
-                    tooltip: {
-                      sx: {
-                        bgcolor: "rgba(255, 255, 255, 0.95)",
-                        color: "text.primary",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                        maxWidth: "none",
-                        p: 2,
-                        "& .MuiTooltip-arrow": {
-                          color: "rgba(255, 255, 255, 0.95)",
-                        },
-                      },
-                    },
-                  }}
-                >
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={handleInfoClick}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "primary.light",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <Info fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+              <Chip label={`${cake.size} inch`} color="primary" sx={{ fontWeight: 500 }} />
+              <Tooltip title={tooltipContent} onClick={handleInfoClick}>
+                <IconButton size="small">
+                  <Info fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
 
-              <Box
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderTop: "1px solid",
+                borderColor: "divider",
+                pt: 2,
+              }}
+            >
+              <Typography
+                variant="h6"
+                color="primary"
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderTop: "1px solid",
-                  borderColor: "divider",
-                  pt: 2,
+                  fontWeight: 600,
+                  fontSize: "1.25rem",
                 }}
               >
-                <Typography
-                  variant="h6"
-                  color="primary"
-                  sx={{
-                    fontWeight: 600,
-                  }}
-                >
-                  £{cake.price}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  endIcon={
-                    isLoading ? <CircularProgress size={16} color="inherit" /> : <ArrowForward />
-                  }
-                  onClick={handleViewDetails}
-                  disabled={isLoading}
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    minWidth: 120,
-                  }}
-                >
-                  {isLoading ? "Loading..." : "View Details"}
-                </Button>
-              </Box>
+                {cake.designs?.individual?.length ? (
+                  <>From £{cake.pricing?.standard}</>
+                ) : (
+                  <>£{cake.pricing?.standard}</>
+                )}
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                endIcon={
+                  isLoading ? <CircularProgress size={16} color="inherit" /> : <ArrowForward />
+                }
+                onClick={handleViewDetails}
+                disabled={isLoading}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 500,
+                  minWidth: 120,
+                }}
+              >
+                {isLoading ? "Loading..." : "View Details"}
+              </Button>
             </Box>
           </CardContent>
         </Card>

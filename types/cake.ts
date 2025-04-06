@@ -13,6 +13,16 @@ export interface CakeImage {
   alt?: string;
 }
 
+export interface CakeDesigns {
+  standard: CakeImage[];
+  individual?: CakeImage[];
+}
+
+export interface CakePricing {
+  standard: number;
+  individual: number;
+}
+
 export interface Cake {
   _id: string;
   _createdAt: string;
@@ -22,8 +32,8 @@ export interface Cake {
   };
   description: string;
   size: string;
-  price: number;
-  images: CakeImage[];
+  pricing: CakePricing;
+  designs: CakeDesigns;
   category: string;
   ingredients: string[];
   allergens?: string[];
