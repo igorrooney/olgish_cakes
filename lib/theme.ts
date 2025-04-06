@@ -52,55 +52,79 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "var(--font-inter), sans-serif",
+    fontFamily: "var(--font-inter), system-ui, -apple-system, sans-serif",
     h1: {
-      fontSize: "2.5rem",
-      fontWeight: 700,
+      fontFamily: "var(--font-playfair-display), serif",
+      fontWeight: 600,
+      fontSize: "3rem",
+      lineHeight: 1.2,
+      letterSpacing: "-0.02em",
       color: "#2D2D2D",
     },
     h2: {
-      fontSize: "2rem",
+      fontFamily: "var(--font-playfair-display), serif",
       fontWeight: 600,
+      fontSize: "2.25rem",
+      lineHeight: 1.3,
+      letterSpacing: "-0.01em",
       color: "#2D2D2D",
     },
     h3: {
-      fontSize: "1.75rem",
+      fontFamily: "var(--font-playfair-display), serif",
       fontWeight: 600,
+      fontSize: "1.875rem",
+      lineHeight: 1.4,
+      color: "#2D2D2D",
+    },
+    h4: {
+      fontFamily: "var(--font-playfair-display), serif",
+      fontWeight: 600,
+      fontSize: "1.5rem",
+      lineHeight: 1.4,
+      color: "#2D2D2D",
+    },
+    h5: {
+      fontFamily: "var(--font-playfair-display), serif",
+      fontWeight: 600,
+      fontSize: "1.25rem",
+      lineHeight: 1.4,
+      color: "#2D2D2D",
+    },
+    h6: {
+      fontFamily: "var(--font-playfair-display), serif",
+      fontWeight: 600,
+      fontSize: "1rem",
+      lineHeight: 1.4,
       color: "#2D2D2D",
     },
     body1: {
       fontSize: "1rem",
-      lineHeight: 1.5,
+      lineHeight: 1.6,
       color: "#2D2D2D",
     },
-    fontFamilyMonospace: "var(--font-roboto-mono), monospace",
+    body2: {
+      fontSize: "0.875rem",
+      lineHeight: 1.6,
+      color: "#666666",
+    },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
           textTransform: "none",
-          fontWeight: 600,
+          borderRadius: "8px",
           padding: "8px 24px",
-        },
-        contained: {
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          "&:hover": {
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-          },
+          fontSize: "1rem",
+          fontWeight: 500,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          transition: "transform 0.2s ease-in-out",
-          "&:hover": {
-            transform: "translateY(-4px)",
-          },
+          borderRadius: "12px",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.08)",
         },
       },
     },
