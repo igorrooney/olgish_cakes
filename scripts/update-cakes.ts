@@ -1,5 +1,13 @@
-const { createClient } = require("@sanity/client");
-require("dotenv").config({ path: ".env.local" });
+import { createClient } from "@sanity/client";
+import * as dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from .env.local
+dotenv.config({ path: resolve(__dirname, "../.env.local") });
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;

@@ -1,5 +1,5 @@
 import { Container, Typography, Grid, Box } from "@mui/material";
-import { client } from "@/lib/sanity";
+import { client } from "@/sanity/lib/client";
 import { CakeCard } from "./components/CakeCard";
 import { Cake } from "@/types/cake";
 import { Header } from "./components/Header";
@@ -13,7 +13,7 @@ async function getCakes(): Promise<Cake[]> {
     description,
     size,
     price,
-    image,
+    images,
     category,
     ingredients,
     allergens

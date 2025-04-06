@@ -46,13 +46,31 @@ export default {
       validation: (Rule: any) => Rule.required().min(0),
     },
     {
-      name: "image",
-      title: "Image",
-      type: "image",
-      options: {
-        hotspot: true,
-      },
-      validation: (Rule: any) => Rule.required(),
+      name: "images",
+      title: "Cake Images",
+      type: "array",
+      of: [
+        {
+          type: "image",
+          options: {
+            hotspot: true,
+          },
+          fields: [
+            {
+              name: "isMain",
+              title: "Use as Main Image",
+              type: "boolean",
+              initialValue: false,
+            },
+            {
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+            },
+          ],
+        },
+      ],
+      validation: (Rule: any) => Rule.required().min(1),
     },
     {
       name: "category",
@@ -84,7 +102,7 @@ export default {
   preview: {
     select: {
       title: "name",
-      media: "image",
+      media: "images.0",
     },
   },
 };

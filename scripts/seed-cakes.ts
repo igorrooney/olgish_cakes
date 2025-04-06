@@ -1,11 +1,28 @@
-require("dotenv").config({ path: ".env.local" });
-const { createClient } = require("@sanity/client");
+import { createClient } from "@sanity/client";
+import * as dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from .env.local
+dotenv.config({ path: resolve(__dirname, "../.env.local") });
+
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+const token = process.env.SANITY_API_TOKEN;
+
+if (!projectId || !dataset || !token) {
+  console.error("Missing required environment variables. Please check your .env.local file.");
+  process.exit(1);
+}
 
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId,
+  dataset,
   apiVersion: "2024-03-31",
-  token: process.env.SANITY_API_TOKEN, // You'll need this
+  token,
   useCdn: false,
 });
 
@@ -19,6 +36,7 @@ const cakes = [
     },
     description:
       "The legendary Kyiv Cake - a beloved Ukrainian dessert featuring crispy meringue layers with hazelnuts, filled with a rich chocolate-buttercream frosting. Each bite is a perfect harmony of crunchy and creamy textures.",
+    size: "8",
     price: 45,
     category: "traditional",
     ingredients: ["Meringue", "Hazelnuts", "Chocolate", "Buttercream", "Eggs", "Sugar"],
@@ -33,6 +51,7 @@ const cakes = [
     },
     description:
       "Traditional Ukrainian Honey Cake (Medovik) with delicate honey-infused layers and smooth sour cream filling. This cake is known for its melt-in-your-mouth texture and rich honey flavor.",
+    size: "8",
     price: 40,
     category: "traditional",
     ingredients: ["Honey", "Flour", "Sour Cream", "Butter", "Eggs", "Sugar"],
@@ -47,6 +66,7 @@ const cakes = [
     },
     description:
       "A Ukrainian take on the classic Napoleon cake with multiple layers of flaky puff pastry and rich vanilla custard cream. Each slice reveals beautiful layers that tell a story of culinary craftsmanship.",
+    size: "8",
     price: 42,
     category: "traditional",
     ingredients: ["Puff Pastry", "Milk", "Vanilla", "Eggs", "Butter", "Flour"],
@@ -61,6 +81,7 @@ const cakes = [
     },
     description:
       "Traditional Ukrainian Poppy Seed Roll (Makivnyk) - a soft yeast dough filled with a generous layer of sweetened poppy seed filling. A perfect balance of soft bread and rich filling.",
+    size: "8",
     price: 35,
     category: "traditional",
     ingredients: ["Poppy Seeds", "Yeast Dough", "Milk", "Butter", "Eggs", "Sugar"],
@@ -75,6 +96,7 @@ const cakes = [
     },
     description:
       "A delightful Ukrainian Cherry Cake featuring layers of soft sponge cake filled with sweet-tart cherry filling and topped with vanilla cream. Made with fresh Ukrainian cherries when in season.",
+    size: "8",
     price: 38,
     category: "traditional",
     ingredients: ["Cherries", "Sponge Cake", "Vanilla Cream", "Eggs", "Flour", "Sugar"],
@@ -96,6 +118,7 @@ async function seedCakes() {
     if (error.response) {
       console.error("Response details:", error.response.body);
     }
+    process.exit(1);
   }
 }
 

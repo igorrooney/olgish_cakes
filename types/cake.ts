@@ -3,6 +3,16 @@ export interface CakeSize {
   price: number;
 }
 
+export interface CakeImage {
+  _type: "image";
+  asset: {
+    _ref: string;
+    _type: "reference";
+  };
+  isMain?: boolean;
+  alt?: string;
+}
+
 export interface Cake {
   _id: string;
   _createdAt: string;
@@ -13,7 +23,7 @@ export interface Cake {
   description: string;
   size: string;
   price: number;
-  image: any;
+  images: CakeImage[];
   category: string;
   ingredients: string[];
   allergens?: string[];
