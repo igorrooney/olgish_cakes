@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /studio/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://olgishcakes.com/sitemap.xml 
