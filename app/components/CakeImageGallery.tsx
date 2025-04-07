@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, IconButton, ImageList, ImageListItem, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import Image from "next/image";
@@ -13,6 +13,7 @@ interface CakeImageGalleryProps {
   name: string;
   designType: DesignType;
   onDesignTypeChange: (type: DesignType) => void;
+  hideDesignSelector?: boolean;
 }
 
 export function CakeImageGallery({
@@ -20,23 +21,78 @@ export function CakeImageGallery({
   name,
   designType,
   onDesignTypeChange,
+  hideDesignSelector = false,
 }: CakeImageGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const hasIndividualDesigns = Boolean(designs?.individual?.length);
-  const images = designType === "standard" ? designs?.standard || [] : designs?.individual || [];
+  const standardImages = designs?.standard || [];
+  const individualImages = designs?.individual || [];
+
+  // Always keep the same order of images
+  const allImages = [...standardImages, ...individualImages];
+
+  // Reset image index when design type changes
+  useEffect(() => {
+    if (designType === "standard") {
+      setCurrentImageIndex(0);
+    } else {
+      setCurrentImageIndex(standardImages.length);
+    }
+  }, [designType, standardImages.length]);
 
   const handlePrevious = () => {
-    setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+    const newIndex = currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1;
+
+    // Update design type if needed
+    if (newIndex < standardImages.length) {
+      if (designType !== "standard") {
+        onDesignTypeChange("standard");
+      }
+    } else {
+      if (designType !== "individual") {
+        onDesignTypeChange("individual");
+      }
+    }
+
+    setCurrentImageIndex(newIndex);
   };
 
   const handleNext = () => {
-    setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+    const newIndex = currentImageIndex === allImages.length - 1 ? 0 : currentImageIndex + 1;
+
+    // Update design type if needed
+    if (newIndex < standardImages.length) {
+      if (designType !== "standard") {
+        onDesignTypeChange("standard");
+      }
+    } else {
+      if (designType !== "individual") {
+        onDesignTypeChange("individual");
+      }
+    }
+
+    setCurrentImageIndex(newIndex);
   };
 
   const handleDesignChange = (newDesign: DesignType) => {
+    if (newDesign === designType) return;
     onDesignTypeChange(newDesign);
-    setCurrentImageIndex(0); // Reset to first image when changing design type
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    // Update design type if needed
+    if (index < standardImages.length) {
+      if (designType !== "standard") {
+        onDesignTypeChange("standard");
+      }
+    } else {
+      if (designType !== "individual") {
+        onDesignTypeChange("individual");
+      }
+    }
+
+    setCurrentImageIndex(index);
   };
 
   if (!designs?.standard || designs.standard.length === 0) {
@@ -59,12 +115,12 @@ export function CakeImageGallery({
     );
   }
 
-  const currentImage = images[currentImageIndex];
-  const galleryImages = images.filter((_, index) => index !== currentImageIndex);
+  const currentImage = allImages[currentImageIndex];
+  const galleryImages = allImages.filter((_, index) => index !== currentImageIndex);
 
   return (
     <>
-      {hasIndividualDesigns && (
+      {hasIndividualDesigns && !hideDesignSelector && (
         <Box sx={{ mb: 3 }}>
           <DesignSelector
             hasIndividualDesigns={hasIndividualDesigns}
@@ -146,25 +202,29 @@ export function CakeImageGallery({
           rowHeight={200}
           gap={8}
         >
-          {galleryImages.map((image, index) => (
-            <ImageListItem
-              key={index}
-              sx={{
-                cursor: "pointer",
-                "&:hover": {
-                  opacity: 0.8,
-                },
-              }}
-              onClick={() => setCurrentImageIndex(images.indexOf(image))}
-            >
-              <Image
-                src={urlFor(image).width(400).height(400).url()}
-                alt={image.alt || `${name} view ${index + 2}`}
-                fill
-                style={{ objectFit: "cover" }}
-              />
-            </ImageListItem>
-          ))}
+          {galleryImages.map((image, index) => {
+            const originalIndex = index >= currentImageIndex ? index + 1 : index;
+
+            return (
+              <ImageListItem
+                key={index}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": {
+                    opacity: 0.8,
+                  },
+                }}
+                onClick={() => handleThumbnailClick(originalIndex)}
+              >
+                <Image
+                  src={urlFor(image).width(400).height(400).url()}
+                  alt={image.alt || `${name} view ${index + 2}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </ImageListItem>
+            );
+          })}
         </ImageList>
       )}
     </>

@@ -6,7 +6,7 @@ import { Cake } from "@/types/cake";
 import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { Header } from "@/app/components/Header";
 import { BackButton } from "@/app/components/BackButton";
-import { DesignType } from "@/app/components/DesignSelector";
+import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
 
 interface PageProps {
   cake: Cake;
@@ -14,7 +14,7 @@ interface PageProps {
 
 export function CakePageClient({ cake }: PageProps) {
   const [designType, setDesignType] = useState<DesignType>("standard");
-
+  const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
   const currentPrice = designType === "standard" ? cake.pricing.standard : cake.pricing.individual;
 
   return (
@@ -31,6 +31,7 @@ export function CakePageClient({ cake }: PageProps) {
               name={cake.name}
               designType={designType}
               onDesignTypeChange={setDesignType}
+              hideDesignSelector
             />
           </Grid>
           <Grid item xs={12} md={5}>
@@ -51,6 +52,16 @@ export function CakePageClient({ cake }: PageProps) {
               <Box sx={{ display: "flex", gap: 1, mb: 4 }}>
                 <Chip label={`${cake.size} inch`} color="primary" sx={{ fontWeight: 500 }} />
               </Box>
+
+              {hasIndividualDesigns && (
+                <Box sx={{ mb: 4 }}>
+                  <DesignSelector
+                    hasIndividualDesigns={hasIndividualDesigns}
+                    onChange={setDesignType}
+                    value={designType}
+                  />
+                </Box>
+              )}
 
               <Typography
                 variant="body1"

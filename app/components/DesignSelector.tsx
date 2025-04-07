@@ -1,7 +1,6 @@
 "use client";
 
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { useState } from "react";
+import { Box, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 
 export type DesignType = "standard" | "individual";
 
@@ -12,10 +11,8 @@ interface DesignSelectorProps {
 }
 
 export function DesignSelector({ hasIndividualDesigns, onChange, value }: DesignSelectorProps) {
-  const handleChange = (_: React.MouseEvent<HTMLElement>, newDesign: DesignType | null) => {
-    if (newDesign !== null) {
-      onChange(newDesign);
-    }
+  const handleChange = (event: SelectChangeEvent<DesignType>) => {
+    onChange(event.target.value as DesignType);
   };
 
   return (
@@ -23,23 +20,21 @@ export function DesignSelector({ hasIndividualDesigns, onChange, value }: Design
       <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
         Select Design Type:
       </Typography>
-      <ToggleButtonGroup
-        value={value}
-        exclusive
-        onChange={handleChange}
-        aria-label="design type"
-        sx={{
-          "& .MuiToggleButton-root": {
-            textTransform: "none",
-            px: 3,
-          },
-        }}
-      >
-        <ToggleButton value="standard">Standard Design</ToggleButton>
-        <ToggleButton value="individual" disabled={!hasIndividualDesigns}>
-          Individual Design Examples
-        </ToggleButton>
-      </ToggleButtonGroup>
+      <FormControl fullWidth size="small">
+        <Select
+          value={value}
+          onChange={handleChange}
+          sx={{
+            minWidth: 200,
+            "& .MuiSelect-select": {
+              py: 1.5,
+            },
+          }}
+        >
+          <MenuItem value="standard">Standard Design</MenuItem>
+          {hasIndividualDesigns && <MenuItem value="individual">Individual Design</MenuItem>}
+        </Select>
+      </FormControl>
     </Box>
   );
 }
