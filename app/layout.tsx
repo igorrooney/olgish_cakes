@@ -9,6 +9,7 @@ import { theme } from "@/lib/theme";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { StructuredData } from "./components/StructuredData";
 import { Breadcrumbs } from "./components/Breadcrumbs";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 const playfairDisplay = Playfair_Display({
@@ -92,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Providers>
           </ThemeProvider>
         </EmotionCacheProvider>
+        <Analytics />
       </body>
     </html>
   );
