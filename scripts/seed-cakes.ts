@@ -1,13 +1,46 @@
-import { createClient } from "@sanity/client";
-import * as dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import { createClient as createSanityClient } from "@sanity/client";
+import dotenv from "dotenv";
+import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+interface SanityImage {
+  _type: "image";
+  asset: {
+    _type: "reference";
+    _ref: string;
+  };
+}
+
+interface SanitySlug {
+  _type: "slug";
+  current: string;
+}
+
+interface CakePricing {
+  standard: number;
+  individual: number;
+}
+
+interface CakeDesigns {
+  standard: never[];
+  individual: never[];
+}
+
+interface Cake {
+  _type: "cake";
+  name: string;
+  slug: SanitySlug;
+  description: string;
+  size: string;
+  pricing: CakePricing;
+  designs: CakeDesigns;
+  category: string;
+  ingredients: string[];
+  allergens: string[];
+  images: SanityImage[];
+}
 
 // Load environment variables from .env.local
-dotenv.config({ path: resolve(__dirname, "../.env.local") });
+dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
@@ -18,7 +51,7 @@ if (!projectId || !dataset || !token) {
   process.exit(1);
 }
 
-const client = createClient({
+const sanityClient = createSanityClient({
   projectId,
   dataset,
   apiVersion: "2024-03-31",
@@ -26,7 +59,67 @@ const client = createClient({
   useCdn: false,
 });
 
-const cakes = [
+const cakes: Cake[] = [
+  {
+    _type: "cake",
+    name: "Classic Vanilla",
+    slug: {
+      _type: "slug",
+      current: "classic-vanilla",
+    },
+    description: "A timeless vanilla cake with buttercream frosting",
+    size: "medium",
+    pricing: {
+      standard: 45,
+      individual: 55,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
+    category: "classic",
+    ingredients: ["Vanilla", "Butter", "Sugar", "Flour", "Eggs"],
+    allergens: ["Eggs", "Dairy", "Gluten"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-1",
+        },
+      },
+    ],
+  },
+  {
+    _type: "cake",
+    name: "Chocolate Fudge",
+    slug: {
+      _type: "slug",
+      current: "chocolate-fudge",
+    },
+    description: "Rich chocolate cake with fudge filling",
+    size: "medium",
+    pricing: {
+      standard: 50,
+      individual: 60,
+    },
+    designs: {
+      standard: [],
+      individual: [],
+    },
+    category: "chocolate",
+    ingredients: ["Chocolate", "Butter", "Sugar", "Flour", "Eggs"],
+    allergens: ["Eggs", "Dairy", "Gluten"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-2",
+        },
+      },
+    ],
+  },
   {
     _type: "cake",
     name: "Kyiv Cake",
@@ -48,6 +141,15 @@ const cakes = [
     category: "traditional",
     ingredients: ["Meringue", "Hazelnuts", "Chocolate", "Buttercream", "Eggs", "Sugar"],
     allergens: ["eggs", "nuts", "milk"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-3",
+        },
+      },
+    ],
   },
   {
     _type: "cake",
@@ -70,6 +172,15 @@ const cakes = [
     category: "traditional",
     ingredients: ["Honey", "Flour", "Sour Cream", "Butter", "Eggs", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-4",
+        },
+      },
+    ],
   },
   {
     _type: "cake",
@@ -92,6 +203,15 @@ const cakes = [
     category: "traditional",
     ingredients: ["Puff Pastry", "Milk", "Vanilla", "Eggs", "Butter", "Flour"],
     allergens: ["gluten", "eggs", "milk"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-5",
+        },
+      },
+    ],
   },
   {
     _type: "cake",
@@ -114,6 +234,15 @@ const cakes = [
     category: "traditional",
     ingredients: ["Poppy Seeds", "Yeast Dough", "Milk", "Butter", "Eggs", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-6",
+        },
+      },
+    ],
   },
   {
     _type: "cake",
@@ -136,23 +265,28 @@ const cakes = [
     category: "traditional",
     ingredients: ["Cherries", "Sponge Cake", "Vanilla Cream", "Eggs", "Flour", "Sugar"],
     allergens: ["gluten", "eggs", "milk"],
+    images: [
+      {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: "image-7",
+        },
+      },
+    ],
   },
 ];
 
 async function seedCakes() {
-  console.log("Seeding cakes...");
   try {
-    for (const cake of cakes) {
-      const result = await client.create(cake);
-      console.log(`Created cake: ${cake.name} with ID: ${result._id}`);
-    }
-    console.log("Seeding completed!");
-  } catch (error: any) {
+    const transactions = cakes.map(cake => ({
+      create: cake,
+    }));
+
+    await sanityClient.transaction(transactions).commit();
+    console.log("Successfully seeded cakes!");
+  } catch (error) {
     console.error("Error seeding cakes:", error);
-    // Log more detailed error information
-    if (error.response) {
-      console.error("Response details:", error.response.body);
-    }
     process.exit(1);
   }
 }

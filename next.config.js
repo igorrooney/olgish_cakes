@@ -1,16 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-        pathname: "/**",
-      },
-    ],
+    domains: ["cdn.sanity.io"],
+  },
+  transpilePackages: ["@sanity/ui", "@sanity/icons", "@sanity/vision", "sanity"],
+  // Disable telemetry and tracing during build
+  telemetry: false,
+  experimental: {
+    // Disable trace profiling which can cause permission issues
+    profiling: false,
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

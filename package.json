@@ -2,17 +2,16 @@
   "name": "olgish_cakes",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "seed": "node --loader ts-node/esm scripts/seed-cakes.ts",
-    "cleanup": "node --loader ts-node/esm scripts/cleanup-cakes.ts",
+    "seed": "node scripts/seed-cakes.ts",
+    "cleanup": "node scripts/cleanup-cakes.ts",
     "reset-db": "npm run cleanup && npm run seed",
-    "update-cakes": "node --loader ts-node/esm scripts/update-cakes.ts"
+    "update-cakes": "node scripts/update-cakes.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",

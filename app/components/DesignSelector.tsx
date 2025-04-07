@@ -8,14 +8,12 @@ export type DesignType = "standard" | "individual";
 interface DesignSelectorProps {
   hasIndividualDesigns: boolean;
   onChange: (design: DesignType) => void;
+  value: DesignType;
 }
 
-export function DesignSelector({ hasIndividualDesigns, onChange }: DesignSelectorProps) {
-  const [selectedDesign, setSelectedDesign] = useState<DesignType>("standard");
-
+export function DesignSelector({ hasIndividualDesigns, onChange, value }: DesignSelectorProps) {
   const handleChange = (_: React.MouseEvent<HTMLElement>, newDesign: DesignType | null) => {
     if (newDesign !== null) {
-      setSelectedDesign(newDesign);
       onChange(newDesign);
     }
   };
@@ -26,7 +24,7 @@ export function DesignSelector({ hasIndividualDesigns, onChange }: DesignSelecto
         Select Design Type:
       </Typography>
       <ToggleButtonGroup
-        value={selectedDesign}
+        value={value}
         exclusive
         onChange={handleChange}
         aria-label="design type"

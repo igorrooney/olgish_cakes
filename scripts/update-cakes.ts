@@ -1,13 +1,14 @@
-import { createClient } from "@sanity/client";
-import * as dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import { createClient as createSanityClient } from "@sanity/client";
+import dotenv from "dotenv";
+import path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+interface SanityDocument {
+  _id: string;
+  _type: string;
+}
 
 // Load environment variables from .env.local
-dotenv.config({ path: resolve(__dirname, "../.env.local") });
+dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
@@ -18,7 +19,7 @@ if (!projectId || !dataset || !token) {
   process.exit(1);
 }
 
-const client = createClient({
+const sanityClient = createSanityClient({
   projectId,
   dataset,
   apiVersion: "2024-03-31",
@@ -39,8 +40,8 @@ async function updateCakes() {
   console.log("Fetching existing cakes...");
 
   try {
-    // Fetch all cakes
-    const cakes = await client.fetch(`*[_type == "cake"]`);
+    // First, fetch all cakes
+    const cakes = await sanityClient.fetch<SanityDocument[]>('*[_type == "cake"]');
 
     if (!cakes || cakes.length === 0) {
       console.log("No cakes found in the database.");
@@ -49,25 +50,18 @@ async function updateCakes() {
 
     console.log(`Found ${cakes.length} cakes to update`);
 
-    for (const cake of cakes) {
-      const originalPrice = cakePrices[cake.slug.current] || 40; // Default to 40 if not found
+    // Update each cake with new fields or modifications
+    const transactions = cakes.map((cake: SanityDocument) => ({
+      patch: {
+        id: cake._id,
+        set: {
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    }));
 
-      console.log(`Updating ${cake.name} with new size format...`);
-
-      // Update the cake with new size format
-      await client
-        .patch(cake._id)
-        .set({
-          size: "8",
-          price: originalPrice,
-        })
-        .unset(["sizes"]) // Remove the old sizes array if it exists
-        .commit();
-
-      console.log(`Updated ${cake.name} with size: 8 inch and price: £${originalPrice}`);
-    }
-
-    console.log("Update completed successfully!");
+    await sanityClient.transaction(transactions).commit();
+    console.log("Successfully updated all cakes!");
   } catch (error) {
     console.error("Error updating cakes:", error);
     process.exit(1);
