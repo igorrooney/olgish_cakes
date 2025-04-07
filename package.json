@@ -11,8 +11,15 @@
     "seed": "node scripts/seed-cakes.ts",
     "cleanup": "node scripts/cleanup-cakes.ts",
     "reset-db": "npm run cleanup && npm run seed",
-    "update-cakes": "node scripts/update-cakes.ts"
+    "update-cakes": "node scripts/update-cakes.ts",
+    "studio": "sanity studio",
+    "deploy": "vercel deploy --prod"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.8.0",
   "dependencies": {
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",

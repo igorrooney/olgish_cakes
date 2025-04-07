@@ -1,18 +1,9 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "version": 2,
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "env": {
+    "NEXT_PUBLIC_SANITY_PROJECT_ID": "@sanity_project_id",
+    "NEXT_PUBLIC_SANITY_DATASET": "@sanity_dataset",
+    "SANITY_API_TOKEN": "@sanity_api_token"
+  }
 }
