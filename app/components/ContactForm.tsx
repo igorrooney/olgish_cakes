@@ -44,15 +44,37 @@ export function ContactForm() {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
+    // Format date for API (ISO string or null)
     const submissionData = {
       ...formData,
-      dateNeeded: formData.dateNeeded ? formData.dateNeeded.toISOString() : null,
+      dateNeeded: formData.dateNeeded ? formData.dateNeeded.toISOString() : undefined, // Send undefined if null
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log("Form submitted:", submissionData);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (!response.ok) {
+        // Attempt to parse error details from the response
+        let errorDetails = "An unknown error occurred.";
+        try {
+          const errorData = await response.json();
+          errorDetails = errorData.message || errorData.error || JSON.stringify(errorData);
+        } catch (parseError) {
+          // If parsing fails, use the status text
+          errorDetails = response.statusText;
+        }
+        throw new Error(`API Error: ${response.status} ${errorDetails}`);
+      }
+
+      // Handle success
       setSubmitStatus("success");
+      // Reset form data after successful submission
       setFormData({
         name: "",
         email: "",
@@ -163,12 +185,13 @@ export function ContactForm() {
         </Box>
         {submitStatus === "success" && (
           <Typography color="success.main" sx={{ mt: 2 }}>
-            Message sent successfully!
+            Message sent successfully! We'll get back to you soon.
           </Typography>
         )}
         {submitStatus === "error" && (
           <Typography color="error.main" sx={{ mt: 2 }}>
-            Failed to send message. Please try again later.
+            Failed to send message. Please try again later or contact us directly via phone or
+            email.
           </Typography>
         )}
       </Box>
