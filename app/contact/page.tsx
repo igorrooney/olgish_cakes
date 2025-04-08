@@ -1,10 +1,23 @@
+import type { Metadata } from "next";
 import { Container, Typography, Box, Stack, Link, Grid, Paper, Divider } from "@mui/material";
 import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
+import { StructuredData } from "../components/StructuredData"; // Import StructuredData
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import InstagramIcon from "@mui/icons-material/Instagram"; // Example social icon
 import FacebookIcon from "@mui/icons-material/Facebook"; // Example social icon
 import WhatsAppIcon from "@mui/icons-material/WhatsApp"; // Import WhatsApp icon
+
+// SEO Metadata
+export const metadata: Metadata = {
+  title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+  description:
+    "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+  // Add canonical URL if your domain is set up
+  // alternates: {
+  //   canonical: 'https://olgishcakes.com/contact',
+  // },
+};
 
 export default function ContactPage() {
   const contactEmail = "olgish.cakes@gmail.com"; // Updated email
@@ -13,6 +26,9 @@ export default function ContactPage() {
 
   return (
     <Container maxWidth="lg" sx={{ my: 4 }}>
+      {/* Add structured data component */}
+      <StructuredData />
+
       <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
         Contact Us
       </Typography>
