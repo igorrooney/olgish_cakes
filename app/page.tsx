@@ -1,8 +1,7 @@
-import { Container, Typography, Grid, Box } from "@mui/material";
 import { client } from "@/sanity/lib/client";
-import { CakeCard } from "./components/CakeCard";
 import { Cake } from "@/types/cake";
-import { Header } from "./components/Header";
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { CakeCard } from "./components/CakeCard";
 
 async function getCakes(): Promise<Cake[]> {
   const query = `*[_type == "cake"] | order(_createdAt desc) {
@@ -27,7 +26,6 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
       <Box
         sx={{
           bgcolor: "background.paper",

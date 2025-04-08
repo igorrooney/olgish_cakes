@@ -1,5 +1,4 @@
-import { Container, Typography, Box, Grid, Paper } from "@mui/material";
-import { Header } from "../components/Header";
+import { Box, Container, Grid, Paper, Typography } from "@mui/material";
 import { Metadata } from "next";
 import Script from "next/script";
 
@@ -133,7 +132,6 @@ export default function AboutPage() {
         })}
       </Script>
 
-      <Header />
       <main>
         <Box
           sx={{

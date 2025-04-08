@@ -9,6 +9,11 @@ import {
   Button,
   Drawer,
   IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
@@ -149,41 +154,28 @@ export function Header() {
           },
         }}
       >
-        <Box sx={{ p: 2, display: "flex", justifyContent: "flex-end" }}>
-          <IconButton onClick={handleDrawerToggle} color="primary">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Box sx={{ px: 2, py: 4 }}>
-          {navigation.map(item => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                passHref
-                style={{ textDecoration: "none" }}
-                onClick={handleDrawerToggle}
-              >
-                <Button
-                  fullWidth
-                  sx={{
-                    justifyContent: "flex-start",
-                    color: isActive ? "primary.main" : "text.primary",
-                    fontSize: "1.1rem",
-                    fontWeight: isActive ? 600 : 400,
-                    py: 1.5,
-                    "&:hover": {
-                      color: "primary.main",
-                      backgroundColor: "action.hover",
-                    },
-                  }}
-                >
-                  {item.name}
-                </Button>
-              </Link>
-            );
-          })}
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+          <Box
+            sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}
+          >
+            <Typography variant="h6" sx={{ my: 0 }}>
+              Olgish Cakes
+            </Typography>
+            <IconButton onClick={handleDrawerToggle}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          <Divider />
+          <List>
+            {navigation.map(item => (
+              <ListItem key={item.name} disablePadding>
+                <ListItemButton component={Link} href={item.href} sx={{ textAlign: "center" }}>
+                  <ListItemText primary={item.name} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
         </Box>
       </Drawer>
     </AppBar>

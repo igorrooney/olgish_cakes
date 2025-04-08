@@ -8,6 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "@/lib/theme";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { Header } from "./components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 const playfairDisplay = Playfair_Display({
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <EmotionCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
+            <Header />
             <Providers>{children}</Providers>
           </ThemeProvider>
         </EmotionCacheProvider>
