@@ -19,7 +19,6 @@ export function CakePageClient({ cake }: PageProps) {
 
   return (
     <>
-      <Header />
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
         <Box sx={{ mb: 4 }}>
           <BackButton />
