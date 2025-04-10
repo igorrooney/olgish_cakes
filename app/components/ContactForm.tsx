@@ -10,13 +10,27 @@ import type { Dayjs } from "dayjs";
 interface FormData {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   cakeInterest?: string;
-  dateNeeded?: Dayjs | null;
+  dateNeeded: Dayjs | null;
   message: string;
 }
 
-export function ContactForm() {
+interface ContactFormProps {
+  onSubmit?: (formData: FormData) => Promise<void>;
+  isSubmitting?: boolean;
+  submitStatus?: "success" | "error" | null;
+  hideCakeInterest?: boolean;
+  isOrderForm?: boolean;
+}
+
+export function ContactForm({
+  onSubmit,
+  isSubmitting: externalIsSubmitting,
+  submitStatus: externalSubmitStatus,
+  hideCakeInterest = false,
+  isOrderForm = false,
+}: ContactFormProps = {}) {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -25,30 +39,35 @@ export function ContactForm() {
     dateNeeded: null,
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+  const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
+  const [internalSubmitStatus, setInternalSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
+
+  const isSubmitting = externalIsSubmitting ?? internalIsSubmitting;
+  const submitStatus = externalSubmitStatus ?? internalSubmitStatus;
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = event.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
-    setSubmitStatus(null); // Reset status on change
+    setInternalSubmitStatus(null);
   }
 
   function handleDateChange(newValue: Dayjs | null) {
     setFormData(prevData => ({ ...prevData, dateNeeded: newValue }));
-    setSubmitStatus(null);
+    setInternalSubmitStatus(null);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus(null);
 
-    // Format date for API (ISO string or null)
-    const submissionData = {
-      ...formData,
-      dateNeeded: formData.dateNeeded ? formData.dateNeeded.toISOString() : undefined, // Send undefined if null
-    };
+    if (onSubmit) {
+      await onSubmit(formData);
+      return;
+    }
+
+    setInternalIsSubmitting(true);
+    setInternalSubmitStatus(null);
 
     try {
       const response = await fetch("/api/contact", {
@@ -56,25 +75,17 @@ export function ContactForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify({
+          ...formData,
+          dateNeeded: formData.dateNeeded ? formData.dateNeeded.toISOString() : undefined,
+        }),
       });
 
       if (!response.ok) {
-        // Attempt to parse error details from the response
-        let errorDetails = "An unknown error occurred.";
-        try {
-          const errorData = await response.json();
-          errorDetails = errorData.message || errorData.error || JSON.stringify(errorData);
-        } catch (parseError) {
-          // If parsing fails, use the status text
-          errorDetails = response.statusText;
-        }
-        throw new Error(`API Error: ${response.status} ${errorDetails}`);
+        throw new Error("Failed to send message");
       }
 
-      // Handle success
-      setSubmitStatus("success");
-      // Reset form data after successful submission
+      setInternalSubmitStatus("success");
       setFormData({
         name: "",
         email: "",
@@ -85,9 +96,9 @@ export function ContactForm() {
       });
     } catch (error) {
       console.error("Form submission error:", error);
-      setSubmitStatus("error");
+      setInternalSubmitStatus("error");
     } finally {
-      setIsSubmitting(false);
+      setInternalIsSubmitting(false);
     }
   }
 
@@ -95,7 +106,7 @@ export function ContactForm() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
         <TextField
-          label="Name"
+          label="Full Name"
           name="name"
           value={formData.name}
           onChange={handleChange}
@@ -103,9 +114,10 @@ export function ContactForm() {
           fullWidth
           margin="normal"
           disabled={isSubmitting}
+          placeholder="Enter your full name"
         />
         <TextField
-          label="Email"
+          label="Email Address"
           name="email"
           type="email"
           value={formData.email}
@@ -114,28 +126,35 @@ export function ContactForm() {
           fullWidth
           margin="normal"
           disabled={isSubmitting}
+          placeholder="Enter your email address"
         />
         <TextField
-          label="Phone (Optional)"
+          label="Phone Number"
           name="phone"
           type="tel"
           value={formData.phone}
           onChange={handleChange}
+          required
           fullWidth
           margin="normal"
           disabled={isSubmitting}
+          placeholder="Enter your phone number"
         />
-        <TextField
-          label="Which cake are you interested in? (Optional)"
-          name="cakeInterest"
-          value={formData.cakeInterest}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          disabled={isSubmitting}
-        />
+        {!hideCakeInterest && (
+          <TextField
+            label="Cake Interest"
+            name="cakeInterest"
+            value={formData.cakeInterest}
+            onChange={handleChange}
+            required={isOrderForm}
+            fullWidth
+            margin="normal"
+            disabled={isSubmitting}
+            placeholder="Which cake are you interested in?"
+          />
+        )}
         <DatePicker
-          label="When do you need it? (Optional)"
+          label={isOrderForm ? "Required Date" : "Preferred Date (Optional)"}
           value={formData.dateNeeded}
           onChange={handleDateChange}
           slotProps={{
@@ -144,12 +163,14 @@ export function ContactForm() {
               margin: "normal",
               name: "dateNeeded",
               disabled: isSubmitting,
+              placeholder: isOrderForm ? "Select your required date" : "Select your preferred date",
+              required: isOrderForm,
             },
           }}
           disablePast
         />
         <TextField
-          label="Message"
+          label="Order Details"
           name="message"
           value={formData.message}
           onChange={handleChange}
@@ -159,8 +180,9 @@ export function ContactForm() {
           multiline
           rows={4}
           disabled={isSubmitting}
+          placeholder="Please provide details about your order, including any special requests, dietary requirements, or preferred flavors"
         />
-        <Box sx={{ mt: 2, position: "relative" }}>
+        <Box sx={{ position: "relative", mt: 2 }}>
           <Button
             type="submit"
             variant="contained"
@@ -168,7 +190,7 @@ export function ContactForm() {
             disabled={isSubmitting}
             fullWidth
           >
-            {isSubmitting ? "Sending..." : "Send Message"}
+            {isSubmitting ? "Sending..." : "Send Order Inquiry"}
           </Button>
           {isSubmitting && (
             <CircularProgress
@@ -185,13 +207,13 @@ export function ContactForm() {
         </Box>
         {submitStatus === "success" && (
           <Typography color="success.main" sx={{ mt: 2 }}>
-            Message sent successfully! We'll get back to you soon.
+            Your order inquiry has been sent successfully! We'll get back to you soon.
           </Typography>
         )}
         {submitStatus === "error" && (
           <Typography color="error.main" sx={{ mt: 2 }}>
-            Failed to send message. Please try again later or contact us directly via phone or
-            email.
+            Failed to send your order inquiry. Please try again later or contact us directly via
+            phone or email.
           </Typography>
         )}
       </Box>

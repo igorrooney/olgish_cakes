@@ -1,12 +1,13 @@
 "use client";
 
-import { Container, Typography, Box, Grid, Chip, Paper } from "@mui/material";
+import { Container, Typography, Box, Grid, Chip, Paper, Button } from "@mui/material";
 import { useState } from "react";
 import { Cake } from "@/types/cake";
 import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { Header } from "@/app/components/Header";
 import { BackButton } from "@/app/components/BackButton";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
+import { OrderModal } from "@/app/components/OrderModal";
 
 interface PageProps {
   cake: Cake;
@@ -14,6 +15,7 @@ interface PageProps {
 
 export function CakePageClient({ cake }: PageProps) {
   const [designType, setDesignType] = useState<DesignType>("standard");
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
   const currentPrice = designType === "standard" ? cake.pricing.standard : cake.pricing.individual;
 
@@ -132,11 +134,32 @@ export function CakePageClient({ cake }: PageProps) {
                 <Typography variant="h4" color="primary" sx={{ fontWeight: 600 }}>
                   £{currentPrice}
                 </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  onClick={() => setIsOrderModalOpen(true)}
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 500,
+                    px: 3,
+                    py: 1.5,
+                  }}
+                >
+                  Order Now
+                </Button>
               </Box>
             </Box>
           </Grid>
         </Grid>
       </Container>
+
+      <OrderModal
+        open={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        cake={cake}
+        designType={designType}
+      />
     </>
   );
 }
