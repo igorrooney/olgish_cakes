@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { ContactForm } from "@/app/components/ContactForm";
-import { Cake } from "@/app/types/cake";
+import { Cake } from "@/types/cake";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 
