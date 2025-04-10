@@ -7,7 +7,7 @@ import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { Header } from "@/app/components/Header";
 import { BackButton } from "@/app/components/BackButton";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
-import { OrderModal } from "@/app/components/OrderModal";
+import { OrderModal } from "./OrderModal";
 
 interface PageProps {
   cake: Cake;
@@ -154,12 +154,7 @@ export function CakePageClient({ cake }: PageProps) {
         </Grid>
       </Container>
 
-      <OrderModal
-        open={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
-        cake={cake}
-        designType={designType}
-      />
+      <OrderModal open={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} cake={cake} />
     </>
   );
 }
