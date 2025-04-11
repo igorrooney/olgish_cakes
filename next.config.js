@@ -6,9 +6,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.sanity.io",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+      },
     ],
+    dangerouslyAllowSVG: true,
   },
-  transpilePackages: ["@sanity/ui", "@sanity/icons", "@sanity/vision", "sanity"],
 };
 
 module.exports = nextConfig;

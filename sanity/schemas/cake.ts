@@ -60,62 +60,24 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
-      name: "designs",
-      title: "Cake Designs",
-      type: "object",
-      fields: [
+      name: "mainImage",
+      title: "Main Image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: "images",
+      title: "Additional Images",
+      type: "array",
+      of: [
         {
-          name: "standard",
-          title: "Standard Design",
-          type: "array",
-          of: [
-            {
-              type: "image",
-              options: {
-                hotspot: true,
-              },
-              fields: [
-                {
-                  name: "isMain",
-                  title: "Use as Main Image",
-                  type: "boolean",
-                  initialValue: false,
-                },
-                {
-                  name: "alt",
-                  title: "Alternative Text",
-                  type: "string",
-                },
-              ],
-            },
-          ],
-          validation: (Rule: any) => Rule.required().min(1),
-        },
-        {
-          name: "individual",
-          title: "Individual Design Examples",
-          type: "array",
-          of: [
-            {
-              type: "image",
-              options: {
-                hotspot: true,
-              },
-              fields: [
-                {
-                  name: "isMain",
-                  title: "Use as Main Image",
-                  type: "boolean",
-                  initialValue: false,
-                },
-                {
-                  name: "alt",
-                  title: "Alternative Text",
-                  type: "string",
-                },
-              ],
-            },
-          ],
+          type: "image",
+          options: {
+            hotspot: true,
+          },
         },
       ],
     },
@@ -145,11 +107,70 @@ export default {
       type: "array",
       of: [{ type: "string" }],
     },
+    {
+      name: "designs",
+      title: "Designs",
+      type: "object",
+      fields: [
+        {
+          name: "standard",
+          title: "Standard Designs",
+          type: "array",
+          of: [
+            {
+              type: "image",
+              options: {
+                hotspot: true,
+              },
+              fields: [
+                {
+                  name: "isMain",
+                  title: "Is Main Image",
+                  type: "boolean",
+                  initialValue: false,
+                },
+                {
+                  name: "alt",
+                  title: "Alternative Text",
+                  type: "string",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "individual",
+          title: "Individual Designs",
+          type: "array",
+          of: [
+            {
+              type: "image",
+              options: {
+                hotspot: true,
+              },
+              fields: [
+                {
+                  name: "isMain",
+                  title: "Is Main Image",
+                  type: "boolean",
+                  initialValue: false,
+                },
+                {
+                  name: "alt",
+                  title: "Alternative Text",
+                  type: "string",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ],
   preview: {
     select: {
       title: "name",
-      media: "designs.standard.0",
+      media: "mainImage",
     },
   },
 };

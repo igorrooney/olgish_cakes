@@ -9,6 +9,7 @@ import { theme } from "@/lib/theme";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 const playfairDisplay = Playfair_Display({
@@ -36,8 +37,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <EmotionCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Header />
-            <Providers>{children}</Providers>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow">
+                <Providers>{children}</Providers>
+              </main>
+              <Footer />
+            </div>
           </ThemeProvider>
         </EmotionCacheProvider>
         <Analytics />

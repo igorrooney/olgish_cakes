@@ -1,215 +1,94 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Box,
-  Chip,
-  IconButton,
-  Tooltip,
-  Button,
-  CircularProgress,
-} from "@mui/material";
-import { urlFor } from "@/sanity/lib/image";
-import { Cake } from "@/types/cake";
-import { motion } from "framer-motion";
-import { Info, CakeOutlined, ArrowForward } from "@mui/icons-material";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Cake } from "../utils/fetchCakes";
+import { urlFor } from "@/sanity/lib/image";
 
 interface CakeCardProps {
   cake: Cake;
+  variant?: "featured" | "catalog";
 }
 
-export function CakeCard({ cake }: CakeCardProps) {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): JSX.Element {
+  const price = cake.pricing?.standard || 0;
+  const formattedPrice = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(price);
 
-  const mainImage = cake.designs?.standard
-    ? cake.designs.standard.find(img => img.isMain) || cake.designs.standard[0]
-    : undefined;
+  // Get the first image from designs.standard that has a valid asset reference
+  const mainImage =
+    cake.designs?.standard?.find(img => img.isMain && img.asset?._ref) ||
+    cake.designs?.standard?.find(img => img.asset?._ref) ||
+    cake.designs?.standard?.[0];
 
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    router.push(`/cakes/${cake.slug.current}`);
-  };
+  // Create a placeholder URL with the cake name and category
+  const placeholderUrl = `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(
+    `${cake.name}\n${cake.category}`
+  )}`;
 
-  const tooltipContent = (
-    <Box sx={{ p: 1 }}>
-      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-        Ingredients:
-      </Typography>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1 }}>
-        {cake.ingredients.map((ingredient, index) => (
-          <Chip
-            key={index}
-            label={ingredient}
-            size="small"
-            sx={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              color: "text.primary",
-              fontSize: "0.75rem",
-            }}
-          />
-        ))}
-      </Box>
-      {cake.allergens && cake.allergens.length > 0 && (
-        <>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, mt: 1, mb: 1 }}>
-            Allergens:
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-            {cake.allergens.map((allergen, index) => (
-              <Chip
-                key={index}
-                label={allergen}
-                size="small"
-                color="error"
-                sx={{
-                  backgroundColor: "rgba(211, 47, 47, 0.9)",
-                  color: "white",
-                  fontSize: "0.75rem",
-                }}
-              />
-            ))}
-          </Box>
-        </>
-      )}
-    </Box>
-  );
-
-  const handleInfoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+  // Use the Sanity image if available, otherwise use the placeholder
+  const imageUrl = mainImage?.asset?._ref
+    ? urlFor(mainImage).width(800).height(800).url()
+    : placeholderUrl;
 
   return (
-    <Link href={`/cakes/${cake.slug.current}`} style={{ textDecoration: "none" }}>
-      <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
-        <Card
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            position: "relative",
-            overflow: "hidden",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            "&:hover": {
-              boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
-              cursor: "pointer",
-            },
-          }}
+    <Card
+      className="h-full flex flex-col bg-white rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+      elevation={0}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden group">
+        <Image
+          src={imageUrl}
+          alt={cake.name}
+          fill
+          className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {variant === "featured" && (
+          <Box className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+            <Typography variant="caption" className="font-medium text-primary">
+              Featured
+            </Typography>
+          </Box>
+        )}
+      </div>
+      <CardContent className="flex-grow flex flex-col p-6">
+        <div className="flex items-center justify-between mb-3">
+          <Typography
+            variant="caption"
+            className="text-sm font-medium px-3 py-1 rounded-full bg-primary/10 text-primary"
+          >
+            {cake.category || "Cake"}
+          </Typography>
+          <Typography variant="h6" color="primary" className="font-bold">
+            {formattedPrice}
+          </Typography>
+        </div>
+        <Typography variant="h6" component="h3" className="font-bold mb-2 text-gray-900">
+          {cake.name}
+        </Typography>
+        <Typography variant="body2" className="mb-6 text-gray-600 line-clamp-2">
+          {cake.description || "A delicious cake made with love"}
+        </Typography>
+        <Button
+          variant={variant === "featured" ? "outlined" : "contained"}
+          color="primary"
+          component={Link}
+          href={`/cakes/${cake.slug.current}`}
+          className={`mt-auto py-2.5 ${
+            variant === "featured"
+              ? "border-2 hover:bg-primary hover:text-white"
+              : "shadow-md hover:shadow-lg"
+          }`}
+          fullWidth
         >
-          {mainImage ? (
-            <CardMedia
-              component="img"
-              height={240}
-              image={urlFor(mainImage).width(500).height(500).url()}
-              alt={mainImage.alt || cake.name}
-              sx={{
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            <Box
-              sx={{
-                height: 240,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                bgcolor: "grey.100",
-              }}
-            >
-              <CakeOutlined sx={{ fontSize: 80, color: "grey.400" }} />
-            </Box>
-          )}
-          <CardContent sx={{ flexGrow: 1, p: 3 }}>
-            <Box sx={{ mb: 2 }}>
-              <Typography
-                variant="h6"
-                component="h3"
-                sx={{
-                  fontFamily: "var(--font-playfair-display)",
-                  fontWeight: 600,
-                }}
-              >
-                {cake.name}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  mb: 2,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  minHeight: "4.5em",
-                }}
-              >
-                {cake.description}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-              <Chip label={`${cake.size} inch`} color="primary" sx={{ fontWeight: 500 }} />
-              <Tooltip title={tooltipContent} onClick={handleInfoClick}>
-                <IconButton size="small">
-                  <Info fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderTop: "1px solid",
-                borderColor: "divider",
-                pt: 2,
-              }}
-            >
-              <Typography
-                variant="h6"
-                color="primary"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: "1.25rem",
-                }}
-              >
-                {cake.designs?.individual?.length ? (
-                  <>From £{cake.pricing?.standard}</>
-                ) : (
-                  <>£{cake.pricing?.standard}</>
-                )}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                endIcon={
-                  isLoading ? <CircularProgress size={16} color="inherit" /> : <ArrowForward />
-                }
-                onClick={handleViewDetails}
-                disabled={isLoading}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 500,
-                  minWidth: 120,
-                }}
-              >
-                {isLoading ? "Loading..." : "View Details"}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </Link>
+          {variant === "featured" ? "View Details" : "Order Now"}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
