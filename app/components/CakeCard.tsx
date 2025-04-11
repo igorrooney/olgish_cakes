@@ -1,10 +1,11 @@
 "use client";
 
-import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+import { Card, CardContent, Typography, Button, Box, Chip } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { Cake } from "../utils/fetchCakes";
 import { urlFor } from "@/sanity/lib/image";
+import { useState } from "react";
 
 interface CakeCardProps {
   cake: Cake;
@@ -12,81 +13,124 @@ interface CakeCardProps {
 }
 
 export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): JSX.Element {
+  const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
   const formattedPrice = new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
   }).format(price);
 
-  // Get the first image from designs.standard that has a valid asset reference
   const mainImage =
     cake.designs?.standard?.find(img => img.isMain && img.asset?._ref) ||
     cake.designs?.standard?.find(img => img.asset?._ref) ||
     cake.designs?.standard?.[0];
 
-  // Create a placeholder URL with the cake name and category
   const placeholderUrl = `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(
     `${cake.name}\n${cake.category}`
   )}`;
 
-  // Use the Sanity image if available, otherwise use the placeholder
   const imageUrl = mainImage?.asset?._ref
     ? urlFor(mainImage).width(800).height(800).url()
     : placeholderUrl;
 
   return (
     <Card
-      className="h-full flex flex-col bg-white rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+      className="group h-full flex flex-col bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500"
       elevation={0}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      sx={{
+        border: "1px solid rgba(231, 229, 228, 0.8)",
+      }}
     >
-      <div className="relative aspect-[4/3] overflow-hidden group">
+      {/* Image Container with Overlay */}
+      <Link
+        href={`/cakes/${cake.slug.current}`}
+        className="relative aspect-square overflow-hidden bg-stone-50"
+      >
         <Image
           src={imageUrl}
           alt={cake.name}
           fill
-          className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+          className={`object-cover transition-all duration-700 ${
+            isHovered ? "scale-105 brightness-95" : "scale-100 brightness-100"
+          }`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={variant === "featured"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Elegant Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* Featured Badge */}
         {variant === "featured" && (
-          <Box className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-            <Typography variant="caption" className="font-medium text-primary">
+          <Box className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-sm border border-stone-100">
+            <Typography variant="caption" className="font-medium text-stone-800">
               Featured
             </Typography>
           </Box>
         )}
-      </div>
-      <CardContent className="flex-grow flex flex-col p-6">
-        <div className="flex items-center justify-between mb-3">
+      </Link>
+
+      {/* Content */}
+      <CardContent className="flex-grow flex flex-col p-6 space-y-3">
+        {/* Category and Price */}
+        <div className="flex items-center justify-between mb-1">
+          <Chip
+            label={cake.category || "Cake"}
+            size="small"
+            className="bg-stone-50 text-stone-600 font-medium px-1"
+            sx={{
+              borderRadius: "4px",
+              height: "24px",
+            }}
+          />
           <Typography
-            variant="caption"
-            className="text-sm font-medium px-3 py-1 rounded-full bg-primary/10 text-primary"
+            variant="h6"
+            className="font-serif text-stone-800"
+            sx={{
+              fontFamily: "'Playfair Display', serif",
+            }}
           >
-            {cake.category || "Cake"}
-          </Typography>
-          <Typography variant="h6" color="primary" className="font-bold">
             {formattedPrice}
           </Typography>
         </div>
-        <Typography variant="h6" component="h3" className="font-bold mb-2 text-gray-900">
+
+        {/* Title */}
+        <Typography
+          variant="h6"
+          component="h3"
+          className="font-serif text-stone-800 line-clamp-1 group-hover:text-stone-900 transition-colors duration-300"
+          sx={{
+            fontFamily: "'Playfair Display', serif",
+          }}
+        >
           {cake.name}
         </Typography>
-        <Typography variant="body2" className="mb-6 text-gray-600 line-clamp-2">
-          {cake.description || "A delicious cake made with love"}
+
+        {/* Description */}
+        <Typography
+          variant="body2"
+          className="text-stone-600 line-clamp-2 min-h-[3rem] italic font-light"
+        >
+          {cake.description || "A delightful artisanal cake crafted with the finest ingredients"}
         </Typography>
+
+        {/* Action Button */}
         <Button
-          variant={variant === "featured" ? "outlined" : "contained"}
-          color="primary"
+          variant="outlined"
           component={Link}
           href={`/cakes/${cake.slug.current}`}
-          className={`mt-auto py-2.5 ${
-            variant === "featured"
-              ? "border-2 hover:bg-primary hover:text-white"
-              : "shadow-md hover:shadow-lg"
-          }`}
+          className="mt-auto py-3 border-stone-200 text-stone-800 hover:bg-stone-50 hover:border-stone-300 transition-all duration-300 normal-case font-medium"
           fullWidth
+          sx={{
+            borderWidth: "1px",
+            "&:hover": {
+              borderWidth: "1px",
+            },
+          }}
         >
-          {variant === "featured" ? "View Details" : "Order Now"}
+          Order Now
         </Button>
       </CardContent>
     </Card>
