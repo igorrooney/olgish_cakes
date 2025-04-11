@@ -32,12 +32,19 @@ interface OrderModalProps {
   open: boolean;
   onClose: () => void;
   cake: Cake;
+  designType: "standard" | "individual";
+  onDesignTypeChange: (type: "standard" | "individual") => void;
 }
 
-export function OrderModal({ open, onClose, cake }: OrderModalProps) {
+export function OrderModal({
+  open,
+  onClose,
+  cake,
+  designType,
+  onDesignTypeChange,
+}: OrderModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
-  const [designType, setDesignType] = useState<"standard" | "individual">("standard");
   const [showFeedback, setShowFeedback] = useState(false);
 
   async function handleSubmit(formData: any) {
@@ -102,7 +109,6 @@ ${formData.message}
         }}
         TransitionProps={{
           onExited: () => {
-            setDesignType("standard");
             setSubmitStatus(null);
             setShowFeedback(false);
           },
@@ -184,7 +190,7 @@ ${formData.message}
                     labelId="design-type-label"
                     value={designType}
                     label="Design Type"
-                    onChange={e => setDesignType(e.target.value as "standard" | "individual")}
+                    onChange={e => onDesignTypeChange(e.target.value as "standard" | "individual")}
                   >
                     <MenuItem value="standard">Standard Design • £{cake.pricing.standard}</MenuItem>
                     <MenuItem value="individual">

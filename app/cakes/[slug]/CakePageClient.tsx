@@ -19,6 +19,10 @@ export function CakePageClient({ cake }: PageProps) {
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
   const currentPrice = designType === "standard" ? cake.pricing.standard : cake.pricing.individual;
 
+  const handleDesignTypeChange = (newDesignType: DesignType) => {
+    setDesignType(newDesignType);
+  };
+
   return (
     <>
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
@@ -31,7 +35,7 @@ export function CakePageClient({ cake }: PageProps) {
               designs={cake.designs}
               name={cake.name}
               designType={designType}
-              onDesignTypeChange={setDesignType}
+              onDesignTypeChange={handleDesignTypeChange}
               hideDesignSelector
             />
           </Grid>
@@ -154,7 +158,13 @@ export function CakePageClient({ cake }: PageProps) {
         </Grid>
       </Container>
 
-      <OrderModal open={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} cake={cake} />
+      <OrderModal
+        open={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        cake={cake}
+        designType={designType}
+        onDesignTypeChange={handleDesignTypeChange}
+      />
     </>
   );
 }
