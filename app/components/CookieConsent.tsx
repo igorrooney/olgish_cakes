@@ -5,6 +5,9 @@ import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton } fr
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 
+// Import the gtag type
+import "../types/gtag";
+
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +30,7 @@ export default function CookieConsent() {
       // Handle cookies based on consent
       if (consent === "accepted") {
         // Enable analytics and other cookies
-        if (typeof window !== "undefined" && window.gtag) {
+        if (typeof window !== "undefined" && "gtag" in window) {
           window.gtag("consent", "update", {
             analytics_storage: "granted",
             functionality_storage: "granted",
@@ -36,7 +39,7 @@ export default function CookieConsent() {
         }
       } else {
         // Disable analytics and other cookies
-        if (typeof window !== "undefined" && window.gtag) {
+        if (typeof window !== "undefined" && "gtag" in window) {
           window.gtag("consent", "update", {
             analytics_storage: "denied",
             functionality_storage: "denied",
