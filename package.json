@@ -15,7 +15,8 @@
     "studio": "sanity studio",
     "deploy": "vercel deploy --prod",
     "seed:testimonials": "node scripts/seed-testimonials.js",
-    "check:testimonials": "node scripts/check-testimonials.js"
+    "check:testimonials": "node scripts/check-testimonials.js",
+    "migrate:faqs": "ts-node --project scripts/tsconfig.json scripts/migrateFaqs.ts"
   },
   "engines": {
     "node": ">=18.0.0",

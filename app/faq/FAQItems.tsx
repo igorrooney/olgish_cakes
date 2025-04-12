@@ -11,14 +11,10 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
-
-interface FAQItem {
-  question: string;
-  answer: string;
-}
+import { FAQ } from "../utils/fetchFaqs";
 
 interface FAQItemsProps {
-  items: FAQItem[];
+  items: FAQ[];
 }
 
 export function FAQItems({ items }: FAQItemsProps) {
@@ -34,7 +30,7 @@ export function FAQItems({ items }: FAQItemsProps) {
       {items.map((item, index) => {
         const panel = `panel${index}`;
         return (
-          <Grid item xs={12} key={index}>
+          <Grid item xs={12} key={item._id}>
             <Box
               sx={{
                 transform: "scale(1)",
