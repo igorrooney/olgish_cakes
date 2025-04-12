@@ -5,9 +5,6 @@ import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton } fr
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 
-// Import the gtag type
-import "../types/gtag";
-
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
