@@ -10,6 +10,7 @@ import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
 import Footer from "./components/Footer";
+import CookieConsent from "./components/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"] });
 const playfairDisplay = Playfair_Display({
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Providers>{children}</Providers>
               </main>
               <Footer />
+              <CookieConsent />
             </div>
           </ThemeProvider>
         </EmotionCacheProvider>
