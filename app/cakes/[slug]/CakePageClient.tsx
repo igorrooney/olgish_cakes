@@ -8,6 +8,7 @@ import { Header } from "@/app/components/Header";
 import { BackButton } from "@/app/components/BackButton";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
 import { OrderModal } from "./OrderModal";
+import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
 
 interface PageProps {
   cake: Cake;
@@ -157,6 +158,8 @@ export function CakePageClient({ cake }: PageProps) {
           </Grid>
         </Grid>
       </Container>
+
+      <TrustpilotReviews productName={cake.name} />
 
       <OrderModal
         open={isOrderModalOpen}
