@@ -6,12 +6,7 @@ import Image from "next/image";
 import { Instagram, Facebook, WhatsApp, Email, Phone } from "@mui/icons-material";
 
 const footerLinks = {
-  products: [
-    { name: "All Cakes", href: "/cakes" },
-    { name: "Custom Orders", href: "/cakes/custom" },
-    { name: "Wedding Cakes", href: "/cakes/wedding" },
-    { name: "Birthday Cakes", href: "/cakes/birthday" },
-  ],
+  products: [{ name: "All Cakes", href: "/cakes" }],
   company: [
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
