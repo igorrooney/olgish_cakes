@@ -25,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Cakes", href: "/cakes" },
+  { name: "Testimonials", href: "/testimonials" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];

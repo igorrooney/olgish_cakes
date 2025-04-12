@@ -13,7 +13,9 @@
     "reset-db": "npm run cleanup && npm run seed",
     "update-cakes": "node scripts/update-cakes.ts",
     "studio": "sanity studio",
-    "deploy": "vercel deploy --prod"
+    "deploy": "vercel deploy --prod",
+    "seed:testimonials": "node scripts/seed-testimonials.js",
+    "check:testimonials": "node scripts/check-testimonials.js"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -27,12 +29,12 @@
     "@mui/icons-material": "5.15.10",
     "@mui/material": "5.15.10",
     "@mui/x-date-pickers": "^7.28.3",
-    "@sanity/client": "^6.12.3",
+    "@sanity/client": "^6.29.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.28.0",
     "@vercel/analytics": "^1.5.0",
     "dayjs": "^1.11.13",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.5.0",
     "framer-motion": "^11.0.3",
     "next": "14.1.3",
     "next-sanity": "^7.1.4",
