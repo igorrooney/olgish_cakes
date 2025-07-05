@@ -1,20 +1,32 @@
 "use client";
 
-import { Container, Typography, Box, Grid, Chip, Paper, Button } from "@mui/material";
-import { useState } from "react";
-import { Cake } from "@/types/cake";
-import { CakeImageGallery } from "@/app/components/CakeImageGallery";
-import { Header } from "@/app/components/Header";
 import { BackButton } from "@/app/components/BackButton";
+import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
-import { OrderModal } from "./OrderModal";
 import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
+import { designTokens } from "@/lib/design-system";
+import {
+  AllergenChip,
+  BodyText,
+  Container as DesignContainer,
+  DisplayHeading,
+  IngredientChip,
+  PriceDisplay,
+  StyledAccordion,
+} from "@/lib/ui-components";
+import { Cake } from "@/types/cake";
+import { Box, Button, Chip, Divider, Grid, Paper, Typography } from "@mui/material";
+import { useState } from "react";
+import { OrderModal } from "./OrderModal";
+
+const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
 interface PageProps {
   cake: Cake;
 }
 
 export function CakePageClient({ cake }: PageProps) {
+  console.log("cake", cake);
   const [designType, setDesignType] = useState<DesignType>("standard");
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
@@ -26,12 +38,27 @@ export function CakePageClient({ cake }: PageProps) {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 12 } }}>
-        <Box sx={{ mb: 4 }}>
+      <DesignContainer
+        sx={{ maxWidth: "1200px", mx: "auto", py: { xs: 5, md: 10 }, px: { xs: 4, md: 8 } }}
+      >
+        <Box sx={{ mb: spacing["3xl"] }}>
           <BackButton />
         </Box>
-        <Grid container spacing={6}>
-          <Grid item xs={12} md={7}>
+
+        {/* Product Title */}
+        <DisplayHeading
+          sx={{
+            mb: spacing["3xl"],
+            textAlign: "center",
+            px: { xs: spacing.lg, md: spacing["4xl"] },
+          }}
+        >
+          {cake.name}
+        </DisplayHeading>
+
+        <Grid container spacing={{ xs: 6, md: 12 }} sx={{ mb: spacing["5xl"] }}>
+          {/* Product Images */}
+          <Grid item xs={12} md={6}>
             <CakeImageGallery
               designs={cake.designs}
               name={cake.name}
@@ -40,27 +67,55 @@ export function CakePageClient({ cake }: PageProps) {
               hideDesignSelector
             />
           </Grid>
-          <Grid item xs={12} md={5}>
-            <Box>
-              <Typography
-                variant="h2"
-                component="h1"
-                sx={{
-                  fontFamily: "var(--font-playfair-display)",
-                  fontWeight: 600,
-                  mb: 2,
-                  fontSize: { xs: "2rem", md: "3rem" },
-                }}
-              >
-                {cake.name}
-              </Typography>
 
-              <Box sx={{ display: "flex", gap: 1, mb: 4 }}>
-                <Chip label={`${cake.size} inch`} color="primary" sx={{ fontWeight: 500 }} />
+          {/* Product Details */}
+          <Grid item xs={12} md={6}>
+            <Box
+              sx={{
+                position: "sticky",
+                top: 0,
+                px: 2.5,
+                py: 2.5,
+                pl: 3,
+                pr: 3,
+                mr: { xs: 1, md: 2 },
+                backgroundColor: colors.background.paper,
+                borderRadius: 1.5,
+                boxShadow: shadows.lg,
+                border: `1px solid ${colors.border.light}`,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2.5,
+                minWidth: 0,
+              }}
+            >
+              {/* Price */}
+              <PriceDisplay
+                price={currentPrice}
+                size="medium"
+                sx={{ mb: 2, fontSize: typography.fontSize["2xl"] }}
+              />
+
+              {/* Size Badge */}
+              <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+                <Chip
+                  label={`${cake.size} inch`}
+                  sx={{
+                    backgroundColor: colors.background.subtle,
+                    color: colors.text.primary,
+                    fontWeight: typography.fontWeight.semibold,
+                    fontSize: typography.fontSize.sm,
+                    px: 2,
+                    py: 0.5,
+                    height: 28,
+                    borderRadius: 1,
+                  }}
+                />
               </Box>
 
+              {/* Design Selector */}
               {hasIndividualDesigns && (
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: 2 }}>
                   <DesignSelector
                     hasIndividualDesigns={hasIndividualDesigns}
                     onChange={setDesignType}
@@ -69,95 +124,126 @@ export function CakePageClient({ cake }: PageProps) {
                 </Box>
               )}
 
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                sx={{
-                  mb: 4,
-                  fontSize: "1.1rem",
-                  lineHeight: 1.8,
-                }}
-              >
-                {cake.description}
-              </Typography>
-
+              {/* Key Features */}
               <Paper
                 elevation={0}
                 sx={{
-                  p: 3,
-                  mb: 4,
-                  backgroundColor: "grey.50",
-                  borderRadius: 2,
+                  p: 2,
+                  mb: 2,
+                  backgroundColor: colors.background.subtle,
+                  borderRadius: 1,
+                  border: `1px solid ${colors.border.light}`,
                 }}
               >
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Ingredients
-                </Typography>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {cake.ingredients.map((ingredient, index) => (
-                    <Chip
-                      key={index}
-                      label={ingredient}
-                      sx={{
-                        backgroundColor: "white",
-                      }}
-                    />
-                  ))}
-                </Box>
-
-                {cake.allergens && cake.allergens.length > 0 && (
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, color: "error.main" }}>
-                      Allergens
-                    </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      {cake.allergens.map((allergen, index) => (
-                        <Chip
-                          key={index}
-                          label={allergen}
-                          color="error"
-                          sx={{
-                            fontWeight: 500,
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-                )}
+                <BodyText
+                  sx={{
+                    textAlign: "center",
+                    fontStyle: "italic",
+                    color: colors.text.secondary,
+                    fontSize: typography.fontSize.sm,
+                  }}
+                >
+                  Freshly baked to order with free UK delivery and gift note included.
+                </BodyText>
               </Paper>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  borderTop: "1px solid",
-                  borderColor: "divider",
-                  pt: 4,
-                }}
-              >
-                <Typography variant="h4" color="primary" sx={{ fontWeight: 600 }}>
-                  £{currentPrice}
-                </Typography>
+              {/* Order Button */}
+              <Box sx={{ my: 2 }}>
                 <Button
                   variant="contained"
-                  color="primary"
                   size="large"
                   onClick={() => setIsOrderModalOpen(true)}
                   sx={{
+                    backgroundColor: colors.primary.main,
+                    color: colors.primary.contrast,
                     textTransform: "none",
-                    fontWeight: 500,
+                    fontWeight: typography.fontWeight.semibold,
+                    fontSize: typography.fontSize.lg,
                     px: 3,
                     py: 1.5,
+                    borderRadius: 1.5,
+                    width: "100%",
+                    transition: "all 0.2s ease-in-out",
+                    boxShadow: shadows.md,
+                    "&:hover": {
+                      backgroundColor: colors.primary.dark,
+                      transform: "translateY(-2px)",
+                      boxShadow: shadows.lg,
+                    },
                   }}
                 >
                   Order Now
                 </Button>
               </Box>
+
+              {/* Delivery Info */}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: colors.text.secondary,
+                  textAlign: "center",
+                  fontStyle: "italic",
+                  mb: 2,
+                  fontSize: typography.fontSize.sm,
+                }}
+              >
+                Estimated delivery: 3-5 working days
+              </Typography>
+
+              {/* Collapsible Sections */}
+              <Box sx={{ mt: 2 }}>
+                {/* Description Accordion */}
+                <StyledAccordion title="About This Cake" sx={{ mb: 1 }}>
+                  <BodyText sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
+                    {cake.description}
+                  </BodyText>
+                </StyledAccordion>
+
+                {/* Ingredients Accordion */}
+                <StyledAccordion title="Ingredients" sx={{ mb: 1 }}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+                    {cake.ingredients.map((ingredient, index) => (
+                      <IngredientChip key={index} label={ingredient} />
+                    ))}
+                  </Box>
+
+                  {cake.allergens && cake.allergens.length > 0 && (
+                    <>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          mb: 1,
+                          color: colors.error.main,
+                          fontWeight: typography.fontWeight.semibold,
+                        }}
+                      >
+                        Allergens
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {cake.allergens.map((allergen, index) => (
+                          <AllergenChip key={index} label={allergen} />
+                        ))}
+                      </Box>
+                    </>
+                  )}
+                </StyledAccordion>
+
+                {/* Delivery Accordion */}
+                <StyledAccordion title="Delivery">
+                  <BodyText sx={{ mb: 1, fontSize: typography.fontSize.base }}>
+                    We aim to ship orders within 2-3 working days.
+                  </BodyText>
+                  <BodyText sx={{ fontSize: typography.fontSize.base }}>
+                    We offer free UK delivery on all orders. For guaranteed delivery on a specific
+                    day, please contact us directly.
+                  </BodyText>
+                </StyledAccordion>
+              </Box>
             </Box>
           </Grid>
         </Grid>
-      </Container>
+      </DesignContainer>
 
       <TrustpilotReviews productName={cake.name} />
 

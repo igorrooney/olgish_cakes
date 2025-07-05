@@ -2,10 +2,22 @@
 
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { motion } from "framer-motion";
+import { designTokens } from "@/lib/design-system";
+import { BodyText } from "@/lib/ui-components";
+
+const { colors, spacing } = designTokens;
 
 export default function Loading() {
   return (
-    <Box className="flex flex-col items-center justify-center py-12">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        py: spacing["3xl"],
+      }}
+    >
       <motion.div
         animate={{
           scale: [1, 1.1, 1],
@@ -17,18 +29,21 @@ export default function Loading() {
           ease: "easeInOut",
         }}
       >
-        <CircularProgress size={60} thickness={4} className="text-primary" />
+        <CircularProgress size={60} thickness={4} sx={{ color: colors.primary.main }} />
       </motion.div>
-      <Typography
-        variant="body1"
-        className="mt-4 text-gray-600"
+      <BodyText
         component={motion.div}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
+        sx={{
+          mt: spacing.md,
+          color: colors.text.secondary,
+          textAlign: "center",
+        }}
       >
         Loading our delicious cakes...
-      </Typography>
+      </BodyText>
     </Box>
   );
 }

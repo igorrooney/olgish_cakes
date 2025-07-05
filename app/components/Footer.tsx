@@ -4,6 +4,16 @@ import { Container, Grid, Typography, IconButton, Button, Box, Divider } from "@
 import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Facebook, WhatsApp, Email, Phone } from "@mui/icons-material";
+import { designTokens } from "@/lib/design-system";
+import {
+  Container as DesignContainer,
+  PrimaryButton,
+  BodyText,
+  SectionHeading,
+  ContactInfo,
+} from "@/lib/ui-components";
+
+const { colors, typography, spacing, shadows } = designTokens;
 
 const footerLinks = {
   products: [{ name: "All Cakes", href: "/cakes" }],
@@ -49,24 +59,44 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-gray-100">
-      <Container>
+    <Box
+      component="footer"
+      sx={{
+        backgroundColor: colors.background.paper,
+        borderTop: `1px solid ${colors.border.light}`,
+      }}
+    >
+      <DesignContainer>
         {/* Main Footer Content */}
-        <div className="py-16">
+        <Box sx={{ py: spacing["4xl"] }}>
           <Grid container spacing={8}>
             {/* Brand Column */}
             <Grid item xs={12} md={4}>
-              <div className="space-y-6">
-                <Link href="/" className="inline-block">
-                  <Typography variant="h6" className="text-2xl font-bold text-gray-900">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
+                <Link href="/" style={{ textDecoration: "none" }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: typography.fontSize["2xl"],
+                      fontWeight: typography.fontWeight.bold,
+                      color: colors.text.primary,
+                      fontFamily: typography.fontFamily.display,
+                    }}
+                  >
                     Olgish Cakes
                   </Typography>
                 </Link>
-                <Typography variant="body2" className="text-gray-600 max-w-sm">
+                <BodyText
+                  sx={{
+                    color: colors.text.secondary,
+                    maxWidth: "300px",
+                    lineHeight: typography.lineHeight.relaxed,
+                  }}
+                >
                   Handcrafted Ukrainian cakes made with love in Leeds. Traditional recipes, premium
                   ingredients, and exceptional taste.
-                </Typography>
-                <div className="flex gap-4">
+                </BodyText>
+                <Box sx={{ display: "flex", gap: spacing.md }}>
                   {contactInfo.social.map(social => (
                     <IconButton
                       key={social.name}
@@ -74,129 +104,179 @@ export default function Footer() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-primary transition-colors"
+                      sx={{
+                        color: colors.text.secondary,
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                          color: social.hoverColor,
+                          transform: "translateY(-2px)",
+                        },
+                      }}
                       size="small"
-                      sx={{ "&:hover": { color: social.hoverColor } }}
                     >
                       <social.icon />
                     </IconButton>
                   ))}
-                </div>
-              </div>
+                </Box>
+              </Box>
             </Grid>
 
             {/* Quick Links */}
             <Grid item xs={12} sm={6} md={2}>
-              <Typography variant="subtitle2" className="font-bold text-gray-900 mb-6">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.lg,
+                  fontSize: typography.fontSize.base,
+                }}
+              >
                 Products
               </Typography>
-              <ul className="space-y-4">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
                 {footerLinks.products.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                    <BodyText
+                      sx={{
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                        transition: "color 0.2s ease-in-out",
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                      }}
                     >
                       {link.name}
-                    </Link>
-                  </li>
+                    </BodyText>
+                  </Link>
                 ))}
-              </ul>
+              </Box>
             </Grid>
 
             <Grid item xs={12} sm={6} md={2}>
-              <Typography variant="subtitle2" className="font-bold text-gray-900 mb-6">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.lg,
+                  fontSize: typography.fontSize.base,
+                }}
+              >
                 Company
               </Typography>
-              <ul className="space-y-4">
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
                 {footerLinks.company.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                    <BodyText
+                      sx={{
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                        transition: "color 0.2s ease-in-out",
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                      }}
                     >
                       {link.name}
-                    </Link>
-                  </li>
+                    </BodyText>
+                  </Link>
                 ))}
-              </ul>
+              </Box>
             </Grid>
 
             {/* Contact Column */}
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" className="font-bold text-gray-900 mb-6">
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.lg,
+                  fontSize: typography.fontSize.base,
+                }}
+              >
                 Contact Us
               </Typography>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <Phone className="text-gray-400" />
-                  <Link
-                    href={`tel:${contactInfo.phone}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {contactInfo.phone}
-                  </Link>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                  <ContactInfo icon={<Phone />} text={contactInfo.phone} />
                   <IconButton
                     component="a"
                     href={`https://wa.me/${contactInfo.phone.replace(/\D/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     size="small"
-                    sx={{ color: "#25D366" }}
+                    sx={{
+                      color: "#25D366",
+                      "&:hover": {
+                        backgroundColor: colors.background.subtle,
+                      },
+                    }}
                   >
                     <WhatsApp />
                   </IconButton>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <Email className="text-gray-400" />
-                  <Link
-                    href={`mailto:${contactInfo.email}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {contactInfo.email}
-                  </Link>
-                </div>
-                <Button
-                  variant="contained"
-                  color="primary"
+                </Box>
+                <ContactInfo icon={<Email />} text={contactInfo.email} />
+                <PrimaryButton
                   component={Link}
                   href="/contact"
-                  className="mt-4"
+                  sx={{ mt: spacing.sm, alignSelf: "flex-start" }}
                 >
                   Get in Touch
-                </Button>
-              </div>
+                </PrimaryButton>
+              </Box>
             </Grid>
           </Grid>
-        </div>
+        </Box>
 
-        <Divider />
+        <Divider sx={{ borderColor: colors.border.light }} />
 
         {/* Bottom Bar */}
-        <div className="py-8">
+        <Box sx={{ py: spacing.xl }}>
           <Grid container spacing={2} alignItems="center" justifyContent="space-between">
             <Grid item xs={12} md="auto">
-              <Typography variant="body2" className="text-gray-600 text-center md:text-left">
+              <BodyText
+                sx={{
+                  color: colors.text.secondary,
+                  textAlign: { xs: "center", md: "left" },
+                  fontSize: typography.fontSize.sm,
+                }}
+              >
                 © {currentYear} Olgish Cakes. All rights reserved.
-              </Typography>
+              </BodyText>
             </Grid>
             <Grid item xs={12} md="auto">
-              <ul className="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-2">
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: { xs: "center", md: "flex-end" },
+                  gap: { xs: spacing.sm, md: spacing.lg },
+                }}
+              >
                 {footerLinks.legal.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                    <BodyText
+                      sx={{
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                        transition: "color 0.2s ease-in-out",
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                      }}
                     >
                       {link.name}
-                    </Link>
-                  </li>
+                    </BodyText>
+                  </Link>
                 ))}
-              </ul>
+              </Box>
             </Grid>
           </Grid>
-        </div>
-      </Container>
-    </footer>
+        </Box>
+      </DesignContainer>
+    </Box>
   );
 }

@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
+import { designTokens } from "@/lib/design-system";
+import { PrimaryButton, OutlineButton, BodyText } from "@/lib/ui-components";
+
+const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
@@ -69,12 +73,14 @@ export default function CookieConsent() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        borderRadius: "8px 8px 0 0",
-        p: { xs: 2, md: 3 },
-        m: { xs: 2, md: 3 },
+        borderRadius: `${borderRadius.lg} ${borderRadius.lg} 0 0`,
+        p: { xs: spacing.md, md: spacing.lg },
+        m: { xs: spacing.md, md: spacing.lg },
         maxWidth: { md: "600px" },
         mx: { md: "auto" },
-        bgcolor: "background.paper",
+        backgroundColor: colors.background.paper,
+        boxShadow: shadows.lg,
+        border: `1px solid ${colors.border.light}`,
       }}
     >
       <Box sx={{ position: "relative" }}>
@@ -85,7 +91,10 @@ export default function CookieConsent() {
             position: "absolute",
             right: 0,
             top: 0,
-            color: "text.secondary",
+            color: colors.text.secondary,
+            "&:hover": {
+              backgroundColor: colors.background.subtle,
+            },
           }}
         >
           <CloseIcon />
@@ -94,61 +103,64 @@ export default function CookieConsent() {
         <Typography
           variant="h6"
           sx={{
-            mb: 1,
-            fontWeight: 600,
-            color: "primary.main",
+            mb: spacing.sm,
+            fontWeight: typography.fontWeight.semibold,
+            color: colors.primary.main,
+            fontFamily: typography.fontFamily.display,
           }}
         >
           Cookie Preferences
         </Typography>
 
-        <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
+        <BodyText
+          sx={{
+            mb: spacing.md,
+            color: colors.text.secondary,
+            lineHeight: typography.lineHeight.relaxed,
+          }}
+        >
           We use cookies to enhance your browsing experience, serve personalized content, and
           analyze our traffic. By clicking "Accept All", you consent to our use of cookies.{" "}
           <MuiLink
             component={Link}
             href="/cookies"
             sx={{
-              color: "primary.main",
+              color: colors.primary.main,
               textDecoration: "none",
-              "&:hover": { textDecoration: "underline" },
+              fontWeight: typography.fontWeight.medium,
+              "&:hover": {
+                textDecoration: "underline",
+                color: colors.primary.dark,
+              },
             }}
           >
             Learn more
           </MuiLink>
-        </Typography>
+        </BodyText>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={spacing.md} sx={{ mt: spacing.md }}>
+          <PrimaryButton
             onClick={() => handleConsent("accepted")}
             disabled={isLoading}
             sx={{
               flex: { sm: 1 },
-              py: 1,
-              borderRadius: "8px",
-              textTransform: "none",
-              fontWeight: 500,
+              py: spacing.sm,
+              fontWeight: typography.fontWeight.medium,
             }}
           >
             {isLoading ? "Processing..." : "Accept All"}
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
+          </PrimaryButton>
+          <OutlineButton
             onClick={() => handleConsent("declined")}
             disabled={isLoading}
             sx={{
               flex: { sm: 1 },
-              py: 1,
-              borderRadius: "8px",
-              textTransform: "none",
-              fontWeight: 500,
+              py: spacing.sm,
+              fontWeight: typography.fontWeight.medium,
             }}
           >
             {isLoading ? "Processing..." : "Decline"}
-          </Button>
+          </OutlineButton>
         </Stack>
       </Box>
     </Paper>

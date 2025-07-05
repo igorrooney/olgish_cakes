@@ -13,6 +13,15 @@ import {
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { fetchTrustpilotReviews } from "@/app/lib/trustpilot";
+import { designTokens } from "@/lib/design-system";
+import {
+  Container as DesignContainer,
+  BodyText,
+  SectionHeading,
+  ProductCard,
+} from "@/lib/ui-components";
+
+const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
 interface Review {
   id: string;
@@ -46,25 +55,21 @@ export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
-      <Box sx={{ textAlign: "center", mb: 6 }}>
-        <Typography
-          variant="h4"
-          component="h2"
+    <DesignContainer sx={{ mt: spacing["4xl"], mb: spacing["4xl"] }}>
+      <Box sx={{ textAlign: "center", mb: spacing["2xl"] }}>
+        <SectionHeading
           sx={{
-            fontFamily: "var(--font-playfair-display)",
-            fontWeight: 600,
-            color: "primary.main",
-            mb: 2,
+            color: colors.primary.main,
+            mb: spacing.md,
           }}
         >
           Customer Reviews
-        </Typography>
+        </SectionHeading>
         <Box
           component="img"
           src="https://cdn.trustpilot.net/brand-assets/4.1.0/logo-black.svg"
           alt="Trustpilot"
-          sx={{ height: 24, mb: 4 }}
+          sx={{ height: 24, mb: spacing.xl }}
         />
       </Box>
 
@@ -72,7 +77,7 @@ export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-          gap: 4,
+          gap: spacing.xl,
         }}
       >
         {reviews.map((review, index) => (
@@ -82,67 +87,104 @@ export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Paper
-              elevation={0}
+            <ProductCard
               sx={{
-                p: 3,
+                p: spacing.lg,
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                bgcolor: "grey.50",
-                borderRadius: 2,
-                border: "1px solid",
-                borderColor: "divider",
+                backgroundColor: colors.background.subtle,
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Avatar sx={{ width: 48, height: 48, mr: 2, bgcolor: "primary.main" }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: spacing.md }}>
+                <Avatar
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    mr: spacing.md,
+                    backgroundColor: colors.primary.main,
+                    fontWeight: typography.fontWeight.semibold,
+                  }}
+                >
                   {review.author[0]}
                 </Avatar>
                 <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: typography.fontWeight.semibold,
+                      color: colors.text.primary,
+                    }}
+                  >
                     {review.author}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <BodyText
+                    sx={{
+                      color: colors.text.secondary,
+                      fontSize: typography.fontSize.sm,
+                    }}
+                  >
                     {review.location && `${review.location} • `}
                     {new Date(review.date).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
                     })}
-                  </Typography>
+                  </BodyText>
                 </Box>
               </Box>
 
-              <Rating value={review.rating} readOnly sx={{ mb: 2 }} />
+              <Rating
+                value={review.rating}
+                readOnly
+                sx={{
+                  mb: spacing.md,
+                  "& .MuiRating-iconFilled": {
+                    color: colors.secondary.main,
+                  },
+                }}
+              />
 
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: typography.fontWeight.semibold,
+                  color: colors.text.primary,
+                  mb: spacing.sm,
+                }}
+              >
                 {review.title}
               </Typography>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
+              <BodyText
                 sx={{
                   flex: 1,
+                  color: colors.text.secondary,
                   overflow: "hidden",
                   display: "-webkit-box",
                   WebkitLineClamp: 4,
                   WebkitBoxOrient: "vertical",
+                  lineHeight: typography.lineHeight.relaxed,
                 }}
               >
                 {review.content}
-              </Typography>
-            </Paper>
+              </BodyText>
+            </ProductCard>
           </motion.div>
         ))}
       </Box>
 
-      <Box sx={{ textAlign: "center", mt: 4 }}>
-        <Typography variant="body2" color="text.secondary">
+      <Box sx={{ textAlign: "center", mt: spacing.xl }}>
+        <BodyText
+          sx={{
+            color: colors.text.secondary,
+            fontSize: typography.fontSize.sm,
+            fontStyle: "italic",
+          }}
+        >
           These reviews are from verified purchases on Trustpilot
-        </Typography>
+        </BodyText>
       </Box>
-    </Container>
+    </DesignContainer>
   );
 }
