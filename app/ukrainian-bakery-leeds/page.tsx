@@ -1,0 +1,446 @@
+import type { Metadata } from "next";
+import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
+import { getAllCakes } from "../utils/fetchCakes";
+import CakeCard from "../components/CakeCard";
+import { StructuredData } from "../components/StructuredData";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title:
+    "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Traditional Ukrainian Desserts | Olgish Cakes",
+  description:
+    "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, Medovik, Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
+  keywords:
+    "Ukrainian bakery Leeds, Ukrainian cakes Leeds, authentic Ukrainian desserts, traditional Ukrainian baking, Ukrainian baker Leeds, Medovik Leeds, Kyiv cake Leeds, Ukrainian sweets Leeds",
+  openGraph: {
+    title: "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Traditional Ukrainian Desserts",
+    description:
+      "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, Medovik, Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
+    url: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+    siteName: "Olgish Cakes",
+    images: [
+      {
+        url: "https://olgish-cakes.vercel.app/images/ukrainian-bakery-leeds.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Ukrainian Bakery Leeds - Authentic Ukrainian Cakes by Olgish Cakes",
+      },
+    ],
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Traditional Ukrainian Desserts",
+    description:
+      "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, Medovik, Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-bakery-leeds.jpg"],
+  },
+  alternates: {
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+  },
+};
+
+export default async function UkrainianBakeryLeedsPage() {
+  const allCakes = await getAllCakes();
+  const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
+
+  return (
+    <>
+      <StructuredData />
+
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
+          minHeight: "100vh",
+          py: { xs: 4, md: 8 },
+        }}
+      >
+        <Container maxWidth="lg">
+          {/* Hero Section */}
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
+            <Typography
+              variant="h1"
+              component="h1"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                fontWeight: 700,
+                color: "primary.main",
+                mb: 3,
+                lineHeight: 1.2,
+              }}
+            >
+              Ukrainian Bakery Leeds
+            </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "text.secondary",
+                maxWidth: "800px",
+                mx: "auto",
+                mb: 4,
+                lineHeight: 1.6,
+              }}
+            >
+              Welcome to the only authentic Ukrainian bakery in Leeds. Founded by professional
+              Ukrainian baker Olga, we bring the authentic taste of Ukraine to our local community
+              with traditional recipes and techniques.
+            </Typography>
+            <Chip
+              label="Authentic Ukrainian Baking"
+              sx={{
+                backgroundColor: "primary.main",
+                color: "white",
+                fontSize: "1.1rem",
+                px: 3,
+                py: 1,
+                mb: 4,
+              }}
+            />
+          </Box>
+
+          {/* Ukrainian Bakery Features */}
+          <Grid container spacing={4} sx={{ mb: { xs: 6, md: 8 } }}>
+            {[
+              {
+                title: "Ukrainian Baker",
+                description:
+                  "Professional Ukrainian baker Olga brings authentic recipes and techniques from Ukraine",
+                icon: "👩‍🍳",
+              },
+              {
+                title: "Traditional Recipes",
+                description: "Authentic Ukrainian cake recipes passed down through generations",
+                icon: "📜",
+              },
+              {
+                title: "Ukrainian Ingredients",
+                description:
+                  "Traditional Ukrainian ingredients including honey, poppy seeds, and sour cream",
+                icon: "🇺🇦",
+              },
+              {
+                title: "Cultural Heritage",
+                description:
+                  "Preserving Ukrainian baking traditions and sharing them with the Leeds community",
+                icon: "🏛️",
+              },
+            ].map((feature, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    height: "100%",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                    {feature.icon}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {feature.description}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Traditional Ukrainian Cakes */}
+          <Box sx={{ mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Traditional Ukrainian Cakes
+            </Typography>
+
+            {traditionalCakes.length === 0 ? (
+              <Box sx={{ textAlign: "center", py: 8 }}>
+                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                  Authentic Ukrainian Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+                  Our traditional Ukrainian cake collection features authentic recipes from Ukraine.
+                  Contact us to learn more about our Ukrainian desserts.
+                </Typography>
+                <Button
+                  component={Link}
+                  href="/cakes"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                >
+                  View All Cakes
+                </Button>
+              </Box>
+            ) : (
+              <Grid container spacing={4}>
+                {traditionalCakes.map(cake => (
+                  <Grid item xs={12} sm={6} md={4} key={cake._id}>
+                    <CakeCard cake={cake} />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          </Box>
+
+          {/* Ukrainian Baking Traditions */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Ukrainian Baking Traditions
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
+              Ukrainian baking has a rich history dating back centuries, with each region of Ukraine
+              having its own unique recipes and techniques. Our bakery honors these traditions by
+              using authentic Ukrainian recipes and methods passed down through generations.
+            </Typography>
+            <Grid container spacing={4}>
+              {[
+                {
+                  title: "Medovik (Honey Cake)",
+                  description:
+                    "A traditional Ukrainian honey cake with delicate layers and rich honey flavor, often served at celebrations and special occasions.",
+                },
+                {
+                  title: "Kyiv Cake",
+                  description:
+                    "The legendary Kyiv cake features crispy meringue layers with hazelnuts and rich chocolate-buttercream frosting.",
+                },
+                {
+                  title: "Napoleon Cake",
+                  description:
+                    "Ukrainian version of the classic Napoleon with multiple layers of flaky puff pastry and vanilla custard cream.",
+                },
+                {
+                  title: "Poppy Seed Roll",
+                  description:
+                    "Traditional Makivnyk with soft yeast dough filled with sweetened poppy seed filling, a staple in Ukrainian celebrations.",
+                },
+              ].map((tradition, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                      {tradition.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {tradition.description}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Meet Our Ukrainian Baker */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Meet Our Ukrainian Baker
+            </Typography>
+            <Grid container spacing={4} alignItems="center">
+              <Grid item xs={12} md={6}>
+                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
+                  <strong>Olga Ieromenko</strong> is our professional Ukrainian baker who brings
+                  authentic Ukrainian baking traditions to Leeds. Trained in traditional Ukrainian
+                  baking techniques, Olga moved to Leeds in 2022 and founded Olgish Cakes to share
+                  the authentic taste of Ukraine with our local community.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
+                  With years of experience in Ukrainian baking, Olga specializes in traditional
+                  Ukrainian cakes like Medovik, Kyiv cake, and other authentic Ukrainian desserts.
+                  Her passion for preserving Ukrainian culinary heritage drives every cake she
+                  creates.
+                </Typography>
+                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
+                  At Olgish Cakes, we're proud to be the only authentic Ukrainian bakery in Leeds,
+                  bringing the warmth and tradition of Ukrainian hospitality to our customers
+                  through every delicious creation.
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    backgroundColor: "primary.light",
+                    borderRadius: 3,
+                    p: 4,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h5" sx={{ mb: 2, color: "white", fontWeight: 600 }}>
+                    Ukrainian Baking Expertise
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "white", mb: 3 }}>
+                    • Traditional Ukrainian recipes
+                    <br />
+                    • Professional baking training
+                    <br />
+                    • Authentic Ukrainian techniques
+                    <br />• Cultural heritage preservation
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          {/* Ukrainian Community */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Supporting the Ukrainian Community in Leeds
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
+              As a Ukrainian-owned business in Leeds, we're proud to support and celebrate the
+              Ukrainian community. Our bakery serves as a cultural bridge, introducing authentic
+              Ukrainian flavors to our diverse Leeds community while providing a taste of home for
+              Ukrainian residents.
+            </Typography>
+            <Grid container spacing={3}>
+              {[
+                "Authentic Ukrainian flavors for the Ukrainian community",
+                "Cultural exchange through traditional baking",
+                "Supporting Ukrainian-owned businesses in Leeds",
+                "Preserving Ukrainian culinary heritage",
+                "Building community connections through food",
+                "Celebrating Ukrainian traditions and celebrations",
+              ].map((benefit, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        backgroundColor: "primary.main",
+                        mr: 2,
+                      }}
+                    />
+                    <Typography variant="body1">{benefit}</Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Call to Action */}
+          <Box sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 3,
+              }}
+            >
+              Experience Authentic Ukrainian Baking
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
+            >
+              Taste the authentic flavors of Ukraine right here in Leeds. Order your traditional
+              Ukrainian cake today and experience the warmth of Ukrainian hospitality.
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+              <Button
+                component={Link}
+                href="/contact"
+                variant="contained"
+                color="primary"
+                size="large"
+                sx={{ px: 4, py: 1.5 }}
+              >
+                Order Ukrainian Cake
+              </Button>
+              <Button
+                component={Link}
+                href="/about"
+                variant="outlined"
+                color="primary"
+                size="large"
+                sx={{ px: 4, py: 1.5 }}
+              >
+                Learn More About Us
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </>
+  );
+}
