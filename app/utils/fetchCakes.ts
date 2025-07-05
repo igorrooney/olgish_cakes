@@ -9,6 +9,7 @@ export interface Cake {
     current: string;
   };
   description: string;
+  shortDescription?: string;
   size: string;
   pricing: {
     standard: number;
@@ -35,6 +36,7 @@ export async function getAllCakes(): Promise<Cake[]> {
     name,
     slug,
     description,
+    shortDescription,
     size,
     pricing,
     designs {
@@ -83,6 +85,7 @@ export async function getCakeBySlug(slug: string): Promise<Cake | null> {
     name,
     slug,
     description,
+    shortDescription,
     size,
     pricing,
     designs {

@@ -26,6 +26,13 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: "shortDescription",
+      title: "Short Description",
+      type: "string",
+      description: "A brief summary of the cake (max 150 characters)",
+      validation: (Rule: any) => Rule.max(150),
+    },
+    {
       name: "size",
       title: "Size",
       type: "string",

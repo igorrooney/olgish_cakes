@@ -1,14 +1,10 @@
-import { createClient as createSanityClient } from "@sanity/client";
+import { createClient } from "@sanity/client";
+import type { SanityDocument } from "@sanity/types";
 import dotenv from "dotenv";
 import path from "path";
 
-interface SanityDocument {
-  _id: string;
-  _type: string;
-}
-
 // Load environment variables from .env.local
-dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
@@ -19,7 +15,7 @@ if (!projectId || !dataset || !token) {
   process.exit(1);
 }
 
-const sanityClient = createSanityClient({
+const sanityClient = createClient({
   projectId,
   dataset,
   apiVersion: "2024-03-31",
@@ -36,6 +32,15 @@ const cakePrices: Record<string, number> = {
   "cherry-cake": 38,
 };
 
+// Short descriptions for existing cakes
+const cakeShortDescriptions: Record<string, string> = {
+  "kyiv-cake": "Legendary Ukrainian dessert with crispy meringue and hazelnuts",
+  "honey-cake-medovik": "Traditional honey cake with melt-in-your-mouth texture",
+  "napoleon-cake": "Ukrainian Napoleon with flaky pastry and vanilla custard",
+  "poppy-seed-roll": "Soft yeast dough with sweetened poppy seed filling",
+  "cherry-cake": "Soft sponge cake with sweet-tart cherry filling",
+};
+
 async function updateCakes() {
   console.log("Fetching existing cakes...");
 
@@ -50,18 +55,23 @@ async function updateCakes() {
 
     console.log(`Found ${cakes.length} cakes to update`);
 
-    // Update each cake with new fields or modifications
-    const transactions = cakes.map((cake: SanityDocument) => ({
-      patch: {
-        id: cake._id,
-        set: {
-          updatedAt: new Date().toISOString(),
+    // Update each cake with shortDescription field
+    const transactions = cakes.map((cake: SanityDocument) => {
+      const slug = (cake as any).slug?.current;
+      const shortDescription = cakeShortDescriptions[slug] || "";
+
+      return {
+        patch: {
+          id: cake._id,
+          set: {
+            shortDescription: shortDescription,
+          },
         },
-      },
-    }));
+      };
+    });
 
     await sanityClient.transaction(transactions).commit();
-    console.log("Successfully updated all cakes!");
+    console.log("Successfully updated all cakes with short descriptions!");
   } catch (error) {
     console.error("Error updating cakes:", error);
     process.exit(1);

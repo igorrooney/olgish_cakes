@@ -7,6 +7,7 @@ export interface Cake {
     current: string;
   };
   description: string;
+  shortDescription?: string;
   size: string;
   pricing: {
     standard: number;

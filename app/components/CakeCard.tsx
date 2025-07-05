@@ -113,7 +113,9 @@ export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): 
           variant="body2"
           className="text-stone-600 line-clamp-2 min-h-[3rem] italic font-light"
         >
-          {cake.description || "A delightful artisanal cake crafted with the finest ingredients"}
+          {cake.shortDescription ||
+            cake.description ||
+            "A delightful artisanal cake crafted with the finest ingredients"}
         </Typography>
 
         {/* Action Button */}

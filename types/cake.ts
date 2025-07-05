@@ -31,6 +31,7 @@ export interface Cake {
     current: string;
   };
   description: string;
+  shortDescription?: string;
   size: string;
   pricing: CakePricing;
   designs: CakeDesigns;
