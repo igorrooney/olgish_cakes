@@ -1,12 +1,11 @@
-import { Container, Typography, Button, Grid, Box, Paper, Rating, Chip } from "@mui/material";
+import { CakeOutlined, Favorite, LocalShipping, Verified } from "@mui/icons-material";
+import { Box, Button, Chip, Container, Grid, Paper, Rating, Typography } from "@mui/material";
 import Link from "next/link";
-import Image from "next/image";
+import { AnimatedDiv, AnimatedSection } from "./components/AnimatedSection";
 import CakeCard from "./components/CakeCard";
+import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
-import { AnimatedSection, AnimatedDiv } from "./components/AnimatedSection";
-import { CakeOutlined, Star, LocalShipping, Verified, Favorite } from "@mui/icons-material";
-import { urlFor } from "@/sanity/lib/image";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -360,7 +359,7 @@ export default async function Home() {
 
           <Grid container spacing={6}>
             {testimonials.length > 0
-              ? testimonials.map((testimonial, index) => (
+              ? testimonials.map((testimonial: Testimonial, index: number) => (
                   <Grid item xs={12} md={4} key={testimonial._id}>
                     <AnimatedDiv
                       initial={{ opacity: 0, y: 20 }}
