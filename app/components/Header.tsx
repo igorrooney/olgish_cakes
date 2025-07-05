@@ -3,8 +3,8 @@
 import { designTokens } from "@/lib/design-system";
 import { Container as DesignContainer } from "@/lib/ui-components";
 import CloseIcon from "@mui/icons-material/Close";
-import MenuIcon from "@mui/icons-material/Menu";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
@@ -16,11 +16,10 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Toolbar,
-  Typography,
   Menu,
   MenuItem,
-  ClickAwayListener,
+  Toolbar,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
@@ -36,9 +35,7 @@ const navigation = [
     href: "/cakes",
     dropdown: [
       { name: "All Cakes", href: "/cakes" },
-      { name: "Cakes Leeds", href: "/cakes-leeds" },
-      { name: "Ukrainian Bakery Leeds", href: "/ukrainian-bakery-leeds" },
-      { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
+
       { name: "Wedding Cakes", href: "/wedding-cakes" },
       { name: "Birthday Cakes", href: "/birthday-cakes" },
       { name: "Celebration Cakes", href: "/celebration-cakes" },
@@ -46,7 +43,7 @@ const navigation = [
     ],
   },
   { name: "Gallery", href: "/cake-gallery" },
-  { name: "How to Order", href: "/how-to-order" },
+  { name: "Blog", href: "/blog" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];

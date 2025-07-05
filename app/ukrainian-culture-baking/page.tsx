@@ -226,7 +226,7 @@ export default function UkrainianCultureBakingPage() {
                   icon: "🍯",
                   meaning: "Symbolizes sweetness of life, prosperity, and good fortune",
                   cultural: "Used in traditional celebrations and believed to bring good luck",
-                  tradition: "Medovik cake represents the sweetness of marriage and family life",
+                  tradition: "Honey cake represents the sweetness of marriage and family life",
                 },
                 {
                   ingredient: "Poppy Seeds",
@@ -334,21 +334,21 @@ export default function UkrainianCultureBakingPage() {
                 {
                   celebration: "Christmas (Rizdvo)",
                   icon: "🎄",
-                  cakes: ["Medovik", "Kyiv Cake", "Christmas Roll"],
+                  cakes: ["Honey Cake", "Kyiv Cake", "Christmas Roll"],
                   significance: "Celebrates the birth of Christ and family unity",
                   tradition: "Cakes are blessed in church and shared with family and guests",
                 },
                 {
                   celebration: "Easter (Velykden)",
                   icon: "🐰",
-                  cakes: ["Paska", "Easter Medovik", "Spring Cakes"],
+                  cakes: ["Paska", "Easter Honey Cake", "Spring Cakes"],
                   significance: "Celebrates resurrection and new life",
                   tradition: "Cakes are decorated with religious symbols and blessed",
                 },
                 {
                   celebration: "Weddings (Vesillia)",
                   icon: "💒",
-                  cakes: ["Wedding Medovik", "Kyiv Cake", "Traditional Wedding Cakes"],
+                  cakes: ["Wedding Honey Cake", "Kyiv Cake", "Traditional Wedding Cakes"],
                   significance: "Symbolizes the sweetness of marriage and family life",
                   tradition: "Cakes are shared with all guests as a symbol of hospitality",
                 },

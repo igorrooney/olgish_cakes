@@ -9,13 +9,13 @@ import { Button } from "@mui/material";
 export const metadata: Metadata = {
   title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts | Olgish Cakes",
   description:
-    "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted Medovik, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes. Order authentic Ukrainian desserts.",
+    "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes. Order authentic Ukrainian desserts.",
   keywords:
-    "traditional Ukrainian cakes Leeds, authentic Ukrainian desserts, Medovik Leeds, Kyiv cake Leeds, Ukrainian honey cake, traditional Ukrainian baking, Ukrainian cake recipes, authentic Ukrainian sweets",
+    "traditional Ukrainian cakes Leeds, authentic Ukrainian desserts, honey cake Leeds, Kyiv cake Leeds, Ukrainian honey cake, traditional Ukrainian baking, Ukrainian cake recipes, authentic Ukrainian sweets",
   openGraph: {
     title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
     description:
-      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted Medovik, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
     url: "https://olgish-cakes.vercel.app/traditional-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
     description:
-      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted Medovik, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
     images: ["https://olgish-cakes.vercel.app/images/traditional-ukrainian-cakes.jpg"],
   },
   alternates: {
@@ -233,11 +233,11 @@ export default async function TraditionalUkrainianCakesPage() {
               methods.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-              From the delicate layers of Medovik (honey cake) to the rich flavors of Kyiv cake,
-              each traditional Ukrainian dessert tells a story of family, celebration, and the
-              warmth of Ukrainian hospitality. These recipes have been cherished and preserved
-              through generations, ensuring that the authentic taste of Ukraine continues to delight
-              people around the world.
+              From the delicate layers of honey cake to the rich flavors of Kyiv cake, each
+              traditional Ukrainian dessert tells a story of family, celebration, and the warmth of
+              Ukrainian hospitality. These recipes have been cherished and preserved through
+              generations, ensuring that the authentic taste of Ukraine continues to delight people
+              around the world.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
               At Olgish Cakes, we honor these traditions by using authentic Ukrainian recipes and

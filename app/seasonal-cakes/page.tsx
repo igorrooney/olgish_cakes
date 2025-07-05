@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
   keywords:
-    "seasonal cakes Leeds, Christmas cakes, Easter cakes, holiday Ukrainian cakes, seasonal Ukrainian desserts, Christmas Medovik, Easter cake traditions, holiday cake delivery Leeds",
+    "seasonal cakes Leeds, Christmas cakes, Easter cakes, holiday Ukrainian cakes, seasonal Ukrainian desserts, Christmas honey cake, Easter cake traditions, holiday cake delivery Leeds",
   openGraph: {
     title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
     description:
@@ -78,7 +78,7 @@ export default function SeasonalCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate every season with traditional Ukrainian cakes. From Christmas Medovik to
+              Celebrate every season with traditional Ukrainian cakes. From Christmas honey cake to
               Easter celebrations, our seasonal cakes honor Ukrainian traditions and bring the
               authentic taste of Ukraine to your holiday table.
             </Typography>
@@ -136,7 +136,7 @@ export default function SeasonalCakesPage() {
             <Grid container spacing={4}>
               {[
                 {
-                  name: "Christmas Medovik",
+                  name: "Christmas Honey Cake",
                   description:
                     "Traditional honey cake with festive spices, decorated with Christmas motifs and served during Ukrainian Christmas celebrations",
                   flavors: ["Honey", "Cinnamon", "Nutmeg", "Cloves", "Sour Cream"],
@@ -242,7 +242,7 @@ export default function SeasonalCakesPage() {
                   tradition: "Blessed in church and shared with family on Easter Sunday",
                 },
                 {
-                  name: "Easter Medovik",
+                  name: "Easter Honey Cake",
                   description:
                     "Spring version of honey cake with lighter flavors and Easter decorations",
                   flavors: ["Honey", "Spring Herbs", "Light Cream", "Fresh Flowers"],
@@ -419,7 +419,7 @@ export default function SeasonalCakesPage() {
                 {
                   title: "Christmas Traditions",
                   description:
-                    "Ukrainian Christmas celebrations feature special cakes like Medovik and Kyiv cake, often blessed in church and shared with family and guests. The Christmas season is marked by rich, spiced flavors and elaborate decorations.",
+                    "Ukrainian Christmas celebrations feature special cakes like honey cake and Kyiv cake, often blessed in church and shared with family and guests. The Christmas season is marked by rich, spiced flavors and elaborate decorations.",
                 },
                 {
                   title: "Easter Celebrations",

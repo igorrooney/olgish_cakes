@@ -116,7 +116,7 @@ export default async function WeddingCakesPage() {
               {
                 title: "Ukrainian Flavors",
                 description:
-                  "Traditional Ukrainian cake flavors like Medovik and Kyiv cake for a unique wedding experience",
+                  "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for a unique wedding experience",
                 icon: "🇺🇦",
               },
               {
@@ -316,13 +316,13 @@ export default async function WeddingCakesPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               Our wedding cakes feature a unique blend of traditional Ukrainian flavors and classic
-              wedding cake options. From the delicate honey layers of Medovik to the rich chocolate
-              of Kyiv cake, each flavor tells a story of Ukrainian tradition while creating a
-              memorable wedding experience.
+              wedding cake options. From the delicate honey layers of honey cake to the rich
+              chocolate of Kyiv cake, each flavor tells a story of Ukrainian tradition while
+              creating a memorable wedding experience.
             </Typography>
             <Grid container spacing={3}>
               {[
-                "Medovik (Honey Cake) - Traditional Ukrainian honey layers",
+                "Honey Cake - Traditional Ukrainian honey layers",
                 "Kyiv Cake - Rich chocolate and hazelnut meringue",
                 "Vanilla Bean - Classic wedding cake with Ukrainian twist",
                 "Chocolate Fudge - Decadent chocolate layers",
