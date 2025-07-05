@@ -5,23 +5,23 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Gluten-Free Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes | Olgish Cakes",
+    "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes | Olgish Cakes",
   description:
-    "Delicious gluten-free Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-free ingredients. Traditional Ukrainian flavors adapted for gluten-free diets. Safe for celiac disease.",
+    "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets. Safe for celiac disease.",
   keywords:
-    "gluten-free Ukrainian cakes Leeds, celiac-friendly cakes, wheat-free cakes Leeds, gluten-free birthday cakes, gluten-free wedding cakes, celiac disease cakes, Ukrainian gluten-free desserts",
+    "gluten-friendly Ukrainian cakes Leeds, celiac-friendly cakes, wheat-free cakes Leeds, gluten-friendly birthday cakes, gluten-friendly wedding cakes, celiac disease cakes, Ukrainian gluten-friendly desserts",
   openGraph: {
-    title: "Gluten-Free Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
+    title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
-      "Delicious gluten-free Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-free ingredients. Traditional Ukrainian flavors adapted for gluten-free diets.",
-    url: "https://olgishcakes.com/gluten-free-ukrainian-cakes",
+      "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
+    url: "https://olgishcakes.com/gluten-friendly-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/gluten-free-ukrainian-cakes.jpg",
+        url: "https://olgishcakes.com/images/gluten-friendly-ukrainian-cakes.jpg",
         width: 1200,
         height: 630,
-        alt: "Gluten-Free Ukrainian Cakes Leeds - Olgish Cakes",
+        alt: "Gluten-Friendly Ukrainian Cakes Leeds - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -29,17 +29,17 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gluten-Free Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
+    title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
-      "Delicious gluten-free Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-free ingredients. Traditional Ukrainian flavors adapted for gluten-free diets.",
-    images: ["https://olgishcakes.com/images/gluten-free-ukrainian-cakes.jpg"],
+      "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
+    images: ["https://olgishcakes.com/images/gluten-friendly-ukrainian-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/gluten-free-ukrainian-cakes",
+    canonical: "https://olgishcakes.com/gluten-friendly-ukrainian-cakes",
   },
 };
 
-export default function GlutenFreeUkrainianCakesPage() {
+export default function GlutenFriendlyUkrainianCakesPage() {
   return (
     <>
       <StructuredData />
@@ -66,7 +66,7 @@ export default function GlutenFreeUkrainianCakesPage() {
                 lineHeight: 1.2,
               }}
             >
-              Gluten-Free Ukrainian Cakes Leeds
+              Gluten-Friendly Ukrainian Cakes Leeds
             </Typography>
             <Typography
               variant="h5"
@@ -78,12 +78,12 @@ export default function GlutenFreeUkrainianCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Delicious gluten-free Ukrainian cakes made with certified gluten-free ingredients.
-              Celiac-friendly cakes that maintain the authentic taste and beauty of traditional
-              Ukrainian desserts. Safe for celiac disease and gluten intolerance.
+              Delicious gluten-friendly Ukrainian cakes made with certified gluten-friendly
+              ingredients. Celiac-friendly cakes that maintain the authentic taste and beauty of
+              traditional Ukrainian desserts. Safe for celiac disease and gluten intolerance.
             </Typography>
             <Chip
-              label="Certified Gluten-Free Ukrainian Cakes"
+              label="Certified Gluten-Friendly Ukrainian Cakes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -99,43 +99,43 @@ export default function GlutenFreeUkrainianCakesPage() {
           <Box sx={{ mb: 6 }}>
             <Alert severity="success" sx={{ borderRadius: 2, fontSize: "1.1rem" }}>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                🛡️ All our gluten-free cakes are prepared in a dedicated gluten-free environment
-                with certified gluten-free ingredients. Safe for celiac disease and gluten
-                intolerance.
+                🛡️ All our gluten-friendly cakes are prepared in a dedicated gluten-friendly
+                environment with certified gluten-friendly ingredients. Safe for celiac disease and
+                gluten intolerance.
               </Typography>
             </Alert>
           </Box>
 
-          {/* Gluten-Free Cake Features */}
+          {/* Gluten-Friendly Cake Features */}
           <Box sx={{ mb: 8 }}>
             <Typography
               variant="h3"
               sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
             >
-              Why Choose Our Gluten-Free Ukrainian Cakes?
+              Why Choose Our Gluten-Friendly Ukrainian Cakes?
             </Typography>
             <Grid container spacing={4}>
               {[
                 {
                   title: "Celiac-Safe Preparation",
                   description:
-                    "Dedicated gluten-free kitchen area with strict cross-contamination protocols. Certified safe for celiac disease.",
+                    "Dedicated gluten-friendly kitchen area with strict cross-contamination protocols. Certified safe for celiac disease.",
                   icon: "🛡️",
                 },
                 {
-                  title: "Certified Gluten-Free Ingredients",
+                  title: "Certified Gluten-Friendly Ingredients",
                   description:
-                    "All ingredients are certified gluten-free and sourced from trusted suppliers. No wheat, rye, or barley used.",
+                    "All ingredients are certified gluten-friendly and sourced from trusted suppliers. No wheat, rye, or barley used.",
                   icon: "✅",
                 },
                 {
                   title: "Authentic Ukrainian Taste",
                   description:
-                    "Traditional Ukrainian cake recipes adapted for gluten-free diets without compromising on taste or texture.",
+                    "Traditional Ukrainian cake recipes adapted for gluten-friendly diets without compromising on taste or texture.",
                   icon: "🇺🇦",
                 },
                 {
-                  title: "Custom Gluten-Free Designs",
+                  title: "Custom Gluten-Friendly Designs",
                   description:
                     "Beautiful custom designs for all occasions. Wedding cakes, birthday cakes, and celebration cakes.",
                   icon: "🎨",
@@ -171,57 +171,57 @@ export default function GlutenFreeUkrainianCakesPage() {
             </Grid>
           </Box>
 
-          {/* Gluten-Free Cake Varieties */}
+          {/* Gluten-Friendly Cake Varieties */}
           <Box sx={{ mb: 8 }}>
             <Typography
               variant="h3"
               sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
             >
-              Our Gluten-Free Ukrainian Cake Collection
+              Our Gluten-Friendly Ukrainian Cake Collection
             </Typography>
             <Grid container spacing={4}>
               {[
                 {
-                  name: "Gluten-Free Honey Cake",
+                  name: "Gluten-Friendly Honey Cake",
                   description:
-                    "Traditional Ukrainian honey cake made with gluten-free flour. Layers of honey-infused sponge with cream filling.",
+                    "Traditional Ukrainian honey cake made with gluten-friendly flour. Layers of honey-infused sponge with cream filling.",
                   price: "From £38",
-                  image: "/images/gluten-free/gluten-free-honey-cake.jpg",
+                  image: "/images/gluten-friendly/gluten-friendly-honey-cake.jpg",
                 },
                 {
-                  name: "Gluten-Free Kyiv Cake",
+                  name: "Gluten-Friendly Kyiv Cake",
                   description:
                     "Celiac-safe version of the classic Kyiv cake. Rich chocolate layers with meringue and hazelnut filling.",
                   price: "From £42",
-                  image: "/images/gluten-free/gluten-free-kyiv-cake.jpg",
+                  image: "/images/gluten-friendly/gluten-friendly-kyiv-cake.jpg",
                 },
                 {
-                  name: "Gluten-Free Napoleon",
+                  name: "Gluten-Friendly Napoleon",
                   description:
-                    "Wheat-free Napoleon cake with flaky gluten-free pastry layers and custard cream.",
+                    "Wheat-free Napoleon cake with flaky gluten-friendly pastry layers and custard cream.",
                   price: "From £40",
-                  image: "/images/gluten-free/gluten-free-napoleon.jpg",
+                  image: "/images/gluten-friendly/gluten-friendly-napoleon.jpg",
                 },
                 {
-                  name: "Gluten-Free Chocolate Cake",
+                  name: "Gluten-Friendly Chocolate Cake",
                   description:
-                    "Rich chocolate cake made with gluten-free flour. Perfect for chocolate lovers with celiac disease.",
+                    "Rich chocolate cake made with gluten-friendly flour. Perfect for chocolate lovers with celiac disease.",
                   price: "From £35",
-                  image: "/images/gluten-free/gluten-free-chocolate.jpg",
+                  image: "/images/gluten-friendly/gluten-friendly-chocolate.jpg",
                 },
                 {
-                  name: "Gluten-Free Vanilla Cake",
+                  name: "Gluten-Friendly Vanilla Cake",
                   description:
-                    "Light and fluffy vanilla cake with gluten-free flour. Classic flavor for any celebration.",
+                    "Light and fluffy vanilla cake with gluten-friendly flour. Classic flavor for any celebration.",
                   price: "From £32",
-                  image: "/images/gluten-free/gluten-free-vanilla.jpg",
+                  image: "/images/gluten-friendly/gluten-friendly-vanilla.jpg",
                 },
                 {
-                  name: "Custom Gluten-Free Cakes",
+                  name: "Custom Gluten-Friendly Cakes",
                   description:
-                    "Personalized gluten-free cakes for any occasion. Wedding cakes, birthday cakes, and celebration cakes.",
+                    "Personalized gluten-friendly cakes for any occasion. Wedding cakes, birthday cakes, and celebration cakes.",
                   price: "From £45",
-                  image: "/images/gluten-free/custom-gluten-free.jpg",
+                  image: "/images/gluten-friendly/custom-gluten-friendly.jpg",
                 },
               ].map((cake, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
@@ -291,7 +291,7 @@ export default function GlutenFreeUkrainianCakesPage() {
             </Grid>
           </Box>
 
-          {/* Gluten-Free Safety Information */}
+          {/* Gluten-Friendly Safety Information */}
           <Box sx={{ mb: 8 }}>
             <Paper
               elevation={3}
@@ -303,24 +303,24 @@ export default function GlutenFreeUkrainianCakesPage() {
               }}
             >
               <Typography variant="h3" sx={{ mb: 3, textAlign: "center", fontWeight: 600 }}>
-                Our Gluten-Free Safety Standards
+                Our Gluten-Friendly Safety Standards
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                    Gluten-Free Ingredients We Use:
+                    Gluten-Friendly Ingredients We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Certified gluten-free flour blends
+                    • Certified gluten-friendly flour blends
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
                     • Almond flour and coconut flour
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Gluten-free baking powder and xanthan gum
+                    • Gluten-friendly baking powder and xanthan gum
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Certified gluten-free vanilla and extracts
+                    • Certified gluten-friendly vanilla and extracts
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
                     • All ingredients tested for gluten contamination
@@ -331,7 +331,7 @@ export default function GlutenFreeUkrainianCakesPage() {
                     Our Safety Protocols:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Dedicated gluten-free preparation area
+                    • Dedicated gluten-friendly preparation area
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
                     • Separate utensils and equipment
@@ -362,17 +362,17 @@ export default function GlutenFreeUkrainianCakesPage() {
               {[
                 {
                   name: "Sarah from Leeds",
-                  text: "As someone with celiac disease, I was so happy to find authentic Ukrainian cakes I can safely eat. The gluten-free honey cake is amazing!",
+                  text: "As someone with celiac disease, I was so happy to find authentic Ukrainian cakes I can safely eat. The gluten-friendly honey cake is amazing!",
                   rating: 5,
                 },
                 {
                   name: "James from Bradford",
-                  text: "Ordered a gluten-free wedding cake and it was perfect. No gluten symptoms and tasted exactly like the traditional version.",
+                  text: "Ordered a gluten-friendly wedding cake and it was perfect. No gluten symptoms and tasted exactly like the traditional version.",
                   rating: 5,
                 },
                 {
                   name: "Lisa from Harrogate",
-                  text: "Finally found gluten-free Ukrainian cakes that are safe for my daughter. The Kyiv cake is her favorite and she can eat it worry-free.",
+                  text: "Finally found gluten-friendly Ukrainian cakes that are safe for my daughter. The Kyiv cake is her favorite and she can eat it worry-free.",
                   rating: 5,
                 },
               ].map((testimonial, index) => (
@@ -414,15 +414,15 @@ export default function GlutenFreeUkrainianCakesPage() {
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="h4" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
-              Ready to Order Your Gluten-Free Ukrainian Cake?
+              Ready to Order Your Gluten-Friendly Ukrainian Cake?
             </Typography>
             <Typography
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Contact us today to discuss your gluten-free cake requirements, get a quote, or place
-              an order. We're here to make your celebration special with safe, delicious Ukrainian
-              flavors.
+              Contact us today to discuss your gluten-friendly cake requirements, get a quote, or
+              place an order. We're here to make your celebration special with safe, delicious
+              Ukrainian flavors.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -439,7 +439,7 @@ export default function GlutenFreeUkrainianCakesPage() {
                   },
                 }}
               >
-                Order Gluten-Free Cake
+                Order Gluten-Friendly Cake
               </Button>
               <Button
                 variant="outlined"

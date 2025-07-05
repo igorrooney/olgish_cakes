@@ -132,7 +132,7 @@ export default function ChristmasCakesLeedsPage() {
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
                   We also offer modern variations of Christmas cakes, including Kyiv cake, chocolate
-                  Christmas cakes, and gluten-free Christmas cake options for those with dietary
+                  Christmas cakes, and gluten-friendly Christmas cake options for those with dietary
                   restrictions.
                 </Typography>
               </Grid>
@@ -312,7 +312,7 @@ export default function ChristmasCakesLeedsPage() {
                       size="small"
                       sx={{ backgroundColor: "success.main", color: "white" }}
                     />
-                    <Typography variant="body1">Gluten-free options available</Typography>
+                    <Typography variant="body1">Gluten-friendly options available</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip

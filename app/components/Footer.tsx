@@ -46,7 +46,7 @@ const footerLinks = {
     { name: "Birthday Cakes", href: "/birthday-cakes" },
     { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
     { name: "Vegan Cakes", href: "/vegan-cakes-leeds" },
-    { name: "Gluten-Free Cakes", href: "/gluten-free-ukrainian-cakes" },
+    { name: "Gluten-Friendly Cakes", href: "/gluten-friendly-ukrainian-cakes" },
   ],
   services: [
     { name: "Custom Cake Design", href: "/custom-cake-design" },

@@ -134,7 +134,7 @@ export default async function EasterCakesLeedsPage() {
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
                   We also offer modern variations of Easter cakes, including chocolate Easter cakes,
-                  fruit-filled Easter bread, and gluten-free Easter cake options for those with
+                  fruit-filled Easter bread, and gluten-friendly Easter cake options for those with
                   dietary restrictions.
                 </Typography>
               </Grid>
@@ -312,7 +312,7 @@ export default async function EasterCakesLeedsPage() {
                       size="small"
                       sx={{ backgroundColor: "success.main", color: "white" }}
                     />
-                    <Typography variant="body1">Gluten-free options available</Typography>
+                    <Typography variant="body1">Gluten-friendly options available</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip

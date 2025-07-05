@@ -5,15 +5,15 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Allergen Information | Gluten-Free Cakes Leeds | Dairy-Free Ukrainian Cakes | Olgish Cakes",
+    "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes | Olgish Cakes",
   description:
-    "Complete allergen information for our Ukrainian cakes. Gluten-free, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
+    "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
   keywords:
-    "allergen information, gluten-free cakes Leeds, dairy-free Ukrainian cakes, nut-free cakes, vegan cakes Leeds, food allergies, dietary requirements, safe cakes",
+    "allergen information, gluten-friendly cakes Leeds, dairy-free Ukrainian cakes, nut-free cakes, vegan cakes Leeds, food allergies, dietary requirements, safe cakes",
   openGraph: {
-    title: "Allergen Information | Gluten-Free Cakes Leeds | Dairy-Free Ukrainian Cakes",
+    title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Complete allergen information for our Ukrainian cakes. Gluten-free, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
+      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
     url: "https://olgish-cakes.vercel.app/allergen-information",
     siteName: "Olgish Cakes",
     images: [
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Allergen Information | Gluten-Free Cakes Leeds | Dairy-Free Ukrainian Cakes",
+    title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Complete allergen information for our Ukrainian cakes. Gluten-free, dairy-free, nut-free, and vegan cake options available.",
+      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
     images: ["https://olgish-cakes.vercel.app/images/allergen-information.jpg"],
   },
   alternates: {
@@ -139,7 +139,7 @@ export default function AllergenInformationPage() {
                   icon: "🌾",
                   description: "Found in wheat flour, present in most traditional Ukrainian cakes",
                   commonIn: ["Medovik", "Kyiv Cake", "Napoleon", "Poppy Seed Roll"],
-                  alternatives: "Gluten-free flour options available",
+                  alternatives: "Gluten-friendly flour options available",
                 },
                 {
                   allergen: "Dairy",
@@ -246,11 +246,15 @@ export default function AllergenInformationPage() {
             <Grid container spacing={4}>
               {[
                 {
-                  diet: "Gluten-Free",
+                  diet: "Gluten-Friendly",
                   icon: "🌾❌",
                   description:
-                    "Traditional Ukrainian cakes adapted with gluten-free flour blends that maintain authentic texture and taste",
-                  options: ["Gluten-free Medovik", "Gluten-free Kyiv cake", "Gluten-free Napoleon"],
+                    "Traditional Ukrainian cakes adapted with gluten-friendly flour blends that maintain authentic texture and taste",
+                  options: [
+                    "Gluten-friendly Medovik",
+                    "Gluten-friendly Kyiv cake",
+                    "Gluten-friendly Napoleon",
+                  ],
                   notice: "Made in a kitchen that handles gluten",
                 },
                 {
@@ -378,7 +382,7 @@ export default function AllergenInformationPage() {
                 {
                   cake: "Medovik (Honey Cake)",
                   allergens: ["Gluten", "Dairy", "Eggs"],
-                  alternatives: "Gluten-free, dairy-free, and vegan versions available",
+                  alternatives: "Gluten-friendly, dairy-free, and vegan versions available",
                 },
                 {
                   cake: "Kyiv Cake",
@@ -388,22 +392,22 @@ export default function AllergenInformationPage() {
                 {
                   cake: "Napoleon Cake",
                   allergens: ["Gluten", "Dairy", "Eggs"],
-                  alternatives: "Gluten-free and dairy-free versions available",
+                  alternatives: "Gluten-friendly and dairy-free versions available",
                 },
                 {
                   cake: "Poppy Seed Roll",
                   allergens: ["Gluten", "Dairy", "Eggs"],
-                  alternatives: "Gluten-free and dairy-free versions available",
+                  alternatives: "Gluten-friendly and dairy-free versions available",
                 },
                 {
                   cake: "Cherry Cake",
                   allergens: ["Gluten", "Dairy", "Eggs"],
-                  alternatives: "Gluten-free and dairy-free versions available",
+                  alternatives: "Gluten-friendly and dairy-free versions available",
                 },
                 {
                   cake: "Apple Cake",
                   allergens: ["Gluten", "Dairy", "Eggs"],
-                  alternatives: "Gluten-free and dairy-free versions available",
+                  alternatives: "Gluten-friendly and dairy-free versions available",
                 },
               ].map((cake, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>

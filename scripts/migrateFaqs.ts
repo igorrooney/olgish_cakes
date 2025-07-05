@@ -56,7 +56,7 @@ const faqs = [
   {
     question: "How do you handle dietary requirements?",
     answer:
-      "We accommodate various dietary needs including gluten-free, dairy-free, vegan, and nut-free options. Our Ukrainian recipes can be adapted while maintaining their authentic taste. Please inform us of any allergies or dietary restrictions when placing your order, and we'll ensure your cake meets all requirements.",
+      "We accommodate various dietary needs including gluten-friendly, dairy-free, vegan, and nut-free options. Our Ukrainian recipes can be adapted while maintaining their authentic taste. Please inform us of any allergies or dietary restrictions when placing your order, and we'll ensure your cake meets all requirements.",
     order: 4,
   },
   {

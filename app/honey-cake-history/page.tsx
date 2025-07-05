@@ -263,7 +263,11 @@ export default function HoneyCakeHistoryPage() {
                   title: "Innovation",
                   description:
                     "Contemporary variations while maintaining authenticity, including dietary adaptations and new flavor combinations.",
-                  innovations: ["Gluten-free versions", "Vegan adaptations", "New flavor profiles"],
+                  innovations: [
+                    "Gluten-friendly versions",
+                    "Vegan adaptations",
+                    "New flavor profiles",
+                  ],
                 },
               ].map((era, index) => (
                 <Grid item xs={12} md={4} key={index}>
@@ -406,8 +410,8 @@ export default function HoneyCakeHistoryPage() {
                     preserving its authentic taste and cultural significance.
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
-                    Gluten-free, vegan, and dairy-free versions ensure that everyone can enjoy this
-                    traditional Ukrainian dessert, regardless of dietary restrictions.
+                    Gluten-friendly, vegan, and dairy-free versions ensure that everyone can enjoy
+                    this traditional Ukrainian dessert, regardless of dietary restrictions.
                   </Typography>
                 </Grid>
               </Grid>

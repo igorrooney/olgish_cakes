@@ -71,7 +71,7 @@ const navigation = [
           title: "Dietary Options",
           items: [
             { name: "Vegan Cakes", href: "/vegan-cakes-leeds" },
-            { name: "Gluten-Free Cakes", href: "/gluten-free-ukrainian-cakes" },
+            { name: "Gluten-Friendly Cakes", href: "/gluten-friendly-ukrainian-cakes" },
             { name: "Dairy-Free Cakes", href: "/dairy-free-cakes-leeds" },
             { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
           ],

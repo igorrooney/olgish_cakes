@@ -203,7 +203,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
-      url: `${baseUrl}/gluten-free-ukrainian-cakes`,
+      url: `${baseUrl}/gluten-friendly-ukrainian-cakes`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.6,
@@ -399,7 +399,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
-      url: `${baseUrl}/gluten-free-wedding-cakes-leeds`,
+      url: `${baseUrl}/gluten-friendly-wedding-cakes-leeds`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.6,
