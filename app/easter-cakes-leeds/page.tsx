@@ -1,39 +1,43 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
+import { getAllCakes } from "../utils/fetchCakes";
+import CakeCard from "../components/CakeCard";
 import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
+  title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes | Olgish Cakes",
   description:
-    "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
+    "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread, sweet Easter cakes, and festive Ukrainian Easter desserts. Order now for Easter delivery.",
   keywords:
-    "Christmas cakes Leeds, Ukrainian Christmas cakes, honey cake, Kyiv cake, Christmas desserts, traditional Christmas cakes, Ukrainian bakery Leeds",
+    "Easter cakes Leeds, Ukrainian Easter cakes, Paska bread, Easter desserts, traditional Easter cakes, Ukrainian bakery Leeds",
   openGraph: {
-    title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
+    title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
     description:
-      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    url: "https://olgishcakes.com/christmas-cakes-leeds",
-    images: ["https://olgishcakes.com/images/christmas-cakes-leeds.jpg"],
+      "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread and festive Easter desserts.",
+    url: "https://olgishcakes.com/easter-cakes-leeds",
+    images: ["https://olgishcakes.com/images/easter-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
+    title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
     description:
-      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    images: ["https://olgishcakes.com/images/christmas-cakes-leeds.jpg"],
+      "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread and festive Easter desserts.",
+    images: ["https://olgishcakes.com/images/easter-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/christmas-cakes-leeds",
+    canonical: "https://olgishcakes.com/easter-cakes-leeds",
   },
 };
 
-export default function ChristmasCakesLeedsPage() {
+export default async function EasterCakesLeedsPage() {
+  const allCakes = await getAllCakes();
+  const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
+
   return (
     <>
       <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -42,7 +46,6 @@ export default function ChristmasCakesLeedsPage() {
         }}
       >
         <Container maxWidth="lg">
-          {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography
               variant="h1"
@@ -56,7 +59,7 @@ export default function ChristmasCakesLeedsPage() {
                 lineHeight: 1.2,
               }}
             >
-              Christmas Cakes Leeds
+              Easter Cakes Leeds
             </Typography>
             <Typography
               variant="h5"
@@ -68,12 +71,12 @@ export default function ChristmasCakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate Christmas with traditional Ukrainian Christmas cakes and honey cake.
-              Handcrafted with love in Leeds, our Christmas cakes bring the authentic taste of
-              Ukrainian Christmas celebrations to your home.
+              Celebrate Easter with traditional Ukrainian Easter cakes and Paska bread. Handcrafted
+              with love in Leeds, our Easter cakes bring the authentic taste of Ukrainian Easter
+              celebrations to your home.
             </Typography>
             <Chip
-              label="Traditional Ukrainian Christmas Cakes"
+              label="Traditional Ukrainian Easter Cakes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -85,7 +88,6 @@ export default function ChristmasCakesLeedsPage() {
             />
           </Box>
 
-          {/* Christmas Traditions Section */}
           <Paper
             elevation={0}
             sx={{
@@ -108,38 +110,37 @@ export default function ChristmasCakesLeedsPage() {
                 textAlign: "center",
               }}
             >
-              Ukrainian Christmas Traditions
+              Ukrainian Easter Traditions
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Honey Cake (Medovik)</strong> is the traditional Ukrainian Christmas cake,
-                  made with layers of honey-infused sponge and rich sour cream frosting. This
-                  beloved dessert symbolizes sweetness, prosperity, and the warmth of family
-                  gatherings during Christmas.
+                  <strong>Paska</strong> is the traditional Ukrainian Easter bread, rich with eggs,
+                  butter, and sweetened with honey. This golden, dome-shaped bread is decorated with
+                  intricate patterns and religious symbols, representing the resurrection and new
+                  life.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  In Ukrainian tradition, Christmas cakes are shared with family and friends during
-                  the festive season. The honey cake represents the sweetness of life and the hope
-                  for a prosperous new year.
+                  In Ukrainian tradition, Easter cakes are blessed in church on Easter Sunday and
+                  shared with family and friends. The sweet, rich bread symbolizes the sweetness of
+                  life and the joy of resurrection.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  Our Christmas cakes are made using traditional Ukrainian recipes passed down
-                  through generations. Each cake is handcrafted with premium ingredients, including
-                  pure honey, farm-fresh eggs, and real butter.
+                  Our Easter cakes are made using traditional Ukrainian recipes passed down through
+                  generations. Each cake is handcrafted with premium ingredients, including
+                  farm-fresh eggs, real butter, and pure honey.
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                  We also offer modern variations of Christmas cakes, including Kyiv cake, chocolate
-                  Christmas cakes, and gluten-free Christmas cake options for those with dietary
-                  restrictions.
+                  We also offer modern variations of Easter cakes, including chocolate Easter cakes,
+                  fruit-filled Easter bread, and gluten-free Easter cake options for those with
+                  dietary restrictions.
                 </Typography>
               </Grid>
             </Grid>
           </Paper>
 
-          {/* Christmas Cake Varieties */}
           <Paper
             elevation={0}
             sx={{
@@ -162,7 +163,7 @@ export default function ChristmasCakesLeedsPage() {
                 textAlign: "center",
               }}
             >
-              Our Christmas Cake Collection
+              Our Easter Cake Collection
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={4}>
@@ -175,11 +176,11 @@ export default function ChristmasCakesLeedsPage() {
                       mb: 2,
                     }}
                   >
-                    Traditional Honey Cake
+                    Traditional Paska
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Classic Ukrainian honey cake with multiple layers of honey sponge and rich sour
-                    cream frosting. Decorated with festive Christmas patterns.
+                    Classic Ukrainian Easter bread with rich, sweet dough, decorated with
+                    traditional patterns and symbols. Made with honey, eggs, and butter.
                   </Typography>
                   <Chip
                     label="Traditional Recipe"
@@ -197,14 +198,14 @@ export default function ChristmasCakesLeedsPage() {
                       mb: 2,
                     }}
                   >
-                    Kyiv Cake
+                    Chocolate Easter Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Elegant Kyiv cake with hazelnut meringue layers and chocolate ganache. A
-                    sophisticated choice for Christmas celebrations.
+                    Rich chocolate Easter cake with chocolate chips and cocoa. A modern twist on
+                    traditional Easter bread, perfect for chocolate lovers.
                   </Typography>
                   <Chip
-                    label="Premium Choice"
+                    label="Chocolate Lover's Choice"
                     sx={{ backgroundColor: "primary.main", color: "white" }}
                   />
                 </Box>
@@ -219,14 +220,14 @@ export default function ChristmasCakesLeedsPage() {
                       mb: 2,
                     }}
                   >
-                    Chocolate Christmas Cake
+                    Fruit Easter Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Rich chocolate Christmas cake with chocolate chips and festive decorations.
-                    Perfect for chocolate lovers during the holiday season.
+                    Sweet Easter bread filled with dried fruits, nuts, and citrus zest. A festive
+                    and colorful addition to your Easter celebration.
                   </Typography>
                   <Chip
-                    label="Chocolate Lover's Choice"
+                    label="Fruit & Nut Blend"
                     sx={{ backgroundColor: "primary.main", color: "white" }}
                   />
                 </Box>
@@ -234,7 +235,6 @@ export default function ChristmasCakesLeedsPage() {
             </Grid>
           </Paper>
 
-          {/* Ordering Information */}
           <Paper
             elevation={0}
             sx={{
@@ -257,7 +257,7 @@ export default function ChristmasCakesLeedsPage() {
                 textAlign: "center",
               }}
             >
-              Order Your Christmas Cakes
+              Order Your Easter Cakes
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
@@ -265,21 +265,21 @@ export default function ChristmasCakesLeedsPage() {
                   Ordering Information
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Advance Orders:</strong> Christmas cakes should be ordered at least 5-7
-                  days in advance to ensure availability and proper preparation time.
+                  <strong>Advance Orders:</strong> Easter cakes should be ordered at least 3-5 days
+                  in advance to ensure availability and proper preparation time.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
                   <strong>Delivery:</strong> We offer free delivery across Leeds and surrounding
-                  areas. Christmas cakes are delivered fresh on your chosen date.
+                  areas. Easter cakes are delivered fresh on your chosen date.
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                  <strong>Customization:</strong> All Christmas cakes can be customized with your
+                  <strong>Customization:</strong> All Easter cakes can be customized with your
                   preferred decorations, sizes, and dietary requirements.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" sx={{ mb: 3, color: "primary.main" }}>
-                  Christmas Cake Features
+                  Easter Cake Features
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -296,7 +296,7 @@ export default function ChristmasCakesLeedsPage() {
                       size="small"
                       sx={{ backgroundColor: "success.main", color: "white" }}
                     />
-                    <Typography variant="body1">Premium ingredients and pure honey</Typography>
+                    <Typography variant="body1">Premium ingredients and fresh eggs</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
@@ -304,7 +304,7 @@ export default function ChristmasCakesLeedsPage() {
                       size="small"
                       sx={{ backgroundColor: "success.main", color: "white" }}
                     />
-                    <Typography variant="body1">Beautiful festive decorations</Typography>
+                    <Typography variant="body1">Beautiful traditional decorations</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
@@ -327,7 +327,6 @@ export default function ChristmasCakesLeedsPage() {
             </Grid>
           </Paper>
 
-          {/* CTA Section */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
               variant="h4"
@@ -338,15 +337,15 @@ export default function ChristmasCakesLeedsPage() {
                 mb: 3,
               }}
             >
-              Order Your Christmas Cakes Today
+              Order Your Easter Cakes Today
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Celebrate Christmas with authentic Ukrainian Christmas cakes. Contact us to place your
-              order and ensure you have the perfect Christmas cakes for your celebration.
+              Celebrate Easter with authentic Ukrainian Easter cakes. Contact us to place your order
+              and ensure you have the perfect Easter cakes for your celebration.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -357,7 +356,7 @@ export default function ChristmasCakesLeedsPage() {
                 size="large"
                 sx={{ px: 4, py: 1.5 }}
               >
-                Order Christmas Cakes
+                Order Easter Cakes
               </Button>
               <Button
                 component={Link}

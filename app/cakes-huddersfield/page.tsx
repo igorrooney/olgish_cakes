@@ -1,0 +1,141 @@
+import type { Metadata } from "next";
+import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
+import { getAllCakes } from "../utils/fetchCakes";
+import CakeCard from "../components/CakeCard";
+import { StructuredData } from "../components/StructuredData";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title:
+    "Cakes Huddersfield | Ukrainian Cakes Huddersfield | Traditional Ukrainian Cakes | Olgish Cakes",
+  description:
+    "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield. Order now for special occasions.",
+  keywords:
+    "cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, Kyiv cake Huddersfield, traditional Ukrainian cakes Huddersfield, cake delivery Huddersfield",
+  openGraph: {
+    title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
+    description:
+      "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
+    url: "https://olgishcakes.com/cakes-huddersfield",
+    images: ["https://olgishcakes.com/images/cakes-huddersfield.jpg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
+    description:
+      "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
+    images: ["https://olgishcakes.com/images/cakes-huddersfield.jpg"],
+  },
+  alternates: {
+    canonical: "https://olgishcakes.com/cakes-huddersfield",
+  },
+};
+
+export default async function CakesHuddersfieldPage() {
+  const allCakes = await getAllCakes();
+
+  return (
+    <>
+      <StructuredData />
+
+      <Box
+        sx={{
+          background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
+          minHeight: "100vh",
+          py: { xs: 4, md: 8 },
+        }}
+      >
+        <Container maxWidth="lg">
+          {/* Hero Section */}
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
+            <Typography
+              variant="h1"
+              component="h1"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                fontWeight: 700,
+                color: "primary.main",
+                mb: 3,
+                lineHeight: 1.2,
+              }}
+            >
+              Cakes Huddersfield
+            </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "text.secondary",
+                maxWidth: "800px",
+                mx: "auto",
+                mb: 4,
+                lineHeight: 1.6,
+              }}
+            >
+              Traditional Ukrainian cakes delivered to Huddersfield. Handcrafted honey cake, Kyiv
+              cake, and authentic Ukrainian desserts made with love in Leeds and delivered fresh to
+              your door in Huddersfield.
+            </Typography>
+            <Chip
+              label="Traditional Ukrainian Cakes Huddersfield"
+              sx={{
+                backgroundColor: "primary.main",
+                color: "white",
+                fontSize: "1.1rem",
+                px: 3,
+                py: 1,
+                mb: 4,
+              }}
+            />
+          </Box>
+
+          {/* CTA Section */}
+          <Box sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 3,
+              }}
+            >
+              Order Your Ukrainian Cakes in Huddersfield Today
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
+            >
+              Experience authentic Ukrainian cakes in Huddersfield. Contact us to place your order
+              and enjoy traditional Ukrainian flavors delivered to your door.
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+              <Button
+                component={Link}
+                href="/contact"
+                variant="contained"
+                color="primary"
+                size="large"
+                sx={{ px: 4, py: 1.5 }}
+              >
+                Order Cakes Huddersfield
+              </Button>
+              <Button
+                component={Link}
+                href="/delivery-areas"
+                variant="outlined"
+                color="primary"
+                size="large"
+                sx={{ px: 4, py: 1.5 }}
+              >
+                View All Delivery Areas
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </>
+  );
+}
