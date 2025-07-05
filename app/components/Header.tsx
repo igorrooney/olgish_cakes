@@ -4,6 +4,7 @@ import { designTokens } from "@/lib/design-system";
 import { Container as DesignContainer } from "@/lib/ui-components";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   AppBar,
   Box,
@@ -17,6 +18,9 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  Menu,
+  MenuItem,
+  ClickAwayListener,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
@@ -27,8 +31,22 @@ const { colors, typography, spacing, shadows } = designTokens;
 
 const navigation = [
   { name: "Home", href: "/" },
-  { name: "Cakes", href: "/cakes" },
-  { name: "Testimonials", href: "/testimonials" },
+  {
+    name: "Cakes",
+    href: "/cakes",
+    dropdown: [
+      { name: "All Cakes", href: "/cakes" },
+      { name: "Cakes Leeds", href: "/cakes-leeds" },
+      { name: "Ukrainian Bakery Leeds", href: "/ukrainian-bakery-leeds" },
+      { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
+      { name: "Wedding Cakes", href: "/wedding-cakes" },
+      { name: "Birthday Cakes", href: "/birthday-cakes" },
+      { name: "Celebration Cakes", href: "/celebration-cakes" },
+      { name: "Seasonal Cakes", href: "/seasonal-cakes" },
+    ],
+  },
+  { name: "Gallery", href: "/cake-gallery" },
+  { name: "How to Order", href: "/how-to-order" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -37,10 +55,21 @@ export function Header() {
   const theme = useTheme();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cakesMenuAnchor, setCakesMenuAnchor] = useState<null | HTMLElement>(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const handleCakesMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setCakesMenuAnchor(event.currentTarget);
+  };
+
+  const handleCakesMenuClose = () => {
+    setCakesMenuAnchor(null);
+  };
+
+  const isCakesMenuOpen = Boolean(cakesMenuAnchor);
 
   return (
     <AppBar
@@ -104,6 +133,117 @@ export function Header() {
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: spacing.xl, alignItems: "center" }}>
             {navigation.map(item => {
               const isActive = pathname === item.href;
+
+              if (item.dropdown) {
+                return (
+                  <Box key={item.name}>
+                    <Button
+                      onClick={handleCakesMenuOpen}
+                      sx={{
+                        color: isActive ? colors.primary.main : colors.text.primary,
+                        fontSize: typography.fontSize.lg,
+                        fontWeight: isActive
+                          ? typography.fontWeight.bold
+                          : typography.fontWeight.medium,
+                        position: "relative",
+                        background: "none",
+                        boxShadow: "none",
+                        px: 2.5,
+                        py: 1.5,
+                        borderRadius: 2,
+                        transition: "all 0.2s ease-in-out",
+                        textTransform: "none",
+                        letterSpacing: 0.2,
+                        "&:hover": {
+                          color: colors.primary.main,
+                          backgroundColor: colors.background.subtle,
+                          transform: "translateY(-1px)",
+                        },
+                        "&::after": isActive
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              left: 12,
+                              right: 12,
+                              bottom: 4,
+                              height: "3px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 2,
+                              boxShadow: `0 2px 8px 0 ${colors.primary.main}22`,
+                              transform: "scaleX(1)",
+                              transition: "transform 0.2s ease-in-out",
+                            }
+                          : {
+                              content: '""',
+                              position: "absolute",
+                              left: 12,
+                              right: 12,
+                              bottom: 4,
+                              height: "3px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 2,
+                              transform: "scaleX(0)",
+                              transition: "transform 0.2s ease-in-out",
+                            },
+                        "&:hover::after": {
+                          transform: "scaleX(1)",
+                        },
+                      }}
+                      endIcon={<KeyboardArrowDownIcon />}
+                    >
+                      {item.name}
+                    </Button>
+                    <Menu
+                      anchorEl={cakesMenuAnchor}
+                      open={isCakesMenuOpen}
+                      onClose={handleCakesMenuClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      PaperProps={{
+                        sx: {
+                          mt: 1,
+                          minWidth: 200,
+                          boxShadow: shadows.lg,
+                          border: `1px solid ${colors.border.light}`,
+                          borderRadius: 2,
+                        },
+                      }}
+                    >
+                      {item.dropdown.map(dropdownItem => (
+                        <MenuItem
+                          key={dropdownItem.name}
+                          component={Link}
+                          href={dropdownItem.href}
+                          onClick={handleCakesMenuClose}
+                          sx={{
+                            color:
+                              pathname === dropdownItem.href
+                                ? colors.primary.main
+                                : colors.text.primary,
+                            fontWeight:
+                              pathname === dropdownItem.href
+                                ? typography.fontWeight.semibold
+                                : typography.fontWeight.normal,
+                            "&:hover": {
+                              backgroundColor: colors.background.subtle,
+                              color: colors.primary.main,
+                            },
+                          }}
+                        >
+                          {dropdownItem.name}
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </Box>
+                );
+              }
+
               return (
                 <Link key={item.name} href={item.href} passHref style={{ textDecoration: "none" }}>
                   <Button
@@ -282,35 +422,103 @@ export function Header() {
           </Link>
           <Divider sx={{ borderColor: colors.border.light }} />
           <List>
-            {navigation.map(item => (
-              <ListItem key={item.name} disablePadding>
-                <ListItemButton
-                  component={Link}
-                  href={item.href}
-                  sx={{
-                    textAlign: "center",
-                    color: pathname === item.href ? colors.primary.main : colors.text.primary,
-                    fontWeight:
-                      pathname === item.href
-                        ? typography.fontWeight.semibold
-                        : typography.fontWeight.normal,
-                    "&:hover": {
-                      backgroundColor: colors.background.subtle,
-                      color: colors.primary.main,
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary={item.name}
+            {navigation.map(item => {
+              if (item.dropdown) {
+                return (
+                  <Box key={item.name}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        onClick={handleCakesMenuOpen}
+                        sx={{
+                          textAlign: "center",
+                          color: pathname === item.href ? colors.primary.main : colors.text.primary,
+                          fontWeight:
+                            pathname === item.href
+                              ? typography.fontWeight.semibold
+                              : typography.fontWeight.normal,
+                          "&:hover": {
+                            backgroundColor: colors.background.subtle,
+                            color: colors.primary.main,
+                          },
+                        }}
+                      >
+                        <ListItemText
+                          primary={item.name}
+                          sx={{
+                            "& .MuiListItemText-primary": {
+                              fontSize: typography.fontSize.base,
+                            },
+                          }}
+                        />
+                        <KeyboardArrowDownIcon />
+                      </ListItemButton>
+                    </ListItem>
+                    {item.dropdown.map(dropdownItem => (
+                      <ListItem key={dropdownItem.name} disablePadding sx={{ pl: 2 }}>
+                        <ListItemButton
+                          component={Link}
+                          href={dropdownItem.href}
+                          sx={{
+                            textAlign: "center",
+                            color:
+                              pathname === dropdownItem.href
+                                ? colors.primary.main
+                                : colors.text.primary,
+                            fontWeight:
+                              pathname === dropdownItem.href
+                                ? typography.fontWeight.semibold
+                                : typography.fontWeight.normal,
+                            "&:hover": {
+                              backgroundColor: colors.background.subtle,
+                              color: colors.primary.main,
+                            },
+                          }}
+                        >
+                          <ListItemText
+                            primary={dropdownItem.name}
+                            sx={{
+                              "& .MuiListItemText-primary": {
+                                fontSize: typography.fontSize.sm,
+                              },
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    ))}
+                  </Box>
+                );
+              }
+
+              return (
+                <ListItem key={item.name} disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    href={item.href}
                     sx={{
-                      "& .MuiListItemText-primary": {
-                        fontSize: typography.fontSize.base,
+                      textAlign: "center",
+                      color: pathname === item.href ? colors.primary.main : colors.text.primary,
+                      fontWeight:
+                        pathname === item.href
+                          ? typography.fontWeight.semibold
+                          : typography.fontWeight.normal,
+                      "&:hover": {
+                        backgroundColor: colors.background.subtle,
+                        color: colors.primary.main,
                       },
                     }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
+                  >
+                    <ListItemText
+                      primary={item.name}
+                      sx={{
+                        "& .MuiListItemText-primary": {
+                          fontSize: typography.fontSize.base,
+                        },
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
           </List>
         </Box>
       </Drawer>

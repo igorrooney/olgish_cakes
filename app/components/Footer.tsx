@@ -16,11 +16,35 @@ import {
 const { colors, typography, spacing, shadows } = designTokens;
 
 const footerLinks = {
-  products: [{ name: "All Cakes", href: "/cakes" }],
+  cakes: [
+    { name: "All Cakes", href: "/cakes" },
+    { name: "Cakes Leeds", href: "/cakes-leeds" },
+    { name: "Ukrainian Bakery Leeds", href: "/ukrainian-bakery-leeds" },
+    { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
+    { name: "Wedding Cakes", href: "/wedding-cakes" },
+    { name: "Birthday Cakes", href: "/birthday-cakes" },
+    { name: "Celebration Cakes", href: "/celebration-cakes" },
+    { name: "Seasonal Cakes", href: "/seasonal-cakes" },
+  ],
+  services: [
+    { name: "Custom Cake Design", href: "/custom-cake-design" },
+    { name: "Cake Delivery", href: "/cake-delivery" },
+    { name: "Delivery Areas", href: "/delivery-areas" },
+    { name: "How to Order", href: "/how-to-order" },
+  ],
+  information: [
+    { name: "Cake Flavors", href: "/cake-flavors" },
+    { name: "Cake Sizes Guide", href: "/cake-sizes-guide" },
+    { name: "Allergen Information", href: "/allergen-information" },
+    { name: "Cake Care & Storage", href: "/cake-care-storage" },
+    { name: "Cake Pricing", href: "/cake-pricing" },
+  ],
   company: [
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
     { name: "Testimonials", href: "/testimonials" },
+    { name: "Cake Gallery", href: "/cake-gallery" },
+    { name: "Ukrainian Culture", href: "/ukrainian-culture-baking" },
     { name: "FAQ", href: "/faq" },
   ],
   legal: [
@@ -69,9 +93,9 @@ export default function Footer() {
       <DesignContainer>
         {/* Main Footer Content */}
         <Box sx={{ py: spacing["4xl"] }}>
-          <Grid container spacing={8}>
+          <Grid container spacing={6}>
             {/* Brand Column */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
                 <Link href="/" style={{ textDecoration: "none" }}>
                   <Typography
@@ -121,7 +145,7 @@ export default function Footer() {
               </Box>
             </Grid>
 
-            {/* Quick Links */}
+            {/* Cakes */}
             <Grid item xs={12} sm={6} md={2}>
               <Typography
                 variant="subtitle2"
@@ -132,10 +156,10 @@ export default function Footer() {
                   fontSize: typography.fontSize.base,
                 }}
               >
-                Products
+                Our Cakes
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
-                {footerLinks.products.map(link => (
+                {footerLinks.cakes.map(link => (
                   <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
                     <BodyText
                       sx={{
@@ -154,6 +178,73 @@ export default function Footer() {
               </Box>
             </Grid>
 
+            {/* Services */}
+            <Grid item xs={12} sm={6} md={2}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.lg,
+                  fontSize: typography.fontSize.base,
+                }}
+              >
+                Services
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
+                {footerLinks.services.map(link => (
+                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                    <BodyText
+                      sx={{
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                        transition: "color 0.2s ease-in-out",
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                      }}
+                    >
+                      {link.name}
+                    </BodyText>
+                  </Link>
+                ))}
+              </Box>
+            </Grid>
+
+            {/* Information */}
+            <Grid item xs={12} sm={6} md={2}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.lg,
+                  fontSize: typography.fontSize.base,
+                }}
+              >
+                Information
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
+                {footerLinks.information.map(link => (
+                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                    <BodyText
+                      sx={{
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                        transition: "color 0.2s ease-in-out",
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                      }}
+                    >
+                      {link.name}
+                    </BodyText>
+                  </Link>
+                ))}
+              </Box>
+            </Grid>
+
+            {/* Company */}
             <Grid item xs={12} sm={6} md={2}>
               <Typography
                 variant="subtitle2"
@@ -187,7 +278,7 @@ export default function Footer() {
             </Grid>
 
             {/* Contact Column */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={1}>
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -197,65 +288,9 @@ export default function Footer() {
                   fontSize: typography.fontSize.base,
                 }}
               >
-                Contact Us
+                Legal
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
-                  <ContactInfo icon={<Phone />} text={contactInfo.phone} />
-                  <IconButton
-                    component="a"
-                    href={`https://wa.me/${contactInfo.phone.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    size="small"
-                    sx={{
-                      color: "#25D366",
-                      "&:hover": {
-                        backgroundColor: colors.background.subtle,
-                      },
-                    }}
-                  >
-                    <WhatsApp />
-                  </IconButton>
-                </Box>
-                <ContactInfo icon={<Email />} text={contactInfo.email} />
-                <PrimaryButton
-                  component={Link}
-                  href="/contact"
-                  sx={{ mt: spacing.sm, alignSelf: "flex-start" }}
-                >
-                  Get in Touch
-                </PrimaryButton>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Divider sx={{ borderColor: colors.border.light }} />
-
-        {/* Bottom Bar */}
-        <Box sx={{ py: spacing.xl }}>
-          <Grid container spacing={2} alignItems="center" justifyContent="space-between">
-            <Grid item xs={12} md="auto">
-              <BodyText
-                sx={{
-                  color: colors.text.secondary,
-                  textAlign: { xs: "center", md: "left" },
-                  fontSize: typography.fontSize.sm,
-                }}
-              >
-                © {currentYear} Olgish Cakes. All rights reserved.
-              </BodyText>
-            </Grid>
-            <Grid item xs={12} md="auto">
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: { xs: "center", md: "flex-end" },
-                  gap: { xs: spacing.sm, md: spacing.lg },
-                }}
-              >
                 {footerLinks.legal.map(link => (
                   <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
                     <BodyText
@@ -275,6 +310,101 @@ export default function Footer() {
               </Box>
             </Grid>
           </Grid>
+        </Box>
+
+        {/* Contact Section */}
+        <Box sx={{ py: spacing["2xl"], borderTop: `1px solid ${colors.border.light}` }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.md,
+                }}
+              >
+                Get in Touch
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
+                  <Email sx={{ color: colors.text.secondary, fontSize: 20 }} />
+                  <BodyText sx={{ color: colors.text.secondary }}>{contactInfo.email}</BodyText>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
+                  <Phone sx={{ color: colors.text.secondary, fontSize: 20 }} />
+                  <BodyText sx={{ color: colors.text.secondary }}>{contactInfo.phone}</BodyText>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.md }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: typography.fontWeight.bold,
+                    color: colors.text.primary,
+                  }}
+                >
+                  Ready to Order?
+                </Typography>
+                <BodyText sx={{ color: colors.text.secondary, mb: spacing.md }}>
+                  Contact us today to discuss your cake requirements and get a personalized quote.
+                </BodyText>
+                <Box sx={{ display: "flex", gap: spacing.md, flexWrap: "wrap" }}>
+                  <Link href="/contact" style={{ textDecoration: "none" }}>
+                    <PrimaryButton
+                      variant="contained"
+                      sx={{
+                        px: spacing.xl,
+                        py: spacing.md,
+                        borderRadius: 3,
+                        textTransform: "none",
+                        fontWeight: typography.fontWeight.bold,
+                      }}
+                    >
+                      Order Now
+                    </PrimaryButton>
+                  </Link>
+                  <Link href="/how-to-order" style={{ textDecoration: "none" }}>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        px: spacing.xl,
+                        py: spacing.md,
+                        borderRadius: 3,
+                        textTransform: "none",
+                        fontWeight: typography.fontWeight.bold,
+                        borderColor: colors.primary.main,
+                        color: colors.primary.main,
+                        "&:hover": {
+                          borderColor: colors.primary.dark,
+                          backgroundColor: colors.primary.main,
+                          color: colors.primary.contrast,
+                        },
+                      }}
+                    >
+                      How to Order
+                    </Button>
+                  </Link>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Bottom Bar */}
+        <Box
+          sx={{
+            py: spacing.lg,
+            borderTop: `1px solid ${colors.border.light}`,
+            textAlign: "center",
+          }}
+        >
+          <BodyText sx={{ color: colors.text.secondary }}>
+            © {currentYear} Olgish Cakes. All rights reserved. Handcrafted Ukrainian cakes in
+            Leeds.
+          </BodyText>
         </Box>
       </DesignContainer>
     </Box>
