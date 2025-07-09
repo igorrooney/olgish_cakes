@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Plant-Based Cakes | Olgish Cakes",
+  title:
+    "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes | Olgish Cakes",
   description:
-    "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors adapted for vegan diets. Custom vegan cake design available.",
+    "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets. Custom vegan cake design available.",
   keywords:
-    "vegan cakes Leeds, dairy-free Ukrainian cakes, plant-based cakes Leeds, vegan birthday cakes, vegan wedding cakes, dairy-free cakes Leeds, vegan cake delivery Leeds, Ukrainian vegan desserts",
+    "vegan cakes Leeds, dairy-free Ukrainian cakes, vegan honey cake, vegan Medovik, plant-based cakes Leeds, vegan birthday cakes, vegan wedding cakes, dairy-free cakes Leeds, vegan cake delivery Leeds, Ukrainian vegan desserts",
   openGraph: {
-    title: "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Plant-Based Cakes",
+    title:
+      "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
-      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors adapted for vegan diets.",
+      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
     url: "https://olgishcakes.com/vegan-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
         url: "https://olgishcakes.com/images/vegan-cakes-leeds.jpg",
         width: 1200,
         height: 630,
-        alt: "Vegan Ukrainian Cakes Leeds - Olgish Cakes",
+        alt: "Vegan Ukrainian Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -28,9 +29,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Plant-Based Cakes",
+    title:
+      "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
-      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors adapted for vegan diets.",
+      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
     images: ["https://olgishcakes.com/images/vegan-cakes-leeds.jpg"],
   },
   alternates: {
@@ -41,8 +43,6 @@ export const metadata: Metadata = {
 export default function VeganCakesLeedsPage() {
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

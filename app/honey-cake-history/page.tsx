@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -42,7 +41,7 @@ export const metadata: Metadata = {
 export default function HoneyCakeHistoryPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

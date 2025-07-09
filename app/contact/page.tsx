@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Stack, Link, Grid, Paper, Divider } from "@mui/material";
 import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
-import { StructuredData } from "../components/StructuredData"; // Import StructuredData
+// Import StructuredData
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import InstagramIcon from "@mui/icons-material/Instagram"; // Example social icon
@@ -27,7 +27,7 @@ export default function ContactPage() {
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
       {/* Add structured data component */}
-      <StructuredData />
+      
 
       <Box
         sx={{

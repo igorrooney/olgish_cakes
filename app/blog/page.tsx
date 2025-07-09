@@ -11,19 +11,20 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Olgish Cakes",
+  title:
+    "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
   description:
-    "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake, Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
+    "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
   keywords:
-    "Ukrainian cake recipes, traditional Ukrainian desserts, honey cake recipe, Kyiv cake recipe, Ukrainian baking blog, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking tips",
+    "Ukrainian cake recipes, traditional Ukrainian desserts, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian baking blog, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking tips, traditional medovik",
   openGraph: {
-    title: "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts",
+    title:
+      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake, Kyiv cake, and more.",
+      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     url: "https://olgishcakes.com/blog",
     siteName: "Olgish Cakes",
     images: [
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
         url: "https://olgishcakes.com/images/ukrainian-baking-blog.jpg",
         width: 1200,
         height: 630,
-        alt: "Ukrainian Cake Recipes and Baking Blog - Olgish Cakes",
+        alt: "Ukrainian Cake Recipes and Baking Blog - Honey Cake (Medovik) - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -39,9 +40,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts",
+    title:
+      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts.",
+      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     images: ["https://olgishcakes.com/images/ukrainian-baking-blog.jpg"],
   },
   alternates: {
@@ -121,8 +123,6 @@ const blogPosts = [
 export default function BlogPage() {
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

@@ -1,377 +1,220 @@
-import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
-import { StructuredData } from "../components/StructuredData";
+import { Metadata } from "next";
 import Link from "next/link";
+import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
+import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes | Olgish Cakes",
   description:
-    "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread, sweet Easter cakes, and festive Ukrainian Easter desserts. Order now for Easter delivery.",
+    "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with authentic recipes. Same-day delivery available in Leeds and surrounding areas.",
   keywords:
-    "Easter cakes Leeds, Ukrainian Easter cakes, Paska bread, Easter desserts, traditional Easter cakes, Ukrainian bakery Leeds",
+    "easter cakes leeds, ukrainian easter cakes, paska, babka, traditional easter cakes, easter cake delivery leeds",
   openGraph: {
     title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
     description:
-      "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread and festive Easter desserts.",
-    url: "https://olgishcakes.com/easter-cakes-leeds",
-    images: ["https://olgishcakes.com/images/easter-cakes-leeds.jpg"],
+      "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with authentic recipes.",
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
-    description:
-      "Celebrate Easter with traditional Ukrainian Easter cakes in Leeds. Handcrafted Paska bread and festive Easter desserts.",
-    images: ["https://olgishcakes.com/images/easter-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/easter-cakes-leeds",
+    images: [
+      {
+        url: "/images/cakes/easter-cake.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Easter Cake Leeds",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/easter-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/easter-cakes-leeds",
   },
 };
 
-export default async function EasterCakesLeedsPage() {
-  const allCakes = await getAllCakes();
-  const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Easter Cakes Leeds",
+  description:
+    "Traditional Ukrainian Easter cakes in Leeds including Paska and Babka. Authentic recipes and Easter-themed designs.",
+  provider: {
+    "@type": "LocalBusiness",
+    name: "Olgish Cakes",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Leeds",
+      addressRegion: "West Yorkshire",
+      addressCountry: "GB",
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Leeds",
+    },
+  },
+  serviceType: "Easter Cake Delivery",
+  areaServed: "Leeds",
+  availableChannel: {
+    "@type": "ServiceChannel",
+    serviceUrl: "https://olgishcakes.co.uk/easter-cakes-leeds",
+  },
+};
 
+const easterCakes = [
+  {
+    name: "Traditional Paska",
+    description: "Authentic Ukrainian Easter bread with rich, sweet dough and decorative cross",
+    price: "£35",
+    features: ["Traditional recipe", "Sweet dough", "Decorative cross", "Easter symbols"],
+  },
+  {
+    name: "Babka Easter Cake",
+    description: "Classic Ukrainian babka with raisins, nuts, and Easter decorations",
+    price: "£40",
+    features: ["Raisins and nuts", "Rich flavor", "Easter decorations", "Traditional recipe"],
+  },
+  {
+    name: "Easter Honey Cake",
+    description: "Ukrainian honey cake with layers of sweet honey cream",
+    price: "£45",
+    features: ["Honey layers", "Sweet cream", "Easter design", "Traditional Ukrainian"],
+  },
+  {
+    name: "Spring Flower Cake",
+    description: "Light vanilla cake decorated with spring flowers and Easter eggs",
+    price: "£50",
+    features: ["Spring flowers", "Easter eggs", "Light vanilla", "Beautiful decoration"],
+  },
+];
+
+export default function EasterCakesLeedsPage() {
   return (
-    <>
-      <StructuredData />
-      <Box
-        sx={{
-          background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
-          minHeight: "100vh",
-          py: { xs: 4, md: 8 },
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
-            <Typography
-              variant="h1"
-              component="h1"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontSize: { xs: "2.5rem", md: "3.5rem" },
-                fontWeight: 700,
-                color: "primary.main",
-                mb: 3,
-                lineHeight: 1.2,
-              }}
-            >
-              Easter Cakes Leeds
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                color: "text.secondary",
-                maxWidth: "800px",
-                mx: "auto",
-                mb: 4,
-                lineHeight: 1.6,
-              }}
-            >
-              Celebrate Easter with traditional Ukrainian Easter cakes and Paska bread. Handcrafted
-              with love in Leeds, our Easter cakes bring the authentic taste of Ukrainian Easter
-              celebrations to your home.
-            </Typography>
-            <Chip
-              label="Traditional Ukrainian Easter Cakes"
-              sx={{
-                backgroundColor: "primary.main",
-                color: "white",
-                fontSize: "1.1rem",
-                px: 3,
-                py: 1,
-                mb: 4,
-              }}
-            />
-          </Box>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-yellow-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 4, md: 6 },
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: 3,
-              border: "1px solid",
-              borderColor: "divider",
-              mb: 6,
-            }}
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <section className="text-center mb-16">
+          <Typography
+            variant="h2"
+            component="h1"
+            className="text-4xl md:text-6xl font-bold text-gray-900 mb-6"
           >
-            <Typography
-              variant="h3"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontSize: { xs: "1.8rem", md: "2.2rem" },
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 4,
-                textAlign: "center",
-              }}
-            >
-              Ukrainian Easter Traditions
-            </Typography>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Paska</strong> is the traditional Ukrainian Easter bread, rich with eggs,
-                  butter, and sweetened with honey. This golden, dome-shaped bread is decorated with
-                  intricate patterns and religious symbols, representing the resurrection and new
-                  life.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  In Ukrainian tradition, Easter cakes are blessed in church on Easter Sunday and
-                  shared with family and friends. The sweet, rich bread symbolizes the sweetness of
-                  life and the joy of resurrection.
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  Our Easter cakes are made using traditional Ukrainian recipes passed down through
-                  generations. Each cake is handcrafted with premium ingredients, including
-                  farm-fresh eggs, real butter, and pure honey.
-                </Typography>
-                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                  We also offer modern variations of Easter cakes, including chocolate Easter cakes,
-                  fruit-filled Easter bread, and gluten-friendly Easter cake options for those with
-                  dietary restrictions.
-                </Typography>
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 4, md: 6 },
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: 3,
-              border: "1px solid",
-              borderColor: "divider",
-              mb: 6,
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontSize: { xs: "1.8rem", md: "2.2rem" },
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 4,
-                textAlign: "center",
-              }}
-            >
-              Our Easter Cake Collection
-            </Typography>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={4}>
-                <Box sx={{ textAlign: "center", p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
-                  >
-                    Traditional Paska
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Classic Ukrainian Easter bread with rich, sweet dough, decorated with
-                    traditional patterns and symbols. Made with honey, eggs, and butter.
-                  </Typography>
-                  <Chip
-                    label="Traditional Recipe"
-                    sx={{ backgroundColor: "primary.main", color: "white" }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Box sx={{ textAlign: "center", p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
-                  >
-                    Chocolate Easter Cake
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Rich chocolate Easter cake with chocolate chips and cocoa. A modern twist on
-                    traditional Easter bread, perfect for chocolate lovers.
-                  </Typography>
-                  <Chip
-                    label="Chocolate Lover's Choice"
-                    sx={{ backgroundColor: "primary.main", color: "white" }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Box sx={{ textAlign: "center", p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
-                  >
-                    Fruit Easter Cake
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-                    Sweet Easter bread filled with dried fruits, nuts, and citrus zest. A festive
-                    and colorful addition to your Easter celebration.
-                  </Typography>
-                  <Chip
-                    label="Fruit & Nut Blend"
-                    sx={{ backgroundColor: "primary.main", color: "white" }}
-                  />
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 4, md: 6 },
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: 3,
-              border: "1px solid",
-              borderColor: "divider",
-              mb: 6,
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontSize: { xs: "1.8rem", md: "2.2rem" },
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 4,
-                textAlign: "center",
-              }}
-            >
-              Order Your Easter Cakes
-            </Typography>
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 3, color: "primary.main" }}>
-                  Ordering Information
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Advance Orders:</strong> Easter cakes should be ordered at least 3-5 days
-                  in advance to ensure availability and proper preparation time.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Delivery:</strong> We offer free delivery across Leeds and surrounding
-                  areas. Easter cakes are delivered fresh on your chosen date.
-                </Typography>
-                <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                  <strong>Customization:</strong> All Easter cakes can be customized with your
-                  preferred decorations, sizes, and dietary requirements.
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 3, color: "primary.main" }}>
-                  Easter Cake Features
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Chip
-                      label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
-                    />
-                    <Typography variant="body1">Handcrafted with traditional recipes</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Chip
-                      label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
-                    />
-                    <Typography variant="body1">Premium ingredients and fresh eggs</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Chip
-                      label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
-                    />
-                    <Typography variant="body1">Beautiful traditional decorations</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Chip
-                      label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
-                    />
-                    <Typography variant="body1">Gluten-friendly options available</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Chip
-                      label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
-                    />
-                    <Typography variant="body1">Free delivery in Leeds area</Typography>
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 3,
-              }}
-            >
-              Order Your Easter Cakes Today
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
-            >
-              Celebrate Easter with authentic Ukrainian Easter cakes. Contact us to place your order
-              and ensure you have the perfect Easter cakes for your celebration.
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+            Easter Cakes
+            <span className="block text-green-600">Leeds</span>
+          </Typography>
+          <Typography variant="h5" className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Celebrate Easter with our traditional Ukrainian Easter cakes. From authentic Paska to
+            beautiful Easter-themed designs, we'll make your celebration special.
+          </Typography>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/cakes">
               <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
-                color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
+                sx={{ bgcolor: "green.600", "&:hover": { bgcolor: "green.700" }, color: "white" }}
               >
-                Order Easter Cakes
+                Browse Easter Cakes
               </Button>
+            </Link>
+            <Link href="/contact">
               <Button
-                component={Link}
-                href="/traditional-ukrainian-cakes"
+                size="large"
                 variant="outlined"
-                color="primary"
-                size="large"
-                sx={{ px: 4, py: 1.5 }}
+                sx={{
+                  borderColor: "green.600",
+                  color: "green.600",
+                  "&:hover": { bgcolor: "green.600", color: "white" },
+                }}
               >
-                View All Ukrainian Cakes
+                Custom Design
               </Button>
-            </Box>
+            </Link>
+          </div>
+        </section>
+
+        {/* Popular Easter Cakes */}
+        <section className="mb-16">
+          <Typography variant="h3" className="text-3xl font-bold text-center mb-12">
+            Traditional Easter Cakes
+          </Typography>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {easterCakes.map((cake, index) => (
+              <Card
+                key={index}
+                sx={{
+                  overflow: "hidden",
+                  "&:hover": { boxShadow: 6 },
+                  transition: "box-shadow 0.3s",
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h5" color="primary" className="text-xl mb-2">
+                    {cake.name}
+                  </Typography>
+                  <Typography variant="body2" className="text-gray-600 mb-4">
+                    {cake.description}
+                  </Typography>
+                  <Typography variant="h4" className="text-2xl font-bold text-gray-900 mb-4">
+                    {cake.price}
+                  </Typography>
+                  <div className="space-y-2 mb-4">
+                    {cake.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">• {feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <Button
+                    sx={{
+                      width: "100%",
+                      bgcolor: "green.600",
+                      "&:hover": { bgcolor: "green.700" },
+                    }}
+                  >
+                    Order Now
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="text-center">
+          <Box sx={{ bgcolor: "green.600", borderRadius: 2, p: 4, color: "white" }}>
+            <Typography variant="h3" className="text-3xl font-bold mb-4">
+              Celebrate Easter with Tradition
+            </Typography>
+            <Typography variant="h5" className="text-xl mb-6">
+              Order your traditional Ukrainian Easter cakes today and make your celebration
+              authentic and special.
+            </Typography>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/cakes">
+                <Button
+                  size="large"
+                  sx={{ bgcolor: "white", color: "green.600", "&:hover": { bgcolor: "gray.100" } }}
+                >
+                  Browse All Cakes
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button
+                  size="large"
+                  variant="outlined"
+                  sx={{
+                    borderColor: "white",
+                    color: "white",
+                    "&:hover": { bgcolor: "white", color: "green.600" },
+                  }}
+                >
+                  Contact Us
+                </Button>
+              </Link>
+            </div>
           </Box>
-        </Container>
-      </Box>
-    </>
+        </section>
+      </div>
+    </div>
   );
 }

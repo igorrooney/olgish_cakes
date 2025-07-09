@@ -14,7 +14,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -55,7 +54,7 @@ export const metadata: Metadata = {
 export default function CakePricingPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

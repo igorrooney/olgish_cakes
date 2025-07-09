@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -52,7 +51,7 @@ export default async function CelebrationCakesPage() {
 
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

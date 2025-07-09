@@ -1,7 +1,5 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-import { StructuredData } from "@/app/components/StructuredData";
-
 export const metadata = {
   title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes | Olgish Cakes",
   description:
@@ -31,7 +29,7 @@ export const metadata = {
 export default function GraduationCakesLeedsPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

@@ -1,7 +1,5 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-import { StructuredData } from "@/app/components/StructuredData";
-
 export const metadata = {
   title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes | Olgish Cakes",
   description:
@@ -31,7 +29,7 @@ export const metadata = {
 export default function NutFreeCakesLeedsPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 import { Button } from "@mui/material";
 
@@ -47,7 +46,7 @@ export default async function TraditionalUkrainianCakesPage() {
 
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

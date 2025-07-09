@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Button } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import { FAQItems } from "./FAQItems";
 import Link from "next/link";
 import { getFaqs } from "../utils/fetchFaqs";
@@ -46,7 +45,7 @@ export default async function FAQPage() {
         }}
       >
         <Container>
-          <StructuredData />
+          
 
           <Box sx={{ mb: 6, textAlign: "center" }}>
             <Typography

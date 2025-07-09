@@ -13,7 +13,6 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -81,7 +80,7 @@ const giftCardOptions = [
 export default function GiftCardsPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

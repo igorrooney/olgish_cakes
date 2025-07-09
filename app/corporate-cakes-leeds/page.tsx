@@ -14,7 +14,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -130,7 +129,7 @@ const corporatePackages = [
 export default function CorporateCakesLeedsPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

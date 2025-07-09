@@ -9,7 +9,6 @@ import {
   ListItemText,
   Button,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -28,7 +27,7 @@ export default function PrivacyPolicyPage() {
       }}
     >
       <Container maxWidth="md">
-        <StructuredData />
+        
 
         <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2 }}>
           <Typography

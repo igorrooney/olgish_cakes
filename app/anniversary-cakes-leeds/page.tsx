@@ -1,7 +1,5 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-import { StructuredData } from "@/app/components/StructuredData";
-
 export const metadata = {
   title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes | Olgish Cakes",
   description:
@@ -31,8 +29,6 @@ export const metadata = {
 export default function AnniversaryCakesLeedsPage() {
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

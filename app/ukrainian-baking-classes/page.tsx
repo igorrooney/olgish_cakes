@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -95,7 +94,7 @@ const classes = [
 export default function UkrainianBakingClassesPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

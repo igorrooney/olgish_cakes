@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Flavors | Medovik Cake | Kyiv Cake | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts | Olgish Cakes",
   description:
-    "Discover authentic Ukrainian cake flavors including Medovik, Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
+    "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
   keywords:
-    "Ukrainian cake flavors, Medovik cake, Kyiv cake, traditional Ukrainian desserts, Ukrainian honey cake, Ukrainian cake recipes, authentic Ukrainian sweets, Ukrainian dessert flavors",
+    "Ukrainian cake flavors, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian honey cake, Ukrainian cake recipes, authentic Ukrainian sweets, Ukrainian dessert flavors, traditional medovik",
   openGraph: {
-    title: "Ukrainian Cake Flavors | Medovik Cake | Kyiv Cake | Traditional Ukrainian Desserts",
+    title:
+      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
     description:
-      "Discover authentic Ukrainian cake flavors including Medovik, Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
+      "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
     url: "https://olgish-cakes.vercel.app/cake-flavors",
     siteName: "Olgish Cakes",
     images: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         url: "https://olgish-cakes.vercel.app/images/ukrainian-cake-flavors.jpg",
         width: 1200,
         height: 630,
-        alt: "Ukrainian Cake Flavors - Olgish Cakes",
+        alt: "Ukrainian Cake Flavors - Honey Cake (Medovik) - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -29,9 +29,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Cake Flavors | Medovik Cake | Kyiv Cake | Traditional Ukrainian Desserts",
+    title:
+      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
     description:
-      "Discover authentic Ukrainian cake flavors including Medovik, Kyiv cake, Napoleon, and more.",
+      "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more.",
     images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-flavors.jpg"],
   },
   alternates: {
@@ -42,8 +43,6 @@ export const metadata: Metadata = {
 export default function CakeFlavorsPage() {
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

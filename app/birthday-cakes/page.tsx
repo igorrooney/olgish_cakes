@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Birthday Cakes Leeds | Custom Birthday Cakes | Children's Birthday Cakes | Olgish Cakes",
+  title:
+    "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes | Olgish Cakes",
   description:
-    "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors.",
+    "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
   keywords:
-    "birthday cakes Leeds, custom birthday cakes, children's birthday cakes, themed birthday cakes, birthday cake delivery Leeds, Ukrainian birthday cakes, party cakes Leeds, celebration cakes",
+    "birthday cakes Leeds, custom birthday cakes, honey cake birthday cakes, Medovik birthday cakes, children's birthday cakes, themed birthday cakes, birthday cake delivery Leeds, Ukrainian birthday cakes, party cakes Leeds, celebration cakes",
   openGraph: {
-    title: "Birthday Cakes Leeds | Custom Birthday Cakes | Children's Birthday Cakes",
+    title:
+      "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
     description:
-      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors.",
+      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
     url: "https://olgish-cakes.vercel.app/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
         url: "https://olgish-cakes.vercel.app/images/birthday-cakes.jpg",
         width: 1200,
         height: 630,
-        alt: "Beautiful Birthday Cakes Leeds - Olgish Cakes",
+        alt: "Beautiful Birthday Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -30,9 +31,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Birthday Cakes Leeds | Custom Birthday Cakes | Children's Birthday Cakes",
+    title:
+      "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
     description:
-      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes.",
+      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
     images: ["https://olgish-cakes.vercel.app/images/birthday-cakes.jpg"],
   },
   alternates: {
@@ -51,8 +53,6 @@ export default async function BirthdayCakesPage() {
 
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -128,7 +128,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Ukrainian Birthday Cakes",
                 description:
-                  "Traditional Ukrainian birthday cakes like Medovik and Kyiv cake with authentic flavors and cultural significance",
+                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with authentic flavors and cultural significance",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (

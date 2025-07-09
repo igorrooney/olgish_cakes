@@ -3,15 +3,15 @@ import Script from "next/script";
 import AboutContent from "./AboutContent";
 
 export const metadata: Metadata = {
-  title: "About Olgish Cakes - Traditional Ukrainian Baking in Leeds",
+  title: "About Olgish Cakes - Traditional Ukrainian Baking in Leeds | Honey Cake & Medovik",
   description:
-    "Learn about Olgish Cakes, a Ukrainian bakery in Leeds specializing in traditional cakes like honey cake, Kyev cake, and King's cake.",
+    "Learn about Olgish Cakes, a Ukrainian bakery in Leeds specializing in traditional cakes like honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
   keywords:
-    "Ukrainian bakery Leeds, Ukrainian cakes Leeds, Olga baker Leeds, traditional Ukrainian cakes, honey cake Leeds, Kyiv cake Leeds, custom cakes Leeds, artisan bakery Leeds",
+    "Ukrainian bakery Leeds, Ukrainian cakes Leeds, Olga baker Leeds, traditional Ukrainian cakes, honey cake Leeds, Medovik Leeds, Kyiv cake Leeds, custom cakes Leeds, artisan bakery Leeds, traditional medovik",
   openGraph: {
-    title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds",
+    title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds | Honey Cake & Medovik",
     description:
-      "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cakes, Kyiv cakes & custom celebration cakes using time-honored recipes.",
+      "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cake (Medovik), Kyiv cakes & custom celebration cakes using time-honored recipes.",
     url: "https://olgish-cakes.vercel.app/about",
     siteName: "Olgish Cakes",
     images: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         url: "https://olgish-cakes.vercel.app/images/about-baker.jpg",
         width: 1200,
         height: 630,
-        alt: "Olga from Olgish Cakes - Ukrainian Baker in Leeds",
+        alt: "Olga from Olgish Cakes - Ukrainian Baker in Leeds - Honey Cake & Medovik",
       },
     ],
     locale: "en_GB",
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds",
+    title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds | Honey Cake & Medovik",
     description:
-      "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cakes, Kyiv cakes & custom celebration cakes using time-honored recipes.",
+      "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cake (Medovik), Kyiv cakes & custom celebration cakes using time-honored recipes.",
     images: ["https://olgish-cakes.vercel.app/images/about-baker.jpg"],
   },
   alternates: {

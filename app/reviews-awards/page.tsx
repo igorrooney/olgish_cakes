@@ -10,7 +10,6 @@ import {
   Rating,
   Avatar,
 } from "@mui/material";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -152,7 +151,7 @@ const awards = [
 export default function ReviewsAwardsPage() {
   return (
     <>
-      <StructuredData />
+      
 
       <Box
         sx={{

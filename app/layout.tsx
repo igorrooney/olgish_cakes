@@ -25,10 +25,25 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds",
+  title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
   description:
-    "Handcrafted Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+    "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients and exceptional taste.",
+  keywords:
+    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds",
   metadataBase: new URL("https://olgish-cakes.vercel.app"),
+  openGraph: {
+    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    description:
+      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+    type: "website",
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    description:
+      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

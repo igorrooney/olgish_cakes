@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
-import { StructuredData } from "../components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Custom Wedding Cakes | Olgish Cakes",
+  title:
+    "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes | Olgish Cakes",
   description:
-    "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors and modern designs. Wedding cake consultation and delivery service available.",
+    "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs. Wedding cake consultation and delivery service available.",
   keywords:
-    "wedding cakes Leeds, Ukrainian wedding cakes, custom wedding cakes Leeds, wedding cake consultation, wedding cake delivery Leeds, traditional wedding cakes, luxury wedding cakes, wedding cake design",
+    "wedding cakes Leeds, Ukrainian wedding cakes, honey cake wedding cakes, Medovik wedding cakes, custom wedding cakes Leeds, wedding cake consultation, wedding cake delivery Leeds, traditional wedding cakes, luxury wedding cakes, wedding cake design",
   openGraph: {
-    title: "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Custom Wedding Cakes",
+    title:
+      "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
     description:
-      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors and modern designs. Wedding cake consultation and delivery service available.",
+      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs. Wedding cake consultation and delivery service available.",
     url: "https://olgish-cakes.vercel.app/wedding-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
         url: "https://olgish-cakes.vercel.app/images/wedding-cakes.jpg",
         width: 1200,
         height: 630,
-        alt: "Beautiful Wedding Cakes Leeds - Olgish Cakes",
+        alt: "Beautiful Wedding Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -30,9 +31,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Custom Wedding Cakes",
+    title:
+      "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
     description:
-      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors and modern designs.",
+      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
     images: ["https://olgish-cakes.vercel.app/images/wedding-cakes.jpg"],
   },
   alternates: {
@@ -51,8 +53,6 @@ export default async function WeddingCakesPage() {
 
   return (
     <>
-      <StructuredData />
-
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
