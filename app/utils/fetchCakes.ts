@@ -29,7 +29,27 @@ export interface Cake {
   allergens?: string[];
 }
 
+// Cache for expensive queries
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+function getCachedData<T>(key: string): T | null {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data as T;
+  }
+  return null;
+}
+
+function setCachedData<T>(key: string, data: T): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
 export async function getAllCakes(): Promise<Cake[]> {
+  const cacheKey = "all-cakes";
+  const cached = getCachedData<Cake[]>(cacheKey);
+  if (cached) return cached;
+
   const query = `*[_type == "cake"] | order(_createdAt desc) {
     _id,
     _createdAt,
@@ -51,34 +71,54 @@ export async function getAllCakes(): Promise<Cake[]> {
     allergens
   }`;
 
-  return client.fetch(query);
+  try {
+    const data = await client.fetch(query);
+    setCachedData(cacheKey, data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching all cakes:", error);
+    return [];
+  }
 }
 
 export async function getFeaturedCakes(): Promise<Cake[]> {
+  const cacheKey = "featured-cakes";
+  const cached = getCachedData<Cake[]>(cacheKey);
+  if (cached) return cached;
+
   const query = groq`*[_type == "cake" && isFeatured == true] | order(_createdAt desc) {
     _id,
     name,
     description,
-    price,
+    shortDescription,
+    pricing,
     category,
     slug,
     designs {
       standard[] {
-        image {
-          asset {
-            _ref
-          },
-          alt
+        asset {
+          _ref
         },
         isMain
       }
     }
   }`;
 
-  return client.fetch(query);
+  try {
+    const data = await client.fetch(query);
+    setCachedData(cacheKey, data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching featured cakes:", error);
+    return [];
+  }
 }
 
 export async function getCakeBySlug(slug: string): Promise<Cake | null> {
+  const cacheKey = `cake-${slug}`;
+  const cached = getCachedData<Cake>(cacheKey);
+  if (cached) return cached;
+
   const query = `*[_type == "cake" && slug.current == $slug][0] {
     _id,
     _createdAt,
@@ -107,5 +147,19 @@ export async function getCakeBySlug(slug: string): Promise<Cake | null> {
     allergens
   }`;
 
-  return client.fetch(query, { slug });
+  try {
+    const data = await client.fetch(query, { slug });
+    if (data) {
+      setCachedData(cacheKey, data);
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching cake by slug:", error);
+    return null;
+  }
+}
+
+// Clear cache function for development
+export function clearCache(): void {
+  cache.clear();
 }

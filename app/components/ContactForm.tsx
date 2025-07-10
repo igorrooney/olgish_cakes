@@ -171,7 +171,13 @@ export function ContactForm({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box component="form" id="contact-form" onSubmit={handleSubmit}>
+      <Box
+        component="form"
+        id="contact-form"
+        onSubmit={handleSubmit}
+        role="form"
+        aria-label="Contact form"
+      >
         <Stack spacing={spacing.lg}>
           {[
             <StyledTextField
@@ -185,6 +191,8 @@ export function ContactForm({
               disabled={isSubmitting}
               placeholder="Enter your full name"
               size="medium"
+              aria-label="Full name"
+              aria-required="true"
             />,
             <StyledTextField
               key="email"
@@ -198,6 +206,8 @@ export function ContactForm({
               disabled={isSubmitting}
               placeholder="Enter your email address"
               size="medium"
+              aria-label="Email address"
+              aria-required="true"
             />,
             <StyledTextField
               key="phone"

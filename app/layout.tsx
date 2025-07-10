@@ -12,16 +12,27 @@ import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
 import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "arial"],
+});
+
 const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair-display",
+  display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"],
 });
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#ffffff",
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export const metadata: Metadata = {
@@ -55,6 +66,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/images/hero-cake.jpg" as="image" type="image/jpeg" />
+
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//cdn.sanity.io" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+
         {/* Google Analytics 4 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"

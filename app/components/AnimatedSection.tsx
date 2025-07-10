@@ -1,70 +1,48 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
+import { ReactNode, memo, forwardRef } from "react";
 
-interface AnimatedSectionProps {
+interface AnimatedSectionProps extends HTMLMotionProps<"section"> {
   children: ReactNode;
   className?: string;
-  initial?: Record<string, any>;
-  whileInView?: Record<string, any>;
-  viewport?: Record<string, any>;
-  transition?: Record<string, any>;
 }
 
-export function AnimatedSection({
-  children,
-  className,
-  initial,
-  whileInView,
-  viewport,
-  transition,
-}: AnimatedSectionProps) {
-  return (
-    <motion.section
-      initial={initial}
-      whileInView={whileInView}
-      viewport={viewport}
-      transition={transition}
-      className={className}
-    >
-      {children}
-    </motion.section>
-  );
-}
+export const AnimatedSection = memo(
+  forwardRef<HTMLElement, AnimatedSectionProps>(({ children, className = "", ...props }, ref) => {
+    return (
+      <motion.section
+        ref={ref}
+        className={className}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        {...props}
+      >
+        {children}
+      </motion.section>
+    );
+  })
+);
 
-interface AnimatedDivProps {
-  children: ReactNode;
-  className?: string;
-  variants?: Record<string, any>;
-  initial?: string | Record<string, any>;
-  animate?: string | Record<string, any>;
-  whileInView?: Record<string, any>;
-  viewport?: Record<string, any>;
-  transition?: Record<string, any>;
-}
+AnimatedSection.displayName = "AnimatedSection";
 
-export function AnimatedDiv({
-  children,
-  className,
-  variants,
-  initial,
-  animate,
-  whileInView,
-  viewport,
-  transition,
-}: AnimatedDivProps) {
-  return (
-    <motion.div
-      variants={variants}
-      initial={initial}
-      animate={animate}
-      whileInView={whileInView}
-      viewport={viewport}
-      transition={transition}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+export const AnimatedDiv = memo(
+  forwardRef<HTMLDivElement, HTMLMotionProps<"div">>(({ children, ...props }, ref) => {
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    );
+  })
+);
+
+AnimatedDiv.displayName = "AnimatedDiv";

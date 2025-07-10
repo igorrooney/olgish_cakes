@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useMemo, useCallback } from "react";
 import { Box, IconButton, ImageList, ImageListItem, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import Image from "next/image";
@@ -16,7 +16,7 @@ interface CakeImageGalleryProps {
   hideDesignSelector?: boolean;
 }
 
-export function CakeImageGallery({
+const CakeImageGallery = memo(function CakeImageGallery({
   designs,
   name,
   designType,
@@ -29,8 +29,16 @@ export function CakeImageGallery({
   const standardImages = designs?.standard || [];
   const individualImages = designs?.individual || [];
 
-  // Always keep the same order of images
-  const allImages = [...standardImages, ...individualImages];
+  // Memoize images
+  const allImages = useMemo(
+    () => [...standardImages, ...individualImages],
+    [standardImages, individualImages]
+  );
+  const galleryImages = useMemo(
+    () => allImages.filter((_, index) => index !== currentImageIndex),
+    [allImages, currentImageIndex]
+  );
+  const currentImage = allImages[currentImageIndex];
 
   // Reset image index when design type changes
   useEffect(() => {
@@ -41,7 +49,8 @@ export function CakeImageGallery({
     }
   }, [designType, standardImages.length]);
 
-  const handlePrevious = () => {
+  // Memoize handlers
+  const handlePrevious = useCallback(() => {
     const newIndex = currentImageIndex === 0 ? allImages.length - 1 : currentImageIndex - 1;
 
     // Update design type if needed
@@ -56,9 +65,9 @@ export function CakeImageGallery({
     }
 
     setCurrentImageIndex(newIndex);
-  };
+  }, [currentImageIndex, allImages.length, designType, standardImages.length, onDesignTypeChange]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const newIndex = currentImageIndex === allImages.length - 1 ? 0 : currentImageIndex + 1;
 
     // Update design type if needed
@@ -73,27 +82,33 @@ export function CakeImageGallery({
     }
 
     setCurrentImageIndex(newIndex);
-  };
+  }, [currentImageIndex, allImages.length, designType, standardImages.length, onDesignTypeChange]);
 
-  const handleDesignChange = (newDesign: DesignType) => {
-    if (newDesign === designType) return;
-    onDesignTypeChange(newDesign);
-  };
+  const handleDesignChange = useCallback(
+    (newDesign: DesignType) => {
+      if (newDesign === designType) return;
+      onDesignTypeChange(newDesign);
+    },
+    [designType, onDesignTypeChange]
+  );
 
-  const handleThumbnailClick = (index: number) => {
-    // Update design type if needed
-    if (index < standardImages.length) {
-      if (designType !== "standard") {
-        onDesignTypeChange("standard");
+  const handleThumbnailClick = useCallback(
+    (index: number) => {
+      // Update design type if needed
+      if (index < standardImages.length) {
+        if (designType !== "standard") {
+          onDesignTypeChange("standard");
+        }
+      } else {
+        if (designType !== "individual") {
+          onDesignTypeChange("individual");
+        }
       }
-    } else {
-      if (designType !== "individual") {
-        onDesignTypeChange("individual");
-      }
-    }
 
-    setCurrentImageIndex(index);
-  };
+      setCurrentImageIndex(index);
+    },
+    [designType, onDesignTypeChange, standardImages.length]
+  );
 
   if (!designs?.standard || designs.standard.length === 0) {
     return (
@@ -115,11 +130,8 @@ export function CakeImageGallery({
     );
   }
 
-  const currentImage = allImages[currentImageIndex];
-  const galleryImages = allImages.filter((_, index) => index !== currentImageIndex);
-
   return (
-    <>
+    <section aria-label="Cake image gallery" role="region">
       {hasIndividualDesigns && !hideDesignSelector && (
         <Box sx={{ mb: 3 }}>
           <DesignSelector
@@ -138,12 +150,17 @@ export function CakeImageGallery({
           boxShadow: 4,
           mb: 3,
         }}
+        aria-label="Main cake image"
+        role="img"
       >
         <Image
           src={urlFor(currentImage).width(800).height(800).url()}
           alt={currentImage.alt || name}
           fill
           style={{ objectFit: "cover" }}
+          sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
           priority
         />
         <Box
@@ -227,6 +244,8 @@ export function CakeImageGallery({
           })}
         </ImageList>
       )}
-    </>
+    </section>
   );
-}
+});
+
+export { CakeImageGallery };

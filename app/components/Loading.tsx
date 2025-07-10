@@ -4,10 +4,11 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { designTokens } from "@/lib/design-system";
 import { BodyText } from "@/lib/ui-components";
+import { memo } from "react";
 
 const { colors, spacing } = designTokens;
 
-export default function Loading() {
+const Loading = memo(function Loading() {
   return (
     <Box
       sx={{
@@ -46,4 +47,6 @@ export default function Loading() {
       </BodyText>
     </Box>
   );
-}
+});
+
+export default Loading;

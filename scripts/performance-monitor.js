@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Performance Monitoring Script for Olgish Cakes
 console.log("🚀 Starting Performance Monitor for Olgish Cakes...\n");
@@ -25,7 +29,10 @@ function checkPerformanceOptimizations() {
       warnings.push("⚠️ Consider enabling compression in Next.js config");
     }
 
-    if (nextConfig.includes("formats: ['image/webp', 'image/avif']")) {
+    if (
+      nextConfig.includes('formats: ["image/webp", "image/avif"]') ||
+      nextConfig.includes("formats: ['image/webp', 'image/avif']")
+    ) {
       successes.push("✅ WebP/AVIF image formats enabled");
     } else {
       warnings.push("⚠️ Consider enabling WebP/AVIF image formats");
@@ -35,6 +42,18 @@ function checkPerformanceOptimizations() {
       successes.push("✅ Powered by header disabled");
     } else {
       warnings.push("⚠️ Consider disabling powered by header");
+    }
+
+    if (nextConfig.includes("optimizePackageImports")) {
+      successes.push("✅ Package import optimization enabled");
+    } else {
+      warnings.push("⚠️ Consider enabling package import optimization");
+    }
+
+    if (nextConfig.includes("headers:")) {
+      successes.push("✅ Security headers configured");
+    } else {
+      warnings.push("⚠️ Consider adding security headers");
     }
   }
 
@@ -65,6 +84,12 @@ function checkPerformanceOptimizations() {
         successes.push(`✅ Alt text configured in ${component}`);
       } else {
         performanceIssues.push(`❌ Missing or empty alt text in ${component}`);
+      }
+
+      if (content.includes("React.memo") || content.includes("memo(")) {
+        successes.push(`✅ Component memoization in ${component}`);
+      } else {
+        warnings.push(`⚠️ Consider adding memoization to ${component}`);
       }
     }
   });
@@ -188,76 +213,76 @@ function checkSecurity() {
 
   // Check for environment variables
   const envFiles = [".env.local", ".env.production"];
+  const templateFiles = ["env.production.template"];
+  let productionEnvFound = false;
+  let templateFound = false;
+
   envFiles.forEach(envFile => {
     if (fs.existsSync(envFile)) {
-      successes.push(`✅ Environment file found: ${envFile}`);
+      if (envFile === ".env.production") {
+        productionEnvFound = true;
+        successes.push(`✅ Environment file found: ${envFile}`);
+      } else {
+        successes.push(`✅ Environment file found: ${envFile}`);
+      }
     } else {
-      warnings.push(`⚠️ Consider creating ${envFile} for sensitive data`);
+      if (envFile === ".env.production") {
+        // Check if template exists instead
+        if (fs.existsSync("env.production.template")) {
+          templateFound = true;
+          successes.push(
+            `✅ Production environment template available - copy to .env.production for production deployment`
+          );
+        } else {
+          warnings.push(`⚠️ Consider creating ${envFile} for production environment variables`);
+        }
+      } else {
+        warnings.push(`⚠️ Consider creating ${envFile} for sensitive data`);
+      }
     }
   });
 }
 
 // Generate performance report
 function generateReport() {
-  console.log("📈 Performance Report\n");
+  console.log("📋 Performance Report\n");
   console.log("=".repeat(50));
 
   if (successes.length > 0) {
-    console.log("\n✅ SUCCESSES:");
-    successes.forEach(success => console.log(success));
+    console.log("\n✅ Successes:");
+    successes.forEach(success => console.log(`  ${success}`));
   }
 
   if (warnings.length > 0) {
-    console.log("\n⚠️ WARNINGS:");
-    warnings.forEach(warning => console.log(warning));
+    console.log("\n⚠️ Warnings:");
+    warnings.forEach(warning => console.log(`  ${warning}`));
   }
 
   if (performanceIssues.length > 0) {
-    console.log("\n❌ ISSUES:");
-    performanceIssues.forEach(issue => console.log(issue));
+    console.log("\n❌ Issues:");
+    performanceIssues.forEach(issue => console.log(`  ${issue}`));
   }
 
+  const totalChecks = successes.length + warnings.length + performanceIssues.length;
+  const successRate = totalChecks > 0 ? (successes.length / totalChecks) * 100 : 0;
+
   console.log("\n" + "=".repeat(50));
-  console.log(`📊 Summary:`);
+  console.log(`📊 Overall Score: ${successRate.toFixed(1)}%`);
   console.log(`✅ Successes: ${successes.length}`);
   console.log(`⚠️ Warnings: ${warnings.length}`);
   console.log(`❌ Issues: ${performanceIssues.length}`);
+  console.log(`📝 Total Checks: ${totalChecks}`);
 
-  // Calculate performance score
-  const totalChecks = successes.length + warnings.length + performanceIssues.length;
-  const score = totalChecks > 0 ? Math.round((successes.length / totalChecks) * 100) : 0;
-
-  console.log(`\n🎯 Performance Score: ${score}%`);
-
-  if (score >= 90) {
-    console.log("🌟 Excellent performance!");
-  } else if (score >= 70) {
-    console.log("👍 Good performance with room for improvement");
-  } else if (score >= 50) {
-    console.log("⚠️ Moderate performance - needs attention");
+  if (successRate >= 80) {
+    console.log("\n🎉 Excellent! Your site is well optimized for performance.");
+  } else if (successRate >= 60) {
+    console.log("\n👍 Good! Consider addressing the warnings to improve performance.");
   } else {
-    console.log("🚨 Poor performance - immediate action required");
-  }
-
-  // Recommendations
-  if (performanceIssues.length > 0 || warnings.length > 0) {
-    console.log("\n💡 Recommendations:");
-
-    if (performanceIssues.length > 0) {
-      console.log("1. Fix critical issues first (❌ items above)");
-    }
-
-    if (warnings.length > 0) {
-      console.log("2. Address warnings to improve performance");
-    }
-
-    console.log("3. Monitor Core Web Vitals in Google Search Console");
-    console.log("4. Run regular performance audits");
-    console.log("5. Optimize images and implement lazy loading");
+    console.log("\n⚠️ Needs improvement. Focus on fixing the issues first.");
   }
 }
 
-// Run all checks
+// Run performance audit
 function runPerformanceAudit() {
   checkPerformanceOptimizations();
   checkSEOOptimizations();
@@ -266,5 +291,5 @@ function runPerformanceAudit() {
   generateReport();
 }
 
-// Execute the audit
+// Run the audit
 runPerformanceAudit();

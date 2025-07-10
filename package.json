@@ -17,7 +17,11 @@
     "deploy": "vercel deploy --prod",
     "seed:testimonials": "node scripts/seed-testimonials.js",
     "check:testimonials": "node scripts/check-testimonials.js",
-    "migrate:faqs": "ts-node --project scripts/tsconfig.json scripts/migrateFaqs.ts"
+    "migrate:faqs": "ts-node --project scripts/tsconfig.json scripts/migrateFaqs.ts",
+    "analyze": "ANALYZE=true next build",
+    "performance": "node scripts/performance-monitor.js",
+    "lighthouse": "lighthouse https://olgish-cakes.vercel.app --output=json --output-path=./reports/lighthouse-report.json",
+    "bundle-analyzer": "cross-env ANALYZE=true next build"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -50,14 +54,17 @@
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.1.3",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
+    "lighthouse": "^11.6.0",
     "postcss": "^8.5.3",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",

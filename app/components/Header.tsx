@@ -174,6 +174,8 @@ export function Header() {
     <AppBar
       position="sticky"
       elevation={0}
+      role="banner"
+      aria-label="Main navigation"
       sx={{
         backgroundColor: colors.background.paper,
         borderBottom: `1px solid ${colors.border.light}`,
@@ -183,6 +185,8 @@ export function Header() {
       <DesignContainer>
         <Toolbar
           disableGutters
+          role="navigation"
+          aria-label="Primary navigation"
           sx={{
             height: 70,
             minHeight: 70,
@@ -198,6 +202,7 @@ export function Header() {
             <Link
               href="/"
               passHref
+              aria-label="Olgish Cakes - Home"
               style={{ textDecoration: "none", display: "flex", alignItems: "center" }}
             >
               <Box

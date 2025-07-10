@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Cake } from "../utils/fetchCakes";
 import { urlFor } from "@/sanity/lib/image";
-import { useState } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import { designTokens } from "@/lib/design-system";
 import { ProductCard, CategoryChip, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 
@@ -16,36 +16,52 @@ interface CakeCardProps {
   variant?: "featured" | "catalog";
 }
 
-export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): JSX.Element {
+const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
 
-  const mainImage =
-    cake.designs?.standard?.find(img => img.isMain && img.asset?._ref) ||
-    cake.designs?.standard?.find(img => img.asset?._ref) ||
-    cake.designs?.standard?.[0];
+  // Memoize expensive computations
+  const mainImage = useMemo(() => {
+    return (
+      cake.designs?.standard?.find(img => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find(img => img.asset?._ref) ||
+      cake.designs?.standard?.[0]
+    );
+  }, [cake.designs?.standard]);
 
-  const placeholderUrl = `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(
-    `${cake.name}\n${cake.category}`
-  )}`;
+  const placeholderUrl = useMemo(() => {
+    return `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(
+      `${cake.name}\n${cake.category}`
+    )}`;
+  }, [cake.name, cake.category]);
 
-  const imageUrl = mainImage?.asset?._ref
-    ? urlFor(mainImage).width(800).height(800).url()
-    : placeholderUrl;
+  const imageUrl = useMemo(() => {
+    return mainImage?.asset?._ref ? urlFor(mainImage).width(800).height(800).url() : placeholderUrl;
+  }, [mainImage, placeholderUrl]);
+
+  // Memoize event handlers
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
   return (
     <ProductCard
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
       }}
+      role="article"
+      aria-label={`Cake card for ${cake.name}`}
     >
       {/* Image Container with Overlay */}
-      <Link href={`/cakes/${cake.slug.current}`} style={{ textDecoration: "none" }}>
+      <Link
+        href={`/cakes/${cake.slug.current}`}
+        style={{ textDecoration: "none" }}
+        aria-label={`View details for ${cake.name}`}
+      >
         <Box
           sx={{
             position: "relative",
@@ -53,6 +69,8 @@ export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): 
             overflow: "hidden",
             backgroundColor: colors.background.subtle,
           }}
+          role="img"
+          aria-label={`${cake.name} - ${cake.category} cake image`}
         >
           <Image
             src={imageUrl}
@@ -60,14 +78,15 @@ export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): 
             fill
             style={{
               objectFit: "cover",
-              transition: "all 0.7s ease-in-out",
+              transition: "transform 0.3s ease-in-out, filter 0.3s ease-in-out",
               transform: isHovered ? "scale(1.05)" : "scale(1)",
               filter: isHovered ? "brightness(0.95)" : "brightness(1)",
             }}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             priority={variant === "featured"}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+            loading={variant === "featured" ? "eager" : "lazy"}
           />
 
           {/* Elegant Gradient Overlay */}
@@ -77,7 +96,7 @@ export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): 
               inset: 0,
               background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent, transparent)",
               opacity: isHovered ? 1 : 0,
-              transition: "opacity 0.5s ease-in-out",
+              transition: "opacity 0.3s ease-in-out",
             }}
           />
 
@@ -191,4 +210,6 @@ export default function CakeCard({ cake, variant = "catalog" }: CakeCardProps): 
       </CardContent>
     </ProductCard>
   );
-}
+});
+
+export default CakeCard;

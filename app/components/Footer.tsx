@@ -142,6 +142,8 @@ export default function Footer() {
   return (
     <Box
       component="footer"
+      role="contentinfo"
+      aria-label="Site footer"
       sx={{
         backgroundColor: colors.background.paper,
         borderTop: `1px solid ${colors.border.light}`,
@@ -150,9 +152,9 @@ export default function Footer() {
       <DesignContainer>
         {/* Main Footer Content */}
         <Box sx={{ py: spacing["4xl"] }}>
-          <Grid container spacing={6}>
+          <Grid container spacing={6} aria-label="Footer links">
             {/* Brand Column */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} aria-label="Footer brand info">
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
                 <Link href="/" style={{ textDecoration: "none" }}>
                   <Typography

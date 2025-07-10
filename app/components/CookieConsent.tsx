@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { PrimaryButton, OutlineButton, BodyText } from "@/lib/ui-components";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
-export default function CookieConsent() {
+const CookieConsent = memo(function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,148 +21,141 @@ export default function CookieConsent() {
     }
   }, []);
 
-  const handleConsent = (consent: "accepted" | "declined") => {
+  const handleAccept = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Save to localStorage
-      localStorage.setItem("cookieConsent", consent);
-      localStorage.setItem("cookieConsentTimestamp", new Date().toISOString());
-
-      // Handle cookies based on consent
-      if (consent === "accepted") {
-        // Enable analytics and other cookies
-        if (typeof window !== "undefined" && "gtag" in window) {
-          window.gtag("consent", "update", {
-            analytics_storage: "granted",
-            functionality_storage: "granted",
-            personalization_storage: "granted",
-          });
-        }
-      } else {
-        // Disable analytics and other cookies
-        if (typeof window !== "undefined" && "gtag" in window) {
-          window.gtag("consent", "update", {
-            analytics_storage: "denied",
-            functionality_storage: "denied",
-            personalization_storage: "denied",
-          });
-        }
-        // Clear existing cookies
-        document.cookie.split(";").forEach(cookie => {
-          const [name] = cookie.split("=");
-          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        });
-      }
-
+      localStorage.setItem("cookieConsent", "accepted");
       setIsVisible(false);
     } catch (error) {
-      console.error("Error handling cookie consent:", error);
+      console.error("Error saving cookie consent:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  const handleDecline = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      localStorage.setItem("cookieConsent", "declined");
+      setIsVisible(false);
+    } catch (error) {
+      console.error("Error saving cookie consent:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+  }, []);
 
   if (!isVisible) return null;
 
   return (
-    <Paper
-      elevation={3}
+    <Box
       sx={{
         position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 1000,
-        borderRadius: `${borderRadius.lg} ${borderRadius.lg} 0 0`,
-        p: { xs: spacing.md, md: spacing.lg },
-        m: { xs: spacing.md, md: spacing.lg },
-        maxWidth: { md: "600px" },
-        mx: { md: "auto" },
-        backgroundColor: colors.background.paper,
-        boxShadow: shadows.lg,
-        border: `1px solid ${colors.border.light}`,
+        zIndex: 9999,
+        p: { xs: 2, md: 3 },
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
       }}
     >
-      <Box sx={{ position: "relative" }}>
-        <IconButton
-          onClick={() => handleConsent("declined")}
-          disabled={isLoading}
-          sx={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            color: colors.text.secondary,
-            "&:hover": {
-              backgroundColor: colors.background.subtle,
-            },
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        <Typography
-          variant="h6"
-          sx={{
-            mb: spacing.sm,
-            fontWeight: typography.fontWeight.semibold,
-            color: colors.primary.main,
-            fontFamily: typography.fontFamily.display,
-          }}
-        >
-          Cookie Preferences
-        </Typography>
-
-        <BodyText
-          sx={{
-            mb: spacing.md,
-            color: colors.text.secondary,
-            lineHeight: typography.lineHeight.relaxed,
-          }}
-        >
-          We use cookies to enhance your browsing experience, serve personalized content, and
-          analyze our traffic. By clicking "Accept All", you consent to our use of cookies.{" "}
-          <MuiLink
-            component={Link}
-            href="/cookies"
+      <Paper
+        elevation={8}
+        sx={{
+          maxWidth: "600px",
+          mx: "auto",
+          p: { xs: 3, md: 4 },
+          borderRadius: borderRadius.lg,
+          backgroundColor: colors.background.paper,
+          border: `1px solid ${colors.border.light}`,
+        }}
+      >
+        <Box sx={{ position: "relative" }}>
+          <IconButton
+            onClick={handleClose}
             sx={{
-              color: colors.primary.main,
-              textDecoration: "none",
-              fontWeight: typography.fontWeight.medium,
+              position: "absolute",
+              top: -spacing.sm,
+              right: -spacing.sm,
+              backgroundColor: colors.background.paper,
+              border: `1px solid ${colors.border.light}`,
               "&:hover": {
-                textDecoration: "underline",
-                color: colors.primary.dark,
+                backgroundColor: colors.background.subtle,
               },
             }}
           >
-            Learn more
-          </MuiLink>
-        </BodyText>
+            <CloseIcon />
+          </IconButton>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={spacing.md} sx={{ mt: spacing.md }}>
-          <PrimaryButton
-            onClick={() => handleConsent("accepted")}
-            disabled={isLoading}
+          <Typography
+            variant="h6"
             sx={{
-              flex: { sm: 1 },
-              py: spacing.sm,
-              fontWeight: typography.fontWeight.medium,
+              mb: spacing.md,
+              color: colors.text.primary,
+              fontWeight: typography.fontWeight.semibold,
             }}
           >
-            {isLoading ? "Processing..." : "Accept All"}
-          </PrimaryButton>
-          <OutlineButton
-            onClick={() => handleConsent("declined")}
-            disabled={isLoading}
+            🍪 Cookie Policy
+          </Typography>
+
+          <BodyText
             sx={{
-              flex: { sm: 1 },
-              py: spacing.sm,
-              fontWeight: typography.fontWeight.medium,
+              mb: spacing.lg,
+              color: colors.text.secondary,
+              lineHeight: typography.lineHeight.relaxed,
             }}
           >
-            {isLoading ? "Processing..." : "Decline"}
-          </OutlineButton>
-        </Stack>
-      </Box>
-    </Paper>
+            We use cookies to enhance your browsing experience, serve personalized content, and
+            analyze our traffic. By clicking "Accept All", you consent to our use of cookies.{" "}
+            <MuiLink
+              component={Link}
+              href="/cookies"
+              sx={{
+                color: colors.primary.main,
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              Learn more
+            </MuiLink>
+          </BodyText>
+
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            sx={{ justifyContent: "flex-end" }}
+          >
+            <OutlineButton
+              onClick={handleDecline}
+              disabled={isLoading}
+              sx={{
+                minWidth: "120px",
+                fontWeight: typography.fontWeight.medium,
+              }}
+            >
+              Decline
+            </OutlineButton>
+            <PrimaryButton
+              onClick={handleAccept}
+              disabled={isLoading}
+              sx={{
+                minWidth: "120px",
+                fontWeight: typography.fontWeight.medium,
+              }}
+            >
+              Accept All
+            </PrimaryButton>
+          </Stack>
+        </Box>
+      </Paper>
+    </Box>
   );
-}
+});
+
+export default CookieConsent;
