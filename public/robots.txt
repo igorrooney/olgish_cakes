@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://olgishcakes.co.uk/sitemap.xml
+Sitemap: https://olgish-cakes.vercel.app/sitemap.xml
 
 # Disallow admin and private areas
 Disallow: /studio/

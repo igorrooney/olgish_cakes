@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -15,11 +16,11 @@ export const metadata: Metadata = {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
-    url: "https://olgishcakes.com/cakes-york",
+    url: "https://olgish-cakes.vercel.app/cakes-york",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/cakes-york.jpg",
+        url: "https://olgish-cakes.vercel.app/images/cakes-york.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cakes York - Olgish Cakes Delivery Service",
@@ -33,10 +34,10 @@ export const metadata: Metadata = {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/cakes-york.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-york.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-york",
+    canonical: "https://olgish-cakes.vercel.app/cakes-york",
   },
 };
 
@@ -46,8 +47,42 @@ export default async function CakesYorkPage() {
 
   return (
     <>
-      
-
+      <Script
+        id="cakes-york-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - York Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in York. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in York and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-york",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.9590",
+              longitude: "-1.0815",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "York",
+            },
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

@@ -97,8 +97,8 @@ const footerLinks = {
 
 const contactInfo = {
   email: "olgish.cakes@gmail.com",
-  phone: "+447867218194",
-  address: "Leeds, West Yorkshire, UK",
+  phone: "+44 786 721 8194",
+  address: "107 Harehills Lane, Leeds, LS8 4DN, United Kingdom",
   social: [
     {
       name: "Instagram",
@@ -109,7 +109,7 @@ const contactInfo = {
     {
       name: "Facebook",
       icon: Facebook,
-      href: "https://www.facebook.com/profile.php?id=61557043820222",
+      href: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
       hoverColor: "#1877F2",
     },
     {

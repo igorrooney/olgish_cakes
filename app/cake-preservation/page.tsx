@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Preservation | How to Store Cakes | Olgish Cakes",
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Preservation | How to Store Cakes",
     description:
       "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
-    url: "https://olgishcakes.com/cake-preservation",
-    images: ["https://olgishcakes.com/images/cake-preservation.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-preservation",
+    images: ["https://olgish-cakes.vercel.app/images/cake-preservation.jpg"],
     type: "article",
   },
   twitter: {
@@ -20,31 +21,14 @@ export const metadata: Metadata = {
     title: "Cake Preservation | How to Store Cakes",
     description:
       "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
-    images: ["https://olgishcakes.com/images/cake-preservation.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-preservation.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-preservation",
+    canonical: "https://olgish-cakes.vercel.app/cake-preservation",
   },
 };
 
 export default function CakePreservationPage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Cake Preservation Guide: How to Keep Your Cake Fresh",
-    description: "Guide to preserving and storing cakes for maximum freshness",
-    author: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-    datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/cake-preservation.jpg",
-    publisher: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-  };
-
   const tips = [
     {
       title: "Room Temperature Storage",
@@ -83,9 +67,66 @@ export default function CakePreservationPage() {
 
   return (
     <>
-      <script
+      <Script
+        id="cake-preservation-structured-data"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Preserve and Store Cakes",
+            description:
+              "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+            image: "https://olgish-cakes.vercel.app/images/cake-preservation.jpg",
+            totalTime: "PT5M",
+            estimatedCost: {
+              "@type": "MonetaryAmount",
+              currency: "GBP",
+              value: "0",
+            },
+            supply: [
+              {
+                "@type": "HowToSupply",
+                name: "Airtight container",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Plastic wrap",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Cake dome",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Labels",
+              },
+            ],
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Choose Storage Method",
+                text: "Decide between room temperature (2 days), refrigeration (3 days), or freezing (3 months) based on cake type and timeline.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Prepare for Storage",
+                text: "Wrap cakes in plastic wrap or place in airtight container to prevent drying and odor absorption.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Store Properly",
+                text: "Keep away from direct sunlight and store in appropriate temperature conditions.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Label and Monitor",
+                text: "Label frozen cakes with date and type, and monitor freshness regularly.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/cake-preservation",
+          }),
+        }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Shipping | Cake Delivery & Shipping | Olgish Cakes",
@@ -10,8 +11,8 @@ export const metadata: Metadata = {
     title: "Cake Shipping | Cake Delivery & Shipping",
     description:
       "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
-    url: "https://olgishcakes.com/cake-shipping",
-    images: ["https://olgishcakes.com/images/cake-shipping.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-shipping",
+    images: ["https://olgish-cakes.vercel.app/images/cake-shipping.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,36 +20,82 @@ export const metadata: Metadata = {
     title: "Cake Shipping | Cake Delivery & Shipping",
     description:
       "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
-    images: ["https://olgishcakes.com/images/cake-shipping.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-shipping.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-shipping",
+    canonical: "https://olgish-cakes.vercel.app/cake-shipping",
   },
 };
 
 export default function CakeShippingPage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: "Cake Shipping",
-    description: "Safe and secure cake shipping services in Leeds",
-    provider: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-    areaServed: {
-      "@type": "City",
-      name: "Leeds",
-    },
-    serviceType: "Cake Shipping",
-    url: "https://olgishcakes.com/cake-shipping",
-  };
-
   return (
     <>
-      <script
+      <Script
+        id="cake-shipping-structured-data"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Cake Shipping",
+            description:
+              "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Cake Shipping and Delivery",
+            areaServed: [
+              {
+                "@type": "City",
+                name: "Leeds",
+              },
+              {
+                "@type": "Country",
+                name: "United Kingdom",
+              },
+            ],
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Shipping Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Nationwide Shipping",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Local Delivery",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Safe Packaging",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/cake-shipping",
+          }),
+        }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Container, Typography, Box, Grid, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -36,6 +37,16 @@ export default function AboutContent() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "About", href: "/about" },
+              ]}
+            />
+          </Box>
+
           <motion.div initial="initial" animate="animate" variants={staggerContainer}>
             <motion.div variants={fadeInUp}>
               <Typography

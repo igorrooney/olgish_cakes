@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Bakery Delivery Service | Wedding Cake Delivery | Olgish Cakes",
@@ -40,6 +42,68 @@ export const metadata: Metadata = {
 export default function CakeDeliveryPage() {
   return (
     <>
+      <Script
+        id="cake-delivery-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Cake Delivery Leeds",
+            description:
+              "Professional cake delivery service in Leeds. Wedding cake delivery, birthday cake delivery, and celebration cake delivery. Safe and secure delivery to your venue or home.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Cake Delivery Service",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Delivery Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Wedding Cake Delivery",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Birthday Cake Delivery",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Celebration Cake Delivery",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/cake-delivery",
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -48,6 +112,14 @@ export default function CakeDeliveryPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Cake Delivery", href: "/cake-delivery" },
+            ]}
+          />
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

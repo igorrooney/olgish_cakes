@@ -11,8 +11,8 @@ export const metadata: Metadata = {
     title: "Charity Events | Ukrainian Cake Fundraisers",
     description:
       "Learn about charity events and fundraisers supported by Olgish Cakes. Join our Ukrainian cake charity events and help support good causes in Leeds.",
-    url: "https://olgishcakes.com/charity-events",
-    images: ["https://olgishcakes.com/images/charity-events.jpg"],
+    url: "https://olgish-cakes.vercel.app/charity-events",
+    images: ["https://olgish-cakes.vercel.app/images/charity-events.jpg"],
     type: "website",
   },
   twitter: {
@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     title: "Charity Events | Ukrainian Cake Fundraisers",
     description:
       "Learn about charity events and fundraisers supported by Olgish Cakes. Join our Ukrainian cake charity events and help support good causes in Leeds.",
-    images: ["https://olgishcakes.com/images/charity-events.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/charity-events.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/charity-events",
+    canonical: "https://olgish-cakes.vercel.app/charity-events",
   },
 };
 
@@ -33,7 +33,7 @@ export default function CharityEventsPage() {
     "@type": "WebPage",
     name: "Charity Events",
     description: "Supporting local charities and community events in Leeds",
-    url: "https://olgishcakes.com/charity-events",
+    url: "https://olgish-cakes.vercel.app/charity-events",
   };
 
   return (

@@ -1,0 +1,39 @@
+{
+  "name": "Olgish Cakes - Traditional Ukrainian Cakes in Leeds",
+  "short_name": "Olgish Cakes",
+  "description": "Authentic Ukrainian honey cakes and traditional pastries made fresh in Leeds. Order custom cakes for birthdays, weddings, and special occasions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#005BBB",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "shopping", "lifestyle"],
+  "lang": "en-GB",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "screenshots": [
+    {
+      "src": "/images/placeholder-cake.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Olgish Cakes Homepage"
+    }
+  ]
+} 

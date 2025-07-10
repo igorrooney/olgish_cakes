@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -15,8 +16,8 @@ export const metadata: Metadata = {
     title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
-    url: "https://olgishcakes.com/cakes-huddersfield",
-    images: ["https://olgishcakes.com/images/cakes-huddersfield.jpg"],
+    url: "https://olgish-cakes.vercel.app/cakes-huddersfield",
+    images: ["https://olgish-cakes.vercel.app/images/cakes-huddersfield.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +25,10 @@ export const metadata: Metadata = {
     title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
-    images: ["https://olgishcakes.com/images/cakes-huddersfield.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-huddersfield.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-huddersfield",
+    canonical: "https://olgish-cakes.vercel.app/cakes-huddersfield",
   },
 };
 
@@ -36,8 +37,42 @@ export default async function CakesHuddersfieldPage() {
 
   return (
     <>
-      
-
+      <Script
+        id="cakes-huddersfield-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Huddersfield Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Huddersfield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Huddersfield and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-huddersfield",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.6458",
+              longitude: "-1.7850",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Huddersfield",
+            },
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

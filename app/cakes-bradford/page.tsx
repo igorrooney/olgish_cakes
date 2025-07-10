@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cakes Bradford | Ukrainian Cakes Bradford | Traditional Ukrainian Cakes | Olgish Cakes",
@@ -14,8 +15,8 @@ export const metadata: Metadata = {
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
-    url: "https://olgishcakes.com/cakes-bradford",
-    images: ["https://olgishcakes.com/images/cakes-bradford.jpg"],
+    url: "https://olgish-cakes.vercel.app/cakes-bradford",
+    images: ["https://olgish-cakes.vercel.app/images/cakes-bradford.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +24,10 @@ export const metadata: Metadata = {
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
-    images: ["https://olgishcakes.com/images/cakes-bradford.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-bradford.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-bradford",
+    canonical: "https://olgish-cakes.vercel.app/cakes-bradford",
   },
 };
 
@@ -35,8 +36,42 @@ export default async function CakesBradfordPage() {
 
   return (
     <>
-      
-
+      <Script
+        id="cakes-bradford-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Bradford Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Bradford. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Bradford and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-bradford",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.7950",
+              longitude: "-1.7594",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Bradford",
+            },
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

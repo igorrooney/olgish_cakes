@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     title: "How to Make Honey Cake | Traditional Ukrainian Honey Cake Recipe",
     description:
       "Learn how to make authentic Ukrainian honey cake (Medovik) with our traditional recipe. Step-by-step instructions for the perfect honey cake.",
-    url: "https://olgishcakes.com/how-to-make-honey-cake",
-    images: ["https://olgishcakes.com/images/honey-cake-recipe.jpg"],
+    url: "https://olgish-cakes.vercel.app/how-to-make-honey-cake",
+    images: ["https://olgish-cakes.vercel.app/images/honey-cake-recipe.jpg"],
     type: "article",
   },
   twitter: {
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     title: "How to Make Honey Cake | Traditional Ukrainian Honey Cake Recipe",
     description:
       "Learn how to make authentic Ukrainian honey cake (Medovik) with our traditional recipe. Step-by-step instructions for the perfect honey cake.",
-    images: ["https://olgishcakes.com/images/honey-cake-recipe.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/honey-cake-recipe.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/how-to-make-honey-cake",
+    canonical: "https://olgish-cakes.vercel.app/how-to-make-honey-cake",
   },
 };
 
@@ -56,7 +56,7 @@ export default function HowToMakeHoneyCakePage() {
     recipeYield: "1 cake (8-10 servings)",
     recipeCategory: "Dessert",
     recipeCuisine: "Ukrainian",
-    image: "https://olgishcakes.com/images/honey-cake-recipe.jpg",
+    image: "https://olgish-cakes.vercel.app/images/honey-cake-recipe.jpg",
     ingredients: [
       "3 cups all-purpose flour",
       "1 cup honey",

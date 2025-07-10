@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -55,7 +56,37 @@ export const metadata: Metadata = {
 export default function CakeSizesGuidePage() {
   return (
     <>
-      
+      <Script
+        id="cake-sizes-guide-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "Cake Sizes Guide",
+            description: "Guide to choosing the right cake size for your event.",
+            image: "https://olgish-cakes.vercel.app/images/cake-size-guide.jpg",
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Determine Guest Count",
+                text: "Count the number of guests.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Select Cake Size",
+                text: "Choose a cake size based on servings needed.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Order with Buffer",
+                text: "Order a slightly larger cake for leftovers.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/cake-sizes-guide",
+          }),
+        }}
+      />
 
       <Box
         sx={{

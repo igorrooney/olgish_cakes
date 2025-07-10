@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cake Decorating Services | Custom Cake Design",
     description:
       "Professional cake decorating services in Leeds. Custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
-    url: "https://olgishcakes.com/cake-decorating-services",
-    images: ["https://olgishcakes.com/images/cake-decorating-services.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-decorating-services",
+    images: ["https://olgish-cakes.vercel.app/images/cake-decorating-services.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Cake Decorating Services | Custom Cake Design",
     description:
       "Professional cake decorating services in Leeds. Custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
-    images: ["https://olgishcakes.com/images/cake-decorating-services.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-decorating-services.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-decorating-services",
+    canonical: "https://olgish-cakes.vercel.app/cake-decorating-services",
   },
 };
 
@@ -44,7 +44,7 @@ export default function CakeDecoratingServicesPage() {
       name: "Leeds",
     },
     serviceType: "Cake Decorating",
-    url: "https://olgishcakes.com/cake-decorating-services",
+    url: "https://olgish-cakes.vercel.app/cake-decorating-services",
   };
 
   const services = [

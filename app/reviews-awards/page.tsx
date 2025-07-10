@@ -11,6 +11,7 @@ import {
   Avatar,
 } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -23,11 +24,11 @@ export const metadata: Metadata = {
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
       "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes.",
-    url: "https://olgishcakes.com/reviews-awards",
+    url: "https://olgish-cakes.vercel.app/reviews-awards",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/reviews-awards.jpg",
+        url: "https://olgish-cakes.vercel.app/images/reviews-awards.jpg",
         width: 1200,
         height: 630,
         alt: "Customer Reviews and Awards - Olgish Cakes Leeds",
@@ -41,10 +42,10 @@ export const metadata: Metadata = {
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
       "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers.",
-    images: ["https://olgishcakes.com/images/reviews-awards.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/reviews-awards.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/reviews-awards",
+    canonical: "https://olgish-cakes.vercel.app/reviews-awards",
   },
 };
 
@@ -151,7 +152,60 @@ const awards = [
 export default function ReviewsAwardsPage() {
   return (
     <>
-      
+      <Script
+        id="reviews-awards-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Customer Reviews and Awards",
+            description:
+              "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes, delivery service, and custom cake designs.",
+            itemListElement: [
+              {
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Bakery",
+                  name: "Olgish Cakes",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Sarah Johnson",
+                },
+                reviewBody:
+                  "Our Ukrainian wedding cake was absolutely stunning! The honey cake was delicious and the design was exactly what we wanted.",
+                datePublished: "2024-01-15",
+              },
+              {
+                "@type": "Review",
+                itemReviewed: {
+                  "@type": "Bakery",
+                  name: "Olgish Cakes",
+                },
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: "5",
+                  bestRating: "5",
+                },
+                author: {
+                  "@type": "Person",
+                  name: "Michael Chen",
+                },
+                reviewBody:
+                  "Ordered a Kyiv cake for my daughter's birthday and it was incredible! The chocolate layers were perfect and the hazelnut filling was delicious.",
+                datePublished: "2024-01-12",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/reviews-awards",
+          }),
+        }}
+      />
 
       <Box
         sx={{
@@ -418,7 +472,7 @@ export default function ReviewsAwardsPage() {
               </Box>
               <Button
                 variant="contained"
-                href="https://www.trustpilot.com/review/olgishcakes.com"
+                href="https://www.trustpilot.com/review/olgish-cakes.vercel.app"
                 target="_blank"
                 sx={{
                   backgroundColor: "white",

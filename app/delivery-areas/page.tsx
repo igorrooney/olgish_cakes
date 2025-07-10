@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery | Olgish Cakes",
@@ -40,7 +41,81 @@ export const metadata: Metadata = {
 export default function DeliveryAreasPage() {
   return (
     <>
-      
+      <Script
+        id="delivery-areas-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Cake Delivery Leeds",
+            description:
+              "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Cake Delivery Service",
+            areaServed: [
+              {
+                "@type": "City",
+                name: "Leeds",
+              },
+              {
+                "@type": "City",
+                name: "Bradford",
+              },
+              {
+                "@type": "City",
+                name: "Wakefield",
+              },
+              {
+                "@type": "City",
+                name: "York",
+              },
+            ],
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Delivery Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Same Day Delivery",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Next Day Delivery",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Local Delivery",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/delivery-areas",
+          }),
+        }}
+      />
 
       <Box
         sx={{

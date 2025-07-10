@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -13,11 +14,11 @@ export const metadata: Metadata = {
     title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
-    url: "https://olgishcakes.com/honey-cake-history",
+    url: "https://olgish-cakes.vercel.app/honey-cake-history",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/honey-cake-history.jpg",
+        url: "https://olgish-cakes.vercel.app/images/honey-cake-history.jpg",
         width: 1200,
         height: 630,
         alt: "Honey Cake History - Ukrainian Honey Cake Traditions",
@@ -31,17 +32,29 @@ export const metadata: Metadata = {
     title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
-    images: ["https://olgishcakes.com/images/honey-cake-history.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/honey-cake-history.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/honey-cake-history",
+    canonical: "https://olgish-cakes.vercel.app/honey-cake-history",
   },
 };
 
 export default function HoneyCakeHistoryPage() {
   return (
     <>
-      
+      <Script
+        id="honey-cake-history-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "History of Ukrainian Honey Cake",
+            description: "Learn about the history and tradition of Ukrainian honey cake (medovik).",
+            url: "https://olgish-cakes.vercel.app/honey-cake-history",
+          }),
+        }}
+      />
 
       <Box
         sx={{

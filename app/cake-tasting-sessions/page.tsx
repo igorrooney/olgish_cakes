@@ -1,6 +1,8 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
-export const metadata = {
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting | Olgish Cakes",
   description:
     "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake. Perfect for wedding cake selection and special occasions.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
-    url: "https://olgishcakes.com/cake-tasting-sessions",
-    images: ["https://olgishcakes.com/images/cake-tasting-sessions.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
+    images: ["https://olgish-cakes.vercel.app/images/cake-tasting-sessions.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,17 +21,77 @@ export const metadata = {
     title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
-    images: ["https://olgishcakes.com/images/cake-tasting-sessions.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-tasting-sessions.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-tasting-sessions",
+    canonical: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
   },
 };
 
 export default function CakeTastingSessionsPage() {
   return (
     <>
-      
+      <Script
+        id="cake-tasting-sessions-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Cake Tasting Sessions Leeds",
+            description:
+              "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake. Perfect for wedding cake selection and special occasions.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Cake Tasting Service",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Tasting Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Ukrainian Cake Tasting",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Wedding Cake Tasting",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Honey Cake Tasting",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
+          }),
+        }}
+      />
 
       <Box
         sx={{

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
       "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
-    url: "https://olgishcakes.com/vegan-cakes-leeds",
+    url: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/vegan-cakes-leeds.jpg",
+        url: "https://olgish-cakes.vercel.app/images/vegan-cakes-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Vegan Ukrainian Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
@@ -33,16 +34,37 @@ export const metadata: Metadata = {
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
       "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
-    images: ["https://olgishcakes.com/images/vegan-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/vegan-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/vegan-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
   },
 };
 
 export default function VeganCakesLeedsPage() {
   return (
     <>
+      <Script
+        id="vegan-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Vegan Cakes Leeds",
+            description:
+              "Order vegan Ukrainian cakes in Leeds. 100% plant-based cakes for all occasions.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+            },
+            serviceType: "Vegan Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

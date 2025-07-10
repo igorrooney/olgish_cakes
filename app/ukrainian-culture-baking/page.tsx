@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -43,6 +44,19 @@ export const metadata: Metadata = {
 export default function UkrainianCultureBakingPage() {
   return (
     <>
+      <Script
+        id="ukrainian-culture-baking-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Ukrainian Culture Baking",
+            description: "Discover the role of baking in Ukrainian culture and traditions.",
+            url: "https://olgish-cakes.vercel.app/ukrainian-culture-baking",
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

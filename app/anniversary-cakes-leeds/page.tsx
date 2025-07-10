@@ -1,6 +1,8 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
-export const metadata = {
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes | Olgish Cakes",
   description:
     "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs. Order now for anniversary celebrations.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
-    url: "https://olgishcakes.com/anniversary-cakes-leeds",
-    images: ["https://olgishcakes.com/images/anniversary-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/anniversary-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,16 +21,78 @@ export const metadata = {
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
-    images: ["https://olgishcakes.com/images/anniversary-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/anniversary-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/anniversary-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
   },
 };
 
 export default function AnniversaryCakesLeedsPage() {
   return (
     <>
+      <Script
+        id="anniversary-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Anniversary Cakes Leeds",
+            description:
+              "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs. Order now for anniversary celebrations.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Anniversary Cake Design",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Anniversary Cake Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Ukrainian Anniversary Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Personalized Anniversary Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Anniversary Cake Delivery",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

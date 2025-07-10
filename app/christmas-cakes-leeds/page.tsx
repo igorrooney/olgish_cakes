@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
@@ -12,8 +13,8 @@ export const metadata: Metadata = {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    url: "https://olgishcakes.com/christmas-cakes-leeds",
-    images: ["https://olgishcakes.com/images/christmas-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/christmas-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -21,17 +22,47 @@ export const metadata: Metadata = {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    images: ["https://olgishcakes.com/images/christmas-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/christmas-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/christmas-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
   },
 };
 
 export default function ChristmasCakesLeedsPage() {
   return (
     <>
-      
+      <Script
+        id="christmas-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Christmas Cakes Leeds",
+            description:
+              "Traditional Ukrainian Christmas cakes in Leeds. Order festive cakes for the holidays.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Christmas Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
+          }),
+        }}
+      />
 
       <Box
         sx={{

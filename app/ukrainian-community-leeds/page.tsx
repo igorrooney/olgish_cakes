@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Community Leeds | Ukrainian Events & Support",
     description:
       "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
-    url: "https://olgishcakes.com/ukrainian-community-leeds",
-    images: ["https://olgishcakes.com/images/ukrainian-community-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/ukrainian-community-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-community-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Community Leeds | Ukrainian Events & Support",
     description:
       "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
-    images: ["https://olgishcakes.com/images/ukrainian-community-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-community-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-community-leeds",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-community-leeds",
   },
 };
 
@@ -33,7 +33,7 @@ export default function UkrainianCommunityLeedsPage() {
     name: "Ukrainian Community Leeds",
     description:
       "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
-    url: "https://olgishcakes.com/ukrainian-community-leeds",
+    url: "https://olgish-cakes.vercel.app/ukrainian-community-leeds",
   };
 
   return (

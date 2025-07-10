@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ImageIcon from "@mui/icons-material/Image";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { designTokens } from "@/lib/design-system";
 import { StyledTextField, PrimaryButton, BodyText, SectionHeading } from "@/lib/ui-components";
 
@@ -336,15 +337,16 @@ export function ContactForm({
                         mb: spacing.md,
                       }}
                     >
-                      <img
+                      <Image
                         src={previewUrl}
                         alt="Preview"
+                        width={200}
+                        height={200}
                         style={{
-                          width: "200px",
-                          height: "200px",
                           objectFit: "cover",
                           borderRadius: borderRadius.md,
                         }}
+                        priority
                       />
                       <IconButton
                         onClick={handleRemoveImage}

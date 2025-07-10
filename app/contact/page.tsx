@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Stack, Link, Grid, Paper, Divider } from "@mui/material";
 import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
+import { Breadcrumbs } from "../components/Breadcrumbs";
 // Import StructuredData
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
@@ -13,21 +14,100 @@ export const metadata: Metadata = {
   title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
   description:
     "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
-  // Add canonical URL if your domain is set up
-  // alternates: {
-  //   canonical: 'https://olgishcakes.com/contact',
-  // },
+  openGraph: {
+    title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+    description:
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+    url: "https://olgish-cakes.vercel.app/contact",
+    siteName: "Olgish Cakes",
+    images: [
+      {
+        url: "https://olgish-cakes.vercel.app/images/contact.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact Olgish Cakes - Leeds Ukrainian Bakery",
+      },
+    ],
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+    description:
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+    images: ["https://olgish-cakes.vercel.app/images/contact.jpg"],
+  },
+  alternates: {
+    canonical: "https://olgish-cakes.vercel.app/contact",
+  },
 };
 
 export default function ContactPage() {
   const contactEmail = "olgish.cakes@gmail.com"; // Updated email
-  const contactPhone = "+447867218194"; // Updated phone number
+  const contactPhone = "+44 786 721 8194"; // Updated phone number
   const whatsappLink = `https://wa.me/${contactPhone.replace(/\D/g, "")}`;
+
+  // Structured data for contact page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Olgish Cakes",
+    description:
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes.",
+    url: "https://olgish-cakes.vercel.app/contact",
+    mainEntity: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgish-cakes.vercel.app",
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          telephone: contactPhone,
+          contactType: "customer service",
+          availableLanguage: "English",
+          areaServed: "Leeds, UK",
+        },
+        {
+          "@type": "ContactPoint",
+          email: contactEmail,
+          contactType: "customer service",
+          availableLanguage: "English",
+        },
+      ],
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "107 Harehills Lane",
+        addressLocality: "Leeds",
+        postalCode: "LS8 4DN",
+        addressCountry: "GB",
+      },
+      sameAs: [
+        "https://www.instagram.com/olgish_cakes/",
+        "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
+      ],
+    },
+  };
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+      {/* Breadcrumbs */}
+      <Box sx={{ mb: 3 }}>
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Contact", href: "/contact" },
+          ]}
+        />
+      </Box>
+
       {/* Add structured data component */}
-      
 
       <Box
         sx={{
@@ -111,7 +191,7 @@ export default function ContactPage() {
                     <InstagramIcon fontSize="large" />
                   </Link>
                   <Link
-                    href="https://www.facebook.com/profile.php?id=61557043820222"
+                    href="https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB"
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"

@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-export const metadata = {
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Cakes Skipton | Ukrainian Cakes Skipton | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
     "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton. Order now for special occasions.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
-    url: "https://olgishcakes.com/cakes-skipton",
-    images: ["https://olgishcakes.com/images/cakes-skipton.jpg"],
+    url: "https://olgish-cakes.vercel.app/cakes-skipton",
+    images: ["https://olgish-cakes.vercel.app/images/cakes-skipton.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,18 +21,52 @@ export const metadata = {
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
-    images: ["https://olgishcakes.com/images/cakes-skipton.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-skipton.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-skipton",
+    canonical: "https://olgish-cakes.vercel.app/cakes-skipton",
   },
 };
 
 export default function CakesSkiptonPage() {
   return (
     <>
-      
-
+      <Script
+        id="cakes-skipton-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Skipton Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Skipton. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Skipton and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-skipton",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.9621",
+              longitude: "-2.0177",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Skipton",
+            },
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

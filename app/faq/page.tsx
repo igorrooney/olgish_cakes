@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Button } from "@mui/material";
 import { FAQItems } from "./FAQItems";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 import { getFaqs } from "../utils/fetchFaqs";
 
@@ -8,12 +9,53 @@ export const metadata: Metadata = {
   title: "FAQ | Olgish Cakes - Frequently Asked Questions",
   description:
     "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+  openGraph: {
+    title: "FAQ | Olgish Cakes - Frequently Asked Questions",
+    description:
+      "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+    url: "https://olgish-cakes.vercel.app/faq",
+    siteName: "Olgish Cakes",
+    images: [
+      {
+        url: "https://olgish-cakes.vercel.app/images/faq.jpg",
+        width: 1200,
+        height: 630,
+        alt: "FAQ - Frequently Asked Questions - Olgish Cakes",
+      },
+    ],
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FAQ | Olgish Cakes - Frequently Asked Questions",
+    description:
+      "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+    images: ["https://olgish-cakes.vercel.app/images/faq.jpg"],
+  },
+  alternates: {
+    canonical: "https://olgish-cakes.vercel.app/faq",
+  },
 };
 
 export default async function FAQPage() {
   try {
     const faqItems = await getFaqs();
     console.log("Fetched FAQs:", faqItems);
+
+    // Generate FAQ structured data
+    const faqStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqItems.map(faq => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    };
 
     if (!faqItems || faqItems.length === 0) {
       return (
@@ -45,7 +87,20 @@ export default async function FAQPage() {
         }}
       >
         <Container>
-          
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "FAQ", href: "/faq" },
+              ]}
+            />
+          </Box>
+
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+          />
 
           <Box sx={{ mb: 6, textAlign: "center" }}>
             <Typography

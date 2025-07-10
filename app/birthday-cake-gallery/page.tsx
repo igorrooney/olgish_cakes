@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Birthday Cake Gallery | Ukrainian Birthday Cakes | Olgish Cakes",
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
     title: "Birthday Cake Gallery | Ukrainian Birthday Cakes",
     description:
       "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
-    url: "https://olgishcakes.com/birthday-cake-gallery",
-    images: ["https://olgishcakes.com/images/birthday-cake-gallery.jpg"],
+    url: "https://olgish-cakes.vercel.app/birthday-cake-gallery",
+    images: ["https://olgish-cakes.vercel.app/images/birthday-cake-gallery.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +23,10 @@ export const metadata: Metadata = {
     title: "Birthday Cake Gallery | Ukrainian Birthday Cakes",
     description:
       "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
-    images: ["https://olgishcakes.com/images/birthday-cake-gallery.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/birthday-cake-gallery.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/birthday-cake-gallery",
+    canonical: "https://olgish-cakes.vercel.app/birthday-cake-gallery",
   },
 };
 
@@ -40,7 +41,7 @@ export default async function BirthdayCakeGalleryPage() {
     name: "Birthday Cake Gallery",
     description:
       "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
-    url: "https://olgishcakes.com/birthday-cake-gallery",
+    url: "https://olgish-cakes.vercel.app/birthday-cake-gallery",
   };
 
   return (
@@ -50,6 +51,15 @@ export default async function BirthdayCakeGalleryPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Birthday Cakes", href: "/birthday-cakes" },
+            { label: "Gallery", href: "/birthday-cake-gallery" },
+          ]}
+        />
+
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
           <Typography
             variant="h1"

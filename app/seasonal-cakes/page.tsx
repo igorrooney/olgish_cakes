@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -41,7 +42,67 @@ export const metadata: Metadata = {
 export default function SeasonalCakesPage() {
   return (
     <>
-      
+      <Script
+        id="seasonal-cakes-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Seasonal Ukrainian Cakes",
+            description:
+              "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Seasonal Cake Design",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Seasonal Cake Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Christmas Ukrainian Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Easter Ukrainian Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Holiday Ukrainian Cakes",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/seasonal-cakes",
+          }),
+        }}
+      />
 
       <Box
         sx={{

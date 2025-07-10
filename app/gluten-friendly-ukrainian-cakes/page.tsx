@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -13,11 +14,11 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
-    url: "https://olgishcakes.com/gluten-friendly-ukrainian-cakes",
+    url: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/gluten-friendly-ukrainian-cakes.jpg",
+        url: "https://olgish-cakes.vercel.app/images/gluten-friendly-ukrainian-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Gluten-Friendly Ukrainian Cakes Leeds - Olgish Cakes",
@@ -31,17 +32,37 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
-    images: ["https://olgishcakes.com/images/gluten-friendly-ukrainian-cakes.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-ukrainian-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/gluten-friendly-ukrainian-cakes",
+    canonical: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
   },
 };
 
 export default function GlutenFriendlyUkrainianCakesPage() {
   return (
     <>
-      
+      <Script
+        id="gluten-friendly-ukrainian-cakes-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Gluten-Friendly Ukrainian Cakes",
+            description:
+              "Order gluten-friendly Ukrainian cakes in Leeds. Safe for gluten-sensitive diets.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+            },
+            serviceType: "Gluten-Friendly Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
+          }),
+        }}
+      />
 
       <Box
         sx={{

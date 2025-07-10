@@ -1,6 +1,8 @@
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-export const metadata = {
+import type { Metadata } from "next";
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes | Olgish Cakes",
   description:
     "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs. Order now for graduation celebrations.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes",
     description:
       "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs.",
-    url: "https://olgishcakes.com/graduation-cakes-leeds",
-    images: ["https://olgishcakes.com/images/graduation-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/graduation-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/graduation-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,17 +21,47 @@ export const metadata = {
     title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes",
     description:
       "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs.",
-    images: ["https://olgishcakes.com/images/graduation-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/graduation-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/graduation-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/graduation-cakes-leeds",
   },
 };
 
 export default function GraduationCakesLeedsPage() {
   return (
     <>
-      
+      <Script
+        id="graduation-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Graduation Cakes Leeds",
+            description:
+              "Order custom graduation cakes in Leeds. Celebrate academic achievements with Ukrainian cakes.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Graduation Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/graduation-cakes-leeds",
+          }),
+        }}
+      />
 
       <Box
         sx={{

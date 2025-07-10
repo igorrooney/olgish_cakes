@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes",
     description:
       "Discover Ukrainian celebrations and festivals throughout the year. Learn about traditional cakes and desserts served during these special occasions.",
-    url: "https://olgishcakes.com/ukrainian-celebrations",
-    images: ["https://olgishcakes.com/images/ukrainian-celebrations.jpg"],
+    url: "https://olgish-cakes.vercel.app/ukrainian-celebrations",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-celebrations.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes",
     description:
       "Discover Ukrainian celebrations and festivals throughout the year. Learn about traditional cakes and desserts served during these special occasions.",
-    images: ["https://olgishcakes.com/images/ukrainian-celebrations.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-celebrations.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-celebrations",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-celebrations",
   },
 };
 
@@ -40,7 +40,7 @@ export default function UkrainianCelebrationsPage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/ukrainian-celebrations.jpg",
+    image: "https://olgish-cakes.vercel.app/images/ukrainian-celebrations.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

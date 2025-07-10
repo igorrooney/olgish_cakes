@@ -14,6 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds | Olgish Cakes",
@@ -25,11 +26,11 @@ export const metadata: Metadata = {
     title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions. Redeemable for any Ukrainian cake or custom cake design in Leeds.",
-    url: "https://olgishcakes.com/gift-cards",
+    url: "https://olgish-cakes.vercel.app/gift-cards",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/gift-cards.jpg",
+        url: "https://olgish-cakes.vercel.app/images/gift-cards.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Gift Cards - Olgish Cakes",
@@ -43,10 +44,10 @@ export const metadata: Metadata = {
     title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions.",
-    images: ["https://olgishcakes.com/images/gift-cards.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/gift-cards.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/gift-cards",
+    canonical: "https://olgish-cakes.vercel.app/gift-cards",
   },
 };
 
@@ -80,7 +81,37 @@ const giftCardOptions = [
 export default function GiftCardsPage() {
   return (
     <>
-      
+      <Script
+        id="gift-cards-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: "Ukrainian Cake Gift Cards",
+            description:
+              "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions. Redeemable for any Ukrainian cake or custom cake design in Leeds.",
+            brand: {
+              "@type": "Brand",
+              name: "Olgish Cakes",
+            },
+            offers: {
+              "@type": "Offer",
+              price: "25.00",
+              priceCurrency: "GBP",
+              availability: "https://schema.org/InStock",
+              seller: {
+                "@type": "Bakery",
+                name: "Olgish Cakes",
+                url: "https://olgish-cakes.vercel.app",
+              },
+            },
+            category: "Gift Cards",
+            image: "https://olgish-cakes.vercel.app/images/gift-cards.jpg",
+            url: "https://olgish-cakes.vercel.app/gift-cards",
+          }),
+        }}
+      />
 
       <Box
         sx={{

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
@@ -39,9 +40,113 @@ export const metadata: Metadata = {
 };
 
 export default function CustomCakeDesignPage() {
+  const designServices = [
+    {
+      name: "Wedding Cake Design",
+      description: "Elegant wedding cakes designed to match your wedding theme and personal style",
+      price: "From £80",
+    },
+    {
+      name: "Birthday Cake Design",
+      description: "Personalized birthday cakes with custom themes, colors, and decorations",
+      price: "From £35",
+    },
+    {
+      name: "Celebration Cake Design",
+      description: "Special occasion cakes for anniversaries, graduations, and milestones",
+      price: "From £45",
+    },
+    {
+      name: "Ukrainian Design Cakes",
+      description:
+        "Traditional Ukrainian-inspired designs with authentic flavors and cultural elements",
+      price: "From £50",
+    },
+  ];
+
+  const designProcess = [
+    {
+      step: "1",
+      title: "Initial Consultation",
+      description:
+        "We discuss your vision, theme, colors, guest count, and any special requirements.",
+    },
+    {
+      step: "2",
+      title: "Design Concept",
+      description:
+        "We create a custom design proposal with sketches, color schemes, and flavor combinations.",
+    },
+    {
+      step: "3",
+      title: "Tasting Session",
+      description:
+        "Sample our signature Ukrainian flavors and traditional cake options to find the perfect combination.",
+    },
+    {
+      step: "4",
+      title: "Final Design",
+      description: "We refine the design based on your feedback and create the final custom cake.",
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Cake Design Leeds",
+    description:
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
+    url: "https://olgish-cakes.vercel.app/custom-cake-design",
+    provider: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Leeds",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Custom Cake Design Services",
+      itemListElement: designServices.map(service => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          description: service.description,
+          category: "Custom Cake Design",
+          provider: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+        price: service.price,
+        priceCurrency: "GBP",
+        availability: "https://schema.org/InStock",
+      })),
+    },
+    mainEntity: {
+      "@type": "HowTo",
+      name: "Custom Cake Design Process",
+      description: "Our step-by-step process for creating custom cakes",
+      step: designProcess.map(process => ({
+        "@type": "HowToStep",
+        name: process.title,
+        text: process.description,
+      })),
+    },
+  };
+
   return (
     <>
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <Box
         sx={{
@@ -51,6 +156,14 @@ export default function CustomCakeDesignPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Custom Cake Design", href: "/custom-cake-design" },
+            ]}
+          />
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

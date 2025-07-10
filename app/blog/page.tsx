@@ -11,6 +11,7 @@ import {
   CardContent,
   CardMedia,
 } from "@mui/material";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -25,11 +26,11 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
       "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
-    url: "https://olgishcakes.com/blog",
+    url: "https://olgish-cakes.vercel.app/blog",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/ukrainian-baking-blog.jpg",
+        url: "https://olgish-cakes.vercel.app/images/ukrainian-baking-blog.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Recipes and Baking Blog - Honey Cake (Medovik) - Olgish Cakes",
@@ -44,10 +45,10 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
       "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
-    images: ["https://olgishcakes.com/images/ukrainian-baking-blog.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-baking-blog.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/blog",
+    canonical: "https://olgish-cakes.vercel.app/blog",
   },
 };
 
@@ -121,8 +122,51 @@ const blogPosts = [
 ];
 
 export default function BlogPage() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Ukrainian Baking Blog",
+    description:
+      "Discover authentic Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind traditional Ukrainian desserts.",
+    url: "https://olgish-cakes.vercel.app/blog",
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: blogPosts.map((post, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          url: `https://olgish-cakes.vercel.app/blog/${post.slug}`,
+          datePublished: post.date,
+          author: {
+            "@type": "Person",
+            name: "Olga",
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -131,6 +175,16 @@ export default function BlogPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Blog", href: "/blog" },
+              ]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

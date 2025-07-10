@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -51,8 +52,80 @@ export default async function WeddingCakesPage() {
       cake.description.toLowerCase().includes("wedding")
   );
 
+  const weddingServices = [
+    {
+      name: "Custom Design Wedding Cakes",
+      description:
+        "Every wedding cake is uniquely designed to match your wedding theme and personal style",
+      price: "From £80",
+    },
+    {
+      name: "Ukrainian Flavors Wedding Cakes",
+      description:
+        "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for a unique wedding experience",
+      price: "From £90",
+    },
+    {
+      name: "Wedding Cake Consultation",
+      description:
+        "Personal consultation to discuss design, flavors, and wedding cake requirements",
+      price: "Free",
+    },
+    {
+      name: "Wedding Cake Delivery",
+      description:
+        "Professional delivery and setup service to your wedding venue in Leeds and surrounding areas",
+      price: "From £20",
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Wedding Cakes Leeds",
+    description:
+      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
+    url: "https://olgish-cakes.vercel.app/wedding-cakes",
+    provider: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Leeds",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Wedding Cake Services",
+      itemListElement: weddingServices.map(service => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          description: service.description,
+          category: "Wedding Cake",
+          provider: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+        price: service.price,
+        priceCurrency: "GBP",
+        availability: "https://schema.org/InStock",
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -61,6 +134,16 @@ export default async function WeddingCakesPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Wedding Cakes", href: "/wedding-cakes" },
+              ]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

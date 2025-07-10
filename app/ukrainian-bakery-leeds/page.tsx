@@ -46,8 +46,78 @@ export default async function UkrainianBakeryLeedsPage() {
   const allCakes = await getAllCakes();
   const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    name: "Olgish Cakes - Ukrainian Bakery Leeds",
+    description:
+      "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
+    url: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://olgish-cakes.vercel.app/logo.png",
+    },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "107 Harehills Lane",
+      addressLocality: "Leeds",
+      postalCode: "LS8 4DN",
+      addressCountry: "GB",
+    },
+    telephone: "+44 786 721 8194",
+    email: "olgish.cakes@gmail.com",
+    openingHours: "Mo-Su 09:00-18:00",
+    servesCuisine: "Ukrainian",
+    priceRange: "££",
+    hasMenu: {
+      "@type": "Menu",
+      name: "Ukrainian Cakes Menu",
+      hasMenuSection: [
+        {
+          "@type": "MenuSection",
+          name: "Traditional Ukrainian Cakes",
+          hasMenuItem: [
+            {
+              "@type": "MenuItem",
+              name: "Medovik (Honey Cake)",
+              description:
+                "Traditional Ukrainian honey cake with delicate layers and sour cream filling",
+              offers: {
+                "@type": "Offer",
+                price: "25",
+                priceCurrency: "GBP",
+              },
+            },
+            {
+              "@type": "MenuItem",
+              name: "Kyiv Cake",
+              description:
+                "Legendary Ukrainian cake with meringue layers and chocolate-buttercream",
+              offers: {
+                "@type": "Offer",
+                price: "30",
+                priceCurrency: "GBP",
+              },
+            },
+          ],
+        },
+      ],
+    },
+    founder: {
+      "@type": "Person",
+      name: "Olga",
+      jobTitle: "Ukrainian Baker",
+      description:
+        "Professional Ukrainian baker bringing authentic recipes and techniques from Ukraine",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

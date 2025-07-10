@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -51,7 +53,74 @@ export default async function CelebrationCakesPage() {
 
   return (
     <>
-      
+      <Script
+        id="celebration-cakes-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Celebration Cakes Leeds",
+            description:
+              "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Celebration Cake Design",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Celebration Cake Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Anniversary Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Graduation Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Retirement Cakes",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Baby Shower Cakes",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/celebration-cakes",
+          }),
+        }}
+      />
 
       <Box
         sx={{
@@ -61,6 +130,16 @@ export default async function CelebrationCakesPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Celebration Cakes", href: "/celebration-cakes" },
+              ]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

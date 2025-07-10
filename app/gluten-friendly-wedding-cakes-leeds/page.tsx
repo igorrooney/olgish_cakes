@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
-    url: "https://olgishcakes.com/gluten-friendly-wedding-cakes-leeds",
-    images: ["https://olgishcakes.com/images/gluten-friendly-wedding-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-wedding-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
-    images: ["https://olgishcakes.com/images/gluten-friendly-wedding-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-wedding-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/gluten-friendly-wedding-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
   },
 };
 
@@ -39,8 +39,8 @@ export default async function GlutenFriendlyWeddingCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Gluten-Friendly Wedding Cakes in Leeds",
     description: "Traditional Ukrainian gluten-friendly wedding cakes in Leeds",
-    url: "https://olgishcakes.com/gluten-friendly-wedding-cakes-leeds",
-    telephone: "+44-113-123-4567",
+    url: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
+    telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Leeds",
@@ -57,7 +57,10 @@ export default async function GlutenFriendlyWeddingCakesPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

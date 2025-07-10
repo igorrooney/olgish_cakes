@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Flavor Guide | Ukrainian Cake Flavors",
     description:
       "Explore our Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
-    url: "https://olgishcakes.com/cake-flavor-guide",
-    images: ["https://olgishcakes.com/images/cake-flavor-guide.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-flavor-guide",
+    images: ["https://olgish-cakes.vercel.app/images/cake-flavor-guide.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Cake Flavor Guide | Ukrainian Cake Flavors",
     description:
       "Explore our Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
-    images: ["https://olgishcakes.com/images/cake-flavor-guide.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-flavor-guide.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-flavor-guide",
+    canonical: "https://olgish-cakes.vercel.app/cake-flavor-guide",
   },
 };
 
@@ -39,7 +39,7 @@ export default function CakeFlavorGuidePage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/cake-flavor-guide.jpg",
+    image: "https://olgish-cakes.vercel.app/images/cake-flavor-guide.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

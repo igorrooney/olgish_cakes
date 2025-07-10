@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Cake vs British Cake | Cake Comparison",
     description:
       "Compare Ukrainian cakes and British cakes. Discover the differences in ingredients, flavors, and traditions between these two cake cultures.",
-    url: "https://olgishcakes.com/ukrainian-cake-vs-british-cake",
-    images: ["https://olgishcakes.com/images/ukrainian-cake-vs-british-cake.jpg"],
+    url: "https://olgish-cakes.vercel.app/ukrainian-cake-vs-british-cake",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-vs-british-cake.jpg"],
     type: "article",
   },
   twitter: {
@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Cake vs British Cake | Cake Comparison",
     description:
       "Compare Ukrainian cakes and British cakes. Discover the differences in ingredients, flavors, and traditions between these two cake cultures.",
-    images: ["https://olgishcakes.com/images/ukrainian-cake-vs-british-cake.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-vs-british-cake.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-cake-vs-british-cake",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-cake-vs-british-cake",
   },
 };
 
@@ -38,7 +38,7 @@ export default function UkrainianVsBritishCakePage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/ukrainian-cake-vs-british-cake.jpg",
+    image: "https://olgish-cakes.vercel.app/images/ukrainian-cake-vs-british-cake.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

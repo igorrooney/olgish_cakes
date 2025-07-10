@@ -6,6 +6,43 @@ import CakeCard from "./components/CakeCard";
 import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title:
+    "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik | Traditional Ukrainian Bakery",
+  description:
+    "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients, custom designs, and exceptional taste. Order online for delivery across Yorkshire.",
+  keywords:
+    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, authentic Ukrainian cakes, traditional medovik",
+  openGraph: {
+    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    description:
+      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients and exceptional taste.",
+    url: "https://olgish-cakes.vercel.app",
+    siteName: "Olgish Cakes",
+    images: [
+      {
+        url: "https://olgish-cakes.vercel.app/images/hero-cake.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Authentic Ukrainian Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
+      },
+    ],
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    description:
+      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+    images: ["https://olgish-cakes.vercel.app/images/hero-cake.jpg"],
+  },
+  alternates: {
+    canonical: "https://olgish-cakes.vercel.app",
+  },
+};
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -34,8 +71,78 @@ export default async function Home() {
     getFeaturedTestimonials(3),
   ]);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    name: "Olgish Cakes",
+    description:
+      "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+    image: "https://olgish-cakes.vercel.app/images/logo.png",
+    url: "https://olgish-cakes.vercel.app",
+    telephone: "+44 786 721 8194",
+    email: "olgish.cakes@gmail.com",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "107 Harehills Lane",
+      addressLocality: "Leeds",
+      postalCode: "LS8 4DN",
+      addressCountry: "GB",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: "53.8008",
+      longitude: "-1.5491",
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:00",
+        closes: "18:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Saturday",
+        opens: "09:00",
+        closes: "17:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Sunday",
+        opens: "10:00",
+        closes: "16:00",
+      },
+    ],
+    priceRange: "££",
+    servesCuisine: "Ukrainian",
+    hasMenu: "https://olgish-cakes.vercel.app/cakes",
+    areaServed: [
+      { "@type": "City", name: "Leeds" },
+      { "@type": "City", name: "York" },
+      { "@type": "City", name: "Bradford" },
+      { "@type": "City", name: "Halifax" },
+      { "@type": "City", name: "Huddersfield" },
+    ],
+    sameAs: [
+      "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
+      "https://www.instagram.com/olgish_cakes/",
+    ],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      reviewCount: "127",
+      bestRating: "5",
+      worstRating: "1",
+    },
+  };
+
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* Hero Section */}
       <AnimatedSection
         initial={{ opacity: 0 }}

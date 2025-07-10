@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
       "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
-    url: "https://olgishcakes.com/ukrainian-cake-recipes",
+    url: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/ukrainian-cake-recipes.jpg",
+        url: "https://olgish-cakes.vercel.app/images/ukrainian-cake-recipes.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Recipes - Traditional Ukrainian Baking - Honey Cake (Medovik)",
@@ -33,16 +34,29 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
       "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/ukrainian-cake-recipes.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-recipes.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-cake-recipes",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
   },
 };
 
 export default function UkrainianCakeRecipesPage() {
   return (
     <>
+      <Script
+        id="ukrainian-cake-recipes-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "Ukrainian Cake Recipes",
+            description: "Explore traditional Ukrainian cake recipes and baking tips.",
+            url: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
+          }),
+        }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

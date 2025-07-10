@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Father's Day Cakes Leeds | Ukrainian Father's Day Cakes",
     description:
       "Special Ukrainian Father's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique Father's Day designs.",
-    url: "https://olgishcakes.com/father-day-cakes-leeds",
-    images: ["https://olgishcakes.com/images/fathers-day-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/fathers-day-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Father's Day Cakes Leeds | Ukrainian Father's Day Cakes",
     description:
       "Special Ukrainian Father's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique Father's Day designs.",
-    images: ["https://olgishcakes.com/images/fathers-day-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/fathers-day-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/father-day-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
   },
 };
 
@@ -38,8 +38,8 @@ export default async function FathersDayCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Father's Day Cakes in Leeds",
     description: "Traditional Ukrainian Father's Day cakes in Leeds",
-    url: "https://olgishcakes.com/father-day-cakes-leeds",
-    telephone: "+44-113-123-4567",
+    url: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
+    telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Leeds",
@@ -56,7 +56,10 @@ export default async function FathersDayCakesPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Size Guide | Ukrainian Cake Sizing Chart | Olgish Cakes",
@@ -12,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cake Size Guide | Ukrainian Cake Sizing Chart",
     description:
       "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
-    url: "https://olgishcakes.com/cake-size-guide",
-    images: ["https://olgishcakes.com/images/cake-size-guide.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-size-guide",
+    images: ["https://olgish-cakes.vercel.app/images/cake-size-guide.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,31 +22,14 @@ export const metadata: Metadata = {
     title: "Cake Size Guide | Ukrainian Cake Sizing Chart",
     description:
       "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
-    images: ["https://olgishcakes.com/images/cake-size-guide.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-size-guide.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-size-guide",
+    canonical: "https://olgish-cakes.vercel.app/cake-size-guide",
   },
 };
 
 export default function CakeSizeGuidePage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: "Cake Size Guide: How to Choose the Right Cake Size",
-    description: "Guide to choosing the perfect cake size for your celebration",
-    author: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-    datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/cake-size-guide.jpg",
-    publisher: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-  };
-
   const sizes = [
     { size: "6-inch", servings: "6-8", bestFor: "Small gatherings, couples", icon: "👫" },
     { size: "8-inch", servings: "10-12", bestFor: "Family celebrations", icon: "👨‍👩‍👧‍👦" },
@@ -57,9 +41,48 @@ export default function CakeSizeGuidePage() {
 
   return (
     <>
-      <script
+      <Script
+        id="cake-size-guide-structured-data"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Choose the Right Cake Size",
+            description:
+              "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
+            image: "https://olgish-cakes.vercel.app/images/cake-size-guide.jpg",
+            totalTime: "PT5M",
+            estimatedCost: {
+              "@type": "MonetaryAmount",
+              currency: "GBP",
+              value: "0",
+            },
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Determine Guest Count",
+                text: "Count the number of guests who will be eating cake at your event.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Choose Cake Size",
+                text: "6-inch serves 6-8 people, 8-inch serves 10-12, 10-inch serves 15-20, 12-inch serves 25-30, 2-tier serves 30-40, 3-tier serves 50+.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Consider Event Type",
+                text: "Small gatherings need 6-8 inch, family celebrations need 8-10 inch, large events need 12-inch or tiered cakes.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Order with Buffer",
+                text: "Order slightly larger than needed to ensure everyone gets a piece and for leftovers.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/cake-size-guide",
+          }),
+        }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

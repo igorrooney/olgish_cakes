@@ -5,6 +5,7 @@ import { groq } from "next-sanity";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableText } from "@portabletext/react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 
 interface BlogPost {
@@ -120,7 +121,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       images: [imageUrl],
     },
     alternates: {
-      canonical: `https://olgishcakes.co.uk/blog/${params.slug}`,
+      canonical: `https://olgish-cakes.vercel.app/blog/${params.slug}`,
     },
   };
 }
@@ -152,14 +153,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgishcakes.co.uk/logo.png",
+        url: "https://olgish-cakes.vercel.app/logo.png",
       },
     },
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://olgishcakes.co.uk/blog/${params.slug}`,
+      "@id": `https://olgish-cakes.vercel.app/blog/${params.slug}`,
     },
   };
 
@@ -215,10 +216,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Featured Image */}
           {post.featuredImage && (
             <div className="mb-8">
-              <img
+              <Image
                 src={imageUrl}
                 alt={post.title}
+                width={1200}
+                height={600}
                 className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+                priority
               />
             </div>
           )}
@@ -247,9 +251,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     }}
                   >
                     {relatedPost.featuredImage && (
-                      <img
+                      <Image
                         src={urlFor(relatedPost.featuredImage).url()}
                         alt={relatedPost.title}
+                        width={400}
+                        height={192}
                         className="w-full h-48 object-cover"
                       />
                     )}

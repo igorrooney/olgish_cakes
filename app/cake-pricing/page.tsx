@@ -52,9 +52,87 @@ export const metadata: Metadata = {
 };
 
 export default function CakePricingPage() {
+  const pricingData = {
+    traditionalCakes: [
+      { name: "Medovik (Honey Cake)", size: "6-inch", price: "£25", serves: "8-10 people" },
+      { name: "Medovik (Honey Cake)", size: "8-inch", price: "£35", serves: "12-15 people" },
+      { name: "Medovik (Honey Cake)", size: "10-inch", price: "£45", serves: "20-25 people" },
+      { name: "Kyiv Cake", size: "6-inch", price: "£30", serves: "8-10 people" },
+      { name: "Kyiv Cake", size: "8-inch", price: "£40", serves: "12-15 people" },
+      { name: "Kyiv Cake", size: "10-inch", price: "£50", serves: "20-25 people" },
+    ],
+    customCakes: [
+      { type: "Wedding Cakes", startingPrice: "£80", description: "Multi-tier designs" },
+      { type: "Birthday Cakes", startingPrice: "£35", description: "Custom designs" },
+      { type: "Celebration Cakes", startingPrice: "£45", description: "Special occasions" },
+    ],
+  };
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Ukrainian Cake Pricing Guide",
+    description:
+      "Transparent pricing for authentic Ukrainian cakes. Our pricing structure reflects the quality, craftsmanship, and cultural significance of traditional Ukrainian baking.",
+    url: "https://olgish-cakes.vercel.app/cake-pricing",
+    provider: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Leeds",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Ukrainian Cake Pricing",
+      itemListElement: [
+        ...pricingData.traditionalCakes.map(cake => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Product",
+            name: cake.name,
+            description: `${cake.name} - ${cake.size} size, serves ${cake.serves}`,
+            category: "Ukrainian Cake",
+            brand: {
+              "@type": "Brand",
+              name: "Olgish Cakes",
+            },
+          },
+          price: cake.price,
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+        })),
+        ...pricingData.customCakes.map(cake => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: cake.type,
+            description: cake.description,
+            category: "Custom Cake Design",
+            provider: {
+              "@type": "Organization",
+              name: "Olgish Cakes",
+            },
+          },
+          price: cake.startingPrice,
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+        })),
+      ],
+    },
+  };
+
   return (
     <>
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <Box
         sx={{

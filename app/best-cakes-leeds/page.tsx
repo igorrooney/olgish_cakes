@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, traditional recipes, and custom designs.",
     type: "website",
-    url: "https://olgishcakes.co.uk/best-cakes-leeds",
+    url: "https://olgish-cakes.vercel.app/best-cakes-leeds",
     images: [
       {
         url: "/images/cakes/best-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgishcakes.co.uk/best-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/best-cakes-leeds",
   },
 };
 
@@ -35,8 +35,8 @@ const structuredData = {
   name: "Olgish Cakes - Best Cakes in Leeds",
   description:
     "Award-winning Ukrainian cakes in Leeds. Traditional recipes, custom designs, and exceptional quality.",
-  url: "https://olgishcakes.co.uk",
-  telephone: "+44-113-123-4567",
+  url: "https://olgish-cakes.vercel.app",
+  telephone: "+44 786 721 8194",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Leeds",

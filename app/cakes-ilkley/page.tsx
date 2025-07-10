@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-export const metadata = {
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Cakes Ilkley | Ukrainian Cakes Ilkley | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
     "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Ilkley. Order now for special occasions.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Ilkley.",
-    url: "https://olgishcakes.com/cakes-ilkley",
-    images: ["https://olgishcakes.com/images/cakes-ilkley.jpg"],
+    url: "https://olgish-cakes.vercel.app/cakes-ilkley",
+    images: ["https://olgish-cakes.vercel.app/images/cakes-ilkley.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,17 +21,52 @@ export const metadata = {
     title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Ilkley.",
-    images: ["https://olgishcakes.com/images/cakes-ilkley.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-ilkley.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-ilkley",
+    canonical: "https://olgish-cakes.vercel.app/cakes-ilkley",
   },
 };
 
 export default function CakesIlkleyPage() {
   return (
     <>
-      
+      <Script
+        id="cakes-ilkley-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Ilkley Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-ilkley",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.9235",
+              longitude: "-1.8226",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Ilkley",
+            },
+          }),
+        }}
+      />
 
       <Box
         sx={{

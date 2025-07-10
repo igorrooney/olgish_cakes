@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 import { Button } from "@mui/material";
 
@@ -44,9 +45,80 @@ export default async function TraditionalUkrainianCakesPage() {
   const allCakes = await getAllCakes();
   const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
 
+  const traditionalCakeTypes = [
+    {
+      name: "Medovik (Honey Cake)",
+      description:
+        "The most beloved Ukrainian cake with delicate honey-infused layers and smooth sour cream filling",
+      price: "From £25",
+    },
+    {
+      name: "Kyiv Cake",
+      description:
+        "Legendary cake with crispy meringue layers, hazelnuts, and rich chocolate-buttercream frosting",
+      price: "From £30",
+    },
+    {
+      name: "Napoleon Cake",
+      description:
+        "Ukrainian version with multiple layers of flaky puff pastry and rich vanilla custard cream",
+      price: "From £28",
+    },
+    {
+      name: "Poppy Seed Roll (Makivnyk)",
+      description:
+        "Traditional Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
+      price: "From £20",
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Traditional Ukrainian Cakes",
+    description:
+      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+    url: "https://olgish-cakes.vercel.app/traditional-ukrainian-cakes",
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    itemListElement: traditionalCakeTypes.map((cake, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: cake.name,
+        description: cake.description,
+        category: "Traditional Ukrainian Cake",
+        brand: {
+          "@type": "Brand",
+          name: "Olgish Cakes",
+        },
+        offers: {
+          "@type": "Offer",
+          price: cake.price,
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+      },
+    })),
+  };
+
   return (
     <>
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <Box
         sx={{
@@ -56,6 +128,16 @@ export default async function TraditionalUkrainianCakesPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Traditional Ukrainian Cakes", href: "/traditional-ukrainian-cakes" },
+              ]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

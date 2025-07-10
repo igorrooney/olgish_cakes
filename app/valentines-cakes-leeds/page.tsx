@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs.",
     type: "website",
-    url: "https://olgishcakes.co.uk/valentines-cakes-leeds",
+    url: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
     images: [
       {
         url: "/images/cakes/valentine-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgishcakes.co.uk/valentines-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
   },
 };
 
@@ -38,9 +38,13 @@ const structuredData = {
   provider: {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
+    telephone: "+44 786 721 8194",
+    email: "olgish.cakes@gmail.com",
     address: {
       "@type": "PostalAddress",
+      streetAddress: "107 Harehills Lane",
       addressLocality: "Leeds",
+      postalCode: "LS8 4DN",
       addressRegion: "West Yorkshire",
       addressCountry: "GB",
     },
@@ -53,7 +57,7 @@ const structuredData = {
   areaServed: "Leeds",
   availableChannel: {
     "@type": "ServiceChannel",
-    serviceUrl: "https://olgishcakes.co.uk/valentines-cakes-leeds",
+    serviceUrl: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
   },
 };
 

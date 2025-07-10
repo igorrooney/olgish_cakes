@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Wedding Cake Gallery | Ukrainian Wedding Cakes | Olgish Cakes",
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
     title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    url: "https://olgishcakes.com/wedding-cake-gallery",
-    images: ["https://olgishcakes.com/images/wedding-cake-gallery.jpg"],
+    url: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
+    images: ["https://olgish-cakes.vercel.app/images/wedding-cake-gallery.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +23,10 @@ export const metadata: Metadata = {
     title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    images: ["https://olgishcakes.com/images/wedding-cake-gallery.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/wedding-cake-gallery.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/wedding-cake-gallery",
+    canonical: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
   },
 };
 
@@ -40,7 +41,7 @@ export default async function WeddingCakeGalleryPage() {
     name: "Wedding Cake Gallery",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    url: "https://olgishcakes.com/wedding-cake-gallery",
+    url: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
   };
 
   return (
@@ -50,6 +51,15 @@ export default async function WeddingCakeGalleryPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Wedding Cakes", href: "/wedding-cakes" },
+            { label: "Gallery", href: "/wedding-cake-gallery" },
+          ]}
+        />
+
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
           <Typography
             variant="h1"

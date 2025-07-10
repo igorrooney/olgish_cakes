@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Photography | Professional Cake Photos | Olgish Cakes",
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Photography | Professional Cake Photos",
     description:
       "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
-    url: "https://olgishcakes.com/cake-photography",
-    images: ["https://olgishcakes.com/images/cake-photography.jpg"],
+    url: "https://olgish-cakes.vercel.app/cake-photography",
+    images: ["https://olgish-cakes.vercel.app/images/cake-photography.jpg"],
     type: "website",
   },
   twitter: {
@@ -20,36 +21,76 @@ export const metadata: Metadata = {
     title: "Cake Photography | Professional Cake Photos",
     description:
       "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
-    images: ["https://olgishcakes.com/images/cake-photography.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cake-photography.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cake-photography",
+    canonical: "https://olgish-cakes.vercel.app/cake-photography",
   },
 };
 
 export default function CakePhotographyPage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: "Cake Photography",
-    description: "Professional cake photography in Leeds",
-    provider: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-    },
-    areaServed: {
-      "@type": "City",
-      name: "Leeds",
-    },
-    serviceType: "Cake Photography",
-    url: "https://olgishcakes.com/cake-photography",
-  };
-
   return (
     <>
-      <script
+      <Script
+        id="cake-photography-structured-data"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Cake Photography",
+            description:
+              "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Cake Photography",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Photography Services",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Professional Cake Photography",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Wedding Cake Photography",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Service",
+                    name: "Celebration Cake Photography",
+                  },
+                },
+              ],
+            },
+            url: "https://olgish-cakes.vercel.app/cake-photography",
+          }),
+        }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

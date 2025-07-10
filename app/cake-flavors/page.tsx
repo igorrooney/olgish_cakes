@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
@@ -41,8 +42,90 @@ export const metadata: Metadata = {
 };
 
 export default function CakeFlavorsPage() {
+  const cakeFlavors = [
+    {
+      name: "Medovik (Honey Cake)",
+      description:
+        "The most beloved Ukrainian cake, featuring delicate honey-infused layers with smooth sour cream filling.",
+      ingredients: ["Honey", "Flour", "Sour Cream", "Butter", "Eggs", "Sugar"],
+    },
+    {
+      name: "Kyiv Cake",
+      description:
+        "The legendary Kyiv cake features crispy meringue layers with hazelnuts, filled with rich chocolate-buttercream frosting.",
+      ingredients: ["Meringue", "Hazelnuts", "Chocolate", "Buttercream", "Eggs", "Sugar"],
+    },
+    {
+      name: "Napoleon Cake",
+      description:
+        "Ukrainian version of the classic Napoleon with multiple layers of flaky puff pastry and rich vanilla custard cream.",
+      ingredients: ["Puff Pastry", "Milk", "Vanilla", "Eggs", "Butter", "Flour"],
+    },
+    {
+      name: "Poppy Seed Roll (Makivnyk)",
+      description:
+        "Traditional Ukrainian poppy seed roll with soft yeast dough filled with generous sweetened poppy seed filling.",
+      ingredients: ["Poppy Seeds", "Yeast Dough", "Milk", "Butter", "Eggs", "Sugar"],
+    },
+    {
+      name: "Cherry Cake (Vyshnevyi)",
+      description:
+        "A delightful Ukrainian cherry cake featuring layers of soft sponge cake filled with sweet-tart cherry filling.",
+      ingredients: ["Cherries", "Sponge Cake", "Vanilla Cream", "Eggs", "Flour", "Sugar"],
+    },
+    {
+      name: "Apple Cake (Yabluchnyk)",
+      description:
+        "Traditional Ukrainian apple cake with layers of tender cake and spiced apple filling.",
+      ingredients: ["Apples", "Cinnamon", "Flour", "Butter", "Eggs", "Sugar"],
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Ukrainian Cake Flavors",
+    description:
+      "Discover the rich and diverse flavors of traditional Ukrainian cakes. Each flavor tells a story of Ukrainian culture, tradition, and the art of baking.",
+    url: "https://olgish-cakes.vercel.app/cake-flavors",
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    itemListElement: cakeFlavors.map((flavor, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: flavor.name,
+        description: flavor.description,
+        category: "Ukrainian Cake",
+        brand: {
+          "@type": "Brand",
+          name: "Olgish Cakes",
+        },
+        offers: {
+          "@type": "Offer",
+          availability: "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+      },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -51,6 +134,14 @@ export default function CakeFlavorsPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Cake Flavors", href: "/cake-flavors" },
+            ]}
+          />
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

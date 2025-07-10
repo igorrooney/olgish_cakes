@@ -2,6 +2,7 @@
   "name": "olgish_cakes",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -34,6 +35,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.28.0",
     "@vercel/analytics": "^1.5.0",
+    "critters": "^0.0.25",
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "framer-motion": "^11.0.3",

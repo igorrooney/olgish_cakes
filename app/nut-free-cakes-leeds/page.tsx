@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
-export const metadata = {
+import Script from "next/script";
+export const metadata: Metadata = {
   title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes | Olgish Cakes",
   description:
     "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for nut allergies.",
@@ -10,8 +12,8 @@ export const metadata = {
     title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
-    url: "https://olgishcakes.com/nut-free-cakes-leeds",
-    images: ["https://olgishcakes.com/images/nut-free-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/nut-free-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -19,17 +21,46 @@ export const metadata = {
     title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/nut-free-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/nut-free-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/nut-free-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
   },
 };
 
 export default function NutFreeCakesLeedsPage() {
   return (
     <>
-      
+      <Script
+        id="nut-free-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Nut-Free Cakes Leeds",
+            description: "Order nut-free Ukrainian cakes in Leeds. Safe for nut allergies.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+              telephone: "+44 786 721 8194",
+              email: "olgish.cakes@gmail.com",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "107 Harehills Lane",
+                addressLocality: "Leeds",
+                postalCode: "LS8 4DN",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
+            serviceType: "Nut-Free Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
+          }),
+        }}
+      />
 
       <Box
         sx={{

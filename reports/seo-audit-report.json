@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-07-10T22:02:25.995Z",
+  "summary": {
+    "technicalScore": "11/11 (100%)",
+    "contentScore": "85/86 (99%)",
+    "performanceScore": "6/6 (100%)",
+    "localScore": "4/6 (67%)",
+    "overallScore": "27/100"
+  },
+  "details": {
+    "technical": {
+      "sitemap": true,
+      "robots": true,
+      "sitemapTs": true,
+      "robotsTs": true,
+      "layout": true,
+      "manifest": true,
+      "favicon": true,
+      "security": true,
+      "ssl": true,
+      "mobileFriendly": true,
+      "structuredData": true
+    },
+    "content": {
+      "totalPages": 86,
+      "pagesWithMetadata": 84,
+      "pagesWithCanonical": 85,
+      "pagesWithOpenGraph": 86,
+      "pagesWithStructuredData": 84,
+      "pagesWithBreadcrumbs": 16,
+      "averageTitleLength": 74,
+      "averageDescriptionLength": 155,
+      "duplicateTitles": [],
+      "duplicateDescriptions": []
+    },
+    "performance": {
+      "imageOptimization": true,
+      "lazyLoading": true,
+      "compression": true,
+      "caching": true,
+      "coreWebVitals": {
+        "lcp": "Good",
+        "fid": "Good",
+        "cls": "Good"
+      },
+      "lighthouseScore": {
+        "performance": 92,
+        "accessibility": 95,
+        "bestPractices": 90,
+        "seo": 95
+      }
+    },
+    "local": {
+      "localBusinessSchema": true,
+      "addressConsistency": false,
+      "phoneConsistency": false,
+      "socialMediaLinks": true,
+      "googleMyBusiness": true,
+      "localKeywords": true
+    }
+  },
+  "recommendations": []
+}

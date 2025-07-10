@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
-    url: "https://olgishcakes.com/egg-free-cakes-leeds",
-    images: ["https://olgishcakes.com/images/egg-free-cakes-leeds.jpg"],
+    url: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
+    images: ["https://olgish-cakes.vercel.app/images/egg-free-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/egg-free-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/egg-free-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/egg-free-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
   },
 };
 
@@ -38,8 +38,8 @@ export default async function EggFreeCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Egg-Free Cakes in Leeds",
     description: "Traditional Ukrainian egg-free cakes in Leeds",
-    url: "https://olgishcakes.com/egg-free-cakes-leeds",
-    telephone: "+44-113-123-4567",
+    url: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
+    telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Leeds",
@@ -56,7 +56,10 @@ export default async function EggFreeCakesPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>

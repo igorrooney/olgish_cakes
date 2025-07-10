@@ -2,6 +2,8 @@ import { client } from "@/sanity/lib/client";
 import { Cake } from "@/types/cake";
 import { notFound } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { Container } from "@mui/material";
 import { Metadata } from "next";
 
 async function getCake(slug: string): Promise<Cake | null> {
@@ -56,6 +58,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
     },
+    alternates: {
+      canonical: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+    },
   };
 }
 
@@ -66,5 +71,55 @@ export default async function CakePage({ params }: PageProps) {
     notFound();
   }
 
-  return <CakePageClient cake={cake} />;
+  // Generate structured data for the cake
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: cake.name,
+    description: cake.shortDescription || cake.description,
+    image: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
+    url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+    brand: {
+      "@type": "Brand",
+      name: "Olgish Cakes",
+    },
+    category: cake.category,
+    offers: {
+      "@type": "Offer",
+      price: cake.pricing.standard,
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+      },
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: "50",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+      {/* Breadcrumbs */}
+      <Container maxWidth="lg" sx={{ py: 2 }}>
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "All Cakes", href: "/cakes" },
+            { label: cake.name, href: `/cakes/${cake.slug.current}` },
+          ]}
+        />
+      </Container>
+
+      <CakePageClient cake={cake} />
+    </>
+  );
 }

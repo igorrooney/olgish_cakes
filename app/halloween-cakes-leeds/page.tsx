@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Order spooky Halloween cakes in Leeds. Pumpkin cakes, ghost designs, and Halloween-themed creations.",
     type: "website",
-    url: "https://olgishcakes.co.uk/halloween-cakes-leeds",
+    url: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
     images: [
       {
         url: "/images/cakes/halloween-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgishcakes.co.uk/halloween-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
   },
 };
 
@@ -38,9 +38,13 @@ const structuredData = {
   provider: {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
+    telephone: "+44 786 721 8194",
+    email: "olgish.cakes@gmail.com",
     address: {
       "@type": "PostalAddress",
+      streetAddress: "107 Harehills Lane",
       addressLocality: "Leeds",
+      postalCode: "LS8 4DN",
       addressRegion: "West Yorkshire",
       addressCountry: "GB",
     },
@@ -53,7 +57,7 @@ const structuredData = {
   areaServed: "Leeds",
   availableChannel: {
     "@type": "ServiceChannel",
-    serviceUrl: "https://olgishcakes.co.uk/halloween-cakes-leeds",
+    serviceUrl: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
   },
 };
 

@@ -61,7 +61,7 @@ export default function AboutPage() {
           image: "https://olgish-cakes.vercel.app/images/about-baker.jpg",
           "@id": "https://olgish-cakes.vercel.app",
           url: "https://olgish-cakes.vercel.app",
-          telephone: "+447867218194",
+          telephone: "+44 786 721 8194",
           address: {
             "@type": "PostalAddress",
             streetAddress: "107 Harehills Lane",
@@ -82,7 +82,10 @@ export default function AboutPage() {
             jobTitle: "Professional Baker",
             description: "A professionally-trained Ukrainian baker who moved to Leeds in 2022",
           },
-          sameAs: ["https://www.instagram.com/olgish_cakes/"],
+          sameAs: [
+            "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
+            "https://www.instagram.com/olgish_cakes/",
+          ],
           priceRange: "££",
           servesCuisine: "Ukrainian",
           offers: [

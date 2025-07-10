@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders | Olgish Cakes",
@@ -40,7 +41,59 @@ export const metadata: Metadata = {
 export default function HowToOrderPage() {
   return (
     <>
-      
+      <Script
+        id="how-to-order-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Order a Ukrainian Cake",
+            description:
+              "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information. Easy cake ordering in Leeds.",
+            image: "https://olgish-cakes.vercel.app/images/how-to-order.jpg",
+            totalTime: "PT30M",
+            estimatedCost: {
+              "@type": "MonetaryAmount",
+              currency: "GBP",
+              value: "25",
+            },
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Initial Contact",
+                text: "Contact us via phone (+44 786 721 8194), email (olgish.cakes@gmail.com), or our online form to discuss your cake requirements.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Consultation",
+                text: "We'll discuss your vision, preferences, dietary requirements, and event details including cake design, theme, flavor, and size selection.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Design & Quote",
+                text: "We'll create a custom design proposal and provide a detailed quote with pricing breakdown and delivery details.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Confirmation & Deposit",
+                text: "Once you're happy with the design and quote, we'll confirm your order. A 50% deposit is required to secure your order.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Cake Creation",
+                text: "We'll create your cake with regular updates and photos during the process, including quality control checks.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Delivery & Payment",
+                text: "Your cake is delivered fresh and beautiful, with final payment due upon delivery.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/how-to-order",
+          }),
+        }}
+      />
 
       <Box
         sx={{
@@ -138,7 +191,7 @@ export default function HowToOrderPage() {
                     "Contact us via phone, email, or our online form to discuss your cake requirements",
                   details: [
                     "Call us: +44 786 721 8194",
-                    "Email: info@olgishcakes.com",
+                    "Email: olgish.cakes@gmail.com",
                     "Online contact form",
                     "WhatsApp messaging available",
                   ],

@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and surrounding areas.",
-    url: "https://olgishcakes.com/cakes-wakefield",
+    url: "https://olgish-cakes.vercel.app/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/cakes-wakefield.jpg",
+        url: "https://olgish-cakes.vercel.app/images/cakes-wakefield.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cakes Wakefield - Olgish Cakes Delivery Service",
@@ -35,10 +36,10 @@ export const metadata: Metadata = {
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/cakes-wakefield.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-wakefield.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-wakefield",
+    canonical: "https://olgish-cakes.vercel.app/cakes-wakefield",
   },
 };
 
@@ -47,7 +48,43 @@ export default async function CakesWakefieldPage() {
 
   return (
     <>
-      
+      <Script
+        id="cakes-wakefield-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Wakefield Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Wakefield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Wakefield and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-wakefield",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.6833",
+              longitude: "-1.4977",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Wakefield",
+            },
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

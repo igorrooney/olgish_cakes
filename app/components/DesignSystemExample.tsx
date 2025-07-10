@@ -159,7 +159,7 @@ export function DesignSystemExample() {
 
           <Grid container spacing={spacing.lg}>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Email />} text="hello@olgishcakes.com" />
+              <ContactInfo icon={<Email />} text="olgish.cakes@gmail.com" />
             </Grid>
             <Grid item xs={12} md={6}>
               <ContactInfo icon={<Phone />} text="+44 123 456 7890" />

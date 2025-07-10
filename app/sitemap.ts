@@ -10,7 +10,7 @@ async function getCakes() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://olgishcakes.co.uk"; // Replace with your actual domain
+  const baseUrl = "https://olgish-cakes.vercel.app";
   const cakes = await getCakes();
 
   const cakeRoutes = cakes.map((cake: { slug: { current: string }; _updatedAt: string }) => ({

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
     description:
       "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural significance of Ukrainian desserts.",
-    url: "https://olgishcakes.com/ukrainian-baking-traditions",
-    images: ["https://olgishcakes.com/images/ukrainian-baking-traditions.jpg"],
+    url: "https://olgish-cakes.vercel.app/ukrainian-baking-traditions",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-baking-traditions.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
     description:
       "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural significance of Ukrainian desserts.",
-    images: ["https://olgishcakes.com/images/ukrainian-baking-traditions.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-baking-traditions.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-baking-traditions",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-baking-traditions",
   },
 };
 
@@ -40,7 +40,7 @@ export default function UkrainianBakingTraditionsPage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/ukrainian-baking-traditions.jpg",
+    image: "https://olgish-cakes.vercel.app/images/ukrainian-baking-traditions.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

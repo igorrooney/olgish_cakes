@@ -9,13 +9,13 @@ export function StructuredData() {
       "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
     image: "https://olgish-cakes.vercel.app/images/logo.png",
     url: "https://olgish-cakes.vercel.app",
-    telephone: "+44 113 123 4567", // Update with actual phone number
-    email: "hello@olgishcakes.com", // Update with actual email
+    telephone: "+44 786 721 8194",
+    email: "olgish.cakes@gmail.com",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "123 Baker Street", // Update with actual address
+      streetAddress: "107 Harehills Lane",
       addressLocality: "Leeds",
-      postalCode: "LS1 1AA", // Update with actual postcode
+      postalCode: "LS8 4DN",
       addressCountry: "GB",
     },
     geo: {
@@ -69,8 +69,8 @@ export function StructuredData() {
       },
     ],
     sameAs: [
-      "https://www.facebook.com/olgishcakes",
-      "https://www.instagram.com/olgishcakes",
+      "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
+      "https://www.instagram.com/olgish_cakes/",
       "https://www.google.com/maps?cid=YOUR_GOOGLE_MY_BUSINESS_ID",
     ],
     aggregateRating: {

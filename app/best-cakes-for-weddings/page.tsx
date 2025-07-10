@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes | Olgish Cakes",
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
       "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice for choosing your perfect wedding cake.",
-    url: "https://olgishcakes.com/best-cakes-for-weddings",
+    url: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/best-cakes-for-weddings.jpg",
+        url: "https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg",
         width: 1200,
         height: 630,
         alt: "Best Cakes for Weddings - Wedding Cake Guide",
@@ -32,10 +33,10 @@ export const metadata: Metadata = {
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
       "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice.",
-    images: ["https://olgishcakes.com/images/best-cakes-for-weddings.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/best-cakes-for-weddings",
+    canonical: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
   },
 };
 
@@ -47,6 +48,55 @@ export default async function BestCakesForWeddingsPage() {
 
   return (
     <>
+      <Script
+        id="best-cakes-for-weddings-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Choose the Best Wedding Cake",
+            description:
+              "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice for choosing your perfect wedding cake.",
+            image: "https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg",
+            totalTime: "PT15M",
+            estimatedCost: {
+              "@type": "MonetaryAmount",
+              currency: "GBP",
+              value: "180",
+            },
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Consider Your Wedding Style",
+                text: "Think about your wedding theme, venue, and overall style to choose a cake that complements your celebration.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Choose Cake Type",
+                text: "Select from traditional Ukrainian honey cake, elegant Kyiv cake, classic wedding cake, or modern naked cake.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Determine Serving Size",
+                text: "Calculate the number of guests and choose appropriate serving sizes ranging from 60-120 guests.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Set Your Budget",
+                text: "Wedding cakes range from £180-£250+ depending on size, design complexity, and ingredients.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Book Early",
+                text: "Order your wedding cake 2-3 months in advance to ensure availability and allow time for custom design.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

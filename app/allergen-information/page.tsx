@@ -39,9 +39,90 @@ export const metadata: Metadata = {
 };
 
 export default function AllergenInformationPage() {
+  const allergenData = [
+    {
+      name: "Gluten",
+      description: "Found in wheat flour, present in most traditional Ukrainian cakes",
+      commonIn: ["Medovik", "Kyiv Cake", "Napoleon", "Poppy Seed Roll"],
+      alternatives: "Gluten-friendly flour options available",
+    },
+    {
+      name: "Dairy",
+      description: "Found in butter, milk, cream, and sour cream used in Ukrainian recipes",
+      commonIn: ["All traditional cakes", "Cream fillings", "Buttercream"],
+      alternatives: "Dairy-free alternatives available",
+    },
+    {
+      name: "Eggs",
+      description: "Used in most cake recipes for structure and richness",
+      commonIn: ["All traditional cakes", "Meringue", "Custard"],
+      alternatives: "Egg-free options available",
+    },
+    {
+      name: "Nuts",
+      description: "Hazelnuts in Kyiv cake, almonds in some traditional recipes",
+      commonIn: ["Kyiv Cake", "Some specialty cakes"],
+      alternatives: "Nut-free versions available",
+    },
+    {
+      name: "Soy",
+      description: "May be present in some ingredients and chocolate products",
+      commonIn: ["Chocolate products", "Some fillings"],
+      alternatives: "Soy-free options available",
+    },
+    {
+      name: "Sulphites",
+      description: "May be present in dried fruits and some preservatives",
+      commonIn: ["Dried fruit fillings", "Some traditional recipes"],
+      alternatives: "Sulphite-free options available",
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Allergen Information - Olgish Cakes",
+    description:
+      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
+    url: "https://olgish-cakes.vercel.app/allergen-information",
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    mainEntity: {
+      "@type": "Article",
+      headline: "Allergen Information",
+      description:
+        "Complete allergen information for our Ukrainian cakes. Safe cake options for all dietary requirements.",
+      author: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+      },
+      datePublished: "2024-01-01",
+      dateModified: new Date().toISOString().split("T")[0],
+      articleBody: allergenData
+        .map(
+          allergen =>
+            `${allergen.name}: ${allergen.description}. Common in: ${allergen.commonIn.join(", ")}. Alternatives: ${allergen.alternatives}`
+        )
+        .join(" "),
+    },
+  };
+
   return (
     <>
-      {/* Structured data removed */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

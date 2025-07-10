@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Wedding Traditions | Traditional Ukrainian Wedding Cakes",
     description:
       "Discover traditional Ukrainian wedding customs and the special cakes served at Ukrainian weddings. Learn about wedding traditions and celebration cakes.",
-    url: "https://olgishcakes.com/ukrainian-wedding-traditions",
-    images: ["https://olgishcakes.com/images/ukrainian-wedding-traditions.jpg"],
+    url: "https://olgish-cakes.vercel.app/ukrainian-wedding-traditions",
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-wedding-traditions.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Wedding Traditions | Traditional Ukrainian Wedding Cakes",
     description:
       "Discover traditional Ukrainian wedding customs and the special cakes served at Ukrainian weddings. Learn about wedding traditions and celebration cakes.",
-    images: ["https://olgishcakes.com/images/ukrainian-wedding-traditions.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/ukrainian-wedding-traditions.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/ukrainian-wedding-traditions",
+    canonical: "https://olgish-cakes.vercel.app/ukrainian-wedding-traditions",
   },
 };
 
@@ -40,7 +40,7 @@ export default function UkrainianWeddingTraditionsPage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/ukrainian-wedding-traditions.jpg",
+    image: "https://olgish-cakes.vercel.app/images/ukrainian-wedding-traditions.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips | Olgish Cakes",
@@ -40,6 +41,74 @@ export const metadata: Metadata = {
 export default function CakeCareStoragePage() {
   return (
     <>
+      <Script
+        id="cake-care-storage-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: "How to Care for and Store Ukrainian Cakes",
+            description:
+              "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh. Professional cake storage advice.",
+            image: "https://olgish-cakes.vercel.app/images/cake-care-storage.jpg",
+            totalTime: "PT10M",
+            estimatedCost: {
+              "@type": "MonetaryAmount",
+              currency: "GBP",
+              value: "0",
+            },
+            supply: [
+              {
+                "@type": "HowToSupply",
+                name: "Airtight container or cake box",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Plastic wrap",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Aluminum foil",
+              },
+              {
+                "@type": "HowToSupply",
+                name: "Refrigerator",
+              },
+            ],
+            tool: [
+              {
+                "@type": "HowToTool",
+                name: "Cake dome",
+              },
+            ],
+            step: [
+              {
+                "@type": "HowToStep",
+                name: "Choose Storage Method",
+                text: "Decide whether to store at room temperature (24 hours), refrigerated (5-7 days), or frozen (2-3 months) based on your needs.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Prepare for Storage",
+                text: "Wrap the cake in plastic wrap or place in an airtight container to prevent drying out and absorbing odors.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Store Appropriately",
+                text: "Place in refrigerator at 2-4°C, freezer at -18°C, or cool room temperature location away from direct sunlight.",
+              },
+              {
+                "@type": "HowToStep",
+                name: "Serve Properly",
+                text: "Bring to room temperature before serving for best flavor and texture.",
+              },
+            ],
+            url: "https://olgish-cakes.vercel.app/cake-care-storage",
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cakes Halifax | Ukrainian Cakes Halifax | Traditional Ukrainian Cakes | Olgish Cakes",
@@ -14,8 +15,8 @@ export const metadata: Metadata = {
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Halifax.",
-    url: "https://olgishcakes.com/cakes-halifax",
-    images: ["https://olgishcakes.com/images/cakes-halifax.jpg"],
+    url: "https://olgish-cakes.vercel.app/cakes-halifax",
+    images: ["https://olgish-cakes.vercel.app/images/cakes-halifax.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +24,10 @@ export const metadata: Metadata = {
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Halifax.",
-    images: ["https://olgishcakes.com/images/cakes-halifax.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/cakes-halifax.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/cakes-halifax",
+    canonical: "https://olgish-cakes.vercel.app/cakes-halifax",
   },
 };
 
@@ -35,7 +36,43 @@ export default async function CakesHalifaxPage() {
 
   return (
     <>
-      
+      <Script
+        id="cakes-halifax-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Halifax Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-halifax",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.7224",
+              longitude: "-1.8577",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            areaServed: {
+              "@type": "City",
+              name: "Halifax",
+            },
+          }),
+        }}
+      />
+
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",

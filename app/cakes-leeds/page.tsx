@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes | Olgish Cakes",
@@ -44,7 +45,69 @@ export default async function CakesLeedsPage() {
 
   return (
     <>
-      
+      <Script
+        id="cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes - Leeds Ukrainian Bakery",
+            description:
+              "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and surrounding areas.",
+            url: "https://olgish-cakes.vercel.app/cakes-leeds",
+            telephone: "+44 786 721 8194",
+            email: "olgish.cakes@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "107 Harehills Lane",
+              addressLocality: "Leeds",
+              postalCode: "LS8 4DN",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "53.8008",
+              longitude: "-1.5491",
+            },
+            openingHours: "Mo-Su 09:00-18:00",
+            priceRange: "££",
+            servesCuisine: "Ukrainian",
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Ukrainian Cakes",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "Ukrainian Honey Cake",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "Kyiv Cake",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "Custom Wedding Cakes",
+                  },
+                },
+              ],
+            },
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+          }),
+        }}
+      />
 
       <Box
         sx={{

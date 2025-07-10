@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio | Olgish Cakes",
@@ -42,9 +43,48 @@ export const metadata: Metadata = {
 export default async function CakeGalleryPage() {
   const allCakes = await getAllCakes();
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: "Cake Gallery - Ukrainian Cake Designs",
+    description:
+      "Explore our beautiful collection of Ukrainian cakes and custom designs. From traditional Ukrainian desserts to modern celebration cakes.",
+    url: "https://olgish-cakes.vercel.app/cake-gallery",
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: allCakes.map((cake, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Product",
+          name: cake.name,
+          description: cake.description,
+          image: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
+          url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+          category: cake.category,
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes",
+          },
+        },
+      })),
+    },
+  };
+
   return (
     <>
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       <Box
         sx={{
@@ -54,6 +94,14 @@ export default async function CakeGalleryPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Cake Gallery", href: "/cake-gallery" },
+            ]}
+          />
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

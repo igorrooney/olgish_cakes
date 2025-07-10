@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
     description:
       "Discover the best Ukrainian cakes for birthdays. Our guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
-    url: "https://olgishcakes.com/best-cakes-for-birthdays",
-    images: ["https://olgishcakes.com/images/best-cakes-for-birthdays.jpg"],
+    url: "https://olgish-cakes.vercel.app/best-cakes-for-birthdays",
+    images: ["https://olgish-cakes.vercel.app/images/best-cakes-for-birthdays.jpg"],
     type: "article",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
     description:
       "Discover the best Ukrainian cakes for birthdays. Our guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
-    images: ["https://olgishcakes.com/images/best-cakes-for-birthdays.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/best-cakes-for-birthdays.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/best-cakes-for-birthdays",
+    canonical: "https://olgish-cakes.vercel.app/best-cakes-for-birthdays",
   },
 };
 
@@ -43,7 +43,7 @@ export default async function BestCakesForBirthdaysPage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgishcakes.com/images/best-cakes-for-birthdays.jpg",
+    image: "https://olgish-cakes.vercel.app/images/best-cakes-for-birthdays.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

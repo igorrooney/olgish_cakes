@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -51,8 +52,76 @@ export default async function BirthdayCakesPage() {
       cake.description.toLowerCase().includes("birthday")
   );
 
+  const birthdayServices = [
+    {
+      name: "Children's Birthday Cakes",
+      description: "Colorful, fun, and themed birthday cakes perfect for children's parties",
+      price: "From £35",
+    },
+    {
+      name: "Adult Birthday Cakes",
+      description: "Elegant and sophisticated birthday cakes for adults",
+      price: "From £45",
+    },
+    {
+      name: "Themed Birthday Cakes",
+      description: "Custom themed cakes based on hobbies and interests",
+      price: "From £50",
+    },
+    {
+      name: "Ukrainian Birthday Cakes",
+      description: "Traditional Ukrainian birthday cakes like honey cake (Medovik)",
+      price: "From £40",
+    },
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Birthday Cakes Leeds",
+    description:
+      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages with traditional Ukrainian flavors like honey cake (Medovik).",
+    url: "https://olgish-cakes.vercel.app/birthday-cakes",
+    provider: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgish-cakes.vercel.app/logo.png",
+      },
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Leeds",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Birthday Cake Services",
+      itemListElement: birthdayServices.map(service => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          description: service.description,
+          category: "Birthday Cake",
+          provider: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+          },
+        },
+        price: service.price,
+        priceCurrency: "GBP",
+        availability: "https://schema.org/InStock",
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Box
         sx={{
           background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
@@ -61,6 +130,16 @@ export default async function BirthdayCakesPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Birthday Cakes", href: "/birthday-cakes" },
+              ]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

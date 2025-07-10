@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@mui/material";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
@@ -27,11 +28,11 @@ export const metadata: Metadata = {
     title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service for meetings, conferences, and office celebrations.",
-    url: "https://olgishcakes.com/corporate-cakes-leeds",
+    url: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.com/images/corporate-cakes-leeds.jpg",
+        url: "https://olgish-cakes.vercel.app/images/corporate-cakes-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Corporate Cakes Leeds - Business Catering by Olgish Cakes",
@@ -45,10 +46,10 @@ export const metadata: Metadata = {
     title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service.",
-    images: ["https://olgishcakes.com/images/corporate-cakes-leeds.jpg"],
+    images: ["https://olgish-cakes.vercel.app/images/corporate-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgishcakes.com/corporate-cakes-leeds",
+    canonical: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
   },
 };
 
@@ -129,7 +130,26 @@ const corporatePackages = [
 export default function CorporateCakesLeedsPage() {
   return (
     <>
-      
+      <Script
+        id="corporate-cakes-leeds-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Corporate Cakes Leeds",
+            description: "Custom corporate cakes for business events in Leeds.",
+            provider: {
+              "@type": "Bakery",
+              name: "Olgish Cakes",
+              url: "https://olgish-cakes.vercel.app",
+            },
+            serviceType: "Corporate Cake Design",
+            areaServed: { "@type": "City", name: "Leeds" },
+            url: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
+          }),
+        }}
+      />
 
       <Box
         sx={{
