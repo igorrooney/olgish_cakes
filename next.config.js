@@ -12,7 +12,11 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+    formats: ["image/webp", "image/avif"],
   },
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: false,
 };
 
-module.exports = nextConfig;
+export default nextConfig;
