@@ -5,6 +5,7 @@ import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 import Script from "next/script";
+import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
@@ -48,7 +49,7 @@ export default async function CelebrationCakesPage() {
     cake =>
       cake.category === "custom" ||
       cake.name.toLowerCase().includes("celebration") ||
-      cake.description.toLowerCase().includes("celebration")
+      blocksToText(cake.description).toLowerCase().includes("celebration")
   );
 
   return (

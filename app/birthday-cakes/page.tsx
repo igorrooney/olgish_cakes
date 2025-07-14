@@ -4,6 +4,7 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
+import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
@@ -49,7 +50,7 @@ export default async function BirthdayCakesPage() {
     cake =>
       cake.category === "custom" ||
       cake.name.toLowerCase().includes("birthday") ||
-      cake.description.toLowerCase().includes("birthday")
+      blocksToText(cake.description).toLowerCase().includes("birthday")
   );
 
   const birthdayServices = [
