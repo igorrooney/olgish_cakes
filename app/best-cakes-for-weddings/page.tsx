@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -105,6 +106,14 @@ export default async function BestCakesForWeddingsPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[{ label: "Home", href: "/" }, { label: "Best Cakes for Weddings" }]}
+            />
+          </Box>
+
+          {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography
               variant="h1"

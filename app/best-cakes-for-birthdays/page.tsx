@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide | Olgish Cakes",
@@ -57,6 +58,13 @@ export default async function BestCakesForBirthdaysPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Breadcrumbs */}
+        <Box sx={{ mb: 3 }}>
+          <Breadcrumbs
+            items={[{ label: "Home", href: "/" }, { label: "Best Cakes for Birthdays" }]}
+          />
+        </Box>
+
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
           <Typography

@@ -4,6 +4,7 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Cakes Halifax | Ukrainian Cakes Halifax | Traditional Ukrainian Cakes | Olgish Cakes",
@@ -81,6 +82,12 @@ export default async function CakesHalifaxPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cakes Halifax" }]} />
+          </Box>
+
+          {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography
               variant="h1"

@@ -1,7 +1,21 @@
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Chip,
+  Button,
+  Alert,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+} from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders | Olgish Cakes",
@@ -103,6 +117,11 @@ export default function HowToOrderPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "How to Order" }]} />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

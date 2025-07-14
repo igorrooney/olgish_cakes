@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Ilkley | Ukrainian Cakes Ilkley | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
@@ -76,6 +77,11 @@ export default function CakesIlkleyPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cakes Ilkley" }]} />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

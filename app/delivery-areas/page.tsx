@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+  Chip,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+} from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery | Olgish Cakes",
@@ -125,6 +138,11 @@ export default function DeliveryAreasPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Delivery Areas" }]} />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

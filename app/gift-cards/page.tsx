@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds | Olgish Cakes",
@@ -121,6 +122,11 @@ export default function GiftCardsPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Gift Cards" }]} />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

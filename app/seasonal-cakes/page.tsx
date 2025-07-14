@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
+import { getAllCakes } from "../utils/fetchCakes";
+import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
@@ -39,7 +42,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SeasonalCakesPage() {
+export default async function SeasonalCakesPage() {
+  const cakes = await getAllCakes();
+
   return (
     <>
       <Script
@@ -111,9 +116,14 @@ export default function SeasonalCakesPage() {
           py: { xs: 4, md: 8 },
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Seasonal Cakes" }]} />
+          </Box>
+
           {/* Hero Section */}
-          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
             <Typography
               variant="h1"
               component="h1"

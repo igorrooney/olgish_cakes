@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@mui/material";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost | Olgish Cakes",
@@ -142,6 +143,11 @@ export default function CakePricingPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cake Pricing" }]} />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

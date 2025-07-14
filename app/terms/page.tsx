@@ -10,6 +10,7 @@ import {
   Button,
 } from "@mui/material";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Terms of Service | Olgish Cakes - Legal Terms & Conditions",
@@ -91,6 +92,11 @@ export default function TermsOfServicePage() {
         }}
       >
         <Container maxWidth="md">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Terms of Service" }]} />
+          </Box>
+
           <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2 }}>
             <Typography
               variant="h2"

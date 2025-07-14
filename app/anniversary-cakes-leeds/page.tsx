@@ -2,6 +2,7 @@ import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/mate
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes | Olgish Cakes",
   description:
@@ -101,6 +102,13 @@ export default function AnniversaryCakesLeedsPage() {
         }}
       >
         <Container maxWidth="lg">
+          {/* Breadcrumbs */}
+          <Box sx={{ mb: 3 }}>
+            <Breadcrumbs
+              items={[{ label: "Home", href: "/" }, { label: "Anniversary Cakes Leeds" }]}
+            />
+          </Box>
+
           {/* Hero Section */}
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography

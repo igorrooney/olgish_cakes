@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Best Cakes Leeds | Top Rated Ukrainian Cakes | Olgish Cakes",
@@ -103,6 +104,11 @@ export default function BestCakesLeedsPage() {
       />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumbs */}
+        <Box sx={{ mb: 3 }}>
+          <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Best Cakes Leeds" }]} />
+        </Box>
+
         {/* Hero Section */}
         <section className="text-center mb-16">
           <Typography
