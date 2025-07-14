@@ -2,12 +2,16 @@ import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, projectId } from "../env";
 
-// Main client for production with CDN caching
+// Configuration: Set to true for real-time data, false for cached data
+const USE_REAL_TIME_DATA =
+  process.env.NEXT_PUBLIC_USE_REAL_TIME_DATA === "true" || process.env.NODE_ENV === "development";
+
+// Main client - configurable between cached and real-time
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true, // Keep CDN for production performance
+  useCdn: !USE_REAL_TIME_DATA, // Disable CDN for real-time data
   perspective: "published", // Only published content
 });
 
@@ -25,3 +29,6 @@ export const previewClient = createClient({
 export function getClient(preview = false) {
   return preview ? previewClient : client;
 }
+
+// Export configuration for other parts of the app
+export { USE_REAL_TIME_DATA };

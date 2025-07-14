@@ -1,15 +1,23 @@
-import { client, getClient } from "@/sanity/lib/client";
+import { client, getClient, USE_REAL_TIME_DATA } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
 
-// Cache for expensive queries
+// Cache configuration based on real-time setting
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = process.env.NODE_ENV === "development" ? 30 * 1000 : 5 * 60 * 1000; // 30s in dev, 5min in prod
+const CACHE_DURATION = USE_REAL_TIME_DATA
+  ? 0
+  : process.env.NODE_ENV === "development"
+    ? 30 * 1000
+    : 5 * 60 * 1000;
 
-// Production revalidation settings
-const REVALIDATE_TIME = process.env.NODE_ENV === "development" ? 0 : 300; // 5 minutes in production
+// Revalidation settings
+const REVALIDATE_TIME = USE_REAL_TIME_DATA ? 0 : process.env.NODE_ENV === "development" ? 0 : 300;
 
 function getCachedData<T>(key: string): T | null {
+  if (USE_REAL_TIME_DATA) {
+    return null; // No caching for real-time data
+  }
+
   const cached = cache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data as T;
@@ -18,13 +26,15 @@ function getCachedData<T>(key: string): T | null {
 }
 
 function setCachedData<T>(key: string, data: T): void {
-  cache.set(key, { data, timestamp: Date.now() });
+  if (!USE_REAL_TIME_DATA) {
+    cache.set(key, { data, timestamp: Date.now() });
+  }
 }
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   const cacheKey = `all-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached; // Don't cache preview data
+  if (cached && !preview) return cached;
 
   const query = `*[_type == "cake"] | order(_createdAt desc) {
     _id,
@@ -68,7 +78,7 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
 export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   const cacheKey = `featured-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached; // Don't cache preview data
+  if (cached && !preview) return cached;
 
   const query = groq`*[_type == "cake" && isFeatured == true] | order(_createdAt desc) {
     _id,
@@ -109,7 +119,7 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   const cacheKey = `cake-${slug}-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake>(cacheKey);
-  if (cached && !preview) return cached; // Don't cache preview data
+  if (cached && !preview) return cached;
 
   const query = `*[_type == "cake" && slug.current == $slug][0] {
     _id,
@@ -157,18 +167,18 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
   }
 }
 
-// Production revalidation helper
+// Revalidation helper
 export function getRevalidateTime(): number {
   return REVALIDATE_TIME;
 }
 
-// Clear cache function for development
+// Clear cache function
 export function clearCache(): void {
   cache.clear();
   console.log("Cache cleared");
 }
 
-// Production cache invalidation
+// Cache invalidation
 export async function invalidateCache(pattern?: string): Promise<void> {
   if (pattern) {
     // Clear specific cache entries
