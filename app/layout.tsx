@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
+import { DevTools } from "./components/DevTools";
 import Script from "next/script";
 
 const inter = Inter({
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
   description:
     "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients and exceptional taste.",
   keywords:
-    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds",
+    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds",
   metadataBase: new URL("https://olgish-cakes.vercel.app"),
   manifest: "/manifest.json",
   icons: {
@@ -53,12 +54,35 @@ export const metadata: Metadata = {
       "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
     type: "website",
     locale: "en_GB",
+    images: [
+      {
+        url: "https://olgish-cakes.vercel.app/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
     description:
       "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+    images: ["https://olgish-cakes.vercel.app/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
   },
 };
 
@@ -123,6 +147,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <main className="flex-grow">{children}</main>
                 <Footer />
                 <CookieConsent />
+                <DevTools />
               </div>
             </Providers>
           </ThemeProvider>

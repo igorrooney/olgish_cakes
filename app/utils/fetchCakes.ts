@@ -1,37 +1,13 @@
-import { client } from "@/sanity/lib/client";
+import { client, getClient } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
-
-export interface Cake {
-  _id: string;
-  _createdAt: string;
-  name: string;
-  slug: {
-    current: string;
-  };
-  description: string;
-  shortDescription?: string;
-  size: string;
-  pricing: {
-    standard: number;
-    individual: number;
-  };
-  designs: {
-    standard: Array<{
-      _type: string;
-      asset?: {
-        _ref: string;
-      };
-      isMain?: boolean;
-    }>;
-  };
-  category: string;
-  ingredients: string[];
-  allergens?: string[];
-}
+import { Cake } from "@/types/cake";
 
 // Cache for expensive queries
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = process.env.NODE_ENV === "development" ? 30 * 1000 : 5 * 60 * 1000; // 30s in dev, 5min in prod
+
+// Production revalidation settings
+const REVALIDATE_TIME = process.env.NODE_ENV === "development" ? 0 : 300; // 5 minutes in production
 
 function getCachedData<T>(key: string): T | null {
   const cached = cache.get(key);
@@ -45,10 +21,10 @@ function setCachedData<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-export async function getAllCakes(): Promise<Cake[]> {
-  const cacheKey = "all-cakes";
+export async function getAllCakes(preview = false): Promise<Cake[]> {
+  const cacheKey = `all-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached) return cached;
+  if (cached && !preview) return cached; // Don't cache preview data
 
   const query = `*[_type == "cake"] | order(_createdAt desc) {
     _id,
@@ -59,6 +35,10 @@ export async function getAllCakes(): Promise<Cake[]> {
     shortDescription,
     size,
     pricing,
+    mainImage {
+      _type,
+      asset
+    },
     designs {
       standard[] {
         _type,
@@ -72,8 +52,12 @@ export async function getAllCakes(): Promise<Cake[]> {
   }`;
 
   try {
-    const data = await client.fetch(query);
-    setCachedData(cacheKey, data);
+    const sanityClient = getClient(preview);
+    const data = await sanityClient.fetch(query);
+
+    if (!preview) {
+      setCachedData(cacheKey, data);
+    }
     return data;
   } catch (error) {
     console.error("Error fetching all cakes:", error);
@@ -81,10 +65,10 @@ export async function getAllCakes(): Promise<Cake[]> {
   }
 }
 
-export async function getFeaturedCakes(): Promise<Cake[]> {
-  const cacheKey = "featured-cakes";
+export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
+  const cacheKey = `featured-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached) return cached;
+  if (cached && !preview) return cached; // Don't cache preview data
 
   const query = groq`*[_type == "cake" && isFeatured == true] | order(_createdAt desc) {
     _id,
@@ -94,6 +78,10 @@ export async function getFeaturedCakes(): Promise<Cake[]> {
     pricing,
     category,
     slug,
+    mainImage {
+      _type,
+      asset
+    },
     designs {
       standard[] {
         asset {
@@ -105,8 +93,12 @@ export async function getFeaturedCakes(): Promise<Cake[]> {
   }`;
 
   try {
-    const data = await client.fetch(query);
-    setCachedData(cacheKey, data);
+    const sanityClient = getClient(preview);
+    const data = await sanityClient.fetch(query);
+
+    if (!preview) {
+      setCachedData(cacheKey, data);
+    }
     return data;
   } catch (error) {
     console.error("Error fetching featured cakes:", error);
@@ -114,10 +106,10 @@ export async function getFeaturedCakes(): Promise<Cake[]> {
   }
 }
 
-export async function getCakeBySlug(slug: string): Promise<Cake | null> {
-  const cacheKey = `cake-${slug}`;
+export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
+  const cacheKey = `cake-${slug}-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake>(cacheKey);
-  if (cached) return cached;
+  if (cached && !preview) return cached; // Don't cache preview data
 
   const query = `*[_type == "cake" && slug.current == $slug][0] {
     _id,
@@ -128,6 +120,10 @@ export async function getCakeBySlug(slug: string): Promise<Cake | null> {
     shortDescription,
     size,
     pricing,
+    mainImage {
+      _type,
+      asset
+    },
     designs {
       standard[] {
         _type,
@@ -148,8 +144,10 @@ export async function getCakeBySlug(slug: string): Promise<Cake | null> {
   }`;
 
   try {
-    const data = await client.fetch(query, { slug });
-    if (data) {
+    const sanityClient = getClient(preview);
+    const data = await sanityClient.fetch(query, { slug });
+
+    if (data && !preview) {
       setCachedData(cacheKey, data);
     }
     return data;
@@ -159,7 +157,30 @@ export async function getCakeBySlug(slug: string): Promise<Cake | null> {
   }
 }
 
+// Production revalidation helper
+export function getRevalidateTime(): number {
+  return REVALIDATE_TIME;
+}
+
 // Clear cache function for development
 export function clearCache(): void {
   cache.clear();
+  console.log("Cache cleared");
+}
+
+// Production cache invalidation
+export async function invalidateCache(pattern?: string): Promise<void> {
+  if (pattern) {
+    // Clear specific cache entries
+    for (const key of cache.keys()) {
+      if (key.includes(pattern)) {
+        cache.delete(key);
+      }
+    }
+    console.log(`Cache cleared for pattern: ${pattern}`);
+  } else {
+    // Clear all cache
+    cache.clear();
+    console.log("All cache cleared");
+  }
 }

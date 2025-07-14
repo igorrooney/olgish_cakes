@@ -33,6 +33,9 @@ importers:
       '@mui/x-date-pickers':
         specifier: ^7.28.3
         version: 7.28.3(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@mui/material@5.15.10(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mui/system@5.17.1(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@emotion/styled@11.11.0(@emotion/react@11.11.3(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(date-fns@2.30.0)(dayjs@1.11.13)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@portabletext/react':
+        specifier: ^3.2.1
+        version: 3.2.1(react@18.3.1)
       '@sanity/client':
         specifier: ^6.29.0
         version: 6.29.0(debug@4.4.0)

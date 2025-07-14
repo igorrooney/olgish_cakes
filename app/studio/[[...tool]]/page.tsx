@@ -7,8 +7,8 @@
  */
 
 import { NextStudio } from "next-sanity/studio";
-import config from "../../sanity.config";
-import StudioStructuredData from "./StudioStructuredData";
+import config from "../../../sanity.config";
+import StudioStructuredData from "../StudioStructuredData";
 
 export default function StudioPage() {
   return (

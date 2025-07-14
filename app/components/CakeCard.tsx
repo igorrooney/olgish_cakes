@@ -3,7 +3,8 @@
 import { Card, CardContent, Typography, Button, Box, Chip } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { Cake } from "../utils/fetchCakes";
+import { Cake, blocksToText } from "@/types/cake";
+import { RichTextRenderer } from "./RichTextRenderer";
 import { urlFor } from "@/sanity/lib/image";
 import { useState, memo, useMemo, useCallback } from "react";
 import { designTokens } from "@/lib/design-system";
@@ -22,12 +23,17 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
 
   // Memoize expensive computations
   const mainImage = useMemo(() => {
+    // First try to use the dedicated mainImage field from studio
+    if (cake.mainImage?.asset?._ref) {
+      return cake.mainImage;
+    }
+    // Fallback to designs.standard array
     return (
       cake.designs?.standard?.find(img => img.isMain && img.asset?._ref) ||
       cake.designs?.standard?.find(img => img.asset?._ref) ||
       cake.designs?.standard?.[0]
     );
-  }, [cake.designs?.standard]);
+  }, [cake.mainImage, cake.designs?.standard]);
 
   const placeholderUrl = useMemo(() => {
     return `https://placehold.co/600x400/e2e8f0/1e293b?text=${encodeURIComponent(
@@ -74,7 +80,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         >
           <Image
             src={imageUrl}
-            alt={`${cake.name} - ${cake.category} cake by Olgish Cakes`}
+            alt={`${cake.name} - ${cake.category} cake by Olgish Cakes${cake.shortDescription ? ` - ${cake.shortDescription}` : ""}`}
             fill
             style={{
               objectFit: "cover",
@@ -175,8 +181,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         </Typography>
 
         {/* Description */}
-        <Typography
-          variant="body2"
+        <Box
           sx={{
             color: colors.text.secondary,
             fontStyle: "italic",
@@ -189,10 +194,24 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             WebkitBoxOrient: "vertical",
           }}
         >
-          {cake.shortDescription ||
-            cake.description ||
-            "A delightful artisanal cake crafted with the finest ingredients"}
-        </Typography>
+          {cake.shortDescription ? (
+            <Typography variant="body2">{cake.shortDescription}</Typography>
+          ) : cake.description && cake.description.length > 0 ? (
+            <RichTextRenderer
+              value={cake.description}
+              variant="body2"
+              sx={{
+                color: colors.text.secondary,
+                fontStyle: "italic",
+                fontWeight: typography.fontWeight.light,
+              }}
+            />
+          ) : (
+            <Typography variant="body2">
+              A delightful artisanal cake crafted with the finest ingredients
+            </Typography>
+          )}
+        </Box>
 
         {/* Action Button */}
         <OutlineButton

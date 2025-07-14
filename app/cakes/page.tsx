@@ -1,10 +1,13 @@
 import { Container, Grid, Typography, Box } from "@mui/material";
 import CakeCard from "../components/CakeCard";
-import { getAllCakes } from "../utils/fetchCakes";
+import { getAllCakes, getRevalidateTime } from "../utils/fetchCakes";
 import Loading from "@/app/components/Loading";
 import HeroSection from "./HeroSection";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Metadata } from "next";
+
+// Enable revalidation for this page
+export const revalidate = getRevalidateTime();
 
 export const metadata: Metadata = {
   title: "All Cakes | Ukrainian Cakes Collection | Honey Cake (Medovik) | Olgish Cakes",

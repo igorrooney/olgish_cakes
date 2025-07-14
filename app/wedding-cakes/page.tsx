@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
+import { blocksToText } from "@/types/cake";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
@@ -49,7 +50,7 @@ export default async function WeddingCakesPage() {
     cake =>
       cake.category === "custom" ||
       cake.name.toLowerCase().includes("wedding") ||
-      cake.description.toLowerCase().includes("wedding")
+      blocksToText(cake.description).toLowerCase().includes("wedding")
   );
 
   const weddingServices = [
@@ -93,6 +94,15 @@ export default async function WeddingCakesPage() {
         "@type": "ImageObject",
         url: "https://olgish-cakes.vercel.app/logo.png",
       },
+      url: "https://olgish-cakes.vercel.app",
+      telephone: "+44 786 721 8194",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "107 Harehills Lane",
+        addressLocality: "Leeds",
+        postalCode: "LS8 4DN",
+        addressCountry: "GB",
+      },
     },
     areaServed: {
       "@type": "City",
@@ -117,6 +127,23 @@ export default async function WeddingCakesPage() {
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
       })),
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://olgish-cakes.vercel.app",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Wedding Cakes",
+          item: "https://olgish-cakes.vercel.app/wedding-cakes",
+        },
+      ],
     },
   };
 

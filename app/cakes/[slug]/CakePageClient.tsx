@@ -15,6 +15,7 @@ import {
   StyledAccordion,
 } from "@/lib/ui-components";
 import { Cake } from "@/types/cake";
+import { RichTextRenderer } from "@/app/components/RichTextRenderer";
 import { Box, Button, Chip, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { OrderModal } from "./OrderModal";
@@ -96,23 +97,6 @@ export function CakePageClient({ cake }: PageProps) {
                 sx={{ mb: 2, fontSize: typography.fontSize["2xl"] }}
               />
 
-              {/* Size Badge */}
-              <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-                <Chip
-                  label={`${cake.size} inch`}
-                  sx={{
-                    backgroundColor: colors.background.subtle,
-                    color: colors.text.primary,
-                    fontWeight: typography.fontWeight.semibold,
-                    fontSize: typography.fontSize.sm,
-                    px: 2,
-                    py: 0.5,
-                    height: 28,
-                    borderRadius: 1,
-                  }}
-                />
-              </Box>
-
               {/* Design Selector */}
               {hasIndividualDesigns && (
                 <Box sx={{ mb: 2 }}>
@@ -143,7 +127,8 @@ export function CakePageClient({ cake }: PageProps) {
                     fontSize: typography.fontSize.sm,
                   }}
                 >
-                  Freshly baked to order with free UK delivery and gift note included.
+                  {cake.shortDescription ||
+                    "Freshly baked to order with free UK delivery and gift note included."}
                 </BodyText>
               </Paper>
 
@@ -194,9 +179,9 @@ export function CakePageClient({ cake }: PageProps) {
               <Box sx={{ mt: 2 }}>
                 {/* Description Accordion */}
                 <StyledAccordion title="About This Cake" sx={{ mb: 1 }}>
-                  <BodyText sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
-                    {cake.description}
-                  </BodyText>
+                  <Box sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
+                    <RichTextRenderer value={cake.description} />
+                  </Box>
                 </StyledAccordion>
 
                 {/* Ingredients Accordion */}

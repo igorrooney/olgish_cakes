@@ -23,6 +23,21 @@ export interface CakePricing {
   individual: number;
 }
 
+// Utility function to convert rich text blocks to plain text
+export function blocksToText(blocks: any[]): string {
+  if (!blocks || !Array.isArray(blocks)) return "";
+
+  return blocks
+    .map(block => {
+      if (block._type === "block") {
+        return block.children?.map((child: any) => child.text).join("") || "";
+      }
+      return "";
+    })
+    .join("\n")
+    .trim();
+}
+
 export interface Cake {
   _id: string;
   _createdAt: string;
@@ -30,10 +45,16 @@ export interface Cake {
   slug: {
     current: string;
   };
-  description: string;
+  description: any[]; // Changed from string to any[] for rich text blocks
   shortDescription?: string;
   size: string;
   pricing: CakePricing;
+  mainImage?: {
+    _type: string;
+    asset?: {
+      _ref: string;
+    };
+  };
   designs: CakeDesigns;
   category: string;
   ingredients: string[];

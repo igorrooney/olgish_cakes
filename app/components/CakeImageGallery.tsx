@@ -208,28 +208,36 @@ const CakeImageGallery = memo(function CakeImageGallery({
       </Box>
 
       {galleryImages.length > 0 && (
-        <ImageList
+        <Box
           sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "repeat(2, 1fr)",
+              sm: "repeat(3, 1fr)",
+              md: "repeat(4, 1fr)",
+              lg: "repeat(5, 1fr)",
+            },
+            gap: 2,
             width: "100%",
-            height: 200,
-            borderRadius: 2,
-            overflow: "hidden",
           }}
-          cols={3}
-          rowHeight={200}
-          gap={8}
         >
           {galleryImages.map((image, index) => {
             const originalIndex = index >= currentImageIndex ? index + 1 : index;
 
             return (
-              <ImageListItem
+              <Box
                 key={index}
                 sx={{
+                  position: "relative",
+                  aspectRatio: "1",
+                  borderRadius: 1,
+                  overflow: "hidden",
                   cursor: "pointer",
                   "&:hover": {
                     opacity: 0.8,
+                    transform: "scale(1.02)",
                   },
+                  transition: "opacity 0.2s ease, transform 0.2s ease",
                 }}
                 onClick={() => handleThumbnailClick(originalIndex)}
               >
@@ -238,11 +246,12 @@ const CakeImageGallery = memo(function CakeImageGallery({
                   alt={image.alt || `${name} view ${index + 2}`}
                   fill
                   style={{ objectFit: "cover" }}
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                 />
-              </ImageListItem>
+              </Box>
             );
           })}
-        </ImageList>
+        </Box>
       )}
     </section>
   );
