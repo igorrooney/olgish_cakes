@@ -46,7 +46,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const description = cake.shortDescription || blocksToText(cake.description);
+  const description = cake.shortDescription
+    ? blocksToText(cake.shortDescription)
+    : blocksToText(cake.description);
   const title = `${cake.name} | Olgish Cakes - Traditional Ukrainian Cakes in Leeds`;
   const keywords = `${cake.name}, ${cake.category} cake, Ukrainian cake, honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds`;
 
@@ -92,7 +94,9 @@ export default async function CakePage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: cake.name,
-    description: cake.shortDescription || blocksToText(cake.description),
+    description: cake.shortDescription
+      ? blocksToText(cake.shortDescription)
+      : blocksToText(cake.description),
     image: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
     url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
     brand: {

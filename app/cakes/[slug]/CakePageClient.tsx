@@ -27,7 +27,6 @@ interface PageProps {
 }
 
 export function CakePageClient({ cake }: PageProps) {
-  console.log("cake", cake);
   const [designType, setDesignType] = useState<DesignType>("standard");
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
@@ -119,7 +118,7 @@ export function CakePageClient({ cake }: PageProps) {
                   border: `1px solid ${colors.border.light}`,
                 }}
               >
-                <BodyText
+                <Box
                   sx={{
                     textAlign: "center",
                     fontStyle: "italic",
@@ -127,9 +126,31 @@ export function CakePageClient({ cake }: PageProps) {
                     fontSize: typography.fontSize.sm,
                   }}
                 >
-                  {cake.shortDescription ||
-                    "Freshly baked to order with free UK delivery and gift note included."}
-                </BodyText>
+                  {cake.shortDescription && cake.shortDescription.length > 0 ? (
+                    <RichTextRenderer
+                      value={cake.shortDescription}
+                      variant="body2"
+                      sx={{
+                        textAlign: "center",
+                        fontStyle: "italic",
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        textAlign: "center",
+                        fontStyle: "italic",
+                        color: colors.text.secondary,
+                        fontSize: typography.fontSize.sm,
+                      }}
+                    >
+                      Freshly baked to order with free UK delivery and gift note included.
+                    </Typography>
+                  )}
+                </Box>
               </Paper>
 
               {/* Order Button */}
@@ -216,13 +237,13 @@ export function CakePageClient({ cake }: PageProps) {
 
                 {/* Delivery Accordion */}
                 <StyledAccordion title="Delivery">
-                  <BodyText sx={{ mb: 1, fontSize: typography.fontSize.base }}>
+                  <Typography variant="body1" sx={{ mb: 1, fontSize: typography.fontSize.base }}>
                     We aim to ship orders within 2-3 working days.
-                  </BodyText>
-                  <BodyText sx={{ fontSize: typography.fontSize.base }}>
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontSize: typography.fontSize.base }}>
                     We offer free UK delivery on all orders. For guaranteed delivery on a specific
                     day, please contact us directly.
-                  </BodyText>
+                  </Typography>
                 </StyledAccordion>
               </Box>
             </Box>

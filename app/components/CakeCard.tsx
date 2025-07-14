@@ -80,7 +80,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         >
           <Image
             src={imageUrl}
-            alt={`${cake.name} - ${cake.category} cake by Olgish Cakes${cake.shortDescription ? ` - ${cake.shortDescription}` : ""}`}
+            alt={`${cake.name} - ${cake.category} cake by Olgish Cakes${cake.shortDescription && cake.shortDescription.length > 0 ? ` - ${blocksToText(cake.shortDescription)}` : ""}`}
             fill
             style={{
               objectFit: "cover",
@@ -194,8 +194,16 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             WebkitBoxOrient: "vertical",
           }}
         >
-          {cake.shortDescription ? (
-            <Typography variant="body2">{cake.shortDescription}</Typography>
+          {cake.shortDescription && cake.shortDescription.length > 0 ? (
+            <RichTextRenderer
+              value={cake.shortDescription}
+              variant="body2"
+              sx={{
+                color: colors.text.secondary,
+                fontStyle: "italic",
+                fontWeight: typography.fontWeight.light,
+              }}
+            />
           ) : cake.description && cake.description.length > 0 ? (
             <RichTextRenderer
               value={cake.description}

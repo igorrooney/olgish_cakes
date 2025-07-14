@@ -7,7 +7,7 @@ export interface Cake {
     current: string;
   };
   description: string;
-  shortDescription?: string;
+  shortDescription?: any[]; // Rich text blocks for short description
   size: string;
   pricing: {
     standard: number;

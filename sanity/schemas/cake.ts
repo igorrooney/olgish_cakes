@@ -67,9 +67,29 @@ export default {
     {
       name: "shortDescription",
       title: "Short Description",
-      type: "string",
-      description: "A brief summary of the cake (max 150 characters)",
-      validation: (Rule: any) => Rule.max(150),
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "Strong", value: "strong" },
+            { title: "Emphasis", value: "em" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Strong", value: "strong" },
+              { title: "Emphasis", value: "em" },
+            ],
+          },
+          // Ensure unique keys are generated
+          options: {
+            spellCheck: true,
+          },
+        },
+      ],
+      description: "A brief summary of the cake with basic formatting",
+      validation: (Rule: any) => Rule.max(1).warning("Short description should be concise"),
     },
     {
       name: "size",

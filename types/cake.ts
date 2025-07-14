@@ -24,6 +24,7 @@ export interface CakePricing {
 }
 
 // Utility function to convert rich text blocks to plain text
+// This is kept for backward compatibility, but consider using richTextToText from lib/rich-text-utils
 export function blocksToText(blocks: any[]): string {
   if (!blocks || !Array.isArray(blocks)) return "";
 
@@ -46,7 +47,7 @@ export interface Cake {
     current: string;
   };
   description: any[]; // Changed from string to any[] for rich text blocks
-  shortDescription?: string;
+  shortDescription?: any[]; // Rich text blocks for short description
   size: string;
   pricing: CakePricing;
   mainImage?: {

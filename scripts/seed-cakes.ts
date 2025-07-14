@@ -1,6 +1,7 @@
 import { createClient as createSanityClient } from "@sanity/client";
 import dotenv from "dotenv";
 import path from "path";
+import { stringToRichText } from "../lib/rich-text-utils";
 
 interface SanityImage {
   _type: "image";
@@ -30,7 +31,7 @@ interface Cake {
   name: string;
   slug: SanitySlug;
   description: string;
-  shortDescription?: string;
+  shortDescription?: any[]; // Rich text blocks for short description
   size: string;
   pricing: CakePricing;
   designs: CakeDesigns;
@@ -69,7 +70,7 @@ const cakes: Cake[] = [
       current: "classic-vanilla",
     },
     description: "A timeless vanilla cake with buttercream frosting",
-    shortDescription: "Timeless vanilla cake with buttercream frosting",
+    shortDescription: stringToRichText("Timeless vanilla cake with buttercream frosting"),
     size: "medium",
     pricing: {
       standard: 45,
@@ -100,7 +101,7 @@ const cakes: Cake[] = [
       current: "chocolate-fudge",
     },
     description: "Rich chocolate cake with fudge filling",
-    shortDescription: "Rich chocolate cake with fudge filling",
+    shortDescription: stringToRichText("Rich chocolate cake with fudge filling"),
     size: "medium",
     pricing: {
       standard: 50,
@@ -132,7 +133,9 @@ const cakes: Cake[] = [
     },
     description:
       "The legendary Kyiv Cake - a beloved Ukrainian dessert featuring crispy meringue layers with hazelnuts, filled with a rich chocolate-buttercream frosting. Each bite is a perfect harmony of crunchy and creamy textures.",
-    shortDescription: "Legendary Ukrainian dessert with crispy meringue and hazelnuts",
+    shortDescription: stringToRichText(
+      "Legendary Ukrainian dessert with crispy meringue and hazelnuts"
+    ),
     size: "8",
     pricing: {
       standard: 45,
@@ -164,7 +167,7 @@ const cakes: Cake[] = [
     },
     description:
       "Traditional Ukrainian Honey Cake (Medovik) with delicate honey-infused layers and smooth sour cream filling. This cake is known for its melt-in-your-mouth texture and rich honey flavor.",
-    shortDescription: "Traditional honey cake with melt-in-your-mouth texture",
+    shortDescription: stringToRichText("Traditional honey cake with melt-in-your-mouth texture"),
     size: "8",
     pricing: {
       standard: 40,
@@ -196,7 +199,7 @@ const cakes: Cake[] = [
     },
     description:
       "A Ukrainian take on the classic Napoleon cake with multiple layers of flaky puff pastry and rich vanilla custard cream. Each slice reveals beautiful layers that tell a story of culinary craftsmanship.",
-    shortDescription: "Ukrainian Napoleon with flaky pastry and vanilla custard",
+    shortDescription: stringToRichText("Ukrainian Napoleon with flaky pastry and vanilla custard"),
     size: "8",
     pricing: {
       standard: 42,
@@ -228,7 +231,7 @@ const cakes: Cake[] = [
     },
     description:
       "Traditional Ukrainian Poppy Seed Roll (Makivnyk) - a soft yeast dough filled with a generous layer of sweetened poppy seed filling. A perfect balance of soft bread and rich filling.",
-    shortDescription: "Soft yeast dough with sweetened poppy seed filling",
+    shortDescription: stringToRichText("Soft yeast dough with sweetened poppy seed filling"),
     size: "8",
     pricing: {
       standard: 35,
@@ -260,7 +263,7 @@ const cakes: Cake[] = [
     },
     description:
       "A delightful Ukrainian Cherry Cake featuring layers of soft sponge cake filled with sweet-tart cherry filling and topped with vanilla cream. Made with fresh Ukrainian cherries when in season.",
-    shortDescription: "Soft sponge cake with sweet-tart cherry filling",
+    shortDescription: stringToRichText("Soft sponge cake with sweet-tart cherry filling"),
     size: "8",
     pricing: {
       standard: 38,

@@ -2,6 +2,7 @@ import { createClient } from "@sanity/client";
 import type { SanityDocument } from "@sanity/types";
 import dotenv from "dotenv";
 import path from "path";
+import { stringToRichText } from "../lib/rich-text-utils";
 
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
@@ -64,7 +65,7 @@ async function updateCakes() {
         patch: {
           id: cake._id,
           set: {
-            shortDescription: shortDescription,
+            shortDescription: stringToRichText(shortDescription),
           },
         },
       };
