@@ -313,7 +313,6 @@ export const StyledAccordion = ({ title, children, ...props }: any) => (
     sx={{
       backgroundColor: colors.background.subtle,
       border: `1px solid ${colors.border.light}`,
-      borderRadius: borderRadius.lg,
       mb: spacing.sm,
       "&:before": {
         display: "none",

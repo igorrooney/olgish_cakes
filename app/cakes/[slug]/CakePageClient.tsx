@@ -1,27 +1,24 @@
 "use client";
 
-import { BackButton } from "@/app/components/BackButton";
+import { useState, useMemo, useCallback } from "react";
+import { Box, Grid, Typography, Button, Paper, Divider, Container } from "@mui/material";
 import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
-import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
-import { designTokens } from "@/lib/design-system";
-import {
-  AllergenChip,
-  BodyText,
-  Container as DesignContainer,
-  DisplayHeading,
-  IngredientChip,
-  PriceDisplay,
-  StyledAccordion,
-} from "@/lib/ui-components";
-import { Cake } from "@/types/cake";
-import { RichTextRenderer } from "@/app/components/RichTextRenderer";
-import { Box, Button, Chip, Divider, Grid, Paper, Typography } from "@mui/material";
-import { useState } from "react";
 import { OrderModal } from "./OrderModal";
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { RichTextRenderer } from "@/app/components/RichTextRenderer";
+import { IngredientChip, AllergenChip, DisplayHeading } from "@/lib/ui-components";
+import { StyledAccordion } from "@/lib/ui-components";
+import { PriceDisplay } from "@/lib/ui-components";
+import { Cake } from "@/types/cake";
+import { designTokens } from "@/lib/design-system";
 import Link from "next/link";
+import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing, shadows } = designTokens;
+
+// Performance monitoring
+const startTime = performance.now();
 
 interface PageProps {
   cake: Cake;
@@ -30,16 +27,56 @@ interface PageProps {
 export function CakePageClient({ cake }: PageProps) {
   const [designType, setDesignType] = useState<DesignType>("standard");
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
-  const currentPrice = designType === "standard" ? cake.pricing.standard : cake.pricing.individual;
 
-  const handleDesignTypeChange = (newDesignType: DesignType) => {
-    setDesignType(newDesignType);
-  };
+  // Performance monitoring
+  useMemo(() => {
+    const loadTime = performance.now() - startTime;
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "cake_page_load", {
+        cake_name: cake.name,
+        load_time: loadTime,
+        design_type: designType,
+      });
+    }
+  }, [cake.name, designType]);
+
+  const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
+  const currentPrice =
+    designType === "individual" ? cake.pricing.individual : cake.pricing.standard;
+
+  const handleDesignTypeChange = useCallback(
+    (newDesignType: DesignType) => {
+      setDesignType(newDesignType);
+
+      // Track design type changes for analytics
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("event", "design_type_change", {
+          cake_name: cake.name,
+          design_type: newDesignType,
+          price: newDesignType === "individual" ? cake.pricing.individual : cake.pricing.standard,
+        });
+      }
+    },
+    [cake.name, cake.pricing.individual, cake.pricing.standard]
+  );
+
+  const handleOrderClick = useCallback(() => {
+    setIsOrderModalOpen(true);
+
+    // Track order button clicks
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "begin_checkout", {
+        cake_name: cake.name,
+        design_type: designType,
+        price: currentPrice,
+        currency: "GBP",
+      });
+    }
+  }, [cake.name, designType, currentPrice]);
 
   return (
     <main role="main" aria-label={`${cake.name} product details`}>
-      <DesignContainer
+      <Container
         component="article"
         sx={{ maxWidth: "1200px", mx: "auto", py: { xs: 5, md: 10 }, px: { xs: 4, md: 8 } }}
       >
@@ -83,7 +120,7 @@ export function CakePageClient({ cake }: PageProps) {
                 pr: 3,
                 mr: { xs: 1, md: 2 },
                 backgroundColor: colors.background.paper,
-                borderRadius: 1.5,
+                borderRadius: "35px",
                 boxShadow: shadows.lg,
                 border: `1px solid ${colors.border.light}`,
                 display: "flex",
@@ -135,7 +172,7 @@ export function CakePageClient({ cake }: PageProps) {
                 <Box
                   sx={{
                     textAlign: "left",
-                    fontSize: typography.fontSize.lg,
+                    fontSize: typography.fontSize.base,
                   }}
                 >
                   {cake.shortDescription && cake.shortDescription.length > 0 ? (
@@ -144,7 +181,7 @@ export function CakePageClient({ cake }: PageProps) {
                       variant="body2"
                       sx={{
                         textAlign: "left",
-                        fontSize: typography.fontSize.lg,
+                        fontSize: typography.fontSize.base,
                       }}
                     />
                   ) : (
@@ -169,7 +206,7 @@ export function CakePageClient({ cake }: PageProps) {
                 <Button
                   variant="contained"
                   size="large"
-                  onClick={() => setIsOrderModalOpen(true)}
+                  onClick={handleOrderClick}
                   aria-label={`Order ${cake.name} now`}
                   sx={{
                     backgroundColor: colors.primary.main,
@@ -198,7 +235,12 @@ export function CakePageClient({ cake }: PageProps) {
               <Box component="section" aria-label="Product details" sx={{ mt: 2 }}>
                 {/* Description Accordion */}
                 <StyledAccordion title="About This Cake" sx={{ mb: 1 }}>
-                  <Box sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
+                  <Box
+                    sx={{
+                      fontSize: typography.fontSize.base,
+                      lineHeight: 1.7,
+                    }}
+                  >
                     <RichTextRenderer value={cake.description} />
                   </Box>
                 </StyledAccordion>
@@ -256,7 +298,7 @@ export function CakePageClient({ cake }: PageProps) {
             </Box>
           </Grid>
         </Grid>
-      </DesignContainer>
+      </Container>
 
       {/* Related Cakes Section for SEO */}
       <Box
@@ -268,7 +310,7 @@ export function CakePageClient({ cake }: PageProps) {
           backgroundColor: colors.background.subtle,
         }}
       >
-        <DesignContainer>
+        <Container>
           <Box
             sx={{
               textAlign: "center",
@@ -330,7 +372,7 @@ export function CakePageClient({ cake }: PageProps) {
               Browse All Cakes
             </Button>
           </Box>
-        </DesignContainer>
+        </Container>
       </Box>
 
       <TrustpilotReviews productName={cake.name} />

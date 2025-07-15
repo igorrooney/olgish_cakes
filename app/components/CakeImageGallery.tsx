@@ -119,7 +119,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "grey.100",
-          borderRadius: 2,
+          borderRadius: "35px",
           mb: 3,
         }}
       >
@@ -133,7 +133,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
   return (
     <section aria-label="Cake image gallery" role="region">
       {hasIndividualDesigns && !hideDesignSelector && (
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 3, borderRadius: "35px" }}>
           <DesignSelector
             hasIndividualDesigns={hasIndividualDesigns}
             onChange={handleDesignChange}
@@ -145,17 +145,20 @@ const CakeImageGallery = memo(function CakeImageGallery({
         sx={{
           position: "relative",
           height: { xs: 400, md: 600 },
-          borderRadius: 2,
           overflow: "hidden",
           boxShadow: 4,
           mb: 3,
+          borderRadius: "35px",
         }}
         aria-label="Main cake image"
         role="img"
       >
         <Image
           src={urlFor(currentImage).width(800).height(800).url()}
-          alt={currentImage.alt || name}
+          alt={
+            currentImage.alt ||
+            `${name} - Ukrainian ${designType} cake design by Olgish Cakes in Leeds`
+          }
           fill
           style={{ objectFit: "cover" }}
           sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -176,6 +179,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
             px: 2,
             opacity: 0,
             transition: "opacity 0.2s",
+            borderRadius: "35px",
             "&:hover": {
               opacity: 1,
               bgcolor: "rgba(0, 0, 0, 0.03)",
@@ -186,6 +190,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
             onClick={handlePrevious}
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "35px",
               "&:hover": {
                 bgcolor: "rgba(255, 255, 255, 1)",
               },
@@ -197,6 +202,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
             onClick={handleNext}
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "35px",
               "&:hover": {
                 bgcolor: "rgba(255, 255, 255, 1)",
               },
@@ -243,7 +249,10 @@ const CakeImageGallery = memo(function CakeImageGallery({
               >
                 <Image
                   src={urlFor(image).width(400).height(400).url()}
-                  alt={image.alt || `${name} view ${index + 2}`}
+                  alt={
+                    image.alt ||
+                    `${name} - Ukrainian cake gallery view ${index + 2} by Olgish Cakes`
+                  }
                   fill
                   style={{ objectFit: "cover" }}
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"

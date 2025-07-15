@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-07-10T22:02:25.995Z",
+  "timestamp": "2025-07-15T22:48:00.743Z",
   "summary": {
     "technicalScore": "11/11 (100%)",
-    "contentScore": "85/86 (99%)",
+    "contentScore": "84/86 (97%)",
     "performanceScore": "6/6 (100%)",
     "localScore": "4/6 (67%)",
-    "overallScore": "27/100"
+    "overallScore": "26/100"
   },
   "details": {
     "technical": {
@@ -23,13 +23,13 @@
     },
     "content": {
       "totalPages": 86,
-      "pagesWithMetadata": 84,
-      "pagesWithCanonical": 85,
-      "pagesWithOpenGraph": 86,
-      "pagesWithStructuredData": 84,
-      "pagesWithBreadcrumbs": 16,
-      "averageTitleLength": 74,
-      "averageDescriptionLength": 155,
+      "pagesWithMetadata": 83,
+      "pagesWithCanonical": 84,
+      "pagesWithOpenGraph": 85,
+      "pagesWithStructuredData": 83,
+      "pagesWithBreadcrumbs": 48,
+      "averageTitleLength": 75,
+      "averageDescriptionLength": 156,
       "duplicateTitles": [],
       "duplicateDescriptions": []
     },

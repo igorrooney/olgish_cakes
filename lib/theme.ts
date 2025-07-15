@@ -150,7 +150,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: borderRadius.lg,
+          borderRadius: "35px !important",
           padding: `${spacing.md} ${spacing.xl}`,
           fontSize: typography.fontSize.base,
           fontWeight: typography.fontWeight.semibold,
