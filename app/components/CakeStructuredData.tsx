@@ -5,7 +5,9 @@ import { useEffect } from "react";
 interface CakeStructuredDataProps {
   cake: {
     name: string;
-    slug: string;
+    slug: {
+      current: string;
+    };
     description?: any[];
     shortDescription?: any[];
     pricing: {
@@ -14,7 +16,7 @@ interface CakeStructuredDataProps {
     };
     mainImage?: {
       asset?: {
-        url: string;
+        url?: string;
       };
       alt?: string;
     };
@@ -38,7 +40,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
   useEffect(() => {
     if (!cake.structuredData?.enableProductSchema) return;
 
-    const structuredData = {
+    const structuredData: any = {
       "@context": "https://schema.org",
       "@type": "Product",
       name: cake.name,
@@ -48,7 +50,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         name: cake.structuredData?.brand || "Olgish Cakes",
       },
       category: cake.category || "Traditional Ukrainian Cakes",
-      image: cake.mainImage?.asset?.url,
+      ...(cake.mainImage?.asset?.url && { image: cake.mainImage.asset.url }),
       offers: {
         "@type": "Offer",
         price: cake.pricing.standard,
