@@ -197,16 +197,9 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         {/* Category and Price */}
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
             mb: spacing.xs,
           }}
         >
-          <CategoryChip
-            label={cake.category || "Honey Cake"}
-            aria-label={`Category: ${cake.category || "Honey Cake"}`}
-          />
           <PriceDisplay
             price={price}
             size="large"

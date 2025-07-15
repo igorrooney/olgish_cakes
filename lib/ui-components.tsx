@@ -356,7 +356,17 @@ export const StyledAccordion = ({ title, children, ...props }: any) => (
 );
 
 // Price Display Component with SEO enhancements
-export const PriceDisplay = ({ price, size = "large", label = "", ...props }: any) => {
+export const PriceDisplay = ({
+  price,
+  size = "large" as const,
+  label = "",
+  ...props
+}: {
+  price: number;
+  size?: "small" | "medium" | "large" | "xlarge";
+  label?: string;
+  [key: string]: any;
+}) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-GB", {
       style: "currency",
@@ -377,17 +387,18 @@ export const PriceDisplay = ({ price, size = "large", label = "", ...props }: an
       fontWeight: typography.fontWeight.semibold,
     },
     large: {
-      fontSize: typography.fontSize.xl,
+      fontSize: typography.fontSize["3xl"],
       fontWeight: typography.fontWeight.bold,
     },
-  };
+    xlarge: {
+      fontSize: typography.fontSize["5xl"],
+      fontWeight: typography.fontWeight.bold,
+    },
+  } as const;
 
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-end",
         ...props.sx,
       }}
       {...props}
@@ -397,12 +408,12 @@ export const PriceDisplay = ({ price, size = "large", label = "", ...props }: an
           variant="caption"
           sx={{
             color: colors.text.secondary,
-            fontSize: typography.fontSize.sm,
+            fontSize: typography.fontSize.lg,
             fontWeight: typography.fontWeight.medium,
-            mb: spacing.xs / 2,
+            mb: spacing.xs,
           }}
         >
-          {label}
+          {label}{" "}
         </Typography>
       )}
       <Typography

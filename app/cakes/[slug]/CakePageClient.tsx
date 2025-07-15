@@ -131,11 +131,7 @@ export function CakePageClient({ cake }: PageProps) {
             >
               {/* Price Section */}
               <section aria-label="Pricing information">
-                <PriceDisplay
-                  price={currentPrice}
-                  size="medium"
-                  sx={{ ml: 5, fontSize: typography.fontSize["5xl"] }}
-                />
+                <PriceDisplay price={currentPrice} size="xlarge" sx={{ ml: 5 }} />
                 <Typography
                   component="p"
                   fontSize={typography.fontSize.sm}
