@@ -19,6 +19,7 @@ import { RichTextRenderer } from "@/app/components/RichTextRenderer";
 import { Box, Button, Chip, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { OrderModal } from "./OrderModal";
+import Link from "next/link";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -37,16 +38,14 @@ export function CakePageClient({ cake }: PageProps) {
   };
 
   return (
-    <>
+    <main role="main" aria-label={`${cake.name} product details`}>
       <DesignContainer
+        component="article"
         sx={{ maxWidth: "1200px", mx: "auto", py: { xs: 5, md: 10 }, px: { xs: 4, md: 8 } }}
       >
-        <Box sx={{ mb: spacing["3xl"] }}>
-          <BackButton />
-        </Box>
-
         {/* Product Title */}
         <DisplayHeading
+          component="h1"
           sx={{
             mb: spacing["3xl"],
             textAlign: "center",
@@ -59,18 +58,22 @@ export function CakePageClient({ cake }: PageProps) {
         <Grid container spacing={{ xs: 6, md: 12 }} sx={{ mb: spacing["5xl"] }}>
           {/* Product Images */}
           <Grid item xs={12} md={6}>
-            <CakeImageGallery
-              designs={cake.designs}
-              name={cake.name}
-              designType={designType}
-              onDesignTypeChange={handleDesignTypeChange}
-              hideDesignSelector
-            />
+            <section aria-label="Product images">
+              <CakeImageGallery
+                designs={cake.designs}
+                name={cake.name}
+                designType={designType}
+                onDesignTypeChange={handleDesignTypeChange}
+                hideDesignSelector
+              />
+            </section>
           </Grid>
 
           {/* Product Details */}
           <Grid item xs={12} md={6}>
             <Box
+              component="aside"
+              aria-label="Product information and ordering"
               sx={{
                 position: "sticky",
                 top: 0,
@@ -89,41 +92,50 @@ export function CakePageClient({ cake }: PageProps) {
                 minWidth: 0,
               }}
             >
-              {/* Price */}
-              <PriceDisplay
-                price={currentPrice}
-                size="medium"
-                sx={{ mb: 2, fontSize: typography.fontSize["2xl"] }}
-              />
+              {/* Price Section */}
+              <section aria-label="Pricing information">
+                <PriceDisplay
+                  price={currentPrice}
+                  size="medium"
+                  sx={{ ml: 5, fontSize: typography.fontSize["5xl"] }}
+                />
+                <Typography
+                  component="p"
+                  fontSize={typography.fontSize.sm}
+                  sx={{ color: colors.grey[500], ml: 5 }}
+                  aria-label="Baking information"
+                >
+                  Freshly Baked to Order
+                </Typography>
+              </section>
 
               {/* Design Selector */}
               {hasIndividualDesigns && (
-                <Box sx={{ mb: 2 }}>
-                  <DesignSelector
-                    hasIndividualDesigns={hasIndividualDesigns}
-                    onChange={setDesignType}
-                    value={designType}
-                  />
-                </Box>
+                <section aria-label="Design options">
+                  <Box sx={{ mb: 2 }}>
+                    <DesignSelector
+                      hasIndividualDesigns={hasIndividualDesigns}
+                      onChange={setDesignType}
+                      value={designType}
+                    />
+                  </Box>
+                </section>
               )}
 
               {/* Key Features */}
               <Paper
+                component="section"
+                aria-label="Product description"
                 elevation={0}
                 sx={{
                   p: 2,
                   mb: 2,
-                  backgroundColor: colors.background.subtle,
-                  borderRadius: 1,
-                  border: `1px solid ${colors.border.light}`,
                 }}
               >
                 <Box
                   sx={{
-                    textAlign: "center",
-                    fontStyle: "italic",
-                    color: colors.text.secondary,
-                    fontSize: typography.fontSize.sm,
+                    textAlign: "left",
+                    fontSize: typography.fontSize.lg,
                   }}
                 >
                   {cake.shortDescription && cake.shortDescription.length > 0 ? (
@@ -131,20 +143,19 @@ export function CakePageClient({ cake }: PageProps) {
                       value={cake.shortDescription}
                       variant="body2"
                       sx={{
-                        textAlign: "center",
-                        fontStyle: "italic",
-                        color: colors.text.secondary,
-                        fontSize: typography.fontSize.sm,
+                        textAlign: "left",
+                        fontSize: typography.fontSize.lg,
                       }}
                     />
                   ) : (
                     <Typography
+                      component="p"
                       variant="body2"
                       sx={{
                         textAlign: "center",
                         fontStyle: "italic",
                         color: colors.text.secondary,
-                        fontSize: typography.fontSize.sm,
+                        fontSize: typography.fontSize.lg,
                       }}
                     >
                       Freshly baked to order with free UK delivery and gift note included.
@@ -154,11 +165,12 @@ export function CakePageClient({ cake }: PageProps) {
               </Paper>
 
               {/* Order Button */}
-              <Box sx={{ my: 2 }}>
+              <Box component="section" aria-label="Ordering" sx={{ my: 2 }}>
                 <Button
                   variant="contained"
                   size="large"
                   onClick={() => setIsOrderModalOpen(true)}
+                  aria-label={`Order ${cake.name} now`}
                   sx={{
                     backgroundColor: colors.primary.main,
                     color: colors.primary.contrast,
@@ -182,22 +194,8 @@ export function CakePageClient({ cake }: PageProps) {
                 </Button>
               </Box>
 
-              {/* Delivery Info */}
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.text.secondary,
-                  textAlign: "center",
-                  fontStyle: "italic",
-                  mb: 2,
-                  fontSize: typography.fontSize.sm,
-                }}
-              >
-                Estimated delivery: 3-5 working days
-              </Typography>
-
               {/* Collapsible Sections */}
-              <Box sx={{ mt: 2 }}>
+              <Box component="section" aria-label="Product details" sx={{ mt: 2 }}>
                 {/* Description Accordion */}
                 <StyledAccordion title="About This Cake" sx={{ mb: 1 }}>
                   <Box sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
@@ -217,6 +215,7 @@ export function CakePageClient({ cake }: PageProps) {
                     <>
                       <Divider sx={{ my: 2 }} />
                       <Typography
+                        component="h4"
                         variant="h6"
                         sx={{
                           mb: 1,
@@ -237,10 +236,18 @@ export function CakePageClient({ cake }: PageProps) {
 
                 {/* Delivery Accordion */}
                 <StyledAccordion title="Delivery">
-                  <Typography variant="body1" sx={{ mb: 1, fontSize: typography.fontSize.base }}>
+                  <Typography
+                    component="p"
+                    variant="body1"
+                    sx={{ mb: 1, fontSize: typography.fontSize.base }}
+                  >
                     We aim to ship orders within 2-3 working days.
                   </Typography>
-                  <Typography variant="body1" sx={{ fontSize: typography.fontSize.base }}>
+                  <Typography
+                    component="p"
+                    variant="body1"
+                    sx={{ fontSize: typography.fontSize.base }}
+                  >
                     We offer free UK delivery on all orders. For guaranteed delivery on a specific
                     day, please contact us directly.
                   </Typography>
@@ -251,6 +258,81 @@ export function CakePageClient({ cake }: PageProps) {
         </Grid>
       </DesignContainer>
 
+      {/* Related Cakes Section for SEO */}
+      <Box
+        component="section"
+        aria-label="Related cakes"
+        sx={{
+          py: { xs: 6, md: 10 },
+          px: { xs: 4, md: 8 },
+          backgroundColor: colors.background.subtle,
+        }}
+      >
+        <DesignContainer>
+          <Box
+            sx={{
+              textAlign: "center",
+              maxWidth: "600px",
+              mx: "auto",
+            }}
+          >
+            <Typography
+              component="h2"
+              variant="h3"
+              sx={{
+                mb: spacing.lg,
+                fontWeight: typography.fontWeight.bold,
+                color: colors.text.primary,
+              }}
+            >
+              Explore More Ukrainian Cakes
+            </Typography>
+
+            <Typography
+              component="p"
+              variant="body1"
+              sx={{
+                mb: spacing["2xl"],
+                color: colors.text.secondary,
+                fontSize: typography.fontSize.lg,
+                lineHeight: 1.6,
+              }}
+            >
+              Discover our complete collection of traditional Ukrainian cakes, each made with
+              authentic recipes and premium ingredients.
+            </Typography>
+
+            <Button
+              component={Link}
+              href="/cakes"
+              variant="outlined"
+              size="large"
+              sx={{
+                borderColor: colors.primary.main,
+                color: colors.primary.main,
+                borderWidth: 2,
+                px: 4,
+                py: 1.5,
+                fontSize: typography.fontSize.lg,
+                fontWeight: typography.fontWeight.semibold,
+                borderRadius: 2,
+                textTransform: "none",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": {
+                  backgroundColor: colors.primary.main,
+                  color: colors.primary.contrast,
+                  borderColor: colors.primary.main,
+                  transform: "translateY(-2px)",
+                  boxShadow: shadows.lg,
+                },
+              }}
+            >
+              Browse All Cakes
+            </Button>
+          </Box>
+        </DesignContainer>
+      </Box>
+
       <TrustpilotReviews productName={cake.name} />
 
       <OrderModal
@@ -260,6 +342,6 @@ export function CakePageClient({ cake }: PageProps) {
         designType={designType}
         onDesignTypeChange={handleDesignTypeChange}
       />
-    </>
+    </main>
   );
 }
