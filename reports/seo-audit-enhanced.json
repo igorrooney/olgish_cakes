@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "overallScore": 78,
+    "timestamp": "2025-07-15T23:10:36.169Z",
+    "totalRecommendations": 0,
+    "criticalIssues": 0
+  },
+  "sections": {
+    "metaTags": {
+      "title": {
+        "passed": 1,
+        "failed": 0,
+        "issues": []
+      },
+      "description": {
+        "passed": 0,
+        "failed": 0,
+        "issues": []
+      },
+      "keywords": {
+        "passed": 0,
+        "failed": 0,
+        "issues": []
+      },
+      "ogTags": {
+        "passed": 1,
+        "failed": 0,
+        "issues": []
+      },
+      "twitterTags": {
+        "passed": 0,
+        "failed": 0,
+        "issues": []
+      }
+    },
+    "structuredData": {
+      "organization": true,
+      "breadcrumbs": true,
+      "product": true,
+      "faq": true,
+      "localBusiness": false
+    },
+    "performance": {
+      "imageOptimization": true,
+      "lazyLoading": true,
+      "compression": true,
+      "caching": false,
+      "bundleOptimization": false
+    },
+    "accessibility": {
+      "altText": true,
+      "semanticHTML": true,
+      "focusStates": true,
+      "skipLinks": true,
+      "ariaLabels": true
+    },
+    "contentOptimization": {
+      "keywordOptimization": true,
+      "internalLinking": true,
+      "contentLength": false,
+      "headingStructure": true,
+      "imageOptimization": false
+    },
+    "technicalSEO": {
+      "sitemap": true,
+      "robots": true,
+      "canonical": true,
+      "ssl": false,
+      "mobileFriendly": true
+    }
+  },
+  "recommendations": [],
+  "nextSteps": [
+    "Address high-priority recommendations first",
+    "Implement structured data for better search visibility",
+    "Optimize images and improve page load times",
+    "Ensure all pages have proper meta tags",
+    "Add alt text to all images for accessibility",
+    "Monitor Core Web Vitals in Google Search Console"
+  ]
+}

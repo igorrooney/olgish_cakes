@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
 import { getRevalidateTime } from "@/app/utils/fetchCakes";
+import { CakeStructuredData } from "@/app/components/CakeStructuredData";
 
 // Enable revalidation for this page
 export const revalidate = getRevalidateTime();
@@ -23,7 +24,10 @@ async function getCake(slug: string, preview = false): Promise<Cake | null> {
     designs,
     category,
     ingredients,
-    allergens
+    allergens,
+    mainImage,
+    seo,
+    structuredData
   }`;
 
   const sanityClient = getClient(preview);
@@ -46,15 +50,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const description = cake.shortDescription
-    ? blocksToText(cake.shortDescription)
-    : blocksToText(cake.description);
-  const title = `${cake.name} | Olgish Cakes - Traditional Ukrainian Cakes in Leeds`;
-  const keywords = `${cake.name}, ${cake.category} cake, Ukrainian cake, honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
+  // Use SEO fields if available, otherwise generate from content
+  const metaTitle =
+    cake.seo?.metaTitle ||
+    `${cake.name} | Olgish Cakes - Traditional Ukrainian Honey Cakes in Leeds`;
+  const metaDescription =
+    cake.seo?.metaDescription ||
+    (cake.shortDescription
+      ? blocksToText(cake.shortDescription).substring(0, 160)
+      : `Traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with authentic recipes. Free UK delivery.`);
+
+  const keywords =
+    cake.seo?.keywords?.join(", ") ||
+    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
+
+  const canonicalUrl =
+    cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
 
   return {
-    title,
-    description,
+    title: metaTitle,
+    description: metaDescription,
     keywords,
     authors: [{ name: "Olgish Cakes" }],
     creator: "Olgish Cakes",
@@ -64,32 +79,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       address: false,
       telephone: false,
     },
-    metadataBase: new URL("https://olgish-cakes.vercel.app"),
+    metadataBase: new URL("https://olgishcakes.co.uk"),
     alternates: {
-      canonical: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
-      title,
-      description,
+      title: metaTitle,
+      description: metaDescription,
       type: "website",
-      url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+      url: canonicalUrl,
       siteName: "Olgish Cakes",
       locale: "en_GB",
       images: [
         {
-          url: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
+          url:
+            cake.mainImage?.asset?.url ||
+            `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
           width: 1200,
           height: 630,
-          alt: `${cake.name} - ${cake.category} cake by Olgish Cakes`,
+          alt: `${cake.name} - ${cake.category} honey cake by Olgish Cakes`,
           type: "image/jpeg",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
-      images: [`https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`],
+      title: metaTitle,
+      description: metaDescription,
+      images: [
+        cake.mainImage?.asset?.url ||
+          `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+      ],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
     },
@@ -113,6 +133,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
+      "og:price:amount": cake.pricing.standard.toString(),
+      "og:price:currency": "GBP",
     },
   };
 }
@@ -124,304 +146,10 @@ export default async function CakePage({ params }: PageProps) {
     notFound();
   }
 
-  // Generate structured data for the cake
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: cake.name,
-    description: cake.shortDescription
-      ? blocksToText(cake.shortDescription)
-      : blocksToText(cake.description),
-    image: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
-    url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
-    brand: {
-      "@type": "Brand",
-      name: "Olgish Cakes",
-      url: "https://olgish-cakes.vercel.app",
-    },
-    category: cake.category,
-    // Enhanced SEO properties
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-      {
-        "@type": "Review",
-        author: {
-          "@type": "Person",
-          name: "Verified Customer",
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-        },
-        reviewBody: `Amazing ${cake.name}! The taste is incredible and the quality is outstanding. Highly recommend!`,
-        datePublished: new Date().toISOString().split("T")[0],
-      },
-    ],
-    additionalProperty: [
-      {
-        "@type": "PropertyValue",
-        name: "Size",
-        value: cake.size,
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Ingredients",
-        value: cake.ingredients.join(", "),
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Cake Type",
-        value: "Ukrainian Traditional Cake",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Baking Method",
-        value: "Freshly Baked to Order",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Delivery",
-        value: "Free UK Delivery",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Dietary Options",
-        value:
-          cake.allergens && cake.allergens.length > 0
-            ? "Contains allergens"
-            : "Allergen information available",
-      },
-      ...(cake.allergens && cake.allergens.length > 0
-        ? [
-            {
-              "@type": "PropertyValue",
-              name: "Allergens",
-              value: cake.allergens.join(", "),
-            },
-          ]
-        : []),
-    ],
-    offers: [
-      {
-        "@type": "Offer",
-        name: `${cake.name} - Standard Design`,
-        price: cake.pricing.standard,
-        priceCurrency: "GBP",
-        availability: "https://schema.org/InStock",
-        seller: {
-          "@type": "Organization",
-          name: "Olgish Cakes",
-          url: "https://olgish-cakes.vercel.app",
-          telephone: "+44 786 721 8194",
-          email: "olgish.cakes@gmail.com",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "107 Harehills Lane",
-            addressLocality: "Leeds",
-            postalCode: "LS8 4DN",
-            addressRegion: "West Yorkshire",
-            addressCountry: "GB",
-          },
-        },
-        areaServed: [
-          {
-            "@type": "City",
-            name: "Leeds",
-          },
-          {
-            "@type": "City",
-            name: "York",
-          },
-          {
-            "@type": "City",
-            name: "Bradford",
-          },
-          {
-            "@type": "City",
-            name: "Halifax",
-          },
-          {
-            "@type": "City",
-            name: "Huddersfield",
-          },
-        ],
-        deliveryLeadTime: {
-          "@type": "QuantitativeValue",
-          minValue: 2,
-          maxValue: 5,
-          unitText: "DAY",
-        },
-        shippingDetails: {
-          "@type": "OfferShippingDetails",
-          shippingRate: {
-            "@type": "MonetaryAmount",
-            value: "0",
-            currency: "GBP",
-          },
-          deliveryTime: {
-            "@type": "ShippingDeliveryTime",
-            handlingTime: {
-              "@type": "QuantitativeValue",
-              minValue: 1,
-              maxValue: 3,
-              unitText: "DAY",
-            },
-            transitTime: {
-              "@type": "QuantitativeValue",
-              minValue: 1,
-              maxValue: 2,
-              unitText: "DAY",
-            },
-          },
-        },
-      },
-      ...(cake.pricing.individual
-        ? [
-            {
-              "@type": "Offer",
-              name: `${cake.name} - Custom Design`,
-              price: cake.pricing.individual,
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              seller: {
-                "@type": "Organization",
-                name: "Olgish Cakes",
-                url: "https://olgish-cakes.vercel.app",
-                telephone: "+44 786 721 8194",
-                email: "olgish.cakes@gmail.com",
-                address: {
-                  "@type": "PostalAddress",
-                  streetAddress: "107 Harehills Lane",
-                  addressLocality: "Leeds",
-                  postalCode: "LS8 4DN",
-                  addressRegion: "West Yorkshire",
-                  addressCountry: "GB",
-                },
-              },
-              areaServed: [
-                {
-                  "@type": "City",
-                  name: "Leeds",
-                },
-                {
-                  "@type": "City",
-                  name: "York",
-                },
-                {
-                  "@type": "City",
-                  name: "Bradford",
-                },
-                {
-                  "@type": "City",
-                  name: "Halifax",
-                },
-                {
-                  "@type": "City",
-                  name: "Huddersfield",
-                },
-              ],
-              deliveryLeadTime: {
-                "@type": "QuantitativeValue",
-                minValue: 3,
-                maxValue: 7,
-                unitText: "DAY",
-              },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: "0",
-                  currency: "GBP",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 2,
-                    maxValue: 5,
-                    unitText: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 1,
-                    maxValue: 2,
-                    unitText: "DAY",
-                  },
-                },
-              },
-            },
-          ]
-        : []),
-    ],
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://olgish-cakes.vercel.app",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "All Cakes",
-          item: "https://olgish-cakes.vercel.app/cakes",
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: cake.name,
-          item: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
-        },
-      ],
-    },
-    mainEntity: {
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What is included with this cake?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Each cake comes with free UK delivery and a gift note included. Cakes are freshly baked to order.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How long does delivery take?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "We aim to ship orders within 2-3 working days. For guaranteed delivery on a specific day, please contact us directly.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I customize this cake?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: cake.pricing.individual
-              ? "Yes, we offer custom design options for this cake. Please select the custom design option when ordering."
-              : "This cake is available in our standard design. For custom cakes, please browse our custom cake collection.",
-          },
-        },
-      ],
-    },
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      {/* Structured Data Component */}
+      <CakeStructuredData cake={cake} />
 
       {/* Additional Organization Schema */}
       <script
@@ -431,10 +159,10 @@ export default async function CakePage({ params }: PageProps) {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Olgish Cakes",
-            url: "https://olgish-cakes.vercel.app",
-            logo: "https://olgish-cakes.vercel.app/logo.png",
+            url: "https://olgishcakes.co.uk",
+            logo: "https://olgishcakes.co.uk/logo.png",
             description:
-              "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+              "Authentic Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {
@@ -453,6 +181,51 @@ export default async function CakePage({ params }: PageProps) {
             sameAs: [
               "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
               "https://www.instagram.com/olgish_cakes/",
+            ],
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Ukrainian Honey Cakes",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: cake.name,
+                    category: "Ukrainian Honey Cake",
+                  },
+                },
+              ],
+            },
+          }),
+        }}
+      />
+
+      {/* Breadcrumb Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://olgishcakes.co.uk",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "All Cakes",
+                item: "https://olgishcakes.co.uk/cakes",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: cake.name,
+                item: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+              },
             ],
           }),
         }}
@@ -511,6 +284,11 @@ export default async function CakePage({ params }: PageProps) {
         }}
       />
 
+      {/* Skip to content link for accessibility */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       {/* Breadcrumbs */}
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <nav aria-label="Breadcrumb navigation">
@@ -524,7 +302,9 @@ export default async function CakePage({ params }: PageProps) {
         </nav>
       </Container>
 
-      <CakePageClient cake={cake} />
+      <main id="main-content">
+        <CakePageClient cake={cake} />
+      </main>
     </>
   );
 }

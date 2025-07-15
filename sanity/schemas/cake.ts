@@ -20,6 +20,42 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: "seo",
+      title: "SEO Settings",
+      type: "object",
+      fields: [
+        {
+          name: "metaTitle",
+          title: "Meta Title",
+          type: "string",
+          description: "Title for search engines (50-60 characters recommended)",
+          validation: (Rule: any) =>
+            Rule.max(60).warning("Meta title should be under 60 characters"),
+        },
+        {
+          name: "metaDescription",
+          title: "Meta Description",
+          type: "text",
+          description: "Description for search engines (150-160 characters recommended)",
+          validation: (Rule: any) =>
+            Rule.max(160).warning("Meta description should be under 160 characters"),
+        },
+        {
+          name: "keywords",
+          title: "Keywords",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Relevant keywords for this cake",
+        },
+        {
+          name: "canonicalUrl",
+          title: "Canonical URL",
+          type: "url",
+          description: "Canonical URL if different from the page URL",
+        },
+      ],
+    },
+    {
       name: "description",
       title: "Description",
       type: "array",
@@ -57,12 +93,31 @@ export default {
               },
             ],
           },
+          lists: [
+            { title: "Bullet", value: "bullet" },
+            { title: "Numbered", value: "number" },
+          ],
         },
         {
           type: "image",
           options: {
             hotspot: true,
           },
+          fields: [
+            {
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+              description: "Important for accessibility and SEO",
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "caption",
+              title: "Caption",
+              type: "string",
+              description: "Optional caption for the image",
+            },
+          ],
         },
       ],
       validation: (Rule: any) => Rule.required(),
@@ -105,6 +160,10 @@ export default {
               },
             ],
           },
+          lists: [
+            { title: "Bullet", value: "bullet" },
+            { title: "Numbered", value: "number" },
+          ],
         },
       ],
       description: "A brief summary of the cake with basic formatting",
@@ -151,6 +210,21 @@ export default {
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: "alt",
+          title: "Alternative Text",
+          type: "string",
+          description: "Important for accessibility and SEO",
+          validation: (Rule: any) => Rule.required(),
+        },
+        {
+          name: "caption",
+          title: "Caption",
+          type: "string",
+          description: "Optional caption for the image",
+        },
+      ],
       validation: (Rule: any) => Rule.required(),
     },
     {
@@ -163,6 +237,21 @@ export default {
           options: {
             hotspot: true,
           },
+          fields: [
+            {
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+              description: "Important for accessibility and SEO",
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "caption",
+              title: "Caption",
+              type: "string",
+              description: "Optional caption for the image",
+            },
+          ],
         },
       ],
     },
@@ -218,6 +307,14 @@ export default {
                   name: "alt",
                   title: "Alternative Text",
                   type: "string",
+                  description: "Important for accessibility and SEO",
+                  validation: (Rule: any) => Rule.required(),
+                },
+                {
+                  name: "caption",
+                  title: "Caption",
+                  type: "string",
+                  description: "Optional caption for the image",
                 },
               ],
             },
@@ -244,10 +341,53 @@ export default {
                   name: "alt",
                   title: "Alternative Text",
                   type: "string",
+                  description: "Important for accessibility and SEO",
+                  validation: (Rule: any) => Rule.required(),
+                },
+                {
+                  name: "caption",
+                  title: "Caption",
+                  type: "string",
+                  description: "Optional caption for the image",
                 },
               ],
             },
           ],
+        },
+      ],
+    },
+    {
+      name: "structuredData",
+      title: "Structured Data",
+      type: "object",
+      fields: [
+        {
+          name: "enableProductSchema",
+          title: "Enable Product Schema",
+          type: "boolean",
+          initialValue: true,
+          description: "Add structured data for product information",
+        },
+        {
+          name: "brand",
+          title: "Brand",
+          type: "string",
+          initialValue: "Olgish Cakes",
+          description: "Brand name for structured data",
+        },
+        {
+          name: "availability",
+          title: "Availability",
+          type: "string",
+          options: {
+            list: [
+              { title: "In Stock", value: "InStock" },
+              { title: "Out of Stock", value: "OutOfStock" },
+              { title: "Preorder", value: "PreOrder" },
+              { title: "Discontinued", value: "Discontinued" },
+            ],
+          },
+          initialValue: "InStock",
         },
       ],
     },

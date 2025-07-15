@@ -11,6 +11,7 @@ export interface CakeImage {
   };
   isMain?: boolean;
   alt?: string;
+  caption?: string;
 }
 
 export interface CakeDesigns {
@@ -21,6 +22,19 @@ export interface CakeDesigns {
 export interface CakePricing {
   standard: number;
   individual: number;
+}
+
+export interface CakeSEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  canonicalUrl?: string;
+}
+
+export interface CakeStructuredData {
+  enableProductSchema?: boolean;
+  brand?: string;
+  availability?: "InStock" | "OutOfStock" | "PreOrder" | "Discontinued";
 }
 
 // Utility function to convert rich text blocks to plain text
@@ -46,6 +60,7 @@ export interface Cake {
   slug: {
     current: string;
   };
+  seo?: CakeSEO;
   description: any[]; // Changed from string to any[] for rich text blocks
   shortDescription?: any[]; // Rich text blocks for short description
   size: string;
@@ -54,12 +69,17 @@ export interface Cake {
     _type: string;
     asset?: {
       _ref: string;
+      url?: string;
     };
+    alt?: string;
+    caption?: string;
   };
+  images?: CakeImage[];
   designs: CakeDesigns;
   category: string;
   ingredients: string[];
   allergens?: string[];
+  structuredData?: CakeStructuredData;
 }
 
 export const sizeLabels: Record<CakeSize["name"], string> = {

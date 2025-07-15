@@ -10,14 +10,21 @@ interface RichTextRendererProps {
   value: any[];
   variant?: "body1" | "body2" | "caption";
   sx?: any;
+  structuredData?: boolean;
 }
 
-export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichTextRendererProps) {
+export function RichTextRenderer({
+  value,
+  variant = "body1",
+  sx = {},
+  structuredData = false,
+}: RichTextRendererProps) {
   const components = {
     block: {
       h1: ({ children }: any) => (
         <Typography
           variant="h1"
+          component="h1"
           sx={{
             fontFamily: typography.fontFamily.display,
             fontWeight: typography.fontWeight.bold,
@@ -32,6 +39,7 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
       h2: ({ children }: any) => (
         <Typography
           variant="h2"
+          component="h2"
           sx={{
             fontFamily: typography.fontFamily.display,
             fontWeight: typography.fontWeight.semibold,
@@ -46,6 +54,52 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
       h3: ({ children }: any) => (
         <Typography
           variant="h3"
+          component="h3"
+          sx={{
+            fontFamily: typography.fontFamily.display,
+            fontWeight: typography.fontWeight.semibold,
+            color: colors.text.primary,
+            mb: 1,
+            ...sx,
+          }}
+        >
+          {children}
+        </Typography>
+      ),
+      h4: ({ children }: any) => (
+        <Typography
+          variant="h4"
+          component="h4"
+          sx={{
+            fontFamily: typography.fontFamily.display,
+            fontWeight: typography.fontWeight.semibold,
+            color: colors.text.primary,
+            mb: 1,
+            ...sx,
+          }}
+        >
+          {children}
+        </Typography>
+      ),
+      h5: ({ children }: any) => (
+        <Typography
+          variant="h5"
+          component="h5"
+          sx={{
+            fontFamily: typography.fontFamily.display,
+            fontWeight: typography.fontWeight.semibold,
+            color: colors.text.primary,
+            mb: 1,
+            ...sx,
+          }}
+        >
+          {children}
+        </Typography>
+      ),
+      h6: ({ children }: any) => (
+        <Typography
+          variant="h6"
+          component="h6"
           sx={{
             fontFamily: typography.fontFamily.display,
             fontWeight: typography.fontWeight.semibold,
@@ -74,6 +128,7 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
       ),
       blockquote: ({ children }: any) => (
         <Box
+          component="blockquote"
           sx={{
             borderLeft: `4px solid ${colors.primary.main}`,
             pl: 2,
@@ -90,35 +145,57 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
     },
     list: {
       bullet: ({ children }: any) => (
-        <Box component="ul" sx={{ mb: 1.5, pl: 2 }}>
+        <Box
+          component="ul"
+          sx={{
+            mb: 1.5,
+            pl: 3,
+            listStyleType: "disc",
+            listStylePosition: "outside",
+          }}
+        >
           {children}
         </Box>
       ),
       number: ({ children }: any) => (
-        <Box component="ol" sx={{ mb: 1.5, pl: 2 }}>
+        <Box
+          component="ol"
+          sx={{
+            mb: 1.5,
+            pl: 3,
+            listStyleType: "decimal",
+            listStylePosition: "outside",
+          }}
+        >
           {children}
         </Box>
       ),
     },
     listItem: ({ children }: any) => (
-      <Box component="li" sx={{ mb: 0.5 }}>
+      <Box
+        component="li"
+        sx={{
+          mb: 0.5,
+          display: "list-item",
+        }}
+      >
         {children}
       </Box>
     ),
     marks: {
       strong: ({ children }: any) => (
-        <Box component="span" sx={{ fontWeight: typography.fontWeight.bold }}>
+        <Box component="strong" sx={{ fontWeight: typography.fontWeight.bold }}>
           {children}
         </Box>
       ),
       em: ({ children }: any) => (
-        <Box component="span" sx={{ fontStyle: "italic" }}>
+        <Box component="em" sx={{ fontStyle: "italic" }}>
           {children}
         </Box>
       ),
       code: ({ children }: any) => (
         <Box
-          component="span"
+          component="code"
           sx={{
             backgroundColor: colors.background.subtle,
             fontFamily: "monospace",
@@ -136,6 +213,7 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
           href={value?.href}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`External link to ${value?.href}`}
           sx={{
             color: colors.primary.main,
             textDecoration: "underline",
@@ -151,17 +229,39 @@ export function RichTextRenderer({ value, variant = "body1", sx = {} }: RichText
     types: {
       image: ({ value }: any) => (
         <Box
-          component="img"
-          src={value?.asset?.url}
-          alt={value?.alt || "Cake image from Olgish Cakes"}
-          loading="lazy"
+          component="figure"
           sx={{
-            maxWidth: "100%",
-            height: "auto",
-            borderRadius: 1,
             my: 2,
+            textAlign: "center",
           }}
-        />
+        >
+          <Box
+            component="img"
+            src={value?.asset?.url}
+            alt={value?.alt || "Honey cake image from Olgish Cakes"}
+            loading="lazy"
+            decoding="async"
+            sx={{
+              maxWidth: "100%",
+              height: "auto",
+              borderRadius: 1,
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+          {value?.caption && (
+            <Typography
+              component="figcaption"
+              variant="caption"
+              sx={{
+                mt: 1,
+                color: colors.text.secondary,
+                fontStyle: "italic",
+              }}
+            >
+              {value.caption}
+            </Typography>
+          )}
+        </Box>
       ),
     },
   };
