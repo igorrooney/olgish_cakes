@@ -227,3 +227,272 @@ export function generateProductSchema(product: {
     }),
   };
 }
+
+// Enhanced SEO functions for better optimization
+
+export function generateWebSiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Olgish Cakes",
+    url: "https://olgishcakes.co.uk",
+    description: "Authentic Ukrainian honey cakes and traditional pastries made fresh in Leeds",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://olgishcakes.co.uk/search?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function generateWebPageSchema(page: {
+  name: string;
+  description: string;
+  url: string;
+  breadcrumb?: Array<{ name: string; url: string }>;
+  mainEntity?: any;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: page.name,
+    description: page.description,
+    url: page.url,
+    ...(page.breadcrumb && {
+      breadcrumb: generateBreadcrumbData(page.breadcrumb),
+    }),
+    ...(page.mainEntity && {
+      mainEntity: page.mainEntity,
+    }),
+  };
+}
+
+export function generateAggregateRatingSchema(rating: number, reviewCount: number) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    ratingValue: rating,
+    reviewCount: reviewCount,
+    bestRating: 5,
+    worstRating: 1,
+  };
+}
+
+export function generateReviewSchema(review: {
+  author: string;
+  reviewBody: string;
+  ratingValue: number;
+  datePublished: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    author: {
+      "@type": "Person",
+      name: review.author,
+    },
+    reviewBody: review.reviewBody,
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: review.ratingValue,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    datePublished: review.datePublished,
+  };
+}
+
+export function generateImageObjectSchema(image: {
+  url: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    url: image.url,
+    alt: image.alt,
+    ...(image.width && { width: image.width }),
+    ...(image.height && { height: image.height }),
+  };
+}
+
+export function generateServiceSchema(service: {
+  name: string;
+  description: string;
+  provider: string;
+  areaServed: string[];
+  serviceType: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.name,
+    description: service.description,
+    provider: {
+      "@type": "Organization",
+      name: service.provider,
+    },
+    areaServed: service.areaServed.map(area => ({
+      "@type": "City",
+      name: area,
+    })),
+    serviceType: service.serviceType,
+  };
+}
+
+export function generateEventSchema(event: {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: {
+    name: string;
+    address: string;
+  };
+  organizer: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.name,
+    description: event.description,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    location: {
+      "@type": "Place",
+      name: event.location.name,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: event.location.address,
+      },
+    },
+    organizer: {
+      "@type": "Organization",
+      name: event.organizer,
+    },
+  };
+}
+
+export function generateArticleSchema(article: {
+  headline: string;
+  description: string;
+  author: string;
+  datePublished: string;
+  dateModified: string;
+  image: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.headline,
+    description: article.description,
+    author: {
+      "@type": "Person",
+      name: article.author,
+    },
+    datePublished: article.datePublished,
+    dateModified: article.dateModified,
+    image: article.image,
+    url: article.url,
+    publisher: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://olgishcakes.co.uk/logo.png",
+      },
+    },
+  };
+}
+
+export function generateHowToSchema(howTo: {
+  name: string;
+  description: string;
+  steps: Array<{ text: string; image?: string }>;
+  totalTime: string;
+  tool: string[];
+  supply: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: howTo.name,
+    description: howTo.description,
+    step: howTo.steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      text: step.text,
+      ...(step.image && {
+        image: {
+          "@type": "ImageObject",
+          url: step.image,
+        },
+      }),
+    })),
+    totalTime: howTo.totalTime,
+    tool: howTo.tool,
+    supply: howTo.supply,
+  };
+}
+
+export function generateRecipeSchema(recipe: {
+  name: string;
+  description: string;
+  author: string;
+  datePublished: string;
+  prepTime: string;
+  cookTime: string;
+  totalTime: string;
+  recipeYield: string;
+  recipeCategory: string;
+  recipeCuisine: string;
+  ingredients: string[];
+  instructions: string[];
+  image: string;
+  nutrition?: {
+    calories: string;
+    proteinContent: string;
+    fatContent: string;
+    carbohydrateContent: string;
+  };
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    name: recipe.name,
+    description: recipe.description,
+    author: {
+      "@type": "Person",
+      name: recipe.author,
+    },
+    datePublished: recipe.datePublished,
+    prepTime: recipe.prepTime,
+    cookTime: recipe.cookTime,
+    totalTime: recipe.totalTime,
+    recipeYield: recipe.recipeYield,
+    recipeCategory: recipe.recipeCategory,
+    recipeCuisine: recipe.recipeCuisine,
+    image: recipe.image,
+    ingredients: recipe.ingredients,
+    recipeInstructions: recipe.instructions.map((instruction, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      text: instruction,
+    })),
+    ...(recipe.nutrition && {
+      nutrition: {
+        "@type": "NutritionInformation",
+        calories: recipe.nutrition.calories,
+        proteinContent: recipe.nutrition.proteinContent,
+        fatContent: recipe.nutrition.fatContent,
+        carbohydrateContent: recipe.nutrition.carbohydrateContent,
+      },
+    }),
+  };
+}

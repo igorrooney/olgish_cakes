@@ -261,10 +261,8 @@ export const BodyText = ({ children, ...props }: any) => (
   <Typography
     variant="body1"
     sx={{
-      fontFamily: typography.fontFamily.primary,
-      fontSize: typography.fontSize.base,
-      lineHeight: typography.lineHeight.relaxed,
       color: colors.text.primary,
+      lineHeight: typography.lineHeight.relaxed,
       ...props.sx,
     }}
     {...props}
@@ -280,8 +278,8 @@ export const Container = ({ children, ...props }: any) => (
       maxWidth: "1200px",
       margin: "0 auto",
       padding: {
-        xs: `0 ${spacing.md}`,
-        md: `0 ${spacing.lg}`,
+        xs: spacing.md,
+        md: spacing.lg,
       },
       ...props.sx,
     }}
@@ -293,10 +291,11 @@ export const Container = ({ children, ...props }: any) => (
 
 export const Section = ({ children, ...props }: any) => (
   <Box
+    component="section"
     sx={{
       padding: {
-        xs: `${spacing["2xl"]} 0`,
-        md: `${spacing["4xl"]} 0`,
+        xs: `${spacing.xl} 0`,
+        md: `${spacing["2xl"]} 0`,
       },
       ...props.sx,
     }}
@@ -306,99 +305,165 @@ export const Section = ({ children, ...props }: any) => (
   </Box>
 );
 
-// Accordion Components
+// Accordion Component
 export const StyledAccordion = ({ title, children, ...props }: any) => (
   <Accordion
-    elevation={0}
     sx={{
-      backgroundColor: colors.background.subtle,
-      border: `1px solid ${colors.border.light}`,
-      mb: spacing.sm,
       "&:before": {
         display: "none",
       },
-      ...props.sx,
+      boxShadow: "none",
+      border: `1px solid ${colors.border.light}`,
+      borderRadius: borderRadius.lg,
+      mb: spacing.sm,
+      "&:last-child": {
+        mb: 0,
+      },
+      "&.Mui-expanded": {
+        margin: `${spacing.sm} 0`,
+      },
     }}
     {...props}
   >
     <AccordionSummary
-      expandIcon={<ExpandMore sx={{ color: colors.text.primary }} />}
+      expandIcon={<ExpandMore />}
       sx={{
         "& .MuiAccordionSummary-content": {
-          margin: `${spacing.sm} 0`,
+          margin: `${spacing.md} 0`,
         },
       }}
     >
       <Typography
         variant="h6"
         sx={{
+          fontFamily: typography.fontFamily.display,
           fontWeight: typography.fontWeight.semibold,
           color: colors.text.primary,
-          fontSize: typography.fontSize.lg,
         }}
       >
         {title}
       </Typography>
     </AccordionSummary>
-    <AccordionDetails sx={{ pt: 0 }}>{children}</AccordionDetails>
+    <AccordionDetails
+      sx={{
+        padding: `${spacing.md} ${spacing.lg}`,
+        paddingTop: 0,
+      }}
+    >
+      {children}
+    </AccordionDetails>
   </Accordion>
 );
 
-// Price Display Component
-export const PriceDisplay = ({ price, size = "large", ...props }: any) => (
-  <Typography
-    variant={size === "large" ? "h2" : "h4"}
-    sx={{
-      fontFamily: typography.fontFamily.display,
-      fontWeight: typography.fontWeight.bold,
-      color: colors.primary.main,
-      fontSize:
-        size === "large"
-          ? {
-              xs: typography.fontSize["3xl"],
-              md: typography.fontSize["4xl"],
-            }
-          : typography.fontSize["2xl"],
-      ...props.sx,
-    }}
-    {...props}
-  >
-    £{price}
-  </Typography>
-);
+// Price Display Component with SEO enhancements
+export const PriceDisplay = ({ price, size = "large", label = "", ...props }: any) => {
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: "GBP",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(price);
+  };
 
-// Badge Components
+  const priceText = formatPrice(price);
+  const sizeStyles = {
+    small: {
+      fontSize: typography.fontSize.base,
+      fontWeight: typography.fontWeight.medium,
+    },
+    medium: {
+      fontSize: typography.fontSize.lg,
+      fontWeight: typography.fontWeight.semibold,
+    },
+    large: {
+      fontSize: typography.fontSize.xl,
+      fontWeight: typography.fontWeight.bold,
+    },
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        ...props.sx,
+      }}
+      {...props}
+    >
+      {label && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: colors.text.secondary,
+            fontSize: typography.fontSize.sm,
+            fontWeight: typography.fontWeight.medium,
+            mb: spacing.xs / 2,
+          }}
+        >
+          {label}
+        </Typography>
+      )}
+      <Typography
+        component="span"
+        itemProp="price"
+        content={price.toString()}
+        sx={{
+          color: colors.primary.main,
+          ...sizeStyles[size],
+          fontFamily: typography.fontFamily.display,
+        }}
+      >
+        {priceText}
+      </Typography>
+      <meta itemProp="priceCurrency" content="GBP" />
+      <meta itemProp="availability" content="https://schema.org/InStock" />
+    </Box>
+  );
+};
+
+// Rating Badge Component
 export const RatingBadge = ({ rating, ...props }: any) => (
   <Badge
     badgeContent={rating}
     sx={{
       "& .MuiBadge-badge": {
-        backgroundColor: colors.secondary.main,
-        color: colors.secondary.contrast,
+        backgroundColor: colors.primary.main,
+        color: colors.primary.contrast,
         fontWeight: typography.fontWeight.semibold,
+        fontSize: typography.fontSize.sm,
+        minWidth: "20px",
+        height: "20px",
+        borderRadius: "10px",
       },
       ...props.sx,
     }}
     {...props}
   >
-    <Star sx={{ color: colors.secondary.main }} />
+    <Star sx={{ color: colors.warning.main, fontSize: "1.2rem" }} />
   </Badge>
 );
 
 // Action Button Components
 export const AddToCartButton = ({ onClick, ...props }: any) => (
-  <PrimaryButton
+  <Button
+    variant="contained"
     startIcon={<ShoppingCart />}
     onClick={onClick}
     sx={{
-      width: "100%",
-      py: spacing.md,
+      backgroundColor: colors.primary.main,
+      color: colors.primary.contrast,
+      "&:hover": {
+        backgroundColor: colors.primary.dark,
+      },
+      fontWeight: typography.fontWeight.medium,
       ...props.sx,
     }}
     {...props}
   >
     Add to Cart
-  </PrimaryButton>
+  </Button>
 );
 
 export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
@@ -407,39 +472,38 @@ export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
     sx={{
       color: isFavorite ? colors.error.main : colors.text.secondary,
       "&:hover": {
-        color: colors.error.main,
-        backgroundColor: colors.background.subtle,
+        color: isFavorite ? colors.error.dark : colors.text.primary,
       },
       ...props.sx,
     }}
+    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
     {...props}
   >
     <Favorite />
   </IconButton>
 );
 
-// Contact Components
+// Contact Info Component
 export const ContactInfo = ({ icon, text, ...props }: any) => (
   <Box
     sx={{
       display: "flex",
       alignItems: "center",
       gap: spacing.sm,
-      color: colors.text.secondary,
       ...props.sx,
     }}
     {...props}
   >
     {React.cloneElement(icon, {
       sx: {
-        fontSize: "1.25rem",
         color: colors.primary.main,
+        fontSize: "1.5rem",
       },
     })}
     <Typography
       variant="body2"
       sx={{
-        color: colors.text.secondary,
+        color: colors.text.primary,
         fontWeight: typography.fontWeight.medium,
       }}
     >

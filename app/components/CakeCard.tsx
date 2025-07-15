@@ -45,6 +45,42 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
     return mainImage?.asset?._ref ? urlFor(mainImage).width(800).height(800).url() : placeholderUrl;
   }, [mainImage, placeholderUrl]);
 
+  // Generate SEO-optimized alt text
+  const imageAltText = useMemo(() => {
+    const baseAlt = `${cake.name} - ${cake.category} honey cake`;
+    const description =
+      cake.shortDescription && cake.shortDescription.length > 0
+        ? ` - ${blocksToText(cake.shortDescription)}`
+        : "";
+    const location = " by Olgish Cakes in Leeds";
+    return `${baseAlt}${description}${location}`;
+  }, [cake.name, cake.category, cake.shortDescription]);
+
+  // Generate structured data for the cake card
+  const structuredData = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: cake.name,
+      description: cake.shortDescription
+        ? blocksToText(cake.shortDescription)
+        : `${cake.name} - Traditional Ukrainian honey cake`,
+      category: cake.category || "Ukrainian Honey Cake",
+      brand: {
+        "@type": "Brand",
+        name: "Olgish Cakes",
+      },
+      offers: {
+        "@type": "Offer",
+        price: price,
+        priceCurrency: "GBP",
+        availability: "https://schema.org/InStock",
+        url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+      },
+    }),
+    [cake, price]
+  );
+
   // Memoize event handlers
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
@@ -61,12 +97,23 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       }}
       role="article"
       aria-label={`Cake card for ${cake.name}`}
+      itemScope
+      itemType="https://schema.org/Product"
     >
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
       {/* Image Container with Overlay */}
       <Link
         href={`/cakes/${cake.slug.current}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${cake.name}`}
+        itemProp="url"
       >
         <Box
           sx={{
@@ -76,11 +123,11 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             backgroundColor: colors.background.subtle,
           }}
           role="img"
-          aria-label={`${cake.name} - ${cake.category} cake image`}
+          aria-label={imageAltText}
         >
           <Image
             src={imageUrl}
-            alt={`${cake.name} - ${cake.category} cake by Olgish Cakes${cake.shortDescription && cake.shortDescription.length > 0 ? ` - ${blocksToText(cake.shortDescription)}` : ""}`}
+            alt={imageAltText}
             fill
             style={{
               objectFit: "cover",
@@ -93,6 +140,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             loading={variant === "featured" ? "eager" : "lazy"}
+            itemProp="image"
           />
 
           {/* Elegant Gradient Overlay */}
@@ -155,14 +203,25 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             mb: spacing.xs,
           }}
         >
-          <CategoryChip label={cake.category || "Cake"} />
-          <PriceDisplay price={price} size="medium" />
+          <CategoryChip
+            label={cake.category || "Honey Cake"}
+            aria-label={`Category: ${cake.category || "Honey Cake"}`}
+          />
+          <PriceDisplay
+            price={price}
+            size="large"
+            label="From"
+            itemProp="offers"
+            itemScope
+            itemType="https://schema.org/Offer"
+          />
         </Box>
 
         {/* Title */}
         <Typography
           variant="h6"
           component="h3"
+          itemProp="name"
           sx={{
             fontFamily: typography.fontFamily.display,
             color: colors.text.primary,
@@ -180,46 +239,25 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           {cake.name}
         </Typography>
 
-        {/* Description */}
-        <Box
-          sx={{
-            color: colors.text.secondary,
-            fontStyle: "italic",
-            fontWeight: typography.fontWeight.light,
-            lineHeight: typography.lineHeight.relaxed,
-            minHeight: "3rem",
-            overflow: "hidden",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          {cake.shortDescription && cake.shortDescription.length > 0 ? (
-            <RichTextRenderer
-              value={cake.shortDescription}
-              variant="body2"
-              sx={{
-                color: colors.text.secondary,
-                fontStyle: "italic",
-                fontWeight: typography.fontWeight.light,
-              }}
-            />
-          ) : cake.description && cake.description.length > 0 ? (
-            <RichTextRenderer
-              value={cake.description}
-              variant="body2"
-              sx={{
-                color: colors.text.secondary,
-                fontStyle: "italic",
-                fontWeight: typography.fontWeight.light,
-              }}
-            />
-          ) : (
-            <Typography variant="body2">
-              A delightful artisanal cake crafted with the finest ingredients
-            </Typography>
-          )}
-        </Box>
+        {/* Short Description for SEO */}
+        {cake.shortDescription && (
+          <Typography
+            variant="body2"
+            itemProp="description"
+            sx={{
+              color: colors.text.secondary,
+              lineHeight: typography.lineHeight.relaxed,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              minHeight: "2.5rem",
+            }}
+          >
+            {blocksToText(cake.shortDescription)}
+          </Typography>
+        )}
 
         {/* Action Button */}
         <OutlineButton
@@ -231,6 +269,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             width: "100%",
             fontWeight: typography.fontWeight.medium,
           }}
+          aria-label={`Order ${cake.name} now`}
         >
           Order Now
         </OutlineButton>
