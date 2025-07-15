@@ -73,23 +73,36 @@ export default {
           type: "block",
           styles: [
             { title: "Normal", value: "normal" },
-            { title: "Strong", value: "strong" },
-            { title: "Emphasis", value: "em" },
+            { title: "H1", value: "h1" },
+            { title: "H2", value: "h2" },
+            { title: "H3", value: "h3" },
+            { title: "Quote", value: "blockquote" },
           ],
           marks: {
             decorators: [
               { title: "Strong", value: "strong" },
               { title: "Emphasis", value: "em" },
+              { title: "Code", value: "code" },
             ],
-          },
-          // Ensure unique keys are generated
-          options: {
-            spellCheck: true,
+            annotations: [
+              {
+                title: "URL",
+                name: "link",
+                type: "object",
+                fields: [
+                  {
+                    title: "URL",
+                    name: "href",
+                    type: "url",
+                  },
+                ],
+              },
+            ],
           },
         },
       ],
       description: "A brief summary of the cake with basic formatting",
-      validation: (Rule: any) => Rule.max(1).warning("Short description should be concise"),
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: "size",
