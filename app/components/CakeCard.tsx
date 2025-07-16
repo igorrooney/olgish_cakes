@@ -232,20 +232,17 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           {cake.name}
         </Typography>
 
-        {/* Short Description for SEO */}
+        {/* Hidden description for SEO only */}
         {cake.shortDescription && (
           <Typography
             variant="body2"
             itemProp="description"
             sx={{
-              color: colors.text.secondary,
-              lineHeight: typography.lineHeight.relaxed,
+              position: "absolute",
+              left: "-9999px",
+              width: "1px",
+              height: "1px",
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              minHeight: "2.5rem",
             }}
           >
             {blocksToText(cake.shortDescription)}
