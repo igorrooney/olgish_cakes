@@ -204,7 +204,7 @@ export default function CookiePolicyPage() {
               If you have any questions about our Cookie Policy, please contact us at:
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
-              Email: olgish.cakes@gmail.com
+              Email: hello@olgishcakes.co.uk
             </Typography>
             <Typography variant="body1" sx={{ mb: 1 }}>
               Phone: +44 786 721 8194

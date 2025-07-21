@@ -44,7 +44,7 @@ export default function CakesIlkleyPage() {
               "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-ilkley",
             telephone: "+44 786 721 8194",
-            email: "olgish.cakes@gmail.com",
+            email: "hello@olgishcakes.co.uk",
             address: {
               "@type": "PostalAddress",
               streetAddress: "Allerton Grange",

@@ -80,7 +80,7 @@ export default async function Home() {
     image: "https://olgishcakes.co.uk/images/logo.png",
     url: "https://olgishcakes.co.uk",
     telephone: "+44 786 721 8194",
-    email: "olgish.cakes@gmail.com",
+    email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Allerton Grange",

@@ -96,7 +96,7 @@ const footerLinks = {
 };
 
 const contactInfo = {
-  email: "olgish.cakes@gmail.com",
+  email: "hello@olgishcakes.co.uk",
   phone: "+44 786 721 8194",
   address: "Based in Allerton Grange, Leeds LS17",
   social: [

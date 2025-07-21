@@ -355,7 +355,7 @@ This guide will help you set up and monitor Google Search Console to track SEO p
 
 **For Olgish Cakes Specific:**
 
-- Email: olgish.cakes@gmail.com
+- Email: hello@olgishcakes.co.uk
 - Phone: +44 786 721 8194
 
 This setup will provide comprehensive SEO monitoring and optimization capabilities for Olgish Cakes.

@@ -49,7 +49,7 @@ export default async function CakesBradfordPage() {
               "Fresh, handmade cakes in Bradford. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Bradford and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-bradford",
             telephone: "+44 786 721 8194",
-            email: "olgish.cakes@gmail.com",
+            email: "hello@olgishcakes.co.uk",
             address: {
               "@type": "PostalAddress",
               streetAddress: "Allerton Grange",

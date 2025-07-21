@@ -93,7 +93,7 @@ export function generateOrganizationSchema() {
     description:
       "Authentic Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
     telephone: "+44 786 721 8194",
-    email: "olgish.cakes@gmail.com",
+    email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Allerton Grange",
@@ -122,7 +122,7 @@ export function generateLocalBusinessSchema() {
     url: "https://olgishcakes.co.uk",
     description: "Authentic Ukrainian honey cakes and traditional pastries made fresh in Leeds",
     telephone: "+44 786 721 8194",
-    email: "olgish.cakes@gmail.com",
+    email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Allerton Grange",

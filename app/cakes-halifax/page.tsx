@@ -49,7 +49,7 @@ export default async function CakesHalifaxPage() {
               "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-halifax",
             telephone: "+44 786 721 8194",
-            email: "olgish.cakes@gmail.com",
+            email: "hello@olgishcakes.co.uk",
             address: {
               "@type": "PostalAddress",
               streetAddress: "Allerton Grange",

@@ -65,8 +65,8 @@ Update all social media profiles with the new domain:
 Consider setting up professional email addresses:
 
 - hello@olgishcakes.co.uk
-- orders@olgishcakes.co.uk
-- info@olgishcakes.co.uk
+- hello@olgishcakes.co.uk
+- hello@olgishcakes.co.uk
 
 ### 2. Email Service Providers
 

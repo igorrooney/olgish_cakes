@@ -66,7 +66,7 @@ export default async function UkrainianBakeryLeedsPage() {
       addressCountry: "GB",
     },
     telephone: "+44 786 721 8194",
-    email: "olgish.cakes@gmail.com",
+    email: "hello@olgishcakes.co.uk",
     openingHours: "Mo-Su 09:00-18:00",
     servesCuisine: "Ukrainian",
     priceRange: "££",

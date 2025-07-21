@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const contactEmail = "olgish.cakes@gmail.com"; // Updated email
+  const contactEmail = "hello@olgishcakes.co.uk"; // Updated email
   const contactPhone = "+44 786 721 8194"; // Updated phone number
   const whatsappLink = `https://wa.me/${contactPhone.replace(/\D/g, "")}`;
 

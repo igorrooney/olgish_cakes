@@ -57,7 +57,7 @@ export default function CakeDeliveryPage() {
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
-              email: "olgish.cakes@gmail.com",
+              email: "hello@olgishcakes.co.uk",
               address: {
                 "@type": "PostalAddress",
                 streetAddress: "Allerton Grange",

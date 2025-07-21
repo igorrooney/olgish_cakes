@@ -29,9 +29,9 @@ Your project now uses `olgishcakes.co.uk` consistently throughout the entire cod
 ### 4. Environment Configuration ✅
 
 - **`env.production.template`** - Updated all email addresses and URLs:
-  - `contact@olgishcakes.co.uk`
-  - `orders@olgishcakes.co.uk`
-  - `noreply@olgishcakes.co.uk`
+  - `hello@olgishcakes.co.uk`
+- `hello@olgishcakes.co.uk`
+- `hello@olgishcakes.co.uk`
   - `NEXTAUTH_URL=https://olgishcakes.co.uk`
   - `NEXT_PUBLIC_SANITY_STUDIO_URL=https://olgishcakes.co.uk/studio`
 
@@ -53,7 +53,7 @@ Your project now uses `olgishcakes.co.uk` consistently throughout the entire cod
 ### ✅ Current Domain References
 
 - **Primary domain**: `https://olgishcakes.co.uk` (used consistently)
-- **Email addresses**: `@olgishcakes.co.uk` (contact, orders, noreply)
+- **Email addresses**: `@olgishcakes.co.uk` (hello)
 - **Studio URL**: `https://olgishcakes.co.uk/studio`
 - **Sitemap**: `https://olgishcakes.co.uk/sitemap.xml`
 

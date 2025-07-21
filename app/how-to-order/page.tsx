@@ -76,7 +76,7 @@ export default function HowToOrderPage() {
               {
                 "@type": "HowToStep",
                 name: "Initial Contact",
-                text: "Contact us via phone (+44 786 721 8194), email (olgish.cakes@gmail.com), or our online form to discuss your cake requirements.",
+                text: "Contact us via phone (+44 786 721 8194), email (hello@olgishcakes.co.uk), or our online form to discuss your cake requirements.",
               },
               {
                 "@type": "HowToStep",
@@ -210,7 +210,7 @@ export default function HowToOrderPage() {
                     "Contact us via phone, email, or our online form to discuss your cake requirements",
                   details: [
                     "Call us: +44 786 721 8194",
-                    "Email: olgish.cakes@gmail.com",
+                    "Email: hello@olgishcakes.co.uk",
                     "Online contact form",
                     "WhatsApp messaging available",
                   ],

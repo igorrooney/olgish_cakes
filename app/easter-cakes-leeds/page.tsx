@@ -39,7 +39,7 @@ const structuredData = {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
     telephone: "+44 786 721 8194",
-    email: "olgish.cakes@gmail.com",
+    email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Allerton Grange",
