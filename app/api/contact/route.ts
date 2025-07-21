@@ -6,7 +6,7 @@ if (!process.env.RESEND_API_KEY) {
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const recipientEmail = process.env.CONTACT_EMAIL_TO;
+const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
   if (!recipientEmail) {
@@ -194,7 +194,7 @@ Olgish Cakes
     console.log("Sending email to:", recipientEmail);
 
     const response = await resend.emails.send({
-      from: "Olgish Cakes <onboarding@resend.dev>",
+      from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
       replyTo: email,
       subject: isOrderInquiry
