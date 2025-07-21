@@ -1,12 +1,4 @@
 {
   "version": 2,
-  "framework": "nextjs",
-  "domains": ["olgishcakes.co.uk"],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "https://olgishcakes.co.uk",
-      "permanent": true
-    }
-  ]
+  "framework": "nextjs"
 }
