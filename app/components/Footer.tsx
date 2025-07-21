@@ -98,7 +98,7 @@ const footerLinks = {
 const contactInfo = {
   email: "olgish.cakes@gmail.com",
   phone: "+44 786 721 8194",
-  address: "107 Harehills Lane, Leeds, LS8 4DN, United Kingdom",
+  address: "Based in Allerton Grange, Leeds LS17",
   social: [
     {
       name: "Instagram",

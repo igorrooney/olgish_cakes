@@ -64,9 +64,9 @@ export default function AboutPage() {
           telephone: "+44 786 721 8194",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "107 Harehills Lane",
+            streetAddress: "Allerton Grange",
             addressLocality: "Leeds",
-            postalCode: "LS8 4DN",
+            postalCode: "LS17",
             addressCountry: "GB",
           },
           geo: {

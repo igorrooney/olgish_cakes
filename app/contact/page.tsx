@@ -77,9 +77,9 @@ export default function ContactPage() {
       ],
       address: {
         "@type": "PostalAddress",
-        streetAddress: "107 Harehills Lane",
+        streetAddress: "Allerton Grange",
         addressLocality: "Leeds",
-        postalCode: "LS8 4DN",
+        postalCode: "LS17",
         addressCountry: "GB",
       },
       sameAs: [

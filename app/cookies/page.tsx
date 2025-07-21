@@ -209,9 +209,7 @@ export default function CookiePolicyPage() {
             <Typography variant="body1" sx={{ mb: 1 }}>
               Phone: +44 786 721 8194
             </Typography>
-            <Typography variant="body1">
-              Address: 107 Harehills Lane, Leeds, LS8 4DN, United Kingdom
-            </Typography>
+            <Typography variant="body1">Address: Based in Allerton Grange, Leeds LS17</Typography>
 
             <Box sx={{ mt: 6, textAlign: "center" }}>
               <Button

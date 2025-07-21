@@ -49,9 +49,9 @@ export default function CakePhotographyPage() {
               email: "olgish.cakes@gmail.com",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "107 Harehills Lane",
+                streetAddress: "Allerton Grange",
                 addressLocality: "Leeds",
-                postalCode: "LS8 4DN",
+                postalCode: "LS17",
                 addressRegion: "West Yorkshire",
                 addressCountry: "GB",
               },
