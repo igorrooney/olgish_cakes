@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
       "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
-    url: "https://olgish-cakes.vercel.app/allergen-information",
+    url: "https://olgishcakes.co.uk/allergen-information",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/allergen-information.jpg",
+        url: "https://olgishcakes.co.uk/images/allergen-information.jpg",
         width: 1200,
         height: 630,
         alt: "Allergen Information - Olgish Cakes",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
       "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
-    images: ["https://olgish-cakes.vercel.app/images/allergen-information.jpg"],
+    images: ["https://olgishcakes.co.uk/images/allergen-information.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/allergen-information",
+    canonical: "https://olgishcakes.co.uk/allergen-information",
   },
 };
 
@@ -85,13 +85,13 @@ export default function AllergenInformationPage() {
     name: "Allergen Information - Olgish Cakes",
     description:
       "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
-    url: "https://olgish-cakes.vercel.app/allergen-information",
+    url: "https://olgishcakes.co.uk/allergen-information",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {

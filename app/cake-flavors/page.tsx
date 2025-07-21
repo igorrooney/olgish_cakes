@@ -15,11 +15,11 @@ export const metadata: Metadata = {
       "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
     description:
       "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
-    url: "https://olgish-cakes.vercel.app/cake-flavors",
+    url: "https://olgishcakes.co.uk/cake-flavors",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-cake-flavors.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-cake-flavors.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Flavors - Honey Cake (Medovik) - Olgish Cakes",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
       "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
     description:
       "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-flavors.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-cake-flavors.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-flavors",
+    canonical: "https://olgishcakes.co.uk/cake-flavors",
   },
 };
 
@@ -87,13 +87,13 @@ export default function CakeFlavorsPage() {
     name: "Ukrainian Cake Flavors",
     description:
       "Discover the rich and diverse flavors of traditional Ukrainian cakes. Each flavor tells a story of Ukrainian culture, tradition, and the art of baking.",
-    url: "https://olgish-cakes.vercel.app/cake-flavors",
+    url: "https://olgishcakes.co.uk/cake-flavors",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     itemListElement: cakeFlavors.map((flavor, index) => ({

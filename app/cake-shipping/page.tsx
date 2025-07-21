@@ -11,8 +11,8 @@ export const metadata: Metadata = {
     title: "Cake Shipping | Cake Delivery & Shipping",
     description:
       "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
-    url: "https://olgish-cakes.vercel.app/cake-shipping",
-    images: ["https://olgish-cakes.vercel.app/images/cake-shipping.jpg"],
+    url: "https://olgishcakes.co.uk/cake-shipping",
+    images: ["https://olgishcakes.co.uk/images/cake-shipping.jpg"],
     type: "website",
   },
   twitter: {
@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     title: "Cake Shipping | Cake Delivery & Shipping",
     description:
       "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-shipping.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-shipping.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-shipping",
+    canonical: "https://olgishcakes.co.uk/cake-shipping",
   },
 };
 
@@ -43,7 +43,7 @@ export default function CakeShippingPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -93,7 +93,7 @@ export default function CakeShippingPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/cake-shipping",
+            url: "https://olgishcakes.co.uk/cake-shipping",
           }),
         }}
       />

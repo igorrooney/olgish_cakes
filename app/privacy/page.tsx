@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     title: "Privacy Policy | Olgish Cakes - Data Protection & Privacy",
     description:
       "Learn about how Olgish Cakes protects your privacy and handles your personal data. Our commitment to data protection and your rights.",
-    url: "https://olgish-cakes.vercel.app/privacy",
+    url: "https://olgishcakes.co.uk/privacy",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/privacy-policy.jpg",
+        url: "https://olgishcakes.co.uk/images/privacy-policy.jpg",
         width: 1200,
         height: 630,
         alt: "Privacy Policy - Olgish Cakes",
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     title: "Privacy Policy | Olgish Cakes - Data Protection & Privacy",
     description:
       "Learn about how Olgish Cakes protects your privacy and handles your personal data. Our commitment to data protection and your rights.",
-    images: ["https://olgish-cakes.vercel.app/images/privacy-policy.jpg"],
+    images: ["https://olgishcakes.co.uk/images/privacy-policy.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/privacy",
+    canonical: "https://olgishcakes.co.uk/privacy",
   },
 };
 
@@ -52,13 +52,13 @@ export default function PrivacyPolicyPage() {
     name: "Privacy Policy - Olgish Cakes",
     description:
       "Learn about how Olgish Cakes protects your privacy and handles your personal data. Our commitment to data protection and your rights.",
-    url: "https://olgish-cakes.vercel.app/privacy",
+    url: "https://olgishcakes.co.uk/privacy",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {

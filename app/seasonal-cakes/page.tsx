@@ -17,11 +17,11 @@ export const metadata: Metadata = {
     title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
     description:
       "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
-    url: "https://olgish-cakes.vercel.app/seasonal-cakes",
+    url: "https://olgishcakes.co.uk/seasonal-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/seasonal-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/seasonal-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Seasonal Ukrainian Cakes - Olgish Cakes",
@@ -35,10 +35,10 @@ export const metadata: Metadata = {
     title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
     description:
       "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/seasonal-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/seasonal-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/seasonal-cakes",
+    canonical: "https://olgishcakes.co.uk/seasonal-cakes",
   },
 };
 
@@ -60,7 +60,7 @@ export default async function SeasonalCakesPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -104,7 +104,7 @@ export default async function SeasonalCakesPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/seasonal-cakes",
+            url: "https://olgishcakes.co.uk/seasonal-cakes",
           }),
         }}
       />

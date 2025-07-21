@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
     description:
       "Traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Pudsey.",
-    url: "https://olgish-cakes.vercel.app/cakes-pudsey",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-pudsey.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-pudsey",
+    images: ["https://olgishcakes.co.uk/images/cakes-pudsey.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
     description:
       "Traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Pudsey.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-pudsey.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-pudsey.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-pudsey",
+    canonical: "https://olgishcakes.co.uk/cakes-pudsey",
   },
 };
 
@@ -40,7 +40,7 @@ export default async function CakesPudseyPage() {
     name: "Ukrainian Cakes in Pudsey",
     description:
       "Authentic Ukrainian cakes available in Pudsey, Leeds. Traditional recipes and custom designs.",
-    url: "https://olgish-cakes.vercel.app/cakes-pudsey",
+    url: "https://olgishcakes.co.uk/cakes-pudsey",
   };
 
   return (

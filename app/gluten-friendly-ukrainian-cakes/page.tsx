@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
-    url: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
+    url: "https://olgishcakes.co.uk/gluten-friendly-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/gluten-friendly-ukrainian-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/gluten-friendly-ukrainian-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Gluten-Friendly Ukrainian Cakes Leeds - Olgish Cakes",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
-    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-ukrainian-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/gluten-friendly-ukrainian-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
+    canonical: "https://olgishcakes.co.uk/gluten-friendly-ukrainian-cakes",
   },
 };
 
@@ -55,11 +55,11 @@ export default function GlutenFriendlyUkrainianCakesPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
             },
             serviceType: "Gluten-Friendly Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/gluten-friendly-ukrainian-cakes",
+            url: "https://olgishcakes.co.uk/gluten-friendly-ukrainian-cakes",
           }),
         }}
       />

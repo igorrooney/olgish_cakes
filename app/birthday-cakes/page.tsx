@@ -18,11 +18,11 @@ export const metadata: Metadata = {
       "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
     description:
       "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
-    url: "https://olgish-cakes.vercel.app/birthday-cakes",
+    url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/birthday-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/birthday-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Beautiful Birthday Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
       "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
     description:
       "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
-    images: ["https://olgish-cakes.vercel.app/images/birthday-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/birthday-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/birthday-cakes",
+    canonical: "https://olgishcakes.co.uk/birthday-cakes",
   },
 };
 
@@ -82,13 +82,13 @@ export default async function BirthdayCakesPage() {
     name: "Birthday Cakes Leeds",
     description:
       "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages with traditional Ukrainian flavors like honey cake (Medovik).",
-    url: "https://olgish-cakes.vercel.app/birthday-cakes",
+    url: "https://olgishcakes.co.uk/birthday-cakes",
     provider: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     areaServed: {

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
       "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and surrounding areas.",
-    url: "https://olgish-cakes.vercel.app/cakes-leeds",
+    url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cakes-leeds.jpg",
+        url: "https://olgishcakes.co.uk/images/cakes-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Fresh Cakes Leeds - Olgish Cakes Ukrainian Bakery",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
       "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/cakes-leeds",
   },
 };
 
@@ -56,7 +56,7 @@ export default async function CakesLeedsPage() {
             name: "Olgish Cakes - Leeds Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-leeds",
+            url: "https://olgishcakes.co.uk/cakes-leeds",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

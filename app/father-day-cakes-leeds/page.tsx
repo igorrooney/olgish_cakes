@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Father's Day Cakes Leeds | Ukrainian Father's Day Cakes",
     description:
       "Special Ukrainian Father's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique Father's Day designs.",
-    url: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/fathers-day-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/father-day-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/fathers-day-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Father's Day Cakes Leeds | Ukrainian Father's Day Cakes",
     description:
       "Special Ukrainian Father's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique Father's Day designs.",
-    images: ["https://olgish-cakes.vercel.app/images/fathers-day-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/fathers-day-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/father-day-cakes-leeds",
   },
 };
 
@@ -38,7 +38,7 @@ export default async function FathersDayCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Father's Day Cakes in Leeds",
     description: "Traditional Ukrainian Father's Day cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/father-day-cakes-leeds",
+    url: "https://olgishcakes.co.uk/father-day-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

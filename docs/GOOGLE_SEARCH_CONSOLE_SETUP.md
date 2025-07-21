@@ -10,7 +10,7 @@ This guide will help you set up and monitor Google Search Console to track SEO p
 
 1. Go to [Google Search Console](https://search.google.com/search-console)
 2. Click "Add Property"
-3. Enter your domain: `https://olgish-cakes.vercel.app`
+3. Enter your domain: `https://olgishcakes.co.uk`
 4. Choose "Domain" property type (recommended)
 
 ### 1.2 Verify Ownership
@@ -38,13 +38,13 @@ This guide will help you set up and monitor Google Search Console to track SEO p
 ### 2.2 Submit Sitemap
 
 1. Go to Sitemaps section
-2. Submit your sitemap URL: `https://olgish-cakes.vercel.app/sitemap.xml`
+2. Submit your sitemap URL: `https://olgishcakes.co.uk/sitemap.xml`
 3. Monitor for any errors
 
 ### 2.3 Set Preferred Domain
 
 1. Go to Settings > Domain settings
-2. Set preferred domain to `https://olgish-cakes.vercel.app`
+2. Set preferred domain to `https://olgishcakes.co.uk`
 3. Ensure HTTPS is preferred
 
 ## Step 3: Key Reports to Monitor

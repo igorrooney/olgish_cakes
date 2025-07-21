@@ -17,11 +17,11 @@ export const metadata: Metadata = {
       "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
     description:
       "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+    url: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-bakery-leeds.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Bakery Leeds - Authentic Ukrainian Cakes - Honey Cake (Medovik) by Olgish Cakes",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
       "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
     description:
       "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-bakery-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+    canonical: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
   },
 };
 
@@ -53,10 +53,10 @@ export default async function UkrainianBakeryLeedsPage() {
     name: "Olgish Cakes - Ukrainian Bakery Leeds",
     description:
       "Authentic Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using authentic recipes and techniques.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-bakery-leeds",
+    url: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
     logo: {
       "@type": "ImageObject",
-      url: "https://olgish-cakes.vercel.app/logo.png",
+      url: "https://olgishcakes.co.uk/logo.png",
     },
     address: {
       "@type": "PostalAddress",

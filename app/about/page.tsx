@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds | Honey Cake & Medovik",
     description:
       "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cake (Medovik), Kyiv cakes & custom celebration cakes using time-honored recipes.",
-    url: "https://olgish-cakes.vercel.app/about",
+    url: "https://olgishcakes.co.uk/about",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/about-baker.jpg",
+        url: "https://olgishcakes.co.uk/images/about-baker.jpg",
         width: 1200,
         height: 630,
         alt: "Olga from Olgish Cakes - Ukrainian Baker in Leeds - Honey Cake & Medovik",
@@ -30,10 +30,10 @@ export const metadata: Metadata = {
     title: "About Olgish Cakes | Traditional Ukrainian Bakery in Leeds | Honey Cake & Medovik",
     description:
       "Discover authentic Ukrainian cakes in Leeds at Olgish Cakes. Professional baker Olga creates traditional honey cake (Medovik), Kyiv cakes & custom celebration cakes using time-honored recipes.",
-    images: ["https://olgish-cakes.vercel.app/images/about-baker.jpg"],
+    images: ["https://olgishcakes.co.uk/images/about-baker.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/about",
+    canonical: "https://olgishcakes.co.uk/about",
   },
 };
 
@@ -58,9 +58,9 @@ export default function AboutPage() {
           "@context": "https://schema.org",
           "@type": "BakeryBusiness",
           name: "Olgish Cakes",
-          image: "https://olgish-cakes.vercel.app/images/about-baker.jpg",
-          "@id": "https://olgish-cakes.vercel.app",
-          url: "https://olgish-cakes.vercel.app",
+          image: "https://olgishcakes.co.uk/images/about-baker.jpg",
+          "@id": "https://olgishcakes.co.uk",
+          url: "https://olgishcakes.co.uk",
           telephone: "+44 786 721 8194",
           address: {
             "@type": "PostalAddress",

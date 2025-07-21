@@ -121,7 +121,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       images: [imageUrl],
     },
     alternates: {
-      canonical: `https://olgish-cakes.vercel.app/blog/${params.slug}`,
+      canonical: `https://olgishcakes.co.uk/blog/${params.slug}`,
     },
   };
 }
@@ -153,14 +153,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://olgish-cakes.vercel.app/blog/${params.slug}`,
+      "@id": `https://olgishcakes.co.uk/blog/${params.slug}`,
     },
   };
 

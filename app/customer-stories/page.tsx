@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     title: "Customer Stories | Cake Testimonials",
     description:
       "Read real customer stories and testimonials about Olgish Cakes. Discover why our customers love our Ukrainian cakes and service.",
-    url: "https://olgish-cakes.vercel.app/customer-stories",
-    images: ["https://olgish-cakes.vercel.app/images/customer-stories.jpg"],
+    url: "https://olgishcakes.co.uk/customer-stories",
+    images: ["https://olgishcakes.co.uk/images/customer-stories.jpg"],
     type: "website",
   },
   twitter: {
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     title: "Customer Stories | Cake Testimonials",
     description:
       "Read real customer stories and testimonials about Olgish Cakes. Discover why our customers love our Ukrainian cakes and service.",
-    images: ["https://olgish-cakes.vercel.app/images/customer-stories.jpg"],
+    images: ["https://olgishcakes.co.uk/images/customer-stories.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/customer-stories",
+    canonical: "https://olgishcakes.co.uk/customer-stories",
   },
 };
 
@@ -49,7 +49,7 @@ export default async function CustomerStoriesPage() {
     "@type": "WebPage",
     name: "Customer Stories",
     description: "Read real customer stories and testimonials about Olgish Cakes.",
-    url: "https://olgish-cakes.vercel.app/customer-stories",
+    url: "https://olgishcakes.co.uk/customer-stories",
   };
 
   return (

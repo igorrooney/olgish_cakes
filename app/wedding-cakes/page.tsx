@@ -18,11 +18,11 @@ export const metadata: Metadata = {
       "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
     description:
       "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs. Wedding cake consultation and delivery service available.",
-    url: "https://olgish-cakes.vercel.app/wedding-cakes",
+    url: "https://olgishcakes.co.uk/wedding-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/wedding-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/wedding-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Beautiful Wedding Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
       "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
     description:
       "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
-    images: ["https://olgish-cakes.vercel.app/images/wedding-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/wedding-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/wedding-cakes",
+    canonical: "https://olgishcakes.co.uk/wedding-cakes",
   },
 };
 
@@ -86,15 +86,15 @@ export default async function WeddingCakesPage() {
     name: "Wedding Cakes Leeds",
     description:
       "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
-    url: "https://olgish-cakes.vercel.app/wedding-cakes",
+    url: "https://olgishcakes.co.uk/wedding-cakes",
     provider: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
-      url: "https://olgish-cakes.vercel.app",
+      url: "https://olgishcakes.co.uk",
       telephone: "+44 786 721 8194",
       address: {
         "@type": "PostalAddress",
@@ -135,13 +135,13 @@ export default async function WeddingCakesPage() {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://olgish-cakes.vercel.app",
+          item: "https://olgishcakes.co.uk",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Wedding Cakes",
-          item: "https://olgish-cakes.vercel.app/wedding-cakes",
+          item: "https://olgishcakes.co.uk/wedding-cakes",
         },
       ],
     },

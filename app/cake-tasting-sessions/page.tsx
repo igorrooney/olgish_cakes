@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
-    url: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
-    images: ["https://olgish-cakes.vercel.app/images/cake-tasting-sessions.jpg"],
+    url: "https://olgishcakes.co.uk/cake-tasting-sessions",
+    images: ["https://olgishcakes.co.uk/images/cake-tasting-sessions.jpg"],
     type: "website",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-tasting-sessions.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-tasting-sessions.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
+    canonical: "https://olgishcakes.co.uk/cake-tasting-sessions",
   },
 };
 
@@ -44,7 +44,7 @@ export default function CakeTastingSessionsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -88,7 +88,7 @@ export default function CakeTastingSessionsPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/cake-tasting-sessions",
+            url: "https://olgishcakes.co.uk/cake-tasting-sessions",
           }),
         }}
       />

@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
-    url: "https://olgish-cakes.vercel.app/honey-cake-history",
+    url: "https://olgishcakes.co.uk/honey-cake-history",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/honey-cake-history.jpg",
+        url: "https://olgishcakes.co.uk/images/honey-cake-history.jpg",
         width: 1200,
         height: 630,
         alt: "Honey Cake History - Ukrainian Honey Cake Traditions",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
-    images: ["https://olgish-cakes.vercel.app/images/honey-cake-history.jpg"],
+    images: ["https://olgishcakes.co.uk/images/honey-cake-history.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/honey-cake-history",
+    canonical: "https://olgishcakes.co.uk/honey-cake-history",
   },
 };
 
@@ -51,7 +51,7 @@ export default function HoneyCakeHistoryPage() {
             "@type": "WebPage",
             name: "History of Ukrainian Honey Cake",
             description: "Learn about the history and tradition of Ukrainian honey cake (medovik).",
-            url: "https://olgish-cakes.vercel.app/honey-cake-history",
+            url: "https://olgishcakes.co.uk/honey-cake-history",
           }),
         }}
       />

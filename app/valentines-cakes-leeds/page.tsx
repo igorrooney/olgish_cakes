@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs.",
     type: "website",
-    url: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
+    url: "https://olgishcakes.co.uk/valentines-cakes-leeds",
     images: [
       {
         url: "/images/cakes/valentine-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/valentines-cakes-leeds",
   },
 };
 
@@ -57,7 +57,7 @@ const structuredData = {
   areaServed: "Leeds",
   availableChannel: {
     "@type": "ServiceChannel",
-    serviceUrl: "https://olgish-cakes.vercel.app/valentines-cakes-leeds",
+    serviceUrl: "https://olgishcakes.co.uk/valentines-cakes-leeds",
   },
 };
 

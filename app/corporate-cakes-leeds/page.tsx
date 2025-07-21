@@ -29,11 +29,11 @@ export const metadata: Metadata = {
     title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service for meetings, conferences, and office celebrations.",
-    url: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
+    url: "https://olgishcakes.co.uk/corporate-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/corporate-cakes-leeds.jpg",
+        url: "https://olgishcakes.co.uk/images/corporate-cakes-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Corporate Cakes Leeds - Business Catering by Olgish Cakes",
@@ -47,10 +47,10 @@ export const metadata: Metadata = {
     title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service.",
-    images: ["https://olgish-cakes.vercel.app/images/corporate-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/corporate-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/corporate-cakes-leeds",
   },
 };
 
@@ -143,11 +143,11 @@ export default function CorporateCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
             },
             serviceType: "Corporate Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/corporate-cakes-leeds",
+            url: "https://olgishcakes.co.uk/corporate-cakes-leeds",
           }),
         }}
       />

@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes",
     description:
       "Special Ukrainian retirement cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique retirement celebration designs.",
-    url: "https://olgish-cakes.vercel.app/retirement-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/retirement-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/retirement-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/retirement-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes",
     description:
       "Special Ukrainian retirement cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique retirement celebration designs.",
-    images: ["https://olgish-cakes.vercel.app/images/retirement-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/retirement-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/retirement-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/retirement-cakes-leeds",
   },
 };
 
@@ -38,7 +38,7 @@ export default async function RetirementCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Retirement Cakes in Leeds",
     description: "Traditional Ukrainian retirement cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/retirement-cakes-leeds",
+    url: "https://olgishcakes.co.uk/retirement-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
-    url: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/egg-free-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/egg-free-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/egg-free-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/egg-free-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/egg-free-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/egg-free-cakes-leeds",
   },
 };
 
@@ -38,7 +38,7 @@ export default async function EggFreeCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Egg-Free Cakes in Leeds",
     description: "Traditional Ukrainian egg-free cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/egg-free-cakes-leeds",
+    url: "https://olgishcakes.co.uk/egg-free-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

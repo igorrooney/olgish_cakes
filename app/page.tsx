@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
     description:
       "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients and exceptional taste.",
-    url: "https://olgish-cakes.vercel.app",
+    url: "https://olgishcakes.co.uk",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/hero-cake.jpg",
+        url: "https://olgishcakes.co.uk/images/hero-cake.jpg",
         width: 1200,
         height: 630,
         alt: "Authentic Ukrainian Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
     title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
     description:
       "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/hero-cake.jpg"],
+    images: ["https://olgishcakes.co.uk/images/hero-cake.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app",
+    canonical: "https://olgishcakes.co.uk",
   },
 };
 
@@ -77,8 +77,8 @@ export default async function Home() {
     name: "Olgish Cakes",
     description:
       "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
-    image: "https://olgish-cakes.vercel.app/images/logo.png",
-    url: "https://olgish-cakes.vercel.app",
+    image: "https://olgishcakes.co.uk/images/logo.png",
+    url: "https://olgishcakes.co.uk",
     telephone: "+44 786 721 8194",
     email: "olgish.cakes@gmail.com",
     address: {
@@ -115,7 +115,7 @@ export default async function Home() {
     ],
     priceRange: "££",
     servesCuisine: "Ukrainian",
-    hasMenu: "https://olgish-cakes.vercel.app/cakes",
+    hasMenu: "https://olgishcakes.co.uk/cakes",
     areaServed: [
       { "@type": "City", name: "Leeds" },
       { "@type": "City", name: "York" },

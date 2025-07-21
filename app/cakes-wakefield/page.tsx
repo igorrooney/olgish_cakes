@@ -18,11 +18,11 @@ export const metadata: Metadata = {
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and surrounding areas.",
-    url: "https://olgish-cakes.vercel.app/cakes-wakefield",
+    url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cakes-wakefield.jpg",
+        url: "https://olgishcakes.co.uk/images/cakes-wakefield.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cakes Wakefield - Olgish Cakes Delivery Service",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-wakefield.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-wakefield.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-wakefield",
+    canonical: "https://olgishcakes.co.uk/cakes-wakefield",
   },
 };
 
@@ -59,7 +59,7 @@ export default async function CakesWakefieldPage() {
             name: "Olgish Cakes - Wakefield Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Wakefield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Wakefield and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-wakefield",
+            url: "https://olgishcakes.co.uk/cakes-wakefield",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

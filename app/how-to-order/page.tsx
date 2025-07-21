@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders",
     description:
       "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information. Easy cake ordering in Leeds.",
-    url: "https://olgish-cakes.vercel.app/how-to-order",
+    url: "https://olgishcakes.co.uk/how-to-order",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/how-to-order.jpg",
+        url: "https://olgishcakes.co.uk/images/how-to-order.jpg",
         width: 1200,
         height: 630,
         alt: "How to Order Cake - Olgish Cakes",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders",
     description:
       "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information.",
-    images: ["https://olgish-cakes.vercel.app/images/how-to-order.jpg"],
+    images: ["https://olgishcakes.co.uk/images/how-to-order.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/how-to-order",
+    canonical: "https://olgishcakes.co.uk/how-to-order",
   },
 };
 
@@ -65,7 +65,7 @@ export default function HowToOrderPage() {
             name: "How to Order a Ukrainian Cake",
             description:
               "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information. Easy cake ordering in Leeds.",
-            image: "https://olgish-cakes.vercel.app/images/how-to-order.jpg",
+            image: "https://olgishcakes.co.uk/images/how-to-order.jpg",
             totalTime: "PT30M",
             estimatedCost: {
               "@type": "MonetaryAmount",
@@ -104,7 +104,7 @@ export default function HowToOrderPage() {
                 text: "Your cake is delivered fresh and beautiful, with final payment due upon delivery.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/how-to-order",
+            url: "https://olgishcakes.co.uk/how-to-order",
           }),
         }}
       />

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Preservation | How to Store Cakes",
     description:
       "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
-    url: "https://olgish-cakes.vercel.app/cake-preservation",
-    images: ["https://olgish-cakes.vercel.app/images/cake-preservation.jpg"],
+    url: "https://olgishcakes.co.uk/cake-preservation",
+    images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Cake Preservation | How to Store Cakes",
     description:
       "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-preservation.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-preservation",
+    canonical: "https://olgishcakes.co.uk/cake-preservation",
   },
 };
 
@@ -77,7 +77,7 @@ export default function CakePreservationPage() {
             name: "How to Preserve and Store Cakes",
             description:
               "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
-            image: "https://olgish-cakes.vercel.app/images/cake-preservation.jpg",
+            image: "https://olgishcakes.co.uk/images/cake-preservation.jpg",
             totalTime: "PT5M",
             estimatedCost: {
               "@type": "MonetaryAmount",
@@ -124,7 +124,7 @@ export default function CakePreservationPage() {
                 text: "Label frozen cakes with date and type, and monitor freshness regularly.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/cake-preservation",
+            url: "https://olgishcakes.co.uk/cake-preservation",
           }),
         }}
       />

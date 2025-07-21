@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
     description:
       "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
-    url: "https://olgish-cakes.vercel.app/celebration-cakes",
+    url: "https://olgishcakes.co.uk/celebration-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/celebration-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/celebration-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Beautiful Celebration Cakes Leeds - Olgish Cakes",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
     description:
       "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more.",
-    images: ["https://olgish-cakes.vercel.app/images/celebration-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/celebration-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/celebration-cakes",
+    canonical: "https://olgishcakes.co.uk/celebration-cakes",
   },
 };
 
@@ -67,7 +67,7 @@ export default async function CelebrationCakesPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -118,7 +118,7 @@ export default async function CelebrationCakesPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/celebration-cakes",
+            url: "https://olgishcakes.co.uk/celebration-cakes",
           }),
         }}
       />

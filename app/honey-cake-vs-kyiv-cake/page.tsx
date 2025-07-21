@@ -28,11 +28,11 @@ export const metadata: Metadata = {
     title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Traditional Ukrainian Desserts",
     description:
       "Compare honey cake vs Kyiv cake: two iconic Ukrainian desserts. Learn the differences in ingredients, taste, history, and preparation.",
-    url: "https://olgish-cakes.vercel.app/honey-cake-vs-kyiv-cake",
+    url: "https://olgishcakes.co.uk/honey-cake-vs-kyiv-cake",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/honey-cake-vs-kyiv-cake.jpg",
+        url: "https://olgishcakes.co.uk/images/honey-cake-vs-kyiv-cake.jpg",
         width: 1200,
         height: 630,
         alt: "Honey Cake vs Kyiv Cake Comparison - Olgish Cakes",
@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Traditional Ukrainian Desserts",
     description:
       "Compare honey cake vs Kyiv cake: two iconic Ukrainian desserts. Learn the differences in ingredients, taste, history, and preparation.",
-    images: ["https://olgish-cakes.vercel.app/images/honey-cake-vs-kyiv-cake.jpg"],
+    images: ["https://olgishcakes.co.uk/images/honey-cake-vs-kyiv-cake.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/honey-cake-vs-kyiv-cake",
+    canonical: "https://olgishcakes.co.uk/honey-cake-vs-kyiv-cake",
   },
 };
 
@@ -66,7 +66,7 @@ export default function HoneyCakeVsKyivCakePage() {
             name: "Honey Cake vs Kyiv Cake",
             description:
               "Compare Ukrainian honey cake (medovik) and Kyiv cake. Learn about their differences and traditions.",
-            url: "https://olgish-cakes.vercel.app/honey-cake-vs-kyiv-cake",
+            url: "https://olgishcakes.co.uk/honey-cake-vs-kyiv-cake",
           }),
         }}
       />

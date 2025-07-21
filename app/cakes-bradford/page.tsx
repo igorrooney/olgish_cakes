@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
-    url: "https://olgish-cakes.vercel.app/cakes-bradford",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-bradford.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-bradford",
+    images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
     type: "website",
   },
   twitter: {
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-bradford.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-bradford",
+    canonical: "https://olgishcakes.co.uk/cakes-bradford",
   },
 };
 
@@ -47,7 +47,7 @@ export default async function CakesBradfordPage() {
             name: "Olgish Cakes - Bradford Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Bradford. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Bradford and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-bradford",
+            url: "https://olgishcakes.co.uk/cakes-bradford",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

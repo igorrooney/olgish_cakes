@@ -15,18 +15,15 @@ function processFile(filePath) {
     let updatedContent = content;
     let replacements = 0;
 
-    // Replace olgishcakes.com with olgish-cakes.vercel.app
+    // Replace olgishcakes.com with olgishcakes.co.uk
     const olgishcakesComRegex = /https:\/\/olgishcakes\.com/g;
-    updatedContent = updatedContent.replace(olgishcakesComRegex, "https://olgish-cakes.vercel.app");
+    updatedContent = updatedContent.replace(olgishcakesComRegex, "https://olgishcakes.co.uk");
     replacements += (content.match(olgishcakesComRegex) || []).length;
 
-    // Replace olgishcakes.co.uk with olgish-cakes.vercel.app
-    const olgishcakesCoUkRegex = /https:\/\/olgishcakes\.co\.uk/g;
-    updatedContent = updatedContent.replace(
-      olgishcakesCoUkRegex,
-      "https://olgish-cakes.vercel.app"
-    );
-    replacements += (content.match(olgishcakesCoUkRegex) || []).length;
+    // Replace olgish-cakes.vercel.app with olgishcakes.co.uk
+    const olgishCakesVercelRegex = /https:\/\/olgish-cakes\.vercel\.app/g;
+    updatedContent = updatedContent.replace(olgishCakesVercelRegex, "https://olgishcakes.co.uk");
+    replacements += (content.match(olgishCakesVercelRegex) || []).length;
 
     if (replacements > 0) {
       fs.writeFileSync(filePath, updatedContent, "utf8");

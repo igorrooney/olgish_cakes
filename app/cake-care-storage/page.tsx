@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips",
     description:
       "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh. Professional cake storage advice.",
-    url: "https://olgish-cakes.vercel.app/cake-care-storage",
+    url: "https://olgishcakes.co.uk/cake-care-storage",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cake-care-storage.jpg",
+        url: "https://olgishcakes.co.uk/images/cake-care-storage.jpg",
         width: 1200,
         height: 630,
         alt: "Cake Care and Storage - Olgish Cakes",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips",
     description:
       "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-care-storage.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-care-storage.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-care-storage",
+    canonical: "https://olgishcakes.co.uk/cake-care-storage",
   },
 };
 
@@ -65,7 +65,7 @@ export default function CakeCareStoragePage() {
             name: "How to Care for and Store Ukrainian Cakes",
             description:
               "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh. Professional cake storage advice.",
-            image: "https://olgish-cakes.vercel.app/images/cake-care-storage.jpg",
+            image: "https://olgishcakes.co.uk/images/cake-care-storage.jpg",
             totalTime: "PT10M",
             estimatedCost: {
               "@type": "MonetaryAmount",
@@ -118,7 +118,7 @@ export default function CakeCareStoragePage() {
                 text: "Bring to room temperature before serving for best flavor and texture.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/cake-care-storage",
+            url: "https://olgishcakes.co.uk/cake-care-storage",
           }),
         }}
       />

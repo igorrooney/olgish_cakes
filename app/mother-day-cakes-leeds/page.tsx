@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes",
     description:
       "Beautiful Ukrainian Mother's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and special Mother's Day designs.",
-    url: "https://olgish-cakes.vercel.app/mother-day-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/mothers-day-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/mother-day-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/mothers-day-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes",
     description:
       "Beautiful Ukrainian Mother's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and special Mother's Day designs.",
-    images: ["https://olgish-cakes.vercel.app/images/mothers-day-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/mothers-day-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/mother-day-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/mother-day-cakes-leeds",
   },
 };
 
@@ -38,7 +38,7 @@ export default async function MothersDayCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Mother's Day Cakes in Leeds",
     description: "Traditional Ukrainian Mother's Day cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/mother-day-cakes-leeds",
+    url: "https://olgishcakes.co.uk/mother-day-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

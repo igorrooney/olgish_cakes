@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Dairy-Free Cakes Leeds | Ukrainian Dairy-Free Cakes",
     description:
       "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake and traditional Ukrainian desserts.",
-    url: "https://olgish-cakes.vercel.app/dairy-free-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/dairy-free-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/dairy-free-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/dairy-free-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     title: "Dairy-Free Cakes Leeds | Ukrainian Dairy-Free Cakes",
     description:
       "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/dairy-free-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/dairy-free-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/dairy-free-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/dairy-free-cakes-leeds",
   },
 };
 
@@ -49,11 +49,11 @@ export default async function DairyFreeCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
             },
             serviceType: "Dairy-Free Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/dairy-free-cakes-leeds",
+            url: "https://olgishcakes.co.uk/dairy-free-cakes-leeds",
           }),
         }}
       />

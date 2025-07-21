@@ -96,7 +96,7 @@ allFiles.forEach(file => {
   const content = fs.readFileSync(file, "utf8");
   const domains = content.match(/https:\/\/[^\s"']+/g) || [];
   domains.forEach(domain => {
-    if (!domain.includes("olgish-cakes.vercel.app") && domain.includes("olgish")) {
+    if (!domain.includes("olgishcakes.co.uk") && domain.includes("olgish")) {
       domainIssues.push(`${file}: ${domain}`);
     }
   });

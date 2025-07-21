@@ -26,11 +26,11 @@ export const metadata: Metadata = {
     title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
     description:
       "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
-    url: "https://olgish-cakes.vercel.app/delivery-areas",
+    url: "https://olgishcakes.co.uk/delivery-areas",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cake-delivery.jpg",
+        url: "https://olgishcakes.co.uk/images/cake-delivery.jpg",
         width: 1200,
         height: 630,
         alt: "Cake Delivery Leeds - Olgish Cakes",
@@ -44,10 +44,10 @@ export const metadata: Metadata = {
     title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
     description:
       "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-delivery.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/delivery-areas",
+    canonical: "https://olgishcakes.co.uk/delivery-areas",
   },
 };
 
@@ -67,7 +67,7 @@ export default function DeliveryAreasPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -125,7 +125,7 @@ export default function DeliveryAreasPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/delivery-areas",
+            url: "https://olgishcakes.co.uk/delivery-areas",
           }),
         }}
       />

@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost",
     description:
       "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for authentic Ukrainian cakes in Leeds.",
-    url: "https://olgish-cakes.vercel.app/cake-pricing",
+    url: "https://olgishcakes.co.uk/cake-pricing",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cake-pricing.jpg",
+        url: "https://olgishcakes.co.uk/images/cake-pricing.jpg",
         width: 1200,
         height: 630,
         alt: "Cake Pricing Guide - Olgish Cakes",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost",
     description:
       "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-pricing.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-pricing.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-pricing",
+    canonical: "https://olgishcakes.co.uk/cake-pricing",
   },
 };
 
@@ -75,13 +75,13 @@ export default function CakePricingPage() {
     name: "Ukrainian Cake Pricing Guide",
     description:
       "Transparent pricing for authentic Ukrainian cakes. Our pricing structure reflects the quality, craftsmanship, and cultural significance of traditional Ukrainian baking.",
-    url: "https://olgish-cakes.vercel.app/cake-pricing",
+    url: "https://olgishcakes.co.uk/cake-pricing",
     provider: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     areaServed: {

@@ -26,11 +26,11 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
       "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
-    url: "https://olgish-cakes.vercel.app/blog",
+    url: "https://olgishcakes.co.uk/blog",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-baking-blog.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Recipes and Baking Blog - Honey Cake (Medovik) - Olgish Cakes",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
       "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-baking-blog.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/blog",
+    canonical: "https://olgishcakes.co.uk/blog",
   },
 };
 
@@ -128,13 +128,13 @@ export default function BlogPage() {
     name: "Ukrainian Baking Blog",
     description:
       "Discover authentic Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind traditional Ukrainian desserts.",
-    url: "https://olgish-cakes.vercel.app/blog",
+    url: "https://olgishcakes.co.uk/blog",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {
@@ -146,7 +146,7 @@ export default function BlogPage() {
           "@type": "BlogPosting",
           headline: post.title,
           description: post.excerpt,
-          url: `https://olgish-cakes.vercel.app/blog/${post.slug}`,
+          url: `https://olgishcakes.co.uk/blog/${post.slug}`,
           datePublished: post.date,
           author: {
             "@type": "Person",

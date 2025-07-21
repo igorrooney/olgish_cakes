@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
       "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice for choosing your perfect wedding cake.",
-    url: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
+    url: "https://olgishcakes.co.uk/best-cakes-for-weddings",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg",
+        url: "https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg",
         width: 1200,
         height: 630,
         alt: "Best Cakes for Weddings - Wedding Cake Guide",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
       "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice.",
-    images: ["https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg"],
+    images: ["https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
+    canonical: "https://olgishcakes.co.uk/best-cakes-for-weddings",
   },
 };
 
@@ -59,7 +59,7 @@ export default async function BestCakesForWeddingsPage() {
             name: "How to Choose the Best Wedding Cake",
             description:
               "Discover the best cakes for weddings with our comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and expert advice for choosing your perfect wedding cake.",
-            image: "https://olgish-cakes.vercel.app/images/best-cakes-for-weddings.jpg",
+            image: "https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg",
             totalTime: "PT15M",
             estimatedCost: {
               "@type": "MonetaryAmount",
@@ -93,7 +93,7 @@ export default async function BestCakesForWeddingsPage() {
                 text: "Order your wedding cake 2-3 months in advance to ensure availability and allow time for custom design.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/best-cakes-for-weddings",
+            url: "https://olgishcakes.co.uk/best-cakes-for-weddings",
           }),
         }}
       />

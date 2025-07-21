@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with authentic recipes.",
     type: "website",
-    url: "https://olgish-cakes.vercel.app/easter-cakes-leeds",
+    url: "https://olgishcakes.co.uk/easter-cakes-leeds",
     images: [
       {
         url: "/images/cakes/easter-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/easter-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/easter-cakes-leeds",
   },
 };
 
@@ -57,7 +57,7 @@ const structuredData = {
   areaServed: "Leeds",
   availableChannel: {
     "@type": "ServiceChannel",
-    serviceUrl: "https://olgish-cakes.vercel.app/easter-cakes-leeds",
+    serviceUrl: "https://olgishcakes.co.uk/easter-cakes-leeds",
   },
 };
 

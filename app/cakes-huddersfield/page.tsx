@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
-    url: "https://olgish-cakes.vercel.app/cakes-huddersfield",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-huddersfield.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-huddersfield",
+    images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
     type: "website",
   },
   twitter: {
@@ -26,10 +26,10 @@ export const metadata: Metadata = {
     title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Huddersfield.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-huddersfield.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-huddersfield",
+    canonical: "https://olgishcakes.co.uk/cakes-huddersfield",
   },
 };
 
@@ -48,7 +48,7 @@ export default async function CakesHuddersfieldPage() {
             name: "Olgish Cakes - Huddersfield Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Huddersfield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Huddersfield and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-huddersfield",
+            url: "https://olgishcakes.co.uk/cakes-huddersfield",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

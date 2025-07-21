@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    url: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/christmas-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/christmas-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/christmas-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/christmas-cakes-leeds",
   },
 };
 
@@ -45,7 +45,7 @@ export default function ChristmasCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -59,7 +59,7 @@ export default function ChristmasCakesLeedsPage() {
             },
             serviceType: "Christmas Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/christmas-cakes-leeds",
+            url: "https://olgishcakes.co.uk/christmas-cakes-leeds",
           }),
         }}
       />

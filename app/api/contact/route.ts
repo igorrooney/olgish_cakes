@@ -88,7 +88,7 @@ ATTACHMENTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Best regards,
 Olgish Cakes
-        olgish-cakes.vercel.app
+        olgishcakes.co.uk
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`.trim();
 
     const htmlContent = `
@@ -186,7 +186,7 @@ Olgish Cakes
   <div class="footer">
     <strong>Best regards,</strong><br>
     Olgish Cakes<br>
-            <a href="https://olgish-cakes.vercel.app" style="color: #2c5282; text-decoration: none;">olgish-cakes.vercel.app</a>
+            <a href="https://olgishcakes.co.uk" style="color: #2c5282; text-decoration: none;">olgishcakes.co.uk</a>
   </div>
 </body>
 </html>`;

@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Ilkley.",
-    url: "https://olgish-cakes.vercel.app/cakes-ilkley",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-ilkley.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-ilkley",
+    images: ["https://olgishcakes.co.uk/images/cakes-ilkley.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Ilkley.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-ilkley.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-ilkley.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-ilkley",
+    canonical: "https://olgishcakes.co.uk/cakes-ilkley",
   },
 };
 
@@ -42,7 +42,7 @@ export default function CakesIlkleyPage() {
             name: "Olgish Cakes - Ilkley Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-ilkley",
+            url: "https://olgishcakes.co.uk/cakes-ilkley",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

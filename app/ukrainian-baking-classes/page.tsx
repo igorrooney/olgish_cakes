@@ -28,11 +28,11 @@ export const metadata: Metadata = {
       "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops",
     description:
       "Learn authentic Ukrainian baking in Leeds. Traditional cake making workshops, Ukrainian baking classes, and hands-on tutorials. Master honey cake, Kyiv cake, and traditional Ukrainian desserts.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-baking-classes",
+    url: "https://olgishcakes.co.uk/ukrainian-baking-classes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-baking-classes.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-baking-classes.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Baking Classes Leeds - Olgish Cakes",
@@ -47,10 +47,10 @@ export const metadata: Metadata = {
       "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops",
     description:
       "Learn authentic Ukrainian baking in Leeds. Traditional cake making workshops, Ukrainian baking classes, and hands-on tutorials.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-baking-classes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-baking-classes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/ukrainian-baking-classes",
+    canonical: "https://olgishcakes.co.uk/ukrainian-baking-classes",
   },
 };
 
@@ -133,9 +133,9 @@ export default function UkrainianBakingClassesPage() {
             organizer: {
               "@type": "Organization",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
             },
-            url: "https://olgish-cakes.vercel.app/ukrainian-baking-classes",
+            url: "https://olgishcakes.co.uk/ukrainian-baking-classes",
           }),
         }}
       />

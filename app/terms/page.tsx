@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     title: "Terms of Service | Olgish Cakes - Legal Terms & Conditions",
     description:
       "Review the terms and conditions for using Olgish Cakes' services. Our legal agreement covers ordering, delivery, and service policies.",
-    url: "https://olgish-cakes.vercel.app/terms",
+    url: "https://olgishcakes.co.uk/terms",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/terms-of-service.jpg",
+        url: "https://olgishcakes.co.uk/images/terms-of-service.jpg",
         width: 1200,
         height: 630,
         alt: "Terms of Service - Olgish Cakes",
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     title: "Terms of Service | Olgish Cakes - Legal Terms & Conditions",
     description:
       "Review the terms and conditions for using Olgish Cakes' services. Our legal agreement covers ordering, delivery, and service policies.",
-    images: ["https://olgish-cakes.vercel.app/images/terms-of-service.jpg"],
+    images: ["https://olgishcakes.co.uk/images/terms-of-service.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/terms",
+    canonical: "https://olgishcakes.co.uk/terms",
   },
 };
 
@@ -52,13 +52,13 @@ export default function TermsOfServicePage() {
     name: "Terms of Service - Olgish Cakes",
     description:
       "Review the terms and conditions for using Olgish Cakes' services. Our legal agreement covers ordering, delivery, and service policies.",
-    url: "https://olgish-cakes.vercel.app/terms",
+    url: "https://olgishcakes.co.uk/terms",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {

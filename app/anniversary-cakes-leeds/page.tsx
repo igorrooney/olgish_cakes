@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
-    url: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/anniversary-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/anniversary-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/anniversary-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
-    images: ["https://olgish-cakes.vercel.app/images/anniversary-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/anniversary-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/anniversary-cakes-leeds",
   },
 };
 
@@ -45,7 +45,7 @@ export default function AnniversaryCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -89,7 +89,7 @@ export default function AnniversaryCakesLeedsPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/anniversary-cakes-leeds",
+            url: "https://olgishcakes.co.uk/anniversary-cakes-leeds",
           }),
         }}
       />

@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
-    url: "https://olgish-cakes.vercel.app/cakes-skipton",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-skipton.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-skipton",
+    images: ["https://olgishcakes.co.uk/images/cakes-skipton.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-skipton.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-skipton.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-skipton",
+    canonical: "https://olgishcakes.co.uk/cakes-skipton",
   },
 };
 
@@ -42,7 +42,7 @@ export default function CakesSkiptonPage() {
             name: "Olgish Cakes - Skipton Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Skipton. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Skipton and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-skipton",
+            url: "https://olgishcakes.co.uk/cakes-skipton",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

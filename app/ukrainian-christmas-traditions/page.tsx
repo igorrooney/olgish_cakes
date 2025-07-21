@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
     description:
       "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-christmas-traditions",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-christmas-traditions.jpg"],
+    url: "https://olgishcakes.co.uk/ukrainian-christmas-traditions",
+    images: ["https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg"],
     type: "article",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
     description:
       "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-christmas-traditions.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/ukrainian-christmas-traditions",
+    canonical: "https://olgishcakes.co.uk/ukrainian-christmas-traditions",
   },
 };
 
@@ -40,7 +40,7 @@ export default function UkrainianChristmasTraditionsPage() {
       name: "Olgish Cakes",
     },
     datePublished: "2024-01-15",
-    image: "https://olgish-cakes.vercel.app/images/ukrainian-christmas-traditions.jpg",
+    image: "https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",

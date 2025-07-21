@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cakes Otley | Ukrainian Cakes Otley",
     description:
       "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Otley.",
-    url: "https://olgish-cakes.vercel.app/cakes-otley",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-otley.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-otley",
+    images: ["https://olgishcakes.co.uk/images/cakes-otley.jpg"],
     type: "website",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Cakes Otley | Ukrainian Cakes Otley",
     description:
       "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Otley.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-otley.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-otley.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-otley",
+    canonical: "https://olgishcakes.co.uk/cakes-otley",
   },
 };
 
@@ -42,7 +42,7 @@ export default function CakesOtleyPage() {
             name: "Olgish Cakes - Otley Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Otley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Otley and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-otley",
+            url: "https://olgishcakes.co.uk/cakes-otley",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
     description:
       "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
-    url: "https://olgish-cakes.vercel.app/traditional-ukrainian-cakes",
+    url: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/traditional-ukrainian-cakes.jpg",
+        url: "https://olgishcakes.co.uk/images/traditional-ukrainian-cakes.jpg",
         width: 1200,
         height: 630,
         alt: "Traditional Ukrainian Cakes Collection - Olgish Cakes Leeds",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
     description:
       "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
-    images: ["https://olgish-cakes.vercel.app/images/traditional-ukrainian-cakes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/traditional-ukrainian-cakes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/traditional-ukrainian-cakes",
+    canonical: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
   },
 };
 
@@ -78,13 +78,13 @@ export default async function TraditionalUkrainianCakesPage() {
     name: "Traditional Ukrainian Cakes",
     description:
       "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
-    url: "https://olgish-cakes.vercel.app/traditional-ukrainian-cakes",
+    url: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     itemListElement: traditionalCakeTypes.map((cake, index) => ({

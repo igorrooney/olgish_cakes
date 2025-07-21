@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
       "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes.",
-    url: "https://olgish-cakes.vercel.app/reviews-awards",
+    url: "https://olgishcakes.co.uk/reviews-awards",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/reviews-awards.jpg",
+        url: "https://olgishcakes.co.uk/images/reviews-awards.jpg",
         width: 1200,
         height: 630,
         alt: "Customer Reviews and Awards - Olgish Cakes Leeds",
@@ -43,10 +43,10 @@ export const metadata: Metadata = {
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
       "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers.",
-    images: ["https://olgish-cakes.vercel.app/images/reviews-awards.jpg"],
+    images: ["https://olgishcakes.co.uk/images/reviews-awards.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/reviews-awards",
+    canonical: "https://olgishcakes.co.uk/reviews-awards",
   },
 };
 
@@ -203,7 +203,7 @@ export default function ReviewsAwardsPage() {
                 datePublished: "2024-01-12",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/reviews-awards",
+            url: "https://olgishcakes.co.uk/reviews-awards",
           }),
         }}
       />
@@ -478,7 +478,7 @@ export default function ReviewsAwardsPage() {
               </Box>
               <Button
                 variant="contained"
-                href="https://www.trustpilot.com/review/olgish-cakes.vercel.app"
+                href="https://www.trustpilot.com/review/olgishcakes.co.uk"
                 target="_blank"
                 sx={{
                   backgroundColor: "white",

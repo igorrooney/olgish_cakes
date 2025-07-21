@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Cake Photography | Professional Cake Photos",
     description:
       "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
-    url: "https://olgish-cakes.vercel.app/cake-photography",
-    images: ["https://olgish-cakes.vercel.app/images/cake-photography.jpg"],
+    url: "https://olgishcakes.co.uk/cake-photography",
+    images: ["https://olgishcakes.co.uk/images/cake-photography.jpg"],
     type: "website",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Cake Photography | Professional Cake Photos",
     description:
       "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-photography.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-photography.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-photography",
+    canonical: "https://olgishcakes.co.uk/cake-photography",
   },
 };
 
@@ -44,7 +44,7 @@ export default function CakePhotographyPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -88,7 +88,7 @@ export default function CakePhotographyPage() {
                 },
               ],
             },
-            url: "https://olgish-cakes.vercel.app/cake-photography",
+            url: "https://olgishcakes.co.uk/cake-photography",
           }),
         }}
       />

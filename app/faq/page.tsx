@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     title: "FAQ | Olgish Cakes - Frequently Asked Questions",
     description:
       "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
-    url: "https://olgish-cakes.vercel.app/faq",
+    url: "https://olgishcakes.co.uk/faq",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/faq.jpg",
+        url: "https://olgishcakes.co.uk/images/faq.jpg",
         width: 1200,
         height: 630,
         alt: "FAQ - Frequently Asked Questions - Olgish Cakes",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     title: "FAQ | Olgish Cakes - Frequently Asked Questions",
     description:
       "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
-    images: ["https://olgish-cakes.vercel.app/images/faq.jpg"],
+    images: ["https://olgishcakes.co.uk/images/faq.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/faq",
+    canonical: "https://olgishcakes.co.uk/faq",
   },
 };
 

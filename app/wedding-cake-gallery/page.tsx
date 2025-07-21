@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    url: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
-    images: ["https://olgish-cakes.vercel.app/images/wedding-cake-gallery.jpg"],
+    url: "https://olgishcakes.co.uk/wedding-cake-gallery",
+    images: ["https://olgishcakes.co.uk/images/wedding-cake-gallery.jpg"],
     type: "website",
   },
   twitter: {
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    images: ["https://olgish-cakes.vercel.app/images/wedding-cake-gallery.jpg"],
+    images: ["https://olgishcakes.co.uk/images/wedding-cake-gallery.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
+    canonical: "https://olgishcakes.co.uk/wedding-cake-gallery",
   },
 };
 
@@ -41,7 +41,7 @@ export default async function WeddingCakeGalleryPage() {
     name: "Wedding Cake Gallery",
     description:
       "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
-    url: "https://olgish-cakes.vercel.app/wedding-cake-gallery",
+    url: "https://olgishcakes.co.uk/wedding-cake-gallery",
   };
 
   return (

@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
     description:
       "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
-    url: "https://olgish-cakes.vercel.app/custom-cake-design",
+    url: "https://olgishcakes.co.uk/custom-cake-design",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/custom-cake-design.jpg",
+        url: "https://olgishcakes.co.uk/images/custom-cake-design.jpg",
         width: 1200,
         height: 630,
         alt: "Custom Cake Design Leeds - Personalized Cakes by Olgish Cakes",
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
     description:
       "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
-    images: ["https://olgish-cakes.vercel.app/images/custom-cake-design.jpg"],
+    images: ["https://olgishcakes.co.uk/images/custom-cake-design.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/custom-cake-design",
+    canonical: "https://olgishcakes.co.uk/custom-cake-design",
   },
 };
 
@@ -96,13 +96,13 @@ export default function CustomCakeDesignPage() {
     name: "Custom Cake Design Leeds",
     description:
       "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
-    url: "https://olgish-cakes.vercel.app/custom-cake-design",
+    url: "https://olgishcakes.co.uk/custom-cake-design",
     provider: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     areaServed: {

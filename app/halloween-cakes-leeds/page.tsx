@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Order spooky Halloween cakes in Leeds. Pumpkin cakes, ghost designs, and Halloween-themed creations.",
     type: "website",
-    url: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
+    url: "https://olgishcakes.co.uk/halloween-cakes-leeds",
     images: [
       {
         url: "/images/cakes/halloween-cake.jpg",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/halloween-cakes-leeds",
   },
 };
 
@@ -57,7 +57,7 @@ const structuredData = {
   areaServed: "Leeds",
   availableChannel: {
     "@type": "ServiceChannel",
-    serviceUrl: "https://olgish-cakes.vercel.app/halloween-cakes-leeds",
+    serviceUrl: "https://olgishcakes.co.uk/halloween-cakes-leeds",
   },
 };
 

@@ -17,11 +17,11 @@ export const metadata: Metadata = {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
-    url: "https://olgish-cakes.vercel.app/cakes-york",
+    url: "https://olgishcakes.co.uk/cakes-york",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cakes-york.jpg",
+        url: "https://olgishcakes.co.uk/images/cakes-york.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cakes York - Olgish Cakes Delivery Service",
@@ -35,10 +35,10 @@ export const metadata: Metadata = {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-york.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-york.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-york",
+    canonical: "https://olgishcakes.co.uk/cakes-york",
   },
 };
 
@@ -58,7 +58,7 @@ export default async function CakesYorkPage() {
             name: "Olgish Cakes - York Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in York. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in York and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-york",
+            url: "https://olgishcakes.co.uk/cakes-york",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

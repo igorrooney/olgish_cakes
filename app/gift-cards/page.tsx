@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions. Redeemable for any Ukrainian cake or custom cake design in Leeds.",
-    url: "https://olgish-cakes.vercel.app/gift-cards",
+    url: "https://olgishcakes.co.uk/gift-cards",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/gift-cards.jpg",
+        url: "https://olgishcakes.co.uk/images/gift-cards.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Gift Cards - Olgish Cakes",
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions.",
-    images: ["https://olgish-cakes.vercel.app/images/gift-cards.jpg"],
+    images: ["https://olgishcakes.co.uk/images/gift-cards.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/gift-cards",
+    canonical: "https://olgishcakes.co.uk/gift-cards",
   },
 };
 
@@ -104,12 +104,12 @@ export default function GiftCardsPage() {
               seller: {
                 "@type": "Bakery",
                 name: "Olgish Cakes",
-                url: "https://olgish-cakes.vercel.app",
+                url: "https://olgishcakes.co.uk",
               },
             },
             category: "Gift Cards",
-            image: "https://olgish-cakes.vercel.app/images/gift-cards.jpg",
-            url: "https://olgish-cakes.vercel.app/gift-cards",
+            image: "https://olgishcakes.co.uk/images/gift-cards.jpg",
+            url: "https://olgishcakes.co.uk/gift-cards",
           }),
         }}
       />

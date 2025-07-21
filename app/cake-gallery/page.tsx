@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
     description:
       "Explore our beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
-    url: "https://olgish-cakes.vercel.app/cake-gallery",
+    url: "https://olgishcakes.co.uk/cake-gallery",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cake-gallery.jpg",
+        url: "https://olgishcakes.co.uk/images/cake-gallery.jpg",
         width: 1200,
         height: 630,
         alt: "Cake Gallery - Olgish Cakes",
@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
     description:
       "Explore our beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-gallery.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-gallery.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-gallery",
+    canonical: "https://olgishcakes.co.uk/cake-gallery",
   },
 };
 
@@ -49,13 +49,13 @@ export default async function CakeGalleryPage() {
     name: "Cake Gallery - Ukrainian Cake Designs",
     description:
       "Explore our beautiful collection of Ukrainian cakes and custom designs. From traditional Ukrainian desserts to modern celebration cakes.",
-    url: "https://olgish-cakes.vercel.app/cake-gallery",
+    url: "https://olgishcakes.co.uk/cake-gallery",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {
@@ -67,8 +67,8 @@ export default async function CakeGalleryPage() {
           "@type": "Product",
           name: cake.name,
           description: cake.description,
-          image: `https://olgish-cakes.vercel.app/images/cakes/${cake.slug.current}.jpg`,
-          url: `https://olgish-cakes.vercel.app/cakes/${cake.slug.current}`,
+          image: `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+          url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
           category: cake.category,
           brand: {
             "@type": "Brand",

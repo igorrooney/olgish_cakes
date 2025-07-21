@@ -28,11 +28,11 @@ export const metadata: Metadata = {
     title: "Cake Sizes Guide Leeds | How Many People Does a Cake Serve | Cake Portion Guide",
     description:
       "Complete cake sizes guide for Leeds. Learn how many people each cake size serves, portion sizes, and party planning tips. Ukrainian cake sizing guide for all occasions.",
-    url: "https://olgish-cakes.vercel.app/cake-sizes-guide",
+    url: "https://olgishcakes.co.uk/cake-sizes-guide",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cake-sizes-guide.jpg",
+        url: "https://olgishcakes.co.uk/images/cake-sizes-guide.jpg",
         width: 1200,
         height: 630,
         alt: "Cake Sizes Guide - Olgish Cakes",
@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     title: "Cake Sizes Guide Leeds | How Many People Does a Cake Serve | Cake Portion Guide",
     description:
       "Complete cake sizes guide for Leeds. Learn how many people each cake size serves, portion sizes, and party planning tips.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-sizes-guide.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-sizes-guide.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-sizes-guide",
+    canonical: "https://olgishcakes.co.uk/cake-sizes-guide",
   },
 };
 
@@ -65,7 +65,7 @@ export default function CakeSizesGuidePage() {
             "@type": "HowTo",
             name: "Cake Sizes Guide",
             description: "Guide to choosing the right cake size for your event.",
-            image: "https://olgish-cakes.vercel.app/images/cake-size-guide.jpg",
+            image: "https://olgishcakes.co.uk/images/cake-size-guide.jpg",
             step: [
               {
                 "@type": "HowToStep",
@@ -83,7 +83,7 @@ export default function CakeSizesGuidePage() {
                 text: "Order a slightly larger cake for leftovers.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/cake-sizes-guide",
+            url: "https://olgishcakes.co.uk/cake-sizes-guide",
           }),
         }}
       />

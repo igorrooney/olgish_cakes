@@ -15,11 +15,11 @@ export const metadata: Metadata = {
       "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
     description:
       "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural significance of Ukrainian cakes. Authentic Ukrainian baking culture.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-culture-baking",
+    url: "https://olgishcakes.co.uk/ukrainian-culture-baking",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-culture-baking.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-culture-baking.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Culture and Baking - Olgish Cakes",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
       "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
     description:
       "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural significance of Ukrainian cakes.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-culture-baking.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-culture-baking.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/ukrainian-culture-baking",
+    canonical: "https://olgishcakes.co.uk/ukrainian-culture-baking",
   },
 };
 
@@ -53,7 +53,7 @@ export default function UkrainianCultureBakingPage() {
             "@type": "WebPage",
             name: "Ukrainian Culture Baking",
             description: "Discover the role of baking in Ukrainian culture and traditions.",
-            url: "https://olgish-cakes.vercel.app/ukrainian-culture-baking",
+            url: "https://olgishcakes.co.uk/ukrainian-culture-baking",
           }),
         }}
       />

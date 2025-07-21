@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     title: "Cookie Policy | Olgish Cakes - Website Cookie Usage",
     description:
       "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
-    url: "https://olgish-cakes.vercel.app/cookies",
+    url: "https://olgishcakes.co.uk/cookies",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/cookies-policy.jpg",
+        url: "https://olgishcakes.co.uk/images/cookies-policy.jpg",
         width: 1200,
         height: 630,
         alt: "Cookie Policy - Olgish Cakes",
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     title: "Cookie Policy | Olgish Cakes - Website Cookie Usage",
     description:
       "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
-    images: ["https://olgish-cakes.vercel.app/images/cookies-policy.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cookies-policy.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cookies",
+    canonical: "https://olgishcakes.co.uk/cookies",
   },
 };
 
@@ -52,13 +52,13 @@ export default function CookiePolicyPage() {
     name: "Cookie Policy - Olgish Cakes",
     description:
       "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
-    url: "https://olgish-cakes.vercel.app/cookies",
+    url: "https://olgishcakes.co.uk/cookies",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {

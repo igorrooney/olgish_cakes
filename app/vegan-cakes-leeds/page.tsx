@@ -15,11 +15,11 @@ export const metadata: Metadata = {
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
       "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
-    url: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
+    url: "https://olgishcakes.co.uk/vegan-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/vegan-cakes-leeds.jpg",
+        url: "https://olgishcakes.co.uk/images/vegan-cakes-leeds.jpg",
         width: 1200,
         height: 630,
         alt: "Vegan Ukrainian Cakes Leeds - Honey Cake (Medovik) - Olgish Cakes",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes",
     description:
       "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
-    images: ["https://olgish-cakes.vercel.app/images/vegan-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/vegan-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/vegan-cakes-leeds",
   },
 };
 
@@ -57,11 +57,11 @@ export default function VeganCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
             },
             serviceType: "Vegan Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/vegan-cakes-leeds",
+            url: "https://olgishcakes.co.uk/vegan-cakes-leeds",
           }),
         }}
       />

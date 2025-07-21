@@ -24,7 +24,7 @@ async function testWebhook() {
     console.log("🧪 Testing webhook functionality...");
 
     // Get your production URL
-    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://olgish-cakes.vercel.app";
+    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://olgishcakes.co.uk";
     const webhookUrl = `${productionUrl}/api/revalidate`;
 
     console.log("🌐 Testing webhook URL:", webhookUrl);

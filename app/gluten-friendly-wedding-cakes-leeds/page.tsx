@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
-    url: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-wedding-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/gluten-friendly-wedding-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/gluten-friendly-wedding-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/gluten-friendly-wedding-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds",
   },
 };
 
@@ -39,7 +39,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Gluten-Friendly Wedding Cakes in Leeds",
     description: "Traditional Ukrainian gluten-friendly wedding cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/gluten-friendly-wedding-cakes-leeds",
+    url: "https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

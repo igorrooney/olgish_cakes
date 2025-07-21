@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sanity Studio | Olgish Cakes",
     description: "Content management system for Olgish Cakes website.",
-    url: "https://olgish-cakes.vercel.app/studio",
+    url: "https://olgishcakes.co.uk/studio",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/studio.jpg",
+        url: "https://olgishcakes.co.uk/images/studio.jpg",
         width: 1200,
         height: 630,
         alt: "Sanity Studio - Olgish Cakes CMS",
@@ -27,10 +27,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sanity Studio | Olgish Cakes",
     description: "Content management system for Olgish Cakes website.",
-    images: ["https://olgish-cakes.vercel.app/images/studio.jpg"],
+    images: ["https://olgishcakes.co.uk/images/studio.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/studio",
+    canonical: "https://olgishcakes.co.uk/studio",
   },
 };
 

@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
     description:
       "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
-    url: "https://olgish-cakes.vercel.app/contact",
+    url: "https://olgishcakes.co.uk/contact",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/contact.jpg",
+        url: "https://olgishcakes.co.uk/images/contact.jpg",
         width: 1200,
         height: 630,
         alt: "Contact Olgish Cakes - Leeds Ukrainian Bakery",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
     description:
       "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
-    images: ["https://olgish-cakes.vercel.app/images/contact.jpg"],
+    images: ["https://olgishcakes.co.uk/images/contact.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/contact",
+    canonical: "https://olgishcakes.co.uk/contact",
   },
 };
 
@@ -55,11 +55,11 @@ export default function ContactPage() {
     name: "Contact Olgish Cakes",
     description:
       "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes.",
-    url: "https://olgish-cakes.vercel.app/contact",
+    url: "https://olgishcakes.co.uk/contact",
     mainEntity: {
       "@type": "Organization",
       name: "Olgish Cakes",
-      url: "https://olgish-cakes.vercel.app",
+      url: "https://olgishcakes.co.uk",
       contactPoint: [
         {
           "@type": "ContactPoint",

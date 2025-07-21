@@ -13,7 +13,7 @@ export default function StudioStructuredData() {
           "@type": "WebApplication",
           name: "Sanity Studio - Olgish Cakes CMS",
           description: "Content management system for Olgish Cakes website.",
-          url: "https://olgish-cakes.vercel.app/studio",
+          url: "https://olgishcakes.co.uk/studio",
           applicationCategory: "Content Management System",
           operatingSystem: "Web Browser",
           offers: {

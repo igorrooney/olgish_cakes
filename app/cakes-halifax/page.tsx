@@ -16,8 +16,8 @@ export const metadata: Metadata = {
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Halifax.",
-    url: "https://olgish-cakes.vercel.app/cakes-halifax",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-halifax.jpg"],
+    url: "https://olgishcakes.co.uk/cakes-halifax",
+    images: ["https://olgishcakes.co.uk/images/cakes-halifax.jpg"],
     type: "website",
   },
   twitter: {
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Halifax.",
-    images: ["https://olgish-cakes.vercel.app/images/cakes-halifax.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cakes-halifax.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cakes-halifax",
+    canonical: "https://olgishcakes.co.uk/cakes-halifax",
   },
 };
 
@@ -47,7 +47,7 @@ export default async function CakesHalifaxPage() {
             name: "Olgish Cakes - Halifax Ukrainian Bakery",
             description:
               "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and surrounding areas.",
-            url: "https://olgish-cakes.vercel.app/cakes-halifax",
+            url: "https://olgishcakes.co.uk/cakes-halifax",
             telephone: "+44 786 721 8194",
             email: "olgish.cakes@gmail.com",
             address: {

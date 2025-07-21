@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     title: "Cake Size Guide | Ukrainian Cake Sizing Chart",
     description:
       "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
-    url: "https://olgish-cakes.vercel.app/cake-size-guide",
-    images: ["https://olgish-cakes.vercel.app/images/cake-size-guide.jpg"],
+    url: "https://olgishcakes.co.uk/cake-size-guide",
+    images: ["https://olgishcakes.co.uk/images/cake-size-guide.jpg"],
     type: "article",
   },
   twitter: {
@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     title: "Cake Size Guide | Ukrainian Cake Sizing Chart",
     description:
       "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
-    images: ["https://olgish-cakes.vercel.app/images/cake-size-guide.jpg"],
+    images: ["https://olgishcakes.co.uk/images/cake-size-guide.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/cake-size-guide",
+    canonical: "https://olgishcakes.co.uk/cake-size-guide",
   },
 };
 
@@ -51,7 +51,7 @@ export default function CakeSizeGuidePage() {
             name: "How to Choose the Right Cake Size",
             description:
               "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
-            image: "https://olgish-cakes.vercel.app/images/cake-size-guide.jpg",
+            image: "https://olgishcakes.co.uk/images/cake-size-guide.jpg",
             totalTime: "PT5M",
             estimatedCost: {
               "@type": "MonetaryAmount",
@@ -80,7 +80,7 @@ export default function CakeSizeGuidePage() {
                 text: "Order slightly larger than needed to ensure everyone gets a piece and for leftovers.",
               },
             ],
-            url: "https://olgish-cakes.vercel.app/cake-size-guide",
+            url: "https://olgishcakes.co.uk/cake-size-guide",
           }),
         }}
       />

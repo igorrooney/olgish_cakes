@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik)",
     description:
       "Beautiful vegan Ukrainian wedding cakes in Leeds. Handcrafted vegan honey cake (Medovik) and traditional Ukrainian wedding desserts.",
-    url: "https://olgish-cakes.vercel.app/vegan-wedding-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/vegan-wedding-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/vegan-wedding-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/vegan-wedding-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
     title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik)",
     description:
       "Beautiful vegan Ukrainian wedding cakes in Leeds. Handcrafted vegan honey cake (Medovik) and traditional Ukrainian wedding desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/vegan-wedding-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/vegan-wedding-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/vegan-wedding-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/vegan-wedding-cakes-leeds",
   },
 };
 
@@ -39,7 +39,7 @@ export default async function VeganWeddingCakesPage() {
     "@type": "LocalBusiness",
     name: "Olgish Cakes - Vegan Wedding Cakes in Leeds",
     description: "Traditional Ukrainian vegan wedding cakes in Leeds",
-    url: "https://olgish-cakes.vercel.app/vegan-wedding-cakes-leeds",
+    url: "https://olgishcakes.co.uk/vegan-wedding-cakes-leeds",
     telephone: "+44 786 721 8194",
     address: {
       "@type": "PostalAddress",

@@ -15,11 +15,11 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
       "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
-    url: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
+    url: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/ukrainian-cake-recipes.jpg",
+        url: "https://olgishcakes.co.uk/images/ukrainian-cake-recipes.jpg",
         width: 1200,
         height: 630,
         alt: "Ukrainian Cake Recipes - Traditional Ukrainian Baking - Honey Cake (Medovik)",
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
       "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
       "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/ukrainian-cake-recipes.jpg"],
+    images: ["https://olgishcakes.co.uk/images/ukrainian-cake-recipes.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
+    canonical: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
   },
 };
 
@@ -53,7 +53,7 @@ export default function UkrainianCakeRecipesPage() {
             "@type": "WebPage",
             name: "Ukrainian Cake Recipes",
             description: "Explore traditional Ukrainian cake recipes and baking tips.",
-            url: "https://olgish-cakes.vercel.app/ukrainian-cake-recipes",
+            url: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
           }),
         }}
       />

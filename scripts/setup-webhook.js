@@ -37,7 +37,7 @@ async function setupWebhook() {
       name: "Olgish Cakes Content Revalidation",
       url: process.env.NEXT_PUBLIC_SITE_URL
         ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate`
-        : "https://olgish-cakes.vercel.app/api/revalidate",
+        : "https://olgishcakes.co.uk/api/revalidate",
       httpMethod: "POST",
       dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
       filter: '_type in ["cake", "testimonial", "faq"]',
@@ -80,7 +80,7 @@ async function setupWebhook() {
     console.log("\n💡 Manual setup instructions:");
     console.log("1. Go to https://www.sanity.io/manage");
     console.log("2. Find your project → API → Webhooks");
-    console.log("3. Create webhook with URL: https://olgish-cakes.vercel.app/api/revalidate");
+    console.log("3. Create webhook with URL: https://olgishcakes.co.uk/api/revalidate");
   }
 }
 

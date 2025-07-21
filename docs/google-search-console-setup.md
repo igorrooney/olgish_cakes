@@ -10,7 +10,7 @@ Google Search Console is essential for monitoring your website's search performa
 
 1. Go to [Google Search Console](https://search.google.com/search-console)
 2. Click "Add Property"
-3. Enter your domain: `https://olgish-cakes.vercel.app`
+3. Enter your domain: `https://olgishcakes.co.uk`
 4. Choose "Domain" property type (recommended for better coverage)
 
 ### 1.2 Verify Ownership
@@ -27,7 +27,7 @@ Choose one of these verification methods:
 
 - Download the verification file
 - Upload to your website root
-- Access via: `https://olgish-cakes.vercel.app/google1234567890.html`
+- Access via: `https://olgishcakes.co.uk/google1234567890.html`
 
 **Option C: HTML Tag**
 
@@ -42,13 +42,13 @@ Choose one of these verification methods:
 ### 2.1 Submit XML Sitemap
 
 1. Go to "Sitemaps" in GSC
-2. Submit: `https://olgish-cakes.vercel.app/sitemap.xml`
+2. Submit: `https://olgishcakes.co.uk/sitemap.xml`
 3. Monitor indexing status
 
 ### 2.2 Submit Additional Sitemaps (if needed)
 
-- `https://olgish-cakes.vercel.app/cakes-sitemap.xml`
-- `https://olgish-cakes.vercel.app/blog-sitemap.xml`
+- `https://olgishcakes.co.uk/cakes-sitemap.xml`
+- `https://olgishcakes.co.uk/blog-sitemap.xml`
 
 ## Step 3: Configure Settings
 
@@ -59,7 +59,7 @@ Choose one of these verification methods:
 
 ### 3.2 Preferred Domain
 
-- Set to: `https://olgish-cakes.vercel.app`
+- Set to: `https://olgishcakes.co.uk`
 - Redirect www to non-www (already configured)
 
 ### 3.3 International Targeting

@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     title: "Customer Testimonials | Olgish Cakes Leeds",
     description:
       "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
-    url: "https://olgish-cakes.vercel.app/testimonials",
+    url: "https://olgishcakes.co.uk/testimonials",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgish-cakes.vercel.app/images/testimonials.jpg",
+        url: "https://olgishcakes.co.uk/images/testimonials.jpg",
         width: 1200,
         height: 630,
         alt: "Customer Testimonials - Olgish Cakes Leeds",
@@ -31,10 +31,10 @@ export const metadata: Metadata = {
     title: "Customer Testimonials | Olgish Cakes Leeds",
     description:
       "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
-    images: ["https://olgish-cakes.vercel.app/images/testimonials.jpg"],
+    images: ["https://olgishcakes.co.uk/images/testimonials.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/testimonials",
+    canonical: "https://olgishcakes.co.uk/testimonials",
   },
 };
 
@@ -63,13 +63,13 @@ export default async function TestimonialsPage({
     name: "Customer Testimonials - Olgish Cakes",
     description:
       "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
-    url: "https://olgish-cakes.vercel.app/testimonials",
+    url: "https://olgishcakes.co.uk/testimonials",
     publisher: {
       "@type": "Organization",
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgish-cakes.vercel.app/logo.png",
+        url: "https://olgishcakes.co.uk/logo.png",
       },
     },
     mainEntity: {

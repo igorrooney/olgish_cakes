@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
-    url: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
-    images: ["https://olgish-cakes.vercel.app/images/nut-free-cakes-leeds.jpg"],
+    url: "https://olgishcakes.co.uk/nut-free-cakes-leeds",
+    images: ["https://olgishcakes.co.uk/images/nut-free-cakes-leeds.jpg"],
     type: "website",
   },
   twitter: {
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
-    images: ["https://olgish-cakes.vercel.app/images/nut-free-cakes-leeds.jpg"],
+    images: ["https://olgishcakes.co.uk/images/nut-free-cakes-leeds.jpg"],
   },
   alternates: {
-    canonical: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
+    canonical: "https://olgishcakes.co.uk/nut-free-cakes-leeds",
   },
 };
 
@@ -43,7 +43,7 @@ export default function NutFreeCakesLeedsPage() {
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
-              url: "https://olgish-cakes.vercel.app",
+              url: "https://olgishcakes.co.uk",
               telephone: "+44 786 721 8194",
               email: "olgish.cakes@gmail.com",
               address: {
@@ -57,7 +57,7 @@ export default function NutFreeCakesLeedsPage() {
             },
             serviceType: "Nut-Free Cake Design",
             areaServed: { "@type": "City", name: "Leeds" },
-            url: "https://olgish-cakes.vercel.app/nut-free-cakes-leeds",
+            url: "https://olgishcakes.co.uk/nut-free-cakes-leeds",
           }),
         }}
       />

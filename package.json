@@ -24,7 +24,7 @@
     "test-webhook": "node scripts/test-webhook.js",
     "analyze": "ANALYZE=true next build",
     "performance": "node scripts/performance-monitor.js",
-    "lighthouse": "lighthouse https://olgish-cakes.vercel.app --output=json --output-path=./reports/lighthouse-report.json",
+    "lighthouse": "lighthouse https://olgishcakes.co.uk --output=json --output-path=./reports/lighthouse-report.json",
     "bundle-analyzer": "cross-env ANALYZE=true next build"
   },
   "engines": {
