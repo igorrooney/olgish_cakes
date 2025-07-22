@@ -769,6 +769,7 @@ export function Header() {
               <Button
                 variant="contained"
                 fullWidth
+                onClick={handleDrawerToggle}
                 sx={{
                   py: 1.5,
                   borderRadius: 3,
