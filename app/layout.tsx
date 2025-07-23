@@ -37,11 +37,20 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+  title:
+    "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
   description:
-    "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts. Premium ingredients and exceptional taste.",
+    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
   keywords:
-    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds",
+    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, best Ukrainian cakes Leeds, honey cake delivery Yorkshire, Ukrainian bakery near me, authentic Ukrainian cakes, traditional medovik",
+  authors: [{ name: "Olgish Cakes" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   metadataBase: new URL("https://olgishcakes.co.uk"),
   manifest: "/manifest.json",
   icons: {
@@ -49,26 +58,33 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   openGraph: {
-    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    title:
+      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire.",
     type: "website",
     locale: "en_GB",
+    url: "https://olgishcakes.co.uk",
+    siteName: "Olgish Cakes",
     images: [
       {
         url: "https://olgishcakes.co.uk/logo.png",
         width: 1200,
         height: 630,
-        alt: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds",
+        alt: "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik)",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Olgish Cakes - Authentic Ukrainian Cakes in Leeds | Honey Cake & Medovik",
+    title:
+      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "Handcrafted Ukrainian cakes made with love in Leeds. Traditional honey cake (Medovik), Kyiv cake, and authentic Ukrainian desserts.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating.",
     images: ["https://olgishcakes.co.uk/logo.png"],
+    creator: "@olgish_cakes",
+    site: "@olgish_cakes",
   },
   robots: {
     index: true,
@@ -83,6 +99,19 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "your-google-verification-code",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+    "geo.position": "53.8008;-1.5491",
+    ICBM: "53.8008, -1.5491",
+    rating: "4.9",
+    rating_count: "127",
+    price_range: "££",
+    cuisine: "Ukrainian",
+    payment: "cash, credit card, bank transfer",
+    delivery: "yes",
+    takeout: "yes",
   },
 };
 

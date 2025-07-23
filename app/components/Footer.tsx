@@ -382,83 +382,115 @@ export default function Footer() {
           </Grid>
         </Box>
 
-        {/* CTA Section */}
+        {/* Trust Signals & Social Proof Section */}
         <Box
           sx={{
-            py: spacing["3xl"],
+            py: spacing["2xl"],
             borderTop: `1px solid ${colors.border.light}`,
-            background: `linear-gradient(135deg, ${colors.primary.main}08 0%, ${colors.primary.main}04 100%)`,
-            borderRadius: 3,
-            mb: spacing["2xl"],
+            background: `linear-gradient(135deg, ${colors.primary.main}04 0%, ${colors.primary.main}02 100%)`,
           }}
         >
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: typography.fontWeight.bold,
-                color: colors.text.primary,
-                mb: spacing.md,
-                fontFamily: typography.fontFamily.display,
-              }}
-            >
-              Ready to Order Your Perfect Cake?
-            </Typography>
-            <BodyText
-              sx={{
-                color: colors.text.secondary,
-                mb: spacing.xl,
-                maxWidth: "600px",
-                mx: "auto",
-              }}
-            >
-              Contact us today to discuss your cake requirements and get a personalized quote. We're
-              here to make your special occasion even more memorable.
-            </BodyText>
-            <Box
-              sx={{ display: "flex", gap: spacing.md, justifyContent: "center", flexWrap: "wrap" }}
-            >
-              <Link href="/contact" style={{ textDecoration: "none" }}>
-                <PrimaryButton
-                  variant="contained"
-                  size="large"
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: typography.fontWeight.bold,
+                  color: colors.text.primary,
+                  mb: spacing.sm,
+                  fontSize: { xs: typography.fontSize.lg, md: typography.fontSize.xl },
+                }}
+              >
+                Trusted by 127+ Happy Customers
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: colors.text.secondary,
+                  mb: spacing.md,
+                  fontSize: typography.fontSize.base,
+                  lineHeight: 1.6,
+                }}
+              >
+                Join our community of satisfied customers who choose Olgish Cakes for their special
+                occasions. Authentic Ukrainian baking with 4.9★ rating and same-day delivery across
+                Yorkshire.
+              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: spacing.sm }}>
+                <Chip
+                  label="⭐ 4.9★ Rating"
                   sx={{
-                    px: spacing.xl,
-                    py: spacing.md,
-                    borderRadius: 3,
-                    textTransform: "none",
+                    backgroundColor: colors.secondary.main,
+                    color: "white",
                     fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.lg,
+                    fontSize: typography.fontSize.sm,
+                  }}
+                />
+                <Chip
+                  label="🏆 #1 Ukrainian Bakery Leeds"
+                  sx={{
+                    backgroundColor: colors.primary.main,
+                    color: "white",
+                    fontWeight: typography.fontWeight.bold,
+                    fontSize: typography.fontSize.sm,
+                  }}
+                />
+                <Chip
+                  label="🚚 Same-Day Delivery"
+                  sx={{
+                    backgroundColor: colors.primary.dark,
+                    color: "white",
+                    fontWeight: typography.fontWeight.bold,
+                    fontSize: typography.fontSize.sm,
+                  }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ textAlign: { xs: "left", md: "right" } }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: colors.text.primary,
+                    mb: spacing.sm,
+                    fontWeight: typography.fontWeight.bold,
                   }}
                 >
-                  Order Now
-                </PrimaryButton>
-              </Link>
-              <Link href="/how-to-order" style={{ textDecoration: "none" }}>
-                <Button
-                  variant="outlined"
-                  size="large"
+                  Quick Contact
+                </Typography>
+                <Typography
+                  variant="body2"
                   sx={{
-                    px: spacing.xl,
-                    py: spacing.md,
-                    borderRadius: 3,
-                    textTransform: "none",
-                    fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.lg,
-                    borderColor: colors.primary.main,
-                    color: colors.primary.main,
-                    "&:hover": {
-                      borderColor: colors.primary.dark,
-                      backgroundColor: colors.primary.main,
-                      color: colors.primary.contrast,
-                    },
+                    color: colors.text.secondary,
+                    mb: spacing.sm,
+                    fontSize: typography.fontSize.sm,
                   }}
                 >
-                  How to Order
-                </Button>
-              </Link>
-            </Box>
-          </Box>
+                  📞 +44 786 721 8194
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: colors.text.secondary,
+                    mb: spacing.md,
+                    fontSize: typography.fontSize.sm,
+                  }}
+                >
+                  📧 hello@olgishcakes.co.uk
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: colors.text.secondary,
+                    fontSize: typography.fontSize.sm,
+                    fontStyle: "italic",
+                  }}
+                >
+                  Serving Leeds, York, Bradford, Halifax & surrounding areas
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
 
         {/* Bottom Bar */}
