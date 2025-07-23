@@ -413,12 +413,12 @@ export default function Footer() {
                 }}
               >
                 Join our community of satisfied customers who choose Olgish Cakes for their special
-                occasions. Authentic Ukrainian baking with 4.9★ rating and same-day delivery across
+                occasions. Authentic Ukrainian baking with 5★ rating and same-day delivery across
                 Yorkshire.
               </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: spacing.sm }}>
                 <Chip
-                  label="⭐ 4.9★ Rating"
+                  label="⭐ 5★ Rating"
                   sx={{
                     backgroundColor: colors.secondary.main,
                     color: "white",
