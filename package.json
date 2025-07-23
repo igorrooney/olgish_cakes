@@ -25,7 +25,10 @@
     "analyze": "ANALYZE=true next build",
     "performance": "node scripts/performance-monitor.js",
     "lighthouse": "lighthouse https://olgishcakes.co.uk --output=json --output-path=./reports/lighthouse-report.json",
-    "bundle-analyzer": "cross-env ANALYZE=true next build"
+    "bundle-analyzer": "cross-env ANALYZE=true next build",
+    "seo:optimize": "node scripts/seo-optimization.js",
+    "seo:check": "node scripts/seo-optimization.js --check-only",
+    "seo:report": "node scripts/seo-optimization.js --generate-report"
   },
   "engines": {
     "node": ">=18.0.0",
