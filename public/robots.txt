@@ -1,3 +1,6 @@
+# Olgish Cakes - Ukrainian Bakery Leeds
+# SEO Optimized Robots.txt for #1 Google Ranking
+
 # Allow all crawlers
 User-agent: *
 Allow: /
@@ -10,13 +13,33 @@ Disallow: /studio/
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
+Disallow: /test-lists/
 
-# Allow important pages
+# Allow important pages with high priority
 Allow: /cakes/
+Allow: /wedding-cakes/
+Allow: /birthday-cakes/
 Allow: /blog/
 Allow: /about/
 Allow: /contact/
 Allow: /testimonials/
+Allow: /reviews-awards/
+Allow: /faq/
 
-# Crawl delay (optional - be respectful to server)
-Crawl-delay: 1 
+# Location-specific pages
+Allow: /cakes-leeds/
+Allow: /cakes-york/
+Allow: /cakes-bradford/
+Allow: /cakes-halifax/
+Allow: /cakes-huddersfield/
+
+# Educational content
+Allow: /honey-cake-history/
+Allow: /traditional-ukrainian-cakes/
+Allow: /ukrainian-bakery-leeds/
+
+# Crawl delay (be respectful to server)
+Crawl-delay: 1
+
+# Additional sitemaps for better indexing
+Sitemap: https://olgishcakes.co.uk/sitemap-images.xml 

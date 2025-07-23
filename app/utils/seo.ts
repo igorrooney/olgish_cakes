@@ -24,6 +24,19 @@ export function truncateText(text: string, maxLength: number): string {
 export function generateMetaTitle(title: string, siteName = "Olgish Cakes"): string {
   const maxLength = 60;
   const separator = " | ";
+
+  // Add ranking indicators for key pages
+  if (title.toLowerCase().includes("ukrainian cakes leeds")) {
+    const enhancedTitle = `#1 ${title}`;
+    const availableLength = maxLength - separator.length - siteName.length;
+
+    if (enhancedTitle.length <= availableLength) {
+      return `${enhancedTitle}${separator}${siteName}`;
+    }
+
+    return `${truncateText(enhancedTitle, availableLength)}${separator}${siteName}`;
+  }
+
   const availableLength = maxLength - separator.length - siteName.length;
 
   if (title.length <= availableLength) {

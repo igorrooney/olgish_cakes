@@ -9,7 +9,7 @@ import {
   AppBar,
   Box,
   Button,
-  Divider,
+  Collapse,
   Drawer,
   IconButton,
   List,
@@ -138,8 +138,19 @@ export function Header() {
   const [servicesMenuAnchor, setServicesMenuAnchor] = useState<null | HTMLElement>(null);
   const [learnMenuAnchor, setLearnMenuAnchor] = useState<null | HTMLElement>(null);
 
+  // Mobile menu state
+  const [mobileCakesOpen, setMobileCakesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+    // Reset mobile submenu states when closing
+    if (mobileOpen) {
+      setMobileCakesOpen(false);
+      setMobileServicesOpen(false);
+      setMobileLearnOpen(false);
+    }
   };
 
   const handleCakesMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -182,7 +193,11 @@ export function Header() {
         boxShadow: shadows.sm,
       }}
     >
-      <DesignContainer>
+      <DesignContainer
+        sx={{
+          marginInline: { xs: "1rem", md: "auto" },
+        }}
+      >
         <Toolbar
           disableGutters
           role="navigation"
@@ -672,7 +687,7 @@ export function Header() {
         </Toolbar>
       </DesignContainer>
 
-      {/* Mobile Navigation Drawer */}
+      {/* Professional Mobile Navigation Drawer */}
       <Drawer
         variant="temporary"
         anchor="right"
@@ -685,187 +700,278 @@ export function Header() {
           display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
-            width: 240,
+            width: "100%",
+            maxWidth: 320,
             backgroundColor: colors.background.paper,
-            boxShadow: shadows.lg,
+            boxShadow: shadows.xl,
+            border: "none",
           },
         }}
       >
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+        {/* Mobile Header */}
+        <Box
+          sx={{
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.primary.dark} 100%)`,
+            color: colors.primary.contrast,
+            p: 3,
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                'url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>\')',
+              opacity: 0.3,
+            },
+          }}
+        >
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              p: spacing.md,
+              position: "relative",
+              zIndex: 1,
             }}
           >
             <Typography
-              variant="h6"
+              variant="h5"
               sx={{
-                my: 0,
                 fontFamily: typography.fontFamily.display,
-                color: colors.primary.main,
-                fontWeight: typography.fontWeight.semibold,
+                fontWeight: typography.fontWeight.bold,
+                letterSpacing: 0.5,
               }}
             >
-              Olgish Cakes
+              Menu
             </Typography>
-            <IconButton onClick={handleDrawerToggle} color="inherit" aria-label="close menu">
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          {/* Order Now Button (mobile) */}
-          <Link href="/contact" passHref style={{ textDecoration: "none" }}>
-            <Button
-              variant="contained"
-              fullWidth
+            <IconButton
+              onClick={handleDrawerToggle}
               sx={{
-                mb: 2,
-                px: 2,
-                py: 1.25,
-                borderRadius: 2,
-                backgroundColor: colors.primary.main,
                 color: colors.primary.contrast,
-                fontWeight: typography.fontWeight.bold,
-                fontSize: typography.fontSize.base,
-                boxShadow: shadows.md,
-                textTransform: "none",
-                letterSpacing: 0.1,
-                whiteSpace: "nowrap",
-                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                backgroundColor: "rgba(255,255,255,0.1)",
+                backdropFilter: "blur(10px)",
                 "&:hover": {
-                  backgroundColor: colors.primary.dark,
-                  boxShadow: shadows.lg,
+                  backgroundColor: "rgba(255,255,255,0.2)",
                 },
               }}
             >
-              Order Now
-            </Button>
-          </Link>
-          <Divider sx={{ borderColor: colors.border.light }} />
-          <List>
-            {navigation.map(item => {
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Order Now Button (mobile) */}
+          <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
+            <Link href="/contact" passHref style={{ textDecoration: "none" }}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleDrawerToggle}
+                sx={{
+                  py: 1.5,
+                  borderRadius: 3,
+                  backgroundColor: colors.primary.contrast,
+                  color: colors.primary.main,
+                  fontWeight: typography.fontWeight.bold,
+                  fontSize: typography.fontSize.base,
+                  boxShadow: shadows.lg,
+                  textTransform: "none",
+                  letterSpacing: 0.5,
+                  transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
+                  "&:hover": {
+                    backgroundColor: colors.background.paper,
+                    transform: "translateY(-2px)",
+                    boxShadow: shadows.xl,
+                  },
+                }}
+              >
+                Order Your Cake Now
+              </Button>
+            </Link>
+          </Box>
+        </Box>
+
+        {/* Mobile Navigation List */}
+        <Box sx={{ flex: 1, overflow: "auto" }}>
+          <List sx={{ p: 0 }}>
+            {navigation.map((item, index) => {
+              const isActive = pathname === item.href;
+
               if (item.megaMenu) {
                 return (
                   <Box key={item.name}>
                     <ListItem disablePadding>
                       <ListItemButton
-                        onClick={handleCakesMenuOpen}
+                        onClick={() => setMobileCakesOpen(!mobileCakesOpen)}
                         sx={{
-                          textAlign: "center",
-                          color: pathname === item.href ? colors.primary.main : colors.text.primary,
-                          fontWeight:
-                            pathname === item.href
-                              ? typography.fontWeight.semibold
-                              : typography.fontWeight.normal,
+                          py: 2,
+                          px: 3,
+                          borderBottom: `1px solid ${colors.border.light}`,
+                          backgroundColor: isActive ? colors.background.subtle : "transparent",
                           "&:hover": {
                             backgroundColor: colors.background.subtle,
-                            color: colors.primary.main,
                           },
                         }}
                       >
                         <ListItemText
-                          primary={item.name}
-                          sx={{
-                            "& .MuiListItemText-primary": {
-                              fontSize: typography.fontSize.base,
-                            },
-                          }}
-                        />
-                        <KeyboardArrowDownIcon />
-                      </ListItemButton>
-                    </ListItem>
-                    {/* Featured items */}
-                    {item.megaMenu.featured.map(featuredItem => (
-                      <ListItem key={featuredItem.name} disablePadding sx={{ pl: 2 }}>
-                        <ListItemButton
-                          component={Link}
-                          href={featuredItem.href}
-                          sx={{
-                            textAlign: "center",
-                            color:
-                              pathname === featuredItem.href
-                                ? colors.primary.main
-                                : colors.text.primary,
-                            fontWeight:
-                              pathname === featuredItem.href
-                                ? typography.fontWeight.semibold
-                                : typography.fontWeight.normal,
-                            "&:hover": {
-                              backgroundColor: colors.background.subtle,
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          <ListItemText
-                            primary={featuredItem.name}
-                            secondary={featuredItem.description}
-                            sx={{
-                              "& .MuiListItemText-primary": {
-                                fontSize: typography.fontSize.sm,
-                              },
-                              "& .MuiListItemText-secondary": {
-                                fontSize: typography.fontSize.xs,
-                                color: colors.text.secondary,
-                              },
-                            }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                    {/* Category items */}
-                    {item.megaMenu.categories.map(category => (
-                      <Box key={category.title}>
-                        <ListItem disablePadding sx={{ pl: 2 }}>
-                          <ListItemText
-                            primary={category.title}
-                            sx={{
-                              "& .MuiListItemText-primary": {
-                                fontSize: typography.fontSize.xs,
-                                color: colors.text.secondary,
-                                fontWeight: typography.fontWeight.semibold,
-                                textTransform: "uppercase",
-                                letterSpacing: 0.5,
-                                pt: 1,
-                              },
-                            }}
-                          />
-                        </ListItem>
-                        {category.items.map(categoryItem => (
-                          <ListItem key={categoryItem.name} disablePadding sx={{ pl: 4 }}>
-                            <ListItemButton
-                              component={Link}
-                              href={categoryItem.href}
+                          primary={
+                            <Typography
                               sx={{
-                                textAlign: "center",
-                                color:
-                                  pathname === categoryItem.href
-                                    ? colors.primary.main
-                                    : colors.text.primary,
-                                fontWeight:
-                                  pathname === categoryItem.href
-                                    ? typography.fontWeight.semibold
-                                    : typography.fontWeight.normal,
-                                "&:hover": {
-                                  backgroundColor: colors.background.subtle,
-                                  color: colors.primary.main,
-                                },
+                                fontSize: typography.fontSize.lg,
+                                fontWeight: isActive
+                                  ? typography.fontWeight.bold
+                                  : typography.fontWeight.semibold,
+                                color: isActive ? colors.primary.main : colors.text.primary,
                               }}
                             >
-                              <ListItemText
-                                primary={categoryItem.name}
+                              {item.name}
+                            </Typography>
+                          }
+                        />
+                        <KeyboardArrowDownIcon
+                          sx={{
+                            transform: mobileCakesOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.3s ease",
+                            color: colors.text.secondary,
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+
+                    <Collapse in={mobileCakesOpen} timeout="auto" unmountOnExit>
+                      <Box sx={{ backgroundColor: colors.background.subtle }}>
+                        {/* Featured Section */}
+                        <Box sx={{ p: 2, pb: 1 }}>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              color: colors.primary.main,
+                              fontWeight: typography.fontWeight.bold,
+                              mb: 1,
+                              textTransform: "uppercase",
+                              letterSpacing: 0.5,
+                              fontSize: typography.fontSize.sm,
+                            }}
+                          >
+                            Featured
+                          </Typography>
+                          {item.megaMenu.featured.map(featuredItem => (
+                            <ListItem key={featuredItem.name} disablePadding sx={{ mb: 1 }}>
+                              <ListItemButton
+                                component={Link}
+                                href={featuredItem.href}
+                                onClick={handleDrawerToggle}
                                 sx={{
-                                  "& .MuiListItemText-primary": {
-                                    fontSize: typography.fontSize.sm,
+                                  py: 1.5,
+                                  px: 2,
+                                  borderRadius: 2,
+                                  backgroundColor:
+                                    pathname === featuredItem.href
+                                      ? colors.primary.main
+                                      : "transparent",
+                                  color:
+                                    pathname === featuredItem.href
+                                      ? colors.primary.contrast
+                                      : colors.text.primary,
+                                  "&:hover": {
+                                    backgroundColor:
+                                      pathname === featuredItem.href
+                                        ? colors.primary.dark
+                                        : colors.background.paper,
                                   },
                                 }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
+                              >
+                                <ListItemText
+                                  primary={
+                                    <Typography
+                                      sx={{
+                                        fontSize: typography.fontSize.base,
+                                        fontWeight:
+                                          pathname === featuredItem.href
+                                            ? typography.fontWeight.bold
+                                            : typography.fontWeight.medium,
+                                      }}
+                                    >
+                                      {featuredItem.name}
+                                    </Typography>
+                                  }
+                                  secondary={
+                                    <Typography
+                                      sx={{
+                                        fontSize: typography.fontSize.sm,
+                                        color:
+                                          pathname === featuredItem.href
+                                            ? colors.primary.contrast
+                                            : colors.text.secondary,
+                                        mt: 0.5,
+                                      }}
+                                    >
+                                      {featuredItem.description}
+                                    </Typography>
+                                  }
+                                />
+                              </ListItemButton>
+                            </ListItem>
+                          ))}
+                        </Box>
+
+                        {/* Categories */}
+                        {item.megaMenu.categories.map(category => (
+                          <Box key={category.title} sx={{ p: 2, pt: 1 }}>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{
+                                color: colors.text.secondary,
+                                fontWeight: typography.fontWeight.semibold,
+                                mb: 1.5,
+                                textTransform: "uppercase",
+                                letterSpacing: 0.5,
+                                fontSize: typography.fontSize.sm,
+                              }}
+                            >
+                              {category.title}
+                            </Typography>
+                            {category.items.map(categoryItem => (
+                              <ListItem key={categoryItem.name} disablePadding sx={{ mb: 0.5 }}>
+                                <ListItemButton
+                                  component={Link}
+                                  href={categoryItem.href}
+                                  onClick={handleDrawerToggle}
+                                  sx={{
+                                    py: 1,
+                                    px: 2,
+                                    borderRadius: 1.5,
+                                    color:
+                                      pathname === categoryItem.href
+                                        ? colors.primary.main
+                                        : colors.text.primary,
+                                    fontWeight:
+                                      pathname === categoryItem.href
+                                        ? typography.fontWeight.semibold
+                                        : typography.fontWeight.normal,
+                                    "&:hover": {
+                                      backgroundColor: colors.background.paper,
+                                      color: colors.primary.main,
+                                    },
+                                  }}
+                                >
+                                  <ListItemText
+                                    primary={
+                                      <Typography sx={{ fontSize: typography.fontSize.sm }}>
+                                        {categoryItem.name}
+                                      </Typography>
+                                    }
+                                  />
+                                </ListItemButton>
+                              </ListItem>
+                            ))}
+                          </Box>
                         ))}
                       </Box>
-                    ))}
+                    </Collapse>
                   </Box>
                 );
               }
@@ -873,71 +979,86 @@ export function Header() {
               if (item.dropdown) {
                 const isServicesMenu = item.name === "Services";
                 const isLearnMenu = item.name === "Learn";
-                const handleMenuOpen = isServicesMenu
-                  ? handleServicesMenuOpen
-                  : handleLearnMenuOpen;
+                const isOpen = isServicesMenu ? mobileServicesOpen : mobileLearnOpen;
+                const setIsOpen = isServicesMenu ? setMobileServicesOpen : setMobileLearnOpen;
 
                 return (
                   <Box key={item.name}>
                     <ListItem disablePadding>
                       <ListItemButton
-                        onClick={handleMenuOpen}
+                        onClick={() => setIsOpen(!isOpen)}
                         sx={{
-                          textAlign: "center",
-                          color: pathname === item.href ? colors.primary.main : colors.text.primary,
-                          fontWeight:
-                            pathname === item.href
-                              ? typography.fontWeight.semibold
-                              : typography.fontWeight.normal,
+                          py: 2,
+                          px: 3,
+                          borderBottom: `1px solid ${colors.border.light}`,
+                          backgroundColor: isActive ? colors.background.subtle : "transparent",
                           "&:hover": {
                             backgroundColor: colors.background.subtle,
-                            color: colors.primary.main,
                           },
                         }}
                       >
                         <ListItemText
-                          primary={item.name}
+                          primary={
+                            <Typography
+                              sx={{
+                                fontSize: typography.fontSize.lg,
+                                fontWeight: isActive
+                                  ? typography.fontWeight.bold
+                                  : typography.fontWeight.semibold,
+                                color: isActive ? colors.primary.main : colors.text.primary,
+                              }}
+                            >
+                              {item.name}
+                            </Typography>
+                          }
+                        />
+                        <KeyboardArrowDownIcon
                           sx={{
-                            "& .MuiListItemText-primary": {
-                              fontSize: typography.fontSize.base,
-                            },
+                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.3s ease",
+                            color: colors.text.secondary,
                           }}
                         />
-                        <KeyboardArrowDownIcon />
                       </ListItemButton>
                     </ListItem>
-                    {item.dropdown.map(dropdownItem => (
-                      <ListItem key={dropdownItem.name} disablePadding sx={{ pl: 2 }}>
-                        <ListItemButton
-                          component={Link}
-                          href={dropdownItem.href}
-                          sx={{
-                            textAlign: "center",
-                            color:
-                              pathname === dropdownItem.href
-                                ? colors.primary.main
-                                : colors.text.primary,
-                            fontWeight:
-                              pathname === dropdownItem.href
-                                ? typography.fontWeight.semibold
-                                : typography.fontWeight.normal,
-                            "&:hover": {
-                              backgroundColor: colors.background.subtle,
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          <ListItemText
-                            primary={dropdownItem.name}
-                            sx={{
-                              "& .MuiListItemText-primary": {
-                                fontSize: typography.fontSize.sm,
-                              },
-                            }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
+
+                    <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                      <Box sx={{ backgroundColor: colors.background.subtle }}>
+                        {item.dropdown.map(dropdownItem => (
+                          <ListItem key={dropdownItem.name} disablePadding>
+                            <ListItemButton
+                              component={Link}
+                              href={dropdownItem.href}
+                              onClick={handleDrawerToggle}
+                              sx={{
+                                py: 1.5,
+                                px: 3,
+                                color:
+                                  pathname === dropdownItem.href
+                                    ? colors.primary.main
+                                    : colors.text.primary,
+                                fontWeight:
+                                  pathname === dropdownItem.href
+                                    ? typography.fontWeight.semibold
+                                    : typography.fontWeight.normal,
+                                "&:hover": {
+                                  backgroundColor: colors.background.paper,
+                                  color: colors.primary.main,
+                                },
+                              }}
+                            >
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{ fontSize: typography.fontSize.base }}>
+                                    {dropdownItem.name}
+                                  </Typography>
+                                }
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
+                      </Box>
+                    </Collapse>
                   </Box>
                 );
               }
@@ -947,32 +1068,57 @@ export function Header() {
                   <ListItemButton
                     component={Link}
                     href={item.href}
+                    onClick={handleDrawerToggle}
                     sx={{
-                      textAlign: "center",
-                      color: pathname === item.href ? colors.primary.main : colors.text.primary,
-                      fontWeight:
-                        pathname === item.href
-                          ? typography.fontWeight.semibold
-                          : typography.fontWeight.normal,
+                      py: 2.5,
+                      px: 3,
+                      borderBottom: `1px solid ${colors.border.light}`,
+                      backgroundColor: isActive ? colors.background.subtle : "transparent",
                       "&:hover": {
                         backgroundColor: colors.background.subtle,
-                        color: colors.primary.main,
                       },
                     }}
                   >
                     <ListItemText
-                      primary={item.name}
-                      sx={{
-                        "& .MuiListItemText-primary": {
-                          fontSize: typography.fontSize.base,
-                        },
-                      }}
+                      primary={
+                        <Typography
+                          sx={{
+                            fontSize: typography.fontSize.lg,
+                            fontWeight: isActive
+                              ? typography.fontWeight.bold
+                              : typography.fontWeight.semibold,
+                            color: isActive ? colors.primary.main : colors.text.primary,
+                          }}
+                        >
+                          {item.name}
+                        </Typography>
+                      }
                     />
                   </ListItemButton>
                 </ListItem>
               );
             })}
           </List>
+        </Box>
+
+        {/* Mobile Footer */}
+        <Box
+          sx={{
+            p: 3,
+            borderTop: `1px solid ${colors.border.light}`,
+            backgroundColor: colors.background.subtle,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: colors.text.secondary,
+              textAlign: "center",
+              fontSize: typography.fontSize.sm,
+            }}
+          >
+            Authentic Ukrainian Honey Cakes
+          </Typography>
         </Box>
       </Drawer>
     </AppBar>

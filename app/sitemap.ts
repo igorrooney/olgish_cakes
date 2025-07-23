@@ -1,5 +1,5 @@
-import { MetadataRoute } from "next";
 import { client } from "@/sanity/lib/client";
+import { MetadataRoute } from "next";
 
 async function getCakes() {
   const query = `*[_type == "cake"] {
@@ -145,10 +145,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...communityPages,
   ];
 
-  return allPages.map(page => ({
+  const sitemapEntries = allPages.map(page => ({
     url: `${baseUrl}${page}`,
     lastModified: new Date(),
     changeFrequency: page === "" ? "daily" : "weekly",
     priority: page === "" ? 1 : page.startsWith("/cakes") ? 0.9 : 0.8,
   }));
+
+  // Add cake-specific entries with higher priority
+  const cakeEntries = cakeRoutes.map(
+    (route: { url: string; lastModified: Date; changeFrequency: string; priority: number }) => ({
+      ...route,
+      priority: 0.9,
+    })
+  );
+
+  // Combine all entries and sort by priority
+  return [...sitemapEntries, ...cakeEntries].sort((a, b) => (b.priority || 0) - (a.priority || 0));
 }
