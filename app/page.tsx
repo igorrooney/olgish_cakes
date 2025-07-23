@@ -3,12 +3,8 @@ import {
   CakeOutlined,
   Celebration,
   CheckCircle,
-  Email,
   Favorite,
   LocalShipping,
-  Phone,
-  Restaurant,
-  Star,
   Verified,
 } from "@mui/icons-material";
 import {
@@ -26,12 +22,11 @@ import {
 } from "@mui/material";
 import { Metadata } from "next";
 import Link from "next/link";
+import { colors, spacing, typography } from "../lib/design-system";
 import { AnimatedDiv, AnimatedSection } from "./components/AnimatedSection";
-import CakeCard from "./components/CakeCard";
 import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
-import { colors, typography, spacing } from "../lib/design-system";
 
 export const metadata: Metadata = {
   title:
@@ -343,7 +338,7 @@ export default async function Home() {
                   color="inherit"
                   size="large"
                   component={Link}
-                  href="/contact"
+                  href="/get-custom-quote"
                   className="px-10 py-4 text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300"
                 >
                   Get Custom Quote
@@ -517,10 +512,10 @@ export default async function Home() {
                       variant="outlined"
                       color="primary"
                       component={Link}
-                      href="/contact"
+                      href="/get-custom-quote"
                       className="px-8 py-4 text-lg font-semibold"
                     >
-                      Get in Touch
+                      Get Custom Quote
                     </Button>
                   </div>
                 </AnimatedDiv>
@@ -907,7 +902,7 @@ export default async function Home() {
                       flexWrap: "wrap",
                     }}
                   >
-                    <Link href="/contact" style={{ textDecoration: "none" }}>
+                    <Link href="/get-custom-quote" style={{ textDecoration: "none" }}>
                       <Button
                         variant="contained"
                         size="large"
@@ -925,7 +920,7 @@ export default async function Home() {
                           },
                         }}
                       >
-                        Order Now
+                        Get Quote Now
                       </Button>
                     </Link>
                     <Link href="/how-to-order" style={{ textDecoration: "none" }}>
