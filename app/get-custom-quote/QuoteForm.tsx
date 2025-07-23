@@ -31,16 +31,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/en-gb";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { borderRadius, colors, shadows, typography } from "../../lib/design-system";
+
+// Set British locale for date formatting
+dayjs.locale("en-gb");
 
 interface FormData {
   name: string;
   email: string;
   phone: string;
   occasion: string;
-  dateNeeded: string;
+  dateNeeded: Dayjs | null;
   guestCount: string;
   cakeType: string;
   designStyle: string;
@@ -153,7 +161,7 @@ export function QuoteForm() {
     email: "",
     phone: "",
     occasion: "",
-    dateNeeded: "",
+    dateNeeded: null,
     guestCount: "",
     cakeType: "",
     designStyle: "",
@@ -204,7 +212,10 @@ export function QuoteForm() {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("occasion", formData.occasion);
-      formDataToSend.append("dateNeeded", formData.dateNeeded);
+      formDataToSend.append(
+        "dateNeeded",
+        formData.dateNeeded ? formData.dateNeeded.format("YYYY-MM-DD") : ""
+      );
       formDataToSend.append("guestCount", formData.guestCount);
       formDataToSend.append("cakeType", formData.cakeType);
       formDataToSend.append("designStyle", formData.designStyle);
@@ -231,7 +242,7 @@ export function QuoteForm() {
         email: "",
         phone: "",
         occasion: "",
-        dateNeeded: "",
+        dateNeeded: null,
         guestCount: "",
         cakeType: "",
         designStyle: "",
@@ -276,7 +287,7 @@ export function QuoteForm() {
       case 2:
         return formData.designStyle;
       case 3:
-        return formData.dateNeeded && formData.budget;
+        return formData.dateNeeded !== null && formData.budget;
       default:
         return false;
     }
@@ -427,15 +438,20 @@ export function QuoteForm() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
+                <DatePicker
                   label="Date Needed"
-                  type="date"
                   value={formData.dateNeeded}
-                  onChange={e => handleInputChange("dateNeeded", e.target.value)}
-                  required
-                  InputLabelProps={{ shrink: true }}
-                  sx={{ mb: 2 }}
+                  onChange={newValue => handleInputChange("dateNeeded", newValue)}
+                  disablePast
+                  format="DD/MM/YYYY"
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                      sx: { mb: 2 },
+                      placeholder: "DD/MM/YYYY",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -559,126 +575,130 @@ export function QuoteForm() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper
-        elevation={3}
-        sx={{
-          p: { xs: 3, md: 4 },
-          borderRadius: borderRadius.xl,
-          backgroundColor: colors.background.paper,
-        }}
-      >
-        <Typography
-          variant="h4"
-          component="h1"
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Paper
+          elevation={3}
           sx={{
-            mb: 3,
-            textAlign: "center",
-            color: colors.primary.main,
-            fontWeight: typography.fontWeight.bold,
+            p: { xs: 3, md: 4 },
+            borderRadius: borderRadius.xl,
+            backgroundColor: colors.background.paper,
           }}
         >
-          Get Your Custom Cake Quote
-        </Typography>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              mb: 3,
+              textAlign: "center",
+              color: colors.primary.main,
+              fontWeight: typography.fontWeight.bold,
+            }}
+          >
+            Get Your Custom Cake Quote
+          </Typography>
 
-        <Stepper activeStep={activeStep} orientation="vertical" sx={{ mb: 4 }}>
-          {steps.map((step, index) => (
-            <Step key={step.label}>
-              <StepLabel
-                StepIconComponent={() => (
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
-                      backgroundColor: activeStep >= index ? colors.primary.main : colors.grey[300],
-                      color: activeStep >= index ? colors.primary.contrast : colors.text.secondary,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    {step.icon}
+          <Stepper activeStep={activeStep} orientation="vertical" sx={{ mb: 4 }}>
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel
+                  StepIconComponent={() => (
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        backgroundColor:
+                          activeStep >= index ? colors.primary.main : colors.grey[300],
+                        color:
+                          activeStep >= index ? colors.primary.contrast : colors.text.secondary,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      {step.icon}
+                    </Box>
+                  )}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: typography.fontWeight.semibold }}>
+                    {step.label}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {step.description}
+                  </Typography>
+                </StepLabel>
+                <StepContent>
+                  <Box sx={{ mb: 2 }}>{renderStepContent(index)}</Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      startIcon={<ArrowBack />}
+                      variant="outlined"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+                      disabled={!isStepValid(activeStep) || isSubmitting}
+                      endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForward />}
+                      sx={{
+                        backgroundColor: colors.primary.main,
+                        "&:hover": { backgroundColor: colors.primary.dark },
+                        minWidth: activeStep === steps.length - 1 ? "200px" : "auto",
+                      }}
+                    >
+                      {isSubmitting
+                        ? "Sending..."
+                        : activeStep === steps.length - 1
+                          ? "Submit Quote Request"
+                          : "Next"}
+                    </Button>
                   </Box>
-                )}
-              >
-                <Typography variant="h6" sx={{ fontWeight: typography.fontWeight.semibold }}>
-                  {step.label}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {step.description}
-                </Typography>
-              </StepLabel>
-              <StepContent>
-                <Box sx={{ mb: 2 }}>{renderStepContent(index)}</Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    startIcon={<ArrowBack />}
-                    variant="outlined"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-                    disabled={!isStepValid(activeStep) || isSubmitting}
-                    endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForward />}
-                    sx={{
-                      backgroundColor: colors.primary.main,
-                      "&:hover": { backgroundColor: colors.primary.dark },
-                      minWidth: activeStep === steps.length - 1 ? "200px" : "auto",
-                    }}
-                  >
-                    {isSubmitting
-                      ? "Sending..."
-                      : activeStep === steps.length - 1
-                        ? "Submit Quote Request"
-                        : "Next"}
-                  </Button>
-                </Box>
-              </StepContent>
-            </Step>
-          ))}
-        </Stepper>
-      </Paper>
+                </StepContent>
+              </Step>
+            ))}
+          </Stepper>
+        </Paper>
 
-      {/* Professional Notification System */}
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={8000}
-        onClose={handleCloseNotification}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{
-          zIndex: 9999,
-        }}
-      >
-        <Alert
+        {/* Professional Notification System */}
+        <Snackbar
+          open={notification.open}
+          autoHideDuration={8000}
           onClose={handleCloseNotification}
-          severity={notification.severity}
-          variant="filled"
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
           sx={{
-            width: "100%",
-            minWidth: "400px",
-            maxWidth: "600px",
-            borderRadius: borderRadius.lg,
-            boxShadow: shadows.lg,
-            fontSize: "1rem",
-            fontWeight: typography.fontWeight.medium,
-            "& .MuiAlert-icon": {
-              fontSize: "1.5rem",
-            },
-            "& .MuiAlert-message": {
-              fontSize: "1rem",
-              lineHeight: 1.5,
-            },
+            zIndex: 9999,
           }}
         >
-          {notification.message}
-        </Alert>
-      </Snackbar>
-    </Container>
+          <Alert
+            onClose={handleCloseNotification}
+            severity={notification.severity}
+            variant="filled"
+            sx={{
+              width: "100%",
+              minWidth: "400px",
+              maxWidth: "600px",
+              borderRadius: borderRadius.lg,
+              boxShadow: shadows.lg,
+              fontSize: "1rem",
+              fontWeight: typography.fontWeight.medium,
+              "& .MuiAlert-icon": {
+                fontSize: "1.5rem",
+              },
+              "& .MuiAlert-message": {
+                fontSize: "1rem",
+                lineHeight: 1.5,
+              },
+            }}
+          >
+            {notification.message}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </LocalizationProvider>
   );
 }
