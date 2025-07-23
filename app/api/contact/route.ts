@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const phone = formData.get("phone") as string;
     const message = formData.get("message") as string;
     const dateNeeded = formData.get("dateNeeded") as string;
+    const dateNeededDisplay = formData.get("dateNeededDisplay") as string;
     const designImage = formData.get("designImage") as File | null;
     const cakeInterest = formData.get("cakeInterest") as string;
     const isOrderForm = formData.get("isOrderForm") === "true";
@@ -49,14 +50,16 @@ export async function POST(request: NextRequest) {
     const isOrderInquiry =
       isOrderForm || (message.includes("Cake:") && message.includes("Design Type:"));
 
-    const formattedDate = dateNeeded
-      ? new Date(dateNeeded).toLocaleDateString("en-GB", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      : null;
+    const formattedDate =
+      dateNeededDisplay ||
+      (dateNeeded
+        ? new Date(dateNeeded).toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        : null);
 
     const emailContent = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

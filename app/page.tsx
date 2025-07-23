@@ -6,6 +6,10 @@ import {
   Favorite,
   LocalShipping,
   Verified,
+  Star,
+  LocationOn,
+  Phone,
+  Email,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -33,9 +37,32 @@ export const metadata: Metadata = {
     "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
   description:
     "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
-  keywords:
-    "Ukrainian cakes Leeds, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, authentic Ukrainian cakes, traditional medovik, best Ukrainian cakes Leeds, honey cake delivery Yorkshire, Ukrainian bakery near me",
-  authors: [{ name: "Olgish Cakes" }],
+  keywords: [
+    "Ukrainian cakes Leeds",
+    "honey cake",
+    "Medovik",
+    "Kyiv cake",
+    "traditional Ukrainian desserts",
+    "Ukrainian bakery Leeds",
+    "custom cakes Leeds",
+    "wedding cakes Leeds",
+    "birthday cakes Leeds",
+    "cake delivery Leeds",
+    "authentic Ukrainian cakes",
+    "traditional medovik",
+    "best Ukrainian cakes Leeds",
+    "honey cake delivery Yorkshire",
+    "Ukrainian bakery near me",
+    "Leeds cake shop",
+    "Yorkshire Ukrainian bakery",
+    "custom wedding cakes Leeds",
+    "birthday cake delivery Leeds",
+    "Ukrainian dessert shop Leeds",
+    "honey cake recipe",
+    "Kyiv cake recipe",
+    "Ukrainian baking Leeds",
+  ].join(", "),
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
   creator: "Olgish Cakes",
   publisher: "Olgish Cakes",
   formatDetection: {
@@ -102,6 +129,12 @@ export const metadata: Metadata = {
     payment: "cash, credit card, bank transfer",
     delivery: "yes",
     takeout: "yes",
+    "business:contact_data:street_address": "Allerton Grange",
+    "business:contact_data:locality": "Leeds",
+    "business:contact_data:postal_code": "LS17",
+    "business:contact_data:country_name": "United Kingdom",
+    "business:contact_data:phone_number": "+44 786 721 8194",
+    "business:contact_data:email": "hello@olgishcakes.co.uk",
   },
 };
 
@@ -134,124 +167,60 @@ export default async function Home() {
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "Bakery",
-    name: "Olgish Cakes",
-    alternateName: "Olgish Ukrainian Cakes",
+    "@type": "WebPage",
+    "@id": "https://olgishcakes.co.uk/#webpage",
+    name: "Olgish Cakes - #1 Ukrainian Cakes Leeds",
     description:
       "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire.",
-    image: "https://olgishcakes.co.uk/images/logo.png",
     url: "https://olgishcakes.co.uk",
-    telephone: "+44 786 721 8194",
-    email: "hello@olgishcakes.co.uk",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
-      addressLocality: "Leeds",
-      postalCode: "LS17",
-      addressCountry: "GB",
+    isPartOf: {
+      "@id": "https://olgishcakes.co.uk/#website",
     },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: "53.8008",
-      longitude: "-1.5491",
+    about: {
+      "@id": "https://olgishcakes.co.uk/#organization",
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "17:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Sunday",
-        opens: "10:00",
-        closes: "16:00",
-      },
-    ],
-    priceRange: "££",
-    servesCuisine: ["Ukrainian", "Traditional", "Honey Cake", "Medovik", "Kyiv Cake"],
-    hasMenu: "https://olgishcakes.co.uk/cakes",
-    areaServed: [
-      { "@type": "City", name: "Leeds" },
-      { "@type": "City", name: "York" },
-      { "@type": "City", name: "Bradford" },
-      { "@type": "City", name: "Halifax" },
-      { "@type": "City", name: "Huddersfield" },
-      { "@type": "City", name: "Wakefield" },
-      { "@type": "City", name: "Otley" },
-      { "@type": "City", name: "Pudsey" },
-      { "@type": "City", name: "Skipton" },
-      { "@type": "City", name: "Ilkley" },
-    ],
-    sameAs: [
-      "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
-      "https://www.instagram.com/olgish_cakes/",
-    ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Ukrainian Cakes Menu",
+    breadcrumb: {
+      "@type": "BreadcrumbList",
       itemListElement: [
         {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Product",
-            name: "Traditional Honey Cake (Medovik)",
-            category: "Ukrainian Honey Cake",
-            description: "Authentic Ukrainian honey cake with traditional recipe",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Product",
-            name: "Kyiv Cake",
-            category: "Ukrainian Traditional Cake",
-            description: "Classic Kyiv cake with hazelnut meringue",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "Custom Wedding Cakes",
-            category: "Wedding Cake Design",
-            description: "Personalized wedding cakes with Ukrainian flavors",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "Birthday Cakes",
-            category: "Birthday Cake Design",
-            description: "Custom birthday cakes for all ages",
-          },
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://olgishcakes.co.uk",
         },
       ],
     },
-    paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
-    deliveryAvailable: true,
-    takeoutAvailable: true,
-    foundingDate: "2023",
-    award: [
-      "Best Ukrainian Bakery Leeds 2024",
-      "4.9★ Customer Rating",
-      "Same-day Delivery Service",
-    ],
+    mainEntity: {
+      "@type": "ItemList",
+      name: "Featured Ukrainian Cakes",
+      description: "Our most popular Ukrainian honey cakes and traditional desserts",
+      itemListElement: featuredCakes.map((cake, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Product",
+          name: cake.name,
+          description: cake.description,
+          url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+          image:
+            cake.mainImage?.asset?.url || "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes",
+          },
+          category: "Ukrainian Honey Cake",
+          offers: {
+            "@type": "Offer",
+            price: cake.pricing.standard,
+            priceCurrency: "GBP",
+            availability: "https://schema.org/InStock",
+            seller: {
+              "@id": "https://olgishcakes.co.uk/#organization",
+            },
+          },
+        },
+      })),
+    },
   };
 
   return (
@@ -319,7 +288,6 @@ export default async function Home() {
                 story of heritage, craftsmanship, and unforgettable moments
               </Typography>
             </AnimatedDiv>
-
             <AnimatedDiv variants={fadeInUp} className="mb-12">
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                 <Button

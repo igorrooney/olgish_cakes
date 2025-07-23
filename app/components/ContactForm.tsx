@@ -1,34 +1,26 @@
 "use client";
 
-import { useState, useRef } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  CircularProgress,
-  IconButton,
-  Stack,
-  Paper,
-  Alert,
-  AlertTitle,
-} from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import type { Dayjs } from "dayjs";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import ImageIcon from "@mui/icons-material/Image";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { designTokens } from "@/lib/design-system";
-import { StyledTextField, PrimaryButton, BodyText, SectionHeading } from "@/lib/ui-components";
+import { BodyText, PrimaryButton, StyledTextField } from "@/lib/ui-components";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Alert, AlertTitle, Box, CircularProgress, IconButton, Paper, Stack } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import "dayjs/locale/en-gb";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { useRef, useState } from "react";
+
+// Configure dayjs for British locale
+dayjs.locale("en-gb");
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
-const MotionPaper = motion(Paper);
-const MotionBox = motion(Box);
+const MotionBox = motion.create(Box);
 
 interface FormData {
   name: string;
@@ -48,6 +40,7 @@ interface ContactFormProps {
   isOrderForm?: boolean;
   buttonText?: string;
   showImageUpload?: boolean;
+  showButton?: boolean;
 }
 
 const formFieldAnimation = {
@@ -64,6 +57,7 @@ export function ContactForm({
   isOrderForm = false,
   buttonText = isOrderForm ? "Send Order Inquiry" : "Send Message",
   showImageUpload = false,
+  showButton = true,
 }: ContactFormProps = {}) {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -170,7 +164,7 @@ export function ContactForm({
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
       <Box
         component="form"
         id="contact-form"
@@ -317,7 +311,13 @@ export function ContactForm({
                   disabled={isSubmitting}
                 />
                 {!previewUrl ? (
-                  <Box onClick={() => fileInputRef.current?.click()} sx={{ cursor: "pointer" }}>
+                  <Box
+                    onClick={() => !isSubmitting && fileInputRef.current?.click()}
+                    sx={{
+                      cursor: isSubmitting ? "not-allowed" : "pointer",
+                      opacity: isSubmitting ? 0.6 : 1,
+                    }}
+                  >
                     <CloudUploadIcon
                       sx={{
                         fontSize: "3rem",
@@ -326,7 +326,9 @@ export function ContactForm({
                       }}
                     />
                     <BodyText sx={{ color: colors.text.secondary, mb: spacing.sm }}>
-                      Click to upload design reference image
+                      {isSubmitting
+                        ? "Upload disabled during submission..."
+                        : "Click to upload design reference image"}
                     </BodyText>
                     <BodyText
                       sx={{
@@ -360,6 +362,7 @@ export function ContactForm({
                       />
                       <IconButton
                         onClick={handleRemoveImage}
+                        disabled={isSubmitting}
                         sx={{
                           position: "absolute",
                           top: -spacing.sm,
@@ -369,6 +372,7 @@ export function ContactForm({
                           "&:hover": {
                             backgroundColor: colors.error.dark,
                           },
+                          opacity: isSubmitting ? 0.6 : 1,
                         }}
                         size="small"
                       >
@@ -414,27 +418,29 @@ export function ContactForm({
             )}
           </AnimatePresence>
 
-          <MotionBox {...formFieldAnimation} transition={{ delay: 0.7 }}>
-            <PrimaryButton
-              type="submit"
-              disabled={isSubmitting}
-              fullWidth
-              sx={{
-                py: spacing.md,
-                fontSize: typography.fontSize.lg,
-                fontWeight: typography.fontWeight.semibold,
-              }}
-            >
-              {isSubmitting ? (
-                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
-                  <CircularProgress size={20} sx={{ color: "inherit" }} />
-                  Sending...
-                </Box>
-              ) : (
-                buttonText
-              )}
-            </PrimaryButton>
-          </MotionBox>
+          {showButton && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.7 }}>
+              <PrimaryButton
+                type="submit"
+                disabled={isSubmitting}
+                fullWidth
+                sx={{
+                  py: spacing.md,
+                  fontSize: typography.fontSize.lg,
+                  fontWeight: typography.fontWeight.semibold,
+                }}
+              >
+                {isSubmitting ? (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                    <CircularProgress size={20} sx={{ color: "inherit" }} />
+                    Sending...
+                  </Box>
+                ) : (
+                  buttonText
+                )}
+              </PrimaryButton>
+            </MotionBox>
+          )}
         </Stack>
       </Box>
     </LocalizationProvider>
