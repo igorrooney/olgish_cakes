@@ -54,7 +54,7 @@ export default async function CakesPage() {
     name: "Olgish Cakes",
     description:
       "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
-    image: "https://olgishcakes.co.uk/images/logo.png",
+    image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
     url: "https://olgishcakes.co.uk",
     telephone: "+44 786 721 8194",
     email: "hello@olgishcakes.co.uk",

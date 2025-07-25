@@ -134,7 +134,7 @@ export default function BlogPage() {
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgishcakes.co.uk/logo.png",
+        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
       },
     },
     mainEntity: {

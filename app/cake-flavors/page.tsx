@@ -93,7 +93,7 @@ export default function CakeFlavorsPage() {
       name: "Olgish Cakes",
       logo: {
         "@type": "ImageObject",
-        url: "https://olgishcakes.co.uk/logo.png",
+        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
       },
     },
     itemListElement: cakeFlavors.map((flavor, index) => ({

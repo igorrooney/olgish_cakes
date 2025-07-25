@@ -58,7 +58,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
         "@type": "Organization",
         name: "Olgish Cakes",
         url: "https://olgishcakes.co.uk",
-        logo: "https://olgishcakes.co.uk/logo.png",
+        logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
         address: {
           "@type": "PostalAddress",
           addressLocality: "Leeds",
@@ -169,7 +169,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
     "@type": "Organization",
     name: "Olgish Cakes",
     url: "https://olgishcakes.co.uk",
-    logo: "https://olgishcakes.co.uk/logo.png",
+    logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
     description:
       "Professional cake design and delivery service in Leeds, specializing in Ukrainian honey cakes and custom celebration cakes.",
     address: {

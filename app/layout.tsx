@@ -80,9 +80,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/logo.png", sizes: "192x192", type: "image/png" },
+      { url: "/images/olgish-cakes-logo-bakery-brand.png", sizes: "192x192", type: "image/png" },
     ],
-    apple: [{ url: "/logo.png", sizes: "180x180", type: "image/png" }],
+    apple: [
+      { url: "/images/olgish-cakes-logo-bakery-brand.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   openGraph: {
     title:
@@ -95,7 +97,7 @@ export const metadata: Metadata = {
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.co.uk/logo.png",
+        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
         width: 1200,
         height: 630,
         alt: "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik)",
@@ -109,7 +111,7 @@ export const metadata: Metadata = {
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
       "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating.",
-    images: ["https://olgishcakes.co.uk/logo.png"],
+    images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
   },
@@ -159,7 +161,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-GB" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <head>
         {/* Preload critical resources */}
-        <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link
+          rel="preload"
+          href="/images/olgish-cakes-logo-bakery-brand.png"
+          as="image"
+          type="image/png"
+        />
         <link rel="preload" href="/images/hero-cake.jpg" as="image" type="image/jpeg" />
         <link
           rel="preload"
@@ -240,11 +247,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               url: "https://olgishcakes.co.uk",
               logo: {
                 "@type": "ImageObject",
-                url: "https://olgishcakes.co.uk/logo.png",
+                url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
                 width: 1200,
                 height: 630,
               },
-              image: "https://olgishcakes.co.uk/logo.png",
+              image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
               telephone: "+44 786 721 8194",
               email: "hello@olgishcakes.co.uk",
               address: {
