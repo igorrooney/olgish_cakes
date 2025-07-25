@@ -1,0 +1,117 @@
+{
+  "timestamp": "2025-07-25T22:44:53.187Z",
+  "overallScore": 100,
+  "sections": {
+    "metaTags": {
+      "score": 25,
+      "maxScore": 25,
+      "details": {
+        "title": "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
+        "description": "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating, same-day delivery Yorkshire. Order now!"
+      },
+      "issues": [],
+      "strengths": [
+        "Title length is optimal (50-60 characters)",
+        "Title contains target keywords: Ukrainian cakes Leeds, honey cake",
+        "Description length is optimal (150-160 characters)",
+        "Description includes call-to-action",
+        "Complete Open Graph tags implemented",
+        "Twitter Card tags implemented"
+      ]
+    },
+    "structuredData": {
+      "score": 20,
+      "maxScore": 20,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Structured data implemented",
+        "WebPage schema implemented",
+        "Organization schema implemented",
+        "Product schema implemented",
+        "BreadcrumbList schema implemented",
+        "ItemList schema implemented"
+      ]
+    },
+    "contentOptimization": {
+      "score": 25,
+      "maxScore": 25,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Content includes 10 target keywords",
+        "Proper H1 structure (single H1)",
+        "Good H2 structure for content organization",
+        "Content length is substantial",
+        "Good internal linking structure",
+        "Multiple call-to-action buttons present"
+      ]
+    },
+    "technicalSEO": {
+      "score": 20,
+      "maxScore": 20,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Canonical URL properly set",
+        "Robots meta tag properly configured",
+        "Metadata base URL properly set",
+        "Geo-targeting implemented",
+        "Business contact information in metadata",
+        "Rating information in metadata"
+      ]
+    },
+    "userExperience": {
+      "score": 10,
+      "maxScore": 10,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Testimonials section present",
+        "Features/benefits section present",
+        "Clear call-to-action buttons",
+        "Contact information accessible"
+      ]
+    }
+  },
+  "recommendations": [],
+  "strengths": [
+    "Title length is optimal (50-60 characters)",
+    "Title contains target keywords: Ukrainian cakes Leeds, honey cake",
+    "Description length is optimal (150-160 characters)",
+    "Description includes call-to-action",
+    "Complete Open Graph tags implemented",
+    "Twitter Card tags implemented",
+    "Structured data implemented",
+    "WebPage schema implemented",
+    "Organization schema implemented",
+    "Product schema implemented",
+    "BreadcrumbList schema implemented",
+    "ItemList schema implemented",
+    "Content includes 10 target keywords",
+    "Proper H1 structure (single H1)",
+    "Good H2 structure for content organization",
+    "Content length is substantial",
+    "Good internal linking structure",
+    "Multiple call-to-action buttons present",
+    "Canonical URL properly set",
+    "Robots meta tag properly configured",
+    "Metadata base URL properly set",
+    "Geo-targeting implemented",
+    "Business contact information in metadata",
+    "Rating information in metadata",
+    "Testimonials section present",
+    "Features/benefits section present",
+    "Clear call-to-action buttons",
+    "Contact information accessible"
+  ],
+  "weaknesses": [],
+  "criticalIssues": [],
+  "scoreBreakdown": {
+    "metaTags": "25/25",
+    "structuredData": "20/20",
+    "contentOptimization": "25/25",
+    "technicalSEO": "20/20",
+    "userExperience": "10/10"
+  }
+}
