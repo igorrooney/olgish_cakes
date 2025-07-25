@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-07-25T22:35:57.531Z",
+  "page": "About Page SEO Analysis",
+  "metadata": {
+    "hasTitle": true,
+    "hasDescription": true,
+    "hasKeywords": true,
+    "hasOpenGraph": false,
+    "hasTwitter": false,
+    "hasCanonical": false
+  },
+  "structuredData": {
+    "hasOrganizationSchema": true,
+    "hasLocalBusinessSchema": true,
+    "hasWebPageSchema": true,
+    "hasPersonSchema": true,
+    "hasFAQSchema": true
+  },
+  "content": {
+    "hasHeroSection": true,
+    "hasProfessionalQualifications": true,
+    "hasServices": true,
+    "hasAchievements": true,
+    "hasHeritage": true,
+    "hasCallToAction": true,
+    "hasContactInfo": true
+  },
+  "keywords": {
+    "primary": [
+      "Ukrainian baker Leeds",
+      "professional cake maker Leeds",
+      "Olga Ieromenko baker",
+      "authentic Ukrainian honey cake",
+      "traditional Medovik recipe",
+      "Kyiv cake specialist Leeds",
+      "custom wedding cakes Yorkshire",
+      "birthday cake delivery Leeds",
+      "Ukrainian bakery near me",
+      "professional patisserie Leeds",
+      "Level 3 Patisserie qualified",
+      "traditional Ukrainian desserts",
+      "honey cake delivery Yorkshire",
+      "authentic Ukrainian baking",
+      "custom celebration cakes Leeds"
+    ],
+    "foundInContent": [
+      "Ukrainian baker Leeds",
+      "professional cake maker Leeds",
+      "Olga Ieromenko baker",
+      "authentic Ukrainian honey cake",
+      "traditional Medovik recipe",
+      "Kyiv cake specialist Leeds",
+      "custom wedding cakes Yorkshire",
+      "birthday cake delivery Leeds",
+      "Ukrainian bakery near me",
+      "professional patisserie Leeds",
+      "Level 3 Patisserie qualified",
+      "traditional Ukrainian desserts",
+      "honey cake delivery Yorkshire",
+      "authentic Ukrainian baking",
+      "custom celebration cakes Leeds"
+    ],
+    "missingKeywords": []
+  },
+  "technical": {
+    "hasBreadcrumbs": true,
+    "hasResponsiveDesign": true,
+    "hasAnimations": true,
+    "hasAccessibility": true,
+    "hasPerformanceOptimization": false
+  },
+  "recommendations": [
+    "Add Open Graph tags for social media sharing",
+    "Add Twitter Card meta tags",
+    "Add canonical URL to prevent duplicate content",
+    "Optimize for Core Web Vitals and page speed"
+  ],
+  "seoScore": {
+    "score": 83,
+    "breakdown": {
+      "metadata": 50,
+      "structuredData": 100,
+      "content": 100,
+      "technical": 80
+    }
+  },
+  "summary": {
+    "overallScore": 83,
+    "status": "Good",
+    "totalRecommendations": 4,
+    "criticalIssues": 3
+  },
+  "nextSteps": [
+    "Implement all critical SEO recommendations",
+    "Monitor Google Search Console for performance",
+    "Track keyword rankings and organic traffic",
+    "Regular content updates and optimization"
+  ]
+}

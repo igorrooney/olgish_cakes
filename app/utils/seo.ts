@@ -738,6 +738,73 @@ export function generateRecipeSchema(recipe: {
   };
 }
 
+export function generatePersonSchema(person: {
+  name: string;
+  jobTitle: string;
+  description: string;
+  url: string;
+  image: string;
+  telephone: string;
+  email: string;
+  address: {
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    postalCode: string;
+    addressCountry: string;
+  };
+  worksFor?: string;
+  knowsAbout?: string[];
+  alumniOf?: Array<{
+    name: string;
+    description: string;
+  }>;
+  hasCredential?: string[];
+  sameAs?: string[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${person.url}#person`,
+    name: person.name,
+    jobTitle: person.jobTitle,
+    description: person.description,
+    url: person.url,
+    image: person.image,
+    telephone: person.telephone,
+    email: person.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: person.address.streetAddress,
+      addressLocality: person.address.addressLocality,
+      addressRegion: person.address.addressRegion,
+      postalCode: person.address.postalCode,
+      addressCountry: person.address.addressCountry,
+    },
+    ...(person.worksFor && {
+      worksFor: {
+        "@id": person.worksFor,
+      },
+    }),
+    ...(person.knowsAbout && {
+      knowsAbout: person.knowsAbout,
+    }),
+    ...(person.alumniOf && {
+      alumniOf: person.alumniOf.map(org => ({
+        "@type": "EducationalOrganization",
+        name: org.name,
+        description: org.description,
+      })),
+    }),
+    ...(person.hasCredential && {
+      hasCredential: person.hasCredential,
+    }),
+    ...(person.sameAs && {
+      sameAs: person.sameAs,
+    }),
+  };
+}
+
 // Performance and SEO monitoring utilities
 export function generatePerformanceSchema() {
   return {
