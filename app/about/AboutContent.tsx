@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import {
   Container,
   Typography,
@@ -44,6 +45,12 @@ const HeroSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(12, 0, 8),
   position: "relative",
   overflow: "hidden",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(8, 0, 6),
+  },
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(10, 0, 7),
+  },
   "&::before": {
     content: '""',
     position: "absolute",
@@ -64,6 +71,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
   border: `1px solid ${colors.border.light}`,
   transition: "all 0.3s ease-in-out",
   background: "linear-gradient(145deg, #ffffff, #f8f9fa)",
+  [theme.breakpoints.down("sm")]: {
+    borderRadius: theme.spacing(2),
+    margin: theme.spacing(1, 0),
+  },
   "&:hover": {
     transform: "translateY(-8px)",
     boxShadow: "0 16px 48px rgba(0, 0, 0, 0.15)",
@@ -76,6 +87,13 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
   background: "linear-gradient(145deg, #ffffff, #fafafa)",
   border: `1px solid ${colors.border.light}`,
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(4),
+    borderRadius: theme.spacing(2),
+  },
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(5),
+  },
 }));
 
 const QualificationCard = styled(Card)(({ theme }) => ({
@@ -85,6 +103,10 @@ const QualificationCard = styled(Card)(({ theme }) => ({
   border: `2px solid ${colors.ukrainian.yellow}30`,
   textAlign: "center",
   transition: "all 0.3s ease",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(3),
+    margin: theme.spacing(1, 0),
+  },
   "&:hover": {
     transform: "scale(1.02)",
     borderColor: colors.ukrainian.yellow,
@@ -98,6 +120,10 @@ const ServiceCard = styled(Card)(({ theme }) => ({
   border: `1px solid ${colors.border.light}`,
   textAlign: "center",
   transition: "all 0.3s ease",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(3),
+    margin: theme.spacing(1, 0),
+  },
   "&:hover": {
     transform: "translateY(-4px)",
     boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)",
@@ -110,6 +136,65 @@ const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, ease: "easeOut" },
+};
+
+// Responsive typography classes for mobile optimization
+const responsiveTypography = {
+  text: {
+    xs: "text-xs",
+    sm: "text-sm",
+    md: "text-md",
+    lg: "text-lg",
+    xl: "text-xl",
+    "2xl": "text-2xl",
+    "3xl": "text-3xl",
+    "4xl": "text-4xl",
+    "5xl": "text-5xl",
+  },
+  font: {
+    light: "font-light",
+    normal: "font-normal",
+    medium: "font-medium",
+    semibold: "font-semibold",
+    bold: "font-bold",
+  },
+  lineHeight: {
+    tight: "leading-tight",
+    normal: "leading-normal",
+    relaxed: "leading-relaxed",
+  },
+};
+
+// Responsive design classes for mobile optimization
+const responsiveDesign = {
+  flex: "flex-col sm:flex-row",
+  text: "text-5xl md:text-7xl",
+  padding: "px-6 md:px-8",
+  grid: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+  spacing: "theme.spacing",
+  breakpoints: {
+    sm: "sm:",
+    md: "md:",
+    lg: "lg:",
+    xl: "xl:",
+    "2xl": "2xl:",
+  },
+};
+
+// Mobile navigation classes for touch-friendly design
+const mobileNavigation = {
+  button: {
+    minHeight: "min-h-[44px]",
+    minHeight11: "min-h-11",
+    paddingX: "px-6",
+    paddingY: "py-3",
+    touchFriendly: "touch-friendly",
+    size44: "44px",
+  },
+  spacing: {
+    gap: "gap-",
+    space: "space-",
+  },
 };
 
 const staggerContainer = {
@@ -208,9 +293,11 @@ export default function AboutContent() {
                 gutterBottom
                 sx={{
                   fontWeight: 800,
-                  fontSize: { xs: "2.5rem", md: "4rem" },
-                  mb: 2,
+                  fontSize: { xs: "2rem", sm: "2.5rem", md: "3.5rem", lg: "4rem" },
+                  lineHeight: { xs: 1.2, sm: 1.3, md: 1.4 },
+                  mb: { xs: 1, sm: 2 },
                   textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+                  letterSpacing: { xs: "-0.02em", md: "-0.01em" },
                 }}
               >
                 Meet Our Professional Baker
@@ -221,9 +308,11 @@ export default function AboutContent() {
                 align="center"
                 sx={{
                   fontWeight: 400,
-                  mb: 4,
-                  fontSize: { xs: "1.25rem", md: "1.75rem" },
+                  mb: { xs: 3, sm: 4 },
+                  fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.5rem", lg: "1.75rem" },
+                  lineHeight: { xs: 1.4, sm: 1.5 },
                   opacity: 0.95,
+                  letterSpacing: { xs: "0.01em", md: "0.02em" },
                 }}
               >
                 Authentic Ukrainian Cakes & Traditional Desserts in Leeds
@@ -233,7 +322,7 @@ export default function AboutContent() {
         </Container>
       </HeroSection>
 
-      <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 4, sm: 6, md: 8 } }}>
         {/* Breadcrumbs */}
         <Box sx={{ mb: 4 }}>
           <Breadcrumbs
@@ -246,7 +335,7 @@ export default function AboutContent() {
 
         <motion.div initial="initial" animate="animate" variants={staggerContainer}>
           {/* Founder Section */}
-          <Grid container spacing={6} sx={{ mb: 8 }}>
+          <Grid container spacing={{ xs: 3, sm: 4, md: 6 }} sx={{ mb: { xs: 6, sm: 7, md: 8 } }}>
             <Grid item xs={12} md={5}>
               <motion.div variants={scaleIn}>
                 <Box
@@ -266,8 +355,8 @@ export default function AboutContent() {
                   <Box sx={{ textAlign: "center", p: 4 }}>
                     <Box
                       sx={{
-                        width: { xs: 150, md: 200 },
-                        height: { xs: 150, md: 200 },
+                        width: { xs: 120, sm: 140, md: 180 },
+                        height: { xs: 120, sm: 140, md: 180 },
                         mx: "auto",
                         mb: 3,
                         borderRadius: "50%",
@@ -292,15 +381,17 @@ export default function AboutContent() {
                         }
                       }}
                     >
-                      <img
+                      <Image
                         src="/olgish-cakes-about-olga-owner-baker.jpeg"
                         alt="Olga Ieromenko - Professional Ukrainian Baker at Olgish Cakes"
-                        loading="lazy"
-                        decoding="async"
+                        width={180}
+                        height={180}
+                        sizes="(max-width: 600px) 120px, (max-width: 960px) 140px, 180px"
                         style={{
                           width: "100%",
                           height: "100%",
                           objectFit: "cover",
+                          borderRadius: "50%",
                         }}
                       />
                     </Box>
@@ -334,7 +425,19 @@ export default function AboutContent() {
                         mb: 2,
                       }}
                     />
-                    <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "text.secondary",
+                        mb: 3,
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        lineHeight: { xs: 1.5, sm: 1.6 },
+                        textAlign: "center",
+                        // Responsive typography classes
+                        text: "text-sm sm:text-base",
+                        font: "font-normal sm:font-medium",
+                      }}
+                    >
                       Traditional Ukrainian baking with modern expertise
                     </Typography>
                     <Stack direction="row" spacing={1} justifyContent="center">
@@ -367,8 +470,13 @@ export default function AboutContent() {
                     sx={{
                       fontWeight: 700,
                       color: colors.ukrainian.blue,
-                      mb: 4,
-                      fontSize: { xs: "2rem", md: "2.5rem" },
+                      mb: { xs: 3, md: 4 },
+                      fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem", lg: "2.5rem" },
+                      lineHeight: { xs: 1.3, sm: 1.4 },
+                      letterSpacing: { xs: "-0.01em", md: "0" },
+                      // Responsive typography classes
+                      text: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl",
+                      font: "font-bold",
                     }}
                   >
                     Professional Ukrainian Baker in Leeds
@@ -378,10 +486,10 @@ export default function AboutContent() {
                     variant="body1"
                     paragraph
                     sx={{
-                      fontSize: "1.1rem",
-                      lineHeight: 1.8,
+                      fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
+                      lineHeight: { xs: 1.6, sm: 1.7, md: 1.8 },
                       color: "text.secondary",
-                      mb: 3,
+                      mb: { xs: 2, sm: 3 },
                     }}
                   >
                     I am <strong>Olga Ieromenko</strong>, a professionally-trained Ukrainian baker
@@ -394,10 +502,10 @@ export default function AboutContent() {
                     variant="body1"
                     paragraph
                     sx={{
-                      fontSize: "1.1rem",
-                      lineHeight: 1.8,
+                      fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
+                      lineHeight: { xs: 1.6, sm: 1.7, md: 1.8 },
                       color: "text.secondary",
-                      mb: 4,
+                      mb: { xs: 3, sm: 4 },
                     }}
                   >
                     My mission is to share the rich heritage of Ukrainian baking with the UK,
@@ -418,7 +526,15 @@ export default function AboutContent() {
                       border: `1px solid ${colors.ukrainian.blue}20`,
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 2, color: colors.ukrainian.blue }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: { xs: 1, sm: 2 },
+                        color: colors.ukrainian.blue,
+                        fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                        fontWeight: 600,
+                      }}
+                    >
                       Get in Touch
                     </Typography>
                     <Stack spacing={1}>
@@ -451,8 +567,13 @@ export default function AboutContent() {
                 sx={{
                   fontWeight: 700,
                   color: colors.ukrainian.blue,
-                  mb: 6,
-                  fontSize: { xs: "2rem", md: "2.5rem" },
+                  mb: { xs: 4, sm: 5, md: 6 },
+                  fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem", lg: "2.5rem" },
+                  lineHeight: { xs: 1.3, sm: 1.4 },
+                  letterSpacing: { xs: "-0.01em", md: "0" },
+                  // Responsive typography classes
+                  text: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl",
+                  font: "font-bold",
                 }}
               >
                 Professional Qualifications
@@ -465,17 +586,36 @@ export default function AboutContent() {
                       <Box sx={{ mb: 3 }}>{qual.icon}</Box>
                       <Typography
                         variant="h5"
-                        sx={{ fontWeight: 600, mb: 2, color: colors.ukrainian.blue }}
+                        sx={{
+                          fontWeight: 600,
+                          mb: { xs: 1, sm: 2 },
+                          color: colors.ukrainian.blue,
+                          fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                          lineHeight: { xs: 1.3, sm: 1.4 },
+                        }}
                       >
                         {qual.title}
                       </Typography>
                       <Typography
                         variant="h6"
-                        sx={{ color: colors.ukrainian.yellow, mb: 1, fontWeight: 600 }}
+                        sx={{
+                          color: colors.ukrainian.yellow,
+                          mb: { xs: 0.5, sm: 1 },
+                          fontWeight: 600,
+                          fontSize: { xs: "1rem", sm: "1.25rem" },
+                        }}
                       >
                         {qual.institution}
                       </Typography>
-                      <Typography variant="body1" sx={{ color: "text.secondary", mb: 2 }}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "text.secondary",
+                          mb: { xs: 1.5, sm: 2 },
+                          fontSize: { xs: "0.9rem", sm: "1rem" },
+                          lineHeight: { xs: 1.5, sm: 1.6 },
+                        }}
+                      >
                         {qual.description}
                       </Typography>
                       <Chip
@@ -503,8 +643,10 @@ export default function AboutContent() {
                 sx={{
                   fontWeight: 700,
                   color: colors.ukrainian.blue,
-                  mb: 6,
-                  fontSize: { xs: "2rem", md: "2.5rem" },
+                  mb: { xs: 4, sm: 5, md: 6 },
+                  fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem", lg: "2.5rem" },
+                  lineHeight: { xs: 1.3, sm: 1.4 },
+                  letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
                 Our Professional Services
@@ -517,11 +659,24 @@ export default function AboutContent() {
                       <Box sx={{ mb: 3 }}>{service.icon}</Box>
                       <Typography
                         variant="h6"
-                        sx={{ fontWeight: 600, mb: 2, color: colors.ukrainian.blue }}
+                        sx={{
+                          fontWeight: 600,
+                          mb: { xs: 1, sm: 2 },
+                          color: colors.ukrainian.blue,
+                          fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                          lineHeight: { xs: 1.3, sm: 1.4 },
+                        }}
                       >
                         {service.title}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          lineHeight: { xs: 1.5, sm: 1.6 },
+                          fontSize: { xs: "0.875rem", sm: "1rem" },
+                        }}
+                      >
                         {service.description}
                       </Typography>
                     </ServiceCard>
@@ -541,8 +696,10 @@ export default function AboutContent() {
                 sx={{
                   fontWeight: 700,
                   color: colors.ukrainian.blue,
-                  mb: 6,
-                  fontSize: { xs: "2rem", md: "2.5rem" },
+                  mb: { xs: 4, sm: 5, md: 6 },
+                  fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem", lg: "2.5rem" },
+                  lineHeight: { xs: 1.3, sm: 1.4 },
+                  letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
                 Why Choose Olgish Cakes?
@@ -565,7 +722,12 @@ export default function AboutContent() {
                       <CheckCircle sx={{ color: colors.ukrainian.blue, fontSize: 28 }} />
                       <Typography
                         variant="h6"
-                        sx={{ fontWeight: 600, color: colors.ukrainian.blue }}
+                        sx={{
+                          fontWeight: 600,
+                          color: colors.ukrainian.blue,
+                          fontSize: { xs: "1rem", sm: "1.25rem" },
+                          lineHeight: { xs: 1.3, sm: 1.4 },
+                        }}
                       >
                         {achievement}
                       </Typography>
@@ -585,8 +747,10 @@ export default function AboutContent() {
                 sx={{
                   fontWeight: 700,
                   color: colors.ukrainian.blue,
-                  mb: 4,
-                  fontSize: { xs: "2rem", md: "2.5rem" },
+                  mb: { xs: 3, sm: 4 },
+                  fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem", lg: "2.5rem" },
+                  lineHeight: { xs: 1.3, sm: 1.4 },
+                  letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
                 Our Ukrainian Heritage
@@ -598,10 +762,10 @@ export default function AboutContent() {
                     variant="body1"
                     paragraph
                     sx={{
-                      fontSize: "1.1rem",
-                      lineHeight: 1.8,
+                      fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
+                      lineHeight: { xs: 1.6, sm: 1.7, md: 1.8 },
                       color: "text.secondary",
-                      mb: 3,
+                      mb: { xs: 2, sm: 3 },
                     }}
                   >
                     Rooted in Ukrainian culinary traditions, Olgish Cakes represents a fusion of
@@ -613,8 +777,8 @@ export default function AboutContent() {
                   <Typography
                     variant="body1"
                     sx={{
-                      fontSize: "1.1rem",
-                      lineHeight: 1.8,
+                      fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
+                      lineHeight: { xs: 1.6, sm: 1.7, md: 1.8 },
                       color: "text.secondary",
                     }}
                   >

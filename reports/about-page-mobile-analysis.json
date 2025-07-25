@@ -1,6 +1,7 @@
 {
-  "timestamp": "2025-07-25T22:53:34.105Z",
-  "overallScore": 97,
+  "timestamp": "2025-07-25T23:23:45.203Z",
+  "page": "About Page",
+  "overallScore": 100,
   "sections": {
     "responsiveDesign": {
       "score": 25,
@@ -10,19 +11,20 @@
       "strengths": [
         "Comprehensive responsive design with Tailwind classes",
         "Mobile-first responsive approach detected",
-        "Proper mobile spacing implemented",
-        "Responsive grid layouts implemented"
+        "Responsive grid layouts implemented",
+        "Proper mobile spacing implemented"
       ]
     },
     "mobileTypography": {
-      "score": 17,
+      "score": 20,
       "maxScore": 20,
       "details": {},
       "issues": [],
       "strengths": [
         "Good responsive typography",
         "Large, readable headings on mobile",
-        "Proper line height for mobile readability"
+        "Proper line height for mobile readability",
+        "Material-UI Typography component for consistent styling"
       ]
     },
     "mobileNavigation": {
@@ -33,8 +35,7 @@
       "strengths": [
         "Mobile-friendly button sizes",
         "Touch-friendly spacing between elements",
-        "Clear call-to-action buttons for mobile",
-        "Mobile-friendly layout structure"
+        "Clear call-to-action buttons for mobile"
       ]
     },
     "mobilePerformance": {
@@ -65,15 +66,15 @@
   "strengths": [
     "Comprehensive responsive design with Tailwind classes",
     "Mobile-first responsive approach detected",
-    "Proper mobile spacing implemented",
     "Responsive grid layouts implemented",
+    "Proper mobile spacing implemented",
     "Good responsive typography",
     "Large, readable headings on mobile",
     "Proper line height for mobile readability",
+    "Material-UI Typography component for consistent styling",
     "Mobile-friendly button sizes",
     "Touch-friendly spacing between elements",
     "Clear call-to-action buttons for mobile",
-    "Mobile-friendly layout structure",
     "Next.js Image component for optimization",
     "Lazy loading implemented for mobile performance",
     "Optimized animations for mobile",
@@ -86,7 +87,7 @@
   "criticalIssues": [],
   "scoreBreakdown": {
     "responsiveDesign": "25/25",
-    "mobileTypography": "17/20",
+    "mobileTypography": "20/20",
     "mobileNavigation": "20/20",
     "mobilePerformance": "20/20",
     "mobileUserExperience": "15/15"
