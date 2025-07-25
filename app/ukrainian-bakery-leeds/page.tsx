@@ -56,7 +56,7 @@ export default async function UkrainianBakeryLeedsPage() {
     url: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
     logo: {
       "@type": "ImageObject",
-      url: "https://olgishcakes.co.uk/logo.png",
+      url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
     },
     address: {
       "@type": "PostalAddress",

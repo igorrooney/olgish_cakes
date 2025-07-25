@@ -90,7 +90,7 @@ export default function ContactPage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
       {/* Structured Data */}
       <script
         type="application/ld+json"

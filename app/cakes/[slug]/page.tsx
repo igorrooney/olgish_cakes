@@ -160,7 +160,7 @@ export default async function CakePage({ params }: PageProps) {
             "@type": "Organization",
             name: "Olgish Cakes",
             url: "https://olgishcakes.co.uk",
-            logo: "https://olgishcakes.co.uk/logo.png",
+            logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
             description:
               "Authentic Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
             telephone: "+44 786 721 8194",

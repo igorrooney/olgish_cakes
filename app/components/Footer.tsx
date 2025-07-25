@@ -157,18 +157,19 @@ export default function Footer() {
             <Grid item xs={12} md={4} aria-label="Footer brand info">
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
                 <Link href="/" style={{ textDecoration: "none" }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontSize: typography.fontSize["2xl"],
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.primary.main,
-                      fontFamily: typography.fontFamily.display,
-                      mb: spacing.md,
+                  <Image
+                    src="/images/olgish-cakes-logo-bakery-brand.png"
+                    alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
+                    width={200}
+                    height={85}
+                    style={{
+                      height: "auto",
+                      maxHeight: "85px",
+                      width: "auto",
+                      maxWidth: "200px",
+                      marginBottom: spacing.md,
                     }}
-                  >
-                    Olgish Cakes
-                  </Typography>
+                  />
                 </Link>
                 <BodyText
                   sx={{

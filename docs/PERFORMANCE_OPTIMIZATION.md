@@ -115,7 +115,7 @@ const inter = Inter({
 
 ```html
 <link rel="dns-prefetch" href="//cdn.sanity.io" />
-<link rel="preload" href="/logo.png" as="image" type="image/png" />
+<link rel="preload" href="/images/olgish-cakes-logo-bakery-brand.png" as="image" type="image/png" />
 ```
 
 ## 📊 Performance Monitoring

@@ -22,6 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -228,21 +229,19 @@ export function Header() {
                   pl: { xs: 0, md: 2 },
                 }}
               >
-                <Typography
-                  variant="h5"
-                  component="span"
-                  sx={{
-                    fontFamily: typography.fontFamily.display,
-                    color: colors.primary.main,
-                    fontSize: { xs: typography.fontSize.xl, md: typography.fontSize["2xl"] },
-                    fontWeight: typography.fontWeight.bold,
-                    letterSpacing: 0.3,
-                    lineHeight: 1.1,
-                    whiteSpace: "nowrap",
+                <Image
+                  src="/images/olgish-cakes-logo-bakery-brand.png"
+                  alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
+                  width={180}
+                  height={85}
+                  priority
+                  style={{
+                    height: "auto",
+                    maxHeight: "85px",
+                    width: "auto",
+                    maxWidth: "180px",
                   }}
-                >
-                  Olgish Cakes
-                </Typography>
+                />
               </Box>
             </Link>
           </Box>

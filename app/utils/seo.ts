@@ -5,7 +5,7 @@ export const SEO_CONFIG = {
   siteName: "Olgish Cakes",
   siteUrl: "https://olgishcakes.co.uk",
   siteDescription: "Authentic Ukrainian honey cakes and traditional desserts in Leeds",
-  defaultImage: "https://olgishcakes.co.uk/logo.png",
+  defaultImage: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
   twitterHandle: "@olgish_cakes",
   locale: "en_GB",
   type: "website",
@@ -272,11 +272,11 @@ export function generateOrganizationSchema() {
     url: SEO_CONFIG.siteUrl,
     logo: {
       "@type": "ImageObject",
-      url: `${SEO_CONFIG.siteUrl}/logo.png`,
+      url: `${SEO_CONFIG.siteUrl}/images/olgish-cakes-logo-bakery-brand.png`,
       width: 1200,
       height: 630,
     },
-    image: `${SEO_CONFIG.siteUrl}/logo.png`,
+    image: `${SEO_CONFIG.siteUrl}/images/olgish-cakes-logo-bakery-brand.png`,
     telephone: "+44 786 721 8194",
     email: "hello@olgishcakes.co.uk",
     address: {
