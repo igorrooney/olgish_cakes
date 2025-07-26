@@ -33,10 +33,9 @@ import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 
 export const metadata: Metadata = {
-  title:
-    "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
+  title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
   description:
-    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
+    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating, same-day delivery Yorkshire. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -75,10 +74,9 @@ export const metadata: Metadata = {
     canonical: "https://olgishcakes.co.uk",
   },
   openGraph: {
-    title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
+    title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating, same-day delivery Yorkshire.",
     url: "https://olgishcakes.co.uk",
     siteName: "Olgish Cakes",
     images: [
@@ -95,10 +93,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
+    title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating.",
+      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating.",
     images: ["https://olgishcakes.co.uk/images/hero-cake.jpg"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
@@ -179,6 +176,29 @@ export default async function Home() {
     about: {
       "@id": "https://olgishcakes.co.uk/#organization",
     },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://olgishcakes.co.uk/#organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk",
+      logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+      description:
+        "Authentic Ukrainian bakery in Leeds, specializing in traditional honey cakes and desserts",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Leeds",
+        addressRegion: "West Yorkshire",
+        postalCode: "LS17",
+        addressCountry: "GB",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+44 786 721 8194",
+        email: "hello@olgishcakes.co.uk",
+        contactType: "customer service",
+      },
+      sameAs: ["https://www.instagram.com/olgish_cakes", "https://www.facebook.com/olgishcakes"],
+    },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -202,8 +222,14 @@ export default async function Home() {
           name: cake.name,
           description: cake.description,
           url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-          image:
-            cake.mainImage?.asset?.url || "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
+          image: {
+            "@type": "ImageObject",
+            url:
+              cake.mainImage?.asset?.url || "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
+            width: 800,
+            height: 600,
+            loading: "lazy",
+          },
           brand: {
             "@type": "Brand",
             name: "Olgish Cakes",
@@ -229,6 +255,12 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+
+      {/* Mobile Performance Optimization */}
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
       {/* Hero Section */}
       <AnimatedSection
@@ -262,7 +294,7 @@ export default async function Home() {
             <AnimatedDiv variants={fadeInUp} className="mb-8">
               <Typography
                 variant="h1"
-                className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
+                className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
                 sx={{
                   background: "linear-gradient(135deg, #FFFFFF 0%, #FFD700 50%, #FFFFFF 100%)",
                   backgroundClip: "text",
@@ -281,7 +313,7 @@ export default async function Home() {
             <AnimatedDiv variants={fadeInUp} className="mb-12">
               <Typography
                 variant="h2"
-                className="text-xl md:text-2xl lg:text-3xl text-gray-100 mx-auto font-light"
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-100 mx-auto font-light"
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
                 Experience the authentic taste of Ukrainian tradition, where every cake tells a
@@ -289,14 +321,14 @@ export default async function Home() {
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
                 <Button
                   variant="contained"
                   color="secondary"
                   size="large"
                   component={Link}
                   href="/cakes"
-                  className="bg-secondary hover:bg-secondary-dark px-10 py-4 text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center"
                   endIcon={<ArrowForward />}
                 >
                   Explore Our Collection
@@ -307,7 +339,7 @@ export default async function Home() {
                   size="large"
                   component={Link}
                   href="/get-custom-quote"
-                  className="px-10 py-4 text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300"
+                  className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center"
                 >
                   Get Custom Quote
                 </Button>
@@ -339,10 +371,14 @@ export default async function Home() {
             >
               Why Choose Olgish Cakes
             </Typography>
-            <Typography variant="h2" className="text-4xl md:text-5xl font-bold" sx={{ mb: 3 }}>
+            <Typography
+              variant="h2"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold"
+              sx={{ mb: 3 }}
+            >
               Excellence in Every Bite
             </Typography>
-            <Typography component="span" className="text-xl text-gray-600 block">
+            <Typography component="span" className="text-lg sm:text-xl text-gray-600 block">
               We combine traditional Ukrainian recipes with modern craftsmanship to deliver
               exceptional cakes
             </Typography>
@@ -397,7 +433,10 @@ export default async function Home() {
                       <Typography variant="h5" className="font-bold text-gray-900" sx={{ mb: 4 }}>
                         {feature.title}
                       </Typography>
-                      <Typography variant="body1" className="text-gray-700 leading-relaxed">
+                      <Typography
+                        variant="body1"
+                        className="text-sm sm:text-base text-gray-700 leading-relaxed"
+                      >
                         {feature.description}
                       </Typography>
                     </CardContent>
@@ -437,7 +476,7 @@ export default async function Home() {
                   </Typography>
                   <Typography
                     variant="h2"
-                    className="text-4xl md:text-5xl font-bold"
+                    className="text-3xl sm:text-4xl md:text-5xl font-bold"
                     sx={{ mb: 4 }}
                   >
                     Ukrainian Tradition Meets Modern Artistry
@@ -447,7 +486,7 @@ export default async function Home() {
                 <AnimatedDiv variants={fadeInUp} className="mb-8">
                   <Typography
                     variant="body1"
-                    className="text-lg text-gray-700 mb-6 leading-relaxed"
+                    className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
                     At Olgish Cakes, we honor the rich culinary heritage of Ukraine while embracing
                     contemporary design trends. Our master bakers combine traditional recipes passed
@@ -456,7 +495,7 @@ export default async function Home() {
                   </Typography>
                   <Typography
                     variant="body1"
-                    className="text-lg text-gray-700 mb-6 leading-relaxed"
+                    className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
                     From our signature honey cake layers to our intricate floral decorations, every
                     element reflects our commitment to authenticity and excellence. We believe that
@@ -517,12 +556,12 @@ export default async function Home() {
             </Typography>
             <Typography
               variant="h2"
-              className="text-4xl md:text-5xl font-bold"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ marginBottom: 4 }}
             >
               What Our Customers Say
             </Typography>
-            <Typography variant="subtitle1" className="text-xl text-gray-600 mx-auto">
+            <Typography variant="subtitle1" className="text-lg sm:text-xl text-gray-600 mx-auto">
               Real experiences from our valued customers who have celebrated their special moments
               with our cakes
             </Typography>
@@ -595,7 +634,7 @@ export default async function Home() {
 
                           <Typography
                             variant="body1"
-                            className="italic text-gray-700 leading-relaxed"
+                            className="text-sm sm:text-base italic text-gray-700 leading-relaxed"
                             sx={{ lineHeight: 1.7 }}
                           >
                             "{testimonial.text}"
@@ -671,7 +710,7 @@ export default async function Home() {
 
                           <Typography
                             variant="body1"
-                            className="italic text-gray-700 leading-relaxed"
+                            className="text-sm sm:text-base italic text-gray-700 leading-relaxed"
                             sx={{ lineHeight: 1.7 }}
                           >
                             "{testimonial.text}"
@@ -726,10 +765,14 @@ export default async function Home() {
             >
               Our Services
             </Typography>
-            <Typography variant="h2" className="text-4xl md:text-5xl font-bold" sx={{ mb: 6 }}>
+            <Typography
+              variant="h2"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold"
+              sx={{ mb: 6 }}
+            >
               Complete Cake Solutions
             </Typography>
-            <Typography variant="subtitle1" className="text-xl text-gray-600 mx-auto">
+            <Typography variant="subtitle1" className="text-lg sm:text-xl text-gray-600 mx-auto">
               From custom designs to special occasions, we provide comprehensive cake services
             </Typography>
           </AnimatedDiv>

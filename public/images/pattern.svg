@@ -1,0 +1,19 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="ukrainian-pattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <!-- Ukrainian blue and yellow geometric pattern -->
+      <rect width="25" height="25" fill="#005BBB" opacity="0.1"/>
+      <rect x="25" y="25" width="25" height="25" fill="#005BBB" opacity="0.1"/>
+      <rect x="25" y="0" width="25" height="25" fill="#FFD700" opacity="0.1"/>
+      <rect x="0" y="25" width="25" height="25" fill="#FFD700" opacity="0.1"/>
+      
+      <!-- Subtle decorative elements -->
+      <circle cx="12.5" cy="12.5" r="2" fill="#005BBB" opacity="0.2"/>
+      <circle cx="37.5" cy="37.5" r="2" fill="#005BBB" opacity="0.2"/>
+      <circle cx="37.5" cy="12.5" r="2" fill="#FFD700" opacity="0.2"/>
+      <circle cx="12.5" cy="37.5" r="2" fill="#FFD700" opacity="0.2"/>
+    </pattern>
+  </defs>
+  
+  <rect width="100" height="100" fill="url(#ukrainian-pattern)"/>
+</svg> 

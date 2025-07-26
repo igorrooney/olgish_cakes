@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-07-25T23:25:52.654Z",
+  "page": "About Page",
+  "overallScore": 100,
+  "sections": {
+    "desktopLayout": {
+      "score": 25,
+      "maxScore": 25,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Comprehensive desktop layout with responsive classes",
+        "Desktop-first responsive approach detected",
+        "Proper container usage for desktop layout",
+        "Proper desktop spacing implemented"
+      ]
+    },
+    "desktopTypography": {
+      "score": 20,
+      "maxScore": 20,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Good responsive typography for desktop",
+        "Large, readable headings on desktop",
+        "Proper line height for desktop readability",
+        "Material-UI Typography component for consistent styling"
+      ]
+    },
+    "desktopPerformance": {
+      "score": 25,
+      "maxScore": 25,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Next.js Image component for optimization",
+        "Lazy loading implemented for desktop performance",
+        "Optimized animations for desktop",
+        "Efficient data loading for desktop",
+        "Resource preloading for desktop performance"
+      ]
+    },
+    "desktopUserExperience": {
+      "score": 20,
+      "maxScore": 20,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Testimonials section for desktop trust building",
+        "Easy contact access for desktop users",
+        "Well-structured content for desktop consumption",
+        "Interactive elements for desktop engagement"
+      ]
+    },
+    "desktopSEO": {
+      "score": 10,
+      "maxScore": 10,
+      "details": {},
+      "issues": [],
+      "strengths": [
+        "Proper meta tags for desktop SEO",
+        "Structured data for desktop search visibility",
+        "Semantic HTML for desktop SEO"
+      ]
+    }
+  },
+  "recommendations": [],
+  "strengths": [
+    "Comprehensive desktop layout with responsive classes",
+    "Desktop-first responsive approach detected",
+    "Proper container usage for desktop layout",
+    "Proper desktop spacing implemented",
+    "Good responsive typography for desktop",
+    "Large, readable headings on desktop",
+    "Proper line height for desktop readability",
+    "Material-UI Typography component for consistent styling",
+    "Next.js Image component for optimization",
+    "Lazy loading implemented for desktop performance",
+    "Optimized animations for desktop",
+    "Efficient data loading for desktop",
+    "Resource preloading for desktop performance",
+    "Testimonials section for desktop trust building",
+    "Easy contact access for desktop users",
+    "Well-structured content for desktop consumption",
+    "Interactive elements for desktop engagement",
+    "Proper meta tags for desktop SEO",
+    "Structured data for desktop search visibility",
+    "Semantic HTML for desktop SEO"
+  ],
+  "weaknesses": [],
+  "criticalIssues": [],
+  "scoreBreakdown": {
+    "desktopLayout": "25/25",
+    "desktopTypography": "20/20",
+    "desktopPerformance": "25/25",
+    "desktopUserExperience": "20/20",
+    "desktopSEO": "10/10"
+  }
+}
