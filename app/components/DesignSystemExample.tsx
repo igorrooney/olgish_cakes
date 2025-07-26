@@ -162,7 +162,7 @@ export function DesignSystemExample() {
               <ContactInfo icon={<Email />} text="hello@olgishcakes.co.uk" />
             </Grid>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Phone />} text="+44 123 456 7890" />
+              <ContactInfo icon={<Phone />} text="+44 786 721 8194" />
             </Grid>
           </Grid>
         </Box>
