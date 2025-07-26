@@ -20,15 +20,22 @@ import {
   MenuItem,
   Toolbar,
   Typography,
+  Skeleton,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
+import { useAnalytics } from "@/app/hooks/useAnalytics";
+import { useMobileGestures } from "@/app/hooks/useMobileGestures";
+import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
+import { NavigationStructuredData } from "./NavigationStructuredData";
+import { usePerformanceMonitor } from "./PerformanceMonitor";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
+// Memoized navigation data
 const navigation = [
   { name: "Home", href: "/" },
   {
@@ -131,716 +138,1005 @@ const navigation = [
   { name: "Contact", href: "/contact" },
 ];
 
+// Memoized components for better performance
+const MobileMenuItem = memo(
+  ({
+    item,
+    isActive,
+    pathname,
+    onToggle,
+    isOpen,
+    onNavigate,
+  }: {
+    item: any;
+    isActive: boolean;
+    pathname: string;
+    onToggle: () => void;
+    isOpen: boolean;
+    onNavigate: () => void;
+  }) => {
+    const menuStyles = useMemo(
+      () => ({
+        py: 2,
+        px: 3,
+        borderBottom: `1px solid ${colors.border.light}`,
+        backgroundColor: isActive ? colors.background.subtle : "transparent",
+        "&:hover": {
+          backgroundColor: colors.background.subtle,
+        },
+        "&:active": {
+          transform: "scale(0.98)",
+          transition: "transform 0.1s ease",
+        },
+      }),
+      [isActive]
+    );
+
+    const textStyles = useMemo(
+      () => ({
+        fontSize: typography.fontSize.lg,
+        fontWeight: isActive ? typography.fontWeight.bold : typography.fontWeight.semibold,
+        color: isActive ? colors.primary.main : colors.text.primary,
+      }),
+      [isActive]
+    );
+
+    return (
+      <ListItem disablePadding>
+        <ListItemButton onClick={onToggle} sx={menuStyles}>
+          <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
+          <KeyboardArrowDownIcon
+            sx={{
+              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.3s ease",
+              color: colors.text.secondary,
+            }}
+          />
+        </ListItemButton>
+      </ListItem>
+    );
+  }
+);
+
+const MobileSubmenuItem = memo(
+  ({
+    item,
+    pathname,
+    onNavigate,
+    isFeatured = false,
+  }: {
+    item: any;
+    pathname: string;
+    onNavigate: () => void;
+    isFeatured?: boolean;
+  }) => {
+    const buttonStyles = useMemo(
+      () => ({
+        py: isFeatured ? 1.5 : 1,
+        px: isFeatured ? 2 : 2,
+        borderRadius: isFeatured ? 2 : 1.5,
+        backgroundColor: pathname === item.href ? colors.primary.main : "transparent",
+        color: pathname === item.href ? colors.primary.contrast : colors.text.primary,
+        fontWeight:
+          pathname === item.href ? typography.fontWeight.semibold : typography.fontWeight.normal,
+        "&:hover": {
+          backgroundColor: pathname === item.href ? colors.primary.dark : colors.background.paper,
+        },
+        "&:active": {
+          transform: "scale(0.98)",
+          transition: "transform 0.1s ease",
+        },
+      }),
+      [pathname, item.href, isFeatured]
+    );
+
+    return (
+      <ListItem disablePadding sx={{ mb: isFeatured ? 1 : 0.5 }}>
+        <ListItemButton component={Link} href={item.href} onClick={onNavigate} sx={buttonStyles}>
+          <ListItemText
+            primary={
+              <Typography
+                sx={{ fontSize: isFeatured ? typography.fontSize.base : typography.fontSize.sm }}
+              >
+                {item.name}
+              </Typography>
+            }
+            secondary={
+              isFeatured &&
+              item.description && (
+                <Typography
+                  sx={{
+                    fontSize: typography.fontSize.sm,
+                    color: pathname === item.href ? colors.primary.contrast : colors.text.secondary,
+                    mt: 0.5,
+                  }}
+                >
+                  {item.description}
+                </Typography>
+              )
+            }
+          />
+        </ListItemButton>
+      </ListItem>
+    );
+  }
+);
+
 export function Header() {
   const theme = useTheme();
   const pathname = usePathname();
+  const { trackMobileMenuInteraction, trackNavigation } = useAnalytics();
+  const { startTimer } = usePerformanceMonitor();
+
+  // Optimized state management
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuState, setMobileMenuState] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Desktop menu states
   const [cakesMenuAnchor, setCakesMenuAnchor] = useState<null | HTMLElement>(null);
   const [servicesMenuAnchor, setServicesMenuAnchor] = useState<null | HTMLElement>(null);
   const [learnMenuAnchor, setLearnMenuAnchor] = useState<null | HTMLElement>(null);
 
-  // Mobile menu state
-  const [mobileCakesOpen, setMobileCakesOpen] = useState(false);
-  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-  const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
+  // Mobile gestures hook
+  const { triggerHapticFeedback } = useMobileGestures({
+    onSwipeClose: () => {
+      if (mobileOpen) {
+        handleDrawerToggle();
+      }
+    },
+    enabled: mobileOpen,
+  });
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+  // Memoized handlers for better performance
+  const handleDrawerToggle = useCallback(() => {
+    const endTimer = startTimer(mobileOpen ? "menuCloseTime" : "menuOpenTime");
+
+    setMobileOpen(prev => !prev);
     // Reset mobile submenu states when closing
     if (mobileOpen) {
-      setMobileCakesOpen(false);
-      setMobileServicesOpen(false);
-      setMobileLearnOpen(false);
+      setMobileMenuState({});
+      trackMobileMenuInteraction("close", "drawer");
+    } else {
+      trackMobileMenuInteraction("open", "drawer");
     }
-  };
 
-  const handleCakesMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    // End performance timer
+    setTimeout(endTimer, 0);
+  }, [mobileOpen, trackMobileMenuInteraction, startTimer]);
+
+  const toggleMobileSubmenu = useCallback(
+    (menuKey: string) => {
+      const endTimer = startTimer("submenuToggleTime");
+
+      setMobileMenuState(prev => {
+        const newState = {
+          ...prev,
+          [menuKey]: !prev[menuKey],
+        };
+
+        // Track submenu interaction
+        trackMobileMenuInteraction(
+          newState[menuKey] ? "open" : "close",
+          `submenu_${menuKey.toLowerCase()}`
+        );
+
+        // Trigger haptic feedback
+        triggerHapticFeedback();
+
+        return newState;
+      });
+
+      // End performance timer
+      setTimeout(endTimer, 0);
+    },
+    [trackMobileMenuInteraction, triggerHapticFeedback, startTimer]
+  );
+
+  const handleMobileNavigation = useCallback(() => {
+    const endTimer = startTimer("navigationTime");
+
+    setIsLoading(true);
+    handleDrawerToggle();
+    // Track navigation
+    trackNavigation("mobile_menu", pathname);
+    // Simulate loading state for better UX
+    setTimeout(() => {
+      setIsLoading(false);
+      endTimer();
+    }, 300);
+  }, [handleDrawerToggle, trackNavigation, pathname, startTimer]);
+
+  // Memoized desktop menu handlers
+  const handleCakesMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setCakesMenuAnchor(event.currentTarget);
-  };
+  }, []);
 
-  const handleCakesMenuClose = () => {
+  const handleCakesMenuClose = useCallback(() => {
     setCakesMenuAnchor(null);
-  };
+  }, []);
 
-  const handleServicesMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleServicesMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setServicesMenuAnchor(event.currentTarget);
-  };
+  }, []);
 
-  const handleServicesMenuClose = () => {
+  const handleServicesMenuClose = useCallback(() => {
     setServicesMenuAnchor(null);
-  };
+  }, []);
 
-  const handleLearnMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleLearnMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setLearnMenuAnchor(event.currentTarget);
-  };
+  }, []);
 
-  const handleLearnMenuClose = () => {
+  const handleLearnMenuClose = useCallback(() => {
     setLearnMenuAnchor(null);
-  };
+  }, []);
 
+  // Memoized computed values
   const isCakesMenuOpen = Boolean(cakesMenuAnchor);
   const isServicesMenuOpen = Boolean(servicesMenuAnchor);
   const isLearnMenuOpen = Boolean(learnMenuAnchor);
 
-  return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      role="banner"
-      aria-label="Main navigation"
-      sx={{
+  // Memoized mobile menu styles
+  const mobileDrawerStyles = useMemo(
+    () => ({
+      display: { xs: "block", md: "none" },
+      "& .MuiDrawer-paper": {
+        boxSizing: "border-box",
+        width: "100%",
+        maxWidth: { xs: "100%", sm: 320 },
         backgroundColor: colors.background.paper,
-        borderBottom: `1px solid ${colors.border.light}`,
-        boxShadow: shadows.sm,
-      }}
-    >
-      <DesignContainer
+        boxShadow: shadows.xl,
+        border: "none",
+        // Enhanced mobile UX
+        "&::-webkit-scrollbar": {
+          width: "4px",
+        },
+        "&::-webkit-scrollbar-track": {
+          background: colors.background.subtle,
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: colors.border.medium,
+          borderRadius: "2px",
+        },
+      },
+    }),
+    []
+  );
+
+  const mobileHeaderStyles = useMemo(
+    () => ({
+      background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.primary.dark} 100%)`,
+      color: colors.primary.contrast,
+      p: 3,
+      position: "relative" as const,
+      overflow: "hidden" as const,
+      "&::before": {
+        content: '""',
+        position: "absolute" as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background:
+          'url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>\')',
+        opacity: 0.3,
+      },
+    }),
+    []
+  );
+
+  return (
+    <>
+      <NavigationStructuredData navigation={navigation} />
+      <AppBar
+        position="sticky"
+        elevation={0}
+        role="banner"
+        aria-label="Main navigation"
         sx={{
-          marginInline: { xs: "1rem", md: "auto" },
+          backgroundColor: colors.background.paper,
+          borderBottom: `1px solid ${colors.border.light}`,
+          boxShadow: shadows.sm,
         }}
       >
-        <Toolbar
-          disableGutters
-          role="navigation"
-          aria-label="Primary navigation"
+        <DesignContainer
           sx={{
-            height: 70,
-            minHeight: 70,
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            px: { xs: 1, md: 2 },
-            gap: 1,
+            marginInline: { xs: "1rem", md: "auto" },
           }}
         >
-          {/* Logo on the far left */}
-          <Box sx={{ flex: "0 0 auto", display: "flex", alignItems: "center" }}>
-            <Link
-              href="/"
-              passHref
-              aria-label="Olgish Cakes - Home"
-              style={{ textDecoration: "none", display: "flex", alignItems: "center" }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: spacing.md,
-                  pl: { xs: 0, md: 2 },
-                }}
-              >
-                <Image
-                  src="/images/olgish-cakes-logo-bakery-brand.png"
-                  alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
-                  width={180}
-                  height={85}
-                  priority
-                  style={{
-                    height: "auto",
-                    maxHeight: "85px",
-                    width: "auto",
-                    maxWidth: "180px",
-                  }}
-                />
-              </Box>
-            </Link>
-          </Box>
-
-          {/* Spacer to push nav to the right */}
-          <Box sx={{ flex: 1, minWidth: { xs: 16, md: 48 } }} />
-
-          {/* Navigation and Order Now button on the right */}
-          <Box
+          <Toolbar
+            disableGutters
+            role="navigation"
+            aria-label="Primary navigation"
             sx={{
-              display: { xs: "none", md: "flex" },
-              gap: 2,
-              alignItems: "center",
-              flexWrap: "nowrap",
-            }}
-          >
-            {navigation.map(item => {
-              const isActive = pathname === item.href;
-
-              if (item.megaMenu) {
-                return (
-                  <Box key={item.name}>
-                    <Button
-                      onClick={handleCakesMenuOpen}
-                      sx={{
-                        color: isActive ? colors.primary.main : colors.text.primary,
-                        fontSize: typography.fontSize.base,
-                        fontWeight: isActive
-                          ? typography.fontWeight.bold
-                          : typography.fontWeight.medium,
-                        position: "relative",
-                        background: "none",
-                        boxShadow: "none",
-                        px: 2,
-                        py: 1.25,
-                        borderRadius: 2,
-                        transition: "all 0.2s ease-in-out",
-                        textTransform: "none",
-                        letterSpacing: 0.1,
-                        whiteSpace: "nowrap",
-                        minWidth: "auto",
-                        "&:hover": {
-                          color: colors.primary.main,
-                          backgroundColor: colors.background.subtle,
-                          transform: "translateY(-1px)",
-                        },
-                        "&::after": isActive
-                          ? {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                              transform: "scaleX(1)",
-                              transition: "transform 0.2s ease-in-out",
-                            }
-                          : {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              transform: "scaleX(0)",
-                              transition: "transform 0.2s ease-in-out",
-                            },
-                        "&:hover::after": {
-                          transform: "scaleX(1)",
-                        },
-                      }}
-                      endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
-                    >
-                      {item.name}
-                    </Button>
-                    <Menu
-                      anchorEl={cakesMenuAnchor}
-                      open={isCakesMenuOpen}
-                      onClose={handleCakesMenuClose}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                      }}
-                      PaperProps={{
-                        sx: {
-                          mt: 1,
-                          minWidth: 600,
-                          maxWidth: 800,
-                          boxShadow: shadows.lg,
-                          border: `1px solid ${colors.border.light}`,
-                          borderRadius: 2,
-                          p: 2,
-                        },
-                      }}
-                    >
-                      <Box sx={{ display: "flex", gap: 3 }}>
-                        {/* Featured Section */}
-                        <Box sx={{ flex: 1 }}>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              color: colors.primary.main,
-                              fontWeight: typography.fontWeight.bold,
-                              mb: 2,
-                              pb: 1,
-                              borderBottom: `2px solid ${colors.primary.main}`,
-                            }}
-                          >
-                            Featured
-                          </Typography>
-                          {item.megaMenu.featured.map(featuredItem => (
-                            <Box
-                              key={featuredItem.name}
-                              component={Link}
-                              href={featuredItem.href}
-                              onClick={handleCakesMenuClose}
-                              sx={{
-                                display: "block",
-                                p: 1.5,
-                                borderRadius: 1,
-                                textDecoration: "none",
-                                color:
-                                  pathname === featuredItem.href
-                                    ? colors.primary.main
-                                    : colors.text.primary,
-                                fontWeight:
-                                  pathname === featuredItem.href
-                                    ? typography.fontWeight.semibold
-                                    : typography.fontWeight.normal,
-                                "&:hover": {
-                                  backgroundColor: colors.background.subtle,
-                                  color: colors.primary.main,
-                                },
-                              }}
-                            >
-                              <Typography variant="subtitle1" sx={{ fontWeight: "inherit" }}>
-                                {featuredItem.name}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: colors.text.secondary, mt: 0.5 }}
-                              >
-                                {featuredItem.description}
-                              </Typography>
-                            </Box>
-                          ))}
-                        </Box>
-
-                        {/* Categories Section */}
-                        <Box sx={{ flex: 1 }}>
-                          {item.megaMenu.categories.map(category => (
-                            <Box key={category.title} sx={{ mb: 3 }}>
-                              <Typography
-                                variant="subtitle1"
-                                sx={{
-                                  color: colors.text.secondary,
-                                  fontWeight: typography.fontWeight.semibold,
-                                  mb: 1.5,
-                                  textTransform: "uppercase",
-                                  fontSize: typography.fontSize.sm,
-                                  letterSpacing: 0.5,
-                                }}
-                              >
-                                {category.title}
-                              </Typography>
-                              {category.items.map(categoryItem => (
-                                <Box
-                                  key={categoryItem.name}
-                                  component={Link}
-                                  href={categoryItem.href}
-                                  onClick={handleCakesMenuClose}
-                                  sx={{
-                                    display: "block",
-                                    p: 1,
-                                    borderRadius: 1,
-                                    textDecoration: "none",
-                                    color:
-                                      pathname === categoryItem.href
-                                        ? colors.primary.main
-                                        : colors.text.primary,
-                                    fontWeight:
-                                      pathname === categoryItem.href
-                                        ? typography.fontWeight.semibold
-                                        : typography.fontWeight.normal,
-                                    "&:hover": {
-                                      backgroundColor: colors.background.subtle,
-                                      color: colors.primary.main,
-                                    },
-                                  }}
-                                >
-                                  {categoryItem.name}
-                                </Box>
-                              ))}
-                            </Box>
-                          ))}
-                        </Box>
-                      </Box>
-                    </Menu>
-                  </Box>
-                );
-              }
-
-              if (item.dropdown) {
-                const isServicesMenu = item.name === "Services";
-                const isLearnMenu = item.name === "Learn";
-                const menuAnchor = isServicesMenu ? servicesMenuAnchor : learnMenuAnchor;
-                const isMenuOpen = isServicesMenu ? isServicesMenuOpen : isLearnMenuOpen;
-                const handleMenuOpen = isServicesMenu
-                  ? handleServicesMenuOpen
-                  : handleLearnMenuOpen;
-                const handleMenuClose = isServicesMenu
-                  ? handleServicesMenuClose
-                  : handleLearnMenuClose;
-
-                return (
-                  <Box key={item.name}>
-                    <Button
-                      onClick={handleMenuOpen}
-                      sx={{
-                        color: isActive ? colors.primary.main : colors.text.primary,
-                        fontSize: typography.fontSize.base,
-                        fontWeight: isActive
-                          ? typography.fontWeight.bold
-                          : typography.fontWeight.medium,
-                        position: "relative",
-                        background: "none",
-                        boxShadow: "none",
-                        px: 2,
-                        py: 1.25,
-                        borderRadius: 2,
-                        transition: "all 0.2s ease-in-out",
-                        textTransform: "none",
-                        letterSpacing: 0.1,
-                        whiteSpace: "nowrap",
-                        minWidth: "auto",
-                        "&:hover": {
-                          color: colors.primary.main,
-                          backgroundColor: colors.background.subtle,
-                          transform: "translateY(-1px)",
-                        },
-                        "&::after": isActive
-                          ? {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                              transform: "scaleX(1)",
-                              transition: "transform 0.2s ease-in-out",
-                            }
-                          : {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              transform: "scaleX(0)",
-                              transition: "transform 0.2s ease-in-out",
-                            },
-                        "&:hover::after": {
-                          transform: "scaleX(1)",
-                        },
-                      }}
-                      endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
-                    >
-                      {item.name}
-                    </Button>
-                    <Menu
-                      anchorEl={menuAnchor}
-                      open={isMenuOpen}
-                      onClose={handleMenuClose}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                      }}
-                      PaperProps={{
-                        sx: {
-                          mt: 1,
-                          minWidth: 220,
-                          boxShadow: shadows.lg,
-                          border: `1px solid ${colors.border.light}`,
-                          borderRadius: 2,
-                        },
-                      }}
-                    >
-                      {item.dropdown.map(dropdownItem => (
-                        <MenuItem
-                          key={dropdownItem.name}
-                          component={Link}
-                          href={dropdownItem.href}
-                          onClick={handleMenuClose}
-                          sx={{
-                            color:
-                              pathname === dropdownItem.href
-                                ? colors.primary.main
-                                : colors.text.primary,
-                            fontWeight:
-                              pathname === dropdownItem.href
-                                ? typography.fontWeight.semibold
-                                : typography.fontWeight.normal,
-                            "&:hover": {
-                              backgroundColor: colors.background.subtle,
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          {dropdownItem.name}
-                        </MenuItem>
-                      ))}
-                    </Menu>
-                  </Box>
-                );
-              }
-
-              return (
-                <Link key={item.name} href={item.href} passHref style={{ textDecoration: "none" }}>
-                  <Button
-                    sx={{
-                      color: isActive ? colors.primary.main : colors.text.primary,
-                      fontSize: typography.fontSize.base,
-                      fontWeight: isActive
-                        ? typography.fontWeight.bold
-                        : typography.fontWeight.medium,
-                      position: "relative",
-                      background: "none",
-                      boxShadow: "none",
-                      px: 2,
-                      py: 1.25,
-                      borderRadius: 2,
-                      transition: "all 0.2s ease-in-out",
-                      textTransform: "none",
-                      letterSpacing: 0.1,
-                      whiteSpace: "nowrap",
-                      minWidth: "auto",
-                      "&:hover": {
-                        color: colors.primary.main,
-                        backgroundColor: colors.background.subtle,
-                        transform: "translateY(-1px)",
-                      },
-                      "&::after": isActive
-                        ? {
-                            content: '""',
-                            position: "absolute",
-                            left: 8,
-                            right: 8,
-                            bottom: 2,
-                            height: "2px",
-                            backgroundColor: colors.primary.main,
-                            borderRadius: 1,
-                            boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                            transform: "scaleX(1)",
-                            transition: "transform 0.2s ease-in-out",
-                          }
-                        : {
-                            content: '""',
-                            position: "absolute",
-                            left: 8,
-                            right: 8,
-                            bottom: 2,
-                            height: "2px",
-                            backgroundColor: colors.primary.main,
-                            borderRadius: 1,
-                            transform: "scaleX(0)",
-                            transition: "transform 0.2s ease-in-out",
-                          },
-                      "&:hover::after": {
-                        transform: "scaleX(1)",
-                      },
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                </Link>
-              );
-            })}
-            {/* Order Now Button (desktop) */}
-            <Link href="/contact" passHref style={{ textDecoration: "none" }}>
-              <Button
-                variant="contained"
-                sx={{
-                  ml: 2,
-                  px: 2.5,
-                  py: 1.25,
-                  borderRadius: 2,
-                  backgroundColor: colors.primary.main,
-                  color: colors.primary.contrast,
-                  fontWeight: typography.fontWeight.bold,
-                  fontSize: typography.fontSize.base,
-                  boxShadow: shadows.md,
-                  textTransform: "none",
-                  letterSpacing: 0.1,
-                  whiteSpace: "nowrap",
-                  minWidth: "auto",
-                  transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-                  "&:hover": {
-                    backgroundColor: colors.primary.dark,
-                    boxShadow: shadows.lg,
-                  },
-                }}
-              >
-                Order Now
-              </Button>
-            </Link>
-          </Box>
-
-          {/* Mobile Menu Button */}
-          <IconButton
-            color="primary"
-            aria-label="open menu"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{
-              display: { md: "none" },
-              color: colors.primary.main,
-              "&:hover": {
-                backgroundColor: colors.background.subtle,
-              },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
-      </DesignContainer>
-
-      {/* Professional Mobile Navigation Drawer */}
-      <Drawer
-        variant="temporary"
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better mobile performance
-        }}
-        sx={{
-          display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: "100%",
-            maxWidth: 320,
-            backgroundColor: colors.background.paper,
-            boxShadow: shadows.xl,
-            border: "none",
-          },
-        }}
-      >
-        {/* Mobile Header */}
-        <Box
-          sx={{
-            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.primary.dark} 100%)`,
-            color: colors.primary.contrast,
-            p: 3,
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background:
-                'url(\'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>\')',
-              opacity: 0.3,
-            },
-          }}
-        >
-          <Box
-            sx={{
+              height: 70,
+              minHeight: 70,
               display: "flex",
-              justifyContent: "space-between",
+              flexDirection: "row",
               alignItems: "center",
-              position: "relative",
-              zIndex: 1,
+              px: { xs: 1, md: 2 },
+              gap: 1,
             }}
           >
-            <Typography
-              variant="h5"
-              sx={{
-                fontFamily: typography.fontFamily.display,
-                fontWeight: typography.fontWeight.bold,
-                letterSpacing: 0.5,
-              }}
-            >
-              Menu
-            </Typography>
-            <IconButton
-              onClick={handleDrawerToggle}
-              sx={{
-                color: colors.primary.contrast,
-                backgroundColor: "rgba(255,255,255,0.1)",
-                backdropFilter: "blur(10px)",
-                "&:hover": {
-                  backgroundColor: "rgba(255,255,255,0.2)",
-                },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
-          {/* Order Now Button (mobile) */}
-          <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
-            <Link href="/contact" passHref style={{ textDecoration: "none" }}>
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handleDrawerToggle}
-                sx={{
-                  py: 1.5,
-                  borderRadius: 3,
-                  backgroundColor: colors.primary.contrast,
-                  color: colors.primary.main,
-                  fontWeight: typography.fontWeight.bold,
-                  fontSize: typography.fontSize.base,
-                  boxShadow: shadows.lg,
-                  textTransform: "none",
-                  letterSpacing: 0.5,
-                  transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
-                  "&:hover": {
-                    backgroundColor: colors.background.paper,
-                    transform: "translateY(-2px)",
-                    boxShadow: shadows.xl,
-                  },
-                }}
+            {/* Logo on the far left */}
+            <Box sx={{ flex: "0 0 auto", display: "flex", alignItems: "center" }}>
+              <Link
+                href="/"
+                passHref
+                aria-label="Olgish Cakes - Home"
+                style={{ textDecoration: "none", display: "flex", alignItems: "center" }}
               >
-                Order Your Cake Now
-              </Button>
-            </Link>
-          </Box>
-        </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: spacing.md,
+                    pl: { xs: 0, md: 2 },
+                  }}
+                >
+                  <Image
+                    src="/images/olgish-cakes-logo-bakery-brand.png"
+                    alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
+                    width={180}
+                    height={85}
+                    priority
+                    style={{
+                      height: "auto",
+                      maxHeight: "85px",
+                      width: "auto",
+                      maxWidth: "180px",
+                    }}
+                  />
+                </Box>
+              </Link>
+            </Box>
 
-        {/* Mobile Navigation List */}
-        <Box sx={{ flex: 1, overflow: "auto" }}>
-          <List sx={{ p: 0 }}>
-            {navigation.map((item, index) => {
-              const isActive = pathname === item.href;
+            {/* Spacer to push nav to the right */}
+            <Box sx={{ flex: 1, minWidth: { xs: 16, md: 48 } }} />
 
-              if (item.megaMenu) {
-                return (
-                  <Box key={item.name}>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => setMobileCakesOpen(!mobileCakesOpen)}
+            {/* Navigation and Order Now button on the right */}
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 2,
+                alignItems: "center",
+                flexWrap: "nowrap",
+              }}
+            >
+              {navigation.map(item => {
+                const isActive = pathname === item.href;
+
+                if (item.megaMenu) {
+                  return (
+                    <Box key={item.name}>
+                      <Button
+                        onClick={handleCakesMenuOpen}
                         sx={{
-                          py: 2,
-                          px: 3,
-                          borderBottom: `1px solid ${colors.border.light}`,
-                          backgroundColor: isActive ? colors.background.subtle : "transparent",
+                          color: isActive ? colors.primary.main : colors.text.primary,
+                          fontSize: typography.fontSize.base,
+                          fontWeight: isActive
+                            ? typography.fontWeight.bold
+                            : typography.fontWeight.medium,
+                          position: "relative",
+                          background: "none",
+                          boxShadow: "none",
+                          px: 2,
+                          py: 1.25,
+                          borderRadius: 2,
+                          transition: "all 0.2s ease-in-out",
+                          textTransform: "none",
+                          letterSpacing: 0.1,
+                          whiteSpace: "nowrap",
+                          minWidth: "auto",
                           "&:hover": {
+                            color: colors.primary.main,
                             backgroundColor: colors.background.subtle,
+                            transform: "translateY(-1px)",
+                          },
+                          "&::after": isActive
+                            ? {
+                                content: '""',
+                                position: "absolute",
+                                left: 8,
+                                right: 8,
+                                bottom: 2,
+                                height: "2px",
+                                backgroundColor: colors.primary.main,
+                                borderRadius: 1,
+                                boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                                transform: "scaleX(1)",
+                                transition: "transform 0.2s ease-in-out",
+                              }
+                            : {
+                                content: '""',
+                                position: "absolute",
+                                left: 8,
+                                right: 8,
+                                bottom: 2,
+                                height: "2px",
+                                backgroundColor: colors.primary.main,
+                                borderRadius: 1,
+                                transform: "scaleX(0)",
+                                transition: "transform 0.2s ease-in-out",
+                              },
+                          "&:hover::after": {
+                            transform: "scaleX(1)",
+                          },
+                        }}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
+                      >
+                        {item.name}
+                      </Button>
+                      <Menu
+                        anchorEl={cakesMenuAnchor}
+                        open={isCakesMenuOpen}
+                        onClose={handleCakesMenuClose}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        PaperProps={{
+                          sx: {
+                            mt: 1,
+                            minWidth: 600,
+                            maxWidth: 800,
+                            boxShadow: shadows.lg,
+                            border: `1px solid ${colors.border.light}`,
+                            borderRadius: 2,
+                            p: 2,
                           },
                         }}
                       >
-                        <ListItemText
-                          primary={
+                        <Box sx={{ display: "flex", gap: 3 }}>
+                          {/* Featured Section */}
+                          <Box sx={{ flex: 1 }}>
                             <Typography
+                              variant="h6"
                               sx={{
-                                fontSize: typography.fontSize.lg,
-                                fontWeight: isActive
-                                  ? typography.fontWeight.bold
-                                  : typography.fontWeight.semibold,
-                                color: isActive ? colors.primary.main : colors.text.primary,
+                                color: colors.primary.main,
+                                fontWeight: typography.fontWeight.bold,
+                                mb: 2,
+                                pb: 1,
+                                borderBottom: `2px solid ${colors.primary.main}`,
                               }}
                             >
-                              {item.name}
+                              Featured
                             </Typography>
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          sx={{
-                            transform: mobileCakesOpen ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.3s ease",
-                            color: colors.text.secondary,
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
+                            {item.megaMenu.featured.map(featuredItem => (
+                              <Box
+                                key={featuredItem.name}
+                                component={Link}
+                                href={featuredItem.href}
+                                onClick={handleCakesMenuClose}
+                                sx={{
+                                  display: "block",
+                                  p: 1.5,
+                                  borderRadius: 1,
+                                  textDecoration: "none",
+                                  color:
+                                    pathname === featuredItem.href
+                                      ? colors.primary.main
+                                      : colors.text.primary,
+                                  fontWeight:
+                                    pathname === featuredItem.href
+                                      ? typography.fontWeight.semibold
+                                      : typography.fontWeight.normal,
+                                  "&:hover": {
+                                    backgroundColor: colors.background.subtle,
+                                    color: colors.primary.main,
+                                  },
+                                }}
+                              >
+                                <Typography variant="subtitle1" sx={{ fontWeight: "inherit" }}>
+                                  {featuredItem.name}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: colors.text.secondary, mt: 0.5 }}
+                                >
+                                  {featuredItem.description}
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Box>
 
-                    <Collapse in={mobileCakesOpen} timeout="auto" unmountOnExit>
+                          {/* Categories Section */}
+                          <Box sx={{ flex: 1 }}>
+                            {item.megaMenu.categories.map(category => (
+                              <Box key={category.title} sx={{ mb: 3 }}>
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{
+                                    color: colors.text.secondary,
+                                    fontWeight: typography.fontWeight.semibold,
+                                    mb: 1.5,
+                                    textTransform: "uppercase",
+                                    fontSize: typography.fontSize.sm,
+                                    letterSpacing: 0.5,
+                                  }}
+                                >
+                                  {category.title}
+                                </Typography>
+                                {category.items.map(categoryItem => (
+                                  <Box
+                                    key={categoryItem.name}
+                                    component={Link}
+                                    href={categoryItem.href}
+                                    onClick={handleCakesMenuClose}
+                                    sx={{
+                                      display: "block",
+                                      p: 1,
+                                      borderRadius: 1,
+                                      textDecoration: "none",
+                                      color:
+                                        pathname === categoryItem.href
+                                          ? colors.primary.main
+                                          : colors.text.primary,
+                                      fontWeight:
+                                        pathname === categoryItem.href
+                                          ? typography.fontWeight.semibold
+                                          : typography.fontWeight.normal,
+                                      "&:hover": {
+                                        backgroundColor: colors.background.subtle,
+                                        color: colors.primary.main,
+                                      },
+                                    }}
+                                  >
+                                    {categoryItem.name}
+                                  </Box>
+                                ))}
+                              </Box>
+                            ))}
+                          </Box>
+                        </Box>
+                      </Menu>
+                    </Box>
+                  );
+                }
+
+                if (item.dropdown) {
+                  const isServicesMenu = item.name === "Services";
+                  const isLearnMenu = item.name === "Learn";
+                  const menuAnchor = isServicesMenu ? servicesMenuAnchor : learnMenuAnchor;
+                  const isMenuOpen = isServicesMenu ? isServicesMenuOpen : isLearnMenuOpen;
+                  const handleMenuOpen = isServicesMenu
+                    ? handleServicesMenuOpen
+                    : handleLearnMenuOpen;
+                  const handleMenuClose = isServicesMenu
+                    ? handleServicesMenuClose
+                    : handleLearnMenuClose;
+
+                  return (
+                    <Box key={item.name}>
+                      <Button
+                        onClick={handleMenuOpen}
+                        sx={{
+                          color: isActive ? colors.primary.main : colors.text.primary,
+                          fontSize: typography.fontSize.base,
+                          fontWeight: isActive
+                            ? typography.fontWeight.bold
+                            : typography.fontWeight.medium,
+                          position: "relative",
+                          background: "none",
+                          boxShadow: "none",
+                          px: 2,
+                          py: 1.25,
+                          borderRadius: 2,
+                          transition: "all 0.2s ease-in-out",
+                          textTransform: "none",
+                          letterSpacing: 0.1,
+                          whiteSpace: "nowrap",
+                          minWidth: "auto",
+                          "&:hover": {
+                            color: colors.primary.main,
+                            backgroundColor: colors.background.subtle,
+                            transform: "translateY(-1px)",
+                          },
+                          "&::after": isActive
+                            ? {
+                                content: '""',
+                                position: "absolute",
+                                left: 8,
+                                right: 8,
+                                bottom: 2,
+                                height: "2px",
+                                backgroundColor: colors.primary.main,
+                                borderRadius: 1,
+                                boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                                transform: "scaleX(1)",
+                                transition: "transform 0.2s ease-in-out",
+                              }
+                            : {
+                                content: '""',
+                                position: "absolute",
+                                left: 8,
+                                right: 8,
+                                bottom: 2,
+                                height: "2px",
+                                backgroundColor: colors.primary.main,
+                                borderRadius: 1,
+                                transform: "scaleX(0)",
+                                transition: "transform 0.2s ease-in-out",
+                              },
+                          "&:hover::after": {
+                            transform: "scaleX(1)",
+                          },
+                        }}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
+                      >
+                        {item.name}
+                      </Button>
+                      <Menu
+                        anchorEl={menuAnchor}
+                        open={isMenuOpen}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        PaperProps={{
+                          sx: {
+                            mt: 1,
+                            minWidth: 220,
+                            boxShadow: shadows.lg,
+                            border: `1px solid ${colors.border.light}`,
+                            borderRadius: 2,
+                          },
+                        }}
+                      >
+                        {item.dropdown.map(dropdownItem => (
+                          <MenuItem
+                            key={dropdownItem.name}
+                            component={Link}
+                            href={dropdownItem.href}
+                            onClick={handleMenuClose}
+                            sx={{
+                              color:
+                                pathname === dropdownItem.href
+                                  ? colors.primary.main
+                                  : colors.text.primary,
+                              fontWeight:
+                                pathname === dropdownItem.href
+                                  ? typography.fontWeight.semibold
+                                  : typography.fontWeight.normal,
+                              "&:hover": {
+                                backgroundColor: colors.background.subtle,
+                                color: colors.primary.main,
+                              },
+                            }}
+                          >
+                            {dropdownItem.name}
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </Box>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    passHref
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button
+                      sx={{
+                        color: isActive ? colors.primary.main : colors.text.primary,
+                        fontSize: typography.fontSize.base,
+                        fontWeight: isActive
+                          ? typography.fontWeight.bold
+                          : typography.fontWeight.medium,
+                        position: "relative",
+                        background: "none",
+                        boxShadow: "none",
+                        px: 2,
+                        py: 1.25,
+                        borderRadius: 2,
+                        transition: "all 0.2s ease-in-out",
+                        textTransform: "none",
+                        letterSpacing: 0.1,
+                        whiteSpace: "nowrap",
+                        minWidth: "auto",
+                        "&:hover": {
+                          color: colors.primary.main,
+                          backgroundColor: colors.background.subtle,
+                          transform: "translateY(-1px)",
+                        },
+                        "&::after": isActive
+                          ? {
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                              transform: "scaleX(1)",
+                              transition: "transform 0.2s ease-in-out",
+                            }
+                          : {
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              transform: "scaleX(0)",
+                              transition: "transform 0.2s ease-in-out",
+                            },
+                        "&:hover::after": {
+                          transform: "scaleX(1)",
+                        },
+                      }}
+                    >
+                      {item.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+              {/* Order Now Button (desktop) */}
+              <Link href="/contact" passHref style={{ textDecoration: "none" }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    ml: 2,
+                    px: 2.5,
+                    py: 1.25,
+                    borderRadius: 2,
+                    backgroundColor: colors.primary.main,
+                    color: colors.primary.contrast,
+                    fontWeight: typography.fontWeight.bold,
+                    fontSize: typography.fontSize.base,
+                    boxShadow: shadows.md,
+                    textTransform: "none",
+                    letterSpacing: 0.1,
+                    whiteSpace: "nowrap",
+                    minWidth: "auto",
+                    transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                    "&:hover": {
+                      backgroundColor: colors.primary.dark,
+                      boxShadow: shadows.lg,
+                    },
+                  }}
+                >
+                  Order Now
+                </Button>
+              </Link>
+            </Box>
+
+            {/* Mobile Menu Button */}
+            <IconButton
+              color="primary"
+              aria-label="open menu"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{
+                display: { md: "none" },
+                color: colors.primary.main,
+                "&:hover": {
+                  backgroundColor: colors.background.subtle,
+                },
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </DesignContainer>
+
+        {/* Professional Mobile Navigation Drawer */}
+        <Drawer
+          variant="temporary"
+          anchor="right"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better mobile performance
+          }}
+          sx={mobileDrawerStyles}
+        >
+          {/* Mobile Header */}
+          <Box sx={mobileHeaderStyles}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                position: "relative",
+                zIndex: 1,
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontFamily: typography.fontFamily.display,
+                  fontWeight: typography.fontWeight.bold,
+                  letterSpacing: 0.5,
+                }}
+              >
+                Menu
+              </Typography>
+              <IconButton
+                onClick={handleDrawerToggle}
+                sx={{
+                  color: colors.primary.contrast,
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                  "&:hover": {
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                  },
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+
+            {/* Order Now Button (mobile) */}
+            <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
+              <Link href="/contact" passHref style={{ textDecoration: "none" }}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={handleMobileNavigation}
+                  sx={{
+                    py: 1.5,
+                    borderRadius: 3,
+                    backgroundColor: colors.primary.contrast,
+                    color: colors.primary.main,
+                    fontWeight: typography.fontWeight.bold,
+                    fontSize: typography.fontSize.base,
+                    boxShadow: shadows.lg,
+                    textTransform: "none",
+                    letterSpacing: 0.5,
+                    transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
+                    "&:hover": {
+                      backgroundColor: colors.background.paper,
+                      transform: "translateY(-2px)",
+                      boxShadow: shadows.xl,
+                    },
+                  }}
+                >
+                  Order Your Cake Now
+                </Button>
+              </Link>
+            </Box>
+          </Box>
+
+          {/* Mobile Navigation List */}
+          <Box sx={{ flex: 1, overflow: "auto" }}>
+            {/* Breadcrumb Navigation */}
+            {Object.keys(mobileMenuState).length > 0 && (
+              <MobileBreadcrumbs
+                items={[
+                  { label: "Menu", href: "#" },
+                  ...Object.entries(mobileMenuState)
+                    .filter(([_, isOpen]) => isOpen)
+                    .map(([menuKey]) => ({
+                      label: menuKey,
+                      href: `#${menuKey.toLowerCase()}`,
+                    })),
+                ]}
+                onNavigate={href => {
+                  const menuKey = href.replace("#", "");
+                  if (mobileMenuState[menuKey]) {
+                    toggleMobileSubmenu(menuKey);
+                  }
+                }}
+              />
+            )}
+            <List sx={{ p: 0 }}>
+              {navigation.map((item, index) => {
+                const isActive = pathname === item.href;
+                const isMegaMenu = item.megaMenu !== undefined;
+                const isDropdown = item.dropdown !== undefined;
+
+                if (isMegaMenu) {
+                  const menuKey = item.name;
+                  const isOpen = mobileMenuState[menuKey];
+                  const onToggle = () => toggleMobileSubmenu(menuKey);
+                  const onNavigate = () => {
+                    handleMobileNavigation();
+                    handleCakesMenuClose(); // Close mega menu
+                  };
+
+                  return (
+                    <MobileMenuItem
+                      key={item.name}
+                      item={item}
+                      isActive={isActive}
+                      pathname={pathname}
+                      onToggle={onToggle}
+                      isOpen={isOpen}
+                      onNavigate={onNavigate}
+                    />
+                  );
+                }
+
+                if (isDropdown) {
+                  const dropdownKey = item.name;
+                  const isOpen = mobileMenuState[dropdownKey];
+                  const onToggle = () => toggleMobileSubmenu(dropdownKey);
+                  const onNavigate = () => {
+                    handleMobileNavigation();
+                    handleServicesMenuClose(); // Close dropdown
+                  };
+
+                  return (
+                    <MobileMenuItem
+                      key={item.name}
+                      item={item}
+                      isActive={isActive}
+                      pathname={pathname}
+                      onToggle={onToggle}
+                      isOpen={isOpen}
+                      onNavigate={onNavigate}
+                    />
+                  );
+                }
+
+                return (
+                  <ListItem key={item.name} disablePadding>
+                    <ListItemButton
+                      component={Link}
+                      href={item.href}
+                      onClick={handleMobileNavigation}
+                      sx={{
+                        py: 2.5,
+                        px: 3,
+                        borderBottom: `1px solid ${colors.border.light}`,
+                        backgroundColor: isActive ? colors.background.subtle : "transparent",
+                        "&:hover": {
+                          backgroundColor: colors.background.subtle,
+                        },
+                        "&:active": {
+                          transform: "scale(0.98)",
+                          transition: "transform 0.1s ease",
+                        },
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography
+                            sx={{
+                              fontSize: typography.fontSize.lg,
+                              fontWeight: isActive
+                                ? typography.fontWeight.bold
+                                : typography.fontWeight.semibold,
+                              color: isActive ? colors.primary.main : colors.text.primary,
+                            }}
+                          >
+                            {item.name}
+                          </Typography>
+                        }
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+
+              {/* Collapsible Content for Mega Menu and Dropdowns */}
+              {navigation.map(item => {
+                const isMegaMenu = item.megaMenu !== undefined;
+                const isDropdown = item.dropdown !== undefined;
+                const menuKey = item.name;
+                const isOpen = mobileMenuState[menuKey];
+
+                if (isMegaMenu && isOpen) {
+                  return (
+                    <Collapse key={`${menuKey}-content`} in={isOpen} timeout="auto" unmountOnExit>
                       <Box sx={{ backgroundColor: colors.background.subtle }}>
                         {/* Featured Section */}
                         <Box sx={{ p: 2, pb: 1 }}>
@@ -858,62 +1154,13 @@ export function Header() {
                             Featured
                           </Typography>
                           {item.megaMenu.featured.map(featuredItem => (
-                            <ListItem key={featuredItem.name} disablePadding sx={{ mb: 1 }}>
-                              <ListItemButton
-                                component={Link}
-                                href={featuredItem.href}
-                                onClick={handleDrawerToggle}
-                                sx={{
-                                  py: 1.5,
-                                  px: 2,
-                                  borderRadius: 2,
-                                  backgroundColor:
-                                    pathname === featuredItem.href
-                                      ? colors.primary.main
-                                      : "transparent",
-                                  color:
-                                    pathname === featuredItem.href
-                                      ? colors.primary.contrast
-                                      : colors.text.primary,
-                                  "&:hover": {
-                                    backgroundColor:
-                                      pathname === featuredItem.href
-                                        ? colors.primary.dark
-                                        : colors.background.paper,
-                                  },
-                                }}
-                              >
-                                <ListItemText
-                                  primary={
-                                    <Typography
-                                      sx={{
-                                        fontSize: typography.fontSize.base,
-                                        fontWeight:
-                                          pathname === featuredItem.href
-                                            ? typography.fontWeight.bold
-                                            : typography.fontWeight.medium,
-                                      }}
-                                    >
-                                      {featuredItem.name}
-                                    </Typography>
-                                  }
-                                  secondary={
-                                    <Typography
-                                      sx={{
-                                        fontSize: typography.fontSize.sm,
-                                        color:
-                                          pathname === featuredItem.href
-                                            ? colors.primary.contrast
-                                            : colors.text.secondary,
-                                        mt: 0.5,
-                                      }}
-                                    >
-                                      {featuredItem.description}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItemButton>
-                            </ListItem>
+                            <MobileSubmenuItem
+                              key={featuredItem.name}
+                              item={featuredItem}
+                              pathname={pathname}
+                              onNavigate={handleMobileNavigation}
+                              isFeatured={true}
+                            />
                           ))}
                         </Box>
 
@@ -934,192 +1181,71 @@ export function Header() {
                               {category.title}
                             </Typography>
                             {category.items.map(categoryItem => (
-                              <ListItem key={categoryItem.name} disablePadding sx={{ mb: 0.5 }}>
-                                <ListItemButton
-                                  component={Link}
-                                  href={categoryItem.href}
-                                  onClick={handleDrawerToggle}
-                                  sx={{
-                                    py: 1,
-                                    px: 2,
-                                    borderRadius: 1.5,
-                                    color:
-                                      pathname === categoryItem.href
-                                        ? colors.primary.main
-                                        : colors.text.primary,
-                                    fontWeight:
-                                      pathname === categoryItem.href
-                                        ? typography.fontWeight.semibold
-                                        : typography.fontWeight.normal,
-                                    "&:hover": {
-                                      backgroundColor: colors.background.paper,
-                                      color: colors.primary.main,
-                                    },
-                                  }}
-                                >
-                                  <ListItemText
-                                    primary={
-                                      <Typography sx={{ fontSize: typography.fontSize.sm }}>
-                                        {categoryItem.name}
-                                      </Typography>
-                                    }
-                                  />
-                                </ListItemButton>
-                              </ListItem>
+                              <MobileSubmenuItem
+                                key={categoryItem.name}
+                                item={categoryItem}
+                                pathname={pathname}
+                                onNavigate={handleMobileNavigation}
+                              />
                             ))}
                           </Box>
                         ))}
                       </Box>
                     </Collapse>
-                  </Box>
-                );
-              }
+                  );
+                }
 
-              if (item.dropdown) {
-                const isServicesMenu = item.name === "Services";
-                const isLearnMenu = item.name === "Learn";
-                const isOpen = isServicesMenu ? mobileServicesOpen : mobileLearnOpen;
-                const setIsOpen = isServicesMenu ? setMobileServicesOpen : setMobileLearnOpen;
-
-                return (
-                  <Box key={item.name}>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => setIsOpen(!isOpen)}
-                        sx={{
-                          py: 2,
-                          px: 3,
-                          borderBottom: `1px solid ${colors.border.light}`,
-                          backgroundColor: isActive ? colors.background.subtle : "transparent",
-                          "&:hover": {
-                            backgroundColor: colors.background.subtle,
-                          },
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography
-                              sx={{
-                                fontSize: typography.fontSize.lg,
-                                fontWeight: isActive
-                                  ? typography.fontWeight.bold
-                                  : typography.fontWeight.semibold,
-                                color: isActive ? colors.primary.main : colors.text.primary,
-                              }}
-                            >
-                              {item.name}
-                            </Typography>
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          sx={{
-                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.3s ease",
-                            color: colors.text.secondary,
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-
-                    <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                if (isDropdown && isOpen) {
+                  return (
+                    <Collapse key={`${menuKey}-content`} in={isOpen} timeout="auto" unmountOnExit>
                       <Box sx={{ backgroundColor: colors.background.subtle }}>
                         {item.dropdown.map(dropdownItem => (
-                          <ListItem key={dropdownItem.name} disablePadding>
-                            <ListItemButton
-                              component={Link}
-                              href={dropdownItem.href}
-                              onClick={handleDrawerToggle}
-                              sx={{
-                                py: 1.5,
-                                px: 3,
-                                color:
-                                  pathname === dropdownItem.href
-                                    ? colors.primary.main
-                                    : colors.text.primary,
-                                fontWeight:
-                                  pathname === dropdownItem.href
-                                    ? typography.fontWeight.semibold
-                                    : typography.fontWeight.normal,
-                                "&:hover": {
-                                  backgroundColor: colors.background.paper,
-                                  color: colors.primary.main,
-                                },
-                              }}
-                            >
-                              <ListItemText
-                                primary={
-                                  <Typography sx={{ fontSize: typography.fontSize.base }}>
-                                    {dropdownItem.name}
-                                  </Typography>
-                                }
-                              />
-                            </ListItemButton>
-                          </ListItem>
+                          <MobileSubmenuItem
+                            key={dropdownItem.name}
+                            item={dropdownItem}
+                            pathname={pathname}
+                            onNavigate={handleMobileNavigation}
+                          />
                         ))}
                       </Box>
                     </Collapse>
-                  </Box>
-                );
-              }
+                  );
+                }
 
-              return (
-                <ListItem key={item.name} disablePadding>
-                  <ListItemButton
-                    component={Link}
-                    href={item.href}
-                    onClick={handleDrawerToggle}
-                    sx={{
-                      py: 2.5,
-                      px: 3,
-                      borderBottom: `1px solid ${colors.border.light}`,
-                      backgroundColor: isActive ? colors.background.subtle : "transparent",
-                      "&:hover": {
-                        backgroundColor: colors.background.subtle,
-                      },
-                    }}
-                  >
-                    <ListItemText
-                      primary={
-                        <Typography
-                          sx={{
-                            fontSize: typography.fontSize.lg,
-                            fontWeight: isActive
-                              ? typography.fontWeight.bold
-                              : typography.fontWeight.semibold,
-                            color: isActive ? colors.primary.main : colors.text.primary,
-                          }}
-                        >
-                          {item.name}
-                        </Typography>
-                      }
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
+                return null;
+              })}
+            </List>
 
-        {/* Mobile Footer */}
-        <Box
-          sx={{
-            p: 3,
-            borderTop: `1px solid ${colors.border.light}`,
-            backgroundColor: colors.background.subtle,
-          }}
-        >
-          <Typography
-            variant="body2"
+            {/* Loading State */}
+            {isLoading && (
+              <Box sx={{ p: 3, textAlign: "center" }}>
+                <Skeleton variant="rectangular" width="100%" height={40} sx={{ mb: 1 }} />
+                <Skeleton variant="rectangular" width="80%" height={20} />
+              </Box>
+            )}
+          </Box>
+
+          {/* Mobile Footer */}
+          <Box
             sx={{
-              color: colors.text.secondary,
-              textAlign: "center",
-              fontSize: typography.fontSize.sm,
+              p: 3,
+              borderTop: `1px solid ${colors.border.light}`,
+              backgroundColor: colors.background.subtle,
             }}
           >
-            Authentic Ukrainian Honey Cakes
-          </Typography>
-        </Box>
-      </Drawer>
-    </AppBar>
+            <Typography
+              variant="body2"
+              sx={{
+                color: colors.text.secondary,
+                textAlign: "center",
+                fontSize: typography.fontSize.sm,
+              }}
+            >
+              Authentic Ukrainian Honey Cakes
+            </Typography>
+          </Box>
+        </Drawer>
+      </AppBar>
+    </>
   );
 }
