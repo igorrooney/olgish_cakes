@@ -495,33 +495,59 @@ export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
 );
 
 // Contact Info Component
-export const ContactInfo = ({ icon, text, ...props }: any) => (
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      gap: spacing.sm,
-      ...props.sx,
-    }}
-    {...props}
-  >
-    {React.cloneElement(icon, {
-      sx: {
-        color: colors.primary.main,
-        fontSize: "1.5rem",
-      },
-    })}
-    <Typography
-      variant="body2"
+export const ContactInfo = ({ icon, text, href, ...props }: any) => {
+  const isPhone = text?.includes("+44") || text?.includes("phone");
+  const isEmail = text?.includes("@") || text?.includes("email");
+
+  const getHref = () => {
+    if (href) return href;
+    if (isPhone) return `tel:${text}`;
+    if (isEmail) return `mailto:${text}`;
+    return undefined;
+  };
+
+  const linkHref = getHref();
+  const Component = linkHref ? "a" : "div";
+
+  return (
+    <Box
+      component={Component}
+      href={linkHref}
       sx={{
-        color: colors.text.primary,
-        fontWeight: typography.fontWeight.medium,
+        display: "flex",
+        alignItems: "center",
+        gap: spacing.sm,
+        textDecoration: "none",
+        color: "inherit",
+        cursor: linkHref ? "pointer" : "default",
+        transition: "color 0.2s ease",
+        "&:hover": linkHref
+          ? {
+              color: colors.primary.main,
+            }
+          : {},
+        ...props.sx,
       }}
+      {...props}
     >
-      {text}
-    </Typography>
-  </Box>
-);
+      {React.cloneElement(icon, {
+        sx: {
+          color: colors.primary.main,
+          fontSize: "1.5rem",
+        },
+      })}
+      <Typography
+        variant="body2"
+        sx={{
+          color: "inherit",
+          fontWeight: typography.fontWeight.medium,
+        }}
+      >
+        {text}
+      </Typography>
+    </Box>
+  );
+};
 
 // Divider Component
 export const StyledDivider = ({ ...props }: any) => (

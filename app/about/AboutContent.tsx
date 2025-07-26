@@ -1,42 +1,41 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import Head from "next/head";
-import Image from "next/image";
+import { colors } from "@/lib/design-system";
 import {
-  Container,
-  Typography,
+  Cake,
+  CheckCircle,
+  Close,
+  Email,
+  EmojiEvents,
+  Facebook,
+  Favorite,
+  Instagram,
+  LocalShipping,
+  LocationOn,
+  Phone,
+  School,
+  Star,
+} from "@mui/icons-material";
+import {
   Box,
-  Grid,
-  Paper,
-  Card,
-  Avatar,
-  Chip,
   Button,
-  Stack,
+  Card,
+  Chip,
+  Container,
+  Grid,
   IconButton,
   Modal,
   IconButton as MuiIconButton,
+  Paper,
+  Stack,
+  Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import {
-  Cake,
-  Star,
-  LocalShipping,
-  School,
-  Favorite,
-  Instagram,
-  Facebook,
-  Phone,
-  Email,
-  LocationOn,
-  CheckCircle,
-  EmojiEvents,
-  Close,
-} from "@mui/icons-material";
+import { motion } from "framer-motion";
+import Head from "next/head";
+import Image from "next/image";
+import { useState } from "react";
 import { Breadcrumbs } from "../components/Breadcrumbs";
-import { colors } from "@/lib/design-system";
 
 // Styled Components
 const HeroSection = styled(Box)(({ theme }) => ({
@@ -133,9 +132,16 @@ const ServiceCard = styled(Card)(({ theme }) => ({
 
 // Optimized animations for better performance
 const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" },
+  transition: { duration: 0.4, ease: "easeOut" },
+};
+
+// Mobile-optimized animations
+const mobileFadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.3, ease: "easeOut" },
 };
 
 // Responsive typography classes for mobile optimization
@@ -200,18 +206,38 @@ const mobileNavigation = {
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.05,
     },
   },
 };
 
 const scaleIn = {
-  initial: { opacity: 0, scale: 0.9 },
+  initial: { opacity: 0, scale: 0.95 },
   animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5, ease: "easeOut" },
+  transition: { duration: 0.3, ease: "easeOut" },
 };
 
+// Loading skeleton component
+const LoadingSkeleton = () => (
+  <Box
+    sx={{
+      width: { xs: 120, sm: 140, md: 190 },
+      height: { xs: 120, sm: 140, md: 190 },
+      borderRadius: "50%",
+      background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+      backgroundSize: "200% 100%",
+      animation: "loading 1.5s infinite",
+      "@keyframes loading": {
+        "0%": { backgroundPosition: "200% 0" },
+        "100%": { backgroundPosition: "-200% 0" },
+      },
+    }}
+  />
+);
+
 export default function AboutContent() {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const qualifications = [
     {
       title: "Level 2 Patisserie",
@@ -280,17 +306,64 @@ export default function AboutContent() {
           as="image"
           type="image/jpeg"
         />
+        <link rel="preload" href="/images/pattern.svg" as="image" type="image/svg+xml" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        {/* Critical CSS for mobile performance */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            @media (max-width: 600px) {
+              .hero-title {
+                font-size: 2rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 0.5rem !important;
+              }
+              .hero-subtitle {
+                font-size: 1.1rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 1.5rem !important;
+              }
+              .hero-section {
+                padding: 2rem 0 1.5rem !important;
+              }
+              .mobile-optimized {
+                animation-duration: 0.2s !important;
+              }
+            }
+            .lcp-image {
+              width: 100%;
+              height: 100%;
+              max-width: 190px;
+              aspect-ratio: 1;
+              will-change: transform;
+              border-radius: 50%;
+            }
+            .performance-optimized {
+              contain: layout style paint;
+            }
+            @media (prefers-reduced-motion: reduce) {
+              * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+              }
+            }
+          `,
+          }}
+        />
       </Head>
       {/* Hero Section */}
-      <HeroSection>
+      <HeroSection className="hero-section">
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2 }}>
           <motion.div initial="initial" animate="animate" variants={staggerContainer}>
-            <motion.div variants={fadeInUp}>
+            <motion.div variants={mobileFadeIn}>
               <Typography
                 variant="h1"
                 component="h1"
                 align="center"
                 gutterBottom
+                className="hero-title"
                 sx={{
                   fontWeight: 800,
                   fontSize: { xs: "2rem", sm: "2.5rem", md: "3.5rem", lg: "4rem" },
@@ -306,6 +379,7 @@ export default function AboutContent() {
                 variant="h3"
                 component="h2"
                 align="center"
+                className="hero-subtitle"
                 sx={{
                   fontWeight: 400,
                   mb: { xs: 3, sm: 4 },
@@ -322,7 +396,11 @@ export default function AboutContent() {
         </Container>
       </HeroSection>
 
-      <Container maxWidth="lg" sx={{ py: { xs: 4, sm: 6, md: 8 } }}>
+      <Container
+        maxWidth="lg"
+        sx={{ py: { xs: 4, sm: 6, md: 8 } }}
+        className="performance-optimized"
+      >
         {/* Breadcrumbs */}
         <Box sx={{ mb: 4 }}>
           <Breadcrumbs
@@ -333,7 +411,12 @@ export default function AboutContent() {
           />
         </Box>
 
-        <motion.div initial="initial" animate="animate" variants={staggerContainer}>
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={staggerContainer}
+          className="mobile-optimized"
+        >
           {/* Founder Section */}
           <Grid container spacing={{ xs: 3, sm: 4, md: 6 }} sx={{ mb: { xs: 6, sm: 7, md: 8 } }}>
             <Grid item xs={12} md={5}>
@@ -355,8 +438,8 @@ export default function AboutContent() {
                   <Box sx={{ textAlign: "center", p: 4 }}>
                     <Box
                       sx={{
-                        width: { xs: 120, sm: 140, md: 180 },
-                        height: { xs: 120, sm: 140, md: 180 },
+                        width: { xs: 120, sm: 140, md: 190 },
+                        height: { xs: 120, sm: 140, md: 190 },
                         mx: "auto",
                         mb: 3,
                         borderRadius: "50%",
@@ -365,6 +448,7 @@ export default function AboutContent() {
                         boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                         cursor: "pointer",
                         transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                        position: "relative",
                         "&:hover": {
                           transform: "scale(1.05)",
                           boxShadow: "0 12px 40px rgba(0, 0, 0, 0.3)",
@@ -381,19 +465,38 @@ export default function AboutContent() {
                         }
                       }}
                     >
-                      <Image
-                        src="/olgish-cakes-about-olga-owner-baker.jpeg"
-                        alt="Olga Ieromenko - Professional Ukrainian Baker at Olgish Cakes"
-                        width={180}
-                        height={180}
-                        sizes="(max-width: 600px) 120px, (max-width: 960px) 140px, 180px"
+                      {!imageLoaded && <LoadingSkeleton />}
+                      <picture
                         style={{
+                          display: imageLoaded ? "block" : "none",
                           width: "100%",
                           height: "100%",
-                          objectFit: "cover",
                           borderRadius: "50%",
+                          overflow: "hidden",
                         }}
-                      />
+                      >
+                        <source
+                          srcSet="/olgish-cakes-about-olga-owner-baker.webp"
+                          type="image/webp"
+                        />
+                        <Image
+                          src="/olgish-cakes-about-olga-owner-baker.jpeg"
+                          alt="Olga Ieromenko - Professional Ukrainian Baker at Olgish Cakes"
+                          width={190}
+                          height={190}
+                          priority
+                          className="lcp-image"
+                          sizes="(max-width: 600px) 120px, (max-width: 960px) 140px, 190px"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                            display: "block",
+                          }}
+                          onLoad={() => setImageLoaded(true)}
+                        />
+                      </picture>
                     </Box>
                     <Typography
                       variant="h4"
@@ -540,11 +643,41 @@ export default function AboutContent() {
                     <Stack spacing={1}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Phone sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
-                        <Typography>+44 786 721 8194</Typography>
+                        <Typography
+                          component="a"
+                          href="tel:+447867218194"
+                          sx={{
+                            color: "inherit",
+                            textDecoration: "none",
+                            cursor: "pointer",
+                            transition: "color 0.2s ease",
+                            "&:hover": {
+                              color: colors.ukrainian.yellow,
+                              textDecoration: "underline",
+                            },
+                          }}
+                        >
+                          +44 786 721 8194
+                        </Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Email sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
-                        <Typography>hello@olgishcakes.co.uk</Typography>
+                        <Typography
+                          component="a"
+                          href="mailto:hello@olgishcakes.co.uk"
+                          sx={{
+                            color: "inherit",
+                            textDecoration: "none",
+                            cursor: "pointer",
+                            transition: "color 0.2s ease",
+                            "&:hover": {
+                              color: colors.ukrainian.yellow,
+                              textDecoration: "underline",
+                            },
+                          }}
+                        >
+                          hello@olgishcakes.co.uk
+                        </Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <LocationOn sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
@@ -939,6 +1072,8 @@ export default function AboutContent() {
               height: "100%",
               objectFit: "contain",
               display: "block",
+              maxWidth: "100%",
+              maxHeight: "100%",
             }}
           />
         </Box>

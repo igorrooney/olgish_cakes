@@ -9,6 +9,10 @@ import {
 } from "../utils/seo";
 import AboutContent from "./AboutContent";
 
+// Preload critical resources
+export const dynamic = "force-static";
+export const revalidate = 3600; // Revalidate every hour
+
 // Enhanced SEO metadata for About page
 export const metadata: Metadata = generatePageMetadata({
   title:
@@ -140,6 +144,39 @@ export default function AboutPage() {
             content_category: 'company_information',
             custom_parameter: 'ukrainian_baker_leeds'
           });
+        `}
+      </Script>
+
+      {/* Performance optimization scripts */}
+      <Script id="performance-optimization" strategy="beforeInteractive">
+        {`
+          // Preload critical resources
+          if ('connection' in navigator) {
+            if (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g') {
+              // Reduce animations for slow connections
+              document.documentElement.style.setProperty('--animation-duration', '0.1s');
+            }
+          }
+          
+          // Optimize for mobile performance
+          if (window.innerWidth <= 768) {
+            document.documentElement.style.setProperty('--mobile-optimized', 'true');
+          }
+          
+          // Performance monitoring
+          if ('performance' in window) {
+            window.addEventListener('load', () => {
+              const navigation = performance.getEntriesByType('navigation')[0];
+              const paint = performance.getEntriesByType('paint');
+              
+              console.log('Performance Metrics:', {
+                fcp: paint.find(entry => entry.name === 'first-contentful-paint')?.startTime,
+                lcp: paint.find(entry => entry.name === 'largest-contentful-paint')?.startTime,
+                domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+                loadComplete: navigation.loadEventEnd - navigation.loadEventStart
+              });
+            });
+          }
         `}
       </Script>
 

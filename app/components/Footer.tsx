@@ -461,20 +461,40 @@ export default function Footer() {
                 </Typography>
                 <Typography
                   variant="body2"
+                  component="a"
+                  href="tel:+447867218194"
                   sx={{
                     color: colors.text.secondary,
                     mb: spacing.sm,
                     fontSize: typography.fontSize.sm,
+                    textDecoration: "none",
+                    cursor: "pointer",
+                    transition: "color 0.2s ease",
+                    display: "block",
+                    "&:hover": {
+                      color: colors.primary.main,
+                      textDecoration: "underline",
+                    },
                   }}
                 >
                   📞 +44 786 721 8194
                 </Typography>
                 <Typography
                   variant="body2"
+                  component="a"
+                  href="mailto:hello@olgishcakes.co.uk"
                   sx={{
                     color: colors.text.secondary,
                     mb: spacing.md,
                     fontSize: typography.fontSize.sm,
+                    textDecoration: "none",
+                    cursor: "pointer",
+                    transition: "color 0.2s ease",
+                    display: "block",
+                    "&:hover": {
+                      color: colors.primary.main,
+                      textDecoration: "underline",
+                    },
                   }}
                 >
                   📧 hello@olgishcakes.co.uk
