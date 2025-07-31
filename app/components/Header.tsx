@@ -147,6 +147,7 @@ const MobileMenuItem = memo(
     onToggle,
     isOpen,
     onNavigate,
+    hasSubmenu,
   }: {
     item: any;
     isActive: boolean;
@@ -154,6 +155,7 @@ const MobileMenuItem = memo(
     onToggle: () => void;
     isOpen: boolean;
     onNavigate: () => void;
+    hasSubmenu: boolean;
   }) => {
     const menuStyles = useMemo(
       () => ({
@@ -181,18 +183,35 @@ const MobileMenuItem = memo(
       [isActive]
     );
 
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (hasSubmenu) {
+        onToggle();
+      } else {
+        onNavigate();
+      }
+    };
+
     return (
       <ListItem disablePadding>
-        <ListItemButton onClick={onToggle} sx={menuStyles}>
-          <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
-          <KeyboardArrowDownIcon
-            sx={{
-              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.3s ease",
-              color: colors.text.secondary,
-            }}
-          />
-        </ListItemButton>
+        {hasSubmenu ? (
+          <ListItemButton onClick={handleClick} sx={menuStyles}>
+            <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
+            <KeyboardArrowDownIcon
+              sx={{
+                transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.3s ease",
+                color: colors.text.secondary,
+              }}
+            />
+          </ListItemButton>
+        ) : (
+          <ListItemButton component={Link} href={item.href} onClick={handleClick} sx={menuStyles}>
+            <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
+          </ListItemButton>
+        )}
       </ListItem>
     );
   }
@@ -1049,19 +1068,76 @@ export function Header() {
                   const onToggle = () => toggleMobileSubmenu(menuKey);
                   const onNavigate = () => {
                     handleMobileNavigation();
-                    handleCakesMenuClose(); // Close mega menu
                   };
 
                   return (
-                    <MobileMenuItem
-                      key={item.name}
-                      item={item}
-                      isActive={isActive}
-                      pathname={pathname}
-                      onToggle={onToggle}
-                      isOpen={isOpen}
-                      onNavigate={onNavigate}
-                    />
+                    <Box key={item.name}>
+                      <MobileMenuItem
+                        item={item}
+                        isActive={isActive}
+                        pathname={pathname}
+                        onToggle={onToggle}
+                        isOpen={isOpen}
+                        onNavigate={onNavigate}
+                        hasSubmenu={true}
+                      />
+                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                        <Box sx={{ backgroundColor: colors.background.subtle }}>
+                          {/* Featured Section */}
+                          <Box sx={{ p: 2, pb: 1 }}>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{
+                                color: colors.primary.main,
+                                fontWeight: typography.fontWeight.bold,
+                                mb: 1,
+                                textTransform: "uppercase",
+                                letterSpacing: 0.5,
+                                fontSize: typography.fontSize.sm,
+                              }}
+                            >
+                              Featured
+                            </Typography>
+                            {item.megaMenu.featured.map(featuredItem => (
+                              <MobileSubmenuItem
+                                key={featuredItem.name}
+                                item={featuredItem}
+                                pathname={pathname}
+                                onNavigate={handleMobileNavigation}
+                                isFeatured={true}
+                              />
+                            ))}
+                          </Box>
+
+                          {/* Categories */}
+                          {item.megaMenu.categories.map(category => (
+                            <Box key={category.title} sx={{ p: 2, pt: 1 }}>
+                              <Typography
+                                variant="subtitle2"
+                                sx={{
+                                  color: colors.text.secondary,
+                                  fontWeight: typography.fontWeight.semibold,
+                                  mb: 1.5,
+                                  textTransform: "uppercase",
+                                  letterSpacing: 0.5,
+                                  fontSize: typography.fontSize.sm,
+                                }}
+                              >
+                                {category.title}
+                              </Typography>
+                              {category.items.map(categoryItem => (
+                                <MobileSubmenuItem
+                                  key={categoryItem.name}
+                                  item={categoryItem}
+                                  pathname={pathname}
+                                  onNavigate={handleMobileNavigation}
+                                />
+                              ))}
+                            </Box>
+                          ))}
+                        </Box>
+                      </Collapse>
+                    </Box>
                   );
                 }
 
@@ -1071,148 +1147,47 @@ export function Header() {
                   const onToggle = () => toggleMobileSubmenu(dropdownKey);
                   const onNavigate = () => {
                     handleMobileNavigation();
-                    handleServicesMenuClose(); // Close dropdown
                   };
 
                   return (
-                    <MobileMenuItem
-                      key={item.name}
-                      item={item}
-                      isActive={isActive}
-                      pathname={pathname}
-                      onToggle={onToggle}
-                      isOpen={isOpen}
-                      onNavigate={onNavigate}
-                    />
+                    <Box key={item.name}>
+                      <MobileMenuItem
+                        item={item}
+                        isActive={isActive}
+                        pathname={pathname}
+                        onToggle={onToggle}
+                        isOpen={isOpen}
+                        onNavigate={onNavigate}
+                        hasSubmenu={true}
+                      />
+                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                        <Box sx={{ backgroundColor: colors.background.subtle }}>
+                          {item.dropdown.map(dropdownItem => (
+                            <MobileSubmenuItem
+                              key={dropdownItem.name}
+                              item={dropdownItem}
+                              pathname={pathname}
+                              onNavigate={handleMobileNavigation}
+                            />
+                          ))}
+                        </Box>
+                      </Collapse>
+                    </Box>
                   );
                 }
 
                 return (
-                  <ListItem key={item.name} disablePadding>
-                    <ListItemButton
-                      component={Link}
-                      href={item.href}
-                      onClick={handleMobileNavigation}
-                      sx={{
-                        py: 2.5,
-                        px: 3,
-                        borderBottom: `1px solid ${colors.border.light}`,
-                        backgroundColor: isActive ? colors.background.subtle : "transparent",
-                        "&:hover": {
-                          backgroundColor: colors.background.subtle,
-                        },
-                        "&:active": {
-                          transform: "scale(0.98)",
-                          transition: "transform 0.1s ease",
-                        },
-                      }}
-                    >
-                      <ListItemText
-                        primary={
-                          <Typography
-                            sx={{
-                              fontSize: typography.fontSize.lg,
-                              fontWeight: isActive
-                                ? typography.fontWeight.bold
-                                : typography.fontWeight.semibold,
-                              color: isActive ? colors.primary.main : colors.text.primary,
-                            }}
-                          >
-                            {item.name}
-                          </Typography>
-                        }
-                      />
-                    </ListItemButton>
-                  </ListItem>
+                  <MobileMenuItem
+                    key={item.name}
+                    item={item}
+                    isActive={isActive}
+                    pathname={pathname}
+                    onToggle={() => {}}
+                    isOpen={false}
+                    onNavigate={handleMobileNavigation}
+                    hasSubmenu={false}
+                  />
                 );
-              })}
-
-              {/* Collapsible Content for Mega Menu and Dropdowns */}
-              {navigation.map(item => {
-                const isMegaMenu = item.megaMenu !== undefined;
-                const isDropdown = item.dropdown !== undefined;
-                const menuKey = item.name;
-                const isOpen = mobileMenuState[menuKey];
-
-                if (isMegaMenu && isOpen) {
-                  return (
-                    <Collapse key={`${menuKey}-content`} in={isOpen} timeout="auto" unmountOnExit>
-                      <Box sx={{ backgroundColor: colors.background.subtle }}>
-                        {/* Featured Section */}
-                        <Box sx={{ p: 2, pb: 1 }}>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{
-                              color: colors.primary.main,
-                              fontWeight: typography.fontWeight.bold,
-                              mb: 1,
-                              textTransform: "uppercase",
-                              letterSpacing: 0.5,
-                              fontSize: typography.fontSize.sm,
-                            }}
-                          >
-                            Featured
-                          </Typography>
-                          {item.megaMenu.featured.map(featuredItem => (
-                            <MobileSubmenuItem
-                              key={featuredItem.name}
-                              item={featuredItem}
-                              pathname={pathname}
-                              onNavigate={handleMobileNavigation}
-                              isFeatured={true}
-                            />
-                          ))}
-                        </Box>
-
-                        {/* Categories */}
-                        {item.megaMenu.categories.map(category => (
-                          <Box key={category.title} sx={{ p: 2, pt: 1 }}>
-                            <Typography
-                              variant="subtitle2"
-                              sx={{
-                                color: colors.text.secondary,
-                                fontWeight: typography.fontWeight.semibold,
-                                mb: 1.5,
-                                textTransform: "uppercase",
-                                letterSpacing: 0.5,
-                                fontSize: typography.fontSize.sm,
-                              }}
-                            >
-                              {category.title}
-                            </Typography>
-                            {category.items.map(categoryItem => (
-                              <MobileSubmenuItem
-                                key={categoryItem.name}
-                                item={categoryItem}
-                                pathname={pathname}
-                                onNavigate={handleMobileNavigation}
-                              />
-                            ))}
-                          </Box>
-                        ))}
-                      </Box>
-                    </Collapse>
-                  );
-                }
-
-                if (isDropdown && isOpen) {
-                  return (
-                    <Collapse key={`${menuKey}-content`} in={isOpen} timeout="auto" unmountOnExit>
-                      <Box sx={{ backgroundColor: colors.background.subtle }}>
-                        {item.dropdown.map(dropdownItem => (
-                          <MobileSubmenuItem
-                            key={dropdownItem.name}
-                            item={dropdownItem}
-                            pathname={pathname}
-                            onNavigate={handleMobileNavigation}
-                          />
-                        ))}
-                      </Box>
-                    </Collapse>
-                  );
-                }
-
-                return null;
               })}
             </List>
 
