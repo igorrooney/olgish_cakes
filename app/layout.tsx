@@ -199,7 +199,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Google Analytics 4 */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+          src="https://www.googletagmanager.com/gtag/js?id=G-QGQC58H2LD"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -207,7 +207,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX', {
+            gtag('config', 'G-QGQC58H2LD', {
               page_title: document.title,
               page_location: window.location.href,
               custom_map: {
@@ -215,7 +215,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 'custom_parameter_2': 'location'
               }
             });
-            gtag('config', 'G-XXXXXXXXXX', {
+            gtag('config', 'G-QGQC58H2LD', {
               business_type: 'bakery',
               location: 'leeds'
             });
