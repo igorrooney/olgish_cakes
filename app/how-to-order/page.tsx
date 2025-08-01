@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { InteractiveLink } from "./InteractiveLink";
 
 export const metadata: Metadata = {
   title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders | Olgish Cakes",
@@ -338,30 +339,15 @@ export default function HowToOrderPage() {
                               sx={{ mb: 1, fontSize: "0.9rem" }}
                             >
                               • {detail.split(link.text)[0]}
-                              <Link
+                              <InteractiveLink
+                                text={link.text}
                                 href={link.href}
-                                style={{
+                                sx={{
                                   textDecoration: "none",
                                   color: "inherit",
                                   fontWeight: 500,
                                 }}
-                              >
-                                <span
-                                  style={{
-                                    cursor: "pointer",
-                                  }}
-                                  onMouseEnter={e => {
-                                    e.currentTarget.style.textDecoration = "underline";
-                                    e.currentTarget.style.color = "var(--mui-palette-primary-main)";
-                                  }}
-                                  onMouseLeave={e => {
-                                    e.currentTarget.style.textDecoration = "none";
-                                    e.currentTarget.style.color = "inherit";
-                                  }}
-                                >
-                                  {link.text}
-                                </span>
-                              </Link>
+                              />
                               {detail.split(link.text)[1]}
                             </Typography>
                           );
