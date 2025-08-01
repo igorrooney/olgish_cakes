@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -127,12 +127,40 @@ export function OrderPageClient() {
         option_name: orderOptions.find(opt => opt.id === optionId)?.title,
       });
     }
+
+    // Smooth scroll to the form title after a delay to ensure it's rendered
+    setTimeout(() => {
+      const formTitle = document.getElementById("order-form-title");
+      if (formTitle) {
+        formTitle.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 300);
   }, []);
 
   const selectedOrderOption = useMemo(
     () => orderOptions.find(opt => opt.id === selectedOption),
     [selectedOption]
   );
+
+  // Handle scrolling when form becomes visible
+  useEffect(() => {
+    if (isFormVisible && selectedOrderOption) {
+      const timer = setTimeout(() => {
+        const formTitle = document.getElementById("order-form-title");
+        if (formTitle) {
+          formTitle.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isFormVisible, selectedOrderOption]);
 
   const handleFormSubmit = useCallback(
     async (formData: any) => {
@@ -554,6 +582,7 @@ export function OrderPageClient() {
               transition={{ duration: 0.6 }}
             >
               <Typography
+                id="order-form-title"
                 variant="h2"
                 component="h2"
                 sx={{
@@ -579,119 +608,121 @@ export function OrderPageClient() {
                 Complete the form below and we'll get back to you within 24 hours
               </Typography>
 
-              <Grid container spacing={6}>
-                <Grid item xs={12} lg={8}>
-                  <Paper elevation={0} sx={{ p: 4, borderRadius: 3 }}>
-                    <ContactForm
-                      onSubmit={handleFormSubmit}
-                      isOrderForm
-                      showImageUpload={selectedOption === "custom-design"}
-                      hideCakeInterest
-                      showButton={true}
-                      isSubmitting={isSubmitting}
-                    />
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} lg={4}>
-                  <Box sx={{ position: "sticky", top: 24 }}>
-                    {/* Order Summary */}
-                    <Paper
-                      elevation={0}
-                      sx={{ p: 3, mb: 3, borderRadius: 3, bgcolor: "primary.50" }}
-                    >
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                        Order Summary
-                      </Typography>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                          {selectedOrderOption.title}
+              {isFormVisible && selectedOrderOption && (
+                <Grid container spacing={6}>
+                  <Grid item xs={12} lg={8}>
+                    <Paper elevation={0} sx={{ p: 4, borderRadius: 3 }}>
+                      <ContactForm
+                        onSubmit={handleFormSubmit}
+                        isOrderForm
+                        showImageUpload={selectedOption === "custom-design"}
+                        hideCakeInterest
+                        showButton={true}
+                        isSubmitting={isSubmitting}
+                      />
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} lg={4}>
+                    <Box sx={{ position: "sticky", top: 24 }}>
+                      {/* Order Summary */}
+                      <Paper
+                        elevation={0}
+                        sx={{ p: 3, mb: 3, borderRadius: 3, bgcolor: "primary.50" }}
+                      >
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                          Order Summary
                         </Typography>
-                        <Typography variant="h6" color="primary.main" sx={{ fontWeight: 700 }}>
-                          {selectedOrderOption.price}
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            {selectedOrderOption.title}
+                          </Typography>
+                          <Typography variant="h6" color="primary.main" sx={{ fontWeight: 700 }}>
+                            {selectedOrderOption.price}
+                          </Typography>
+                        </Box>
+                        <Divider sx={{ my: 2 }} />
+                        <List dense>
+                          {selectedOrderOption.features.slice(0, 3).map((feature, index) => (
+                            <ListItem key={index} sx={{ px: 0 }}>
+                              <ListItemIcon sx={{ minWidth: 24 }}>
+                                <CheckIcon color="success" fontSize="small" />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={feature}
+                                primaryTypographyProps={{ variant: "body2" }}
+                              />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </Paper>
+
+                      {/* Contact Information */}
+                      <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                          Need Help?
                         </Typography>
-                      </Box>
-                      <Divider sx={{ my: 2 }} />
-                      <List dense>
-                        {selectedOrderOption.features.slice(0, 3).map((feature, index) => (
-                          <ListItem key={index} sx={{ px: 0 }}>
-                            <ListItemIcon sx={{ minWidth: 24 }}>
-                              <CheckIcon color="success" fontSize="small" />
+                        <List dense>
+                          <ListItem sx={{ px: 0 }}>
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                              <PhoneIcon color="primary" />
                             </ListItemIcon>
                             <ListItemText
-                              primary={feature}
-                              primaryTypographyProps={{ variant: "body2" }}
+                              primary="Call Us"
+                              secondary={
+                                <Link
+                                  href="tel:+441131234567"
+                                  style={{
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  +44 113 123 4567
+                                </Link>
+                              }
+                              primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
+                              secondaryTypographyProps={{ variant: "body2" }}
                             />
                           </ListItem>
-                        ))}
-                      </List>
-                    </Paper>
-
-                    {/* Contact Information */}
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                        Need Help?
-                      </Typography>
-                      <List dense>
-                        <ListItem sx={{ px: 0 }}>
-                          <ListItemIcon sx={{ minWidth: 32 }}>
-                            <PhoneIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Call Us"
-                            secondary={
-                              <Link
-                                href="tel:+441131234567"
-                                style={{
-                                  textDecoration: "none",
-                                  color: "inherit",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                +44 113 123 4567
-                              </Link>
-                            }
-                            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-                            secondaryTypographyProps={{ variant: "body2" }}
-                          />
-                        </ListItem>
-                        <ListItem sx={{ px: 0 }}>
-                          <ListItemIcon sx={{ minWidth: 32 }}>
-                            <EmailIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Email Us"
-                            secondary={
-                              <Link
-                                href="mailto:hello@olgishcakes.co.uk"
-                                style={{
-                                  textDecoration: "none",
-                                  color: "inherit",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                hello@olgishcakes.co.uk
-                              </Link>
-                            }
-                            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-                            secondaryTypographyProps={{ variant: "body2" }}
-                          />
-                        </ListItem>
-                        <ListItem sx={{ px: 0 }}>
-                          <ListItemIcon sx={{ minWidth: 32 }}>
-                            <ScheduleIcon color="primary" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary="Response Time"
-                            secondary="Within 24 hours"
-                            primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
-                            secondaryTypographyProps={{ variant: "body2" }}
-                          />
-                        </ListItem>
-                      </List>
-                    </Paper>
-                  </Box>
+                          <ListItem sx={{ px: 0 }}>
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                              <EmailIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Email Us"
+                              secondary={
+                                <Link
+                                  href="mailto:hello@olgishcakes.co.uk"
+                                  style={{
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  hello@olgishcakes.co.uk
+                                </Link>
+                              }
+                              primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
+                              secondaryTypographyProps={{ variant: "body2" }}
+                            />
+                          </ListItem>
+                          <ListItem sx={{ px: 0 }}>
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                              <ScheduleIcon color="primary" />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary="Response Time"
+                              secondary="Within 24 hours"
+                              primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
+                              secondaryTypographyProps={{ variant: "body2" }}
+                            />
+                          </ListItem>
+                        </List>
+                      </Paper>
+                    </Box>
+                  </Grid>
                 </Grid>
-              </Grid>
+              )}
             </motion.div>
           </Box>
         )}
