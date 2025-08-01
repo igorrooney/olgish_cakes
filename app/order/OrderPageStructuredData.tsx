@@ -1,6 +1,35 @@
 import Script from "next/script";
+import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 
-export function OrderPageStructuredData() {
+export async function OrderPageStructuredData() {
+  // Fetch real testimonials from Sanity
+  const testimonials = await getFeaturedTestimonials(3);
+  
+  // Calculate aggregate rating from real testimonials
+  const totalRating = testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0);
+  const averageRating = testimonials.length > 0 ? (totalRating / testimonials.length).toFixed(1) : "5.0";
+  
+  // Convert testimonials to schema format
+  const reviewSchema = testimonials.map((testimonial) => ({
+    "@type": "Review",
+    author: {
+      "@type": "Person",
+      name: testimonial.customerName,
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: testimonial.rating.toString(),
+      bestRating: "5",
+    },
+    reviewBody: testimonial.text,
+    datePublished: testimonial.date,
+    itemReviewed: {
+      "@type": "Product",
+      name: testimonial.cakeType,
+      description: `${testimonial.cakeType} from Olgish Cakes`,
+    },
+  }));
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -110,6 +139,14 @@ export function OrderPageStructuredData() {
       },
       deliveryMethod: ["http://schema.org/OnSitePickup", "http://schema.org/LockerDelivery"],
     },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: averageRating,
+      reviewCount: testimonials.length.toString(),
+      bestRating: "5",
+      worstRating: "1",
+    },
+    review: reviewSchema,
   };
 
   return (

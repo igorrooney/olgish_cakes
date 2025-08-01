@@ -17,6 +17,16 @@ export const metadata: Metadata = {
     "premium cake service leeds",
     "cake design consultation",
     "online cake shop leeds",
+    "cake delivery yorkshire",
+    "leeds cake shop",
+    "west yorkshire cake delivery",
+    "ukrainian bakery leeds",
+    "custom cakes leeds",
+    "wedding cakes leeds",
+    "birthday cakes leeds",
+    "honey cake leeds",
+    "cake ordering leeds",
+    "professional cake design leeds",
   ],
   openGraph: {
     title: "Order Professional Cakes Online | Olgish Cakes Leeds",
@@ -57,7 +67,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function OrderPage() {
+export default async function OrderPage() {
   return (
     <>
       <OrderPageSEO />

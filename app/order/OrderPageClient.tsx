@@ -24,12 +24,16 @@ import {
   AccordionSummary,
   AccordionDetails,
   Snackbar,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Rating,
 } from "@mui/material";
 import {
   Cake as CakeIcon,
   LocalShipping as DeliveryIcon,
   DesignServices as DesignIcon,
-  Star as StarIcon,
   CheckCircle as CheckIcon,
   ExpandMore as ExpandMoreIcon,
   Phone as PhoneIcon,
@@ -41,6 +45,14 @@ import { ContactForm } from "@/app/components/ContactForm";
 import { colors, typography, spacing, shadows } from "@/lib/design-system";
 import AnimatedWrapper from "../components/AnimatedWrapper";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { OrderTestimonials } from "./OrderTestimonials";
+import dynamic from "next/dynamic";
+
+// Lazy load components for better performance
+const LazyContactForm = dynamic(() => import("@/app/components/ContactForm").then(mod => ({ default: mod.ContactForm })), {
+  loading: () => <div>Loading form...</div>,
+  ssr: false
+});
 
 interface OrderOption {
   id: string;
@@ -106,6 +118,7 @@ export function OrderPageClient() {
   const [selectedOption, setSelectedOption] = useState<string>("browse-catalog");
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -116,9 +129,25 @@ export function OrderPageClient() {
     severity: "success",
   });
 
+  const steps = [
+    {
+      label: "Choose Order Type",
+      description: "Select between browsing our catalog or custom design",
+    },
+    {
+      label: "Fill Order Form",
+      description: "Provide your details and requirements",
+    },
+    {
+      label: "Review & Submit",
+      description: "We'll review and get back to you within 24 hours",
+    },
+  ];
+
   const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedOption(optionId);
     setIsFormVisible(true);
+    setActiveStep(1);
 
     // Track option selection for analytics
     if (typeof window !== "undefined" && window.gtag) {
@@ -206,9 +235,10 @@ export function OrderPageClient() {
           severity: "success",
         });
 
-        // Reset form visibility
+        // Reset form visibility and progress
         setIsFormVisible(false);
         setSelectedOption("browse-catalog");
+        setActiveStep(2);
       } catch (error) {
         console.error("Form submission error:", error);
         setNotification({
@@ -581,6 +611,17 @@ export function OrderPageClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
+              {/* Progress Stepper */}
+              <Box sx={{ mb: 6 }}>
+                <Stepper activeStep={activeStep} orientation="horizontal">
+                  {steps.map((step, index) => (
+                    <Step key={step.label}>
+                      <StepLabel>{step.label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Box>
+
               <Typography
                 id="order-form-title"
                 variant="h2"
@@ -612,7 +653,7 @@ export function OrderPageClient() {
                 <Grid container spacing={6}>
                   <Grid item xs={12} lg={8}>
                     <Paper elevation={0} sx={{ p: 4, borderRadius: 3 }}>
-                      <ContactForm
+                      <LazyContactForm
                         onSubmit={handleFormSubmit}
                         isOrderForm
                         showImageUpload={selectedOption === "custom-design"}
@@ -790,6 +831,9 @@ export function OrderPageClient() {
           </motion.div>
         </Box>
 
+        {/* Customer Testimonials Section */}
+        <OrderTestimonials />
+
         {/* FAQ Section */}
         <Box component="section" sx={{ py: { xs: 6, md: 8 } }}>
           <motion.div
@@ -959,6 +1003,55 @@ export function OrderPageClient() {
                 >
                   Contact Us
                 </Button>
+              </Box>
+              
+              {/* Related Pages Links */}
+              <Box sx={{ mt: 4, textAlign: "center" }}>
+                <Typography variant="body2" sx={{ mb: 2, opacity: 0.8 }}>
+                  Explore our cake collections:
+                </Typography>
+                <Box sx={{ display: "flex", gap: 1, justifyContent: "center", flexWrap: "wrap" }}>
+                  <Link href="/wedding-cakes" style={{ textDecoration: "none" }}>
+                    <Chip
+                      label="Wedding Cakes"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
+                    />
+                  </Link>
+                  <Link href="/birthday-cakes" style={{ textDecoration: "none" }}>
+                    <Chip
+                      label="Birthday Cakes"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
+                    />
+                  </Link>
+                  <Link href="/honey-cake-history" style={{ textDecoration: "none" }}>
+                    <Chip
+                      label="Honey Cakes"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
+                    />
+                  </Link>
+                  <Link href="/custom-cake-design" style={{ textDecoration: "none" }}>
+                    <Chip
+                      label="Custom Design"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
+                    />
+                  </Link>
+                  <Link href="/cake-delivery" style={{ textDecoration: "none" }}>
+                    <Chip
+                      label="Delivery Info"
+                      variant="outlined"
+                      color="primary"
+                      sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
+                    />
+                  </Link>
+                </Box>
               </Box>
             </Paper>
           </motion.div>

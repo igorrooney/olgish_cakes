@@ -1,0 +1,202 @@
+{
+  "timestamp": "2025-08-01T21:22:29.229Z",
+  "page": "Order Page",
+  "overallScore": 100,
+  "maxScore": 100,
+  "percentage": 100,
+  "grade": "A+ (Excellent)",
+  "categories": {
+    "metaTags": {
+      "score": 25,
+      "maxScore": 25,
+      "breakdown": {
+        "title": {
+          "score": 5,
+          "max": 5,
+          "status": "✅ Excellent"
+        },
+        "description": {
+          "score": 5,
+          "max": 5,
+          "status": "✅ Excellent"
+        },
+        "keywords": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        },
+        "openGraph": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Complete"
+        },
+        "twitter": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Complete"
+        },
+        "canonical": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        },
+        "robots": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Optimized"
+        }
+      }
+    },
+    "structuredData": {
+      "score": 20,
+      "maxScore": 20,
+      "breakdown": {
+        "webPage": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Present"
+        },
+        "service": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Complete"
+        },
+        "localBusiness": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Complete"
+        },
+        "breadcrumbList": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        },
+        "orderAction": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        },
+        "offerCatalog": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        }
+      }
+    },
+    "contentQuality": {
+      "score": 25,
+      "maxScore": 25,
+      "breakdown": {
+        "h1Tag": {
+          "score": 5,
+          "max": 5,
+          "status": "✅ Present"
+        },
+        "h2Tags": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Multiple present"
+        },
+        "orderOptions": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Clear CTAs"
+        },
+        "faqSection": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        },
+        "deliveryInfo": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Complete"
+        },
+        "contactDetails": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        },
+        "trustSignals": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Present"
+        }
+      }
+    },
+    "technicalSEO": {
+      "score": 20,
+      "maxScore": 20,
+      "breakdown": {
+        "semanticHTML": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Good"
+        },
+        "headingHierarchy": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Proper"
+        },
+        "mobileResponsive": {
+          "score": 4,
+          "max": 4,
+          "status": "✅ Optimized"
+        },
+        "fastLoading": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Good"
+        },
+        "accessibility": {
+          "score": 3,
+          "max": 3,
+          "status": "✅ Good"
+        },
+        "internalLinking": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        }
+      }
+    },
+    "userExperience": {
+      "score": 10,
+      "maxScore": 10,
+      "breakdown": {
+        "clearNavigation": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Good"
+        },
+        "multipleOptions": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        },
+        "formValidation": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        },
+        "loadingStates": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        },
+        "errorHandling": {
+          "score": 2,
+          "max": 2,
+          "status": "✅ Present"
+        }
+      }
+    }
+  },
+  "recommendations": [
+    "Add more location-specific keywords (Leeds, Yorkshire)",
+    "Implement AMP version for better mobile performance",
+    "Add more internal links to related cake pages",
+    "Create location-specific landing pages for better local SEO",
+    "Add schema markup for customer reviews and ratings"
+  ]
+}

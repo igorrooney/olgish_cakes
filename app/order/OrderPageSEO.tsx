@@ -1,5 +1,5 @@
 import { OrderPageStructuredData } from "./OrderPageStructuredData";
 
-export function OrderPageSEO() {
+export async function OrderPageSEO() {
   return <OrderPageStructuredData />;
 }
