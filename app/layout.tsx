@@ -2,15 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
 import { theme } from "@/lib/theme";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
 import Footer from "./components/Footer";
-import CookieConsent from "./components/CookieConsent";
-import { DevTools } from "./components/DevTools";
+import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import Script from "next/script";
 
 const inter = Inter({
@@ -19,6 +17,7 @@ const inter = Inter({
   preload: true,
   fallback: ["system-ui", "arial"],
   variable: "--font-inter",
+  adjustFontFallback: false,
 });
 
 const playfairDisplay = Playfair_Display({
@@ -27,6 +26,7 @@ const playfairDisplay = Playfair_Display({
   display: "swap",
   preload: true,
   fallback: ["Georgia", "serif"],
+  adjustFontFallback: false,
 });
 
 export const viewport: Viewport = {
@@ -161,48 +161,54 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-GB" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <head>
-        {/* Preload critical resources */}
-        <link
-          rel="preload"
-          href="/images/olgish-cakes-logo-bakery-brand.png"
-          as="image"
-          type="image/png"
-        />
-        <link rel="preload" href="/images/hero-cake.jpg" as="image" type="image/jpeg" />
-        <link
-          rel="preload"
-          href="/fonts/inter-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/playfair-display-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
+        {/* Critical CSS inlining */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              /* Critical CSS for above-the-fold content */
+              body { margin: 0; font-family: var(--font-inter), system-ui, arial; }
+              .critical-loading { opacity: 0; transition: opacity 0.3s; }
+              .critical-loaded { opacity: 1; }
+              
+              /* Critical layout styles */
+              .flex { display: flex; }
+              .flex-col { flex-direction: column; }
+              .min-h-screen { min-height: 100vh; }
+              .flex-grow { flex-grow: 1; }
+              
+              /* Critical typography */
+              h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-bottom: 0.5em; font-weight: 600; }
+              h1 { font-size: clamp(2rem, 5vw, 4rem); }
+              h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
+              
+              /* Critical button styles */
+              .btn-primary { background: #005BBB; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+              .btn-primary:hover { background: #004499; transform: translateY(-1px); }
+              
+              /* Critical container styles */
+              .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+              
+              /* Critical focus states */
+              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid #005BBB; outline-offset: 2px; }
+            `,
+          }}
         />
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
         {/* Preconnect for critical domains */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-        {/* Google Analytics 4 */}
+        {/* Google Analytics 4 - Load with lower priority */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-QGQC58H2LD"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -222,8 +228,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
 
-        {/* Google Tag Manager */}
-        <Script id="google-tag-manager" strategy="afterInteractive">
+        {/* Google Tag Manager - Load with lower priority */}
+        <Script id="google-tag-manager" strategy="lazyOnload">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -395,7 +401,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} ${playfairDisplay.variable}`}>
+      <body className={`${inter.className} ${playfairDisplay.variable} critical-loading`}>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -403,6 +409,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
           />
         </noscript>
 
@@ -414,13 +421,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Header />
                 <main className="flex-grow">{children}</main>
                 <Footer />
-                <CookieConsent />
-                <DevTools />
+                <DynamicCookieConsent />
+                <DynamicDevTools />
               </div>
             </Providers>
           </ThemeProvider>
         </EmotionCacheProvider>
         <Analytics />
+
+        {/* Critical CSS loading script */}
+        <Script id="critical-css-loader" strategy="afterInteractive">
+          {`
+            document.body.classList.remove('critical-loading');
+            document.body.classList.add('critical-loaded');
+          `}
+        </Script>
       </body>
     </html>
   );

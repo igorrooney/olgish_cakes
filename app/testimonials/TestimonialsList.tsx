@@ -109,6 +109,8 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
                         <IconButton
                           onClick={() => setSelectedImage(imageUrl)}
+                          aria-label="View larger image"
+                          title="View larger image"
                           sx={{
                             backgroundColor: "rgba(255, 255, 255, 0.9)",
                             opacity: 0,
@@ -241,6 +243,8 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
           >
             <IconButton
               onClick={() => setSelectedImage(null)}
+              aria-label="Close image view"
+              title="Close image view"
               sx={{
                 position: "absolute",
                 top: 8,

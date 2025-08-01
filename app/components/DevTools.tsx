@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Box, Typography, Alert, IconButton, Tooltip } from "@mui/material";
-import { Settings, Close, Refresh, Clear } from "@mui/icons-material";
+import { Button, Box, Typography, Alert, IconButton, Tooltip, SettingsIcon, CloseIcon, RefreshIcon, ClearIcon } from "@/lib/mui-optimization";
 import { clearCache } from "@/app/utils/fetchCakes";
 
 export function DevTools() {
@@ -53,7 +52,7 @@ export function DevTools() {
           }}
           aria-label="Toggle developer tools"
         >
-          {isVisible ? <Close /> : <Settings />}
+          {isVisible ? <CloseIcon /> : <SettingsIcon />}
         </IconButton>
       </Tooltip>
 
@@ -92,7 +91,7 @@ export function DevTools() {
               variant="subtitle2"
               sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}
             >
-              <Settings sx={{ fontSize: 16 }} />
+              <SettingsIcon sx={{ fontSize: 16 }} />
               Dev Tools
             </Typography>
             <IconButton
@@ -101,7 +100,7 @@ export function DevTools() {
               sx={{ p: 0.5 }}
               aria-label="Close developer tools"
             >
-              <Close sx={{ fontSize: 16 }} />
+              <CloseIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
 
@@ -116,7 +115,7 @@ export function DevTools() {
               size="small"
               variant="outlined"
               onClick={handleClearCache}
-              startIcon={<Clear sx={{ fontSize: 16 }} />}
+              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Clear Cache
@@ -126,7 +125,7 @@ export function DevTools() {
               size="small"
               variant="contained"
               onClick={handleForceRefresh}
-              startIcon={<Refresh sx={{ fontSize: 16 }} />}
+              startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Force Refresh

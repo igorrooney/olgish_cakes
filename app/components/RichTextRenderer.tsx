@@ -1,7 +1,7 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import { Typography, Box, Link } from "@mui/material";
+import { Typography, Box, Link } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 
 const { colors, typography } = designTokens;

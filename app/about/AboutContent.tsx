@@ -2,20 +2,20 @@
 
 import { colors } from "@/lib/design-system";
 import {
-  Cake,
-  CheckCircle,
-  Close,
-  Email,
-  EmojiEvents,
-  Facebook,
-  Favorite,
-  Instagram,
-  LocalShipping,
-  LocationOn,
-  Phone,
-  School,
-  Star,
-} from "@mui/icons-material";
+  CakeIcon,
+  CheckCircleIcon,
+  CloseIcon,
+  EmailIcon,
+  EmojiEventsIcon,
+  FacebookIcon,
+  FavoriteIcon,
+  InstagramIcon,
+  LocalShippingIcon,
+  LocationOnIcon,
+  PhoneIcon,
+  SchoolIcon,
+  StarIcon,
+} from "@/lib/mui-optimization";
 import {
   Box,
   Button,
@@ -29,7 +29,7 @@ import {
   Paper,
   Stack,
   Typography,
-} from "@mui/material";
+} from "@/lib/mui-optimization";
 import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import Head from "next/head";
@@ -244,14 +244,14 @@ export default function AboutContent() {
       institution: "Leeds City College",
       description: "Professional Patisserie and Confectionery",
       year: "2022-2023",
-      icon: <School sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
+      icon: <SchoolIcon sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
     },
     {
       title: "Level 3 Patisserie",
       institution: "Leeds City College",
       description: "Advanced Patisserie and Confectionery",
       year: "2023-2024",
-      icon: <EmojiEvents sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
+      icon: <EmojiEventsIcon sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
     },
   ];
 
@@ -260,25 +260,25 @@ export default function AboutContent() {
       title: "Traditional Ukrainian Cakes",
       description:
         "Authentic honey cake (Medovik), Kyiv cake with cashew nuts, Sacher Torte with apricot jam, and Napoleon cake with fresh cream.",
-      icon: <Cake sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
+      icon: <CakeIcon sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
     },
     {
       title: "Premium Handmade Cakes",
       description:
         "Each cake is carefully crafted using time-honored recipes and high-quality ingredients for exceptional taste and presentation.",
-      icon: <Favorite sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
+      icon: <FavoriteIcon sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
     },
     {
       title: "Custom Celebration Cakes",
       description:
         "Bespoke wedding cakes, birthday cakes, anniversary cakes, and special occasion cakes designed to your specifications.",
-      icon: <Star sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
+      icon: <StarIcon sx={{ fontSize: 40, color: colors.ukrainian.blue }} />,
     },
     {
       title: "Same-Day Delivery",
       description:
         "Fast delivery across Leeds, York, Bradford, Halifax, Huddersfield, Wakefield, and surrounding areas.",
-      icon: <LocalShipping sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
+      icon: <LocalShippingIcon sx={{ fontSize: 40, color: colors.ukrainian.yellow }} />,
     },
   ];
 
@@ -547,16 +547,22 @@ export default function AboutContent() {
                       <IconButton
                         href="https://www.instagram.com/olgish_cakes/"
                         target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Follow us on Instagram"
+                        title="Follow us on Instagram"
                         sx={{ color: colors.ukrainian.blue }}
                       >
-                        <Instagram />
+                        <InstagramIcon />
                       </IconButton>
                       <IconButton
                         href="https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB"
                         target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Follow us on Facebook"
+                        title="Follow us on Facebook"
                         sx={{ color: colors.ukrainian.blue }}
                       >
-                        <Facebook />
+                        <FacebookIcon />
                       </IconButton>
                     </Stack>
                   </Box>
@@ -642,7 +648,7 @@ export default function AboutContent() {
                     </Typography>
                     <Stack spacing={1}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Phone sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
+                        <PhoneIcon sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
                         <Typography
                           component="a"
                           href="tel:+447867218194"
@@ -661,7 +667,7 @@ export default function AboutContent() {
                         </Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Email sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
+                        <EmailIcon sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
                         <Typography
                           component="a"
                           href="mailto:hello@olgishcakes.co.uk"
@@ -680,7 +686,7 @@ export default function AboutContent() {
                         </Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <LocationOn sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
+                        <LocationOnIcon sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
                         <Typography>Leeds, West Yorkshire</Typography>
                       </Box>
                     </Stack>
@@ -852,7 +858,7 @@ export default function AboutContent() {
                         border: `1px solid ${colors.ukrainian.yellow}30`,
                       }}
                     >
-                      <CheckCircle sx={{ color: colors.ukrainian.blue, fontSize: 28 }} />
+                      <CheckCircleIcon sx={{ color: colors.ukrainian.blue, fontSize: 28 }} />
                       <Typography
                         variant="h6"
                         sx={{
@@ -947,7 +953,7 @@ export default function AboutContent() {
                         "Custom Celebration Cakes - Weddings, birthdays, and events",
                       ].map((item, index) => (
                         <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                          <Cake sx={{ color: colors.ukrainian.yellow, fontSize: 20 }} />
+                          <CakeIcon sx={{ color: colors.ukrainian.yellow, fontSize: 20 }} />
                           <Typography variant="body2" sx={{ color: "text.secondary" }}>
                             {item}
                           </Typography>
@@ -1046,6 +1052,8 @@ export default function AboutContent() {
         >
           <MuiIconButton
             onClick={handleCloseModal}
+            aria-label="Close image view"
+            title="Close image view"
             sx={{
               position: "absolute",
               top: { xs: 4, sm: 8 },
@@ -1060,7 +1068,7 @@ export default function AboutContent() {
               },
             }}
           >
-            <Close sx={{ fontSize: { xs: 24, sm: 20 } }} />
+            <CloseIcon sx={{ fontSize: { xs: 24, sm: 20 } }} />
           </MuiIconButton>
           <img
             src="/olgish-cakes-about-olga-owner-baker.jpeg"

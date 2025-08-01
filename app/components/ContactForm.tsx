@@ -2,12 +2,8 @@
 
 import { designTokens } from "@/lib/design-system";
 import { BodyText, PrimaryButton, StyledTextField } from "@/lib/ui-components";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Alert, AlertTitle, Box, CircularProgress, IconButton, Paper, Stack } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { CloudUploadIcon, DeleteIcon, Alert, AlertTitle, Box, CircularProgress, IconButton, Paper, Stack } from "@/lib/mui-optimization";
+import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/mui-optimization";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
@@ -363,6 +359,8 @@ export function ContactForm({
                       <IconButton
                         onClick={handleRemoveImage}
                         disabled={isSubmitting}
+                        aria-label="Remove uploaded image"
+                        title="Remove uploaded image"
                         sx={{
                           position: "absolute",
                           top: -spacing.sm,

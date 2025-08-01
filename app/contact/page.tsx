@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Container, Typography, Box, Stack, Link, Grid, Paper, Divider } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Stack,
+  Link,
+  Grid,
+  Paper,
+  Divider,
+} from "@/lib/mui-optimization";
 import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
 import { Breadcrumbs } from "../components/Breadcrumbs";
 // Import StructuredData
-import PhoneIcon from "@mui/icons-material/Phone";
-import EmailIcon from "@mui/icons-material/Email";
-import InstagramIcon from "@mui/icons-material/Instagram"; // Example social icon
-import FacebookIcon from "@mui/icons-material/Facebook"; // Example social icon
-import WhatsAppIcon from "@mui/icons-material/WhatsApp"; // Import WhatsApp icon
+import {
+  PhoneIcon,
+  EmailIcon,
+  InstagramIcon,
+  FacebookIcon,
+  WhatsAppIcon,
+} from "@/lib/mui-optimization";
 
 // SEO Metadata
 export const metadata: Metadata = {

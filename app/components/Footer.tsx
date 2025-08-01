@@ -202,7 +202,13 @@ export default function Footer() {
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
-                      <Link href="tel:+447867218194">{contactInfo.phone}</Link>
+                      <Link
+                        href="tel:+447867218194"
+                        aria-label={`Call ${contactInfo.phone}`}
+                        title={`Call ${contactInfo.phone}`}
+                      >
+                        {contactInfo.phone}
+                      </Link>
                     </BodyText>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
@@ -235,6 +241,8 @@ export default function Footer() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`Follow us on ${social.name}`}
+                        title={`Follow us on ${social.name}`}
                         sx={{
                           color: colors.text.secondary,
                           transition: "all 0.2s ease-in-out",

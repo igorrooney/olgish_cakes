@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { Button, ArrowBackIcon } from "@/lib/mui-optimization";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { designTokens } from "@/lib/design-system";
@@ -20,7 +19,7 @@ export function BackButton() {
   return (
     <Button
       variant="text"
-      startIcon={<ArrowBack />}
+      startIcon={<ArrowBackIcon />}
       onClick={handleBack}
       disabled={isLoading}
       sx={{

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, memo, useCallback } from "react";
-import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton, CloseIcon } from "@/lib/mui-optimization";
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { PrimaryButton, OutlineButton, BodyText } from "@/lib/ui-components";
@@ -77,6 +76,8 @@ const CookieConsent = memo(function CookieConsent() {
         <Box sx={{ position: "relative" }}>
           <IconButton
             onClick={handleClose}
+            aria-label="Close cookie consent"
+            title="Close cookie consent"
             sx={{
               position: "absolute",
               top: -spacing.sm,

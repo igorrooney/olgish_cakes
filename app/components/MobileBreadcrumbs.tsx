@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography, Breadcrumbs, Link } from "@/lib/mui-optimization";
 import { memo } from "react";
 
 const { colors, typography } = designTokens;

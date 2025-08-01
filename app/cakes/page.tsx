@@ -1,4 +1,4 @@
-import { Container, Grid, Typography, Box } from "@mui/material";
+import { Container, Grid, Typography, Box } from "@/lib/mui-optimization";
 import CakeCard from "../components/CakeCard";
 import { getAllCakes, getRevalidateTime } from "../utils/fetchCakes";
 import Loading from "@/app/components/Loading";

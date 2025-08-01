@@ -2,16 +2,12 @@
 
 import { designTokens } from "@/lib/design-system";
 import { Container as DesignContainer } from "@/lib/ui-components";
-import CloseIcon from "@mui/icons-material/Close";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MenuIcon from "@mui/icons-material/Menu";
+import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
+import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
 import {
   AppBar,
-  Box,
-  Button,
   Collapse,
   Drawer,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -19,9 +15,8 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
   Skeleton,
-} from "@mui/material";
+} from "@/lib/mui-optimization";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import Link from "next/link";
@@ -990,6 +985,8 @@ export function Header() {
               </Typography>
               <IconButton
                 onClick={handleDrawerToggle}
+                aria-label="close menu"
+                title="Close menu"
                 sx={{
                   color: colors.primary.contrast,
                   backgroundColor: "rgba(255,255,255,0.1)",

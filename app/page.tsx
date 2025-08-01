@@ -1,16 +1,16 @@
 import {
-  ArrowForward,
-  CakeOutlined,
-  Celebration,
-  CheckCircle,
-  Favorite,
-  LocalShipping,
-  Verified,
-  Star,
-  LocationOn,
-  Phone,
-  Email,
-} from "@mui/icons-material";
+  ArrowForwardIcon,
+  CakeOutlinedIcon,
+  CelebrationIcon,
+  CheckCircleIcon,
+  FavoriteIcon,
+  LocalShippingIcon,
+  VerifiedIcon,
+  StarIcon,
+  LocationOnIcon,
+  PhoneIcon,
+  EmailIcon,
+} from "@/lib/mui-optimization";
 import {
   Avatar,
   Box,
@@ -23,7 +23,7 @@ import {
   Rating,
   Stack,
   Typography,
-} from "@mui/material";
+} from "@/lib/mui-optimization";
 import { Metadata } from "next";
 import Link from "next/link";
 import { colors, spacing, typography } from "../lib/design-system";
@@ -329,7 +329,7 @@ export default async function Home() {
                   component={Link}
                   href="/cakes"
                   className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center"
-                  endIcon={<ArrowForward />}
+                  endIcon={<ArrowForwardIcon />}
                 >
                   Explore Our Collection
                 </Button>
@@ -387,28 +387,28 @@ export default async function Home() {
           <Grid container spacing={4}>
             {[
               {
-                icon: <CakeOutlined sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Artisanal Craftsmanship",
                 description:
                   "Every cake is handcrafted by our expert bakers using traditional Ukrainian techniques passed down through generations",
                 color: "from-blue-50 to-blue-100",
               },
               {
-                icon: <Verified sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <VerifiedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Premium Ingredients",
                 description:
                   "We source only the finest, freshest ingredients to ensure exceptional taste and quality in every creation",
                 color: "from-yellow-50 to-yellow-100",
               },
               {
-                icon: <LocalShipping sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Fresh Delivery",
                 description:
                   "We deliver fresh, beautiful cakes right to your doorstep across Leeds and surrounding Yorkshire areas",
                 color: "from-blue-50 to-blue-100",
               },
               {
-                icon: <Favorite sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <FavoriteIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Made with Love",
                 description:
                   "Each creation is infused with the warmth and passion of Ukrainian hospitality and family tradition",
@@ -511,7 +511,7 @@ export default async function Home() {
                       component={Link}
                       href="/about"
                       className="px-8 py-4 text-lg font-semibold"
-                      endIcon={<ArrowForward />}
+                      endIcon={<ArrowForwardIcon />}
                     >
                       Discover Our Journey
                     </Button>
@@ -735,7 +735,7 @@ export default async function Home() {
               component={Link}
               href="/testimonials"
               className="px-8 py-3 text-lg font-semibold"
-              endIcon={<ArrowForward />}
+              endIcon={<ArrowForwardIcon />}
             >
               Read More Reviews
             </Button>
@@ -780,7 +780,7 @@ export default async function Home() {
           <Grid container spacing={6}>
             {[
               {
-                icon: <CakeOutlined sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Custom Cake Design",
                 description:
                   "Personalized cakes designed to match your vision and occasion perfectly",
@@ -792,7 +792,7 @@ export default async function Home() {
                 ],
               },
               {
-                icon: <Celebration sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CelebrationIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Special Occasions",
                 description:
                   "Weddings, birthdays, anniversaries, and all your important celebrations",
@@ -804,7 +804,7 @@ export default async function Home() {
                 ],
               },
               {
-                icon: <LocalShipping sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Delivery Service",
                 description: "Fresh delivery across Leeds and surrounding Yorkshire areas",
                 features: [
@@ -848,7 +848,7 @@ export default async function Home() {
                       <Stack spacing={2}>
                         {service.features.map((feature, featureIndex) => (
                           <div key={featureIndex} className="flex items-center gap-3">
-                            <CheckCircle sx={{ color: colors.success.main, fontSize: 20 }} />
+                            <CheckCircleIcon sx={{ color: colors.success.main, fontSize: 20 }} />
                             <Typography variant="body2" className="text-gray-700">
                               {feature}
                             </Typography>

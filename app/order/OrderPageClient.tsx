@@ -29,18 +29,18 @@ import {
   StepLabel,
   StepContent,
   Rating,
-} from "@mui/material";
+} from "@/lib/mui-optimization";
 import {
-  Cake as CakeIcon,
-  LocalShipping as DeliveryIcon,
-  DesignServices as DesignIcon,
-  CheckCircle as CheckIcon,
-  ExpandMore as ExpandMoreIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  Schedule as ScheduleIcon,
-  LocationOn as LocationIcon,
-} from "@mui/icons-material";
+  CakeIcon,
+  LocalShippingIcon,
+  DesignServicesIcon,
+  CheckCircleIcon,
+  ExpandMoreIcon,
+  PhoneIcon,
+  EmailIcon,
+  ScheduleIcon,
+  LocationOnIcon,
+} from "@/lib/mui-optimization";
 import { ContactForm } from "@/app/components/ContactForm";
 import { colors, typography, spacing, shadows } from "@/lib/design-system";
 import AnimatedWrapper from "../components/AnimatedWrapper";
@@ -49,10 +49,13 @@ import { OrderTestimonials } from "./OrderTestimonials";
 import dynamic from "next/dynamic";
 
 // Lazy load components for better performance
-const LazyContactForm = dynamic(() => import("@/app/components/ContactForm").then(mod => ({ default: mod.ContactForm })), {
-  loading: () => <div>Loading form...</div>,
-  ssr: false
-});
+const LazyContactForm = dynamic(
+  () => import("@/app/components/ContactForm").then(mod => ({ default: mod.ContactForm })),
+  {
+    loading: () => <div>Loading form...</div>,
+    ssr: false,
+  }
+);
 
 interface OrderOption {
   id: string;
@@ -93,7 +96,7 @@ const orderOptions: OrderOption[] = [
       "Delivery included",
     ],
     popular: true,
-    icon: <DesignIcon sx={{ fontSize: 40, color: colors.secondary.main }} />,
+    icon: <DesignServicesIcon sx={{ fontSize: 40, color: colors.secondary.main }} />,
   },
 ];
 
@@ -512,6 +515,15 @@ export function OrderPageClient() {
                       },
                     }}
                     onClick={() => handleOptionSelect(option.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${option.title} option`}
+                    onKeyDown={e => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleOptionSelect(option.id);
+                      }
+                    }}
                   >
                     {option.popular && (
                       <Chip
@@ -570,7 +582,7 @@ export function OrderPageClient() {
                         {option.features.map((feature, featureIndex) => (
                           <ListItem key={featureIndex} sx={{ px: 0 }}>
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                              <CheckIcon color="success" fontSize="small" />
+                              <CheckCircleIcon color="success" fontSize="small" />
                             </ListItemIcon>
                             <ListItemText
                               primary={feature}
@@ -686,7 +698,7 @@ export function OrderPageClient() {
                           {selectedOrderOption.features.slice(0, 3).map((feature, index) => (
                             <ListItem key={index} sx={{ px: 0 }}>
                               <ListItemIcon sx={{ minWidth: 24 }}>
-                                <CheckIcon color="success" fontSize="small" />
+                                <CheckCircleIcon color="success" fontSize="small" />
                               </ListItemIcon>
                               <ListItemText
                                 primary={feature}
@@ -813,7 +825,7 @@ export function OrderPageClient() {
                       label={area}
                       variant="outlined"
                       color="primary"
-                      icon={<LocationIcon />}
+                      icon={<LocationOnIcon />}
                       sx={{ width: "100%", py: 1 }}
                     />
                   </motion.div>
@@ -1004,7 +1016,7 @@ export function OrderPageClient() {
                   Contact Us
                 </Button>
               </Box>
-              
+
               {/* Related Pages Links */}
               <Box sx={{ mt: 4, textAlign: "center" }}>
                 <Typography variant="body2" sx={{ mb: 2, opacity: 0.8 }}>

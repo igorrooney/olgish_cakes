@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, memo, useMemo, useCallback } from "react";
-import { Box, IconButton, ImageList, ImageListItem, Typography } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { Box, IconButton, ImageList, ImageListItem, Typography, ArrowBackIcon, ArrowForwardIcon } from "@/lib/mui-optimization";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CakeDesigns } from "@/types/cake";
@@ -188,6 +187,8 @@ const CakeImageGallery = memo(function CakeImageGallery({
         >
           <IconButton
             onClick={handlePrevious}
+            aria-label="View previous image"
+            title="View previous image"
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "35px",
@@ -196,10 +197,12 @@ const CakeImageGallery = memo(function CakeImageGallery({
               },
             }}
           >
-            <ArrowBack />
+            <ArrowBackIcon />
           </IconButton>
           <IconButton
             onClick={handleNext}
+            aria-label="View next image"
+            title="View next image"
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "35px",
@@ -208,7 +211,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
               },
             }}
           >
-            <ArrowForward />
+            <ArrowForwardIcon />
           </IconButton>
         </Box>
       </Box>

@@ -509,10 +509,19 @@ export const ContactInfo = ({ icon, text, href, ...props }: any) => {
   const linkHref = getHref();
   const Component = linkHref ? "a" : "div";
 
+  // Generate accessible label for screen readers
+  const getAccessibleLabel = () => {
+    if (isPhone) return `Call ${text}`;
+    if (isEmail) return `Email ${text}`;
+    return text;
+  };
+
   return (
     <Box
       component={Component}
       href={linkHref}
+      aria-label={linkHref ? getAccessibleLabel() : undefined}
+      title={linkHref ? getAccessibleLabel() : undefined}
       sx={{
         display: "flex",
         alignItems: "center",

@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, FormControl, MenuItem, Select, Typography } from "@/lib/mui-optimization";
+import type { SelectChangeEvent } from "@/lib/mui-optimization";
 
 export type DesignType = "standard" | "individual";
 
