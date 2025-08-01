@@ -2,6 +2,7 @@
 // This component shows how to use the design tokens and UI components
 
 import React from "react";
+import Link from "next/link";
 import { Grid, Box } from "@mui/material";
 import { designTokens } from "@/lib/design-system";
 import {
@@ -159,10 +160,17 @@ export function DesignSystemExample() {
 
           <Grid container spacing={spacing.lg}>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Email />} text="hello@olgishcakes.co.uk" />
+              <Link
+                href="mailto:hello@olgishcakes.co.uk"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <ContactInfo icon={<Email />} text="hello@olgishcakes.co.uk" />
+              </Link>
             </Grid>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Phone />} text="+44 786 721 8194" />
+              <Link href="tel:+447867218194" style={{ textDecoration: "none", color: "inherit" }}>
+                <ContactInfo icon={<Phone />} text="+44 786 721 8194" />
+              </Link>
             </Grid>
           </Grid>
         </Box>

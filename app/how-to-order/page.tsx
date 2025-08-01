@@ -214,6 +214,10 @@ export default function HowToOrderPage() {
                     "Online contact form",
                     "WhatsApp messaging available",
                   ],
+                  links: [
+                    { text: "+44 786 721 8194", href: "tel:+447867218194" },
+                    { text: "hello@olgishcakes.co.uk", href: "mailto:hello@olgishcakes.co.uk" },
+                  ],
                   icon: "📞",
                 },
                 {
@@ -322,11 +326,53 @@ export default function HowToOrderPage() {
                       {step.description}
                     </Typography>
                     <Box>
-                      {step.details.map((detail, idx) => (
-                        <Typography key={idx} variant="body2" sx={{ mb: 1, fontSize: "0.9rem" }}>
-                          • {detail}
-                        </Typography>
-                      ))}
+                      {step.details.map((detail, idx) => {
+                        // Check if this detail contains contact information that should be a link
+                        const link = step.links?.find(link => detail.includes(link.text));
+
+                        if (link) {
+                          return (
+                            <Typography
+                              key={idx}
+                              variant="body2"
+                              sx={{ mb: 1, fontSize: "0.9rem" }}
+                            >
+                              • {detail.split(link.text)[0]}
+                              <Link
+                                href={link.href}
+                                style={{
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                  onMouseEnter={e => {
+                                    e.currentTarget.style.textDecoration = "underline";
+                                    e.currentTarget.style.color = "var(--mui-palette-primary-main)";
+                                  }}
+                                  onMouseLeave={e => {
+                                    e.currentTarget.style.textDecoration = "none";
+                                    e.currentTarget.style.color = "inherit";
+                                  }}
+                                >
+                                  {link.text}
+                                </span>
+                              </Link>
+                              {detail.split(link.text)[1]}
+                            </Typography>
+                          );
+                        }
+
+                        return (
+                          <Typography key={idx} variant="body2" sx={{ mb: 1, fontSize: "0.9rem" }}>
+                            • {detail}
+                          </Typography>
+                        );
+                      })}
                     </Box>
                   </Paper>
                 </Grid>

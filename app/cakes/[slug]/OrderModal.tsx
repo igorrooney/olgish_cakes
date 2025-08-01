@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ContactForm } from "@/app/components/ContactForm";
 import { Cake } from "@/types/cake";
 import { OrderModalStructuredData } from "./OrderModalStructuredData";
@@ -445,8 +446,31 @@ ${formData.message}
                 Error Sending Order
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                There was an error sending your order. Please try again or contact us directly at
-                hello@olgishcakes.co.uk
+                There was an error sending your order. Please try again or contact us directly at{" "}
+                <Link
+                  href="mailto:hello@olgishcakes.co.uk"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                    fontWeight: 500,
+                  }}
+                >
+                  <span
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.textDecoration = "underline";
+                      e.currentTarget.style.color = "var(--mui-palette-primary-main)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.textDecoration = "none";
+                      e.currentTarget.style.color = "inherit";
+                    }}
+                  >
+                    hello@olgishcakes.co.uk
+                  </span>
+                </Link>
               </Typography>
               <Button variant="contained" onClick={() => setShowErrorModal(false)}>
                 Try Again
