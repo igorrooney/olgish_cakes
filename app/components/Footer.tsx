@@ -189,7 +189,12 @@ export default function Footer() {
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
-                      {contactInfo.email}
+                      <Link
+                        href="mailto:hello@olgishcakes.co.uk"
+                        style={{ textDecoration: "none" }}
+                      >
+                        {contactInfo.email}
+                      </Link>
                     </BodyText>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
@@ -197,7 +202,7 @@ export default function Footer() {
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
-                      {contactInfo.phone}
+                      <Link href="tel:+447867218194">{contactInfo.phone}</Link>
                     </BodyText>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
