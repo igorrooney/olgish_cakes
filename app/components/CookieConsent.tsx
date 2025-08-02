@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect, memo, useCallback } from "react";
-import { Box, Button, Typography, Paper, Link as MuiLink, Stack, IconButton, CloseIcon } from "@/lib/mui-optimization";
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  Link as MuiLink,
+  Stack,
+  IconButton,
+  CloseIcon,
+} from "@/lib/mui-optimization";
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { PrimaryButton, OutlineButton, BodyText } from "@/lib/ui-components";
@@ -123,7 +132,7 @@ const CookieConsent = memo(function CookieConsent() {
                 },
               }}
             >
-              Learn more
+              Learn more about our cookie policy
             </MuiLink>
           </BodyText>
 
