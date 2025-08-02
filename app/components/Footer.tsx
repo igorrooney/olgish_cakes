@@ -1,41 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Container,
-  Grid,
-  Typography,
-  IconButton,
-  Button,
-  Box,
-  Divider,
-  TextField,
-  Chip,
-  Stack,
-} from "@mui/material";
+import { Divider, Chip, TextField } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Instagram,
-  Facebook,
-  WhatsApp,
-  Email,
-  Phone,
-  LocationOn,
-  Star,
-  Verified,
-  LocalShipping,
-  Favorite,
-  Security,
-} from "@mui/icons-material";
+  InstagramIcon,
+  FacebookIcon,
+  WhatsAppIcon,
+  EmailIcon,
+  PhoneIcon,
+  LocationOnIcon,
+  StarIcon,
+  VerifiedIcon,
+  LocalShippingIcon,
+  FavoriteIcon,
+  SecurityIcon,
+} from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import {
-  Container as DesignContainer,
-  PrimaryButton,
   BodyText,
-  SectionHeading,
+  Container as DesignContainer,
   ContactInfo,
+  AccessibleIconButton,
 } from "@/lib/ui-components";
+import { Box, Grid, Stack, Typography, Button } from "@/lib/mui-optimization";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
@@ -102,19 +91,19 @@ const contactInfo = {
   social: [
     {
       name: "Instagram",
-      icon: Instagram,
+      icon: InstagramIcon,
       href: "https://www.instagram.com/olgish_cakes/",
       hoverColor: "#E1306C",
     },
     {
       name: "Facebook",
-      icon: Facebook,
+      icon: FacebookIcon,
       href: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
       hoverColor: "#1877F2",
     },
     {
       name: "WhatsApp",
-      icon: WhatsApp,
+      icon: WhatsAppIcon,
       href: `https://wa.me/447867218194`,
       hoverColor: "#25D366",
     },
@@ -122,10 +111,10 @@ const contactInfo = {
 };
 
 const trustSignals = [
-  { icon: Star, text: "5-Star Rated", color: "#FFD700" },
-  { icon: Verified, text: "Verified Business", color: "#4CAF50" },
-  { icon: LocalShipping, text: "Free Delivery", color: "#2196F3" },
-  { icon: Security, text: "Secure Orders", color: "#9C27B0" },
+  { icon: StarIcon, text: "5-Star Rated", color: "#FFD700" },
+  { icon: VerifiedIcon, text: "Verified Business", color: "#4CAF50" },
+  { icon: LocalShippingIcon, text: "Free Delivery", color: "#2196F3" },
+  { icon: SecurityIcon, text: "Secure Orders", color: "#9C27B0" },
 ];
 
 export default function Footer() {
@@ -185,7 +174,7 @@ export default function Footer() {
                 {/* Contact Info */}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <Email sx={{ color: colors.text.secondary, fontSize: 18 }} />
+                    <EmailIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
@@ -198,7 +187,7 @@ export default function Footer() {
                     </BodyText>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <Phone sx={{ color: colors.text.secondary, fontSize: 18 }} />
+                    <PhoneIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
@@ -212,7 +201,7 @@ export default function Footer() {
                     </BodyText>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <LocationOn sx={{ color: colors.text.secondary, fontSize: 18 }} />
+                    <LocationOnIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
                     <BodyText
                       sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
                     >
@@ -235,13 +224,13 @@ export default function Footer() {
                   </Typography>
                   <Box sx={{ display: "flex", gap: spacing.md }}>
                     {contactInfo.social.map(social => (
-                      <IconButton
+                      <AccessibleIconButton
                         key={social.name}
                         component="a"
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`Follow us on ${social.name}`}
+                        ariaLabel={`Follow us on ${social.name}`}
                         title={`Follow us on ${social.name}`}
                         sx={{
                           color: colors.text.secondary,
@@ -254,7 +243,7 @@ export default function Footer() {
                         size="small"
                       >
                         <social.icon />
-                      </IconButton>
+                      </AccessibleIconButton>
                     ))}
                   </Box>
                 </Box>

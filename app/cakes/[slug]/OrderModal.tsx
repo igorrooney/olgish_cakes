@@ -4,8 +4,7 @@ import Link from "next/link";
 import { ContactForm } from "@/app/components/ContactForm";
 import { Cake } from "@/types/cake";
 import { OrderModalStructuredData } from "./OrderModalStructuredData";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
+import { CheckCircleIcon, ErrorIcon } from "@/lib/mui-optimization";
 import {
   Box,
   Button,

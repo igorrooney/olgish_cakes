@@ -81,6 +81,10 @@ export { default as DesignServicesIcon } from "@mui/icons-material/DesignService
 export { default as ScheduleIcon } from "@mui/icons-material/Schedule";
 export { default as EmojiEventsIcon } from "@mui/icons-material/EmojiEvents";
 export { default as SchoolIcon } from "@mui/icons-material/School";
+export { default as InfoIcon } from "@mui/icons-material/Info";
+export { default as SecurityIcon } from "@mui/icons-material/Security";
+export { default as ErrorIcon } from "@mui/icons-material/Error";
+export { default as ShoppingCartIcon } from "@mui/icons-material/ShoppingCart";
 
 // Date picker components - fixed export syntax
 export { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

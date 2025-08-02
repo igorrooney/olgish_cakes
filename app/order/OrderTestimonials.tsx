@@ -1,25 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Rating,
-  Chip,
-} from "@mui/material";
+import { Box, Typography, Grid, Card, CardContent, Rating, Chip } from "@mui/material";
 import { motion } from "framer-motion";
 import { colors } from "@/lib/design-system";
 import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 import type { Testimonial } from "@/app/types/testimonial";
-import { Instagram, Facebook, Google } from "@mui/icons-material";
+import { InstagramIcon, FacebookIcon, GoogleIcon } from "@/lib/mui-optimization";
 
 const sourceIcons = {
-  instagram: <Instagram />,
-  facebook: <Facebook />,
-  google: <Google />,
+  instagram: <InstagramIcon />,
+  facebook: <FacebookIcon />,
+  google: <GoogleIcon />,
 } as const;
 
 export function OrderTestimonials() {
@@ -77,7 +69,7 @@ export function OrderTestimonials() {
             Join hundreds of satisfied customers who trust us with their special occasions
           </Typography>
           <Grid container spacing={4}>
-            {[1, 2, 3].map((index) => (
+            {[1, 2, 3].map(index => (
               <Grid item xs={12} md={4} key={index}>
                 <Card sx={{ height: "100%", p: 3 }}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -142,7 +134,14 @@ export function OrderTestimonials() {
           {testimonials.map((testimonial, index) => (
             <Grid item xs={12} md={4} key={testimonial._id}>
               <Card sx={{ height: "100%", p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
                   <Rating
                     value={testimonial.rating}
                     readOnly
@@ -176,7 +175,12 @@ export function OrderTestimonials() {
                 <Typography variant="caption" color="text.secondary">
                   {testimonial.cakeType} Customer
                 </Typography>
-                <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+                <Typography
+                  variant="caption"
+                  display="block"
+                  color="text.secondary"
+                  sx={{ mt: 0.5 }}
+                >
                   {new Date(testimonial.date).toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "long",
@@ -190,4 +194,4 @@ export function OrderTestimonials() {
       </motion.div>
     </Box>
   );
-} 
+}

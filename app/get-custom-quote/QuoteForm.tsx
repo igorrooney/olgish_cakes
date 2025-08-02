@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  ArrowBack,
-  ArrowForward,
-  CakeOutlined,
-  Celebration,
-  CloudUpload,
-  Delete,
-  Info,
-  LocalShipping,
-} from "@mui/icons-material";
+  ArrowBackIcon,
+  ArrowForwardIcon,
+  CakeOutlinedIcon,
+  CelebrationIcon,
+  CloudUploadIcon,
+  DeleteIcon,
+  InfoIcon,
+  LocalShippingIcon,
+} from "@/lib/mui-optimization";
 import {
   Alert,
   Box,
@@ -124,22 +124,22 @@ const budgetRanges = [
 const steps = [
   {
     label: "Basic Information",
-    icon: <Info />,
+    icon: <InfoIcon />,
     description: "Tell us about yourself and your event",
   },
   {
     label: "Cake Details",
-    icon: <CakeOutlined />,
+    icon: <CakeOutlinedIcon />,
     description: "Describe your dream cake",
   },
   {
     label: "Design & Style",
-    icon: <Celebration />,
+    icon: <CelebrationIcon />,
     description: "Choose your preferred design style",
   },
   {
     label: "Delivery & Budget",
-    icon: <LocalShipping />,
+    icon: <LocalShippingIcon />,
     description: "Delivery details and budget considerations",
   },
 ];
@@ -496,12 +496,13 @@ export function QuoteForm() {
                     onChange={handleImageUpload}
                     style={{ display: "none" }}
                     id="design-image-upload"
+                    aria-label="Upload design reference image"
                   />
                   <label htmlFor="design-image-upload">
                     <Button
                       component="span"
                       variant="outlined"
-                      startIcon={<CloudUpload />}
+                      startIcon={<CloudUploadIcon />}
                       sx={{ mb: 2 }}
                     >
                       Upload Design Reference
@@ -515,7 +516,7 @@ export function QuoteForm() {
                       <Button
                         variant="outlined"
                         size="small"
-                        startIcon={<Delete />}
+                        startIcon={<DeleteIcon />}
                         onClick={removeImage}
                         color="error"
                       >
@@ -635,7 +636,7 @@ export function QuoteForm() {
                     <Button
                       disabled={activeStep === 0}
                       onClick={handleBack}
-                      startIcon={<ArrowBack />}
+                      startIcon={<ArrowBackIcon />}
                       variant="outlined"
                     >
                       Back
@@ -644,7 +645,7 @@ export function QuoteForm() {
                       variant="contained"
                       onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
                       disabled={!isStepValid(activeStep) || isSubmitting}
-                      endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForward />}
+                      endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForwardIcon />}
                       sx={{
                         backgroundColor: colors.primary.main,
                         "&:hover": { backgroundColor: colors.primary.dark },

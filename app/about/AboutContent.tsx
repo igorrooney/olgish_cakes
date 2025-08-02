@@ -36,6 +36,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { AccessibleIconButton } from "@/lib/ui-components";
 
 // Styled Components
 const HeroSection = styled(Box)(({ theme }) => ({
@@ -544,26 +545,26 @@ export default function AboutContent() {
                       Traditional Ukrainian baking with modern expertise
                     </Typography>
                     <Stack direction="row" spacing={1} justifyContent="center">
-                      <IconButton
+                      <AccessibleIconButton
                         href="https://www.instagram.com/olgish_cakes/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Follow us on Instagram"
+                        ariaLabel="Follow us on Instagram"
                         title="Follow us on Instagram"
                         sx={{ color: colors.ukrainian.blue }}
                       >
                         <InstagramIcon />
-                      </IconButton>
-                      <IconButton
+                      </AccessibleIconButton>
+                      <AccessibleIconButton
                         href="https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Follow us on Facebook"
+                        ariaLabel="Follow us on Facebook"
                         title="Follow us on Facebook"
                         sx={{ color: colors.ukrainian.blue }}
                       >
                         <FacebookIcon />
-                      </IconButton>
+                      </AccessibleIconButton>
                     </Stack>
                   </Box>
                 </Box>
@@ -1050,9 +1051,9 @@ export default function AboutContent() {
             boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
           }}
         >
-          <MuiIconButton
+          <AccessibleIconButton
             onClick={handleCloseModal}
-            aria-label="Close image view"
+            ariaLabel="Close image view"
             title="Close image view"
             sx={{
               position: "absolute",
@@ -1069,7 +1070,7 @@ export default function AboutContent() {
             }}
           >
             <CloseIcon sx={{ fontSize: { xs: 24, sm: 20 } }} />
-          </MuiIconButton>
+          </AccessibleIconButton>
           <img
             src="/olgish-cakes-about-olga-owner-baker.jpeg"
             alt="Olga Ieromenko - Professional Ukrainian Baker at Olgish Cakes"

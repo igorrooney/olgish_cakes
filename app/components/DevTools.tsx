@@ -1,7 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Box, Typography, Alert, IconButton, Tooltip, SettingsIcon, CloseIcon, RefreshIcon, ClearIcon } from "@/lib/mui-optimization";
+import {
+  Button,
+  Box,
+  Typography,
+  Alert,
+  IconButton,
+  Tooltip,
+  SettingsIcon,
+  CloseIcon,
+  RefreshIcon,
+  ClearIcon,
+} from "@/lib/mui-optimization";
+import { AccessibleIconButton } from "@/lib/ui-components";
 import { clearCache } from "@/app/utils/fetchCakes";
 
 export function DevTools() {
@@ -32,8 +44,9 @@ export function DevTools() {
     <>
       {/* Toggle Icon */}
       <Tooltip title="Developer Tools" placement="left">
-        <IconButton
+        <AccessibleIconButton
           onClick={toggleVisibility}
+          ariaLabel="Toggle developer tools"
           sx={{
             position: "fixed",
             bottom: 16,
@@ -50,10 +63,9 @@ export function DevTools() {
             },
             transition: "all 0.3s ease-in-out",
           }}
-          aria-label="Toggle developer tools"
         >
           {isVisible ? <CloseIcon /> : <SettingsIcon />}
-        </IconButton>
+        </AccessibleIconButton>
       </Tooltip>
 
       {/* Dev Tools Panel */}
@@ -94,14 +106,14 @@ export function DevTools() {
               <SettingsIcon sx={{ fontSize: 16 }} />
               Dev Tools
             </Typography>
-            <IconButton
+            <AccessibleIconButton
               size="small"
               onClick={toggleVisibility}
+              ariaLabel="Close developer tools"
               sx={{ p: 0.5 }}
-              aria-label="Close developer tools"
             >
               <CloseIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+            </AccessibleIconButton>
           </Box>
 
           {message && (

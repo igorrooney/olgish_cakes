@@ -19,16 +19,16 @@ import {
   Divider,
 } from "@mui/material";
 import {
-  ShoppingCart,
-  Favorite,
-  Star,
-  ExpandMore,
-  ArrowForward,
-  LocalShipping,
-  Cake,
-  Email,
-  Phone,
-} from "@mui/icons-material";
+  ShoppingCartIcon,
+  FavoriteIcon,
+  StarIcon,
+  ExpandMoreIcon,
+  ArrowForwardIcon,
+  LocalShippingIcon,
+  CakeIcon,
+  EmailIcon,
+  PhoneIcon,
+} from "@/lib/mui-optimization";
 import { designTokens } from "./design-system";
 
 const { colors, typography, spacing, borderRadius, shadows, components } = designTokens;
@@ -326,7 +326,7 @@ export const StyledAccordion = ({ title, children, ...props }: any) => (
     {...props}
   >
     <AccordionSummary
-      expandIcon={<ExpandMore />}
+      expandIcon={<ExpandMoreIcon />}
       sx={{
         "& .MuiAccordionSummary-content": {
           margin: `${spacing.md} 0`,
@@ -452,7 +452,7 @@ export const RatingBadge = ({ rating, ...props }: any) => (
     }}
     {...props}
   >
-    <Star sx={{ color: colors.warning.main, fontSize: "1.2rem" }} />
+    <StarIcon sx={{ color: colors.warning.main, fontSize: "1.2rem" }} />
   </Badge>
 );
 
@@ -460,7 +460,7 @@ export const RatingBadge = ({ rating, ...props }: any) => (
 export const AddToCartButton = ({ onClick, ...props }: any) => (
   <Button
     variant="contained"
-    startIcon={<ShoppingCart />}
+    startIcon={<ShoppingCartIcon />}
     onClick={onClick}
     sx={{
       backgroundColor: colors.primary.main,
@@ -477,9 +477,27 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
   </Button>
 );
 
+// Accessible IconButton Component
+export const AccessibleIconButton = ({
+  children,
+  ariaLabel,
+  title,
+  ...props
+}: {
+  children: React.ReactNode;
+  ariaLabel: string;
+  title?: string;
+  [key: string]: any;
+}) => (
+  <IconButton aria-label={ariaLabel} title={title || ariaLabel} {...props}>
+    {children}
+  </IconButton>
+);
+
 export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
-  <IconButton
+  <AccessibleIconButton
     onClick={onClick}
+    ariaLabel={isFavorite ? "Remove from favorites" : "Add to favorites"}
     sx={{
       color: isFavorite ? colors.error.main : colors.text.secondary,
       "&:hover": {
@@ -487,11 +505,10 @@ export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
       },
       ...props.sx,
     }}
-    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
     {...props}
   >
-    <Favorite />
-  </IconButton>
+    <FavoriteIcon />
+  </AccessibleIconButton>
 );
 
 // Contact Info Component

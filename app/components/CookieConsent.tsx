@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { PrimaryButton, OutlineButton, BodyText } from "@/lib/ui-components";
+import { AccessibleIconButton } from "@/lib/ui-components";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -83,9 +84,9 @@ const CookieConsent = memo(function CookieConsent() {
         }}
       >
         <Box sx={{ position: "relative" }}>
-          <IconButton
+          <AccessibleIconButton
             onClick={handleClose}
-            aria-label="Close cookie consent"
+            ariaLabel="Close cookie consent"
             title="Close cookie consent"
             sx={{
               position: "absolute",
@@ -99,7 +100,7 @@ const CookieConsent = memo(function CookieConsent() {
             }}
           >
             <CloseIcon />
-          </IconButton>
+          </AccessibleIconButton>
 
           <Typography
             variant="h6"

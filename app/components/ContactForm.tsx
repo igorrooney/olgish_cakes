@@ -2,7 +2,18 @@
 
 import { designTokens } from "@/lib/design-system";
 import { BodyText, PrimaryButton, StyledTextField } from "@/lib/ui-components";
-import { CloudUploadIcon, DeleteIcon, Alert, AlertTitle, Box, CircularProgress, IconButton, Paper, Stack } from "@/lib/mui-optimization";
+import { AccessibleIconButton } from "@/lib/ui-components";
+import {
+  CloudUploadIcon,
+  DeleteIcon,
+  Alert,
+  AlertTitle,
+  Box,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Stack,
+} from "@/lib/mui-optimization";
 import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/mui-optimization";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -305,6 +316,8 @@ export function ContactForm({
                   onChange={handleImageChange}
                   style={{ display: "none" }}
                   disabled={isSubmitting}
+                  id="design-image-upload"
+                  aria-label="Upload design reference image"
                 />
                 {!previewUrl ? (
                   <Box
@@ -356,10 +369,10 @@ export function ContactForm({
                         }}
                         priority
                       />
-                      <IconButton
+                      <AccessibleIconButton
                         onClick={handleRemoveImage}
                         disabled={isSubmitting}
-                        aria-label="Remove uploaded image"
+                        ariaLabel="Remove uploaded image"
                         title="Remove uploaded image"
                         sx={{
                           position: "absolute",
@@ -375,7 +388,7 @@ export function ContactForm({
                         size="small"
                       >
                         <DeleteIcon />
-                      </IconButton>
+                      </AccessibleIconButton>
                     </Box>
                     <BodyText sx={{ color: colors.text.secondary }}>
                       Image uploaded successfully

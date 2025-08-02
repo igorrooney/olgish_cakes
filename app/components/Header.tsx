@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Container as DesignContainer } from "@/lib/ui-components";
+import { Container as DesignContainer, AccessibleIconButton } from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
 import {
@@ -933,9 +933,9 @@ export function Header() {
             </Box>
 
             {/* Mobile Menu Button */}
-            <IconButton
+            <AccessibleIconButton
               color="primary"
-              aria-label="open menu"
+              ariaLabel="Open mobile menu"
               edge="start"
               onClick={handleDrawerToggle}
               sx={{
@@ -947,7 +947,7 @@ export function Header() {
               }}
             >
               <MenuIcon />
-            </IconButton>
+            </AccessibleIconButton>
           </Toolbar>
         </DesignContainer>
 
@@ -983,9 +983,9 @@ export function Header() {
               >
                 Menu
               </Typography>
-              <IconButton
+              <AccessibleIconButton
                 onClick={handleDrawerToggle}
-                aria-label="close menu"
+                ariaLabel="Close mobile menu"
                 title="Close menu"
                 sx={{
                   color: colors.primary.contrast,
@@ -997,7 +997,7 @@ export function Header() {
                 }}
               >
                 <CloseIcon />
-              </IconButton>
+              </AccessibleIconButton>
             </Box>
 
             {/* Order Now Button (mobile) */}

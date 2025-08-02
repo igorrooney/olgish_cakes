@@ -1,4 +1,9 @@
-import { CakeOutlined, CheckCircle, LocalShipping, Payment } from "@mui/icons-material";
+import {
+  CakeOutlinedIcon,
+  CheckCircleIcon,
+  LocalShippingIcon,
+  PaymentIcon,
+} from "@/lib/mui-optimization";
 import { Alert, AlertTitle, Box, Card, Container, Grid, Stack, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import { borderRadius, colors, shadows, typography } from "../../lib/design-system";
@@ -201,23 +206,23 @@ export default function GetCustomQuotePage() {
           <Grid container spacing={4} sx={{ mb: 6 }}>
             {[
               {
-                icon: <CheckCircle sx={{ fontSize: 48, color: colors.success.main }} />,
+                icon: <CheckCircleIcon sx={{ fontSize: 48, color: colors.success.main }} />,
                 title: "Free Consultation",
                 description:
                   "Personal consultation with Olga, our expert Ukrainian cake designer at no cost",
               },
               {
-                icon: <Payment sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <PaymentIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Transparent Pricing",
                 description: "Detailed breakdown of costs with no hidden fees",
               },
               {
-                icon: <LocalShipping sx={{ fontSize: 48, color: colors.secondary.main }} />,
+                icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.secondary.main }} />,
                 title: "Same-Day Delivery",
                 description: "Fresh delivery across Leeds and Yorkshire areas",
               },
               {
-                icon: <CakeOutlined sx={{ fontSize: 48, color: colors.ukrainian.honey }} />,
+                icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.ukrainian.honey }} />,
                 title: "Ukrainian Authenticity",
                 description: "Traditional recipes and techniques for authentic taste",
               },
@@ -296,23 +301,23 @@ export default function GetCustomQuotePage() {
                   </Typography>
                   <Stack spacing={2}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <CheckCircle sx={{ color: colors.success.main }} />
+                      <CheckCircleIcon sx={{ color: colors.success.main }} />
                       <Typography variant="body1">
                         Personal consultation with Olga at no cost
                       </Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <CheckCircle sx={{ color: colors.success.main }} />
+                      <CheckCircleIcon sx={{ color: colors.success.main }} />
                       <Typography variant="body1">Detailed pricing breakdown</Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <CheckCircle sx={{ color: colors.success.main }} />
+                      <CheckCircleIcon sx={{ color: colors.success.main }} />
                       <Typography variant="body1">
                         Personal design recommendations from Olga
                       </Typography>
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <CheckCircle sx={{ color: colors.success.main }} />
+                      <CheckCircleIcon sx={{ color: colors.success.main }} />
                       <Typography variant="body1">Timeline and delivery options</Typography>
                     </Box>
                   </Stack>

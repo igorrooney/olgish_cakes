@@ -172,14 +172,9 @@ export function OrderPageClient() {
     }, 300);
   }, []);
 
-  const selectedOrderOption = useMemo(
-    () => orderOptions.find(opt => opt.id === selectedOption),
-    [selectedOption]
-  );
-
   // Handle scrolling when form becomes visible
   useEffect(() => {
-    if (isFormVisible && selectedOrderOption) {
+    if (isFormVisible && selectedOption) {
       const timer = setTimeout(() => {
         const formTitle = document.getElementById("order-form-title");
         if (formTitle) {
@@ -192,7 +187,12 @@ export function OrderPageClient() {
 
       return () => clearTimeout(timer);
     }
-  }, [isFormVisible, selectedOrderOption]);
+  }, [isFormVisible, selectedOption]);
+
+  const selectedOrderOption = useMemo(
+    () => orderOptions.find(opt => opt.id === selectedOption),
+    [selectedOption]
+  );
 
   const handleFormSubmit = useCallback(
     async (formData: any) => {
