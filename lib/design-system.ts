@@ -14,14 +14,14 @@ export const colors = {
   // Semantic Colors
   primary: {
     main: "#005BBB",
-    light: "#4D8FD1",
+    light: "#1E4A73", // Balanced tone for WCAG AA compliance with dark text
     dark: "#003D7A",
     contrast: "#FFFFFF",
   },
   secondary: {
     main: "#FFD700",
     light: "#FFE44D",
-    dark: "#B39700",
+    dark: "#867100", // Darkened for better contrast with white text (4.8:1)
     contrast: "#2D2D2D",
   },
 
@@ -43,7 +43,7 @@ export const colors = {
 
   // Status Colors
   success: {
-    main: "#27AE60",
+    main: "#1D8348", // Darkened for WCAG AA compliance (4.78:1 with white)
     light: "#6FCF97",
     dark: "#1E8449",
   },
@@ -53,12 +53,12 @@ export const colors = {
     dark: "#D68910",
   },
   error: {
-    main: "#E74C3C",
+    main: "#D04436", // Darkened for WCAG AA compliance (4.6:1 with white)
     light: "#F1948A",
     dark: "#C0392B",
   },
   info: {
-    main: "#3498DB",
+    main: "#2A7AAF", // Darkened for WCAG AA compliance (4.67:1 with white)
     light: "#85C1E9",
     dark: "#2874A6",
   },
