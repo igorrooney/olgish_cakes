@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom CSS for responsive flex direction fallback */
+@layer utilities {
+  .flex-responsive {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 768px) {
+    .flex-responsive {
+      flex-direction: row;
+    }
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

@@ -35,7 +35,7 @@ import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 export const metadata: Metadata = {
   title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
   description:
-    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating, same-day delivery Yorkshire. Order now!",
+    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -321,7 +321,7 @@ export default async function Home() {
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+              <div className="flex-responsive gap-4 sm:gap-6 justify-center items-center">
                 <Button
                   variant="contained"
                   color="secondary"
@@ -504,7 +504,7 @@ export default async function Home() {
                 </AnimatedDiv>
 
                 <AnimatedDiv variants={fadeInUp}>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex-responsive gap-4 justify-center">
                     <Button
                       variant="contained"
                       color="primary"
