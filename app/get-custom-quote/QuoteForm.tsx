@@ -391,7 +391,7 @@ export function QuoteForm() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 2, color: colors.primary.main }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: colors.primary.main }}>
                   Preferred Flavors
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -455,7 +455,7 @@ export function QuoteForm() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 2, color: colors.primary.main }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: colors.primary.main }}>
                   Dietary Requirements
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -623,7 +623,11 @@ export function QuoteForm() {
                     </Box>
                   )}
                 >
-                  <Typography variant="h6" sx={{ fontWeight: typography.fontWeight.semibold }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ fontWeight: typography.fontWeight.semibold }}
+                  >
                     {step.label}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

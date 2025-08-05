@@ -452,7 +452,7 @@ export default function Footer() {
             <Grid item xs={12} md={6}>
               <Box sx={{ textAlign: { xs: "left", md: "right" } }}>
                 <Typography
-                  variant="h6"
+                  variant="h5"
                   sx={{
                     color: colors.text.primary,
                     mb: spacing.sm,

@@ -99,7 +99,7 @@ export default function TermsOfServicePage() {
 
           <Paper elevation={0} sx={{ p: { xs: 3, md: 6 }, borderRadius: 2 }}>
             <Typography
-              variant="h2"
+              variant="h1"
               component="h1"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -121,7 +121,7 @@ export default function TermsOfServicePage() {
               })}
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               1. Acceptance of Terms
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -130,7 +130,7 @@ export default function TermsOfServicePage() {
               services.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               2. Ordering Process
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
@@ -157,7 +157,7 @@ export default function TermsOfServicePage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               3. Payment Terms
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -175,7 +175,7 @@ export default function TermsOfServicePage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               4. Delivery and Collection
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -196,7 +196,7 @@ export default function TermsOfServicePage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               5. Cancellation Policy
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -205,7 +205,7 @@ export default function TermsOfServicePage() {
               preparation.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               6. Intellectual Property
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -213,7 +213,7 @@ export default function TermsOfServicePage() {
               Olgish Cakes and protected by intellectual property laws.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               7. Limitation of Liability
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -222,7 +222,7 @@ export default function TermsOfServicePage() {
               us of any allergies or dietary requirements.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               8. Changes to Terms
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -230,7 +230,7 @@ export default function TermsOfServicePage() {
               after changes constitutes acceptance of the modified terms.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               9. Contact Us
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>

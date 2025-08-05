@@ -189,7 +189,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.title}
             </Typography>
 
-            <Typography variant="h5" className="text-xl text-gray-600 mb-6">
+            <Typography variant="h3" className="text-xl text-gray-600 mb-6">
               {post.excerpt}
             </Typography>
 
@@ -265,7 +265,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           <Chip key={category} label={category} size="small" variant="outlined" />
                         ))}
                       </div>
-                      <Typography variant="h6" className="font-semibold text-lg mb-2">
+                      <Typography variant="h4" className="font-semibold text-lg mb-2">
                         {relatedPost.title}
                       </Typography>
                       <Typography variant="body2" className="text-gray-600 mb-4">
@@ -288,7 +288,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Typography variant="h3" className="text-2xl font-bold mb-4">
               Ready to Order Your Perfect Cake?
             </Typography>
-            <Typography variant="h5" className="text-blue-100 mb-6">
+            <Typography variant="h4" className="text-blue-100 mb-6">
               Inspired by our blog? Let us create a custom cake for your special occasion.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

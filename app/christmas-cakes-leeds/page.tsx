@@ -89,7 +89,8 @@ export default function ChristmasCakesLeedsPage() {
               Christmas Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -198,12 +199,9 @@ export default function ChristmasCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Traditional Honey Cake
                   </Typography>
@@ -220,12 +218,9 @@ export default function ChristmasCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Kyiv Cake
                   </Typography>
@@ -242,12 +237,9 @@ export default function ChristmasCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "primary.main",
-                      mb: 2,
-                    }}
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Chocolate Christmas Cake
                   </Typography>
@@ -291,7 +283,7 @@ export default function ChristmasCakesLeedsPage() {
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 3, color: "primary.main" }}>
+                <Typography variant="h4" component="h4" sx={{ mb: 3, color: "primary.main" }}>
                   Ordering Information
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
@@ -308,7 +300,7 @@ export default function ChristmasCakesLeedsPage() {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 3, color: "primary.main" }}>
+                <Typography variant="h4" component="h4" sx={{ mb: 3, color: "primary.main" }}>
                   Christmas Cake Features
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -360,7 +352,8 @@ export default function ChristmasCakesLeedsPage() {
           {/* CTA Section */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontWeight: 600,

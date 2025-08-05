@@ -377,7 +377,7 @@ export default function AboutContent() {
                 Meet Our Professional Baker
               </Typography>
               <Typography
-                variant="h3"
+                variant="h2"
                 component="h2"
                 align="center"
                 className="hero-subtitle"
@@ -500,7 +500,7 @@ export default function AboutContent() {
                       </picture>
                     </Box>
                     <Typography
-                      variant="h4"
+                      variant="h2"
                       sx={{
                         fontWeight: 600,
                         mb: 2,
@@ -511,7 +511,8 @@ export default function AboutContent() {
                       Olga Ieromenko
                     </Typography>
                     <Typography
-                      variant="h6"
+                      variant="h2"
+                      component="h2"
                       sx={{
                         color: "text.secondary",
                         mb: 3,
@@ -637,7 +638,7 @@ export default function AboutContent() {
                     }}
                   >
                     <Typography
-                      variant="h6"
+                      variant="h4"
                       sx={{
                         mb: { xs: 1, sm: 2 },
                         color: colors.ukrainian.blue,
@@ -725,7 +726,7 @@ export default function AboutContent() {
                     <QualificationCard>
                       <Box sx={{ mb: 3 }}>{qual.icon}</Box>
                       <Typography
-                        variant="h5"
+                        variant="h4"
                         sx={{
                           fontWeight: 600,
                           mb: { xs: 1, sm: 2 },
@@ -737,7 +738,7 @@ export default function AboutContent() {
                         {qual.title}
                       </Typography>
                       <Typography
-                        variant="h6"
+                        variant="h5"
                         sx={{
                           color: colors.ukrainian.yellow,
                           mb: { xs: 0.5, sm: 1 },
@@ -798,7 +799,7 @@ export default function AboutContent() {
                     <ServiceCard>
                       <Box sx={{ mb: 3 }}>{service.icon}</Box>
                       <Typography
-                        variant="h6"
+                        variant="h4"
                         sx={{
                           fontWeight: 600,
                           mb: { xs: 1, sm: 2 },
@@ -861,7 +862,7 @@ export default function AboutContent() {
                     >
                       <CheckCircleIcon sx={{ color: colors.ukrainian.blue, fontSize: 28 }} />
                       <Typography
-                        variant="h6"
+                        variant="h4"
                         sx={{
                           fontWeight: 600,
                           color: colors.ukrainian.blue,
@@ -939,7 +940,7 @@ export default function AboutContent() {
                     }}
                   >
                     <Typography
-                      variant="h5"
+                      variant="h4"
                       sx={{ mb: 3, color: colors.ukrainian.blue, fontWeight: 600 }}
                     >
                       Traditional Ukrainian Specialties
@@ -981,7 +982,7 @@ export default function AboutContent() {
               <Typography variant="h3" sx={{ mb: 3, fontWeight: 700 }}>
                 Ready to Experience Authentic Ukrainian Baking?
               </Typography>
-              <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+              <Typography variant="h4" sx={{ mb: 4, opacity: 0.9 }}>
                 Order your traditional Ukrainian cakes or custom celebration cake today
               </Typography>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center">

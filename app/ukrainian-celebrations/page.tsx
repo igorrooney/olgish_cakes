@@ -49,7 +49,10 @@ export default function UkrainianCelebrationsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
@@ -162,7 +165,11 @@ export default function UkrainianCelebrationsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {celebration.title}
                   </Typography>
                   <Typography
@@ -235,7 +242,11 @@ export default function UkrainianCelebrationsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {celebration.title}
                   </Typography>
                   <Typography
@@ -308,7 +319,11 @@ export default function UkrainianCelebrationsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {celebration.title}
                   </Typography>
                   <Typography
@@ -381,7 +396,11 @@ export default function UkrainianCelebrationsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {celebration.title}
                   </Typography>
                   <Typography
@@ -417,7 +436,7 @@ export default function UkrainianCelebrationsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Family and Community:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -427,7 +446,7 @@ export default function UkrainianCelebrationsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Religious and Cultural Heritage:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>

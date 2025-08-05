@@ -118,7 +118,8 @@ export default function CakeTastingSessionsPage() {
               Cake Tasting Sessions Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -127,9 +128,9 @@ export default function CakeTastingSessionsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Experience the authentic taste of Ukrainian cakes with our cake tasting sessions.
-              Sample traditional honey cake, Kyiv cake, and other Ukrainian desserts in a relaxed,
-              personalized setting.
+              Experience the authentic taste of Ukrainian cakes before you order. Our cake tasting
+              sessions let you sample our traditional honey cake, Kyiv cake, and other Ukrainian
+              specialties in a relaxed, informative setting.
             </Typography>
             <Chip
               label="Traditional Ukrainian Cake Tasting"
@@ -147,13 +148,9 @@ export default function CakeTastingSessionsPage() {
           {/* CTA Section */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 3,
-              }}
+              variant="h3"
+              component="h3"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
             >
               Book Your Cake Tasting Session Today
             </Typography>

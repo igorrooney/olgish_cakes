@@ -155,7 +155,8 @@ export default async function TraditionalUkrainianCakesPage() {
               Traditional Ukrainian Cakes
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -222,10 +223,14 @@ export default async function TraditionalUkrainianCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -254,7 +259,7 @@ export default async function TraditionalUkrainianCakesPage() {
 
             {traditionalCakes.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Our Traditional Ukrainian Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>

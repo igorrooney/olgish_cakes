@@ -140,7 +140,8 @@ export default async function CakesLeedsPage() {
               Fresh Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -207,10 +208,14 @@ export default async function CakesLeedsPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -374,7 +379,11 @@ export default async function CakesLeedsPage() {
               ].map((benefit, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {benefit.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">

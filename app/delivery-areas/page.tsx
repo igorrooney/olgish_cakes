@@ -160,7 +160,8 @@ export default function DeliveryAreasPage() {
               Cake Delivery Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -227,10 +228,14 @@ export default function DeliveryAreasPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {service.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -406,12 +411,13 @@ export default function DeliveryAreasPage() {
                       }}
                     >
                       <Typography
-                        variant="h6"
+                        variant="h4"
+                        component="h4"
                         sx={{ mb: 1, fontWeight: 600, color: "primary.main" }}
                       >
                         {zone.zone}
                       </Typography>
-                      <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }}>
+                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 700 }}>
                         {zone.fee}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -482,10 +488,14 @@ export default function DeliveryAreasPage() {
               ].map((option, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: "2.5rem" }}>
+                    <Typography variant="h4" sx={{ mb: 2, fontSize: "2.5rem" }}>
                       {option.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {option.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -572,7 +582,11 @@ export default function DeliveryAreasPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -598,7 +612,7 @@ export default function DeliveryAreasPage() {
             >
               Ready to Order Your Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to check delivery availability in your area
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

@@ -105,7 +105,7 @@ export default async function CakesPage() {
           {/* Cakes Grid */}
           {!cakes || cakes.length === 0 ? (
             <Box className="text-center py-16">
-              <Typography variant="h4" className="mb-4 text-gray-700 font-light">
+              <Typography variant="h2" component="h2" className="mb-4 text-gray-700 font-light">
                 Our Cake Collection
               </Typography>
               <Typography variant="body1" color="text.secondary" className="max-w-md mx-auto">

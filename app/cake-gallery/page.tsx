@@ -119,7 +119,8 @@ export default async function CakeGalleryPage() {
               Cake Gallery
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -128,9 +129,8 @@ export default async function CakeGalleryPage() {
                 lineHeight: 1.6,
               }}
             >
-              Explore our beautiful collection of Ukrainian cakes and custom designs. From
-              traditional Ukrainian desserts to modern celebration cakes, discover the artistry and
-              craftsmanship that goes into every creation.
+              Explore our beautiful collection of Ukrainian cakes. From traditional honey cake to
+              custom designs, discover the artistry and craftsmanship behind each creation.
             </Typography>
             <Chip
               label="Ukrainian Cake Portfolio"
@@ -213,7 +213,7 @@ export default async function CakeGalleryPage() {
                     <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                       {category.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {category.category}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -252,7 +252,7 @@ export default async function CakeGalleryPage() {
 
             {allCakes.filter(cake => cake.category === "traditional").length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Traditional Ukrainian Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -306,7 +306,7 @@ export default async function CakeGalleryPage() {
 
             {allCakes.filter(cake => cake.category === "custom").length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Custom Cake Designs
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -432,7 +432,7 @@ export default async function CakeGalleryPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {inspiration.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography variant="h3" component="h3" sx={{ fontWeight: 600, color: "primary.main" }}>
                         {inspiration.inspiration}
                       </Typography>
                     </Box>
@@ -513,7 +513,7 @@ export default async function CakeGalleryPage() {
               ].map((testimonial, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ p: 3, textAlign: "center" }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {testimonial.name}
                     </Typography>
                     <Typography
@@ -545,7 +545,7 @@ export default async function CakeGalleryPage() {
             >
               Ready to Order Your Perfect Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to discuss your cake requirements and bring your vision to life
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

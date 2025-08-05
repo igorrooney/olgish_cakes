@@ -90,7 +90,8 @@ export default function VeganCakesLeedsPage() {
               Vegan Ukrainian Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -176,10 +177,14 @@ export default function VeganCakesLeedsPage() {
                       },
                     }}
                   >
-                    <Typography variant="h2" sx={{ mb: 2 }}>
+                    <Typography variant="h3" sx={{ mb: 2 }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -267,7 +272,8 @@ export default function VeganCakesLeedsPage() {
                     />
                     <Box sx={{ p: 3 }}>
                       <Typography
-                        variant="h5"
+                        variant="h4"
+                        component="h4"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {cake.name}
@@ -285,7 +291,11 @@ export default function VeganCakesLeedsPage() {
                           alignItems: "center",
                         }}
                       >
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                        <Typography
+                          variant="h4"
+                          component="h4"
+                          sx={{ fontWeight: 600, color: "primary.main" }}
+                        >
                           {cake.price}
                         </Typography>
                         <Button
@@ -327,7 +337,7 @@ export default function VeganCakesLeedsPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Plant-Based Alternatives We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -347,7 +357,7 @@ export default function VeganCakesLeedsPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     What We Never Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -415,7 +425,11 @@ export default function VeganCakesLeedsPage() {
                     >
                       "{testimonial.text}"
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ fontWeight: 600, color: "primary.main" }}
+                    >
                       {testimonial.name}
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>

@@ -158,13 +158,16 @@ export default async function BirthdayCakesPage() {
               Birthday Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
                 mx: "auto",
                 mb: 4,
                 lineHeight: 1.6,
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                fontWeight: 400,
               }}
             >
               Make every birthday special with our custom birthday cakes. From children's themed
@@ -225,10 +228,14 @@ export default async function BirthdayCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {service.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -257,7 +264,7 @@ export default async function BirthdayCakesPage() {
 
             {birthdayCakes.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Custom Birthday Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -340,13 +347,13 @@ export default async function BirthdayCakesPage() {
               ].map((option, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {option.size}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 1, color: "text.secondary" }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 1, color: "text.secondary" }}>
                       {option.serves}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                       {option.price}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -489,7 +496,11 @@ export default async function BirthdayCakesPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -515,7 +526,7 @@ export default async function BirthdayCakesPage() {
             >
               Ready to Order Your Birthday Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us today to start planning your perfect birthday celebration
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

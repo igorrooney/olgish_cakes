@@ -116,7 +116,7 @@ export default async function CakesPudseyPage() {
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
+                <Typography variant="h4" component="h4" sx={{ mb: 1 }}>
                   Delivery Areas in Pudsey:
                 </Typography>
                 <Typography variant="body2">
@@ -125,7 +125,7 @@ export default async function CakesPudseyPage() {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
+                <Typography variant="h4" component="h4" sx={{ mb: 1 }}>
                   Delivery Options:
                 </Typography>
                 <Typography variant="body2">
@@ -223,7 +223,7 @@ export default async function CakesPudseyPage() {
                     <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 1, color: "#005BBB" }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">

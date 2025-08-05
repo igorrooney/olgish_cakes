@@ -244,7 +244,7 @@ export default function GetCustomQuotePage() {
                 >
                   <Box sx={{ mb: 2 }}>{benefit.icon}</Box>
                   <Typography
-                    variant="h6"
+                    variant="h3"
                     sx={{
                       fontWeight: typography.fontWeight.semibold,
                       mb: 1,
@@ -290,7 +290,7 @@ export default function GetCustomQuotePage() {
               <Grid item xs={12} md={6}>
                 <Card sx={{ p: 3, height: "100%" }}>
                   <Typography
-                    variant="h5"
+                    variant="h3"
                     sx={{
                       mb: 2,
                       color: colors.primary.main,
@@ -326,7 +326,7 @@ export default function GetCustomQuotePage() {
               <Grid item xs={12} md={6}>
                 <Card sx={{ p: 3, height: "100%" }}>
                   <Typography
-                    variant="h5"
+                    variant="h3"
                     sx={{
                       mb: 2,
                       color: colors.primary.main,

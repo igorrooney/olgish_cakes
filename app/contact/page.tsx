@@ -130,7 +130,7 @@ export default function ContactPage() {
           p: { xs: 2, md: 4 },
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 5 }}>
+        <Typography variant="h1" component="h1" gutterBottom align="center" sx={{ mb: 5 }}>
           Contact Us
         </Typography>
         <Grid container spacing={5} alignItems="stretch">
@@ -148,7 +148,7 @@ export default function ContactPage() {
                 boxShadow: "0 4px 24px 0 rgba(0,0,0,0.07)",
               }}
             >
-              <Typography variant="h6" component="h2" gutterBottom>
+              <Typography variant="h2" component="h2" gutterBottom>
                 Get in Touch
               </Typography>
               <Typography variant="body1" sx={{ mb: 3 }}>
@@ -187,7 +187,7 @@ export default function ContactPage() {
 
               {/* Social Links Section */}
               <Box>
-                <Typography variant="h6" component="h3" gutterBottom>
+                <Typography variant="h2" component="h2" gutterBottom>
                   Follow Us
                 </Typography>
                 <Stack direction="row" spacing={2}>
@@ -230,7 +230,7 @@ export default function ContactPage() {
                 boxShadow: "0 4px 24px 0 rgba(0,0,0,0.07)",
               }}
             >
-              <Typography variant="h6" component="h2" gutterBottom>
+              <Typography variant="h2" component="h2" gutterBottom>
                 Send Us a Message
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

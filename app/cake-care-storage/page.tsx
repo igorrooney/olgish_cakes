@@ -153,7 +153,8 @@ export default function CakeCareStoragePage() {
               Cake Care & Storage
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -162,9 +163,9 @@ export default function CakeCareStoragePage() {
                 lineHeight: 1.6,
               }}
             >
-              Learn how to properly care for and store your Ukrainian cakes to maintain their
-              freshness, flavor, and beautiful appearance. Professional tips for cake preservation
-              and serving.
+              Learn how to properly store and care for your Ukrainian cakes to maintain their
+              freshness, flavor, and beautiful appearance. Our expert tips ensure your cake stays
+              perfect until serving.
             </Typography>
             <Chip
               label="Professional Cake Care Guide"
@@ -287,7 +288,11 @@ export default function CakeCareStoragePage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {method.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {method.method}
                       </Typography>
                     </Box>
@@ -402,7 +407,11 @@ export default function CakeCareStoragePage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {cake.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {cake.cake}
                       </Typography>
                     </Box>
@@ -503,7 +512,11 @@ export default function CakeCareStoragePage() {
                     <Typography variant="h2" sx={{ mb: 2, fontSize: "2.5rem" }}>
                       {tip.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {tip.tip}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -592,7 +605,11 @@ export default function CakeCareStoragePage() {
                       <Typography variant="h2" sx={{ fontSize: "2rem", mr: 2 }}>
                         {problem.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {problem.issue}
                       </Typography>
                     </Box>
@@ -622,7 +639,7 @@ export default function CakeCareStoragePage() {
             >
               Need More Cake Care Advice?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us for personalized cake care advice and professional storage recommendations
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

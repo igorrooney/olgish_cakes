@@ -81,7 +81,8 @@ export default function UkrainianCakeRecipesPage() {
               Traditional Ukrainian Cake Recipes
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -203,14 +204,14 @@ export default function UkrainianCakeRecipesPage() {
                       borderColor: "divider",
                     }}
                   >
-                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {recipe.name}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
                       {recipe.description}
                     </Typography>
 
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                       Key Ingredients:
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 3 }}>
@@ -243,7 +244,7 @@ export default function UkrainianCakeRecipesPage() {
                       </Grid>
                     </Grid>
 
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ mb: 1, fontWeight: 600 }}>
                       Pro Tip:
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -308,11 +309,12 @@ export default function UkrainianCakeRecipesPage() {
                 ].map((technique, index) => (
                   <Grid item xs={12} sm={6} key={index}>
                     <Box sx={{ textAlign: "center", p: 3 }}>
-                      <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                      <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                         {technique.icon}
                       </Typography>
                       <Typography
-                        variant="h6"
+                        variant="h4"
+                        component="h4"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {technique.technique}
@@ -392,7 +394,7 @@ export default function UkrainianCakeRecipesPage() {
             >
               Ready to Try Ukrainian Baking?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Order our authentic Ukrainian cakes or join our baking classes to learn these
               traditional techniques
             </Typography>

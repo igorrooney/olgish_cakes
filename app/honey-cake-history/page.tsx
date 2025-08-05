@@ -81,7 +81,8 @@ export default function HoneyCakeHistoryPage() {
               The History of Honey Cake
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -129,7 +130,11 @@ export default function HoneyCakeHistoryPage() {
                     },
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     Early Beginnings
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -163,7 +168,11 @@ export default function HoneyCakeHistoryPage() {
                     },
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     Medieval Development
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -201,7 +210,7 @@ export default function HoneyCakeHistoryPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 3, fontWeight: 600 }}>
                     Religious Traditions
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9, lineHeight: 1.6 }}>
@@ -221,7 +230,7 @@ export default function HoneyCakeHistoryPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 3, fontWeight: 600 }}>
                     Family Celebrations
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9, lineHeight: 1.6 }}>
@@ -295,16 +304,20 @@ export default function HoneyCakeHistoryPage() {
                       },
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 1, color: "primary.main", fontWeight: 600 }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 1, color: "primary.main", fontWeight: 600 }}
+                    >
                       {era.period}
                     </Typography>
-                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                       {era.title}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
                       {era.description}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                       Key Innovations:
                     </Typography>
                     {era.innovations.map((innovation, idx) => (
@@ -336,7 +349,11 @@ export default function HoneyCakeHistoryPage() {
                     borderRadius: 3,
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     The Art of Layering
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -363,7 +380,11 @@ export default function HoneyCakeHistoryPage() {
                     borderRadius: 3,
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     Regional Variations
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -395,12 +416,12 @@ export default function HoneyCakeHistoryPage() {
                 color: "white",
               }}
             >
-              <Typography variant="h3" sx={{ mb: 4, textAlign: "center", fontWeight: 600 }}>
-                Honey Cake in the Modern World
+              <Typography variant="h4" component="h4" sx={{ mb: 3, fontWeight: 600 }}>
+                Modern Adaptations
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 3, fontWeight: 600 }}>
                     Global Popularity
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9, lineHeight: 1.6 }}>
@@ -414,9 +435,6 @@ export default function HoneyCakeHistoryPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                    Contemporary Adaptations
-                  </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9, lineHeight: 1.6 }}>
                     Modern bakers have adapted honey cake to meet contemporary dietary needs while
                     preserving its authentic taste and cultural significance.
@@ -432,8 +450,12 @@ export default function HoneyCakeHistoryPage() {
 
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h4" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
-              Experience Traditional Honey Cake
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+            >
+              Experience the Tradition
             </Typography>
             <Typography
               variant="body1"

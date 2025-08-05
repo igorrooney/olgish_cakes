@@ -144,7 +144,8 @@ export default function GiftCardsPage() {
               Ukrainian Cake Gift Cards
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -223,7 +224,11 @@ export default function GiftCardsPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {benefit.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {benefit.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -273,7 +278,7 @@ export default function GiftCardsPage() {
                       >
                         £{option.value}
                       </Typography>
-                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                         {option.title}
                       </Typography>
                       <Typography
@@ -445,7 +450,11 @@ export default function GiftCardsPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {occasion.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {occasion.occasion}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -524,7 +533,11 @@ export default function GiftCardsPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>

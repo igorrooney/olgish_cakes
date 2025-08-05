@@ -92,7 +92,11 @@ export default function CharityEventsPage() {
             </Box>
           </Box>
           <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h4" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+            >
               Upcoming Charity Events
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -103,7 +107,11 @@ export default function CharityEventsPage() {
             </Typography>
           </Paper>
           <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h4" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+            >
               How to Get Involved
             </Typography>
             <Typography variant="body2" color="text.secondary">

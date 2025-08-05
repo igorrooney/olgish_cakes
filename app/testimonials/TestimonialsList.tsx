@@ -146,7 +146,7 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                   )}
                   <div className="flex items-center justify-between">
                     <Typography
-                      variant="h6"
+                      variant="h3"
                       component="h3"
                       sx={{
                         fontFamily: "var(--font-playfair-display)",

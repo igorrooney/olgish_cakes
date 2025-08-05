@@ -110,7 +110,11 @@ export default async function MothersDayCakesPage() {
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
             🌸 Special Mother's Day Offer 🌸
           </Typography>
-          <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}>
+          <Typography
+            variant="h3"
+            component="h3"
+            sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}
+          >
             15% Off All Mother's Day Cakes
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
@@ -214,7 +218,7 @@ export default async function MothersDayCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -241,7 +245,7 @@ export default async function MothersDayCakesPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -252,7 +256,7 @@ export default async function MothersDayCakesPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>

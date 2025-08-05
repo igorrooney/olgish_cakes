@@ -104,7 +104,8 @@ export default async function CakesHalifaxPage() {
               Cakes Halifax
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -132,7 +133,8 @@ export default async function CakesHalifaxPage() {
 
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontWeight: 600,
@@ -223,7 +225,7 @@ export default async function CakesHalifaxPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Areas in Halifax:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -246,7 +248,7 @@ export default async function CakesHalifaxPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Information:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>

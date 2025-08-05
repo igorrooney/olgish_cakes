@@ -131,7 +131,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
           mb: 3,
         }}
       >
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           No image available
         </Typography>
       </Box>

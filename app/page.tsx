@@ -430,7 +430,12 @@ export default async function Home() {
                   >
                     <CardContent className="p-8 text-center">
                       <Box className="mb-6 flex justify-center">{feature.icon}</Box>
-                      <Typography variant="h5" className="font-bold text-gray-900" sx={{ mb: 4 }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        className="font-bold text-gray-900"
+                        sx={{ mb: 4 }}
+                      >
                         {feature.title}
                       </Typography>
                       <Typography
@@ -592,7 +597,11 @@ export default async function Home() {
                               {testimonial.customerName.charAt(0)}
                             </Avatar>
                             <div className="flex-1">
-                              <Typography variant="h6" className="font-bold text-gray-900">
+                              <Typography
+                                variant="h3"
+                                component="h3"
+                                className="font-bold text-gray-900"
+                              >
                                 {testimonial.customerName}
                               </Typography>
                               <Typography variant="body2" className="text-gray-600">
@@ -687,7 +696,11 @@ export default async function Home() {
                               {testimonial.name.charAt(0)}
                             </Avatar>
                             <div>
-                              <Typography variant="h6" className="font-bold text-gray-900">
+                              <Typography
+                                variant="h3"
+                                component="h3"
+                                className="font-bold text-gray-900"
+                              >
                                 {testimonial.name}
                               </Typography>
                               <Typography variant="body2" className="text-gray-600">
@@ -831,7 +844,8 @@ export default async function Home() {
                     <CardContent className="p-8">
                       <Box className="mb-6 flex justify-center">{service.icon}</Box>
                       <Typography
-                        variant="h5"
+                        variant="h3"
+                        component="h3"
                         className="font-bold text-gray-900 text-center"
                         sx={{ mb: 4 }}
                       >
@@ -882,7 +896,8 @@ export default async function Home() {
               >
                 <Box sx={{ textAlign: "center" }}>
                   <Typography
-                    variant="h4"
+                    variant="h3"
+                    component="h3"
                     sx={{
                       fontWeight: typography.fontWeight.bold,
                       color: colors.text.primary,

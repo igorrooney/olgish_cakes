@@ -219,7 +219,7 @@ export default async function BestCakesForBirthdaysPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {category.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
                     {category.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -256,7 +256,7 @@ export default async function BestCakesForBirthdaysPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h3" component="h3" sx={{ mb: 2 }}>
                 Consider These Factors:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -271,7 +271,7 @@ export default async function BestCakesForBirthdaysPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h3" component="h3" sx={{ mb: 2 }}>
                 Popular Birthday Flavors:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -343,7 +343,7 @@ export default async function BestCakesForBirthdaysPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {size.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography variant="h3" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
                     {size.size}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -374,7 +374,7 @@ export default async function BestCakesForBirthdaysPage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Planning Your Order:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -389,7 +389,7 @@ export default async function BestCakesForBirthdaysPage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Special Requests:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>

@@ -397,7 +397,7 @@ export function OrderPageClient() {
                 <Grid item xs={6} md={3}>
                   <Box sx={{ textAlign: "center" }}>
                     <Typography
-                      variant="h3"
+                      variant="h2"
                       sx={{ fontWeight: 700, mb: 1, color: colors.primary.main }}
                     >
                       127+
@@ -410,7 +410,7 @@ export function OrderPageClient() {
                 <Grid item xs={6} md={3}>
                   <Box sx={{ textAlign: "center" }}>
                     <Typography
-                      variant="h3"
+                      variant="h2"
                       sx={{ fontWeight: 700, mb: 1, color: colors.primary.main }}
                     >
                       24h
@@ -423,7 +423,7 @@ export function OrderPageClient() {
                 <Grid item xs={6} md={3}>
                   <Box sx={{ textAlign: "center" }}>
                     <Typography
-                      variant="h3"
+                      variant="h2"
                       sx={{ fontWeight: 700, mb: 1, color: colors.primary.main }}
                     >
                       5★
@@ -436,7 +436,7 @@ export function OrderPageClient() {
                 <Grid item xs={6} md={3}>
                   <Box sx={{ textAlign: "center" }}>
                     <Typography
-                      variant="h3"
+                      variant="h2"
                       sx={{ fontWeight: 700, mb: 1, color: colors.primary.main }}
                     >
                       Leeds
@@ -475,7 +475,7 @@ export function OrderPageClient() {
           </Typography>
           <Typography
             variant="h3"
-            component="p"
+            component="h3"
             sx={{
               fontSize: "1.25rem",
               textAlign: "center",
@@ -555,7 +555,7 @@ export function OrderPageClient() {
                     >
                       <Box sx={{ mb: 3 }}>{option.icon}</Box>
                       <Typography
-                        variant="h4"
+                        variant="h3"
                         component="h3"
                         sx={{
                           fontWeight: 600,
@@ -569,7 +569,7 @@ export function OrderPageClient() {
                         {option.description}
                       </Typography>
                       <Typography
-                        variant="h5"
+                        variant="h3"
                         sx={{
                           fontWeight: 700,
                           mb: 3,
@@ -650,7 +650,7 @@ export function OrderPageClient() {
               </Typography>
               <Typography
                 variant="h3"
-                component="p"
+                component="h3"
                 sx={{
                   fontSize: "1.25rem",
                   textAlign: "center",
@@ -682,14 +682,19 @@ export function OrderPageClient() {
                         elevation={0}
                         sx={{ p: 3, mb: 3, borderRadius: 3, bgcolor: "primary.50" }}
                       >
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                        <Typography variant="h3" component="h3" sx={{ fontWeight: 600, mb: 2 }}>
                           Order Summary
                         </Typography>
                         <Box sx={{ mb: 2 }}>
                           <Typography variant="body1" sx={{ fontWeight: 500 }}>
                             {selectedOrderOption.title}
                           </Typography>
-                          <Typography variant="h6" color="primary.main" sx={{ fontWeight: 700 }}>
+                          <Typography
+                            variant="h3"
+                            component="h4"
+                            color="primary.main"
+                            sx={{ fontWeight: 700 }}
+                          >
                             {selectedOrderOption.price}
                           </Typography>
                         </Box>
@@ -711,7 +716,7 @@ export function OrderPageClient() {
 
                       {/* Contact Information */}
                       <Paper elevation={0} sx={{ p: 3, borderRadius: 3 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                        <Typography variant="h3" component="h3" sx={{ fontWeight: 600, mb: 2 }}>
                           Need Help?
                         </Typography>
                         <List dense>
@@ -802,7 +807,7 @@ export function OrderPageClient() {
             </Typography>
             <Typography
               variant="h3"
-              component="p"
+              component="h3"
               sx={{
                 fontSize: "1.25rem",
                 textAlign: "center",
@@ -871,7 +876,7 @@ export function OrderPageClient() {
               <Grid item xs={12} md={6}>
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ fontWeight: 600 }}>
                       How far in advance should I order?
                     </Typography>
                   </AccordionSummary>
@@ -887,7 +892,7 @@ export function OrderPageClient() {
               <Grid item xs={12} md={6}>
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ fontWeight: 600 }}>
                       Do you offer dietary options?
                     </Typography>
                   </AccordionSummary>
@@ -902,7 +907,7 @@ export function OrderPageClient() {
               <Grid item xs={12} md={6}>
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ fontWeight: 600 }}>
                       What's included in custom design?
                     </Typography>
                   </AccordionSummary>
@@ -918,7 +923,7 @@ export function OrderPageClient() {
               <Grid item xs={12} md={6}>
                 <Accordion>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h3" component="h3" sx={{ fontWeight: 600 }}>
                       How much does delivery cost?
                     </Typography>
                   </AccordionSummary>
@@ -966,7 +971,7 @@ export function OrderPageClient() {
               </Typography>
               <Typography
                 variant="h3"
-                component="p"
+                component="h3"
                 sx={{
                   fontSize: "1.25rem",
                   mb: 4,

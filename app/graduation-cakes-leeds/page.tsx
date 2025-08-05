@@ -88,7 +88,8 @@ export default function GraduationCakesLeedsPage() {
               Graduation Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -143,7 +144,8 @@ export default function GraduationCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
+                    variant="h4"
+                    component="h4"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",
@@ -165,7 +167,8 @@ export default function GraduationCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
+                    variant="h4"
+                    component="h4"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",
@@ -187,7 +190,8 @@ export default function GraduationCakesLeedsPage() {
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
-                    variant="h5"
+                    variant="h4"
+                    component="h4"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",
@@ -212,7 +216,8 @@ export default function GraduationCakesLeedsPage() {
           {/* CTA Section */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontWeight: 600,

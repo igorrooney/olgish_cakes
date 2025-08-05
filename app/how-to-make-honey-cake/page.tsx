@@ -82,7 +82,10 @@ export default function HowToMakeHoneyCakePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
@@ -134,7 +137,7 @@ export default function HowToMakeHoneyCakePage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Preparation Time:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -147,7 +150,7 @@ export default function HowToMakeHoneyCakePage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Difficulty Level:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -178,7 +181,7 @@ export default function HowToMakeHoneyCakePage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   For the Cake Layers:
                 </Typography>
                 <List>
@@ -208,7 +211,7 @@ export default function HowToMakeHoneyCakePage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   For the Cream Filling:
                 </Typography>
                 <List>
@@ -309,7 +312,11 @@ export default function HowToMakeHoneyCakePage() {
                       {instruction.icon}
                     </Typography>
                     <Box>
-                      <Typography variant="h5" sx={{ color: "#005BBB", fontWeight: "bold" }}>
+                      <Typography
+                        variant="h4"
+                        component="h4"
+                        sx={{ color: "#005BBB", fontWeight: "bold" }}
+                      >
                         Step {instruction.step}: {instruction.title}
                       </Typography>
                     </Box>
@@ -339,7 +346,7 @@ export default function HowToMakeHoneyCakePage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Pro Tips:
                 </Typography>
                 <List>
@@ -360,7 +367,7 @@ export default function HowToMakeHoneyCakePage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Variations:
                 </Typography>
                 <List>

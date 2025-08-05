@@ -137,7 +137,8 @@ export default function CakeDeliveryPage() {
               Cake Delivery Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -146,9 +147,9 @@ export default function CakeDeliveryPage() {
                 lineHeight: 1.6,
               }}
             >
-              Professional cake delivery service across Leeds and surrounding areas. From wedding
-              cakes to birthday cakes, we ensure your cake arrives safely and beautifully presented
-              at your venue or home.
+              Reliable cake delivery service across Leeds and surrounding areas. We ensure your
+              Ukrainian cakes arrive fresh, safe, and beautifully presented for your special
+              occasions.
             </Typography>
             <Chip
               label="Professional Delivery Service"
@@ -203,10 +204,14 @@ export default function CakeDeliveryPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {service.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -368,7 +373,11 @@ export default function CakeDeliveryPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -443,13 +452,17 @@ export default function CakeDeliveryPage() {
                       borderColor: "divider",
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {option.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       {option.description}
                     </Typography>
-                    <Typography variant="h6" color="primary.main" fontWeight={600}>
+                    <Typography variant="h3" component="h3" color="primary.main" fontWeight={600}>
                       {option.price}
                     </Typography>
                   </Paper>
@@ -512,7 +525,11 @@ export default function CakeDeliveryPage() {
               ].map((tip, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {tip.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -527,7 +544,8 @@ export default function CakeDeliveryPage() {
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontWeight: 600,
@@ -535,7 +553,7 @@ export default function CakeDeliveryPage() {
                 mb: 3,
               }}
             >
-              Order Your Cake with Delivery
+              Ready to Order Your Cake with Delivery?
             </Typography>
             <Typography
               variant="body1"

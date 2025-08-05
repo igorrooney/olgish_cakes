@@ -63,7 +63,6 @@ export default function HeroSection() {
           >
             <Typography
               variant="overline"
-              component="h1"
               sx={{
                 color: "text.secondary",
                 letterSpacing: "0.2em",

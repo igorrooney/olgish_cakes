@@ -172,7 +172,8 @@ export default function UkrainianBakingClassesPage() {
               Ukrainian Baking Classes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -251,7 +252,11 @@ export default function UkrainianBakingClassesPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -328,7 +333,7 @@ export default function UkrainianBakingClassesPage() {
                         </Grid>
                       </Grid>
 
-                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                         What's Included:
                       </Typography>
                       <Box sx={{ mb: 3 }}>
@@ -381,7 +386,7 @@ export default function UkrainianBakingClassesPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Weekly Classes:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -398,7 +403,7 @@ export default function UkrainianBakingClassesPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Special Events:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -436,7 +441,7 @@ export default function UkrainianBakingClassesPage() {
                     borderRadius: 3,
                   }}
                 >
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
                     Our Baking Studio
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -462,7 +467,7 @@ export default function UkrainianBakingClassesPage() {
                     borderRadius: 3,
                   }}
                 >
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
                     What to Bring
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -527,7 +532,11 @@ export default function UkrainianBakingClassesPage() {
                     >
                       "{testimonial.text}"
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ fontWeight: 600, color: "primary.main" }}
+                    >
                       {testimonial.name}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary" }}>

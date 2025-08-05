@@ -202,7 +202,8 @@ export default function BlogPage() {
               Ukrainian Baking Blog
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -230,7 +231,7 @@ export default function BlogPage() {
 
           {/* Category Filter */}
           <Box sx={{ mb: 6, textAlign: "center" }}>
-            <Typography variant="h6" sx={{ mb: 2, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 2, color: "text.secondary" }}>
               Browse by Category
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
@@ -255,7 +256,11 @@ export default function BlogPage() {
 
           {/* Featured Post */}
           <Box sx={{ mb: 8 }}>
-            <Typography variant="h4" sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
+            >
               Featured Article
             </Typography>
             <Paper
@@ -341,7 +346,11 @@ export default function BlogPage() {
 
           {/* Blog Posts Grid */}
           <Box>
-            <Typography variant="h4" sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
+            >
               Latest Articles
             </Typography>
             <Grid container spacing={4}>
@@ -366,7 +375,11 @@ export default function BlogPage() {
                         size="small"
                         sx={{ mb: 2, backgroundColor: "primary.main", color: "white" }}
                       />
-                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, lineHeight: 1.3 }}>
+                      <Typography
+                        variant="h4"
+                        component="h5"
+                        sx={{ mb: 2, fontWeight: 600, lineHeight: 1.3 }}
+                      >
                         {post.title}
                       </Typography>
                       <Typography

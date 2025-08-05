@@ -238,7 +238,8 @@ export default function ReviewsAwardsPage() {
               Customer Reviews & Awards
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -261,7 +262,11 @@ export default function ReviewsAwardsPage() {
               }}
             >
               <Rating value={5} readOnly size="large" />
-              <Typography variant="h6" sx={{ color: "primary.main", fontWeight: 600 }}>
+              <Typography
+                variant="h3"
+                component="h3"
+                sx={{ color: "primary.main", fontWeight: 600 }}
+              >
                 5.0 Average Rating
               </Typography>
             </Box>
@@ -306,7 +311,11 @@ export default function ReviewsAwardsPage() {
                     <Typography variant="h1" sx={{ mb: 2 }}>
                       {award.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h2"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {award.title}
                     </Typography>
                     <Typography
@@ -333,7 +342,7 @@ export default function ReviewsAwardsPage() {
           {/* Customer Reviews */}
           <Box sx={{ mb: 8 }}>
             <Typography
-              variant="h3"
+              variant="h2"
               sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
             >
               Customer Reviews
@@ -359,7 +368,7 @@ export default function ReviewsAwardsPage() {
                         {review.name.charAt(0)}
                       </Avatar>
                       <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        <Typography variant="h2" component="h2" sx={{ fontWeight: 600 }}>
                           {review.name}
                         </Typography>
                         <Typography variant="body2" sx={{ color: "text.secondary" }}>
@@ -382,7 +391,11 @@ export default function ReviewsAwardsPage() {
                       )}
                     </Box>
 
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h2"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {review.title}
                     </Typography>
 
@@ -412,7 +425,7 @@ export default function ReviewsAwardsPage() {
                 color: "white",
               }}
             >
-              <Typography variant="h3" sx={{ mb: 4, textAlign: "center", fontWeight: 600 }}>
+              <Typography variant="h2" sx={{ mb: 4, textAlign: "center", fontWeight: 600 }}>
                 Review Statistics
               </Typography>
               <Grid container spacing={4} sx={{ textAlign: "center" }}>
@@ -420,25 +433,33 @@ export default function ReviewsAwardsPage() {
                   <Typography variant="h2" sx={{ fontWeight: 700, mb: 1 }}>
                     500+
                   </Typography>
-                  <Typography variant="h6">Happy Customers</Typography>
+                  <Typography variant="h3" component="h3">
+                    Happy Customers
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant="h2" sx={{ fontWeight: 700, mb: 1 }}>
                     5.0
                   </Typography>
-                  <Typography variant="h6">Average Rating</Typography>
+                  <Typography variant="h3" component="h3">
+                    Average Rating
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant="h2" sx={{ fontWeight: 700, mb: 1 }}>
                     98%
                   </Typography>
-                  <Typography variant="h6">Customer Satisfaction</Typography>
+                  <Typography variant="h3" component="h3">
+                    Customer Satisfaction
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <Typography variant="h2" sx={{ fontWeight: 700, mb: 1 }}>
                     4
                   </Typography>
-                  <Typography variant="h6">Awards Won</Typography>
+                  <Typography variant="h3" component="h3">
+                    Awards Won
+                  </Typography>
                 </Grid>
               </Grid>
             </Paper>
@@ -472,7 +493,7 @@ export default function ReviewsAwardsPage() {
                 }}
               >
                 <Rating value={5} readOnly size="large" />
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                <Typography variant="h4" component="h4" sx={{ fontWeight: 600 }}>
                   5.0 on Trustpilot
                 </Typography>
               </Box>

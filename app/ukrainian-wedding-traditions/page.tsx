@@ -49,7 +49,10 @@ export default function UkrainianWeddingTraditionsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
@@ -159,7 +162,11 @@ export default function UkrainianWeddingTraditionsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {tradition.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {tradition.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -223,7 +230,11 @@ export default function UkrainianWeddingTraditionsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {tradition.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {tradition.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -293,7 +304,11 @@ export default function UkrainianWeddingTraditionsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {cake.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {cake.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -357,7 +372,11 @@ export default function UkrainianWeddingTraditionsPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {tradition.icon}
                   </Typography>
-                  <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {tradition.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -387,7 +406,7 @@ export default function UkrainianWeddingTraditionsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Community and Family:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -397,7 +416,7 @@ export default function UkrainianWeddingTraditionsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Symbolism and Meaning:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>

@@ -140,7 +140,8 @@ export default function HowToOrderPage() {
               How to Order Your Cake
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -319,7 +320,11 @@ export default function HowToOrderPage() {
                       >
                         {step.step}
                       </Box>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h4"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {step.title}
                       </Typography>
                     </Box>
@@ -446,7 +451,11 @@ export default function HowToOrderPage() {
                     <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                       {consultation.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {consultation.type}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -540,7 +549,11 @@ export default function HowToOrderPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {payment.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h4"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {payment.method}
                       </Typography>
                     </Box>
@@ -640,7 +653,11 @@ export default function HowToOrderPage() {
               ].map((timeline, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ p: 3, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {timeline.type}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 600 }}>
@@ -675,7 +692,7 @@ export default function HowToOrderPage() {
             >
               Ready to Order Your Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us today to start your cake ordering journey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
