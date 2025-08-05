@@ -2,168 +2,129 @@
 
 /**
  * Accessibility Check Script
- * 
+ *
  * This script helps identify potential accessibility issues in the codebase.
  * Run with: node scripts/accessibility-check.js
  */
 
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Accessibility check for development
+function checkAccessibility() {
+  console.log("🔍 Running accessibility check...\n");
 
-// Colors for console output
-const colors = {
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  reset: '\x1b[0m',
-  bold: '\x1b[1m'
-};
+  const issues = [];
+  const tsxFiles = glob.sync("app/**/*.tsx");
 
-function log(message, color = 'reset') {
-  console.log(`${colors[color]}${message}${colors.reset}`);
-}
+  tsxFiles.forEach(file => {
+    const content = fs.readFileSync(file, "utf8");
 
-function findFiles(dir, extensions = ['.tsx', '.ts', '.jsx', '.js']) {
-  const files = [];
-  
-  function traverse(currentDir) {
-    const items = fs.readdirSync(currentDir);
-    
-    for (const item of items) {
-      const fullPath = path.join(currentDir, item);
-      const stat = fs.statSync(fullPath);
-      
-      if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
-        traverse(fullPath);
-      } else if (stat.isFile() && extensions.some(ext => item.endsWith(ext))) {
-        // Exclude script files from accessibility checks
-        if (!fullPath.includes('/scripts/') && !fullPath.includes('\\scripts\\') && !fullPath.includes('seo-audit-improved.js') && !fullPath.includes('accessibility-check.js')) {
-          files.push(fullPath);
-        }
-      }
-    }
-  }
-  
-  traverse(dir);
-  return files;
-}
+    // Check for common accessibility issues
+    checkFileAccessibility(file, content, issues);
+  });
 
-function checkAccessibilityIssues() {
-  log('🔍 Starting accessibility check...', 'blue');
-  
-  const files = findFiles('.');
-  let issues = [];
-  
-  for (const file of files) {
-    const content = fs.readFileSync(file, 'utf8');
-    
-    // Check for IconButton without aria-label
-    const iconButtonRegex = /<IconButton[^>]*>/g;
-    const iconButtonMatches = content.match(iconButtonRegex);
-    
-    if (iconButtonMatches) {
-      for (const match of iconButtonMatches) {
-        if (!match.includes('aria-label') && !match.includes('ariaLabel')) {
-          issues.push({
-            file,
-            type: 'IconButton without aria-label',
-            line: findLineNumber(content, match),
-            snippet: match.substring(0, 100) + '...'
-          });
-        }
-      }
-    }
-    
-    // Check for buttons without accessible names
-    const buttonRegex = /<button[^>]*>/g;
-    const buttonMatches = content.match(buttonRegex);
-    
-    if (buttonMatches) {
-      for (const match of buttonMatches) {
-        if (!match.includes('aria-label') && !match.includes('aria-labelledby')) {
-          // Check if button has text content
-          const buttonTagEnd = content.indexOf('</button>', content.indexOf(match));
-          if (buttonTagEnd !== -1) {
-            const buttonContent = content.substring(content.indexOf(match) + match.length, buttonTagEnd);
-            if (!buttonContent.trim()) {
-              issues.push({
-                file,
-                type: 'Button without accessible name',
-                line: findLineNumber(content, match),
-                snippet: match.substring(0, 100) + '...'
-              });
-            }
-          }
-        }
-      }
-    }
-    
-    // Check for images without alt text
-    const imageRegex = /<Image[^>]*>/g;
-    const imageMatches = content.match(imageRegex);
-    
-    if (imageMatches) {
-      for (const match of imageMatches) {
-        if (!match.includes('alt=')) {
-          issues.push({
-            file,
-            type: 'Image without alt text',
-            line: findLineNumber(content, match),
-            snippet: match.substring(0, 100) + '...'
-          });
-        }
-      }
-    }
-    
-    // Check for form inputs without labels
-    const inputRegex = /<input[^>]*>/g;
-    const inputMatches = content.match(inputRegex);
-    
-    if (inputMatches) {
-      for (const match of inputMatches) {
-        if (!match.includes('aria-label') && !match.includes('aria-labelledby') && !match.includes('id=')) {
-          issues.push({
-            file,
-            type: 'Input without label',
-            line: findLineNumber(content, match),
-            snippet: match.substring(0, 100) + '...'
-          });
-        }
-      }
-    }
-  }
-  
   return issues;
 }
 
-function findLineNumber(content, searchText) {
-  const lines = content.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes(searchText.substring(0, 50))) {
-      return i + 1;
+function checkFileAccessibility(file, content, issues) {
+  // Check for missing alt text on images
+  const imageRegex = /<Image[^>]*src=[^>]*>(?![\s\S]*?alt=)[\s\S]*?<\/Image>/g;
+  let match;
+  while ((match = imageRegex.exec(content)) !== null) {
+    const imageContent = match[0];
+    if (!imageContent.includes("alt=")) {
+      const lineNumber = content.substring(0, match.index).split("\n").length;
+      issues.push({
+        file,
+        line: lineNumber,
+        type: "Image missing alt text",
+        severity: "high",
+        suggestion: "Add descriptive alt text to the Image component",
+      });
     }
   }
-  return 'unknown';
+
+  // Check for buttons without accessible names
+  const buttonRegex = /<Button[^>]*>(?![\s\S]*?aria-label)[\s\S]*?<\/Button>/g;
+  while ((match = buttonRegex.exec(content)) !== null) {
+    const buttonContent = match[0];
+    if (!buttonContent.includes("aria-label") && !buttonContent.match(/>[^<]{3,}</)) {
+      const lineNumber = content.substring(0, match.index).split("\n").length;
+      issues.push({
+        file,
+        line: lineNumber,
+        type: "Button without accessible name",
+        severity: "high",
+        suggestion: "Add aria-label or descriptive text to the Button component",
+      });
+    }
+  }
+
+  // Check for form fields without labels
+  const formFieldRegex = /<TextField[^>]*>(?![\s\S]*?label=)[\s\S]*?<\/TextField>/g;
+  while ((match = formFieldRegex.exec(content)) !== null) {
+    const fieldContent = match[0];
+    if (!fieldContent.includes("label=") && !fieldContent.includes("aria-label=")) {
+      const lineNumber = content.substring(0, match.index).split("\n").length;
+      issues.push({
+        file,
+        line: lineNumber,
+        type: "Form field without label",
+        severity: "high",
+        suggestion: "Add label or aria-label to the TextField component",
+      });
+    }
+  }
+
+  // Check for heading hierarchy issues
+  const headings = content.match(/<h[1-6][^>]*>/g) || [];
+  const headingLevels = headings.map(h => parseInt(h.match(/<h([1-6])/)[1]));
+
+  for (let i = 1; i < headingLevels.length; i++) {
+    if (headingLevels[i] - headingLevels[i - 1] > 1) {
+      issues.push({
+        file,
+        line: "Multiple",
+        type: "Skipped heading level",
+        severity: "medium",
+        suggestion: "Ensure heading hierarchy is logical (h1 → h2 → h3, etc.)",
+      });
+      break;
+    }
+  }
+
+  // Check for color-only information
+  const colorOnlyRegex = /color:\s*#[0-9a-fA-F]{6}/g;
+  const colorMatches = content.match(colorOnlyRegex) || [];
+  if (colorMatches.length > 0) {
+    issues.push({
+      file,
+      line: "Multiple",
+      type: "Color-only information",
+      severity: "medium",
+      suggestion: "Ensure information is not conveyed by color alone",
+    });
+  }
 }
 
-function generateReport(issues) {
-  log('\n📊 Accessibility Report', 'bold');
-  log('='.repeat(50), 'blue');
-  
+function generateAccessibilityReport(issues) {
+  console.log(`📊 Accessibility Check Report\n`);
+  console.log(`Found ${issues.length} potential accessibility issues:\n`);
+
   if (issues.length === 0) {
-    log('✅ No accessibility issues found!', 'green');
+    console.log("✅ No accessibility issues found!");
     return;
   }
-  
-  log(`❌ Found ${issues.length} potential accessibility issues:`, 'red');
-  log('');
-  
+
+  const highSeverity = issues.filter(issue => issue.severity === "high");
+  const mediumSeverity = issues.filter(issue => issue.severity === "medium");
+
+  console.log(`🔴 High severity issues: ${highSeverity.length}`);
+  console.log(`🟡 Medium severity issues: ${mediumSeverity.length}\n`);
+
+  // Group by type
   const groupedIssues = issues.reduce((acc, issue) => {
     if (!acc[issue.type]) {
       acc[issue.type] = [];
@@ -171,37 +132,58 @@ function generateReport(issues) {
     acc[issue.type].push(issue);
     return acc;
   }, {});
-  
-  for (const [type, typeIssues] of Object.entries(groupedIssues)) {
-    log(`${type} (${typeIssues.length} issues):`, 'yellow');
-    
-    for (const issue of typeIssues) {
-      log(`  📁 ${issue.file}:${issue.line}`, 'blue');
-      log(`     ${issue.snippet}`, 'reset');
-      log('');
-    }
-  }
-  
-  log('💡 Recommendations:', 'green');
-  log('1. Use AccessibleIconButton component for icon-only buttons', 'reset');
-  log('2. Add meaningful alt text to all images', 'reset');
-  log('3. Ensure all form inputs have associated labels', 'reset');
-  log('4. Test with screen readers and keyboard navigation', 'reset');
-  log('5. Run Lighthouse accessibility audit', 'reset');
+
+  Object.entries(groupedIssues).forEach(([type, typeIssues]) => {
+    console.log(`📋 ${type} (${typeIssues.length} issues):`);
+    typeIssues.forEach((issue, index) => {
+      console.log(`   ${index + 1}. ${issue.file}:${issue.line}`);
+      console.log(`      Suggestion: ${issue.suggestion}`);
+    });
+    console.log("");
+  });
+
+  console.log("💡 Quick Fixes:");
+  console.log("1. Add alt text to all images");
+  console.log("2. Add aria-label to buttons without text");
+  console.log("3. Add labels to form fields");
+  console.log("4. Check heading hierarchy");
+  console.log("5. Ensure color is not the only way to convey information");
 }
 
-function main() {
-  try {
-    const issues = checkAccessibilityIssues();
-    generateReport(issues);
-    
-    if (issues.length > 0) {
-      process.exit(1);
-    }
-  } catch (error) {
-    log(`❌ Error during accessibility check: ${error.message}`, 'red');
+// Main execution
+try {
+  const issues = checkAccessibility();
+  generateAccessibilityReport(issues);
+
+  // Save report to file
+  const report = {
+    timestamp: new Date().toISOString(),
+    totalIssues: issues.length,
+    issues: issues,
+    summary: {
+      highSeverity: issues.filter(issue => issue.severity === "high").length,
+      mediumSeverity: issues.filter(issue => issue.severity === "medium").length,
+    },
+  };
+
+  // Ensure reports directory exists
+  if (!fs.existsSync("reports")) {
+    fs.mkdirSync("reports");
+  }
+
+  fs.writeFileSync("reports/accessibility-check-report.json", JSON.stringify(report, null, 2));
+
+  console.log("📄 Report saved to reports/accessibility-check-report.json");
+
+  // Exit with error code if there are high severity issues
+  const highSeverityCount = issues.filter(issue => issue.severity === "high").length;
+  if (highSeverityCount > 0) {
+    console.log(
+      `\n⚠️  Found ${highSeverityCount} high severity issues. Please fix these before proceeding.`
+    );
     process.exit(1);
   }
+} catch (error) {
+  console.error("❌ Error during accessibility check:", error);
+  process.exit(1);
 }
-
-main(); 

@@ -50,6 +50,7 @@ export const MobileBreadcrumbs = memo(({ items, onNavigate }: MobileBreadcrumbsP
                   e.preventDefault();
                   onNavigate?.(item.href!);
                 }}
+                aria-label={`Navigate to ${item.label}`}
                 sx={{
                   color: colors.primary.main,
                   textDecoration: "none",

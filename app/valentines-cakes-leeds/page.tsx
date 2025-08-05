@@ -121,7 +121,7 @@ export default function ValentinesCakesLeedsPage() {
             designs to luxurious chocolate creations, we'll make your special day unforgettable.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our Valentine's Day cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "red.600", "&:hover": { bgcolor: "red.700" }, color: "white" }}
@@ -129,7 +129,7 @@ export default function ValentinesCakesLeedsPage() {
                 Browse Valentine's Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom Valentine's Day cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -202,7 +202,7 @@ export default function ValentinesCakesLeedsPage() {
               Order your perfect Valentine's Day cake today and make your celebration unforgettable.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "red.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -210,7 +210,7 @@ export default function ValentinesCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

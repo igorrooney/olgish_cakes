@@ -116,7 +116,7 @@ export default function HalloweenCakesLeedsPage() {
             we have the perfect Halloween cake for your party.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our Halloween cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "purple.600", "&:hover": { bgcolor: "purple.700" }, color: "white" }}
@@ -124,7 +124,7 @@ export default function HalloweenCakesLeedsPage() {
                 Browse Halloween Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom Halloween cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -202,7 +202,7 @@ export default function HalloweenCakesLeedsPage() {
               fun and delicious.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "purple.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -210,7 +210,7 @@ export default function HalloweenCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

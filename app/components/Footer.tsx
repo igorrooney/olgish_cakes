@@ -145,7 +145,7 @@ export default function Footer() {
             {/* Brand Column */}
             <Grid item xs={12} md={4} aria-label="Footer brand info">
               <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
-                <Link href="/" style={{ textDecoration: "none" }}>
+                <Link href="/" style={{ textDecoration: "none" }} aria-label="Olgish Cakes - Home">
                   <Image
                     src="/images/olgish-cakes-logo-bakery-brand.png"
                     alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
@@ -181,6 +181,7 @@ export default function Footer() {
                       <Link
                         href="mailto:hello@olgishcakes.co.uk"
                         style={{ textDecoration: "none" }}
+                        aria-label={`Email us at ${contactInfo.email}`}
                       >
                         {contactInfo.email}
                       </Link>
@@ -193,8 +194,8 @@ export default function Footer() {
                     >
                       <Link
                         href="tel:+447867218194"
-                        aria-label={`Call ${contactInfo.phone}`}
-                        title={`Call ${contactInfo.phone}`}
+                        aria-label={`Call us at ${contactInfo.phone}`}
+                        title={`Call us at ${contactInfo.phone}`}
                       >
                         {contactInfo.phone}
                       </Link>
@@ -267,7 +268,12 @@ export default function Footer() {
                   </Typography>
                   <Stack spacing={1}>
                     {footerLinks.cakes.map(link => (
-                      <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        style={{ textDecoration: "none" }}
+                        aria-label={`Navigate to ${link.name} page`}
+                      >
                         <BodyText
                           sx={{
                             color: colors.text.secondary,
@@ -299,7 +305,12 @@ export default function Footer() {
                   </Typography>
                   <Stack spacing={1}>
                     {footerLinks.services.map(link => (
-                      <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        style={{ textDecoration: "none" }}
+                        aria-label={`Navigate to ${link.name} page`}
+                      >
                         <BodyText
                           sx={{
                             color: colors.text.secondary,
@@ -331,7 +342,12 @@ export default function Footer() {
                   </Typography>
                   <Stack spacing={1}>
                     {footerLinks.locations.map(link => (
-                      <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        style={{ textDecoration: "none" }}
+                        aria-label={`Navigate to ${link.name} page`}
+                      >
                         <BodyText
                           sx={{
                             color: colors.text.secondary,
@@ -363,7 +379,12 @@ export default function Footer() {
                   </Typography>
                   <Stack spacing={1}>
                     {footerLinks.company.map(link => (
-                      <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        style={{ textDecoration: "none" }}
+                        aria-label={`Navigate to ${link.name} page`}
+                      >
                         <BodyText
                           sx={{
                             color: colors.text.secondary,
@@ -461,7 +482,11 @@ export default function Footer() {
                 >
                   Quick Contact
                 </Typography>
-                <Link href="tel:+447867218194" style={{ textDecoration: "none" }}>
+                <Link
+                  href="tel:+447867218194"
+                  style={{ textDecoration: "none" }}
+                  aria-label="Call us at +44 786 721 8194"
+                >
                   <Typography
                     variant="body2"
                     sx={{
@@ -480,7 +505,11 @@ export default function Footer() {
                     📞 +44 786 721 8194
                   </Typography>
                 </Link>
-                <Link href="mailto:hello@olgishcakes.co.uk" style={{ textDecoration: "none" }}>
+                <Link
+                  href="mailto:hello@olgishcakes.co.uk"
+                  style={{ textDecoration: "none" }}
+                  aria-label="Email us at hello@olgishcakes.co.uk"
+                >
                   <Typography
                     variant="body2"
                     sx={{
@@ -538,7 +567,12 @@ export default function Footer() {
                 }}
               >
                 {footerLinks.legal.map(link => (
-                  <Link key={link.name} href={link.href} style={{ textDecoration: "none" }}>
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`Navigate to ${link.name}`}
+                  >
                     <BodyText
                       sx={{
                         color: colors.text.secondary,

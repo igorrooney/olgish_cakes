@@ -22,6 +22,7 @@ export function InteractiveLink({ href, text, sx }: InteractiveLinkProps) {
         fontWeight: 500,
         ...sx,
       }}
+      aria-label={`Navigate to ${text}`}
     >
       <Box
         component="span"
@@ -38,4 +39,4 @@ export function InteractiveLink({ href, text, sx }: InteractiveLinkProps) {
       </Box>
     </Link>
   );
-} 
+}

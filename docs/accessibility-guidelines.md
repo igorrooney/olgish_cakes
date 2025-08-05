@@ -1,143 +1,202 @@
 # Accessibility Guidelines for Olgish Cakes
 
-## Overview
+This document outlines accessibility best practices for the Olgish Cakes website, with a focus on link accessibility and general web accessibility standards.
 
-This document outlines accessibility standards and best practices for the Olgish Cakes website to ensure it's usable by people with disabilities.
+## Link Accessibility Standards
 
-## Key Accessibility Standards
+### 1. Link Names and Descriptions
 
-### 1. Button Accessibility
-
-All buttons must have accessible names. Use the `AccessibleIconButton` component for icon-only buttons:
+**✅ Good Examples:**
 
 ```tsx
-import { AccessibleIconButton } from "@/lib/ui-components";
+// Descriptive link text
+<Link href="/cakes" aria-label="Browse our complete cake collection">
+  View All Cakes
+</Link>
 
-<AccessibleIconButton
-  onClick={handleClick}
-  ariaLabel="Descriptive action name"
-  title="Optional tooltip text"
+// Phone number with context
+<Link href="tel:+447867218194" aria-label="Call us at +44 786 721 8194">
+  +44 786 721 8194
+</Link>
+
+// Email with context
+<Link href="mailto:hello@olgishcakes.co.uk" aria-label="Email us at hello@olgishcakes.co.uk">
+  hello@olgishcakes.co.uk
+</Link>
+```
+
+**❌ Avoid:**
+
+```tsx
+// Generic link text
+<Link href="/cakes">Click here</Link>
+<Link href="/cakes">Read more</Link>
+<Link href="/cakes">Learn more</Link>
+
+// Insufficient context
+<Link href="/cakes">More</Link>
+<Link href="/cakes">Here</Link>
+```
+
+### 2. External Links
+
+Always indicate when links open in a new tab:
+
+```tsx
+<Link
+  href="https://www.trustpilot.com/review/olgishcakes.co.uk"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Read our reviews on Trustpilot (opens in new tab)"
 >
-  <IconComponent />
-</AccessibleIconButton>;
+  Trustpilot Reviews
+</Link>
 ```
 
-### 2. Image Accessibility
+### 3. Image Links
 
-- All images must have meaningful `alt` text
-- Decorative images should have `alt=""` or `role="presentation"`
-- Complex images should have detailed descriptions
+When using images as links, provide descriptive alt text:
 
 ```tsx
-<Image
-  src="/cake-image.jpg"
-  alt="Traditional Ukrainian honey cake with layered cream and honey glaze"
-  width={400}
-  height={300}
-/>
+<Link href="/cakes" aria-label="Browse our cake collection">
+  <Image
+    src="/images/cake-collection.jpg"
+    alt="Beautiful display of Ukrainian honey cakes and wedding cakes"
+    width={400}
+    height={300}
+  />
+</Link>
 ```
 
-### 3. Form Accessibility
+## General Accessibility Standards
 
-- All form inputs must have associated labels
-- Use proper form structure with `fieldset` and `legend` for groups
-- Provide clear error messages and validation feedback
+### 1. Semantic HTML
+
+Use proper semantic elements:
 
 ```tsx
-<TextField
-  label="Full Name"
-  aria-label="Enter your full name"
-  required
-  error={!!errors.name}
-  helperText={errors.name}
-/>
+// ✅ Good
+<main role="main" aria-label="Main content">
+  <section aria-label="Product information">
+    <h1>Traditional Ukrainian Honey Cake</h1>
+  </section>
+</main>
+
+// ❌ Avoid
+<div>
+  <div>
+    <span style={{ fontSize: '2rem' }}>Traditional Ukrainian Honey Cake</span>
+  </div>
+</div>
 ```
 
-### 4. Navigation Accessibility
+### 2. Color and Contrast
 
-- Use semantic HTML elements (`nav`, `main`, `section`, etc.)
-- Provide skip links for keyboard users
-- Ensure logical tab order
-- Use ARIA landmarks appropriately
-
-### 5. Color and Contrast
-
-- Maintain minimum contrast ratios (4.5:1 for normal text, 3:1 for large text)
+- Ensure sufficient color contrast (minimum 4.5:1 for normal text)
 - Don't rely solely on color to convey information
-- Use the Ukrainian brand colors (#005BBB and #FFD700) with proper contrast
+- Use our design system colors which meet WCAG standards
 
-### 6. Keyboard Navigation
+### 3. Keyboard Navigation
 
 - All interactive elements must be keyboard accessible
 - Provide visible focus indicators
-- Support keyboard shortcuts where appropriate
+- Ensure logical tab order
 
-### 7. Screen Reader Support
+### 4. Screen Reader Support
 
-- Use semantic HTML elements
-- Provide proper ARIA labels and descriptions
-- Ensure logical reading order
-- Test with screen readers
+- Use proper ARIA labels and roles
+- Provide alternative text for images
+- Use descriptive headings and landmarks
 
-## Components with Built-in Accessibility
+## Accessibility Checklist
 
-### AccessibleIconButton
+### Links
 
-A wrapper component that enforces accessibility requirements:
+- [ ] All links have descriptive text or aria-label
+- [ ] No generic text like "click here" or "read more"
+- [ ] External links indicate they open in new tab
+- [ ] Link text is unique and descriptive
+- [ ] Links are keyboard accessible
 
-```tsx
-interface AccessibleIconButtonProps {
-  children: React.ReactNode;
-  ariaLabel: string; // Required
-  title?: string; // Optional tooltip
-  [key: string]: any;
-}
-```
+### Images
 
-### ContactInfo Component
+- [ ] All images have alt text
+- [ ] Decorative images have empty alt="" or role="presentation"
+- [ ] Complex images have detailed descriptions
+- [ ] Images used as links have descriptive alt text
 
-Automatically generates accessible labels for contact information:
+### Forms
 
-```tsx
-<ContactInfo icon={<PhoneIcon />} text="+44 123 456 7890" href="tel:+441234567890" />
-```
+- [ ] All form fields have labels
+- [ ] Error messages are associated with fields
+- [ ] Required fields are clearly marked
+- [ ] Forms have proper validation
 
-## Testing Checklist
+### Navigation
 
-### Manual Testing
+- [ ] Skip links are available
+- [ ] Breadcrumbs are properly structured
+- [ ] Navigation is keyboard accessible
+- [ ] Current page is clearly indicated
 
-- [ ] Test with keyboard navigation only
-- [ ] Test with screen reader (NVDA, JAWS, VoiceOver)
-- [ ] Test with high contrast mode
-- [ ] Test with zoom (200% and 400%)
-- [ ] Test with reduced motion preferences
+### Content
+
+- [ ] Proper heading hierarchy (h1, h2, h3, etc.)
+- [ ] Sufficient color contrast
+- [ ] Text is readable and resizable
+- [ ] No content relies solely on color
+
+## Testing Tools
 
 ### Automated Testing
 
-- [ ] Run Lighthouse accessibility audit
-- [ ] Use axe-core for automated testing
-- [ ] Check color contrast ratios
-- [ ] Validate ARIA attributes
+```bash
+# Run accessibility audit
+node scripts/accessibility-audit.js
 
-### Common Issues to Avoid
+# Run Lighthouse accessibility audit
+npm run lighthouse:accessibility
+```
 
-- [ ] Empty or missing alt text on images
-- [ ] Buttons without accessible names
-- [ ] Missing form labels
-- [ ] Insufficient color contrast
-- [ ] Missing focus indicators
-- [ ] Non-semantic HTML structure
+### Manual Testing
+
+1. **Keyboard Navigation**: Navigate using Tab, Shift+Tab, Enter, Space
+2. **Screen Reader**: Test with NVDA, JAWS, or VoiceOver
+3. **Color Contrast**: Use browser dev tools or contrast checkers
+4. **Zoom Testing**: Test at 200% zoom level
+
+## Common Issues and Solutions
+
+### Issue: Link without discernible name
+
+**Solution**: Add descriptive aria-label or improve link text
+
+### Issue: Insufficient color contrast
+
+**Solution**: Use design system colors or adjust contrast ratios
+
+### Issue: Missing alt text
+
+**Solution**: Add descriptive alt text for all images
+
+### Issue: Keyboard navigation problems
+
+**Solution**: Ensure all interactive elements are focusable and have visible focus indicators
 
 ## Resources
 
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
-- [Material-UI Accessibility](https://mui.com/material-ui/getting-started/accessibility/)
-- [axe-core Testing](https://github.com/dequelabs/axe-core)
-- [Lighthouse Accessibility](https://developers.google.com/web/tools/lighthouse)
+- [Deque University - Link Name Rule](https://dequeuniversity.com/rules/axe/4.10/link-name)
+- [WebAIM - Links and Hypertext](https://webaim.org/techniques/hypertext/)
+- [MDN - Accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
 
-## Implementation Notes
+## Maintenance
 
-- All new components should follow these guidelines
-- Existing components should be updated to meet accessibility standards
-- Regular accessibility audits should be performed
-- User testing with people with disabilities is recommended
+- Run accessibility audits regularly
+- Test with real users when possible
+- Keep up with accessibility standards updates
+- Monitor accessibility metrics in analytics
+
+---
+
+_Last updated: December 2024_

@@ -734,6 +734,7 @@ export function OrderPageClient() {
                                     color: "inherit",
                                     fontWeight: 500,
                                   }}
+                                  aria-label="Call us at +44 113 123 4567"
                                 >
                                   +44 113 123 4567
                                 </Link>
@@ -756,6 +757,7 @@ export function OrderPageClient() {
                                     color: "inherit",
                                     fontWeight: 500,
                                   }}
+                                  aria-label="Email us at hello@olgishcakes.co.uk"
                                 >
                                   hello@olgishcakes.co.uk
                                 </Link>
@@ -1028,7 +1030,11 @@ export function OrderPageClient() {
                   Explore our cake collections:
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link href="/wedding-cakes" style={{ textDecoration: "none" }}>
+                  <Link
+                    href="/wedding-cakes"
+                    style={{ textDecoration: "none" }}
+                    aria-label="Browse our wedding cake collection"
+                  >
                     <Chip
                       label="Wedding Cakes"
                       variant="outlined"
@@ -1036,7 +1042,11 @@ export function OrderPageClient() {
                       sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
                     />
                   </Link>
-                  <Link href="/birthday-cakes" style={{ textDecoration: "none" }}>
+                  <Link
+                    href="/birthday-cakes"
+                    style={{ textDecoration: "none" }}
+                    aria-label="Browse our birthday cake collection"
+                  >
                     <Chip
                       label="Birthday Cakes"
                       variant="outlined"
@@ -1044,7 +1054,11 @@ export function OrderPageClient() {
                       sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
                     />
                   </Link>
-                  <Link href="/honey-cake-history" style={{ textDecoration: "none" }}>
+                  <Link
+                    href="/honey-cake-history"
+                    style={{ textDecoration: "none" }}
+                    aria-label="Learn about our traditional honey cakes"
+                  >
                     <Chip
                       label="Honey Cakes"
                       variant="outlined"
@@ -1052,7 +1066,11 @@ export function OrderPageClient() {
                       sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
                     />
                   </Link>
-                  <Link href="/custom-cake-design" style={{ textDecoration: "none" }}>
+                  <Link
+                    href="/custom-cake-design"
+                    style={{ textDecoration: "none" }}
+                    aria-label="Explore our custom cake design services"
+                  >
                     <Chip
                       label="Custom Design"
                       variant="outlined"
@@ -1060,7 +1078,11 @@ export function OrderPageClient() {
                       sx={{ cursor: "pointer", "&:hover": { bgcolor: "primary.50" } }}
                     />
                   </Link>
-                  <Link href="/cake-delivery" style={{ textDecoration: "none" }}>
+                  <Link
+                    href="/cake-delivery"
+                    style={{ textDecoration: "none" }}
+                    aria-label="View our cake delivery information"
+                  >
                     <Chip
                       label="Delivery Info"
                       variant="outlined"

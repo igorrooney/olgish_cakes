@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-08-05T12:40:42.084Z",
+  "totalIssues": 0,
+  "issues": [],
+  "recommendations": [
+    "Add descriptive aria-label attributes to all links",
+    "Use descriptive link text instead of generic terms like \"click here\"",
+    "Ensure link text is at least 3 characters long",
+    "Make link text unique and descriptive of the destination",
+    "For external links, indicate they open in a new tab"
+  ]
+}

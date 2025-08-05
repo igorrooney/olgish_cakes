@@ -116,7 +116,7 @@ export default function EasterCakesLeedsPage() {
             beautiful Easter-themed designs, we'll make your celebration special.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our Easter cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "green.600", "&:hover": { bgcolor: "green.700" }, color: "white" }}
@@ -124,7 +124,7 @@ export default function EasterCakesLeedsPage() {
                 Browse Easter Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom Easter cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -202,7 +202,7 @@ export default function EasterCakesLeedsPage() {
               authentic and special.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "green.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -210,7 +210,7 @@ export default function EasterCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

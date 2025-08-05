@@ -138,7 +138,7 @@ export default function BestCakesLeedsPage() {
             <span className="text-gray-600">Award Winning</span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our best cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "blue.600", "&:hover": { bgcolor: "blue.700" }, color: "white" }}
@@ -146,7 +146,7 @@ export default function BestCakesLeedsPage() {
                 Browse Our Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -224,7 +224,7 @@ export default function BestCakesLeedsPage() {
               occasions.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "blue.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -232,7 +232,7 @@ export default function BestCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

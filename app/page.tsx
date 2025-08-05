@@ -928,7 +928,11 @@ export default async function Home() {
                       flexWrap: "wrap",
                     }}
                   >
-                    <Link href="/get-custom-quote" style={{ textDecoration: "none" }}>
+                    <Link
+                      href="/get-custom-quote"
+                      style={{ textDecoration: "none" }}
+                      aria-label="Get a custom cake quote"
+                    >
                       <Button
                         variant="contained"
                         size="large"
@@ -949,7 +953,11 @@ export default async function Home() {
                         Get Quote Now
                       </Button>
                     </Link>
-                    <Link href="/how-to-order" style={{ textDecoration: "none" }}>
+                    <Link
+                      href="/how-to-order"
+                      style={{ textDecoration: "none" }}
+                      aria-label="Learn how to order your cake"
+                    >
                       <Button
                         variant="outlined"
                         size="large"

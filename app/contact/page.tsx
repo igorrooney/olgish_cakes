@@ -160,7 +160,12 @@ export default function ContactPage() {
                 {/* Phone */}
                 <Stack direction="row" spacing={1.5} alignItems="center">
                   <PhoneIcon color="action" />
-                  <Link href={`tel:${contactPhone}`} color="text.secondary" underline="hover">
+                  <Link
+                    href={`tel:${contactPhone}`}
+                    color="text.secondary"
+                    underline="hover"
+                    aria-label={`Call us at ${contactPhone}`}
+                  >
                     <Typography variant="body1">{contactPhone}</Typography>
                   </Link>
                   <Link
@@ -177,7 +182,12 @@ export default function ContactPage() {
                 {/* Email */}
                 <Stack direction="row" spacing={1.5} alignItems="center">
                   <EmailIcon color="action" />
-                  <Link href={`mailto:${contactEmail}`} color="text.secondary" underline="hover">
+                  <Link
+                    href={`mailto:${contactEmail}`}
+                    color="text.secondary"
+                    underline="hover"
+                    aria-label={`Email us at ${contactEmail}`}
+                  >
                     <Typography variant="body1">{contactEmail}</Typography>
                   </Link>
                 </Stack>
@@ -196,7 +206,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Instagram"
+                    aria-label="Follow us on Instagram"
                     sx={{ "&:hover": { color: "#E1306C" } }}
                   >
                     <InstagramIcon fontSize="large" />
@@ -206,7 +216,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Facebook"
+                    aria-label="Follow us on Facebook"
                     sx={{ "&:hover": { color: "#1877F2" } }}
                   >
                     <FacebookIcon fontSize="large" />

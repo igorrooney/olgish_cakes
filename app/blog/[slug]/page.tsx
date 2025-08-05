@@ -271,7 +271,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       <Typography variant="body2" className="text-gray-600 mb-4">
                         {relatedPost.excerpt}
                       </Typography>
-                      <Link href={`/blog/${relatedPost.slug.current}`}>
+                      <Link
+                        href={`/blog/${relatedPost.slug.current}`}
+                        aria-label={`Read more about ${relatedPost.title}`}
+                      >
                         <Button variant="outlined" size="small">
                           Read More
                         </Button>
@@ -292,7 +295,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Inspired by our blog? Let us create a custom cake for your special occasion.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our cake collection">
                 <Button
                   size="large"
                   sx={{
@@ -304,7 +307,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   Browse Our Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cakes">
                 <Button
                   size="large"
                   variant="outlined"

@@ -903,7 +903,12 @@ export function Header() {
                 );
               })}
               {/* Order Now Button (desktop) */}
-              <Link href="/order" passHref style={{ textDecoration: "none" }}>
+              <Link
+                href="/order"
+                passHref
+                style={{ textDecoration: "none" }}
+                aria-label="Order your custom cake now"
+              >
                 <Button
                   variant="contained"
                   sx={{
@@ -1002,7 +1007,12 @@ export function Header() {
 
             {/* Order Now Button (mobile) */}
             <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
-              <Link href="/order" passHref style={{ textDecoration: "none" }}>
+              <Link
+                href="/order"
+                passHref
+                style={{ textDecoration: "none" }}
+                aria-label="Order your custom cake now"
+              >
                 <Button
                   variant="contained"
                   fullWidth

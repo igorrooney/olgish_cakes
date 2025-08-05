@@ -482,17 +482,39 @@ export const AccessibleIconButton = ({
   children,
   ariaLabel,
   title,
+  component,
+  href,
   ...props
 }: {
   children: React.ReactNode;
   ariaLabel: string;
   title?: string;
+  component?: any;
+  href?: string;
   [key: string]: any;
-}) => (
-  <IconButton aria-label={ariaLabel} title={title || ariaLabel} {...props}>
-    {children}
-  </IconButton>
-);
+}) => {
+  // If used as a link, ensure aria-label is properly applied
+  if (component === "a" || href) {
+    return (
+      <IconButton 
+        component={component || "a"}
+        href={href}
+        aria-label={ariaLabel}
+        title={title || ariaLabel}
+        {...props}
+      >
+        {children}
+      </IconButton>
+    );
+  }
+  
+  // Default button behavior
+  return (
+    <IconButton aria-label={ariaLabel} title={title || ariaLabel} {...props}>
+      {children}
+    </IconButton>
+  );
+};
 
 export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
   <AccessibleIconButton
