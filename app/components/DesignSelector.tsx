@@ -21,7 +21,7 @@ export function DesignSelector({ hasIndividualDesigns, onChange, value }: Design
       <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
         Select Design Type:
       </Typography>
-      <FormControl fullWidth size="small">
+      <FormControl fullWidth>
         <Select
           value={value}
           onChange={handleChange}

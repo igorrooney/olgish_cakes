@@ -156,7 +156,6 @@ export function OrderTestimonials() {
                     <Chip
                       icon={sourceIcons[testimonial.source as keyof typeof sourceIcons]}
                       label={testimonial.source}
-                      size="small"
                       sx={{
                         backgroundColor: "rgba(44, 82, 130, 0.1)",
                         "& .MuiChip-icon": {

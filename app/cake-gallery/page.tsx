@@ -213,7 +213,11 @@ export default async function CakeGalleryPage() {
                     <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                       {category.icon}
                     </Typography>
-                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {category.category}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -432,7 +436,11 @@ export default async function CakeGalleryPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {inspiration.icon}
                       </Typography>
-                      <Typography variant="h3" component="h3" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {inspiration.inspiration}
                       </Typography>
                     </Box>
@@ -444,9 +452,10 @@ export default async function CakeGalleryPage() {
                         <Chip
                           key={idx}
                           label={element}
-                          size="small"
                           sx={{
                             m: 0.5,
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
                           }}
@@ -513,7 +522,11 @@ export default async function CakeGalleryPage() {
               ].map((testimonial, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ p: 3, textAlign: "center" }}>
-                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {testimonial.name}
                     </Typography>
                     <Typography

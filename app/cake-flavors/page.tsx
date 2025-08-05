@@ -287,7 +287,11 @@ export default function CakeFlavorsPage() {
                       <Typography variant="h2" sx={{ mr: 2, fontSize: "2.5rem" }}>
                         {flavor.icon}
                       </Typography>
-                      <Typography variant="h3" component="h3" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {flavor.name}
                       </Typography>
                     </Box>
@@ -303,10 +307,11 @@ export default function CakeFlavorsPage() {
                           <Chip
                             key={idx}
                             label={ingredient}
-                            size="small"
                             sx={{
                               backgroundColor: "primary.light",
                               color: "primary.contrastText",
+                              minHeight: "44px", // WCAG touch target requirement
+                              padding: "8px 16px", // Ensure adequate padding
                             }}
                           />
                         ))}
@@ -528,7 +533,11 @@ export default function CakeFlavorsPage() {
               ].map((pairing, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {pairing.cake}
                     </Typography>
                     <Box sx={{ mb: 2 }}>
@@ -536,11 +545,12 @@ export default function CakeFlavorsPage() {
                         <Chip
                           key={idx}
                           label={item}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}

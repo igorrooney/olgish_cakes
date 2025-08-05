@@ -19,7 +19,7 @@ import {
   BodyText,
   SectionHeading,
   ProductCard,
-} from "@/lib/ui-components";
+, TouchTargetWrapper} from "@/lib/ui-components";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 

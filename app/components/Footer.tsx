@@ -23,7 +23,7 @@ import {
   Container as DesignContainer,
   ContactInfo,
   AccessibleIconButton,
-} from "@/lib/ui-components";
+, TouchTargetWrapper} from "@/lib/ui-components";
 import { Box, Grid, Stack, Typography, Button } from "@/lib/mui-optimization";
 
 const { colors, typography, spacing, shadows } = designTokens;
@@ -241,7 +241,6 @@ export default function Footer() {
                             transform: "translateY(-2px)",
                           },
                         }}
-                        size="small"
                       >
                         <social.icon />
                       </AccessibleIconButton>

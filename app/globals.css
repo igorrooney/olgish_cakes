@@ -2,6 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* WCAG Touch Target Utilities */
+@layer utilities {
+  /* Minimum 44px touch targets for WCAG compliance */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Larger touch targets for important actions */
+  .touch-target-large {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  /* Touch-friendly spacing between interactive elements */
+  .touch-spacing {
+    gap: 8px;
+  }
+
+  /* Touch-friendly padding for buttons */
+  .touch-padding {
+    padding: 12px 16px;
+  }
+
+  /* Focus indicators for accessibility */
+  .focus-visible {
+    outline: 2px solid #005bbb;
+    outline-offset: 2px;
+  }
+
+  /* Touch-friendly hover states */
+  .touch-hover {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .touch-hover:hover {
+    transform: translateY(-1px);
+  }
+
+  .touch-hover:active {
+    transform: translateY(0px);
+  }
+}
+
 /* Custom CSS for responsive flex direction fallback */
 @layer utilities {
   .flex-responsive {
@@ -14,6 +58,80 @@
       flex-direction: row;
     }
   }
+}
+
+/* Touch Target Compliance Utilities */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-large {
+  min-height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-extra-large {
+  min-height: 56px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spacing between interactive elements */
+.interactive-spacing {
+  margin: 8px;
+}
+
+.interactive-spacing-large {
+  margin: 12px;
+}
+
+/* Focus indicators for better accessibility */
+.focus-visible {
+  outline: 2px solid #005bbb;
+  outline-offset: 2px;
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  .touch-target-large {
+    min-height: 56px;
+    min-width: 56px;
+  }
+
+  .touch-target-extra-large {
+    min-height: 64px;
+    min-width: 64px;
+  }
+
+  .interactive-spacing {
+    margin: 12px;
+  }
+
+  .interactive-spacing-large {
+    margin: 16px;
+  }
+}
+
+/* Container styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 :root {

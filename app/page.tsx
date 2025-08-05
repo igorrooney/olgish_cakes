@@ -614,12 +614,13 @@ export default async function Home() {
                                   sourceIcons[testimonial.source as keyof typeof sourceIcons] ||
                                   testimonial.source
                                 }
-                                size="small"
                                 className="capitalize"
                                 sx={{
                                   backgroundColor: `${colors.primary.main}20`,
                                   color: colors.primary.main,
                                   fontSize: "0.75rem",
+                                  minHeight: "44px", // WCAG touch target requirement
+                                  padding: "8px 16px", // Ensure adequate padding
                                 }}
                               />
                             )}

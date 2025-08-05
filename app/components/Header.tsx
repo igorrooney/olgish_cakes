@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Container as DesignContainer, AccessibleIconButton } from "@/lib/ui-components";
+import { Container as DesignContainer, AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
 import {
@@ -154,16 +154,22 @@ const MobileMenuItem = memo(
   }) => {
     const menuStyles = useMemo(
       () => ({
-        py: 2,
+        minHeight: "48px", // WCAG touch target requirement with extra padding
+        py: 2.5, // Increased vertical padding for better touch targets
         px: 3,
         borderBottom: `1px solid ${colors.border.light}`,
         backgroundColor: isActive ? colors.background.subtle : "transparent",
+        transition: "all 0.2s ease-in-out",
         "&:hover": {
           backgroundColor: colors.background.subtle,
         },
         "&:active": {
           transform: "scale(0.98)",
           transition: "transform 0.1s ease",
+        },
+        "&:focus": {
+          outline: `2px solid ${colors.primary.main}`,
+          outlineOffset: "2px",
         },
       }),
       [isActive]
@@ -226,19 +232,25 @@ const MobileSubmenuItem = memo(
   }) => {
     const buttonStyles = useMemo(
       () => ({
-        py: isFeatured ? 1.5 : 1,
-        px: isFeatured ? 2 : 2,
+        minHeight: "44px", // WCAG touch target requirement
+        py: isFeatured ? 2 : 1.5, // Increased padding for better touch targets
+        px: isFeatured ? 2.5 : 2,
         borderRadius: isFeatured ? 2 : 1.5,
         backgroundColor: pathname === item.href ? colors.primary.main : "transparent",
         color: pathname === item.href ? colors.primary.contrast : colors.text.primary,
         fontWeight:
           pathname === item.href ? typography.fontWeight.semibold : typography.fontWeight.normal,
+        transition: "all 0.2s ease-in-out",
         "&:hover": {
           backgroundColor: pathname === item.href ? colors.primary.dark : colors.background.paper,
         },
         "&:active": {
           transform: "scale(0.98)",
           transition: "transform 0.1s ease",
+        },
+        "&:focus": {
+          outline: `2px solid ${colors.primary.main}`,
+          outlineOffset: "2px",
         },
       }),
       [pathname, item.href, isFeatured]
@@ -578,7 +590,7 @@ export function Header() {
                             transform: "scaleX(1)",
                           },
                         }}
-                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} /size="large">}
                       >
                         {item.name}
                       </Button>
@@ -781,7 +793,7 @@ export function Header() {
                             transform: "scaleX(1)",
                           },
                         }}
-                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} /size="large">}
                       >
                         {item.name}
                       </Button>
@@ -896,7 +908,7 @@ export function Header() {
                           transform: "scaleX(1)",
                         },
                       }}
-                    >
+                    size="large">
                       {item.name}
                     </Button>
                   </Link>
@@ -931,7 +943,7 @@ export function Header() {
                       boxShadow: shadows.lg,
                     },
                   }}
-                >
+                size="large">
                   Order Now
                 </Button>
               </Link>
@@ -996,6 +1008,11 @@ export function Header() {
                   color: colors.primary.contrast,
                   backgroundColor: "rgba(255,255,255,0.1)",
                   backdropFilter: "blur(10px)",
+                  minWidth: "56px", // Larger touch target for close button
+                  minHeight: "56px", // Larger touch target for close button
+                  width: "56px",
+                  height: "56px",
+                  padding: "16px", // Ensure adequate padding
                   "&:hover": {
                     backgroundColor: "rgba(255,255,255,0.2)",
                   },
@@ -1018,7 +1035,8 @@ export function Header() {
                   fullWidth
                   onClick={handleMobileNavigation}
                   sx={{
-                    py: 1.5,
+                    minHeight: "48px", // WCAG touch target requirement
+                    py: 2, // Increased padding for better touch targets
                     borderRadius: 3,
                     backgroundColor: colors.primary.contrast,
                     color: colors.primary.main,
@@ -1033,8 +1051,12 @@ export function Header() {
                       transform: "translateY(-2px)",
                       boxShadow: shadows.xl,
                     },
+                    "&:focus": {
+                      outline: `2px solid ${colors.primary.main}`,
+                      outlineOffset: "2px",
+                    },
                   }}
-                >
+                size="large">
                   Order Your Cake Now
                 </Button>
               </Link>

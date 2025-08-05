@@ -10,11 +10,14 @@ import {
   ArrowBackIcon,
   ArrowForwardIcon,
 } from "@/lib/mui-optimization";
-import { AccessibleIconButton } from "@/lib/ui-components";
+import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CakeDesigns } from "@/types/cake";
 import { DesignSelector, DesignType } from "./DesignSelector";
+import { designTokens } from "@/lib/design-system";
+
+const { colors } = designTokens;
 
 interface CakeImageGalleryProps {
   designs: CakeDesigns;
@@ -251,13 +254,29 @@ const CakeImageGallery = memo(function CakeImageGallery({
                   borderRadius: 1,
                   overflow: "hidden",
                   cursor: "pointer",
+                  minHeight: "44px", // WCAG touch target requirement
+                  minWidth: "44px", // WCAG touch target requirement
                   "&:hover": {
                     opacity: 0.8,
                     transform: "scale(1.02)",
                   },
                   transition: "opacity 0.2s ease, transform 0.2s ease",
+                  // Ensure proper focus state for accessibility
+                  "&:focus": {
+                    outline: `2px solid ${colors.primary.main}`,
+                    outlineOffset: "2px",
+                  },
                 }}
                 onClick={() => handleThumbnailClick(originalIndex)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${name} image ${index + 2}`}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleThumbnailClick(originalIndex);
+                  }
+                }}
               >
                 <Image
                   src={urlFor(image).width(400).height(400).url()}

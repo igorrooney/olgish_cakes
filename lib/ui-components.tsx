@@ -38,7 +38,30 @@ export const PrimaryButton = ({ children, ...props }: any) => (
   <Button
     variant="contained"
     sx={{
-      ...components.button.primary,
+      minHeight: "44px", // WCAG touch target requirement
+      minWidth: "44px", // WCAG touch target requirement
+      py: 1.5, // 12px vertical padding
+      px: 3, // 12px horizontal padding
+      borderRadius: borderRadius.lg,
+      backgroundColor: colors.primary.main,
+      color: colors.primary.contrast,
+      fontWeight: typography.fontWeight.semibold,
+      fontSize: typography.fontSize.base,
+      textTransform: "none",
+      boxShadow: shadows.md,
+      transition: "all 0.2s ease-in-out",
+      "&:hover": {
+        backgroundColor: colors.primary.dark,
+        transform: "translateY(-1px)",
+        boxShadow: shadows.lg,
+      },
+      "&:active": {
+        transform: "translateY(0px)",
+      },
+      "&:focus": {
+        outline: `2px solid ${colors.primary.main}`,
+        outlineOffset: "2px",
+      },
       ...props.sx,
     }}
     {...props}
@@ -51,7 +74,30 @@ export const SecondaryButton = ({ children, ...props }: any) => (
   <Button
     variant="contained"
     sx={{
-      ...components.button.secondary,
+      minHeight: "44px", // WCAG touch target requirement
+      minWidth: "44px", // WCAG touch target requirement
+      py: 1.5, // 12px vertical padding
+      px: 3, // 12px horizontal padding
+      borderRadius: borderRadius.lg,
+      backgroundColor: colors.secondary.main,
+      color: colors.secondary.contrast,
+      fontWeight: typography.fontWeight.semibold,
+      fontSize: typography.fontSize.base,
+      textTransform: "none",
+      boxShadow: shadows.md,
+      transition: "all 0.2s ease-in-out",
+      "&:hover": {
+        backgroundColor: colors.secondary.dark,
+        transform: "translateY(-1px)",
+        boxShadow: shadows.lg,
+      },
+      "&:active": {
+        transform: "translateY(0px)",
+      },
+      "&:focus": {
+        outline: `2px solid ${colors.secondary.main}`,
+        outlineOffset: "2px",
+      },
       ...props.sx,
     }}
     {...props}
@@ -64,7 +110,30 @@ export const OutlineButton = ({ children, ...props }: any) => (
   <Button
     variant="outlined"
     sx={{
-      ...components.button.outline,
+      minHeight: "44px", // WCAG touch target requirement
+      minWidth: "44px", // WCAG touch target requirement
+      py: 1.5, // 12px vertical padding
+      px: 3, // 12px horizontal padding
+      borderRadius: borderRadius.lg,
+      borderColor: colors.primary.main,
+      color: colors.primary.main,
+      fontWeight: typography.fontWeight.semibold,
+      fontSize: typography.fontSize.base,
+      textTransform: "none",
+      transition: "all 0.2s ease-in-out",
+      "&:hover": {
+        backgroundColor: colors.primary.main,
+        color: colors.primary.contrast,
+        transform: "translateY(-1px)",
+        boxShadow: shadows.md,
+      },
+      "&:active": {
+        transform: "translateY(0px)",
+      },
+      "&:focus": {
+        outline: `2px solid ${colors.primary.main}`,
+        outlineOffset: "2px",
+      },
       ...props.sx,
     }}
     {...props}
@@ -163,6 +232,8 @@ export const IngredientChip = ({ label, ...props }: any) => (
       backgroundColor: colors.background.subtle,
       color: colors.text.primary,
       fontWeight: typography.fontWeight.medium,
+      minHeight: "44px", // WCAG touch target requirement for interactive chips
+      padding: "8px 16px", // Ensure adequate padding
       ...props.sx,
     }}
     {...props}
@@ -178,6 +249,8 @@ export const AllergenChip = ({ label, ...props }: any) => (
       color: colors.error.main,
       fontWeight: typography.fontWeight.semibold,
       border: `1px solid #fecaca`,
+      minHeight: "44px", // WCAG touch target requirement for interactive chips
+      padding: "8px 16px", // Ensure adequate padding
       ...props.sx,
     }}
     {...props}
@@ -192,6 +265,8 @@ export const CategoryChip = ({ label, ...props }: any) => (
       backgroundColor: colors.primary.main,
       color: colors.primary.contrast,
       fontWeight: typography.fontWeight.medium,
+      minHeight: "44px", // WCAG touch target requirement for interactive chips
+      padding: "8px 16px", // Ensure adequate padding
       ...props.sx,
     }}
     {...props}
@@ -444,9 +519,13 @@ export const RatingBadge = ({ rating, ...props }: any) => (
         color: colors.primary.contrast,
         fontWeight: typography.fontWeight.semibold,
         fontSize: typography.fontSize.sm,
-        minWidth: "20px",
-        height: "20px",
-        borderRadius: "10px",
+        minWidth: "44px", // WCAG touch target requirement
+        height: "44px", // WCAG touch target requirement
+        borderRadius: "22px", // Half of height for perfect circle
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "8px 12px", // Ensure adequate padding around content
       },
       ...props.sx,
     }}
@@ -463,12 +542,28 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
     startIcon={<ShoppingCartIcon />}
     onClick={onClick}
     sx={{
+      minHeight: "44px", // WCAG touch target requirement
+      minWidth: "44px", // WCAG touch target requirement
+      py: 1.5, // 12px vertical padding
+      px: 3, // 12px horizontal padding
       backgroundColor: colors.primary.main,
       color: colors.primary.contrast,
+      fontWeight: typography.fontWeight.medium,
+      borderRadius: borderRadius.lg,
+      textTransform: "none",
+      transition: "all 0.2s ease-in-out",
       "&:hover": {
         backgroundColor: colors.primary.dark,
+        transform: "translateY(-1px)",
+        boxShadow: shadows.md,
       },
-      fontWeight: typography.fontWeight.medium,
+      "&:active": {
+        transform: "translateY(0px)",
+      },
+      "&:focus": {
+        outline: `2px solid ${colors.primary.main}`,
+        outlineOffset: "2px",
+      },
       ...props.sx,
     }}
     {...props}
@@ -477,7 +572,7 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
   </Button>
 );
 
-// Accessible IconButton Component
+// Accessible IconButton Component with WCAG touch target compliance
 export const AccessibleIconButton = ({
   children,
   ariaLabel,
@@ -493,24 +588,51 @@ export const AccessibleIconButton = ({
   href?: string;
   [key: string]: any;
 }) => {
+  const iconButtonStyles = {
+    minWidth: "48px", // WCAG touch target requirement with extra padding
+    minHeight: "48px", // WCAG touch target requirement with extra padding
+    width: "48px", // Ensure consistent size
+    height: "48px", // Ensure consistent size
+    padding: "12px", // Ensure adequate padding around icon (48px - 24px = 24px for icon)
+    borderRadius: borderRadius.md,
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      backgroundColor: colors.background.subtle,
+      transform: "scale(1.05)",
+    },
+    "&:active": {
+      transform: "scale(0.95)",
+    },
+    "&:focus": {
+      outline: `2px solid ${colors.primary.main}`,
+      outlineOffset: "2px",
+    },
+    // Ensure proper spacing between multiple icon buttons
+    "& + &": {
+      marginLeft: spacing.sm,
+    },
+    ...props.sx,
+  };
+
   // If used as a link, ensure aria-label is properly applied
   if (component === "a" || href) {
     return (
-      <IconButton 
+      <IconButton
         component={component || "a"}
         href={href}
         aria-label={ariaLabel}
         title={title || ariaLabel}
+        sx={iconButtonStyles}
         {...props}
       >
         {children}
       </IconButton>
     );
   }
-  
+
   // Default button behavior
   return (
-    <IconButton aria-label={ariaLabel} title={title || ariaLabel} {...props}>
+    <IconButton aria-label={ariaLabel} title={title || ariaLabel} sx={iconButtonStyles} {...props}>
       {children}
     </IconButton>
   );
@@ -597,6 +719,29 @@ export const ContactInfo = ({ icon, text, href, ...props }: any) => {
   );
 };
 
+// Touch Target Wrapper Component for ensuring proper spacing
+export const TouchTargetWrapper = ({ children, ...props }: any) => (
+  <Box
+    sx={{
+      minHeight: "44px", // WCAG touch target requirement
+      minWidth: "44px", // WCAG touch target requirement
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: spacing.sm, // Ensure adequate spacing
+      "& > *": {
+        // Ensure child elements don't exceed touch target
+        maxWidth: "100%",
+        maxHeight: "100%",
+      },
+      ...props.sx,
+    }}
+    {...props}
+  >
+    {children}
+  </Box>
+);
+
 // Divider Component
 export const StyledDivider = ({ ...props }: any) => (
   <Divider
@@ -649,6 +794,9 @@ export const UIComponents = {
 
   // Contact
   ContactInfo,
+
+  // Touch Targets
+  TouchTargetWrapper,
 
   // Misc
   StyledDivider,

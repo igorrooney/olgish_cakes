@@ -307,40 +307,60 @@ export default function ChristmasCakesLeedsPage() {
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
                       label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
+                      sx={{
+                        backgroundColor: "success.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
                     <Typography variant="body1">Handcrafted with traditional recipes</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
                       label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
+                      sx={{
+                        backgroundColor: "success.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
                     <Typography variant="body1">Premium ingredients and pure honey</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
                       label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
+                      sx={{
+                        backgroundColor: "success.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
                     <Typography variant="body1">Beautiful festive decorations</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
                       label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
+                      sx={{
+                        backgroundColor: "success.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
                     <Typography variant="body1">Gluten-friendly options available</Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Chip
                       label="✓"
-                      size="small"
-                      sx={{ backgroundColor: "success.main", color: "white" }}
+                      sx={{
+                        backgroundColor: "success.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
                     <Typography variant="body1">Free delivery in Leeds area</Typography>
                   </Box>

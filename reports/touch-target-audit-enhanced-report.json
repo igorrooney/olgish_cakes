@@ -1,0 +1,704 @@
+{
+  "summary": {
+    "totalFiles": 56,
+    "filesWithIssues": 20,
+    "totalIssues": 33,
+    "totalGoodPractices": 55
+  },
+  "issues": [
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 1,
+      "file": "app\\components\\BackButton.tsx",
+      "lineNumbers": [
+        23
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 3,
+      "file": "app\\components\\CakeImageGallery.tsx",
+      "lineNumbers": [
+        201,
+        215,
+        270
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=[\"']button[\"']",
+      "count": 1,
+      "file": "app\\components\\CakeImageGallery.tsx",
+      "lineNumbers": [
+        271
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=['\"]button['\"]",
+      "count": 1,
+      "file": "app\\components\\CakeImageGallery.tsx",
+      "lineNumbers": [
+        271
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "tabIndex=",
+      "count": 1,
+      "file": "app\\components\\CakeImageGallery.tsx",
+      "lineNumbers": [
+        272
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 2,
+      "file": "app\\components\\ContactForm.tsx",
+      "lineNumbers": [
+        324,
+        373
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 3,
+      "file": "app\\components\\CookieConsent.tsx",
+      "lineNumbers": [
+        88,
+        146,
+        156
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 4,
+      "file": "app\\components\\DevTools.tsx",
+      "lineNumbers": [
+        48,
+        110,
+        127,
+        136
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 11,
+      "file": "app\\components\\Header.tsx",
+      "lineNumbers": [
+        201,
+        212,
+        261,
+        540,
+        641
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 1,
+      "file": "app\\components\\MobileBreadcrumbs.tsx",
+      "lineNumbers": [
+        49
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 1,
+      "file": "app\\components\\PlaceholderImage.tsx",
+      "lineNumbers": [
+        38
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 2,
+      "file": "lib\\ui-components.tsx",
+      "lineNumbers": [
+        543,
+        643
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 4,
+      "file": "app\\cakes\\HeroSection.tsx",
+      "lineNumbers": [
+        9,
+        20,
+        34,
+        57
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 6,
+      "file": "app\\cakes\\page.tsx",
+      "lineNumbers": [
+        90,
+        104,
+        107,
+        108,
+        111
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 1,
+      "file": "app\\cakes\\[slug]\\CakePageClient.tsx",
+      "lineNumbers": [
+        205
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 3,
+      "file": "app\\cakes\\[slug]\\OrderModal.tsx",
+      "lineNumbers": [
+        328,
+        409,
+        470
+      ]
+    },
+    {
+      "category": "smallLinks",
+      "pattern": "<a[^>]*>(?!.*min-height|.*min-width)[^<]*<\\/a>",
+      "count": 1,
+      "file": "app\\cakes\\[slug]\\page.tsx",
+      "lineNumbers": []
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 1,
+      "file": "app\\cakes\\[slug]\\page.tsx",
+      "lineNumbers": [
+        288
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 6,
+      "file": "app\\order\\OrderPageClient.tsx",
+      "lineNumbers": [
+        265,
+        277,
+        288,
+        302,
+        326
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 1,
+      "file": "app\\order\\OrderPageClient.tsx",
+      "lineNumbers": [
+        517
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=[\"']button[\"']",
+      "count": 1,
+      "file": "app\\order\\OrderPageClient.tsx",
+      "lineNumbers": [
+        518
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=['\"]button['\"]",
+      "count": 1,
+      "file": "app\\order\\OrderPageClient.tsx",
+      "lineNumbers": [
+        518
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "tabIndex=",
+      "count": 1,
+      "file": "app\\order\\OrderPageClient.tsx",
+      "lineNumbers": [
+        519
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 1,
+      "file": "app\\testimonials\\page.tsx",
+      "lineNumbers": [
+        114
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 14,
+      "file": "app\\testimonials\\TestimonialsList.tsx",
+      "lineNumbers": [
+        81,
+        92,
+        98,
+        100,
+        103
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 2,
+      "file": "app\\testimonials\\TestimonialsList.tsx",
+      "lineNumbers": [
+        120,
+        259
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 3,
+      "file": "app\\get-custom-quote\\QuoteForm.tsx",
+      "lineNumbers": [
+        519,
+        641,
+        649
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 6,
+      "file": "app\\about\\AboutContent.tsx",
+      "lineNumbers": [
+        358,
+        367,
+        383,
+        403,
+        419
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "onClick=",
+      "count": 2,
+      "file": "app\\about\\AboutContent.tsx",
+      "lineNumbers": [
+        458,
+        1056
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=[\"']button[\"']",
+      "count": 1,
+      "file": "app\\about\\AboutContent.tsx",
+      "lineNumbers": [
+        459
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "role=['\"]button['\"]",
+      "count": 1,
+      "file": "app\\about\\AboutContent.tsx",
+      "lineNumbers": [
+        459
+      ]
+    },
+    {
+      "category": "interactiveElements",
+      "pattern": "tabIndex=",
+      "count": 1,
+      "file": "app\\about\\AboutContent.tsx",
+      "lineNumbers": [
+        460
+      ]
+    },
+    {
+      "category": "missingTouchTarget",
+      "pattern": "className=\"[^\"]*(?!.*touch-target)[^\"]*\"",
+      "count": 26,
+      "file": "app\\blog\\[slug]\\page.tsx",
+      "lineNumbers": [
+        168,
+        174,
+        177,
+        187,
+        192
+      ]
+    }
+  ],
+  "goodPractices": [
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 2,
+      "file": "app\\components\\BackButton.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 1,
+      "file": "app\\components\\BackButton.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 1,
+      "file": "app\\components\\CakeCard.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 5,
+      "file": "app\\components\\CakeCard.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "OutlineButton",
+      "count": 3,
+      "file": "app\\components\\CakeCard.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']44px[\"']",
+      "count": 1,
+      "file": "app\\components\\CakeImageGallery.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']44px[\"']",
+      "count": 1,
+      "file": "app\\components\\CakeImageGallery.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 5,
+      "file": "app\\components\\CakeImageGallery.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 3,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 5,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 2,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "PrimaryButton",
+      "count": 3,
+      "file": "app\\components\\ContactForm.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 3,
+      "file": "app\\components\\CookieConsent.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 2,
+      "file": "app\\components\\CookieConsent.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 1,
+      "file": "app\\components\\CookieConsent.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "PrimaryButton",
+      "count": 3,
+      "file": "app\\components\\CookieConsent.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "OutlineButton",
+      "count": 3,
+      "file": "app\\components\\CookieConsent.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 18,
+      "file": "app\\components\\DesignSystemExample.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 8,
+      "file": "app\\components\\DesignSystemExample.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "PrimaryButton",
+      "count": 3,
+      "file": "app\\components\\DesignSystemExample.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "SecondaryButton",
+      "count": 3,
+      "file": "app\\components\\DesignSystemExample.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "OutlineButton",
+      "count": 3,
+      "file": "app\\components\\DesignSystemExample.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 5,
+      "file": "app\\components\\DevTools.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 3,
+      "file": "app\\components\\Footer.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 6,
+      "file": "app\\components\\Footer.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 13,
+      "file": "app\\components\\Footer.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']44px[\"']",
+      "count": 1,
+      "file": "app\\components\\Header.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']48px[\"']",
+      "count": 2,
+      "file": "app\\components\\Header.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 5,
+      "file": "app\\components\\Header.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 1,
+      "file": "app\\components\\Header.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 1,
+      "file": "app\\components\\Loading.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 1,
+      "file": "app\\components\\TrustpilotReviews.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 4,
+      "file": "app\\components\\TrustpilotReviews.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 5,
+      "file": "lib\\design-system.ts"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 1,
+      "file": "lib\\theme.ts"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 1,
+      "file": "lib\\theme.ts"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']44px[\"']",
+      "count": 8,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']44px[\"']",
+      "count": 6,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 3,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.sm",
+      "count": 6,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodSpacing",
+      "pattern": "spacing\\.md",
+      "count": 5,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "PrimaryButton",
+      "count": 2,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "SecondaryButton",
+      "count": 2,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "OutlineButton",
+      "count": 2,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodButtons",
+      "pattern": "AddToCartButton",
+      "count": 2,
+      "file": "lib\\ui-components.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']44px[\"']",
+      "count": 1,
+      "file": "app\\testimonials\\TestimonialsList.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']44px[\"']",
+      "count": 1,
+      "file": "app\\testimonials\\TestimonialsList.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minHeight:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "app\\testimonials\\TestimonialsList.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "minWidth:\\s*[\"']48px[\"']",
+      "count": 1,
+      "file": "app\\testimonials\\TestimonialsList.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 5,
+      "file": "app\\testimonials\\TestimonialsList.tsx"
+    },
+    {
+      "category": "goodTouchTargets",
+      "pattern": "AccessibleIconButton",
+      "count": 7,
+      "file": "app\\about\\AboutContent.tsx"
+    }
+  ],
+  "recommendations": [
+    {
+      "category": "Interactive Elements",
+      "description": "Found 23 interactive elements that may need touch target verification in 14 files",
+      "files": [
+        "app\\components\\BackButton.tsx",
+        "app\\components\\CakeImageGallery.tsx",
+        "app\\components\\ContactForm.tsx",
+        "app\\components\\CookieConsent.tsx",
+        "app\\components\\DevTools.tsx",
+        "app\\components\\Header.tsx",
+        "app\\components\\MobileBreadcrumbs.tsx",
+        "lib\\ui-components.tsx",
+        "app\\cakes\\[slug]\\CakePageClient.tsx",
+        "app\\cakes\\[slug]\\OrderModal.tsx",
+        "app\\order\\OrderPageClient.tsx",
+        "app\\testimonials\\TestimonialsList.tsx",
+        "app\\get-custom-quote\\QuoteForm.tsx",
+        "app\\about\\AboutContent.tsx"
+      ],
+      "fix": "Verify all interactive elements have proper touch targets (44px minimum)",
+      "priority": "medium"
+    }
+  ],
+  "complianceStatus": "Needs Improvement"
+}

@@ -502,7 +502,7 @@ export function QuoteForm() {
                     <Button
                       component="span"
                       variant="outlined"
-                      startIcon={<CloudUploadIcon />}
+                      startIcon={<CloudUploadIcon /size="large">}
                       sx={{ mb: 2 }}
                     >
                       Upload Design Reference
@@ -515,8 +515,7 @@ export function QuoteForm() {
                     <Box sx={{ mt: 2 }}>
                       <Button
                         variant="outlined"
-                        size="small"
-                        startIcon={<DeleteIcon />}
+                        startIcon={<DeleteIcon /size="large">}
                         onClick={removeImage}
                         color="error"
                       >
@@ -640,7 +639,7 @@ export function QuoteForm() {
                     <Button
                       disabled={activeStep === 0}
                       onClick={handleBack}
-                      startIcon={<ArrowBackIcon />}
+                      startIcon={<ArrowBackIcon /size="large">}
                       variant="outlined"
                     >
                       Back
@@ -649,7 +648,7 @@ export function QuoteForm() {
                       variant="contained"
                       onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
                       disabled={!isStepValid(activeStep) || isSubmitting}
-                      endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForwardIcon />}
+                      endIcon={activeStep === steps.length - 1 ? undefined : <ArrowForwardIcon /size="large">}
                       sx={{
                         backgroundColor: colors.primary.main,
                         "&:hover": { backgroundColor: colors.primary.dark },

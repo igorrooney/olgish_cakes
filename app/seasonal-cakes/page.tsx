@@ -252,11 +252,12 @@ export default async function SeasonalCakesPage() {
                         <Chip
                           key={idx}
                           label={flavor}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -355,11 +356,12 @@ export default async function SeasonalCakesPage() {
                         <Chip
                           key={idx}
                           label={flavor}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}

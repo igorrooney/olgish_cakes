@@ -13,7 +13,7 @@ import {
   RefreshIcon,
   ClearIcon,
 } from "@/lib/mui-optimization";
-import { AccessibleIconButton } from "@/lib/ui-components";
+import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import { clearCache } from "@/app/utils/fetchCakes";
 
 export function DevTools() {
@@ -107,7 +107,6 @@ export function DevTools() {
               Dev Tools
             </Typography>
             <AccessibleIconButton
-              size="small"
               onClick={toggleVisibility}
               ariaLabel="Close developer tools"
               sx={{ p: 0.5 }}
@@ -124,20 +123,18 @@ export function DevTools() {
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <Button
-              size="small"
               variant="outlined"
               onClick={handleClearCache}
-              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
+              startIcon={<ClearIcon sx={{ fontSize: 16 }} /size="large">}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Clear Cache
             </Button>
 
             <Button
-              size="small"
               variant="contained"
               onClick={handleForceRefresh}
-              startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
+              startIcon={<RefreshIcon sx={{ fontSize: 16 }} /size="large">}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Force Refresh

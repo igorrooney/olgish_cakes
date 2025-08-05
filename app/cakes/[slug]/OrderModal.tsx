@@ -153,7 +153,7 @@ ${formData.message}
                 <Typography variant="h6" color="primary.main" sx={{ fontWeight: 600 }}>
                   £{currentPrice}
                 </Typography>
-                <Chip label={cake.size} size="small" color="secondary" variant="outlined" />
+                <Chip label={cake.size} color="secondary" variant="outlined" />
               </Box>
               <Typography variant="body2" color="text.secondary" id="order-modal-description">
                 Professional cake design and delivery in Leeds and surrounding areas
@@ -315,22 +315,17 @@ ${formData.message}
                   Professional Service Guarantee
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  <Chip label="24h Response" size="small" color="success" variant="outlined" />
-                  <Chip label="Free Consultation" size="small" color="success" variant="outlined" />
-                  <Chip label="Leeds Delivery" size="small" color="success" variant="outlined" />
-                  <Chip
-                    label="Quality Guaranteed"
-                    size="small"
-                    color="success"
-                    variant="outlined"
-                  />
+                  <Chip label="24h Response" color="success" variant="outlined" />
+                  <Chip label="Free Consultation" color="success" variant="outlined" />
+                  <Chip label="Leeds Delivery" color="success" variant="outlined" />
+                  <Chip label="Quality Guaranteed" color="success" variant="outlined" />
                 </Box>
               </Paper>
             </MotionBox>
           </DialogContent>
           <Divider />
           <DialogActions sx={{ p: 2.5 }}>
-            <Button onClick={onClose} variant="outlined" sx={{ mr: 1 }} disabled={isSubmitting}>
+            <Button onClick={onClose} variant="outlined" sx={{ mr: 1 }} disabled={isSubmitting}size="large">
               Cancel
             </Button>
             <Button
@@ -343,7 +338,7 @@ ${formData.message}
                 fontWeight: 600,
                 position: "relative",
               }}
-            >
+            size="large">
               {isSubmitting ? (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <CircularProgress size={20} sx={{ color: "inherit" }} />
@@ -411,7 +406,7 @@ ${formData.message}
               </Box>
               <Button
                 variant="contained"
-                onClick={() => setShowSuccessModal(false)}
+                onClick={() =size="large"> setShowSuccessModal(false)}
                 sx={{ minWidth: 150 }}
               >
                 Close
@@ -472,7 +467,7 @@ ${formData.message}
                   </span>
                 </Link>
               </Typography>
-              <Button variant="contained" onClick={() => setShowErrorModal(false)}>
+              <Button variant="contained" onClick={() =size="large"> setShowErrorModal(false)}>
                 Try Again
               </Button>
             </motion.div>

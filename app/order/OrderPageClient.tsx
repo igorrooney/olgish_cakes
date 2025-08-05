@@ -604,7 +604,7 @@ export function OrderPageClient() {
                           fontWeight: 600,
                           textTransform: "none",
                         }}
-                      >
+                      size="large">
                         Choose This Option
                       </Button>
                     </CardContent>
@@ -999,7 +999,7 @@ export function OrderPageClient() {
                       bgcolor: colors.secondary.dark,
                     },
                   }}
-                >
+                size="large">
                   Browse Our Cakes
                 </Button>
                 <Button
@@ -1019,7 +1019,7 @@ export function OrderPageClient() {
                       bgcolor: "rgba(255,255,255,0.1)",
                     },
                   }}
-                >
+                size="large">
                   Contact Us
                 </Button>
               </Box>

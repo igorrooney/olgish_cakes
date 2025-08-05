@@ -159,7 +159,6 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                       <Chip
                         icon={sourceIcons[testimonial.source as keyof typeof sourceIcons]}
                         label={testimonial.source}
-                        size="small"
                         className="capitalize"
                         sx={{
                           backgroundColor: "rgba(44, 82, 130, 0.1)",
@@ -213,12 +212,18 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
             sx={{
               "& .MuiPaginationItem-root": {
                 color: "#2c5282",
+                minWidth: "44px", // WCAG touch target requirement
+                minHeight: "44px", // WCAG touch target requirement
                 "&.Mui-selected": {
                   backgroundColor: "#2c5282",
                   color: "white",
                   "&:hover": {
                     backgroundColor: "#1a365d",
                   },
+                },
+                "&:focus": {
+                  outline: `2px solid #2c5282`,
+                  outlineOffset: "2px",
                 },
               },
             }}
@@ -259,6 +264,10 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                 top: 8,
                 right: 8,
                 backgroundColor: "rgba(255, 255, 255, 0.9)",
+                minWidth: "48px", // Larger touch target for close button
+                minHeight: "48px", // Larger touch target for close button
+                width: "48px",
+                height: "48px",
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 1)",
                 },

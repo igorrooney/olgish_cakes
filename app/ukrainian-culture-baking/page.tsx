@@ -423,11 +423,12 @@ export default function UkrainianCultureBakingPage() {
                         <Chip
                           key={idx}
                           label={cake}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}

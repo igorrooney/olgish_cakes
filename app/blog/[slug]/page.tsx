@@ -262,7 +262,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <CardContent>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {relatedPost.categories.slice(0, 2).map(category => (
-                          <Chip key={category} label={category} size="small" variant="outlined" />
+                          <Chip key={category} label={category} variant="outlined" />
                         ))}
                       </div>
                       <Typography variant="h4" className="font-semibold text-lg mb-2">
@@ -275,9 +275,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         href={`/blog/${relatedPost.slug.current}`}
                         aria-label={`Read more about ${relatedPost.title}`}
                       >
-                        <Button variant="outlined" size="small">
-                          Read More
-                        </Button>
+                        <Button variant="outlined">Read More</Button>
                       </Link>
                     </CardContent>
                   </Card>

@@ -377,16 +377,31 @@ export default function ReviewsAwardsPage() {
                       </Box>
                     </Box>
 
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                      <Rating value={review.rating} readOnly size="small" />
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 1 }}>
+                      <Rating
+                        value={review.rating}
+                        readOnly
+                        sx={{
+                          minHeight: "44px", // WCAG touch target requirement
+                          minWidth: "44px", // WCAG touch target requirement
+                          "& .MuiRating-icon": {
+                            fontSize: "1.5rem", // Ensure adequate size for touch targets
+                          },
+                        }}
+                      />
                       <Typography variant="body2" sx={{ ml: 1, color: "text.secondary" }}>
                         {new Date(review.date).toLocaleDateString("en-GB")}
                       </Typography>
                       {review.verified && (
                         <Chip
                           label="Verified"
-                          size="small"
-                          sx={{ ml: 1, backgroundColor: "#4CAF50", color: "white" }}
+                          sx={{
+                            ml: 1,
+                            backgroundColor: "#4CAF50",
+                            color: "white",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
+                          }}
                         />
                       )}
                     </Box>
@@ -401,8 +416,13 @@ export default function ReviewsAwardsPage() {
 
                     <Chip
                       label={review.cakeType}
-                      size="small"
-                      sx={{ mb: 2, backgroundColor: "primary.main", color: "white" }}
+                      sx={{
+                        mb: 2,
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        minHeight: "44px", // WCAG touch target requirement
+                        padding: "8px 16px", // Ensure adequate padding
+                      }}
                     />
 
                     <Typography variant="body1" sx={{ lineHeight: 1.6, fontStyle: "italic" }}>

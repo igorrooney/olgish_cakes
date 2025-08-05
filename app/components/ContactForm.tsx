@@ -1,8 +1,8 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { BodyText, PrimaryButton, StyledTextField } from "@/lib/ui-components";
-import { AccessibleIconButton } from "@/lib/ui-components";
+import { BodyText, PrimaryButton, StyledTextField , TouchTargetWrapper} from "@/lib/ui-components";
+import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import {
   CloudUploadIcon,
   DeleteIcon,
@@ -380,12 +380,16 @@ export function ContactForm({
                           right: -spacing.sm,
                           backgroundColor: colors.error.main,
                           color: "white",
+                          minWidth: "48px", // WCAG touch target requirement with extra padding
+                          minHeight: "48px", // WCAG touch target requirement with extra padding
+                          width: "48px",
+                          height: "48px",
+                          padding: "12px", // Ensure adequate padding
                           "&:hover": {
                             backgroundColor: colors.error.dark,
                           },
                           opacity: isSubmitting ? 0.6 : 1,
                         }}
-                        size="small"
                       >
                         <DeleteIcon />
                       </AccessibleIconButton>

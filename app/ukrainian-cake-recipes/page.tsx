@@ -219,8 +219,12 @@ export default function UkrainianCakeRecipesPage() {
                         <Chip
                           key={idx}
                           label={ingredient}
-                          size="small"
-                          sx={{ backgroundColor: "primary.light", color: "primary.contrastText" }}
+                          sx={{
+                            backgroundColor: "primary.light",
+                            color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
+                          }}
                         />
                       ))}
                     </Box>

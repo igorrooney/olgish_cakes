@@ -426,11 +426,12 @@ export default function AllergenInformationPage() {
                         <Chip
                           key={idx}
                           label={option}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -520,8 +521,9 @@ export default function AllergenInformationPage() {
                         <Chip
                           key={idx}
                           label={allergen}
-                          size="small"
                           sx={{
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                             m: 0.5,
                             backgroundColor: "error.light",
                             color: "error.contrastText",

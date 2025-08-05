@@ -297,7 +297,6 @@ export default function BlogPage() {
                   >
                     <Chip
                       label="Recipes"
-                      size="small"
                       sx={{
                         mb: 2,
                         backgroundColor: "primary.main",
@@ -372,7 +371,6 @@ export default function BlogPage() {
                     <CardContent sx={{ p: 3 }}>
                       <Chip
                         label={post.category}
-                        size="small"
                         sx={{ mb: 2, backgroundColor: "primary.main", color: "white" }}
                       />
                       <Typography
