@@ -1,6 +1,6 @@
 "use client";
 
-import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink, Typography } from "@mui/material";
+import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink, Typography } from "@/lib/mui-optimization";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { designTokens } from "@/lib/design-system";

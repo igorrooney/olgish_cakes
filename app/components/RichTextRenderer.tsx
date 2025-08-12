@@ -1,7 +1,7 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import { Typography, Box, Link } from "@mui/material";
+import { Typography, Box, Link } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 
 const { colors, typography } = designTokens;
@@ -213,7 +213,7 @@ export function RichTextRenderer({
           href={value?.href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`External link to ${value?.href}`}
+          aria-label={`External link to ${value?.href} (opens in new tab)`}
           sx={{
             color: colors.primary.main,
             textDecoration: "underline",

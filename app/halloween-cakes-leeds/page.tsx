@@ -107,12 +107,16 @@ export default function HalloweenCakesLeedsPage() {
             Halloween Cakes
             <span className="block text-purple-600">Leeds</span>
           </Typography>
-          <Typography variant="h5" className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Get spooky with our Halloween cakes! From pumpkin designs to ghostly creations, we'll
-            make your Halloween party unforgettable.
+          <Typography
+            variant="h2"
+            component="h2"
+            className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+          >
+            Spooktacular Halloween cakes for your frightfully fun celebrations. From cute to creepy,
+            we have the perfect Halloween cake for your party.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our Halloween cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "purple.600", "&:hover": { bgcolor: "purple.700" }, color: "white" }}
@@ -120,7 +124,7 @@ export default function HalloweenCakesLeedsPage() {
                 Browse Halloween Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom Halloween cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -152,13 +156,17 @@ export default function HalloweenCakesLeedsPage() {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h5" color="primary" className="text-xl mb-2">
+                  <Typography variant="h4" component="h4" color="primary" className="text-xl mb-2">
                     {cake.name}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 mb-4">
                     {cake.description}
                   </Typography>
-                  <Typography variant="h4" className="text-2xl font-bold text-gray-900 mb-4">
+                  <Typography
+                    variant="h5"
+                    component="h5"
+                    className="text-2xl font-bold text-gray-900 mb-4"
+                  >
                     {cake.price}
                   </Typography>
                   <div className="space-y-2 mb-4">
@@ -189,11 +197,12 @@ export default function HalloweenCakesLeedsPage() {
             <Typography variant="h3" className="text-3xl font-bold mb-4">
               Make Your Halloween Spooky
             </Typography>
-            <Typography variant="h5" className="text-xl mb-6">
-              Order your Halloween cake today and make your celebration frightfully fun!
+            <Typography variant="h4" component="h4" className="text-xl mb-6">
+              Order your spooktacular Halloween cakes today and make your celebration frightfully
+              fun and delicious.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "purple.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -201,7 +210,7 @@ export default function HalloweenCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

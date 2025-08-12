@@ -135,7 +135,11 @@ export default function CakeSizeGuidePage() {
                 <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                   {item.icon}
                 </Typography>
-                <Typography variant="h5" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                >
                   {item.size}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

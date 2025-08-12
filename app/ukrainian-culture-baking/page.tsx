@@ -82,7 +82,8 @@ export default function UkrainianCultureBakingPage() {
               Ukrainian Culture & Baking
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -182,10 +183,14 @@ export default function UkrainianCultureBakingPage() {
                     }}
                   >
                     <Box sx={{ textAlign: "center", mb: 3 }}>
-                      <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
+                      <Typography variant="h3" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {era.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {era.era}
                       </Typography>
                     </Box>
@@ -288,10 +293,14 @@ export default function UkrainianCultureBakingPage() {
                     }}
                   >
                     <Box sx={{ textAlign: "center", mb: 3 }}>
-                      <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
+                      <Typography variant="h4" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {ingredient.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h4"
+                        component="h4"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {ingredient.ingredient}
                       </Typography>
                     </Box>
@@ -401,7 +410,11 @@ export default function UkrainianCultureBakingPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {celebration.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h4"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {celebration.celebration}
                       </Typography>
                     </Box>
@@ -410,11 +423,12 @@ export default function UkrainianCultureBakingPage() {
                         <Chip
                           key={idx}
                           label={cake}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -494,10 +508,14 @@ export default function UkrainianCultureBakingPage() {
               ].map((principle, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: "2.5rem" }}>
+                    <Typography variant="h4" sx={{ mb: 2, fontSize: "2.5rem" }}>
                       {principle.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {principle.principle}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -571,7 +589,11 @@ export default function UkrainianCultureBakingPage() {
               ].map((aspect, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {aspect.aspect}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -600,7 +622,7 @@ export default function UkrainianCultureBakingPage() {
             >
               Experience Ukrainian Culture Through Baking
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Order authentic Ukrainian cakes and experience the rich cultural heritage of Ukrainian
               baking
             </Typography>

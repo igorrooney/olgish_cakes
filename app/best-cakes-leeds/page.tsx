@@ -119,9 +119,13 @@ export default function BestCakesLeedsPage() {
             Best Cakes
             <span className="block text-blue-600">Leeds</span>
           </Typography>
-          <Typography variant="h5" className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Discover why we're rated the #1 cake bakery in Leeds! Our award-winning Ukrainian cakes
-            combine traditional recipes with exceptional quality and taste.
+          <Typography
+            variant="h2"
+            component="h2"
+            className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+          >
+            Discover the best Ukrainian cakes in Leeds. From traditional honey cake to custom
+            designs, we create exceptional cakes for every celebration.
           </Typography>
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="flex items-center gap-2">
@@ -134,7 +138,7 @@ export default function BestCakesLeedsPage() {
             <span className="text-gray-600">Award Winning</span>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cakes">
+            <Link href="/cakes" aria-label="Browse our best cake collection">
               <Button
                 size="large"
                 sx={{ bgcolor: "blue.600", "&:hover": { bgcolor: "blue.700" }, color: "white" }}
@@ -142,7 +146,7 @@ export default function BestCakesLeedsPage() {
                 Browse Our Cakes
               </Button>
             </Link>
-            <Link href="/contact">
+            <Link href="/contact" aria-label="Contact us for custom cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -178,13 +182,17 @@ export default function BestCakesLeedsPage() {
                     <span className="font-semibold">{cake.rating}</span>
                     <span className="text-gray-500">({cake.reviews})</span>
                   </div>
-                  <Typography variant="h5" color="primary" className="text-xl mb-2">
+                  <Typography variant="h3" component="h3" color="primary" className="text-xl mb-2">
                     {cake.name}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 mb-4">
                     {cake.description}
                   </Typography>
-                  <Typography variant="h4" className="text-2xl font-bold text-gray-900 mb-4">
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    className="text-2xl font-bold text-gray-900 mb-4"
+                  >
                     {cake.price}
                   </Typography>
                   <div className="space-y-2 mb-4">
@@ -211,12 +219,12 @@ export default function BestCakesLeedsPage() {
             <Typography variant="h3" className="text-3xl font-bold mb-4">
               Experience the Best Cakes in Leeds
             </Typography>
-            <Typography variant="h5" className="text-xl mb-6">
+            <Typography variant="h4" component="h4" className="text-xl mb-6">
               Join hundreds of satisfied customers who choose Olgish Cakes for their special
               occasions.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our complete cake collection">
                 <Button
                   size="large"
                   sx={{ bgcolor: "white", color: "blue.600", "&:hover": { bgcolor: "gray.100" } }}
@@ -224,7 +232,7 @@ export default function BestCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

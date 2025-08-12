@@ -82,7 +82,8 @@ export default async function DairyFreeCakesLeedsPage() {
               Dairy-Free Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -149,10 +150,14 @@ export default async function DairyFreeCakesLeedsPage() {
                       borderColor: "divider",
                     }}
                   >
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                    <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                       {service.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {service.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -249,7 +254,8 @@ export default async function DairyFreeCakesLeedsPage() {
                   <Grid item xs={12} sm={6} key={index}>
                     <Box sx={{ p: 3, textAlign: "center" }}>
                       <Typography
-                        variant="h6"
+                        variant="h4"
+                        component="h4"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {alt.alternative}

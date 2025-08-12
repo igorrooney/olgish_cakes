@@ -181,7 +181,8 @@ export default function CustomCakeDesignPage() {
               Custom Cake Design Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -248,10 +249,14 @@ export default function CustomCakeDesignPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {service.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -346,7 +351,11 @@ export default function CustomCakeDesignPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -432,7 +441,11 @@ export default function CustomCakeDesignPage() {
               ].map((category, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 4 }}>
-                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                    >
                       {category.category}
                     </Typography>
                     {category.options.map((option, optionIndex) => (
@@ -510,7 +523,11 @@ export default function CustomCakeDesignPage() {
               ].map((element, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {element.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -576,7 +593,11 @@ export default function CustomCakeDesignPage() {
               ].map((factor, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {factor.factor}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -591,15 +612,11 @@ export default function CustomCakeDesignPage() {
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 3,
-              }}
+              variant="h3"
+              component="h3"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
             >
-              Start Your Custom Cake Journey
+              Start Your Custom Cake Design Journey
             </Typography>
             <Typography
               variant="body1"

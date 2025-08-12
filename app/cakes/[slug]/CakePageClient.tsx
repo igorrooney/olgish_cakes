@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { Box, Grid, Typography, Button, Paper, Divider, Container } from "@mui/material";
+import { Box, Grid, Typography, Button, Paper, Divider, Container } from "@/lib/mui-optimization";
 import { CakeImageGallery } from "@/app/components/CakeImageGallery";
 import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
 import { OrderModal } from "./OrderModal";

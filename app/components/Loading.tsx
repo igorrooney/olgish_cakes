@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@/lib/mui-optimization";
 import { motion } from "framer-motion";
 import { designTokens } from "@/lib/design-system";
 import { BodyText } from "@/lib/ui-components";

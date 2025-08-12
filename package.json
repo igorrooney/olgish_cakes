@@ -28,7 +28,11 @@
     "bundle-analyzer": "cross-env ANALYZE=true next build",
     "seo:optimize": "node scripts/seo-optimization.js",
     "seo:check": "node scripts/seo-optimization.js --check-only",
-    "seo:report": "node scripts/seo-optimization.js --generate-report"
+    "seo:report": "node scripts/seo-optimization.js --generate-report",
+    "optimize:render-blocking": "node scripts/optimize-render-blocking.js",
+    "optimize:checklist": "node scripts/optimize-render-blocking.js --checklist",
+    "accessibility:check": "node scripts/accessibility-check.js",
+    "accessibility:audit": "pnpm run accessibility:check && pnpm run lighthouse"
   },
   "engines": {
     "node": ">=18.0.0",

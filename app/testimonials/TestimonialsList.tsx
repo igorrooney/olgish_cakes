@@ -1,32 +1,41 @@
 "use client";
 
-import {
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Rating,
-  Chip,
-  Pagination,
-  Box,
-  Modal,
-  IconButton,
-  Fade,
-} from "@mui/material";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Testimonial } from "../types/testimonial";
-import { Instagram, Facebook, Google, CakeOutlined, ZoomIn, Close } from "@mui/icons-material";
+import {
+  InstagramIcon,
+  FacebookIcon,
+  GoogleIcon,
+  CakeOutlinedIcon,
+  ZoomInIcon,
+  CloseIcon,
+} from "@/lib/mui-optimization";
 import { useRouter } from "next/navigation";
 import { urlFor } from "@/sanity/lib/image";
-import { useState } from "react";
+import { useState, memo } from "react";
+import { designTokens } from "@/lib/design-system";
+import { BodyText } from "@/lib/ui-components";
+import { AccessibleIconButton } from "@/lib/ui-components";
+import {
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Grid,
+  IconButton,
+  Modal,
+  Rating,
+  Typography,
+} from "@/lib/mui-optimization";
+import { Pagination, Fade } from "@mui/material";
 
 const MotionCard = motion.create(Card);
 
 const sourceIcons = {
-  instagram: <Instagram />,
-  facebook: <Facebook />,
-  google: <Google />,
+  instagram: <InstagramIcon />,
+  facebook: <FacebookIcon />,
+  google: <GoogleIcon />,
 } as const;
 
 interface TestimonialsListProps {
@@ -107,8 +116,10 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                         onLoad={() => handleImageLoad(testimonial._id)}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                        <IconButton
+                        <AccessibleIconButton
                           onClick={() => setSelectedImage(imageUrl)}
+                          ariaLabel="View larger image"
+                          title="View larger image"
                           sx={{
                             backgroundColor: "rgba(255, 255, 255, 0.9)",
                             opacity: 0,
@@ -124,18 +135,18 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                             },
                           }}
                         >
-                          <ZoomIn />
-                        </IconButton>
+                          <ZoomInIcon />
+                        </AccessibleIconButton>
                       </div>
                     </div>
                   ) : (
                     <div className="h-32 w-full mb-4 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                      <CakeOutlined sx={{ fontSize: 48, color: "#2c5282" }} />
+                      <CakeOutlinedIcon sx={{ fontSize: 48, color: "#2c5282" }} />
                     </div>
                   )}
                   <div className="flex items-center justify-between">
                     <Typography
-                      variant="h6"
+                      variant="h3"
                       component="h3"
                       sx={{
                         fontFamily: "var(--font-playfair-display)",
@@ -148,7 +159,6 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
                       <Chip
                         icon={sourceIcons[testimonial.source as keyof typeof sourceIcons]}
                         label={testimonial.source}
-                        size="small"
                         className="capitalize"
                         sx={{
                           backgroundColor: "rgba(44, 82, 130, 0.1)",
@@ -202,12 +212,18 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
             sx={{
               "& .MuiPaginationItem-root": {
                 color: "#2c5282",
+                minWidth: "44px", // WCAG touch target requirement
+                minHeight: "44px", // WCAG touch target requirement
                 "&.Mui-selected": {
                   backgroundColor: "#2c5282",
                   color: "white",
                   "&:hover": {
                     backgroundColor: "#1a365d",
                   },
+                },
+                "&:focus": {
+                  outline: `2px solid #2c5282`,
+                  outlineOffset: "2px",
                 },
               },
             }}
@@ -239,21 +255,27 @@ export function TestimonialsList({ testimonials, currentPage, totalPages }: Test
               boxShadow: 24,
             }}
           >
-            <IconButton
+            <AccessibleIconButton
               onClick={() => setSelectedImage(null)}
+              ariaLabel="Close image view"
+              title="Close image view"
               sx={{
                 position: "absolute",
                 top: 8,
                 right: 8,
                 backgroundColor: "rgba(255, 255, 255, 0.9)",
+                minWidth: "48px", // Larger touch target for close button
+                minHeight: "48px", // Larger touch target for close button
+                width: "48px",
+                height: "48px",
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 1)",
                 },
                 zIndex: 1,
               }}
             >
-              <Close />
-            </IconButton>
+              <CloseIcon />
+            </AccessibleIconButton>
             {selectedImage && (
               <Image
                 src={selectedImage}

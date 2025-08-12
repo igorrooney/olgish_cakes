@@ -96,7 +96,8 @@ export default function HoneyCakeVsKyivCakePage() {
               Honey Cake vs Kyiv Cake: Ukrainian Cake Comparison
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -146,7 +147,11 @@ export default function HoneyCakeVsKyivCakePage() {
                     }}
                   />
                   <Box sx={{ p: 3, textAlign: "center" }}>
-                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       Honey Cake
                     </Typography>
                     <Typography variant="body1" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
@@ -177,7 +182,11 @@ export default function HoneyCakeVsKyivCakePage() {
                     }}
                   />
                   <Box sx={{ p: 3, textAlign: "center" }}>
-                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       Kyiv Cake
                     </Typography>
                     <Typography variant="body1" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
@@ -299,7 +308,11 @@ export default function HoneyCakeVsKyivCakePage() {
                     },
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     Honey Cake History
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -331,7 +344,11 @@ export default function HoneyCakeVsKyivCakePage() {
                     },
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                  >
                     Kyiv Cake History
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -358,7 +375,8 @@ export default function HoneyCakeVsKyivCakePage() {
           <Box sx={{ mb: 8 }}>
             <Typography
               variant="h3"
-              sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
+              component="h3"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
             >
               Which Cake Should You Choose?
             </Typography>
@@ -373,7 +391,7 @@ export default function HoneyCakeVsKyivCakePage() {
                     color: "white",
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 3, fontWeight: 600 }}>
                     Choose Honey Cake If:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -403,7 +421,7 @@ export default function HoneyCakeVsKyivCakePage() {
                     color: "white",
                   }}
                 >
-                  <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 3, fontWeight: 600 }}>
                     Choose Kyiv Cake If:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>

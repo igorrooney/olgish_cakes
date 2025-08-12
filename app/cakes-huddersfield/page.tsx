@@ -104,7 +104,8 @@ export default async function CakesHuddersfieldPage() {
               Cakes Huddersfield
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -133,7 +134,8 @@ export default async function CakesHuddersfieldPage() {
           {/* CTA Section */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontWeight: 600,

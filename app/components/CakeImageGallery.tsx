@@ -1,12 +1,23 @@
 "use client";
 
 import { useState, useEffect, memo, useMemo, useCallback } from "react";
-import { Box, IconButton, ImageList, ImageListItem, Typography } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import {
+  Box,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  Typography,
+  ArrowBackIcon,
+  ArrowForwardIcon,
+} from "@/lib/mui-optimization";
+import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CakeDesigns } from "@/types/cake";
 import { DesignSelector, DesignType } from "./DesignSelector";
+import { designTokens } from "@/lib/design-system";
+
+const { colors } = designTokens;
 
 interface CakeImageGalleryProps {
   designs: CakeDesigns;
@@ -123,7 +134,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
           mb: 3,
         }}
       >
-        <Typography variant="h6" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           No image available
         </Typography>
       </Box>
@@ -186,8 +197,10 @@ const CakeImageGallery = memo(function CakeImageGallery({
             },
           }}
         >
-          <IconButton
+          <AccessibleIconButton
             onClick={handlePrevious}
+            ariaLabel="View previous image"
+            title="View previous image"
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "35px",
@@ -196,10 +209,12 @@ const CakeImageGallery = memo(function CakeImageGallery({
               },
             }}
           >
-            <ArrowBack />
-          </IconButton>
-          <IconButton
+            <ArrowBackIcon />
+          </AccessibleIconButton>
+          <AccessibleIconButton
             onClick={handleNext}
+            ariaLabel="View next image"
+            title="View next image"
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "35px",
@@ -208,8 +223,8 @@ const CakeImageGallery = memo(function CakeImageGallery({
               },
             }}
           >
-            <ArrowForward />
-          </IconButton>
+            <ArrowForwardIcon />
+          </AccessibleIconButton>
         </Box>
       </Box>
 
@@ -239,13 +254,29 @@ const CakeImageGallery = memo(function CakeImageGallery({
                   borderRadius: 1,
                   overflow: "hidden",
                   cursor: "pointer",
+                  minHeight: "44px", // WCAG touch target requirement
+                  minWidth: "44px", // WCAG touch target requirement
                   "&:hover": {
                     opacity: 0.8,
                     transform: "scale(1.02)",
                   },
                   transition: "opacity 0.2s ease, transform 0.2s ease",
+                  // Ensure proper focus state for accessibility
+                  "&:focus": {
+                    outline: `2px solid ${colors.primary.main}`,
+                    outlineOffset: "2px",
+                  },
                 }}
                 onClick={() => handleThumbnailClick(originalIndex)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${name} image ${index + 2}`}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleThumbnailClick(originalIndex);
+                  }
+                }}
               >
                 <Image
                   src={urlFor(image).width(400).height(400).url()}

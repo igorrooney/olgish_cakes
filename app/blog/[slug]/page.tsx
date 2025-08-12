@@ -189,7 +189,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.title}
             </Typography>
 
-            <Typography variant="h5" className="text-xl text-gray-600 mb-6">
+            <Typography variant="h3" className="text-xl text-gray-600 mb-6">
               {post.excerpt}
             </Typography>
 
@@ -262,19 +262,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <CardContent>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {relatedPost.categories.slice(0, 2).map(category => (
-                          <Chip key={category} label={category} size="small" variant="outlined" />
+                          <Chip key={category} label={category} variant="outlined" />
                         ))}
                       </div>
-                      <Typography variant="h6" className="font-semibold text-lg mb-2">
+                      <Typography variant="h4" className="font-semibold text-lg mb-2">
                         {relatedPost.title}
                       </Typography>
                       <Typography variant="body2" className="text-gray-600 mb-4">
                         {relatedPost.excerpt}
                       </Typography>
-                      <Link href={`/blog/${relatedPost.slug.current}`}>
-                        <Button variant="outlined" size="small">
-                          Read More
-                        </Button>
+                      <Link
+                        href={`/blog/${relatedPost.slug.current}`}
+                        aria-label={`Read more about ${relatedPost.title}`}
+                      >
+                        <Button variant="outlined">Read More</Button>
                       </Link>
                     </CardContent>
                   </Card>
@@ -288,11 +289,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Typography variant="h3" className="text-2xl font-bold mb-4">
               Ready to Order Your Perfect Cake?
             </Typography>
-            <Typography variant="h5" className="text-blue-100 mb-6">
+            <Typography variant="h4" className="text-blue-100 mb-6">
               Inspired by our blog? Let us create a custom cake for your special occasion.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes">
+              <Link href="/cakes" aria-label="Browse our cake collection">
                 <Button
                   size="large"
                   sx={{
@@ -304,7 +305,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   Browse Our Cakes
                 </Button>
               </Link>
-              <Link href="/contact">
+              <Link href="/contact" aria-label="Contact us for custom cakes">
                 <Button
                   size="large"
                   variant="outlined"

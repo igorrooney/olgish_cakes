@@ -158,7 +158,8 @@ export default async function CelebrationCakesPage() {
               Celebration Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -167,9 +168,8 @@ export default async function CelebrationCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Make every celebration memorable with our custom celebration cakes. From anniversaries
-              to graduations, we create beautiful cakes that honor Ukrainian traditions while
-              celebrating your special moments.
+              Celebrate every special moment with our beautiful Ukrainian celebration cakes. From
+              birthdays to anniversaries, we create cakes that make your celebrations unforgettable.
             </Typography>
             <Chip
               label="Custom Celebration Cake Design"
@@ -225,10 +225,10 @@ export default async function CelebrationCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                     {celebration.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -280,10 +280,10 @@ export default async function CelebrationCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {celebration.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                     {celebration.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -312,7 +312,7 @@ export default async function CelebrationCakesPage() {
 
             {celebrationCakes.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Custom Celebration Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -395,7 +395,7 @@ export default async function CelebrationCakesPage() {
               ].map((tradition, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {tradition.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -480,7 +480,7 @@ export default async function CelebrationCakesPage() {
             >
               Ready to Celebrate?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us today to start planning your perfect celebration cake
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

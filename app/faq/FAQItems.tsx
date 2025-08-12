@@ -9,7 +9,7 @@ import {
   Box,
   useTheme,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ExpandMoreIcon } from "@/lib/mui-optimization";
 import { useState } from "react";
 import { FAQ } from "../utils/fetchFaqs";
 

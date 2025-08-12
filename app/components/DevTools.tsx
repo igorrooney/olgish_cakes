@@ -1,8 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Box, Typography, Alert, IconButton, Tooltip } from "@mui/material";
-import { Settings, Close, Refresh, Clear } from "@mui/icons-material";
+import {
+  Button,
+  Box,
+  Typography,
+  Alert,
+  IconButton,
+  Tooltip,
+  SettingsIcon,
+  CloseIcon,
+  RefreshIcon,
+  ClearIcon,
+} from "@/lib/mui-optimization";
+import { AccessibleIconButton, TouchTargetWrapper } from "@/lib/ui-components";
 import { clearCache } from "@/app/utils/fetchCakes";
 
 export function DevTools() {
@@ -33,8 +44,9 @@ export function DevTools() {
     <>
       {/* Toggle Icon */}
       <Tooltip title="Developer Tools" placement="left">
-        <IconButton
+        <AccessibleIconButton
           onClick={toggleVisibility}
+          ariaLabel="Toggle developer tools"
           sx={{
             position: "fixed",
             bottom: 16,
@@ -51,10 +63,9 @@ export function DevTools() {
             },
             transition: "all 0.3s ease-in-out",
           }}
-          aria-label="Toggle developer tools"
         >
-          {isVisible ? <Close /> : <Settings />}
-        </IconButton>
+          {isVisible ? <CloseIcon /> : <SettingsIcon />}
+        </AccessibleIconButton>
       </Tooltip>
 
       {/* Dev Tools Panel */}
@@ -92,17 +103,16 @@ export function DevTools() {
               variant="subtitle2"
               sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}
             >
-              <Settings sx={{ fontSize: 16 }} />
+              <SettingsIcon sx={{ fontSize: 16 }} />
               Dev Tools
             </Typography>
-            <IconButton
-              size="small"
+            <AccessibleIconButton
               onClick={toggleVisibility}
+              ariaLabel="Close developer tools"
               sx={{ p: 0.5 }}
-              aria-label="Close developer tools"
             >
-              <Close sx={{ fontSize: 16 }} />
-            </IconButton>
+              <CloseIcon sx={{ fontSize: 16 }} />
+            </AccessibleIconButton>
           </Box>
 
           {message && (
@@ -113,20 +123,18 @@ export function DevTools() {
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
             <Button
-              size="small"
               variant="outlined"
               onClick={handleClearCache}
-              startIcon={<Clear sx={{ fontSize: 16 }} />}
+              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Clear Cache
             </Button>
 
             <Button
-              size="small"
               variant="contained"
               onClick={handleForceRefresh}
-              startIcon={<Refresh sx={{ fontSize: 16 }} />}
+              startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Force Refresh

@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
+import { Box, FormControl, MenuItem, Select, Typography } from "@/lib/mui-optimization";
+import type { SelectChangeEvent } from "@/lib/mui-optimization";
 
 export type DesignType = "standard" | "individual";
 
@@ -20,7 +21,7 @@ export function DesignSelector({ hasIndividualDesigns, onChange, value }: Design
       <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
         Select Design Type:
       </Typography>
-      <FormControl fullWidth size="small">
+      <FormControl fullWidth>
         <Select
           value={value}
           onChange={handleChange}

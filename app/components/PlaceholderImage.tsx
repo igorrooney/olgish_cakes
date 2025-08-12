@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Typography } from "@/lib/mui-optimization";
 import { memo } from "react";
 import Image from "next/image";
 

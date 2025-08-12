@@ -188,13 +188,16 @@ export default async function WeddingCakesPage() {
               Wedding Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
                 mx: "auto",
                 mb: 4,
                 lineHeight: 1.6,
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                fontWeight: 400,
               }}
             >
               Create the perfect centerpiece for your special day with our custom wedding cakes.
@@ -255,10 +258,14 @@ export default async function WeddingCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                  >
                     {service.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -287,7 +294,7 @@ export default async function WeddingCakesPage() {
 
             {weddingCakes.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
-                <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
                   Custom Wedding Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -387,7 +394,11 @@ export default async function WeddingCakesPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">

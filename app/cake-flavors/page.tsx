@@ -159,7 +159,8 @@ export default function CakeFlavorsPage() {
               Ukrainian Cake Flavors
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -168,9 +169,9 @@ export default function CakeFlavorsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover the rich and diverse flavors of traditional Ukrainian cakes. Each flavor
-              tells a story of Ukrainian culture, tradition, and the art of baking passed down
-              through generations.
+              Discover the authentic flavors of Ukrainian cakes. From traditional honey cake to
+              modern variations, explore our range of delicious Ukrainian cake flavors and
+              ingredients.
             </Typography>
             <Chip
               label="Authentic Ukrainian Flavors"
@@ -188,7 +189,8 @@ export default function CakeFlavorsPage() {
           {/* Traditional Ukrainian Flavors */}
           <Box sx={{ mb: 8 }}>
             <Typography
-              variant="h2"
+              variant="h3"
+              component="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
@@ -285,7 +287,11 @@ export default function CakeFlavorsPage() {
                       <Typography variant="h2" sx={{ mr: 2, fontSize: "2.5rem" }}>
                         {flavor.icon}
                       </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {flavor.name}
                       </Typography>
                     </Box>
@@ -293,7 +299,7 @@ export default function CakeFlavorsPage() {
                       {flavor.description}
                     </Typography>
                     <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                      <Typography variant="h3" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                         Key Ingredients:
                       </Typography>
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -301,17 +307,18 @@ export default function CakeFlavorsPage() {
                           <Chip
                             key={idx}
                             label={ingredient}
-                            size="small"
                             sx={{
                               backgroundColor: "primary.light",
                               color: "primary.contrastText",
+                              minHeight: "44px", // WCAG touch target requirement
+                              padding: "8px 16px", // Ensure adequate padding
                             }}
                           />
                         ))}
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                      <Typography variant="h3" component="h3" sx={{ mb: 1, fontWeight: 600 }}>
                         Cultural Significance:
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -453,10 +460,10 @@ export default function CakeFlavorsPage() {
               ].map((season, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                    <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                       {season.icon}
                     </Typography>
-                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h4" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
                       {season.season}
                     </Typography>
                     {season.flavors.map((flavor, idx) => (
@@ -526,7 +533,11 @@ export default function CakeFlavorsPage() {
               ].map((pairing, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {pairing.cake}
                     </Typography>
                     <Box sx={{ mb: 2 }}>
@@ -534,11 +545,12 @@ export default function CakeFlavorsPage() {
                         <Chip
                           key={idx}
                           label={item}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -566,7 +578,7 @@ export default function CakeFlavorsPage() {
             >
               Experience Ukrainian Flavors
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Order your favorite Ukrainian cake flavor today and taste the authentic flavors of
               Ukraine
             </Typography>

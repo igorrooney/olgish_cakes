@@ -139,7 +139,8 @@ export default async function SeasonalCakesPage() {
               Seasonal Ukrainian Cakes
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -178,7 +179,7 @@ export default async function SeasonalCakesPage() {
             }}
           >
             <Box sx={{ textAlign: "center", mb: 4 }}>
-              <Typography variant="h2" sx={{ fontSize: "3rem", mb: 2 }}>
+              <Typography variant="h3" sx={{ fontSize: "3rem", mb: 2 }}>
                 🎄
               </Typography>
               <Typography
@@ -236,7 +237,11 @@ export default async function SeasonalCakesPage() {
               ].map((cake, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {cake.name}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -247,11 +252,12 @@ export default async function SeasonalCakesPage() {
                         <Chip
                           key={idx}
                           label={flavor}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -278,7 +284,7 @@ export default async function SeasonalCakesPage() {
             }}
           >
             <Box sx={{ textAlign: "center", mb: 4 }}>
-              <Typography variant="h2" sx={{ fontSize: "3rem", mb: 2 }}>
+              <Typography variant="h3" sx={{ fontSize: "3rem", mb: 2 }}>
                 🐰
               </Typography>
               <Typography
@@ -335,7 +341,11 @@ export default async function SeasonalCakesPage() {
               ].map((cake, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {cake.name}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -346,11 +356,12 @@ export default async function SeasonalCakesPage() {
                         <Chip
                           key={idx}
                           label={flavor}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -434,10 +445,14 @@ export default async function SeasonalCakesPage() {
               ].map((season, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h2" sx={{ mb: 2, fontSize: "3rem" }}>
+                    <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                       {season.icon}
                     </Typography>
-                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 3, fontWeight: 600, color: "primary.main" }}
+                    >
                       {season.season}
                     </Typography>
                     {season.cakes.map((cake, idx) => (
@@ -509,7 +524,11 @@ export default async function SeasonalCakesPage() {
               ].map((tradition, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {tradition.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -576,7 +595,11 @@ export default async function SeasonalCakesPage() {
               ].map((period, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {period.period}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 2, fontWeight: 600 }}>
@@ -605,7 +628,7 @@ export default async function SeasonalCakesPage() {
             >
               Celebrate the Seasons with Ukrainian Tradition
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Order your seasonal Ukrainian cake today and bring authentic Ukrainian traditions to
               your celebrations
             </Typography>

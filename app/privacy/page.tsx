@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
               })}
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               1. Introduction
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
               safeguard your data when you visit our website or use our services.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               2. Information We Collect
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               3. How We Use Your Information
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -179,7 +179,7 @@ export default function PrivacyPolicyPage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               4. Data Security
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -188,7 +188,7 @@ export default function PrivacyPolicyPage() {
               guarantee absolute security.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               5. Your Rights
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -212,7 +212,7 @@ export default function PrivacyPolicyPage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               6. Contact Us
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>

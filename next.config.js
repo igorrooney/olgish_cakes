@@ -38,6 +38,10 @@ const nextConfig = {
     // Enable new performance optimizations
     optimizeServerReact: true,
     serverComponentsExternalPackages: ["@sanity/client"],
+    // Enable CSS optimization
+    optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],
+    // Enable modern JavaScript features
+    esmExternals: true,
   },
   // Enhanced performance settings
   swcMinify: true,
@@ -153,18 +157,28 @@ const nextConfig = {
             name: "vendors",
             chunks: "all",
             priority: 10,
+            reuseExistingChunk: true,
           },
           mui: {
             test: /[\\/]node_modules[\\/]@mui[\\/]/,
             name: "mui",
             chunks: "all",
             priority: 20,
+            reuseExistingChunk: true,
           },
           sanity: {
             test: /[\\/]node_modules[\\/]@sanity[\\/]/,
             name: "sanity",
             chunks: "all",
             priority: 15,
+            reuseExistingChunk: true,
+          },
+          icons: {
+            test: /[\\/]node_modules[\\/]@mui[\\/]icons-material[\\/]/,
+            name: "mui-icons",
+            chunks: "all",
+            priority: 25,
+            reuseExistingChunk: true,
           },
           common: {
             name: "common",
@@ -173,8 +187,20 @@ const nextConfig = {
             priority: 5,
             reuseExistingChunk: true,
           },
+          // Separate emotion cache
+          emotion: {
+            test: /[\\/]node_modules[\\/]@emotion[\\/]/,
+            name: "emotion",
+            chunks: "all",
+            priority: 15,
+            reuseExistingChunk: true,
+          },
         },
       };
+
+      // Enable tree shaking
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
     }
 
     // Optimize images
@@ -205,6 +231,11 @@ const nextConfig = {
         },
       ],
     });
+
+    // Optimize CSS
+    if (!dev) {
+      config.optimization.minimize = true;
+    }
 
     return config;
   },

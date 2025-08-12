@@ -1,7 +1,7 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography, Breadcrumbs, Link } from "@/lib/mui-optimization";
 import { memo } from "react";
 
 const { colors, typography } = designTokens;
@@ -50,6 +50,7 @@ export const MobileBreadcrumbs = memo(({ items, onNavigate }: MobileBreadcrumbsP
                   e.preventDefault();
                   onNavigate?.(item.href!);
                 }}
+                aria-label={`Navigate to ${item.label}`}
                 sx={{
                   color: colors.primary.main,
                   textDecoration: "none",

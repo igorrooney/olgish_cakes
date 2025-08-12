@@ -111,7 +111,11 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
             🌾 Special Gluten-Friendly Wedding Package
           </Typography>
-          <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}>
+          <Typography
+            variant="h3"
+            component="h3"
+            sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}
+          >
             Free Gluten-Friendly Cake Tasting Session
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
@@ -216,7 +220,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h6" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -243,7 +247,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Gluten-Friendly Flours:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -258,7 +262,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
                 Quality Guarantee:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -291,7 +295,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -306,7 +310,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h4" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>

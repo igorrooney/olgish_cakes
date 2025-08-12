@@ -1,13 +1,25 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { BodyText, PrimaryButton, StyledTextField } from "@/lib/ui-components";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Alert, AlertTitle, Box, CircularProgress, IconButton, Paper, Stack } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import {
+  BodyText,
+  PrimaryButton,
+  StyledTextField,
+  TouchTargetWrapper,
+  AccessibleIconButton,
+} from "@/lib/ui-components";
+import {
+  CloudUploadIcon,
+  DeleteIcon,
+  Alert,
+  AlertTitle,
+  Box,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Stack,
+} from "@/lib/mui-optimization";
+import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/mui-optimization";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
@@ -309,6 +321,8 @@ export function ContactForm({
                   onChange={handleImageChange}
                   style={{ display: "none" }}
                   disabled={isSubmitting}
+                  id="design-image-upload"
+                  aria-label="Upload design reference image"
                 />
                 {!previewUrl ? (
                   <Box
@@ -360,24 +374,30 @@ export function ContactForm({
                         }}
                         priority
                       />
-                      <IconButton
+                      <AccessibleIconButton
                         onClick={handleRemoveImage}
                         disabled={isSubmitting}
+                        ariaLabel="Remove uploaded image"
+                        title="Remove uploaded image"
                         sx={{
                           position: "absolute",
                           top: -spacing.sm,
                           right: -spacing.sm,
                           backgroundColor: colors.error.main,
                           color: "white",
+                          minWidth: "48px", // WCAG touch target requirement with extra padding
+                          minHeight: "48px", // WCAG touch target requirement with extra padding
+                          width: "48px",
+                          height: "48px",
+                          padding: "12px", // Ensure adequate padding
                           "&:hover": {
                             backgroundColor: colors.error.dark,
                           },
                           opacity: isSubmitting ? 0.6 : 1,
                         }}
-                        size="small"
                       >
                         <DeleteIcon />
-                      </IconButton>
+                      </AccessibleIconButton>
                     </Box>
                     <BodyText sx={{ color: colors.text.secondary }}>
                       Image uploaded successfully

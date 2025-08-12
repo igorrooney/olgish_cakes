@@ -121,7 +121,7 @@ export default function CookiePolicyPage() {
               })}
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               1. What Are Cookies?
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -130,7 +130,7 @@ export default function CookiePolicyPage() {
               to improve our services.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               2. Types of Cookies We Use
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
@@ -157,7 +157,7 @@ export default function CookiePolicyPage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               3. How We Use Cookies
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -178,7 +178,7 @@ export default function CookiePolicyPage() {
               </ListItem>
             </List>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               4. Managing Your Cookie Preferences
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -188,7 +188,7 @@ export default function CookiePolicyPage() {
               every time you visit our site and some services and functionalities may not work.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               5. Third-Party Cookies
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
@@ -197,7 +197,7 @@ export default function CookiePolicyPage() {
               These third parties may set their own cookies on your device.
             </Typography>
 
-            <Typography variant="h5" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
+            <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               6. Contact Us
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>

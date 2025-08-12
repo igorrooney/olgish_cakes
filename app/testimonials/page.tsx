@@ -132,13 +132,16 @@ export default async function TestimonialsPage({
               Our Happy Customers
             </Typography>
             <Typography
-              variant="h6"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "600px",
                 mx: "auto",
                 lineHeight: 1.6,
                 mb: 4,
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                fontWeight: 400,
               }}
             >
               Discover what makes Olgish Cakes special through the words of our valued customers.
@@ -162,7 +165,13 @@ export default async function TestimonialsPage({
                   borderRadius: 2,
                 }}
               >
-                <Typography variant="h4" color="primary.main" fontWeight="bold" mb={1}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  color="primary.main"
+                  fontWeight="bold"
+                  mb={1}
+                >
                   {totalCount}+
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -178,7 +187,13 @@ export default async function TestimonialsPage({
                   borderRadius: 2,
                 }}
               >
-                <Typography variant="h4" color="primary.main" fontWeight="bold" mb={1}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  color="primary.main"
+                  fontWeight="bold"
+                  mb={1}
+                >
                   5.0
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

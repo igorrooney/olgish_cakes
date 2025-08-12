@@ -156,7 +156,8 @@ export default function AllergenInformationPage() {
               Allergen Information
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -281,7 +282,11 @@ export default function AllergenInformationPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {allergen.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h4"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {allergen.allergen}
                       </Typography>
                     </Box>
@@ -405,7 +410,11 @@ export default function AllergenInformationPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {diet.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {diet.diet}
                       </Typography>
                     </Box>
@@ -417,11 +426,12 @@ export default function AllergenInformationPage() {
                         <Chip
                           key={idx}
                           label={option}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -499,7 +509,11 @@ export default function AllergenInformationPage() {
               ].map((cake, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Box sx={{ p: 3, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {cake.cake}
                     </Typography>
                     <Box sx={{ mb: 2 }}>
@@ -507,8 +521,9 @@ export default function AllergenInformationPage() {
                         <Chip
                           key={idx}
                           label={allergen}
-                          size="small"
                           sx={{
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                             m: 0.5,
                             backgroundColor: "error.light",
                             color: "error.contrastText",
@@ -597,7 +612,11 @@ export default function AllergenInformationPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -623,7 +642,7 @@ export default function AllergenInformationPage() {
             >
               Have Dietary Requirements?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to discuss your specific dietary needs and find the perfect Ukrainian cake
               for you
             </Typography>

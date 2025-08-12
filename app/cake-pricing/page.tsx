@@ -165,7 +165,8 @@ export default function CakePricingPage() {
               Cake Pricing Guide
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -174,9 +175,9 @@ export default function CakePricingPage() {
                 lineHeight: 1.6,
               }}
             >
-              Transparent pricing for authentic Ukrainian cakes. Our pricing structure reflects the
-              quality, craftsmanship, and cultural significance of traditional Ukrainian baking.
-              Find the perfect cake for your budget and celebration.
+              Transparent cake pricing for all our Ukrainian cakes. From traditional honey cake to
+              custom designs, we offer competitive prices for quality ingredients and expert
+              craftsmanship.
             </Typography>
             <Chip
               label="Transparent Pricing Structure"
@@ -268,7 +269,11 @@ export default function CakePricingPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {principle.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {principle.principle}
                       </Typography>
                     </Box>
@@ -513,7 +518,11 @@ export default function CakePricingPage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {factor.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                      >
                         {factor.factor}
                       </Typography>
                     </Box>
@@ -603,7 +612,11 @@ export default function CakePricingPage() {
                     <Typography variant="h2" sx={{ mb: 2, fontSize: "2.5rem" }}>
                       {benefit.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {benefit.benefit}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -686,7 +699,11 @@ export default function CakePricingPage() {
                     <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                       {payment.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {payment.method}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -697,11 +714,12 @@ export default function CakePricingPage() {
                         <Chip
                           key={idx}
                           label={advantage}
-                          size="small"
                           sx={{
                             m: 0.5,
                             backgroundColor: "primary.light",
                             color: "primary.contrastText",
+                            minHeight: "44px", // WCAG touch target requirement
+                            padding: "8px 16px", // Ensure adequate padding
                           }}
                         />
                       ))}
@@ -726,7 +744,7 @@ export default function CakePricingPage() {
             >
               Ready to Order Your Ukrainian Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us for a personalized quote and start your cake ordering journey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

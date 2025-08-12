@@ -1,16 +1,16 @@
 import {
-  ArrowForward,
-  CakeOutlined,
-  Celebration,
-  CheckCircle,
-  Favorite,
-  LocalShipping,
-  Verified,
-  Star,
-  LocationOn,
-  Phone,
-  Email,
-} from "@mui/icons-material";
+  ArrowForwardIcon,
+  CakeOutlinedIcon,
+  CelebrationIcon,
+  CheckCircleIcon,
+  FavoriteIcon,
+  LocalShippingIcon,
+  VerifiedIcon,
+  StarIcon,
+  LocationOnIcon,
+  PhoneIcon,
+  EmailIcon,
+} from "@/lib/mui-optimization";
 import {
   Avatar,
   Box,
@@ -23,7 +23,7 @@ import {
   Rating,
   Stack,
   Typography,
-} from "@mui/material";
+} from "@/lib/mui-optimization";
 import { Metadata } from "next";
 import Link from "next/link";
 import { colors, spacing, typography } from "../lib/design-system";
@@ -35,7 +35,7 @@ import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 export const metadata: Metadata = {
   title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
   description:
-    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 4.9★ rating, same-day delivery Yorkshire. Order now!",
+    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -321,7 +321,7 @@ export default async function Home() {
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+              <div className="flex-responsive gap-4 sm:gap-6 justify-center items-center">
                 <Button
                   variant="contained"
                   color="secondary"
@@ -329,7 +329,7 @@ export default async function Home() {
                   component={Link}
                   href="/cakes"
                   className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center"
-                  endIcon={<ArrowForward />}
+                  endIcon={<ArrowForwardIcon />}
                 >
                   Explore Our Collection
                 </Button>
@@ -387,28 +387,28 @@ export default async function Home() {
           <Grid container spacing={4}>
             {[
               {
-                icon: <CakeOutlined sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Artisanal Craftsmanship",
                 description:
                   "Every cake is handcrafted by our expert bakers using traditional Ukrainian techniques passed down through generations",
                 color: "from-blue-50 to-blue-100",
               },
               {
-                icon: <Verified sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <VerifiedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Premium Ingredients",
                 description:
                   "We source only the finest, freshest ingredients to ensure exceptional taste and quality in every creation",
                 color: "from-yellow-50 to-yellow-100",
               },
               {
-                icon: <LocalShipping sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Fresh Delivery",
                 description:
                   "We deliver fresh, beautiful cakes right to your doorstep across Leeds and surrounding Yorkshire areas",
                 color: "from-blue-50 to-blue-100",
               },
               {
-                icon: <Favorite sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <FavoriteIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Made with Love",
                 description:
                   "Each creation is infused with the warmth and passion of Ukrainian hospitality and family tradition",
@@ -430,7 +430,12 @@ export default async function Home() {
                   >
                     <CardContent className="p-8 text-center">
                       <Box className="mb-6 flex justify-center">{feature.icon}</Box>
-                      <Typography variant="h5" className="font-bold text-gray-900" sx={{ mb: 4 }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        className="font-bold text-gray-900"
+                        sx={{ mb: 4 }}
+                      >
                         {feature.title}
                       </Typography>
                       <Typography
@@ -504,14 +509,14 @@ export default async function Home() {
                 </AnimatedDiv>
 
                 <AnimatedDiv variants={fadeInUp}>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex-responsive gap-4 justify-center">
                     <Button
                       variant="contained"
                       color="primary"
                       component={Link}
                       href="/about"
                       className="px-8 py-4 text-lg font-semibold"
-                      endIcon={<ArrowForward />}
+                      endIcon={<ArrowForwardIcon />}
                     >
                       Discover Our Journey
                     </Button>
@@ -592,7 +597,11 @@ export default async function Home() {
                               {testimonial.customerName.charAt(0)}
                             </Avatar>
                             <div className="flex-1">
-                              <Typography variant="h6" className="font-bold text-gray-900">
+                              <Typography
+                                variant="h3"
+                                component="h3"
+                                className="font-bold text-gray-900"
+                              >
                                 {testimonial.customerName}
                               </Typography>
                               <Typography variant="body2" className="text-gray-600">
@@ -605,12 +614,13 @@ export default async function Home() {
                                   sourceIcons[testimonial.source as keyof typeof sourceIcons] ||
                                   testimonial.source
                                 }
-                                size="small"
                                 className="capitalize"
                                 sx={{
                                   backgroundColor: `${colors.primary.main}20`,
                                   color: colors.primary.main,
                                   fontSize: "0.75rem",
+                                  minHeight: "44px", // WCAG touch target requirement
+                                  padding: "8px 16px", // Ensure adequate padding
                                 }}
                               />
                             )}
@@ -687,7 +697,11 @@ export default async function Home() {
                               {testimonial.name.charAt(0)}
                             </Avatar>
                             <div>
-                              <Typography variant="h6" className="font-bold text-gray-900">
+                              <Typography
+                                variant="h3"
+                                component="h3"
+                                className="font-bold text-gray-900"
+                              >
                                 {testimonial.name}
                               </Typography>
                               <Typography variant="body2" className="text-gray-600">
@@ -735,7 +749,7 @@ export default async function Home() {
               component={Link}
               href="/testimonials"
               className="px-8 py-3 text-lg font-semibold"
-              endIcon={<ArrowForward />}
+              endIcon={<ArrowForwardIcon />}
             >
               Read More Reviews
             </Button>
@@ -780,7 +794,7 @@ export default async function Home() {
           <Grid container spacing={6}>
             {[
               {
-                icon: <CakeOutlined sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Custom Cake Design",
                 description:
                   "Personalized cakes designed to match your vision and occasion perfectly",
@@ -792,7 +806,7 @@ export default async function Home() {
                 ],
               },
               {
-                icon: <Celebration sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <CelebrationIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Special Occasions",
                 description:
                   "Weddings, birthdays, anniversaries, and all your important celebrations",
@@ -804,7 +818,7 @@ export default async function Home() {
                 ],
               },
               {
-                icon: <LocalShipping sx={{ fontSize: 48, color: colors.primary.main }} />,
+                icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Delivery Service",
                 description: "Fresh delivery across Leeds and surrounding Yorkshire areas",
                 features: [
@@ -831,7 +845,8 @@ export default async function Home() {
                     <CardContent className="p-8">
                       <Box className="mb-6 flex justify-center">{service.icon}</Box>
                       <Typography
-                        variant="h5"
+                        variant="h3"
+                        component="h3"
                         className="font-bold text-gray-900 text-center"
                         sx={{ mb: 4 }}
                       >
@@ -848,7 +863,7 @@ export default async function Home() {
                       <Stack spacing={2}>
                         {service.features.map((feature, featureIndex) => (
                           <div key={featureIndex} className="flex items-center gap-3">
-                            <CheckCircle sx={{ color: colors.success.main, fontSize: 20 }} />
+                            <CheckCircleIcon sx={{ color: colors.success.main, fontSize: 20 }} />
                             <Typography variant="body2" className="text-gray-700">
                               {feature}
                             </Typography>
@@ -882,7 +897,8 @@ export default async function Home() {
               >
                 <Box sx={{ textAlign: "center" }}>
                   <Typography
-                    variant="h4"
+                    variant="h3"
+                    component="h3"
                     sx={{
                       fontWeight: typography.fontWeight.bold,
                       color: colors.text.primary,
@@ -913,7 +929,11 @@ export default async function Home() {
                       flexWrap: "wrap",
                     }}
                   >
-                    <Link href="/get-custom-quote" style={{ textDecoration: "none" }}>
+                    <Link
+                      href="/get-custom-quote"
+                      style={{ textDecoration: "none" }}
+                      aria-label="Get a custom cake quote"
+                    >
                       <Button
                         variant="contained"
                         size="large"
@@ -934,7 +954,11 @@ export default async function Home() {
                         Get Quote Now
                       </Button>
                     </Link>
-                    <Link href="/how-to-order" style={{ textDecoration: "none" }}>
+                    <Link
+                      href="/how-to-order"
+                      style={{ textDecoration: "none" }}
+                      aria-label="Learn how to order your cake"
+                    >
                       <Button
                         variant="outlined"
                         size="large"

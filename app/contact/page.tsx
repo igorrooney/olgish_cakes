@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Container, Typography, Box, Stack, Link, Grid, Paper, Divider } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Stack,
+  Link,
+  Grid,
+  Paper,
+  Divider,
+} from "@/lib/mui-optimization";
 import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
 import { Breadcrumbs } from "../components/Breadcrumbs";
 // Import StructuredData
-import PhoneIcon from "@mui/icons-material/Phone";
-import EmailIcon from "@mui/icons-material/Email";
-import InstagramIcon from "@mui/icons-material/Instagram"; // Example social icon
-import FacebookIcon from "@mui/icons-material/Facebook"; // Example social icon
-import WhatsAppIcon from "@mui/icons-material/WhatsApp"; // Import WhatsApp icon
+import {
+  PhoneIcon,
+  EmailIcon,
+  InstagramIcon,
+  FacebookIcon,
+  WhatsAppIcon,
+} from "@/lib/mui-optimization";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -119,7 +130,7 @@ export default function ContactPage() {
           p: { xs: 2, md: 4 },
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 5 }}>
+        <Typography variant="h1" component="h1" gutterBottom align="center" sx={{ mb: 5 }}>
           Contact Us
         </Typography>
         <Grid container spacing={5} alignItems="stretch">
@@ -137,7 +148,7 @@ export default function ContactPage() {
                 boxShadow: "0 4px 24px 0 rgba(0,0,0,0.07)",
               }}
             >
-              <Typography variant="h6" component="h2" gutterBottom>
+              <Typography variant="h2" component="h2" gutterBottom>
                 Get in Touch
               </Typography>
               <Typography variant="body1" sx={{ mb: 3 }}>
@@ -149,7 +160,12 @@ export default function ContactPage() {
                 {/* Phone */}
                 <Stack direction="row" spacing={1.5} alignItems="center">
                   <PhoneIcon color="action" />
-                  <Link href={`tel:${contactPhone}`} color="text.secondary" underline="hover">
+                  <Link
+                    href={`tel:${contactPhone}`}
+                    color="text.secondary"
+                    underline="hover"
+                    aria-label={`Call us at ${contactPhone}`}
+                  >
                     <Typography variant="body1">{contactPhone}</Typography>
                   </Link>
                   <Link
@@ -166,7 +182,12 @@ export default function ContactPage() {
                 {/* Email */}
                 <Stack direction="row" spacing={1.5} alignItems="center">
                   <EmailIcon color="action" />
-                  <Link href={`mailto:${contactEmail}`} color="text.secondary" underline="hover">
+                  <Link
+                    href={`mailto:${contactEmail}`}
+                    color="text.secondary"
+                    underline="hover"
+                    aria-label={`Email us at ${contactEmail}`}
+                  >
                     <Typography variant="body1">{contactEmail}</Typography>
                   </Link>
                 </Stack>
@@ -176,7 +197,7 @@ export default function ContactPage() {
 
               {/* Social Links Section */}
               <Box>
-                <Typography variant="h6" component="h3" gutterBottom>
+                <Typography variant="h2" component="h2" gutterBottom>
                   Follow Us
                 </Typography>
                 <Stack direction="row" spacing={2}>
@@ -185,7 +206,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Instagram"
+                    aria-label="Follow us on Instagram"
                     sx={{ "&:hover": { color: "#E1306C" } }}
                   >
                     <InstagramIcon fontSize="large" />
@@ -195,7 +216,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Facebook"
+                    aria-label="Follow us on Facebook"
                     sx={{ "&:hover": { color: "#1877F2" } }}
                   >
                     <FacebookIcon fontSize="large" />
@@ -219,7 +240,7 @@ export default function ContactPage() {
                 boxShadow: "0 4px 24px 0 rgba(0,0,0,0.07)",
               }}
             >
-              <Typography variant="h6" component="h2" gutterBottom>
+              <Typography variant="h2" component="h2" gutterBottom>
                 Send Us a Message
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

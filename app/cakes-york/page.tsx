@@ -114,7 +114,8 @@ export default async function CakesYorkPage() {
               Ukrainian Cakes York
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -193,7 +194,11 @@ export default async function CakesYorkPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -256,7 +261,7 @@ export default async function CakesYorkPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Areas in York:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -279,7 +284,7 @@ export default async function CakesYorkPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Options:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -347,7 +352,11 @@ export default async function CakesYorkPage() {
                     >
                       "{testimonial.text}"
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ fontWeight: 600, color: "primary.main" }}
+                    >
                       {testimonial.name}
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>

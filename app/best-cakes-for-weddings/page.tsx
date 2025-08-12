@@ -130,7 +130,8 @@ export default async function BestCakesForWeddingsPage() {
               Best Cakes for Weddings
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -139,9 +140,9 @@ export default async function BestCakesForWeddingsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Your comprehensive guide to choosing the perfect wedding cake. From traditional
-              Ukrainian wedding cakes to modern designs, discover the best options for your special
-              day.
+              Discover the perfect wedding cake for your special day. Our Ukrainian wedding cakes
+              combine traditional elegance with modern design to create unforgettable wedding
+              celebrations.
             </Typography>
             <Chip
               label="Wedding Cake Expert Guide"
@@ -225,7 +226,7 @@ export default async function BestCakesForWeddingsPage() {
                       <Typography variant="h2" sx={{ mr: 2, fontSize: "2.5rem" }}>
                         {cake.icon}
                       </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography variant="h3" component="h3" sx={{ fontWeight: 600, color: "primary.main" }}>
                         {cake.name}
                       </Typography>
                     </Box>
@@ -233,7 +234,7 @@ export default async function BestCakesForWeddingsPage() {
                       {cake.description}
                     </Typography>
                     <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                      <Typography variant="h3" component="h3" sx={{ mb: 1, fontWeight: 600 }}>
                         Best For:
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -333,7 +334,8 @@ export default async function BestCakesForWeddingsPage() {
                   <Grid item xs={12} sm={6} key={index}>
                     <Box sx={{ p: 3 }}>
                       <Typography
-                        variant="h6"
+                        variant="h3"
+                        component="h3"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {factor.factor}
@@ -406,7 +408,7 @@ export default async function BestCakesForWeddingsPage() {
             >
               Ready to Choose Your Wedding Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us for a personalized consultation and tasting session
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

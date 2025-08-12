@@ -89,7 +89,8 @@ export default function GlutenFriendlyUkrainianCakesPage() {
               Gluten-Friendly Ukrainian Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -179,7 +180,11 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -267,7 +272,8 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     />
                     <Box sx={{ p: 3 }}>
                       <Typography
-                        variant="h5"
+                        variant="h4"
+                        component="h4"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {cake.name}
@@ -285,7 +291,11 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                           alignItems: "center",
                         }}
                       >
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                        <Typography
+                          variant="h4"
+                          component="h4"
+                          sx={{ fontWeight: 600, color: "primary.main" }}
+                        >
                           {cake.price}
                         </Typography>
                         <Button
@@ -327,7 +337,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Gluten-Friendly Ingredients We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -347,7 +357,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Our Safety Protocols:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -415,7 +425,11 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     >
                       "{testimonial.text}"
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h5"
+                      sx={{ fontWeight: 600, color: "primary.main" }}
+                    >
                       {testimonial.name}
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>
@@ -433,7 +447,11 @@ export default function GlutenFriendlyUkrainianCakesPage() {
 
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h4" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
+            <Typography
+              variant="h4"
+              component="h4"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+            >
               Ready to Order Your Gluten-Friendly Ukrainian Cake?
             </Typography>
             <Typography

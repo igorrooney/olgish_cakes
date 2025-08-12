@@ -113,7 +113,8 @@ export default function CakeSizesGuidePage() {
               Cake Sizes Guide
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -122,9 +123,8 @@ export default function CakeSizesGuidePage() {
                 lineHeight: 1.6,
               }}
             >
-              Not sure what size cake you need? Our comprehensive guide helps you choose the perfect
-              cake size for your celebration. From intimate gatherings to large parties, we have the
-              right size for every occasion.
+              Comprehensive guide to choosing the perfect cake size for your celebration. From
+              intimate gatherings to large events, find the right cake size for your needs.
             </Typography>
             <Chip
               label="Complete Cake Sizing Guide"
@@ -368,7 +368,11 @@ export default function CakeSizesGuidePage() {
                       <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {occasion.icon}
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      <Typography
+                        variant="h3"
+                        component="h3"
+                        sx={{ fontWeight: 600, color: "primary.main" }}
+                      >
                         {occasion.occasion}
                       </Typography>
                     </Box>
@@ -446,7 +450,11 @@ export default function CakeSizesGuidePage() {
               ].map((tradition, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {tradition.tradition}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -527,7 +535,11 @@ export default function CakeSizesGuidePage() {
                     <Typography variant="h2" sx={{ mb: 2, fontSize: "2.5rem" }}>
                       {tip.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {tip.tip}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -597,7 +609,7 @@ export default function CakeSizesGuidePage() {
               ].map((size, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ textAlign: "center", p: 3 }}>
-                    <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {size.size}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 1 }}>
@@ -627,9 +639,9 @@ export default function CakeSizesGuidePage() {
                 mb: 3,
               }}
             >
-              Need Help Choosing the Right Size?
+              Ready to Order Your Perfect Size Cake?
             </Typography>
-            <Typography variant="h6" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us for personalized advice on choosing the perfect cake size for your
               celebration
             </Typography>

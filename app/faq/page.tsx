@@ -70,7 +70,7 @@ export default async function FAQPage() {
           }}
         >
           <Container>
-            <Typography variant="h4" color="error" textAlign="center">
+            <Typography variant="body1" color="error" textAlign="center">
               No FAQs found. Please check your Sanity configuration.
             </Typography>
           </Container>
@@ -116,11 +116,14 @@ export default async function FAQPage() {
               Frequently Asked Questions
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               color="text.secondary"
               sx={{
                 mb: 4,
                 fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.25rem", md: "1.5rem" },
+                fontWeight: 400,
               }}
             >
               Everything you need to know about our Ukrainian-style cakes
@@ -181,7 +184,7 @@ export default async function FAQPage() {
         }}
       >
         <Container>
-          <Typography variant="h4" color="error" textAlign="center">
+          <Typography variant="body1" color="error" textAlign="center">
             Error loading FAQs. Please try again later.
           </Typography>
         </Container>

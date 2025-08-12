@@ -2,7 +2,8 @@
 // This component shows how to use the design tokens and UI components
 
 import React from "react";
-import { Grid, Box } from "@mui/material";
+import Link from "next/link";
+import { Grid, Box } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import {
   DisplayHeading,
@@ -25,7 +26,14 @@ import {
   ContactInfo,
   StyledDivider,
 } from "@/lib/ui-components";
-import { Cake, LocalShipping, Star, Email, Phone, Favorite } from "@mui/icons-material";
+import {
+  CakeOutlinedIcon,
+  LocalShippingIcon,
+  StarIcon,
+  EmailIcon,
+  PhoneIcon,
+  FavoriteIcon,
+} from "@/lib/mui-optimization";
 
 const { colors, spacing } = designTokens;
 
@@ -67,7 +75,9 @@ export function DesignSystemExample() {
             <Grid item xs={12} md={6}>
               <ProductCard>
                 <Box sx={{ textAlign: "center" }}>
-                  <Cake sx={{ fontSize: "3rem", color: colors.primary.main, mb: spacing.md }} />
+                  <CakeOutlinedIcon
+                    sx={{ fontSize: "3rem", color: colors.primary.main, mb: spacing.md }}
+                  />
                   <SectionHeading sx={{ mb: spacing.sm }}>Honey Cake</SectionHeading>
                   <BodyText sx={{ mb: spacing.lg }}>
                     Traditional Ukrainian honey cake with layers of sweet honey and cream.
@@ -79,7 +89,7 @@ export function DesignSystemExample() {
 
             <Grid item xs={12} md={6}>
               <FeatureCard
-                icon={<LocalShipping />}
+                icon={<LocalShippingIcon />}
                 title="Free UK Delivery"
                 description="All orders include free delivery across the United Kingdom with tracking."
               />
@@ -159,10 +169,22 @@ export function DesignSystemExample() {
 
           <Grid container spacing={spacing.lg}>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Email />} text="hello@olgishcakes.co.uk" />
+              <Link
+                href="mailto:hello@olgishcakes.co.uk"
+                style={{ textDecoration: "none", color: "inherit" }}
+                aria-label="Email us at hello@olgishcakes.co.uk"
+              >
+                <ContactInfo icon={<EmailIcon />} text="hello@olgishcakes.co.uk" />
+              </Link>
             </Grid>
             <Grid item xs={12} md={6}>
-              <ContactInfo icon={<Phone />} text="+44 786 721 8194" />
+              <Link
+                href="tel:+447867218194"
+                style={{ textDecoration: "none", color: "inherit" }}
+                aria-label="Call us at +44 786 721 8194"
+              >
+                <ContactInfo icon={<PhoneIcon />} text="+44 786 721 8194" />
+              </Link>
             </Grid>
           </Grid>
         </Box>

@@ -184,7 +184,8 @@ export default function CorporateCakesLeedsPage() {
               Corporate Cakes Leeds
             </Typography>
             <Typography
-              variant="h5"
+              variant="h2"
+              component="h2"
               sx={{
                 color: "text.secondary",
                 maxWidth: "800px",
@@ -238,7 +239,11 @@ export default function CorporateCakesLeedsPage() {
                     <Typography variant="h2" sx={{ mb: 2 }}>
                       {service.icon}
                     </Typography>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {service.title}
                     </Typography>
                     <Typography
@@ -281,7 +286,11 @@ export default function CorporateCakesLeedsPage() {
                       },
                     }}
                   >
-                    <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h3"
+                      component="h3"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {pkg.name}
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
@@ -297,7 +306,7 @@ export default function CorporateCakesLeedsPage() {
                       </Typography>
                     </Box>
 
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                       Package Includes:
                     </Typography>
                     <Box sx={{ mb: 3 }}>
@@ -349,7 +358,7 @@ export default function CorporateCakesLeedsPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Professional Service:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -369,7 +378,7 @@ export default function CorporateCakesLeedsPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Quality Assurance:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -434,7 +443,11 @@ export default function CorporateCakesLeedsPage() {
                       },
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {client.company}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
@@ -516,7 +529,11 @@ export default function CorporateCakesLeedsPage() {
                     >
                       {step.step}
                     </Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    <Typography
+                      variant="h4"
+                      component="h4"
+                      sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
+                    >
                       {step.title}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.5 }}>
@@ -530,8 +547,12 @@ export default function CorporateCakesLeedsPage() {
 
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h4" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
-              Ready to Elevate Your Corporate Events?
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+            >
+              Ready to Order Your Corporate Cakes?
             </Typography>
             <Typography
               variant="body1"

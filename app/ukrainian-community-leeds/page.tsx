@@ -38,7 +38,10 @@ export default function UkrainianCommunityLeedsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
           <Typography
@@ -74,7 +77,11 @@ export default function UkrainianCommunityLeedsPage() {
           </Box>
         </Box>
         <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h4" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+          >
             Ukrainian Community Organizations
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -85,7 +92,11 @@ export default function UkrainianCommunityLeedsPage() {
           </Typography>
         </Paper>
         <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h4" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+          >
             Upcoming Events
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -96,7 +107,11 @@ export default function UkrainianCommunityLeedsPage() {
           </Typography>
         </Paper>
         <Paper elevation={2} sx={{ p: 3 }}>
-          <Typography variant="h4" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+          >
             Support & Resources
           </Typography>
           <Typography variant="body2" color="text.secondary">
