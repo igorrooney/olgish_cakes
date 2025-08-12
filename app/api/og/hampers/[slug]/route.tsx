@@ -21,7 +21,8 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
 
   const name: string = hamper?.name || "Gift Hamper";
   const price: string = hamper?.price ? `£${hamper.price}` : "";
-  const imageUrl: string | undefined = hamper?.images?.find((i: any) => i.isMain)?.asset?.url || hamper?.images?.[0]?.asset?.url;
+  const imageUrl: string | undefined =
+    hamper?.images?.find((i: any) => i.isMain)?.asset?.url || hamper?.images?.[0]?.asset?.url;
 
   const bg = imageUrl || "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png";
 

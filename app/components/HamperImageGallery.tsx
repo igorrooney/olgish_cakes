@@ -6,7 +6,7 @@ import { Box } from "@/lib/mui-optimization";
 import { AccessibleIconButton } from "@/lib/ui-components";
 import { ArrowBackIcon, ArrowForwardIcon } from "@/lib/mui-optimization";
 import { urlFor } from "@/sanity/lib/image";
-import { GiftHamperImage, GiftHamperMainImage } from "@/types/giftHamper";
+import { GiftHamperImage } from "@/types/giftHamper";
 
 interface HamperImageGalleryProps {
   name: string;
@@ -18,7 +18,8 @@ export const HamperImageGallery = memo(function HamperImageGallery({
   images = [],
 }: HamperImageGalleryProps) {
   const allImages = useMemo(() => {
-    const byMain = [...images].sort((a, b) => Number(b.isMain) - Number(a.isMain));
+    const safeImages: GiftHamperImage[] = Array.isArray(images) ? images : [];
+    const byMain = [...safeImages].sort((a, b) => Number(b.isMain) - Number(a.isMain));
     return byMain;
   }, [images]);
 
