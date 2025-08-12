@@ -55,6 +55,7 @@ const footerLinks = {
     { name: "Corporate Cakes", href: "/corporate-cakes-leeds" },
     { name: "Gift Cards", href: "/gift-cards" },
     { name: "Cake Tasting", href: "/cake-tasting-sessions" },
+    { name: "Gift Hampers", href: "/gift-hampers" },
   ],
   locations: [
     { name: "Cakes Leeds", href: "/cakes-leeds" },

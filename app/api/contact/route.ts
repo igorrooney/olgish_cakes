@@ -200,9 +200,7 @@ Olgish Cakes
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
       replyTo: email,
-      subject: isOrderInquiry
-        ? `🎂 New Order Inquiry: ${name} - ${cakeInterest || "Custom Design"}`
-        : `📨 New Contact: ${name}`,
+      subject: isOrderInquiry ? `New Order Inquiry` : `New Contact: ${name}`,
       html: htmlContent,
       text: emailContent, // Fallback plain text version
       attachments: designImage

@@ -25,9 +25,25 @@ async function getBlogPosts() {
   return client.fetch(query);
 }
 
+async function getGiftHampers() {
+  const query = `*[_type == "giftHamper"] {
+    slug,
+    _updatedAt,
+    seo {
+      priority,
+      changefreq
+    }
+  }`;
+  return client.fetch(query);
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://olgishcakes.co.uk";
-  const [cakes, blogPosts] = await Promise.all([getCakes(), getBlogPosts()]);
+  const [cakes, blogPosts, giftHampers] = await Promise.all([
+    getCakes(),
+    getBlogPosts(),
+    getGiftHampers(),
+  ]);
 
   const cakeRoutes = cakes.map(
     (cake: {
@@ -71,6 +87,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
+  const giftHamperRoutes = giftHampers.map(
+    (hamper: {
+      slug: { current: string };
+      _updatedAt: string;
+      seo?: { priority?: number; changefreq?: string };
+    }) => ({
+      url: `${baseUrl}/gift-hampers/${hamper.slug.current}`,
+      lastModified: new Date(hamper._updatedAt),
+      changeFrequency:
+        (hamper.seo?.changefreq as
+          | "always"
+          | "hourly"
+          | "daily"
+          | "weekly"
+          | "monthly"
+          | "yearly"
+          | "never") || "weekly",
+      priority: hamper.seo?.priority || 0.7,
+    })
+  );
+
   // Core pages with high priority
   const corePages = [
     {
@@ -102,6 +139,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/gift-hampers`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.88,
     },
     {
       url: `${baseUrl}/get-custom-quote`,
@@ -625,7 +668,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Combine all entries and sort by priority
-  const allEntries = [...allStaticPages, ...cakeRoutes, ...blogRoutes].sort(
+  const allEntries = [...allStaticPages, ...cakeRoutes, ...giftHamperRoutes, ...blogRoutes].sort(
     (a, b) => (b.priority || 0) - (a.priority || 0)
   );
 

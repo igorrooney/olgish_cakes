@@ -30,6 +30,8 @@ import { colors, spacing, typography } from "../lib/design-system";
 import { AnimatedDiv, AnimatedSection } from "./components/AnimatedSection";
 import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
+import { getFeaturedGiftHampers } from "./utils/fetchGiftHampers";
+import Image from "next/image";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 
 export const metadata: Metadata = {
@@ -157,9 +159,10 @@ const sourceIcons = {
 } as const;
 
 export default async function Home() {
-  const [featuredCakes, testimonials] = await Promise.all([
+  const [featuredCakes, testimonials, featuredHampers] = await Promise.all([
     getFeaturedCakes(),
     getFeaturedTestimonials(3),
+    getFeaturedGiftHampers(),
   ]);
 
   const structuredData = {
@@ -348,6 +351,60 @@ export default async function Home() {
           </AnimatedDiv>
         </Container>
       </AnimatedSection>
+
+      {/* Featured Gift Hampers */}
+      {featuredHampers && featuredHampers.length > 0 && (
+        <section aria-label="Featured Gift Hampers" className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <h2 className="text-3xl md:text-4xl font-semibold text-center mb-6">
+              Featured Gift Hampers
+            </h2>
+            <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+              Discover our curated range of luxury Ukrainian gift hampers — perfect for gifting and
+              special occasions.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {featuredHampers.slice(0, 6).map(h => {
+                const main = h.images?.find((img: any) => img.isMain) || h.images?.[0];
+                const url = main?.asset?._ref
+                  ? require("@/sanity/lib/image").urlFor(main).width(800).height(800).url()
+                  : "/images/placeholder.jpg";
+                return (
+                  <a
+                    key={h._id}
+                    href={`/gift-hampers/${h.slug.current}`}
+                    className="group block"
+                    aria-label={`View ${h.name}`}
+                  >
+                    <div className="relative aspect-square overflow-hidden rounded-2xl shadow-sm bg-white">
+                      <Image
+                        src={url}
+                        alt={`${h.name} - gift hamper`}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    </div>
+                    <div className="mt-4 flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">{h.name}</h3>
+                      <span className="text-primary-600 font-medium">£{h.price}</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+            <div className="text-center mt-10">
+              <a
+                href="/gift-hampers"
+                className="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors rounded-full px-6 py-3"
+                aria-label="Browse all gift hampers"
+              >
+                Browse All Gift Hampers
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <AnimatedSection

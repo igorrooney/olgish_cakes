@@ -1,7 +1,11 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Container as DesignContainer, AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
+import {
+  Container as DesignContainer,
+  AccessibleIconButton,
+  TouchTargetWrapper,
+} from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
 import {
@@ -94,6 +98,10 @@ const navigation = [
         },
       ],
     },
+  },
+  {
+    name: "Gift Hampers",
+    href: "/gift-hampers",
   },
   {
     name: "Services",
@@ -908,7 +916,8 @@ export function Header() {
                           transform: "scaleX(1)",
                         },
                       }}
-                    size="large">
+                      size="large"
+                    >
                       {item.name}
                     </Button>
                   </Link>
@@ -943,7 +952,8 @@ export function Header() {
                       boxShadow: shadows.lg,
                     },
                   }}
-                size="large">
+                  size="large"
+                >
                   Order Now
                 </Button>
               </Link>
@@ -1056,7 +1066,8 @@ export function Header() {
                       outlineOffset: "2px",
                     },
                   }}
-                size="large">
+                  size="large"
+                >
                   Order Your Cake Now
                 </Button>
               </Link>
