@@ -406,7 +406,7 @@ ${formData.message}
               </Box>
               <Button
                 variant="contained"
-                onClick={() =size="large"> setShowSuccessModal(false)}
+                onClick={() => setShowSuccessModal(false)}
                 sx={{ minWidth: 150 }}
               >
                 Close
@@ -467,7 +467,7 @@ ${formData.message}
                   </span>
                 </Link>
               </Typography>
-              <Button variant="contained" onClick={() =size="large"> setShowErrorModal(false)}>
+              <Button variant="contained" onClick={() => setShowErrorModal(false)}>
                 Try Again
               </Button>
             </motion.div>

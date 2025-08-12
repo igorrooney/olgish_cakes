@@ -590,7 +590,7 @@ export function Header() {
                             transform: "scaleX(1)",
                           },
                         }}
-                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} /size="large">}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
                       >
                         {item.name}
                       </Button>
@@ -793,7 +793,7 @@ export function Header() {
                             transform: "scaleX(1)",
                           },
                         }}
-                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} /size="large">}
+                        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: 16 }} />}
                       >
                         {item.name}
                       </Button>

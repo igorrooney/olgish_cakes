@@ -604,7 +604,7 @@ export function OrderPageClient() {
                           fontWeight: 600,
                           textTransform: "none",
                         }}
-                      size="large">
+                      >
                         Choose This Option
                       </Button>
                     </CardContent>
@@ -999,14 +999,13 @@ export function OrderPageClient() {
                       bgcolor: colors.secondary.dark,
                     },
                   }}
-                size="large">
+                >
                   Browse Our Cakes
                 </Button>
                 <Button
                   component={Link}
                   href="/contact"
                   variant="outlined"
-                  size="large"
                   sx={{
                     borderColor: colors.primary.contrast,
                     color: colors.primary.contrast,

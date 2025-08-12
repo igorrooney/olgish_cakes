@@ -13,7 +13,7 @@ import {
   RefreshIcon,
   ClearIcon,
 } from "@/lib/mui-optimization";
-import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
+import { AccessibleIconButton, TouchTargetWrapper } from "@/lib/ui-components";
 import { clearCache } from "@/app/utils/fetchCakes";
 
 export function DevTools() {
@@ -125,7 +125,7 @@ export function DevTools() {
             <Button
               variant="outlined"
               onClick={handleClearCache}
-              startIcon={<ClearIcon sx={{ fontSize: 16 }} /size="large">}
+              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Clear Cache
@@ -134,7 +134,7 @@ export function DevTools() {
             <Button
               variant="contained"
               onClick={handleForceRefresh}
-              startIcon={<RefreshIcon sx={{ fontSize: 16 }} /size="large">}
+              startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
               sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
             >
               Force Refresh

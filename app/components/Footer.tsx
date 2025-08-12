@@ -23,7 +23,8 @@ import {
   Container as DesignContainer,
   ContactInfo,
   AccessibleIconButton,
-, TouchTargetWrapper} from "@/lib/ui-components";
+  TouchTargetWrapper,
+} from "@/lib/ui-components";
 import { Box, Grid, Stack, Typography, Button } from "@/lib/mui-optimization";
 
 const { colors, typography, spacing, shadows } = designTokens;

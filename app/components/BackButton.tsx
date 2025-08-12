@@ -19,7 +19,7 @@ export function BackButton() {
   return (
     <Button
       variant="text"
-      startIcon={<ArrowBackIcon /size="large">}
+      startIcon={<ArrowBackIcon />}
       onClick={handleBack}
       disabled={isLoading}
       sx={{
