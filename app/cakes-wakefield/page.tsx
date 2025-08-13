@@ -75,7 +75,7 @@ export default async function CakesWakefieldPage() {
               latitude: "53.6833",
               longitude: "-1.4977",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

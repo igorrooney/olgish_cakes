@@ -302,7 +302,7 @@ export default async function CakePage({ params }: PageProps) {
         </nav>
       </Container>
 
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <CakePageClient cake={cake} />
       </main>
     </>

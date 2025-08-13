@@ -4,6 +4,7 @@ import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink, Typography } from "@/li
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { designTokens } from "@/lib/design-system";
+import { useMemo } from "react";
 
 const { colors, typography } = designTokens;
 
@@ -52,6 +53,23 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
 
   const breadcrumbItems = items || generateBreadcrumbs();
 
+  const jsonLd = useMemo(() => {
+    const itemListElement = breadcrumbItems.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.label,
+      item: item.href ? `https://olgishcakes.co.uk${item.href}` : undefined,
+    }));
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement,
+    };
+  }, [breadcrumbItems]);
+
+  // Hide breadcrumbs on home page
+  if (pathname === "/") return null;
+
   return (
     <MuiBreadcrumbs
       aria-label="breadcrumb"
@@ -65,6 +83,10 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
         },
       }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {breadcrumbItems.map((item, index) => {
         const isLast = index === breadcrumbItems.length - 1;
 

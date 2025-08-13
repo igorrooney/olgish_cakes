@@ -74,7 +74,7 @@ export function OrderModalStructuredData({
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
+      ratingValue: "5",
       reviewCount: "127",
       bestRating: "5",
       worstRating: "1",

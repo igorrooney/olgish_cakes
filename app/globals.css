@@ -206,19 +206,24 @@ select:focus {
 
 /* Skip to content link for accessibility */
 .skip-link {
-  position: absolute;
-  top: -40px;
+  position: fixed;
+  top: 0;
   left: 6px;
+  transform: translateY(-120%);
   background: #005bbb;
   color: white;
   padding: 8px;
   text-decoration: none;
   border-radius: 4px;
   z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
 }
 
-.skip-link:focus {
-  top: 6px;
+.skip-link:focus-visible {
+  transform: translateY(6px);
+  pointer-events: auto;
+  opacity: 1;
 }
 
 /* Mobile-specific optimizations */

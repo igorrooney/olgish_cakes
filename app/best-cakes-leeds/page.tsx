@@ -49,11 +49,11 @@ const structuredData = {
     latitude: 53.8008,
     longitude: -1.5491,
   },
-  openingHours: "Mo-Su 09:00-18:00",
+  openingHours: "Mo-Su 00:00-23:59",
   priceRange: "££",
   aggregateRating: {
     "@type": "AggregateRating",
-    ratingValue: "4.9",
+    ratingValue: "5",
     reviewCount: "127",
   },
   servesCuisine: "Ukrainian",
@@ -72,7 +72,7 @@ const bestCakes = [
   {
     name: "Kyiv Cake",
     description: "Classic Ukrainian cake with hazelnut meringue and chocolate",
-    rating: "4.9",
+    rating: "5.0",
     reviews: "67",
     price: "£50",
     features: ["Hazelnut meringue", "Chocolate layers", "Traditional", "Premium quality"],
@@ -129,7 +129,7 @@ export default function BestCakesLeedsPage() {
           </Typography>
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold">4.9</span>
+              <span className="text-2xl font-bold">5</span>
               <span className="text-gray-600">/5</span>
             </div>
             <span className="text-gray-600">•</span>

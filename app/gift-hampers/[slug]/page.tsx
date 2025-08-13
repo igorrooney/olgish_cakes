@@ -143,7 +143,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               url: "https://olgishcakes.co.uk",
             },
           },
-          aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "127" },
+          aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "127" },
           ...(hamper.ingredients?.length
             ? {
                 additionalProperty: [

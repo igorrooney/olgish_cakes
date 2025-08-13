@@ -27,6 +27,11 @@ export const NavigationStructuredData = memo(({ navigation }: NavigationStructur
         : item.dropdown
           ? `Explore ${item.name.toLowerCase()} services and options`
           : `Visit ${item.name.toLowerCase()} page`,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Olgish Cakes",
+        url: "https://olgishcakes.co.uk",
+      },
       breadcrumb: {
         "@type": "BreadcrumbList",
         itemListElement: [
