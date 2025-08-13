@@ -63,7 +63,7 @@ export default async function CakesBradfordPage() {
               latitude: "53.7950",
               longitude: "-1.7594",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

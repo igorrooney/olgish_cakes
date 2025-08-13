@@ -4,13 +4,14 @@ import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 export async function OrderPageStructuredData() {
   // Fetch real testimonials from Sanity
   const testimonials = await getFeaturedTestimonials(3);
-  
+
   // Calculate aggregate rating from real testimonials
   const totalRating = testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0);
-  const averageRating = testimonials.length > 0 ? (totalRating / testimonials.length).toFixed(1) : "5.0";
-  
+  const averageRating =
+    testimonials.length > 0 ? (totalRating / testimonials.length).toFixed(1) : "5.0";
+
   // Convert testimonials to schema format
-  const reviewSchema = testimonials.map((testimonial) => ({
+  const reviewSchema = testimonials.map(testimonial => ({
     "@type": "Review",
     author: {
       "@type": "Person",
@@ -61,7 +62,7 @@ export async function OrderPageStructuredData() {
           latitude: 53.8008,
           longitude: -1.5491,
         },
-        openingHours: "Mo-Su 09:00-18:00",
+        openingHours: "Mo-Su 00:00-23:59",
         priceRange: "££",
         servesCuisine: ["Ukrainian", "European"],
         hasOfferCatalog: {

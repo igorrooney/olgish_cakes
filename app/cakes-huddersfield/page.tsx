@@ -64,7 +64,7 @@ export default async function CakesHuddersfieldPage() {
               latitude: "53.6458",
               longitude: "-1.7850",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

@@ -72,7 +72,7 @@ export default async function CakesLeedsPage() {
               latitude: "53.8008",
               longitude: "-1.5491",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             hasOfferCatalog: {

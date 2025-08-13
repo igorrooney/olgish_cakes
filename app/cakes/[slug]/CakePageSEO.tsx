@@ -96,7 +96,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
+      ratingValue: "5",
       reviewCount: "127",
       bestRating: "5",
       worstRating: "1",
@@ -189,7 +189,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
       "https://www.instagram.com/olgishcakes",
       "https://www.trustpilot.com/review/olgishcakes.co.uk",
     ],
-    openingHours: "Mo-Su 09:00-18:00",
+    openingHours: "Mo-Su 00:00-23:59",
     priceRange: "££",
     servesCuisine: "Ukrainian, European",
     hasOfferCatalog: {

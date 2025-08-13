@@ -74,7 +74,7 @@ export default async function CakesYorkPage() {
               latitude: "53.9590",
               longitude: "-1.0815",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

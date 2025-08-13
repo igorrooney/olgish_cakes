@@ -58,7 +58,7 @@ export default function CakesOtleyPage() {
               latitude: "53.9050",
               longitude: "-1.6936",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

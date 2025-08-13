@@ -243,7 +243,7 @@ export function generatePageMetadata({
       "geo.placename": "Leeds",
       "geo.position": "53.8008;-1.5491",
       ICBM: "53.8008, -1.5491",
-      rating: "4.9",
+      rating: "5",
       rating_count: "127",
       price_range: "££",
       cuisine: "Ukrainian",
@@ -295,21 +295,9 @@ export function generateOrganizationSchema() {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "17:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Sunday",
-        opens: "10:00",
-        closes: "16:00",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "00:00",
+        closes: "23:59",
       },
     ],
     priceRange: "££",
@@ -333,7 +321,7 @@ export function generateOrganizationSchema() {
     ],
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
+      ratingValue: "5",
       reviewCount: "127",
       bestRating: "5",
       worstRating: "1",
@@ -342,11 +330,7 @@ export function generateOrganizationSchema() {
     deliveryAvailable: true,
     takeoutAvailable: true,
     foundingDate: "2023",
-    award: [
-      "Best Ukrainian Bakery Leeds 2024",
-      "4.9★ Customer Rating",
-      "Same-day Delivery Service",
-    ],
+    award: ["Best Ukrainian Bakery Leeds 2024", "5★ Customer Rating", "Same-day Delivery Service"],
   };
 }
 
@@ -376,21 +360,9 @@ export function generateLocalBusinessSchema() {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
-        opens: "09:00",
-        closes: "17:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Sunday",
-        opens: "10:00",
-        closes: "16:00",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "00:00",
+        closes: "23:59",
       },
     ],
     priceRange: "££",
@@ -409,7 +381,7 @@ export function generateLocalBusinessSchema() {
     ],
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
+      ratingValue: "5",
       reviewCount: "127",
       bestRating: "5",
       worstRating: "1",

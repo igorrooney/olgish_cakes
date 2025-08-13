@@ -1,8 +1,9 @@
 import { type SchemaTypeDefinition } from "sanity";
 import cake from "./schemas/cake";
+import giftHamper from "./schemas/giftHamper";
 import testimonial from "./schemas/testimonial";
 import faq from "./schemas/faq";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [cake, testimonial, faq],
+  types: [cake, giftHamper, testimonial, faq],
 };

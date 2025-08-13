@@ -7,6 +7,7 @@ import { theme } from "@/lib/theme";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
+import UtilityBar from "./components/UtilityBar";
 import Footer from "./components/Footer";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import Script from "next/script";
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
     template: "%s | Olgish Cakes - Ukrainian Cakes Leeds",
   },
   description:
-    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
+    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
     title:
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
     type: "website",
     locale: "en_GB",
     url: "https://olgishcakes.co.uk",
@@ -111,7 +112,7 @@ export const metadata: Metadata = {
     title:
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
@@ -135,7 +136,7 @@ export const metadata: Metadata = {
     "geo.placename": "Leeds",
     "geo.position": "53.8008;-1.5491",
     ICBM: "53.8008, -1.5491",
-    rating: "4.9",
+    rating: "5",
     rating_count: "127",
     price_range: "££",
     cuisine: "Ukrainian",
@@ -250,7 +251,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               name: "Olgish Cakes",
               alternateName: "Olgish Ukrainian Cakes",
               description:
-                "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 4.9★ rating, same-day delivery across Yorkshire.",
+                "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
               url: "https://olgishcakes.co.uk",
               logo: {
                 "@type": "ImageObject",
@@ -277,21 +278,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               openingHoursSpecification: [
                 {
                   "@type": "OpeningHoursSpecification",
-                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                  opens: "09:00",
-                  closes: "18:00",
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: "Saturday",
-                  opens: "09:00",
-                  closes: "17:00",
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: "Sunday",
-                  opens: "10:00",
-                  closes: "16:00",
+                  dayOfWeek: [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ],
+                  opens: "00:00",
+                  closes: "23:59",
                 },
               ],
               priceRange: "££",
@@ -315,7 +312,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ],
               aggregateRating: {
                 "@type": "AggregateRating",
-                ratingValue: "4.9",
+                ratingValue: "5",
                 reviewCount: "127",
                 bestRating: "5",
                 worstRating: "1",
@@ -368,7 +365,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               foundingDate: "2023",
               award: [
                 "Best Ukrainian Bakery Leeds 2024",
-                "4.9★ Customer Rating",
+                "5★ Customer Rating",
                 "Same-day Delivery Service",
               ],
             }),
@@ -418,6 +415,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CssBaseline />
             <Providers>
               <div className="flex flex-col min-h-screen">
+                <UtilityBar />
                 <Header />
                 <main className="flex-grow">{children}</main>
                 <Footer />

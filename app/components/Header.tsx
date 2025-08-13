@@ -1,7 +1,11 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
-import { Container as DesignContainer, AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
+import {
+  Container as DesignContainer,
+  AccessibleIconButton,
+  TouchTargetWrapper,
+} from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
 import {
@@ -30,8 +34,11 @@ import { usePerformanceMonitor } from "./PerformanceMonitor";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
+// Feature flag: control visibility of Gift Hampers in navigation (default enabled)
+const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
+
 // Memoized navigation data
-const navigation = [
+const navigationBase = [
   { name: "Home", href: "/" },
   {
     name: "Cakes",
@@ -96,6 +103,14 @@ const navigation = [
     },
   },
   {
+    name: "Gift Hampers",
+    href: "/gift-hampers",
+  },
+  {
+    name: "Get a Quote",
+    href: "/get-custom-quote",
+  },
+  {
     name: "Services",
     href: "/custom-cake-design",
     dropdown: [
@@ -129,9 +144,25 @@ const navigation = [
   },
   { name: "Gallery", href: "/cake-gallery" },
   { name: "Blog", href: "/blog" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  {
+    name: "Company",
+    href: "/about",
+    dropdown: [
+      { name: "About Us", href: "/about" },
+      { name: "Reviews & Awards", href: "/reviews-awards" },
+      { name: "FAQ", href: "/faq" },
+      { name: "Customer Stories", href: "/customer-stories" },
+      { name: "Ukrainian Community", href: "/ukrainian-community-leeds" },
+      { name: "Charity Events", href: "/charity-events" },
+      { name: "Delivery Areas", href: "/delivery-areas" },
+      { name: "Contact", href: "/contact" },
+    ],
+  },
 ];
+
+const navigation = isGiftHampersEnabled
+  ? navigationBase
+  : navigationBase.filter(item => item.name !== "Gift Hampers");
 
 // Memoized components for better performance
 const MobileMenuItem = memo(
@@ -185,12 +216,12 @@ const MobileMenuItem = memo(
     );
 
     const handleClick = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
       if (hasSubmenu) {
+        e.preventDefault();
+        e.stopPropagation();
         onToggle();
       } else {
+        // Allow default Link navigation; just close drawer/track
         onNavigate();
       }
     };
@@ -303,6 +334,7 @@ export function Header() {
   const [cakesMenuAnchor, setCakesMenuAnchor] = useState<null | HTMLElement>(null);
   const [servicesMenuAnchor, setServicesMenuAnchor] = useState<null | HTMLElement>(null);
   const [learnMenuAnchor, setLearnMenuAnchor] = useState<null | HTMLElement>(null);
+  const [companyMenuAnchor, setCompanyMenuAnchor] = useState<null | HTMLElement>(null);
 
   // Mobile gestures hook
   const { triggerHapticFeedback } = useMobileGestures({
@@ -398,10 +430,19 @@ export function Header() {
     setLearnMenuAnchor(null);
   }, []);
 
+  const handleCompanyMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setCompanyMenuAnchor(event.currentTarget);
+  }, []);
+
+  const handleCompanyMenuClose = useCallback(() => {
+    setCompanyMenuAnchor(null);
+  }, []);
+
   // Memoized computed values
   const isCakesMenuOpen = Boolean(cakesMenuAnchor);
   const isServicesMenuOpen = Boolean(servicesMenuAnchor);
   const isLearnMenuOpen = Boolean(learnMenuAnchor);
+  const isCompanyMenuOpen = Boolean(companyMenuAnchor);
 
   // Memoized mobile menu styles
   const mobileDrawerStyles = useMemo(
@@ -728,14 +769,27 @@ export function Header() {
                 if (item.dropdown) {
                   const isServicesMenu = item.name === "Services";
                   const isLearnMenu = item.name === "Learn";
-                  const menuAnchor = isServicesMenu ? servicesMenuAnchor : learnMenuAnchor;
-                  const isMenuOpen = isServicesMenu ? isServicesMenuOpen : isLearnMenuOpen;
+                  const isCompanyMenu = item.name === "Company";
+                  const menuAnchor = isServicesMenu
+                    ? servicesMenuAnchor
+                    : isLearnMenu
+                      ? learnMenuAnchor
+                      : companyMenuAnchor;
+                  const isMenuOpen = isServicesMenu
+                    ? isServicesMenuOpen
+                    : isLearnMenu
+                      ? isLearnMenuOpen
+                      : isCompanyMenuOpen;
                   const handleMenuOpen = isServicesMenu
                     ? handleServicesMenuOpen
-                    : handleLearnMenuOpen;
+                    : isLearnMenu
+                      ? handleLearnMenuOpen
+                      : handleCompanyMenuOpen;
                   const handleMenuClose = isServicesMenu
                     ? handleServicesMenuClose
-                    : handleLearnMenuClose;
+                    : isLearnMenu
+                      ? handleLearnMenuClose
+                      : handleCompanyMenuClose;
 
                   return (
                     <Box key={item.name}>
@@ -908,7 +962,8 @@ export function Header() {
                           transform: "scaleX(1)",
                         },
                       }}
-                    size="large">
+                      size="large"
+                    >
                       {item.name}
                     </Button>
                   </Link>
@@ -943,13 +998,15 @@ export function Header() {
                       boxShadow: shadows.lg,
                     },
                   }}
-                size="large">
+                  size="large"
+                >
                   Order Now
                 </Button>
               </Link>
             </Box>
 
             {/* Mobile Menu Button */}
+
             <AccessibleIconButton
               color="primary"
               ariaLabel="Open mobile menu"
@@ -1056,10 +1113,43 @@ export function Header() {
                       outlineOffset: "2px",
                     },
                   }}
-                size="large">
+                  size="large"
+                >
                   Order Your Cake Now
                 </Button>
               </Link>
+            </Box>
+
+            {/* Call Us Button (mobile) */}
+            <Box sx={{ mt: 1, position: "relative", zIndex: 1 }}>
+              <Button
+                component="a"
+                href="tel:+447867218194"
+                fullWidth
+                sx={{
+                  minHeight: "48px",
+                  py: 2,
+                  borderRadius: 3,
+                  color: colors.primary.contrast,
+                  border: `1px solid ${colors.primary.contrast}`,
+                  backgroundColor: "transparent",
+                  fontWeight: typography.fontWeight.bold,
+                  fontSize: typography.fontSize.base,
+                  textTransform: "none",
+                  letterSpacing: 0.5,
+                  "&:hover": {
+                    backgroundColor: "rgba(255,255,255,0.15)",
+                    transform: "translateY(-1px)",
+                  },
+                  "&:focus": {
+                    outline: `2px solid ${colors.primary.contrast}`,
+                    outlineOffset: "2px",
+                  },
+                }}
+                size="large"
+              >
+                Call Us Now
+              </Button>
             </Box>
           </Box>
 

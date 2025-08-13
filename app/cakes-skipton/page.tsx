@@ -58,7 +58,7 @@ export default function CakesSkiptonPage() {
               latitude: "53.9621",
               longitude: "-2.0177",
             },
-            openingHours: "Mo-Su 09:00-18:00",
+            openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {

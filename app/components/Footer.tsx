@@ -29,7 +29,10 @@ import { Box, Grid, Stack, Typography, Button } from "@/lib/mui-optimization";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
-const footerLinks = {
+// Feature flag: control visibility of Gift Hampers links (default enabled)
+const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
+
+const footerLinksBase = {
   cakes: [
     { name: "All Cakes", href: "/cakes" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },
@@ -55,6 +58,7 @@ const footerLinks = {
     { name: "Corporate Cakes", href: "/corporate-cakes-leeds" },
     { name: "Gift Cards", href: "/gift-cards" },
     { name: "Cake Tasting", href: "/cake-tasting-sessions" },
+    { name: "Gift Hampers", href: "/gift-hampers" },
   ],
   locations: [
     { name: "Cakes Leeds", href: "/cakes-leeds" },
@@ -83,6 +87,13 @@ const footerLinks = {
     { name: "Cookie Policy", href: "/cookies" },
     { name: "Allergen Info", href: "/allergen-information" },
   ],
+};
+
+const footerLinks = {
+  ...footerLinksBase,
+  services: isGiftHampersEnabled
+    ? footerLinksBase.services
+    : footerLinksBase.services.filter(link => link.name !== "Gift Hampers"),
 };
 
 const contactInfo = {
