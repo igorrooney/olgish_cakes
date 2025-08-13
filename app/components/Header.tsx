@@ -34,8 +34,11 @@ import { usePerformanceMonitor } from "./PerformanceMonitor";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
+// Feature flag: control visibility of Gift Hampers in navigation (default enabled)
+const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
+
 // Memoized navigation data
-const navigation = [
+const navigationBase = [
   { name: "Home", href: "/" },
   {
     name: "Cakes",
@@ -156,6 +159,10 @@ const navigation = [
     ],
   },
 ];
+
+const navigation = isGiftHampersEnabled
+  ? navigationBase
+  : navigationBase.filter(item => item.name !== "Gift Hampers");
 
 // Memoized components for better performance
 const MobileMenuItem = memo(
