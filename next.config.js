@@ -203,34 +203,7 @@ const nextConfig = {
       config.optimization.sideEffects = false;
     }
 
-    // Optimize images
-    config.module.rules.push({
-      test: /\.(png|jpe?g|gif|svg|webp|avif)$/i,
-      use: [
-        {
-          loader: "image-webpack-loader",
-          options: {
-            mozjpeg: {
-              progressive: true,
-              quality: 85,
-            },
-            optipng: {
-              enabled: false,
-            },
-            pngquant: {
-              quality: [0.65, 0.9],
-              speed: 4,
-            },
-            gifsicle: {
-              interlaced: false,
-            },
-            webp: {
-              quality: 85,
-            },
-          },
-        },
-      ],
-    });
+    // Rely on Next.js built-in Image Optimization instead of custom loaders
 
     // Optimize CSS
     if (!dev) {

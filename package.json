@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "icons:maskable": "tsx scripts/generate-maskable-icons.ts",
+    "icons:all": "tsx scripts/generate-icons.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -82,7 +84,8 @@
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "sharp": "^0.33.4"
   },
   "resolutions": {
     "@emotion/react": "11.11.3",
