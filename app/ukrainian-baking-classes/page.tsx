@@ -16,6 +16,8 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
     "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops | Olgish Cakes",
@@ -377,8 +379,7 @@ export default function UkrainianBakingClassesPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: theme =>
-                  `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
                 color: "white",
               }}
             >

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
   description:
@@ -63,7 +65,7 @@ export default function UkrainianChristmasTraditionsPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Ukrainian Christmas Traditions
@@ -95,8 +97,7 @@ export default function UkrainianChristmasTraditionsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             color: "white",
           }}
         >
@@ -122,7 +123,7 @@ export default function UkrainianChristmasTraditionsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             🕯️ Pre-Christmas Traditions
@@ -166,7 +167,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: theme => theme.palette.primary.main, fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
                   </Typography>
@@ -190,7 +191,7 @@ export default function UkrainianChristmasTraditionsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             🎊 Christmas Day Traditions
@@ -234,7 +235,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: theme => theme.palette.primary.main, fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
                   </Typography>
@@ -258,7 +259,7 @@ export default function UkrainianChristmasTraditionsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             🎂 Traditional Ukrainian Christmas Cakes
@@ -308,7 +309,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: theme => theme.palette.primary.main, fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {cake.title}
                   </Typography>
@@ -332,7 +333,7 @@ export default function UkrainianChristmasTraditionsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             🎁 Post-Christmas Traditions
@@ -379,13 +380,13 @@ export default function UkrainianChristmasTraditionsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: theme => theme.palette.primary.main, fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: theme => theme.palette.secondary.main, fontWeight: "bold" }}
+                    sx={{ mb: 2, color: colors.secondary.main, fontWeight: "bold" }}
                   >
                     {tradition.date}
                   </Typography>
@@ -407,8 +408,7 @@ export default function UkrainianChristmasTraditionsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -443,8 +443,7 @@ export default function UkrainianChristmasTraditionsPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -464,7 +463,7 @@ export default function UkrainianChristmasTraditionsPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: theme => theme.palette.primary.main,
+                color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

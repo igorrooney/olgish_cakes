@@ -4,6 +4,8 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes | Olgish Cakes",
   description:
@@ -70,7 +72,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Retirement Cakes in Leeds
@@ -102,8 +104,7 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             color: "white",
             textAlign: "center",
           }}
@@ -124,7 +125,7 @@ export default async function RetirementCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -140,7 +141,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Perfect Retirement Celebration Cakes
@@ -162,7 +163,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Why Choose Our Retirement Cakes?
@@ -218,7 +219,7 @@ export default async function RetirementCakesPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: theme => theme.palette.primary.main }}
+                    sx={{ mb: 1, color: colors.primary.main }}
                   >
                     {feature.title}
                   </Typography>
@@ -237,8 +238,7 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -280,8 +280,7 @@ export default async function RetirementCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: theme =>
-              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -301,7 +300,7 @@ export default async function RetirementCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: theme => theme.palette.primary.main,
+                color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

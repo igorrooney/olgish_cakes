@@ -4,6 +4,8 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Wedding Cake Gallery | Ukrainian Wedding Cakes | Olgish Cakes",
   description:
@@ -68,7 +70,7 @@ export default async function WeddingCakeGalleryPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Wedding Cake Gallery

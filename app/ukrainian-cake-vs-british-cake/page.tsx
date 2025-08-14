@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Cake vs British Cake | Cake Comparison | Olgish Cakes",
   description:
@@ -93,7 +95,7 @@ export default function UkrainianVsBritishCakePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: theme => theme.palette.primary.main,
+              color: colors.primary.main,
             }}
           >
             Ukrainian Cake vs British Cake
@@ -125,21 +127,21 @@ export default function UkrainianVsBritishCakePage() {
                 <Grid
                   item
                   xs={4}
-                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                  sx={{ fontWeight: "bold", color: colors.primary.main }}
                 >
                   Aspect
                 </Grid>
                 <Grid
                   item
                   xs={4}
-                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                  sx={{ fontWeight: "bold", color: colors.primary.main }}
                 >
                   Ukrainian Cake
                 </Grid>
                 <Grid
                   item
                   xs={4}
-                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                  sx={{ fontWeight: "bold", color: colors.primary.main }}
                 >
                   British Cake
                 </Grid>
