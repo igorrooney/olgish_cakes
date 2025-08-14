@@ -63,7 +63,7 @@ async function renderPngFromSvg(
 }
 
 async function generateAllIcons() {
-  const brandBlue = "#005BBB";
+  const brandBlue = "#2E3192";
   const projectRoot = process.cwd();
   const inputSvgPath = path.resolve(projectRoot, "app", "icon.svg");
   const publicDir = path.resolve(projectRoot, "public");

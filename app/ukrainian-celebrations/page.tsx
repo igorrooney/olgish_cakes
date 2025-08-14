@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes | Olgish Cakes",
   description:
@@ -63,7 +65,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Ukrainian Celebrations
@@ -95,7 +97,7 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             color: "white",
           }}
         >
@@ -121,7 +123,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             ❄️ Winter Celebrations
@@ -168,13 +170,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: colors.secondary.main, fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -198,7 +200,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             🌸 Spring Celebrations
@@ -245,13 +247,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: colors.secondary.main, fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -275,7 +277,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             ☀️ Summer Celebrations
@@ -322,13 +324,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: colors.secondary.main, fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -352,7 +354,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             🍂 Autumn Celebrations
@@ -399,13 +401,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: colors.secondary.main, fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -427,7 +429,7 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -462,7 +464,7 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -482,7 +484,7 @@ export default function UkrainianCelebrationsPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

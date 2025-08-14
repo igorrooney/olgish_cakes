@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import sharp from "sharp";
 
 async function generateMaskableIcons() {
-  const brandBlue = "#005BBB";
+  const brandBlue = "#2E3192";
   const inputSvgPath = path.resolve("app", "icon.svg");
   const outputDir = path.resolve("public");
   const sizes = [192, 512];

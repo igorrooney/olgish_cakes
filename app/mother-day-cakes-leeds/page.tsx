@@ -4,6 +4,8 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes | Olgish Cakes",
   description:
@@ -70,7 +72,7 @@ export default async function MothersDayCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Mother's Day Cakes in Leeds
@@ -102,7 +104,7 @@ export default async function MothersDayCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #FF69B4 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, #FF69B4 100%)`,
             color: "white",
             textAlign: "center",
           }}
@@ -143,7 +145,7 @@ export default async function MothersDayCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Perfect Mother's Day Cakes
@@ -165,7 +167,7 @@ export default async function MothersDayCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Why Choose Our Mother's Day Cakes?
@@ -236,7 +238,7 @@ export default async function MothersDayCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -276,7 +278,7 @@ export default async function MothersDayCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FF69B4 0%, #FFD700 100%)",
+            background: `linear-gradient(135deg, #FF69B4 0%, ${colors.secondary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}

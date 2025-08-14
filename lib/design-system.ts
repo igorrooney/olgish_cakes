@@ -4,8 +4,8 @@
 export const colors = {
   // Primary Ukrainian Colors
   ukrainian: {
-    blue: "#005BBB", // Traditional Ukrainian blue
-    yellow: "#FFD700", // Traditional Ukrainian yellow
+    blue: "#2E3192", // Updated brand blue
+    yellow: "#FEF102", // Updated brand yellow
     honey: "#D4A76A", // Honey Cake color
     cream: "#FFF5E6", // Cream color for Kyiv Cake
     berry: "#8B0000", // Deep berry color for traditional desserts
@@ -13,15 +13,15 @@ export const colors = {
 
   // Semantic Colors
   primary: {
-    main: "#005BBB",
-    light: "#1E4A73", // Balanced tone for WCAG AA compliance with dark text
-    dark: "#003D7A",
+    main: "#2E3192",
+    light: "#4A4DB0", // Adjusted tone for WCAG AA compliance
+    dark: "#1F2368",
     contrast: "#FFFFFF",
   },
   secondary: {
-    main: "#FFD700",
-    light: "#FFE44D",
-    dark: "#867100", // Darkened for better contrast with white text (4.8:1)
+    main: "#FEF102",
+    light: "#FFF56A",
+    dark: "#C9C200", // Darkened for better contrast with dark text
     contrast: "#2D2D2D",
   },
 

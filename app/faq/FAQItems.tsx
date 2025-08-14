@@ -13,6 +13,8 @@ import { ExpandMoreIcon } from "@/lib/mui-optimization";
 import { useState } from "react";
 import { FAQ } from "../utils/fetchFaqs";
 
+
+import { colors } from "@/lib/design-system";
 interface FAQItemsProps {
   items: FAQ[];
 }
@@ -72,11 +74,11 @@ export function FAQItems({ items }: FAQItemsProps) {
                   }
                   sx={{
                     backgroundColor:
-                      expanded === panel ? `${theme.palette.primary.main}08` : "background.paper",
+                      expanded === panel ? `${colors.primary.main}08` : "background.paper",
                     borderRadius: "8px",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      backgroundColor: `${theme.palette.primary.main}08`,
+                      backgroundColor: `${colors.primary.main}08`,
                     },
                     "& .MuiAccordionSummary-content": {
                       transition: "all 0.3s ease",
@@ -103,8 +105,8 @@ export function FAQItems({ items }: FAQItemsProps) {
                 </AccordionSummary>
                 <AccordionDetails
                   sx={{
-                    backgroundColor: `${theme.palette.primary.main}04`,
-                    borderTop: `1px solid ${theme.palette.primary.main}1a`,
+                    backgroundColor: `${colors.primary.main}04`,
+                    borderTop: `1px solid ${colors.primary.main}1a`,
                     padding: "1.5rem",
                   }}
                 >

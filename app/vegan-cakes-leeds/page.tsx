@@ -3,6 +3,8 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@m
 import Link from "next/link";
 import Script from "next/script";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
     "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes | Vegan Honey Cake (Medovik) | Plant-Based Cakes | Olgish Cakes",
@@ -434,7 +436,7 @@ export default function VeganCakesLeedsPage() {
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Typography key={i} sx={{ color: "#FFD700" }}>
+                        <Typography key={i} sx={{ color: colors.secondary.main }}>
                           ⭐
                         </Typography>
                       ))}

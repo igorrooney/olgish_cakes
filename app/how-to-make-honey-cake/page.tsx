@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "How to Make Honey Cake | Traditional Ukrainian Honey Cake Recipe | Olgish Cakes",
   description:
@@ -96,7 +98,7 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             How to Make Traditional Ukrainian Honey Cake
@@ -128,7 +130,7 @@ export default function HowToMakeHoneyCakePage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             color: "white",
           }}
         >
@@ -173,7 +175,7 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             📝 Ingredients
@@ -241,7 +243,7 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             👩‍🍳 Step-by-Step Instructions
@@ -304,7 +306,7 @@ export default function HowToMakeHoneyCakePage() {
                   sx={{
                     p: 3,
                     mb: 2,
-                    borderLeft: "4px solid #005BBB",
+                    borderLeft: `4px solid ${colors.primary.main}`,
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -315,7 +317,7 @@ export default function HowToMakeHoneyCakePage() {
                       <Typography
                         variant="h4"
                         component="h4"
-                        sx={{ color: "#005BBB", fontWeight: "bold" }}
+                        sx={{ color: colors.primary.main, fontWeight: "bold" }}
                       >
                         Step {instruction.step}: {instruction.title}
                       </Typography>
@@ -338,7 +340,7 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             💡 Tips and Variations
@@ -346,7 +348,11 @@ export default function HowToMakeHoneyCakePage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: colors.primary.main }}
+                >
                   Pro Tips:
                 </Typography>
                 <List>
@@ -367,7 +373,11 @@ export default function HowToMakeHoneyCakePage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: colors.primary.main }}
+                >
                   Variations:
                 </Typography>
                 <List>
@@ -394,7 +404,7 @@ export default function HowToMakeHoneyCakePage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -414,7 +424,7 @@ export default function HowToMakeHoneyCakePage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

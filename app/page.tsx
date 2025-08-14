@@ -299,7 +299,7 @@ export default async function Home() {
                 variant="h1"
                 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
                 sx={{
-                  background: "linear-gradient(135deg, #FFFFFF 0%, #FFD700 50%, #FFFFFF 100%)",
+                  background: `linear-gradient(135deg, #FFFFFF 0%, ${colors.secondary.main} 50%, #FFFFFF 100%)`,
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -690,7 +690,7 @@ export default async function Home() {
                               precision={0.5}
                               sx={{
                                 "& .MuiRating-iconFilled": {
-                                  color: "#FFD700",
+                                  color: colors.secondary.main,
                                 },
                               }}
                             />
@@ -773,7 +773,7 @@ export default async function Home() {
                               readOnly
                               sx={{
                                 "& .MuiRating-iconFilled": {
-                                  color: "#FFD700",
+                                  color: colors.secondary.main,
                                 },
                               }}
                             />

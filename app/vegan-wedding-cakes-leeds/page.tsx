@@ -4,6 +4,8 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 
+
+import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
     "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik) | Olgish Cakes",
@@ -71,7 +73,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Vegan Wedding Cakes in Leeds
@@ -103,7 +105,7 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             color: "white",
             textAlign: "center",
           }}
@@ -128,7 +130,7 @@ export default async function VeganWeddingCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: colors.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -144,7 +146,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             Beautiful Vegan Wedding Cakes
@@ -219,7 +221,11 @@ export default async function VeganWeddingCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: colors.primary.main }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -237,7 +243,7 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: `linear-gradient(135deg, ${colors.primary.main} 0%, ${colors.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -286,7 +292,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             📋 Vegan Wedding Cake Ordering
@@ -294,7 +300,11 @@ export default async function VeganWeddingCakesPage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: colors.primary.main }}
+                >
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -309,7 +319,11 @@ export default async function VeganWeddingCakesPage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: colors.primary.main }}
+                >
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -330,7 +344,7 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: `linear-gradient(135deg, ${colors.secondary.main} 0%, ${colors.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -350,7 +364,7 @@ export default async function VeganWeddingCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
