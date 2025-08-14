@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -59,27 +59,27 @@ const corporateServices = [
     title: "Office Celebrations",
     description:
       "Birthday cakes, retirement parties, promotions, and team celebrations with Ukrainian flair.",
-    icon: "🎉",
-    price: "From £25 per person",
+    icon: "ðŸŽ‰",
+    price: "From Â£25 per person",
   },
   {
     title: "Business Meetings",
     description:
       "Professional catering for board meetings, client presentations, and corporate events.",
-    icon: "💼",
-    price: "From £20 per person",
+    icon: "ðŸ’¼",
+    price: "From Â£20 per person",
   },
   {
     title: "Conference Catering",
     description: "Large-scale catering for conferences, seminars, and corporate training events.",
-    icon: "🏢",
-    price: "From £15 per person",
+    icon: "ðŸ¢",
+    price: "From Â£15 per person",
   },
   {
     title: "Corporate Gifts",
     description: "Ukrainian cakes as corporate gifts for clients, partners, and employees.",
-    icon: "🎁",
-    price: "From £35 per cake",
+    icon: "ðŸŽ",
+    price: "From Â£35 per cake",
   },
 ];
 
@@ -87,7 +87,7 @@ const corporatePackages = [
   {
     name: "Starter Package",
     description: "Perfect for small office celebrations and team meetings",
-    price: "£150",
+    price: "Â£150",
     serves: "10-15 people",
     includes: [
       "1 large Ukrainian cake",
@@ -100,7 +100,7 @@ const corporatePackages = [
   {
     name: "Business Package",
     description: "Ideal for medium-sized corporate events and client meetings",
-    price: "£300",
+    price: "Â£300",
     serves: "25-35 people",
     includes: [
       "2 large Ukrainian cakes",
@@ -114,7 +114,7 @@ const corporatePackages = [
   {
     name: "Corporate Package",
     description: "Comprehensive catering for large conferences and major events",
-    price: "£500",
+    price: "Â£500",
     serves: "50-75 people",
     includes: [
       "3 large Ukrainian cakes",
@@ -316,7 +316,7 @@ export default function CorporateCakesLeedsPage() {
                           variant="body2"
                           sx={{ mb: 1, color: "text.secondary" }}
                         >
-                          • {item}
+                          â€¢ {item}
                         </Typography>
                       ))}
                     </Box>
@@ -349,7 +349,7 @@ export default function CorporateCakesLeedsPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
                 color: "white",
               }}
             >
@@ -362,19 +362,19 @@ export default function CorporateCakesLeedsPage() {
                     Professional Service:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Reliable delivery and setup
+                    â€¢ Reliable delivery and setup
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Professional presentation
+                    â€¢ Professional presentation
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Flexible scheduling
+                    â€¢ Flexible scheduling
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Corporate branding options
+                    â€¢ Corporate branding options
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    • Dietary requirement accommodation
+                    â€¢ Dietary requirement accommodation
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -382,19 +382,19 @@ export default function CorporateCakesLeedsPage() {
                     Quality Assurance:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Fresh, handmade cakes
+                    â€¢ Fresh, handmade cakes
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Premium ingredients
+                    â€¢ Premium ingredients
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Authentic Ukrainian recipes
+                    â€¢ Authentic Ukrainian recipes
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Consistent quality
+                    â€¢ Consistent quality
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    • Food safety compliance
+                    â€¢ Food safety compliance
                   </Typography>
                 </Grid>
               </Grid>
@@ -603,3 +603,4 @@ export default function CorporateCakesLeedsPage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -51,48 +51,48 @@ export default function CakeFlavorGuidePage() {
     {
       name: "Honey Cake (Medovik)",
       description: "Classic Ukrainian honey cake with layers of honey and cream.",
-      icon: "🍯",
+      icon: "ðŸ¯",
     },
     {
       name: "Kyiv Cake",
       description: "Nutty meringue layers with chocolate and buttercream.",
-      icon: "🥜",
+      icon: "ðŸ¥œ",
     },
     {
       name: "Chocolate Cake",
       description: "Rich chocolate sponge with decadent chocolate ganache.",
-      icon: "🍫",
+      icon: "ðŸ«",
     },
     {
       name: "Vanilla Cream Cake",
       description: "Light vanilla sponge with creamy vanilla filling.",
-      icon: "🍦",
+      icon: "ðŸ¦",
     },
     {
       name: "Berry Cake",
       description: "Sponge cake with fresh berries and whipped cream.",
-      icon: "🍓",
+      icon: "ðŸ“",
     },
     {
       name: "Caramel Cake",
       description: "Caramel sponge with salted caramel filling.",
-      icon: "🍮",
+      icon: "ðŸ®",
     },
     {
       name: "Lemon Cake",
       description: "Zesty lemon sponge with lemon curd and cream.",
-      icon: "🍋",
+      icon: "ðŸ‹",
     },
     {
       name: "Nut-Free Cake",
       description: "Delicious cakes made without nuts for allergy-friendly celebrations.",
-      icon: "🚫🥜",
+      icon: "ðŸš«ðŸ¥œ",
     },
-    { name: "Vegan Cake", description: "Plant-based cakes with a variety of flavors.", icon: "🌱" },
+    { name: "Vegan Cake", description: "Plant-based cakes with a variety of flavors.", icon: "ðŸŒ±" },
     {
       name: "Gluten-Friendly Cake",
       description: "Cakes made with gluten-friendly ingredients.",
-      icon: "🌾",
+      icon: "ðŸŒ¾",
     },
   ];
 
@@ -124,7 +124,7 @@ export default function CakeFlavorGuidePage() {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: "bold",
                 mb: 2,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Cake Flavor Guide
@@ -166,7 +166,7 @@ export default function CakeFlavorGuidePage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {item.icon}
                   </Typography>
-                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}>
                     {item.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -182,7 +182,7 @@ export default function CakeFlavorGuidePage() {
               href="/cakes"
               variant="contained"
               size="large"
-              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
+              sx={{ bgcolor: "#FEF102", color: "#2E3192", "&:hover": { bgcolor: "#ffe066" } }}
             >
               Browse All Cakes
             </Button>
@@ -192,3 +192,4 @@ export default function CakeFlavorGuidePage() {
     </>
   );
 }
+

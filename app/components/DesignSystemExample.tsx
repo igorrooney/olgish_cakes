@@ -1,4 +1,4 @@
-// Example component demonstrating the Ukrainian Design System usage
+﻿// Example component demonstrating the Ukrainian Design System usage
 // This component shows how to use the design tokens and UI components
 
 import React from "react";
@@ -51,8 +51,8 @@ export function DesignSystemExample() {
 
           <BodyText sx={{ mb: spacing.lg }}>
             This example demonstrates the Ukrainian-inspired design system with traditional colors,
-            typography, and components. The design uses Ukrainian blue (#005BBB) and yellow
-            (#FFD700) as primary colors, with warm honey and cream tones for backgrounds.
+            typography, and components. The design uses Ukrainian blue (#2E3192) and yellow
+            (#FEF102) as primary colors, with warm honey and cream tones for backgrounds.
           </BodyText>
         </Box>
 
@@ -317,3 +317,4 @@ export function DesignSystemExample() {
     </Container>
   );
 }
+

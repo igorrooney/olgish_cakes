@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
 
 export default function CakeSizeGuidePage() {
   const sizes = [
-    { size: "6-inch", servings: "6-8", bestFor: "Small gatherings, couples", icon: "👫" },
-    { size: "8-inch", servings: "10-12", bestFor: "Family celebrations", icon: "👨‍👩‍👧‍👦" },
-    { size: "10-inch", servings: "15-20", bestFor: "Medium parties", icon: "🎉" },
-    { size: "12-inch", servings: "25-30", bestFor: "Large events", icon: "🎊" },
-    { size: "2-tier", servings: "30-40", bestFor: "Weddings, big birthdays", icon: "💍" },
-    { size: "3-tier", servings: "50+", bestFor: "Weddings, corporate", icon: "🏢" },
+    { size: "6-inch", servings: "6-8", bestFor: "Small gatherings, couples", icon: "ðŸ‘«" },
+    { size: "8-inch", servings: "10-12", bestFor: "Family celebrations", icon: "ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦" },
+    { size: "10-inch", servings: "15-20", bestFor: "Medium parties", icon: "ðŸŽ‰" },
+    { size: "12-inch", servings: "25-30", bestFor: "Large events", icon: "ðŸŽŠ" },
+    { size: "2-tier", servings: "30-40", bestFor: "Weddings, big birthdays", icon: "ðŸ’" },
+    { size: "3-tier", servings: "50+", bestFor: "Weddings, corporate", icon: "ðŸ¢" },
   ];
 
   return (
@@ -93,7 +93,7 @@ export default function CakeSizeGuidePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Cake Size Guide
@@ -138,7 +138,7 @@ export default function CakeSizeGuidePage() {
                 <Typography
                   variant="h3"
                   component="h3"
-                  sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
                 >
                   {item.size}
                 </Typography>
@@ -158,7 +158,7 @@ export default function CakeSizeGuidePage() {
             href="/cakes"
             variant="contained"
             size="large"
-            sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
+            sx={{ bgcolor: "#FEF102", color: "#2E3192", "&:hover": { bgcolor: "#ffe066" } }}
           >
             Browse All Cakes
           </Button>
@@ -167,3 +167,4 @@ export default function CakeSizeGuidePage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -80,7 +80,7 @@ export default async function CustomerStoriesPage() {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: "bold",
                 mb: 2,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Customer Stories
@@ -111,3 +111,4 @@ export default async function CustomerStoriesPage() {
     </>
   );
 }
+

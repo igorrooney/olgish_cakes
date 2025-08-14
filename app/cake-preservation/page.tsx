@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
@@ -34,34 +34,34 @@ export default function CakePreservationPage() {
       title: "Room Temperature Storage",
       description:
         "Most cakes can be stored at room temperature for up to 2 days in an airtight container.",
-      icon: "🏠",
+      icon: "ðŸ ",
     },
     {
       title: "Refrigeration",
       description:
         "Cakes with cream or fresh fruit should be refrigerated and consumed within 3 days.",
-      icon: "❄️",
+      icon: "â„ï¸",
     },
     {
       title: "Freezing Cakes",
       description:
         "Wrap cakes tightly and freeze for up to 3 months. Thaw in the fridge overnight.",
-      icon: "🧊",
+      icon: "ðŸ§Š",
     },
     {
       title: "Avoid Sunlight",
       description: "Keep cakes away from direct sunlight to prevent melting and drying.",
-      icon: "☀️",
+      icon: "â˜€ï¸",
     },
     {
       title: "Use Cake Domes",
       description: "Cake domes help maintain moisture and protect from air exposure.",
-      icon: "🎂",
+      icon: "ðŸŽ‚",
     },
     {
       title: "Label and Date",
       description: "Label cakes before freezing to keep track of freshness.",
-      icon: "🏷️",
+      icon: "ðŸ·ï¸",
     },
   ];
 
@@ -137,7 +137,7 @@ export default function CakePreservationPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Cake Preservation
@@ -182,7 +182,7 @@ export default function CakePreservationPage() {
                 <Typography
                   variant="h3"
                   component="h3"
-                  sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
                 >
                   {item.title}
                 </Typography>
@@ -197,3 +197,4 @@ export default function CakePreservationPage() {
     </>
   );
 }
+

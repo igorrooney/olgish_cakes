@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -66,7 +66,7 @@ export default function CharityEventsPage() {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: "bold",
                 mb: 2,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Charity Events
@@ -95,7 +95,7 @@ export default function CharityEventsPage() {
             <Typography
               variant="h3"
               component="h3"
-              sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+              sx={{ color: "#2E3192", fontWeight: "bold", mb: 2 }}
             >
               Upcoming Charity Events
             </Typography>
@@ -110,7 +110,7 @@ export default function CharityEventsPage() {
             <Typography
               variant="h3"
               component="h3"
-              sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+              sx={{ color: "#2E3192", fontWeight: "bold", mb: 2 }}
             >
               How to Get Involved
             </Typography>
@@ -126,3 +126,4 @@ export default function CharityEventsPage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function EggFreeCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -70,7 +70,7 @@ export default async function EggFreeCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Egg-Free Cakes in Leeds
@@ -102,12 +102,12 @@ export default async function EggFreeCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            🥚 Egg-Free Baking Information
+            ðŸ¥š Egg-Free Baking Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -115,12 +115,12 @@ export default async function EggFreeCakesPage() {
                 Our Egg-Free Promise:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • All egg-free cakes are made in a dedicated egg-free environment
+                â€¢ All egg-free cakes are made in a dedicated egg-free environment
                 <br />
-                • We use traditional Ukrainian recipes adapted for egg-free baking
+                â€¢ We use traditional Ukrainian recipes adapted for egg-free baking
                 <br />
-                • All ingredients are carefully selected and verified egg-free
-                <br />• Cross-contamination prevention protocols in place
+                â€¢ All ingredients are carefully selected and verified egg-free
+                <br />â€¢ Cross-contamination prevention protocols in place
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -128,14 +128,14 @@ export default async function EggFreeCakesPage() {
                 Egg Substitutes We Use:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • Flaxseed meal and water
+                â€¢ Flaxseed meal and water
                 <br />
-                • Applesauce
+                â€¢ Applesauce
                 <br />
-                • Mashed bananas
+                â€¢ Mashed bananas
                 <br />
-                • Commercial egg replacers
-                <br />• Aquafaba (chickpea water)
+                â€¢ Commercial egg replacers
+                <br />â€¢ Aquafaba (chickpea water)
               </Typography>
             </Grid>
           </Grid>
@@ -149,7 +149,7 @@ export default async function EggFreeCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Popular Egg-Free Ukrainian Cakes
@@ -171,7 +171,7 @@ export default async function EggFreeCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Why Choose Our Egg-Free Cakes?
@@ -181,32 +181,32 @@ export default async function EggFreeCakesPage() {
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors without compromising on taste",
-                icon: "🏺",
+                icon: "ðŸº",
               },
               {
                 title: "Safe for Allergies",
                 description: "Dedicated egg-free baking environment and protocols",
-                icon: "🛡️",
+                icon: "ðŸ›¡ï¸",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest egg-free ingredients and substitutes",
-                icon: "⭐",
+                icon: "â­",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in egg-free Ukrainian baking",
-                icon: "👩‍🍳",
+                icon: "ðŸ‘©â€ðŸ³",
               },
               {
                 title: "Same Texture",
                 description: "Achieving the perfect texture without eggs",
-                icon: "🥄",
+                icon: "ðŸ¥„",
               },
               {
                 title: "All Occasions",
                 description: "Perfect for birthdays, weddings, and celebrations",
-                icon: "🎉",
+                icon: "ðŸŽ‰",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -224,7 +224,7 @@ export default async function EggFreeCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#2E3192" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -242,12 +242,12 @@ export default async function EggFreeCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            📋 Egg-Free Cake Ordering Information
+            ðŸ“‹ Egg-Free Cake Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -255,12 +255,12 @@ export default async function EggFreeCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Standard Orders: 3 days in advance
+                â€¢ Standard Orders: 3 days in advance
                 <br />
-                • Custom Designs: 5 days in advance
+                â€¢ Custom Designs: 5 days in advance
                 <br />
-                • Large Orders: 1 week in advance
-                <br />• Emergency Orders: Call for availability
+                â€¢ Large Orders: 1 week in advance
+                <br />â€¢ Emergency Orders: Call for availability
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -268,12 +268,12 @@ export default async function EggFreeCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Allergen information provided
+                â€¢ Allergen information provided
                 <br />
-                • Ingredient lists available
+                â€¢ Ingredient lists available
                 <br />
-                • Cross-contamination prevention
-                <br />• Special dietary consultations
+                â€¢ Cross-contamination prevention
+                <br />â€¢ Special dietary consultations
               </Typography>
             </Grid>
           </Grid>
@@ -284,7 +284,7 @@ export default async function EggFreeCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -303,7 +303,7 @@ export default async function EggFreeCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -328,3 +328,4 @@ export default async function EggFreeCakesPage() {
     </>
   );
 }
+

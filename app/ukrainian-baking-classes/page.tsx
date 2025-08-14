@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -61,7 +61,7 @@ const classes = [
     description:
       "Learn to make the traditional Ukrainian honey cake from scratch. Master the art of layering and cream filling.",
     duration: "3 hours",
-    price: "£75",
+    price: "Â£75",
     level: "Intermediate",
     maxStudents: 6,
     includes: ["All ingredients", "Recipe booklet", "Take-home cake", "Tea & coffee"],
@@ -73,7 +73,7 @@ const classes = [
     description:
       "Create the elegant Kyiv cake with chocolate layers, meringue, and hazelnut filling. Advanced techniques included.",
     duration: "4 hours",
-    price: "£95",
+    price: "Â£95",
     level: "Advanced",
     maxStudents: 4,
     includes: ["All ingredients", "Recipe booklet", "Take-home cake", "Lunch provided"],
@@ -85,7 +85,7 @@ const classes = [
     description:
       "Introduction to Ukrainian baking traditions and essential techniques. Perfect for beginners.",
     duration: "2.5 hours",
-    price: "£60",
+    price: "Â£60",
     level: "Beginner",
     maxStudents: 8,
     includes: ["All ingredients", "Recipe booklet", "Take-home treats", "Tea & coffee"],
@@ -97,7 +97,7 @@ const classes = [
     description:
       "Learn to make seasonal Ukrainian desserts including Christmas honey cake and Easter specialties.",
     duration: "3.5 hours",
-    price: "£85",
+    price: "Â£85",
     level: "Intermediate",
     maxStudents: 6,
     includes: ["All ingredients", "Recipe booklet", "Take-home desserts", "Seasonal refreshments"],
@@ -213,25 +213,25 @@ export default function UkrainianBakingClassesPage() {
                   title: "Professional Instruction",
                   description:
                     "Learn from Olga, a professionally trained Ukrainian baker with years of experience in traditional Ukrainian baking.",
-                  icon: "👩‍🍳",
+                  icon: "ðŸ‘©â€ðŸ³",
                 },
                 {
                   title: "Authentic Recipes",
                   description:
                     "Master authentic Ukrainian recipes passed down through generations. Learn traditional techniques and methods.",
-                  icon: "📜",
+                  icon: "ðŸ“œ",
                 },
                 {
                   title: "Small Group Classes",
                   description:
                     "Intimate class sizes ensure personalized attention and hands-on guidance throughout the baking process.",
-                  icon: "👥",
+                  icon: "ðŸ‘¥",
                 },
                 {
                   title: "Take-Home Treats",
                   description:
                     "Take your freshly baked Ukrainian cakes home to share with family and friends. Practice what you've learned.",
-                  icon: "🎁",
+                  icon: "ðŸŽ",
                 },
               ].map((feature, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -343,7 +343,7 @@ export default function UkrainianBakingClassesPage() {
                             variant="body2"
                             sx={{ mb: 0.5, color: "text.secondary" }}
                           >
-                            • {item}
+                            â€¢ {item}
                           </Typography>
                         ))}
                       </Box>
@@ -377,7 +377,7 @@ export default function UkrainianBakingClassesPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
                 color: "white",
               }}
             >
@@ -390,16 +390,16 @@ export default function UkrainianBakingClassesPage() {
                     Weekly Classes:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Tuesday: Ukrainian Baking Basics (6:30 PM)
+                    â€¢ Tuesday: Ukrainian Baking Basics (6:30 PM)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Thursday: Honey Cake Masterclass (6:30 PM)
+                    â€¢ Thursday: Honey Cake Masterclass (6:30 PM)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Saturday: Kyiv Cake Workshop (10:00 AM)
+                    â€¢ Saturday: Kyiv Cake Workshop (10:00 AM)
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    • Sunday: Seasonal Ukrainian Desserts (2:00 PM)
+                    â€¢ Sunday: Seasonal Ukrainian Desserts (2:00 PM)
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -407,16 +407,16 @@ export default function UkrainianBakingClassesPage() {
                     Special Events:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Private Group Classes (Any day)
+                    â€¢ Private Group Classes (Any day)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Corporate Team Building
+                    â€¢ Corporate Team Building
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    • Hen Parties & Celebrations
+                    â€¢ Hen Parties & Celebrations
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    • Children's Baking Parties
+                    â€¢ Children's Baking Parties
                   </Typography>
                 </Grid>
               </Grid>
@@ -471,16 +471,16 @@ export default function UkrainianBakingClassesPage() {
                     What to Bring
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    • Comfortable clothing and closed-toe shoes
+                    â€¢ Comfortable clothing and closed-toe shoes
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    • Apron (provided if you don't have one)
+                    â€¢ Apron (provided if you don't have one)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    • Enthusiasm and willingness to learn
+                    â€¢ Enthusiasm and willingness to learn
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-                    • Container to take your creations home
+                    â€¢ Container to take your creations home
                   </Typography>
                 </Paper>
               </Grid>
@@ -603,3 +603,4 @@ export default function UkrainianBakingClassesPage() {
     </>
   );
 }
+

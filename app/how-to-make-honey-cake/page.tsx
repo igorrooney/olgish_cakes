@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -73,7 +73,7 @@ export default function HowToMakeHoneyCakePage() {
       "Mix honey, eggs, sugar, and butter in a large bowl",
       "Add flour and baking soda, mix until smooth",
       "Divide dough into 8-10 portions and roll out thin layers",
-      "Bake each layer at 350°F for 8-10 minutes",
+      "Bake each layer at 350Â°F for 8-10 minutes",
       "Mix sour cream, heavy cream, and powdered sugar for filling",
       "Layer cake with cream filling between each layer",
       "Refrigerate for at least 3 hours before serving",
@@ -96,7 +96,7 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             How to Make Traditional Ukrainian Honey Cake
@@ -128,12 +128,12 @@ export default function HowToMakeHoneyCakePage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            🍯 Recipe Overview
+            ðŸ¯ Recipe Overview
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -141,12 +141,12 @@ export default function HowToMakeHoneyCakePage() {
                 Preparation Time:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Prep Time: 30 minutes
+                â€¢ Prep Time: 30 minutes
                 <br />
-                • Cook Time: 45 minutes
+                â€¢ Cook Time: 45 minutes
                 <br />
-                • Total Time: 4 hours (including chilling)
-                <br />• Servings: 8-10 people
+                â€¢ Total Time: 4 hours (including chilling)
+                <br />â€¢ Servings: 8-10 people
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -154,12 +154,12 @@ export default function HowToMakeHoneyCakePage() {
                 Difficulty Level:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Skill Level: Intermediate
+                â€¢ Skill Level: Intermediate
                 <br />
-                • Equipment: Rolling pin, baking sheets
+                â€¢ Equipment: Rolling pin, baking sheets
                 <br />
-                • Special Techniques: Layering, cream filling
-                <br />• Storage: Refrigerate up to 5 days
+                â€¢ Special Techniques: Layering, cream filling
+                <br />â€¢ Storage: Refrigerate up to 5 days
               </Typography>
             </Grid>
           </Grid>
@@ -173,15 +173,15 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
-            📝 Ingredients
+            ðŸ“ Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   For the Cake Layers:
                 </Typography>
                 <List>
@@ -211,7 +211,7 @@ export default function HowToMakeHoneyCakePage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   For the Cream Filling:
                 </Typography>
                 <List>
@@ -241,10 +241,10 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
-            👩‍🍳 Step-by-Step Instructions
+            ðŸ‘©â€ðŸ³ Step-by-Step Instructions
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -253,49 +253,49 @@ export default function HowToMakeHoneyCakePage() {
                 title: "Prepare the Dough",
                 description:
                   "In a large bowl, mix honey, eggs, sugar, and softened butter until well combined. Add flour and baking soda, mix until you have a smooth, slightly sticky dough.",
-                icon: "🥣",
+                icon: "ðŸ¥£",
               },
               {
                 step: "2",
                 title: "Divide and Rest",
                 description:
                   "Divide the dough into 8-10 equal portions. Wrap each portion in plastic wrap and refrigerate for 30 minutes to make rolling easier.",
-                icon: "⏰",
+                icon: "â°",
               },
               {
                 step: "3",
                 title: "Roll Out Layers",
                 description:
                   "On a floured surface, roll each portion into a thin circle (about 8-9 inches in diameter). Use a plate as a template to cut perfect circles.",
-                icon: "🔄",
+                icon: "ðŸ”„",
               },
               {
                 step: "4",
                 title: "Bake the Layers",
                 description:
-                  "Bake each layer at 350°F (175°C) for 8-10 minutes until golden brown. Let cool completely on a wire rack.",
-                icon: "🔥",
+                  "Bake each layer at 350Â°F (175Â°C) for 8-10 minutes until golden brown. Let cool completely on a wire rack.",
+                icon: "ðŸ”¥",
               },
               {
                 step: "5",
                 title: "Prepare the Filling",
                 description:
                   "Mix sour cream, heavy cream, powdered sugar, and vanilla extract until smooth and creamy. Refrigerate until ready to use.",
-                icon: "🥄",
+                icon: "ðŸ¥„",
               },
               {
                 step: "6",
                 title: "Assemble the Cake",
                 description:
                   "Place one layer on a serving plate, spread with cream filling, and repeat with remaining layers. Cover the top and sides with remaining cream.",
-                icon: "🎂",
+                icon: "ðŸŽ‚",
               },
               {
                 step: "7",
                 title: "Chill and Serve",
                 description:
                   "Refrigerate the cake for at least 3 hours (preferably overnight) to allow the flavors to meld and the cream to set properly.",
-                icon: "❄️",
+                icon: "â„ï¸",
               },
             ].map((instruction, index) => (
               <Grid item xs={12} key={index}>
@@ -304,7 +304,7 @@ export default function HowToMakeHoneyCakePage() {
                   sx={{
                     p: 3,
                     mb: 2,
-                    borderLeft: "4px solid #005BBB",
+                    borderLeft: "4px solid #2E3192",
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -315,7 +315,7 @@ export default function HowToMakeHoneyCakePage() {
                       <Typography
                         variant="h4"
                         component="h4"
-                        sx={{ color: "#005BBB", fontWeight: "bold" }}
+                        sx={{ color: "#2E3192", fontWeight: "bold" }}
                       >
                         Step {instruction.step}: {instruction.title}
                       </Typography>
@@ -338,50 +338,50 @@ export default function HowToMakeHoneyCakePage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
-            💡 Tips and Variations
+            ðŸ’¡ Tips and Variations
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Pro Tips:
                 </Typography>
                 <List>
                   <ListItem>
-                    <ListItemText primary="• Use high-quality honey for the best flavor" />
+                    <ListItemText primary="â€¢ Use high-quality honey for the best flavor" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Don't overbake the layers - they should be golden, not dark" />
+                    <ListItemText primary="â€¢ Don't overbake the layers - they should be golden, not dark" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Let the cake chill overnight for the best texture" />
+                    <ListItemText primary="â€¢ Let the cake chill overnight for the best texture" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Use full-fat sour cream for the richest filling" />
+                    <ListItemText primary="â€¢ Use full-fat sour cream for the richest filling" />
                   </ListItem>
                 </List>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Variations:
                 </Typography>
                 <List>
                   <ListItem>
-                    <ListItemText primary="• Add chopped walnuts to the cream filling" />
+                    <ListItemText primary="â€¢ Add chopped walnuts to the cream filling" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Use different types of honey for unique flavors" />
+                    <ListItemText primary="â€¢ Use different types of honey for unique flavors" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Add a layer of fresh berries between cream layers" />
+                    <ListItemText primary="â€¢ Add a layer of fresh berries between cream layers" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="• Decorate with honey drizzle and edible flowers" />
+                    <ListItemText primary="â€¢ Decorate with honey drizzle and edible flowers" />
                   </ListItem>
                 </List>
               </Paper>
@@ -394,7 +394,7 @@ export default function HowToMakeHoneyCakePage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -414,7 +414,7 @@ export default function HowToMakeHoneyCakePage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -439,3 +439,4 @@ export default function HowToMakeHoneyCakePage() {
     </>
   );
 }
+

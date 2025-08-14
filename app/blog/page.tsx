@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -320,7 +320,7 @@ export default function BlogPage() {
                         January 15, 2024
                       </Typography>
                       <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        • 8 min read
+                        â€¢ 8 min read
                       </Typography>
                     </Box>
                     <Button
@@ -395,7 +395,7 @@ export default function BlogPage() {
                           })}
                         </Typography>
                         <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                          • {post.readTime}
+                          â€¢ {post.readTime}
                         </Typography>
                       </Box>
                       <Button
@@ -427,7 +427,7 @@ export default function BlogPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
                 color: "white",
               }}
             >
@@ -460,3 +460,4 @@ export default function BlogPage() {
     </>
   );
 }
+

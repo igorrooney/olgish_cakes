@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { memo, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
@@ -99,7 +99,7 @@ export const HamperImageGallery = memo(function HamperImageGallery({
                 borderRadius: 2,
                 overflow: "hidden",
                 cursor: "pointer",
-                outline: i === index ? "2px solid #005BBB" : "none",
+                outline: i === index ? "2px solid #2E3192" : "none",
               }}
               onClick={() => setIndex(i)}
             >
@@ -116,3 +116,4 @@ export const HamperImageGallery = memo(function HamperImageGallery({
     </section>
   );
 });
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -52,7 +52,7 @@ export default async function VeganWeddingCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -71,7 +71,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Vegan Wedding Cakes in Leeds
@@ -103,13 +103,13 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
             textAlign: "center",
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            🌱 Special Vegan Wedding Package
+            ðŸŒ± Special Vegan Wedding Package
           </Typography>
           <Typography
             variant="h3"
@@ -128,7 +128,7 @@ export default async function VeganWeddingCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: "#2E3192",
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -144,7 +144,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Beautiful Vegan Wedding Cakes
@@ -166,7 +166,7 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Why Choose Our Vegan Wedding Cakes?
@@ -176,32 +176,32 @@ export default async function VeganWeddingCakesPage() {
               {
                 title: "100% Vegan",
                 description: "Completely plant-based ingredients, no animal products",
-                icon: "🌱",
+                icon: "ðŸŒ±",
               },
               {
                 title: "Wedding Perfect",
                 description: "Stunning designs perfect for your special day",
-                icon: "💒",
+                icon: "ðŸ’’",
               },
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors adapted for vegan diets",
-                icon: "🏺",
+                icon: "ðŸº",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest plant-based ingredients",
-                icon: "⭐",
+                icon: "â­",
               },
               {
                 title: "Custom Designs",
                 description: "Personalized to match your wedding theme",
-                icon: "🎨",
+                icon: "ðŸŽ¨",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in vegan Ukrainian baking",
-                icon: "👩‍🍳",
+                icon: "ðŸ‘©â€ðŸ³",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -219,7 +219,7 @@ export default async function VeganWeddingCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#2E3192" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -237,12 +237,12 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            🌱 Our Vegan Ingredients
+            ðŸŒ± Our Vegan Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -250,14 +250,14 @@ export default async function VeganWeddingCakesPage() {
                 Plant-Based Substitutes:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • Almond milk and coconut milk
+                â€¢ Almond milk and coconut milk
                 <br />
-                • Vegan butter and margarine
+                â€¢ Vegan butter and margarine
                 <br />
-                • Flax eggs and chia eggs
+                â€¢ Flax eggs and chia eggs
                 <br />
-                • Aquafaba for meringues
-                <br />• Plant-based cream alternatives
+                â€¢ Aquafaba for meringues
+                <br />â€¢ Plant-based cream alternatives
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -265,14 +265,14 @@ export default async function VeganWeddingCakesPage() {
                 Quality Guarantee:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • 100% plant-based ingredients
+                â€¢ 100% plant-based ingredients
                 <br />
-                • No animal products or by-products
+                â€¢ No animal products or by-products
                 <br />
-                • Certified vegan ingredients
+                â€¢ Certified vegan ingredients
                 <br />
-                • Ethical and sustainable sourcing
-                <br />• Same great taste and texture
+                â€¢ Ethical and sustainable sourcing
+                <br />â€¢ Same great taste and texture
               </Typography>
             </Grid>
           </Grid>
@@ -286,39 +286,39 @@ export default async function VeganWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
-            📋 Vegan Wedding Cake Ordering
+            ðŸ“‹ Vegan Wedding Cake Ordering
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • Standard Orders: 4 weeks in advance
+                  â€¢ Standard Orders: 4 weeks in advance
                   <br />
-                  • Custom Designs: 6 weeks in advance
+                  â€¢ Custom Designs: 6 weeks in advance
                   <br />
-                  • Large Wedding Cakes: 8 weeks in advance
-                  <br />• Last-minute Orders: Call for availability
+                  â€¢ Large Wedding Cakes: 8 weeks in advance
+                  <br />â€¢ Last-minute Orders: Call for availability
                 </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • Free vegan cake tasting session
+                  â€¢ Free vegan cake tasting session
                   <br />
-                  • Custom vegan cake designs
+                  â€¢ Custom vegan cake designs
                   <br />
-                  • Wedding venue delivery and setup
-                  <br />• Vegan ingredient lists provided
+                  â€¢ Wedding venue delivery and setup
+                  <br />â€¢ Vegan ingredient lists provided
                 </Typography>
               </Paper>
             </Grid>
@@ -330,7 +330,7 @@ export default async function VeganWeddingCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -350,7 +350,7 @@ export default async function VeganWeddingCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -375,3 +375,4 @@ export default async function VeganWeddingCakesPage() {
     </>
   );
 }
+

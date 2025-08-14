@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Alice } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -25,7 +25,7 @@ const alice = Alice({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#005BBB",
+  themeColor: "#2E3192",
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     template: "%s | Olgish Cakes - Ukrainian Cakes Leeds",
   },
   description:
-    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
+    "ðŸ† #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5â˜… rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     other: [
-      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#005BBB" },
+      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#2E3192" },
       { rel: "msapplication-config", url: "/browserconfig.xml" },
     ],
   },
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     title:
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      "ðŸ† #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5â˜… rating, same-day delivery across Yorkshire.",
     type: "website",
     locale: "en_GB",
     url: "https://olgishcakes.co.uk",
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
     title:
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) & Traditional Desserts",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
+      "ðŸ† #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5â˜… rating.",
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
@@ -127,7 +127,7 @@ export const metadata: Metadata = {
     ICBM: "53.8008, -1.5491",
     rating: "5",
     rating_count: "127",
-    price_range: "££",
+    price_range: "Â£Â£",
     cuisine: "Ukrainian",
     payment: "cash, credit card, bank transfer",
     delivery: "yes",
@@ -172,14 +172,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
               
               /* Critical button styles */
-              .btn-primary { background: #005BBB; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+              .btn-primary { background: #2E3192; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
               .btn-primary:hover { background: #004499; transform: translateY(-1px); }
               
               /* Critical container styles */
               .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
               
               /* Critical focus states */
-              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid #005BBB; outline-offset: 2px; }
+              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid #2E3192; outline-offset: 2px; }
             `,
           }}
         />
@@ -240,7 +240,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               name: "Olgish Cakes",
               alternateName: "Olgish Ukrainian Cakes",
               description:
-                "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+                "ðŸ† #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5â˜… rating, same-day delivery across Yorkshire.",
               url: "https://olgishcakes.co.uk",
               logo: {
                 "@type": "ImageObject",
@@ -280,7 +280,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   closes: "23:59",
                 },
               ],
-              priceRange: "££",
+              priceRange: "Â£Â£",
               servesCuisine: ["Ukrainian", "Traditional", "Honey Cake", "Medovik", "Kyiv Cake"],
               hasMenu: "https://olgishcakes.co.uk/cakes",
               areaServed: [
@@ -354,7 +354,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               foundingDate: "2023",
               award: [
                 "Best Ukrainian Bakery Leeds 2024",
-                "5★ Customer Rating",
+                "5â˜… Customer Rating",
                 "Same-day Delivery Service",
               ],
             }),
@@ -427,3 +427,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

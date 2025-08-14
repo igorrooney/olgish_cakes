@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -71,7 +71,7 @@ export default async function CakesPudseyPage() {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: "bold",
                 mb: 2,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Traditional Ukrainian Cakes in Pudsey
@@ -103,12 +103,12 @@ export default async function CakesPudseyPage() {
             sx={{
               p: { xs: 3, md: 4 },
               mb: { xs: 4, md: 6 },
-              background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+              background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
               color: "white",
             }}
           >
             <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}>
-              🚚 Fast Delivery to Pudsey
+              ðŸšš Fast Delivery to Pudsey
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
               We deliver our traditional Ukrainian cakes to Pudsey and surrounding areas. Same-day
@@ -120,8 +120,8 @@ export default async function CakesPudseyPage() {
                   Delivery Areas in Pudsey:
                 </Typography>
                 <Typography variant="body2">
-                  • Pudsey Town Centre • Fartown • Greenside • Lowtown • • Pudsey Park • Robin Lane
-                  • Richardshaw Lane • • Swinnow • Tyersal • Stanningley
+                  â€¢ Pudsey Town Centre â€¢ Fartown â€¢ Greenside â€¢ Lowtown â€¢ â€¢ Pudsey Park â€¢ Robin Lane
+                  â€¢ Richardshaw Lane â€¢ â€¢ Swinnow â€¢ Tyersal â€¢ Stanningley
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -129,12 +129,12 @@ export default async function CakesPudseyPage() {
                   Delivery Options:
                 </Typography>
                 <Typography variant="body2">
-                  • Standard Delivery: £3.50 (2-3 hours)
+                  â€¢ Standard Delivery: Â£3.50 (2-3 hours)
                   <br />
-                  • Express Delivery: £5.50 (1-2 hours)
+                  â€¢ Express Delivery: Â£5.50 (1-2 hours)
                   <br />
-                  • Same Day Delivery: £7.50 (available until 2 PM)
-                  <br />• Free delivery on orders over £30
+                  â€¢ Same Day Delivery: Â£7.50 (available until 2 PM)
+                  <br />â€¢ Free delivery on orders over Â£30
                 </Typography>
               </Grid>
             </Grid>
@@ -148,7 +148,7 @@ export default async function CakesPudseyPage() {
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
                 mb: 4,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Popular Ukrainian Cakes in Pudsey
@@ -170,7 +170,7 @@ export default async function CakesPudseyPage() {
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
                 mb: 4,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Why Pudsey Chooses Our Ukrainian Cakes
@@ -180,32 +180,32 @@ export default async function CakesPudseyPage() {
                 {
                   title: "Traditional Recipes",
                   description: "Authentic Ukrainian recipes passed down through generations",
-                  icon: "🏺",
+                  icon: "ðŸº",
                 },
                 {
                   title: "Fresh Ingredients",
                   description: "Only the finest ingredients sourced locally when possible",
-                  icon: "🌾",
+                  icon: "ðŸŒ¾",
                 },
                 {
                   title: "Handcrafted",
                   description: "Each cake is lovingly made by hand with attention to detail",
-                  icon: "👩‍🍳",
+                  icon: "ðŸ‘©â€ðŸ³",
                 },
                 {
                   title: "Fast Delivery",
                   description: "Quick and reliable delivery service to Pudsey",
-                  icon: "⚡",
+                  icon: "âš¡",
                 },
                 {
                   title: "Special Occasions",
                   description: "Perfect for birthdays, weddings, and celebrations",
-                  icon: "🎉",
+                  icon: "ðŸŽ‰",
                 },
                 {
                   title: "Local Service",
                   description: "Supporting the local community with authentic Ukrainian baking",
-                  icon: "🤝",
+                  icon: "ðŸ¤",
                 },
               ].map((feature, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
@@ -223,7 +223,7 @@ export default async function CakesPudseyPage() {
                     <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                       {feature.icon}
                     </Typography>
-                    <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                    <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#2E3192" }}>
                       {feature.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -240,7 +240,7 @@ export default async function CakesPudseyPage() {
             sx={{
               textAlign: "center",
               p: { xs: 4, md: 6 },
-              background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+              background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
               borderRadius: 2,
               color: "white",
             }}
@@ -260,7 +260,7 @@ export default async function CakesPudseyPage() {
                 size="large"
                 sx={{
                   bgcolor: "white",
-                  color: "#005BBB",
+                  color: "#2E3192",
                   "&:hover": { bgcolor: "#f5f5f5" },
                 }}
               >
@@ -286,3 +286,4 @@ export default async function CakesPudseyPage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -52,7 +52,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -71,7 +71,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Gluten-Friendly Wedding Cakes in Leeds
@@ -103,13 +103,13 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
             textAlign: "center",
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            🌾 Special Gluten-Friendly Wedding Package
+            ðŸŒ¾ Special Gluten-Friendly Wedding Package
           </Typography>
           <Typography
             variant="h3"
@@ -129,7 +129,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: "#2E3192",
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -145,7 +145,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Beautiful Gluten-Friendly Wedding Cakes
@@ -167,7 +167,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Why Choose Our Gluten-Friendly Wedding Cakes?
@@ -177,32 +177,32 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               {
                 title: "Gluten-Friendly",
                 description: "Made with gluten-friendly ingredients and careful preparation",
-                icon: "🌾",
+                icon: "ðŸŒ¾",
               },
               {
                 title: "Wedding Perfect",
                 description: "Stunning designs perfect for your special day",
-                icon: "💒",
+                icon: "ðŸ’’",
               },
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors adapted for gluten-friendly diets",
-                icon: "🏺",
+                icon: "ðŸº",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest gluten-friendly ingredients",
-                icon: "⭐",
+                icon: "â­",
               },
               {
                 title: "Custom Designs",
                 description: "Personalized to match your wedding theme",
-                icon: "🎨",
+                icon: "ðŸŽ¨",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in gluten-friendly Ukrainian baking",
-                icon: "👩‍🍳",
+                icon: "ðŸ‘©â€ðŸ³",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -220,7 +220,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#2E3192" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -238,12 +238,12 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            🌾 Our Gluten-Friendly Ingredients
+            ðŸŒ¾ Our Gluten-Friendly Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -251,14 +251,14 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                 Gluten-Friendly Flours:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • Almond flour and coconut flour
+                â€¢ Almond flour and coconut flour
                 <br />
-                • Rice flour and tapioca flour
+                â€¢ Rice flour and tapioca flour
                 <br />
-                • Gluten-free oat flour
+                â€¢ Gluten-free oat flour
                 <br />
-                • Buckwheat flour
-                <br />• Certified gluten-free flour blends
+                â€¢ Buckwheat flour
+                <br />â€¢ Certified gluten-free flour blends
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -266,14 +266,14 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                 Quality Guarantee:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • Certified gluten-friendly ingredients
+                â€¢ Certified gluten-friendly ingredients
                 <br />
-                • Dedicated gluten-friendly preparation area
+                â€¢ Dedicated gluten-friendly preparation area
                 <br />
-                • Cross-contamination prevention
+                â€¢ Cross-contamination prevention
                 <br />
-                • Same great taste and texture
-                <br />• Safe for gluten sensitivities
+                â€¢ Same great taste and texture
+                <br />â€¢ Safe for gluten sensitivities
               </Typography>
             </Grid>
           </Grid>
@@ -287,39 +287,39 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
-            📋 Gluten-Friendly Wedding Cake Ordering
+            ðŸ“‹ Gluten-Friendly Wedding Cake Ordering
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • Standard Orders: 4 weeks in advance
+                  â€¢ Standard Orders: 4 weeks in advance
                   <br />
-                  • Custom Designs: 6 weeks in advance
+                  â€¢ Custom Designs: 6 weeks in advance
                   <br />
-                  • Large Wedding Cakes: 8 weeks in advance
-                  <br />• Last-minute Orders: Call for availability
+                  â€¢ Large Wedding Cakes: 8 weeks in advance
+                  <br />â€¢ Last-minute Orders: Call for availability
                 </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#2E3192" }}>
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  • Free gluten-friendly cake tasting session
+                  â€¢ Free gluten-friendly cake tasting session
                   <br />
-                  • Custom gluten-friendly cake designs
+                  â€¢ Custom gluten-friendly cake designs
                   <br />
-                  • Wedding venue delivery and setup
-                  <br />• Gluten-friendly ingredient lists provided
+                  â€¢ Wedding venue delivery and setup
+                  <br />â€¢ Gluten-friendly ingredient lists provided
                 </Typography>
               </Paper>
             </Grid>
@@ -331,7 +331,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -351,7 +351,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -376,3 +376,4 @@ export default async function GlutenFriendlyWeddingCakesPage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function RetirementCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -70,7 +70,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Retirement Cakes in Leeds
@@ -102,13 +102,13 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
             textAlign: "center",
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            🎉 Special Retirement Celebration Offer 🎉
+            ðŸŽ‰ Special Retirement Celebration Offer ðŸŽ‰
           </Typography>
           <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}>
             Free Personalization on Retirement Cakes
@@ -123,7 +123,7 @@ export default async function RetirementCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: "#2E3192",
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -139,7 +139,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Perfect Retirement Celebration Cakes
@@ -161,7 +161,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Why Choose Our Retirement Cakes?
@@ -171,32 +171,32 @@ export default async function RetirementCakesPage() {
               {
                 title: "Milestone Celebration",
                 description: "Special designs perfect for retirement celebrations",
-                icon: "🎊",
+                icon: "ðŸŽŠ",
               },
               {
                 title: "Custom Personalization",
                 description: "Add names, dates, and personal messages",
-                icon: "✏️",
+                icon: "âœï¸",
               },
               {
                 title: "Traditional Flavors",
                 description: "Authentic Ukrainian honey cake and Kyiv cake",
-                icon: "🏺",
+                icon: "ðŸº",
               },
               {
                 title: "Party Sizes",
                 description: "Available in sizes perfect for retirement parties",
-                icon: "🎂",
+                icon: "ðŸŽ‚",
               },
               {
                 title: "Professional Delivery",
                 description: "Reliable delivery to your retirement party venue",
-                icon: "🚚",
+                icon: "ðŸšš",
               },
               {
                 title: "Beautiful Presentation",
                 description: "Stunning presentation for this special occasion",
-                icon: "✨",
+                icon: "âœ¨",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -214,7 +214,7 @@ export default async function RetirementCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#2E3192" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -232,12 +232,12 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            📅 Retirement Cake Ordering Information
+            ðŸ“… Retirement Cake Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -245,12 +245,12 @@ export default async function RetirementCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Standard Delivery: Order 3 days in advance
+                â€¢ Standard Delivery: Order 3 days in advance
                 <br />
-                • Express Delivery: Order 2 days in advance
+                â€¢ Express Delivery: Order 2 days in advance
                 <br />
-                • Custom Designs: Order 5 days in advance
-                <br />• Large Orders: Order 1 week in advance
+                â€¢ Custom Designs: Order 5 days in advance
+                <br />â€¢ Large Orders: Order 1 week in advance
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -258,12 +258,12 @@ export default async function RetirementCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Custom retirement cake toppers
+                â€¢ Custom retirement cake toppers
                 <br />
-                • Special celebration packaging
+                â€¢ Special celebration packaging
                 <br />
-                • Venue delivery and setup
-                <br />• Personalized messages and designs
+                â€¢ Venue delivery and setup
+                <br />â€¢ Personalized messages and designs
               </Typography>
             </Grid>
           </Grid>
@@ -274,7 +274,7 @@ export default async function RetirementCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -294,7 +294,7 @@ export default async function RetirementCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -319,3 +319,4 @@ export default async function RetirementCakesPage() {
     </>
   );
 }
+

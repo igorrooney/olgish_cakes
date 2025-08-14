@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -64,28 +64,28 @@ export default function CakeDecoratingServicesPage() {
     {
       name: "Custom Cake Design",
       description: "Personalized cake designs for any occasion.",
-      icon: "🎨",
+      icon: "ðŸŽ¨",
     },
     {
       name: "Fondant Work",
       description: "Smooth fondant finishes and creative shapes.",
-      icon: "🍰",
+      icon: "ðŸ°",
     },
     {
       name: "Sugar Flowers",
       description: "Handcrafted sugar flowers for elegant cakes.",
-      icon: "🌸",
+      icon: "ðŸŒ¸",
     },
-    { name: "Edible Prints", description: "Custom edible images and prints.", icon: "🖼️" },
+    { name: "Edible Prints", description: "Custom edible images and prints.", icon: "ðŸ–¼ï¸" },
     {
       name: "Sculpted Cakes",
       description: "3D sculpted cakes for unique celebrations.",
-      icon: "🗿",
+      icon: "ðŸ—¿",
     },
     {
       name: "Themed Cakes",
       description: "Cakes for birthdays, weddings, and special events.",
-      icon: "🎂",
+      icon: "ðŸŽ‚",
     },
   ];
 
@@ -119,7 +119,7 @@ export default function CakeDecoratingServicesPage() {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: "bold",
                 mb: 2,
-                color: "#005BBB",
+                color: "#2E3192",
               }}
             >
               Cake Decorating Services
@@ -164,7 +164,7 @@ export default function CakeDecoratingServicesPage() {
                   <Typography
                     variant="h3"
                     component="h3"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
                   >
                     {item.name}
                   </Typography>
@@ -181,7 +181,7 @@ export default function CakeDecoratingServicesPage() {
               href="/custom-cake-design"
               variant="contained"
               size="large"
-              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
+              sx={{ bgcolor: "#FEF102", color: "#2E3192", "&:hover": { bgcolor: "#ffe066" } }}
             >
               Start Your Custom Cake
             </Button>
@@ -191,3 +191,4 @@ export default function CakeDecoratingServicesPage() {
     </>
   );
 }
+

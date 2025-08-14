@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function FathersDayCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -70,7 +70,7 @@ export default async function FathersDayCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Father's Day Cakes in Leeds
@@ -102,13 +102,13 @@ export default async function FathersDayCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             color: "white",
             textAlign: "center",
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            🎯 Special Father's Day Offer 🎯
+            ðŸŽ¯ Special Father's Day Offer ðŸŽ¯
           </Typography>
           <Typography
             variant="h3"
@@ -127,7 +127,7 @@ export default async function FathersDayCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: "#2E3192",
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -143,7 +143,7 @@ export default async function FathersDayCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Perfect Father's Day Cakes
@@ -165,7 +165,7 @@ export default async function FathersDayCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: "#2E3192",
             }}
           >
             Why Choose Our Father's Day Cakes?
@@ -175,32 +175,32 @@ export default async function FathersDayCakesPage() {
               {
                 title: "Rich Flavors",
                 description: "Bold, traditional Ukrainian flavors that Dad will love",
-                icon: "🍰",
+                icon: "ðŸ°",
               },
               {
                 title: "Unique Designs",
                 description: "Special Father's Day themes and decorations",
-                icon: "🎨",
+                icon: "ðŸŽ¨",
               },
               {
                 title: "Traditional Recipes",
                 description: "Authentic Ukrainian honey cake and Kyiv cake",
-                icon: "🏺",
+                icon: "ðŸº",
               },
               {
                 title: "Quality Ingredients",
                 description: "Made with premium ingredients for the best taste",
-                icon: "⭐",
+                icon: "â­",
               },
               {
                 title: "Reliable Delivery",
                 description: "On-time delivery to make Father's Day special",
-                icon: "🎁",
+                icon: "ðŸŽ",
               },
               {
                 title: "Personal Touch",
                 description: "Add personal messages or custom decorations",
-                icon: "💝",
+                icon: "ðŸ’",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -218,7 +218,7 @@ export default async function FathersDayCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#2E3192" }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -236,12 +236,12 @@ export default async function FathersDayCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            📅 Father's Day Ordering Information
+            ðŸ“… Father's Day Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -249,10 +249,10 @@ export default async function FathersDayCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Standard Delivery: Order by June 14th
+                â€¢ Standard Delivery: Order by June 14th
                 <br />
-                • Express Delivery: Order by June 15th
-                <br />• Same Day Delivery: Available until 2 PM on Father's Day
+                â€¢ Express Delivery: Order by June 15th
+                <br />â€¢ Same Day Delivery: Available until 2 PM on Father's Day
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -260,12 +260,12 @@ export default async function FathersDayCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                • Custom cake toppers
+                â€¢ Custom cake toppers
                 <br />
-                • Special Father's Day packaging
+                â€¢ Special Father's Day packaging
                 <br />
-                • Gift cards available
-                <br />• Surprise delivery options
+                â€¢ Gift cards available
+                <br />â€¢ Surprise delivery options
               </Typography>
             </Grid>
           </Grid>
@@ -276,7 +276,7 @@ export default async function FathersDayCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -295,7 +295,7 @@ export default async function FathersDayCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: "#2E3192",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -320,3 +320,4 @@ export default async function FathersDayCakesPage() {
     </>
   );
 }
+
