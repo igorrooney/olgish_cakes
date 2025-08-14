@@ -70,7 +70,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Retirement Cakes in Leeds
@@ -102,7 +102,8 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
             color: "white",
             textAlign: "center",
           }}
@@ -123,7 +124,7 @@ export default async function RetirementCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -139,7 +140,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Perfect Retirement Celebration Cakes
@@ -161,7 +162,7 @@ export default async function RetirementCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Why Choose Our Retirement Cakes?
@@ -214,7 +215,11 @@ export default async function RetirementCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h4" component="h4" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography
+                    variant="h4"
+                    component="h4"
+                    sx={{ mb: 1, color: theme => theme.palette.primary.main }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -232,7 +237,8 @@ export default async function RetirementCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -274,7 +280,8 @@ export default async function RetirementCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -294,7 +301,7 @@ export default async function RetirementCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: theme => theme.palette.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

@@ -441,7 +441,8 @@ export default function ReviewsAwardsPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+                background: theme =>
+                  `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                 color: "white",
               }}
             >

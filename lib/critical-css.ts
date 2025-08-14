@@ -1,6 +1,10 @@
 /**
  * Critical CSS utilities for performance optimization
  */
+import { designTokens } from "./design-system";
+const PRIMARY = designTokens.colors.primary.main;
+const PRIMARY_DARK = designTokens.colors.primary.dark;
+const SECONDARY = designTokens.colors.secondary.main;
 
 // Critical CSS for above-the-fold content
 export const criticalCSS = `
@@ -57,7 +61,7 @@ export const criticalCSS = `
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #005BBB 0%, #FFD700 100%);
+    background: linear-gradient(135deg, ${PRIMARY} 0%, ${SECONDARY} 100%);
     color: white;
     text-align: center;
   }
@@ -79,7 +83,7 @@ export const criticalCSS = `
 
   /* Critical button styles */
   .btn-primary {
-    background: #005BBB;
+    background: ${PRIMARY};
     color: white;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -90,7 +94,7 @@ export const criticalCSS = `
   }
 
   .btn-primary:hover {
-    background: #004499;
+    background: ${PRIMARY_DARK};
     transform: translateY(-1px);
   }
 
@@ -125,7 +129,7 @@ export const criticalCSS = `
   }
 
   .nav-links a:hover {
-    color: #005BBB;
+    color: ${PRIMARY};
   }
 
   /* Mobile critical styles */
@@ -149,7 +153,7 @@ export const criticalCSS = `
   input:focus,
   textarea:focus,
   select:focus {
-    outline: 2px solid #005BBB;
+    outline: 2px solid ${PRIMARY};
     outline-offset: 2px;
   }
 

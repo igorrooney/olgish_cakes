@@ -123,7 +123,7 @@ const contactInfo = {
 };
 
 const trustSignals = [
-  { icon: StarIcon, text: "5-Star Rated", color: "#FFD700" },
+  { icon: StarIcon, text: "5-Star Rated", color: (theme: any) => theme.palette.secondary.main },
   { icon: VerifiedIcon, text: "Verified Business", color: "#4CAF50" },
   { icon: LocalShippingIcon, text: "Free Delivery", color: "#2196F3" },
   { icon: SecurityIcon, text: "Secure Orders", color: "#9C27B0" },

@@ -10,8 +10,8 @@ module.exports = {
       colors: {
         // Ukrainian brand colors - WCAG AA compliant
         ukrainian: {
-          blue: "#005BBB",
-          yellow: "#FFD700",
+          blue: "#2E3192",
+          yellow: "#FEF102",
           honey: "#D4A76A",
           cream: "#FFF5E6",
           berry: "#8B0000",
@@ -23,10 +23,10 @@ module.exports = {
           200: "#C7DBFF",
           300: "#A5C4FF",
           400: "#82A3FF",
-          500: "#1E4A73", // WCAG AA compliant - use with white text
-          600: "#005BBB", // Main primary
-          700: "#004A9B",
-          800: "#003D7A", // Dark primary
+          500: "#4A4DB0", // Updated tone for WCAG AA
+          600: "#2E3192", // Main primary (brand)
+          700: "#1F2368",
+          800: "#1B1E59", // Dark primary
           900: "#002F5D",
         },
         // Status colors - WCAG AA compliant

@@ -51,8 +51,8 @@ export function DesignSystemExample() {
 
           <BodyText sx={{ mb: spacing.lg }}>
             This example demonstrates the Ukrainian-inspired design system with traditional colors,
-            typography, and components. The design uses Ukrainian blue (#005BBB) and yellow
-            (#FFD700) as primary colors, with warm honey and cream tones for backgrounds.
+            typography, and components. The design uses brand primary and secondary from the theme
+            palette as primary colors, with warm honey and cream tones for backgrounds.
           </BodyText>
         </Box>
 

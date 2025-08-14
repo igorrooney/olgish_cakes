@@ -71,7 +71,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Gluten-Friendly Wedding Cakes in Leeds
@@ -103,7 +103,8 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
             color: "white",
             textAlign: "center",
           }}
@@ -129,7 +130,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             size="large"
             sx={{
               bgcolor: "white",
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
@@ -145,7 +146,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Beautiful Gluten-Friendly Wedding Cakes
@@ -167,7 +168,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Why Choose Our Gluten-Friendly Wedding Cakes?
@@ -220,7 +221,11 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {feature.icon}
                   </Typography>
-                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 1, color: theme => theme.palette.primary.main }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -238,7 +243,8 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
             color: "white",
           }}
         >
@@ -287,7 +293,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             📋 Gluten-Friendly Wedding Cake Ordering
@@ -295,7 +301,11 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: theme => theme.palette.primary.main }}
+                >
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -310,7 +320,11 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper elevation={2} sx={{ p: 3 }}>
-                <Typography variant="h3" component="h3" sx={{ mb: 2, color: "#005BBB" }}>
+                <Typography
+                  variant="h3"
+                  component="h3"
+                  sx={{ mb: 2, color: theme => theme.palette.primary.main }}
+                >
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
@@ -331,7 +345,8 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
+            background: theme =>
+              `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
             borderRadius: 2,
             color: "white",
           }}
@@ -351,7 +366,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#005BBB",
+                color: theme => theme.palette.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >

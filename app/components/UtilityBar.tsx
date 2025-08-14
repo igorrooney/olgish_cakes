@@ -95,7 +95,7 @@ export function UtilityBar() {
             Order online 24/7
           </Typography>
           <Box sx={{ display: { xs: "none", md: "inline-flex" }, alignItems: "center", gap: 0.5 }}>
-            <StarIcon sx={{ fontSize: 16, color: "#FFD700" }} />
+            <StarIcon sx={{ fontSize: 16, color: theme => theme.palette.secondary.main }} />
             <Typography
               variant="body2"
               sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}

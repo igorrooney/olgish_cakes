@@ -434,7 +434,7 @@ export default function VeganCakesLeedsPage() {
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Typography key={i} sx={{ color: "#FFD700" }}>
+                        <Typography key={i} sx={{ color: theme => theme.palette.secondary.main }}>
                           ⭐
                         </Typography>
                       ))}

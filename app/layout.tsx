@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import "./globals.css";
 import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
 import { theme } from "@/lib/theme";
+import { designTokens } from "@/lib/design-system";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/Header";
@@ -22,10 +23,14 @@ const alice = Alice({
   adjustFontFallback: false,
 });
 
+const primary = designTokens.colors.primary.main;
+const primaryDark = designTokens.colors.primary.dark;
+const secondary = designTokens.colors.secondary.main;
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#005BBB",
+  themeColor: primary,
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
@@ -73,7 +78,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     other: [
-      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#005BBB" },
+      { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: primary },
       { rel: "msapplication-config", url: "/browserconfig.xml" },
     ],
   },
@@ -172,17 +177,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
               
               /* Critical button styles */
-              .btn-primary { background: #005BBB; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-              .btn-primary:hover { background: #004499; transform: translateY(-1px); }
+              .btn-primary { background: ${primary}; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+              .btn-primary:hover { background: ${primaryDark}; transform: translateY(-1px); }
               
               /* Critical container styles */
               .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
               
               /* Critical focus states */
-              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid #005BBB; outline-offset: 2px; }
+              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid ${primary}; outline-offset: 2px; }
             `,
           }}
         />
+        <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />

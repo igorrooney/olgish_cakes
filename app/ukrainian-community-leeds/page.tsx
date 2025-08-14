@@ -51,7 +51,7 @@ export default function UkrainianCommunityLeedsPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Ukrainian Community in Leeds
@@ -80,7 +80,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+            sx={{ color: theme => theme.palette.primary.main, fontWeight: "bold", mb: 2 }}
           >
             Ukrainian Community Organizations
           </Typography>
@@ -95,7 +95,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+            sx={{ color: theme => theme.palette.primary.main, fontWeight: "bold", mb: 2 }}
           >
             Upcoming Events
           </Typography>
@@ -110,7 +110,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
+            sx={{ color: theme => theme.palette.primary.main, fontWeight: "bold", mb: 2 }}
           >
             Support & Resources
           </Typography>

@@ -80,7 +80,10 @@ export default function UkrainianVsBritishCakePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
           <Typography
@@ -90,7 +93,7 @@ export default function UkrainianVsBritishCakePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: theme => theme.palette.primary.main,
             }}
           >
             Ukrainian Cake vs British Cake
@@ -119,13 +122,25 @@ export default function UkrainianVsBritishCakePage() {
           <Grid item xs={12}>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Grid container spacing={2}>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                >
                   Aspect
                 </Grid>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                >
                   Ukrainian Cake
                 </Grid>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
+                <Grid
+                  item
+                  xs={4}
+                  sx={{ fontWeight: "bold", color: theme => theme.palette.primary.main }}
+                >
                   British Cake
                 </Grid>
                 {comparison.map((row, idx) => (

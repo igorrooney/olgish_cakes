@@ -99,7 +99,7 @@ export const HamperImageGallery = memo(function HamperImageGallery({
                 borderRadius: 2,
                 overflow: "hidden",
                 cursor: "pointer",
-                outline: i === index ? "2px solid #005BBB" : "none",
+                outline: i === index ? theme => `2px solid ${theme.palette.primary.main}` : "none",
               }}
               onClick={() => setIndex(i)}
             >
