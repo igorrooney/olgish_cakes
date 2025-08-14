@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Critical CSS utilities for performance optimization
  */
 
@@ -57,7 +57,7 @@ export const criticalCSS = `
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #2E3192 0%, #FEF102 100%);
+    background: linear-gradient(135deg, #005BBB 0%, #FFD700 100%);
     color: white;
     text-align: center;
   }
@@ -79,7 +79,7 @@ export const criticalCSS = `
 
   /* Critical button styles */
   .btn-primary {
-    background: #2E3192;
+    background: #005BBB;
     color: white;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -125,7 +125,7 @@ export const criticalCSS = `
   }
 
   .nav-links a:hover {
-    color: #2E3192;
+    color: #005BBB;
   }
 
   /* Mobile critical styles */
@@ -149,7 +149,7 @@ export const criticalCSS = `
   input:focus,
   textarea:focus,
   select:focus {
-    outline: 2px solid #2E3192;
+    outline: 2px solid #005BBB;
     outline-offset: 2px;
   }
 
@@ -221,4 +221,3 @@ export function handleCSSLoading(): void {
     setTimeout(checkCSSLoaded, 50);
   }
 }
-

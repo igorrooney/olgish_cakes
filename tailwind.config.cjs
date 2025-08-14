@@ -1,4 +1,4 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,8 +10,8 @@ module.exports = {
       colors: {
         // Ukrainian brand colors - WCAG AA compliant
         ukrainian: {
-          blue: "#2E3192",
-          yellow: "#FEF102",
+          blue: "#005BBB",
+          yellow: "#FFD700",
           honey: "#D4A76A",
           cream: "#FFF5E6",
           berry: "#8B0000",
@@ -24,7 +24,7 @@ module.exports = {
           300: "#A5C4FF",
           400: "#82A3FF",
           500: "#1E4A73", // WCAG AA compliant - use with white text
-          600: "#2E3192", // Main primary
+          600: "#005BBB", // Main primary
           700: "#004A9B",
           800: "#003D7A", // Dark primary
           900: "#002F5D",
@@ -96,4 +96,3 @@ module.exports = {
     "xl:flex-col",
   ],
 };
-

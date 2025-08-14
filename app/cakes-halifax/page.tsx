@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -64,7 +64,7 @@ export default async function CakesHalifaxPage() {
               longitude: "-1.8577",
             },
             openingHours: "Mo-Su 00:00-23:59",
-            priceRange: "Â£Â£",
+            priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {
               "@type": "City",
@@ -216,7 +216,7 @@ export default async function CakesHalifaxPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
+                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
                 color: "white",
               }}
             >
@@ -229,22 +229,22 @@ export default async function CakesHalifaxPage() {
                     Delivery Areas in Halifax:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Halifax Town Centre
+                    • Halifax Town Centre
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Sowerby Bridge
+                    • Sowerby Bridge
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Elland
+                    • Elland
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Brighouse
+                    • Brighouse
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Hebden Bridge
+                    • Hebden Bridge
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ And surrounding areas
+                    • And surrounding areas
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -252,16 +252,16 @@ export default async function CakesHalifaxPage() {
                     Delivery Information:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Delivery Fee: Â£15-20
+                    • Delivery Fee: £15-20
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Delivery Time: 1-2 hours
+                    • Delivery Time: 1-2 hours
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Order Lead Time: 3-5 days
+                    • Order Lead Time: 3-5 days
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Fresh delivery on celebration day
+                    • Fresh delivery on celebration day
                   </Typography>
                 </Grid>
               </Grid>
@@ -272,4 +272,3 @@ export default async function CakesHalifaxPage() {
     </>
   );
 }
-

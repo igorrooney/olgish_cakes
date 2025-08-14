@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -63,7 +63,7 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
             Ukrainian Celebrations
@@ -95,12 +95,12 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
+            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸŽ‰ Ukrainian Celebrations Throughout the Year
+            🎉 Ukrainian Celebrations Throughout the Year
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian celebrations are deeply rooted in both Christian traditions and ancient pagan
@@ -121,10 +121,10 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
-            â„ï¸ Winter Celebrations
+            ❄️ Winter Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -132,21 +132,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Christmas (Rizdvo)",
                 date: "January 7th",
                 description: "Traditional Christmas celebration with honey cake and kutia",
-                icon: "ðŸŽ„",
+                icon: "🎄",
                 cakes: "Honey Cake, Kutia, Pampushky",
               },
               {
                 title: "New Year (Novyi Rik)",
                 date: "January 1st",
                 description: "Celebrating the new year with festive cakes and pastries",
-                icon: "ðŸŽŠ",
+                icon: "🎊",
                 cakes: "Honey Cake, Kyiv Cake, Festive Pastries",
               },
               {
                 title: "Epiphany (Vodokhreshche)",
                 date: "January 19th",
                 description: "Blessing of water and traditional sweet breads",
-                icon: "ðŸ’§",
+                icon: "💧",
                 cakes: "Sweet Bread, Honey Cookies",
               },
             ].map((celebration, index) => (
@@ -168,13 +168,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FEF102", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -198,10 +198,10 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
-            ðŸŒ¸ Spring Celebrations
+            🌸 Spring Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -209,21 +209,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Easter (Velykden)",
                 date: "Variable",
                 description: "The most important Christian holiday with traditional Easter bread",
-                icon: "ðŸ¥š",
+                icon: "🥚",
                 cakes: "Paska, Babka, Honey Cake",
               },
               {
                 title: "Maslenitsa",
                 date: "February/March",
                 description: "Butter week celebration with pancakes and sweet treats",
-                icon: "ðŸ¥ž",
+                icon: "🥞",
                 cakes: "Blini, Sweet Pancakes, Honey Cake",
               },
               {
                 title: "Annunciation",
                 date: "April 7th",
                 description: "Celebration of spring with light, sweet pastries",
-                icon: "ðŸŒº",
+                icon: "🌺",
                 cakes: "Light Pastries, Honey Cookies",
               },
             ].map((celebration, index) => (
@@ -245,13 +245,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FEF102", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -275,10 +275,10 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
-            â˜€ï¸ Summer Celebrations
+            ☀️ Summer Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -286,21 +286,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Ivan Kupala",
                 date: "July 7th",
                 description: "Ancient summer solstice celebration with wildflower decorations",
-                icon: "ðŸŒ»",
+                icon: "🌻",
                 cakes: "Flower-decorated Cakes, Honey Cake",
               },
               {
                 title: "Harvest Festival",
                 date: "August",
                 description: "Celebrating the harvest with grain-based desserts",
-                icon: "ðŸŒ¾",
+                icon: "🌾",
                 cakes: "Grain Cakes, Honey Cake, Fruit Pastries",
               },
               {
                 title: "Assumption (Uspennya)",
                 date: "August 28th",
                 description: "Religious celebration with blessed bread and cakes",
-                icon: "ðŸ™",
+                icon: "🙏",
                 cakes: "Blessed Bread, Honey Cake, Sweet Pastries",
               },
             ].map((celebration, index) => (
@@ -322,13 +322,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FEF102", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -352,10 +352,10 @@ export default function UkrainianCelebrationsPage() {
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
               mb: 4,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
-            ðŸ‚ Autumn Celebrations
+            🍂 Autumn Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -363,21 +363,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Intercession (Pokrova)",
                 date: "October 14th",
                 description: "Celebration of protection with traditional cakes",
-                icon: "ðŸ›¡ï¸",
+                icon: "🛡️",
                 cakes: "Protection Cakes, Honey Cake, Kyiv Cake",
               },
               {
                 title: "St. Michael's Day",
                 date: "November 21st",
                 description: "Honoring the archangel with special pastries",
-                icon: "âš”ï¸",
+                icon: "⚔️",
                 cakes: "Michael's Cakes, Honey Pastries",
               },
               {
                 title: "St. Andrew's Day",
                 date: "December 13th",
                 description: "Winter preparation with hearty cakes",
-                icon: "â„ï¸",
+                icon: "❄️",
                 cakes: "Winter Cakes, Honey Cake, Nuts and Dried Fruits",
               },
             ].map((celebration, index) => (
@@ -399,13 +399,13 @@ export default function UkrainianCelebrationsPage() {
                   <Typography
                     variant="h4"
                     component="h4"
-                    sx={{ mb: 1, color: "#2E3192", fontWeight: "bold" }}
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {celebration.title}
                   </Typography>
                   <Typography
                     variant="subtitle1"
-                    sx={{ mb: 2, color: "#FEF102", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: "#FFD700", fontWeight: "bold" }}
                   >
                     {celebration.date}
                   </Typography>
@@ -427,12 +427,12 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             p: { xs: 3, md: 4 },
             mb: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
+            background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
             color: "white",
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸ›ï¸ Cultural Significance of Ukrainian Celebrations
+            🏛️ Cultural Significance of Ukrainian Celebrations
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -462,7 +462,7 @@ export default function UkrainianCelebrationsPage() {
           sx={{
             textAlign: "center",
             p: { xs: 4, md: 6 },
-            background: "linear-gradient(135deg, #FEF102 0%, #2E3192 100%)",
+            background: "linear-gradient(135deg, #FFD700 0%, #005BBB 100%)",
             borderRadius: 2,
             color: "white",
           }}
@@ -482,7 +482,7 @@ export default function UkrainianCelebrationsPage() {
               size="large"
               sx={{
                 bgcolor: "white",
-                color: "#2E3192",
+                color: "#005BBB",
                 "&:hover": { bgcolor: "#f5f5f5" },
               }}
             >
@@ -507,4 +507,3 @@ export default function UkrainianCelebrationsPage() {
     </>
   );
 }
-

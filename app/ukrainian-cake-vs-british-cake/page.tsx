@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 export const metadata: Metadata = {
   title: "Ukrainian Cake vs British Cake | Cake Comparison | Olgish Cakes",
@@ -90,7 +90,7 @@ export default function UkrainianVsBritishCakePage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
             Ukrainian Cake vs British Cake
@@ -119,13 +119,13 @@ export default function UkrainianVsBritishCakePage() {
           <Grid item xs={12}>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Grid container spacing={2}>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#2E3192" }}>
+                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
                   Aspect
                 </Grid>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#2E3192" }}>
+                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
                   Ukrainian Cake
                 </Grid>
-                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#2E3192" }}>
+                <Grid item xs={4} sx={{ fontWeight: "bold", color: "#005BBB" }}>
                   British Cake
                 </Grid>
                 {comparison.map((row, idx) => (
@@ -149,4 +149,3 @@ export default function UkrainianVsBritishCakePage() {
     </>
   );
 }
-

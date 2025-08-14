@@ -1,8 +1,8 @@
-﻿# Ukrainian Design System for Olgish Cakes
+# Ukrainian Design System for Olgish Cakes
 
 A comprehensive design system inspired by Ukrainian culture and traditional colors, designed specifically for the Olgish Cakes website.
 
-## ðŸŽ¨ Color Palette
+## 🎨 Color Palette
 
 ### Primary Ukrainian Colors
 
@@ -12,8 +12,8 @@ Our color palette is inspired by traditional Ukrainian culture and the colors of
 import { colors } from "@/lib/design-system";
 
 // Ukrainian traditional colors
-colors.ukrainian.blue; // #2E3192 - Traditional Ukrainian blue
-colors.ukrainian.yellow; // #FEF102 - Traditional Ukrainian yellow
+colors.ukrainian.blue; // #005BBB - Traditional Ukrainian blue
+colors.ukrainian.yellow; // #FFD700 - Traditional Ukrainian yellow
 colors.ukrainian.honey; // #D4A76A - Honey Cake color
 colors.ukrainian.cream; // #FFF5E6 - Cream color for Kyiv Cake
 colors.ukrainian.berry; // #8B0000 - Deep berry color for traditional desserts
@@ -23,13 +23,13 @@ colors.ukrainian.berry; // #8B0000 - Deep berry color for traditional desserts
 
 ```typescript
 // Primary colors (Ukrainian blue)
-colors.primary.main; // #2E3192
+colors.primary.main; // #005BBB
 colors.primary.light; // #4D8FD1
 colors.primary.dark; // #003D7A
 colors.primary.contrast; // #FFFFFF
 
 // Secondary colors (Ukrainian yellow)
-colors.secondary.main; // #FEF102
+colors.secondary.main; // #FFD700
 colors.secondary.light; // #FFE44D
 colors.secondary.dark; // #B39700
 colors.secondary.contrast; // #2D2D2D
@@ -64,7 +64,7 @@ colors.background.warm; // #FEF9F0 - Very light honey
 - **Cards and Sections**: Use white for content areas
 - **Subtle Backgrounds**: Use cream for form fields and secondary content
 
-## ðŸ“ Typography
+## 📝 Typography
 
 ### Font Families
 
@@ -116,7 +116,7 @@ typography.fontWeight.extrabold; // 800 - Extra bold display text
 - Use normal weight (400) for regular text
 - Use medium weight (500) for emphasized text
 
-## ðŸ“ Spacing
+## 📏 Spacing
 
 ### Spacing Scale
 
@@ -140,7 +140,7 @@ spacing["5xl"]; // 8rem (128px) - Extra large section spacing
 - Prefer the spacing scale over arbitrary values
 - Use larger spacing for sections and smaller spacing for components
 
-## ðŸ”² Border Radius
+## 🔲 Border Radius
 
 ### Border Radius Scale
 
@@ -164,7 +164,7 @@ borderRadius.full; // 9999px - Fully rounded
 - Use `borderRadius['2xl']` for cards and content containers
 - Use `borderRadius.full` for avatars and circular elements
 
-## ðŸŽ­ Shadows
+## 🎭 Shadows
 
 ### Shadow Scale
 
@@ -188,7 +188,7 @@ shadows.none; // No shadow
 - Use `shadows.lg` for modals and overlays
 - Use `shadows.inner` for pressed button states
 
-## ðŸ§© Components
+## 🧩 Components
 
 ### Buttons
 
@@ -255,7 +255,7 @@ import { components } from '@/lib/design-system';
 />
 ```
 
-## ðŸ“± Responsive Design
+## 📱 Responsive Design
 
 ### Breakpoints
 
@@ -290,7 +290,7 @@ sx={{
 }}
 ```
 
-## ðŸŽ¬ Animations
+## 🎬 Animations
 
 ### Animation Tokens
 
@@ -317,7 +317,7 @@ animation.transitions.slow; // all 0.5s ease-in-out
 - Use normal transitions for most UI changes
 - Use slow transitions for complex animations and page transitions
 
-## ðŸŽ¯ Best Practices
+## 🎯 Best Practices
 
 ### Color Usage
 
@@ -347,7 +347,7 @@ animation.transitions.slow; // all 0.5s ease-in-out
 3. **Accessibility**: Ensure components are accessible
 4. **Performance**: Optimize components for performance
 
-## ðŸ”§ Implementation
+## 🔧 Implementation
 
 ### Importing the Design System
 
@@ -400,8 +400,8 @@ module.exports = {
     extend: {
       colors: {
         ukrainian: {
-          blue: "#2E3192",
-          yellow: "#FEF102",
+          blue: "#005BBB",
+          yellow: "#FFD700",
           honey: "#D4A76A",
           cream: "#FFF5E6",
           berry: "#8B0000",
@@ -423,7 +423,7 @@ module.exports = {
 };
 ```
 
-## ðŸ“š Resources
+## 📚 Resources
 
 - [Ukrainian Flag Colors](https://en.wikipedia.org/wiki/Flag_of_Ukraine)
 - [Ukrainian Traditional Desserts](https://en.wikipedia.org/wiki/Ukrainian_cuisine#Desserts)
@@ -433,4 +433,3 @@ module.exports = {
 ---
 
 This design system ensures consistency, accessibility, and a beautiful Ukrainian-inspired aesthetic across the Olgish Cakes website.
-

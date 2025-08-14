@@ -1,4 +1,4 @@
-﻿import {
+import {
   ArrowForwardIcon,
   CakeOutlinedIcon,
   CelebrationIcon,
@@ -37,7 +37,7 @@ import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 export const metadata: Metadata = {
   title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
   description:
-    "ðŸ† #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5â˜… rating, same-day delivery Yorkshire. Order now!",
+    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire. Order now!",
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
     description:
-      "ðŸ† #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5â˜… rating, same-day delivery Yorkshire.",
+      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.",
     url: "https://olgishcakes.co.uk",
     siteName: "Olgish Cakes",
     images: [
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
     description:
-      "ðŸ† #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5â˜… rating.",
+      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating.",
     images: ["https://olgishcakes.co.uk/images/hero-cake.jpg"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
@@ -123,7 +123,7 @@ export const metadata: Metadata = {
     ICBM: "53.8008, -1.5491",
     rating: "5",
     rating_count: "127",
-    price_range: "Â£Â£",
+    price_range: "££",
     cuisine: "Ukrainian",
     payment: "cash, credit card, bank transfer",
     delivery: "yes",
@@ -152,10 +152,10 @@ const staggerContainer = {
 };
 
 const sourceIcons = {
-  instagram: "ðŸ“¸",
-  facebook: "ðŸ“˜",
-  google: "ðŸ”",
-  direct: "ðŸ’¬",
+  instagram: "📸",
+  facebook: "📘",
+  google: "🔍",
+  direct: "💬",
 } as const;
 
 export default async function Home() {
@@ -171,7 +171,7 @@ export default async function Home() {
     "@id": "https://olgishcakes.co.uk/#webpage",
     name: "Olgish Cakes - #1 Ukrainian Cakes Leeds",
     description:
-      "ðŸ† #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5â˜… rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
     url: "https://olgishcakes.co.uk",
     isPartOf: {
       "@id": "https://olgishcakes.co.uk/#website",
@@ -299,7 +299,7 @@ export default async function Home() {
                 variant="h1"
                 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
                 sx={{
-                  background: "linear-gradient(135deg, #FFFFFF 0%, #FEF102 50%, #FFFFFF 100%)",
+                  background: "linear-gradient(135deg, #FFFFFF 0%, #FFD700 50%, #FFFFFF 100%)",
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -360,7 +360,7 @@ export default async function Home() {
               Featured Gift Hampers
             </h2>
             <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
-              Discover our curated range of luxury Ukrainian gift hampers â€” perfect for gifting and
+              Discover our curated range of luxury Ukrainian gift hampers — perfect for gifting and
               special occasions.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -387,7 +387,7 @@ export default async function Home() {
                     </div>
                     <div className="mt-4 flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900 truncate">{h.name}</h3>
-                      <span className="text-primary-600 font-medium">Â£{h.price}</span>
+                      <span className="text-primary-600 font-medium">£{h.price}</span>
                     </div>
                   </a>
                 );
@@ -690,7 +690,7 @@ export default async function Home() {
                               precision={0.5}
                               sx={{
                                 "& .MuiRating-iconFilled": {
-                                  color: "#FEF102",
+                                  color: "#FFD700",
                                 },
                               }}
                             />
@@ -773,7 +773,7 @@ export default async function Home() {
                               readOnly
                               sx={{
                                 "& .MuiRating-iconFilled": {
-                                  color: "#FEF102",
+                                  color: "#FFD700",
                                 },
                               }}
                             />
@@ -1048,4 +1048,3 @@ export default async function Home() {
     </main>
   );
 }
-

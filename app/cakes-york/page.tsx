@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -75,7 +75,7 @@ export default async function CakesYorkPage() {
               longitude: "-1.0815",
             },
             openingHours: "Mo-Su 00:00-23:59",
-            priceRange: "Â£Â£",
+            priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {
               "@type": "City",
@@ -155,25 +155,25 @@ export default async function CakesYorkPage() {
                   title: "Fresh Delivery to York",
                   description:
                     "Professional delivery service covering York city centre and surrounding areas. Same-day and next-day delivery available.",
-                  icon: "ðŸšš",
+                  icon: "🚚",
                 },
                 {
                   title: "Authentic Ukrainian Recipes",
                   description:
                     "Traditional Ukrainian cakes made with authentic recipes passed down through generations. Experience the real taste of Ukraine.",
-                  icon: "ðŸ‡ºðŸ‡¦",
+                  icon: "🇺🇦",
                 },
                 {
                   title: "Custom Cake Design",
                   description:
                     "Personalized cakes for all occasions. Wedding cakes, birthday cakes, and celebration cakes designed to your specifications.",
-                  icon: "ðŸŽ¨",
+                  icon: "🎨",
                 },
                 {
                   title: "Local York Community",
                   description:
                     "Serving the York community with love and care. Supporting local events and celebrations with beautiful Ukrainian cakes.",
-                  icon: "ðŸ°",
+                  icon: "🏰",
                 },
               ].map((feature, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -252,7 +252,7 @@ export default async function CakesYorkPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
+                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
                 color: "white",
               }}
             >
@@ -265,22 +265,22 @@ export default async function CakesYorkPage() {
                     Delivery Areas in York:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ York City Centre
+                    • York City Centre
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Clifton
+                    • Clifton
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Heworth
+                    • Heworth
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Acomb
+                    • Acomb
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Fulford
+                    • Fulford
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ And surrounding areas
+                    • And surrounding areas
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -288,19 +288,19 @@ export default async function CakesYorkPage() {
                     Delivery Options:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Same-day delivery (orders before 2 PM)
+                    • Same-day delivery (orders before 2 PM)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Next-day delivery
+                    • Next-day delivery
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Scheduled delivery for special occasions
+                    • Scheduled delivery for special occasions
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Wedding cake delivery service
+                    • Wedding cake delivery service
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Corporate delivery for office events
+                    • Corporate delivery for office events
                   </Typography>
                 </Grid>
               </Grid>
@@ -361,8 +361,8 @@ export default async function CakesYorkPage() {
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Typography key={i} sx={{ color: "#FEF102" }}>
-                          â­
+                        <Typography key={i} sx={{ color: "#FFD700" }}>
+                          ⭐
                         </Typography>
                       ))}
                     </Box>
@@ -426,4 +426,3 @@ export default async function CakesYorkPage() {
     </>
   );
 }
-

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -185,25 +185,25 @@ export default function GiftCardsPage() {
                   title: "Flexible Redemption",
                   description:
                     "Redeemable for any Ukrainian cake, custom designs, or cake delivery service. No restrictions on cake selection.",
-                  icon: "ðŸŽ‚",
+                  icon: "🎂",
                 },
                 {
                   title: "Personalized Experience",
                   description:
                     "Recipients can choose their preferred Ukrainian cake, size, and design. Perfect for personalizing their celebration.",
-                  icon: "ðŸŽ¨",
+                  icon: "🎨",
                 },
                 {
                   title: "Convenient Delivery",
                   description:
                     "Gift cards can be delivered digitally or as physical cards. Recipients can schedule delivery at their convenience.",
-                  icon: "ðŸ“§",
+                  icon: "📧",
                 },
                 {
                   title: "Long Validity",
                   description:
                     "Gift cards are valid for 12 months, giving recipients plenty of time to choose their perfect Ukrainian cake.",
-                  icon: "â°",
+                  icon: "⏰",
                 },
               ].map((benefit, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -276,7 +276,7 @@ export default function GiftCardsPage() {
                         variant="h4"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
-                        Â£{option.value}
+                        £{option.value}
                       </Typography>
                       <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
                         {option.title}
@@ -315,7 +315,7 @@ export default function GiftCardsPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
+                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
                 color: "white",
               }}
             >
@@ -331,7 +331,7 @@ export default function GiftCardsPage() {
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
-                    label="Gift Card Amount (Â£)"
+                    label="Gift Card Amount (£)"
                     type="number"
                     variant="outlined"
                     sx={{
@@ -400,37 +400,37 @@ export default function GiftCardsPage() {
                   occasion: "Birthdays",
                   description:
                     "Give the gift of a beautiful Ukrainian birthday cake. Let them choose their favorite flavor and design.",
-                  icon: "ðŸŽ‚",
+                  icon: "🎂",
                 },
                 {
                   occasion: "Weddings",
                   description:
                     "Perfect wedding gift for couples who love authentic Ukrainian flavors. Custom wedding cake designs available.",
-                  icon: "ðŸ’’",
+                  icon: "💒",
                 },
                 {
                   occasion: "Holidays",
                   description:
                     "Christmas, Easter, and other holidays. Traditional Ukrainian seasonal cakes and celebrations.",
-                  icon: "ðŸŽ„",
+                  icon: "🎄",
                 },
                 {
                   occasion: "Anniversaries",
                   description:
                     "Celebrate love with authentic Ukrainian cakes. Romantic designs and traditional flavors.",
-                  icon: "ðŸ’•",
+                  icon: "💕",
                 },
                 {
                   occasion: "Housewarming",
                   description:
                     "Welcome new neighbors with the taste of Ukraine. Perfect for introducing Ukrainian culture.",
-                  icon: "ðŸ ",
+                  icon: "🏠",
                 },
                 {
                   occasion: "Thank You",
                   description:
                     "Show appreciation with authentic Ukrainian cakes. A thoughtful way to say thank you.",
-                  icon: "ðŸ™",
+                  icon: "🙏",
                 },
               ].map((occasion, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
@@ -562,19 +562,19 @@ export default function GiftCardsPage() {
                 Gift Card Terms & Conditions
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                â€¢ Gift cards are valid for 12 months from the date of purchase
+                • Gift cards are valid for 12 months from the date of purchase
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                â€¢ Redeemable for any Ukrainian cake, custom designs, or delivery service
+                • Redeemable for any Ukrainian cake, custom designs, or delivery service
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                â€¢ Cannot be exchanged for cash or refunded
+                • Cannot be exchanged for cash or refunded
               </Typography>
               <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                â€¢ Delivery charges may apply depending on location
+                • Delivery charges may apply depending on location
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-                â€¢ Gift cards are non-transferable and should be kept secure
+                • Gift cards are non-transferable and should be kept secure
               </Typography>
             </Paper>
           </Box>
@@ -634,4 +634,3 @@ export default function GiftCardsPage() {
     </>
   );
 }
-

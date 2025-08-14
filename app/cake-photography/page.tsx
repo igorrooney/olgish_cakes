@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
@@ -101,7 +101,7 @@ export default function CakePhotographyPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
             Cake Photography
@@ -129,7 +129,7 @@ export default function CakePhotographyPage() {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#2E3192", fontWeight: "bold" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
                 Professional Lighting
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -139,7 +139,7 @@ export default function CakePhotographyPage() {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#2E3192", fontWeight: "bold" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
                 Creative Styling
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -149,7 +149,7 @@ export default function CakePhotographyPage() {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#2E3192", fontWeight: "bold" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
                 High-Resolution Images
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -162,4 +162,3 @@ export default function CakePhotographyPage() {
     </>
   );
 }
-

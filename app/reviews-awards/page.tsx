@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -125,28 +125,28 @@ const awards = [
     organization: "Leeds Food Awards",
     year: "2023",
     description: "Recognized for authentic Ukrainian baking and exceptional customer service",
-    icon: "ðŸ†",
+    icon: "🏆",
   },
   {
     title: "Excellence in Customer Service",
     organization: "Yorkshire Business Awards",
     year: "2023",
     description: "Awarded for outstanding customer satisfaction and service quality",
-    icon: "â­",
+    icon: "⭐",
   },
   {
     title: "Local Business of the Year",
     organization: "Leeds Chamber of Commerce",
     year: "2022",
     description: "Recognized for contribution to the local community and business excellence",
-    icon: "ðŸ¢",
+    icon: "🏢",
   },
   {
     title: "Best Wedding Cake Provider",
     organization: "Yorkshire Wedding Awards",
     year: "2022",
     description: "Awarded for exceptional wedding cake designs and service",
-    icon: "ðŸ’’",
+    icon: "💒",
   },
 ];
 
@@ -441,7 +441,7 @@ export default function ReviewsAwardsPage() {
               sx={{
                 p: 4,
                 borderRadius: 3,
-                background: "linear-gradient(135deg, #2E3192 0%, #FEF102 100%)",
+                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
                 color: "white",
               }}
             >
@@ -591,4 +591,3 @@ export default function ReviewsAwardsPage() {
     </>
   );
 }
-

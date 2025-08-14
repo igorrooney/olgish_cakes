@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 export const metadata: Metadata = {
   title: "Ukrainian Community Leeds | Ukrainian Events & Support | Olgish Cakes",
@@ -51,7 +51,7 @@ export default function UkrainianCommunityLeedsPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#2E3192",
+              color: "#005BBB",
             }}
           >
             Ukrainian Community in Leeds
@@ -80,7 +80,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#2E3192", fontWeight: "bold", mb: 2 }}
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
           >
             Ukrainian Community Organizations
           </Typography>
@@ -95,7 +95,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#2E3192", fontWeight: "bold", mb: 2 }}
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
           >
             Upcoming Events
           </Typography>
@@ -110,7 +110,7 @@ export default function UkrainianCommunityLeedsPage() {
           <Typography
             variant="h2"
             component="h2"
-            sx={{ color: "#2E3192", fontWeight: "bold", mb: 2 }}
+            sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}
           >
             Support & Resources
           </Typography>
@@ -125,4 +125,3 @@ export default function UkrainianCommunityLeedsPage() {
     </>
   );
 }
-

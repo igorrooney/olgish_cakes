@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
@@ -95,12 +95,12 @@ export function UtilityBar() {
             Order online 24/7
           </Typography>
           <Box sx={{ display: { xs: "none", md: "inline-flex" }, alignItems: "center", gap: 0.5 }}>
-            <StarIcon sx={{ fontSize: 16, color: "#FEF102" }} />
+            <StarIcon sx={{ fontSize: 16, color: "#FFD700" }} />
             <Typography
               variant="body2"
               sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
             >
-              5â˜… (127+)
+              5★ (127+)
             </Typography>
           </Box>
         </Box>
@@ -150,4 +150,3 @@ export function UtilityBar() {
 }
 
 export default UtilityBar;
-

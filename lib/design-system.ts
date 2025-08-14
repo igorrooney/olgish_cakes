@@ -1,11 +1,11 @@
-﻿// Ukrainian Design System for Olgish Cakes
+// Ukrainian Design System for Olgish Cakes
 // Inspired by Ukrainian culture and traditional colors
 
 export const colors = {
   // Primary Ukrainian Colors
   ukrainian: {
-    blue: "#2E3192", // Traditional Ukrainian blue
-    yellow: "#FEF102", // Traditional Ukrainian yellow
+    blue: "#005BBB", // Traditional Ukrainian blue
+    yellow: "#FFD700", // Traditional Ukrainian yellow
     honey: "#D4A76A", // Honey Cake color
     cream: "#FFF5E6", // Cream color for Kyiv Cake
     berry: "#8B0000", // Deep berry color for traditional desserts
@@ -13,13 +13,13 @@ export const colors = {
 
   // Semantic Colors
   primary: {
-    main: "#2E3192",
+    main: "#005BBB",
     light: "#1E4A73", // Balanced tone for WCAG AA compliance with dark text
     dark: "#003D7A",
     contrast: "#FFFFFF",
   },
   secondary: {
-    main: "#FEF102",
+    main: "#FFD700",
     light: "#FFE44D",
     dark: "#867100", // Darkened for better contrast with white text (4.8:1)
     contrast: "#2D2D2D",
@@ -334,4 +334,3 @@ export const designTokens = {
 } as const;
 
 export default designTokens;
-

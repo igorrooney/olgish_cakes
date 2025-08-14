@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Divider, Chip, TextField } from "@mui/material";
@@ -123,7 +123,7 @@ const contactInfo = {
 };
 
 const trustSignals = [
-  { icon: StarIcon, text: "5-Star Rated", color: "#FEF102" },
+  { icon: StarIcon, text: "5-Star Rated", color: "#FFD700" },
   { icon: VerifiedIcon, text: "Verified Business", color: "#4CAF50" },
   { icon: LocalShippingIcon, text: "Free Delivery", color: "#2196F3" },
   { icon: SecurityIcon, text: "Secure Orders", color: "#9C27B0" },
@@ -448,12 +448,12 @@ export default function Footer() {
                 }}
               >
                 Join our community of satisfied customers who choose Olgish Cakes for their special
-                occasions. Authentic Ukrainian baking with 5â˜… rating and same-day delivery across
+                occasions. Authentic Ukrainian baking with 5★ rating and same-day delivery across
                 Yorkshire.
               </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: spacing.sm }}>
                 <Chip
-                  label="â­ 5â˜… Rating"
+                  label="⭐ 5★ Rating"
                   sx={{
                     backgroundColor: colors.secondary.main,
                     color: "white",
@@ -462,7 +462,7 @@ export default function Footer() {
                   }}
                 />
                 <Chip
-                  label="ðŸ† #1 Ukrainian Bakery Leeds"
+                  label="🏆 #1 Ukrainian Bakery Leeds"
                   sx={{
                     backgroundColor: colors.primary.main,
                     color: "white",
@@ -471,7 +471,7 @@ export default function Footer() {
                   }}
                 />
                 <Chip
-                  label="ðŸšš Same-Day Delivery"
+                  label="🚚 Same-Day Delivery"
                   sx={{
                     backgroundColor: colors.primary.dark,
                     color: "white",
@@ -513,7 +513,7 @@ export default function Footer() {
                       },
                     }}
                   >
-                    ðŸ“ž +44 786 721 8194
+                    📞 +44 786 721 8194
                   </Typography>
                 </Link>
                 <Link
@@ -536,7 +536,7 @@ export default function Footer() {
                       },
                     }}
                   >
-                    ðŸ“§ hello@olgishcakes.co.uk
+                    📧 hello@olgishcakes.co.uk
                   </Typography>
                 </Link>
                 <Typography
@@ -564,7 +564,7 @@ export default function Footer() {
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <BodyText sx={{ color: colors.text.secondary }}>
-                Â© {currentYear} Olgish Cakes. All rights reserved. Handcrafted Ukrainian cakes in
+                © {currentYear} Olgish Cakes. All rights reserved. Handcrafted Ukrainian cakes in
                 Leeds.
               </BodyText>
             </Grid>
@@ -606,4 +606,3 @@ export default function Footer() {
     </Box>
   );
 }
-

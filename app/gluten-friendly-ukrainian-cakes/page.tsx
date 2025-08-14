@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
@@ -120,7 +120,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
           <Box sx={{ mb: 6 }}>
             <Alert severity="success" sx={{ borderRadius: 2, fontSize: "1.1rem" }}>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                ðŸ›¡ï¸ All our gluten-friendly cakes are prepared in a dedicated gluten-friendly
+                🛡️ All our gluten-friendly cakes are prepared in a dedicated gluten-friendly
                 environment with certified gluten-friendly ingredients. Safe for celiac disease and
                 gluten intolerance.
               </Typography>
@@ -141,25 +141,25 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                   title: "Celiac-Safe Preparation",
                   description:
                     "Dedicated gluten-friendly kitchen area with strict cross-contamination protocols. Certified safe for celiac disease.",
-                  icon: "ðŸ›¡ï¸",
+                  icon: "🛡️",
                 },
                 {
                   title: "Certified Gluten-Friendly Ingredients",
                   description:
                     "All ingredients are certified gluten-friendly and sourced from trusted suppliers. No wheat, rye, or barley used.",
-                  icon: "âœ…",
+                  icon: "✅",
                 },
                 {
                   title: "Authentic Ukrainian Taste",
                   description:
                     "Traditional Ukrainian cake recipes adapted for gluten-friendly diets without compromising on taste or texture.",
-                  icon: "ðŸ‡ºðŸ‡¦",
+                  icon: "🇺🇦",
                 },
                 {
                   title: "Custom Gluten-Friendly Designs",
                   description:
                     "Beautiful custom designs for all occasions. Wedding cakes, birthday cakes, and celebration cakes.",
-                  icon: "ðŸŽ¨",
+                  icon: "🎨",
                 },
               ].map((feature, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -210,42 +210,42 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                   name: "Gluten-Friendly Honey Cake",
                   description:
                     "Traditional Ukrainian honey cake made with gluten-friendly flour. Layers of honey-infused sponge with cream filling.",
-                  price: "From Â£38",
+                  price: "From £38",
                   image: "/images/gluten-friendly/gluten-friendly-honey-cake.jpg",
                 },
                 {
                   name: "Gluten-Friendly Kyiv Cake",
                   description:
                     "Celiac-safe version of the classic Kyiv cake. Rich chocolate layers with meringue and hazelnut filling.",
-                  price: "From Â£42",
+                  price: "From £42",
                   image: "/images/gluten-friendly/gluten-friendly-kyiv-cake.jpg",
                 },
                 {
                   name: "Gluten-Friendly Napoleon",
                   description:
                     "Wheat-free Napoleon cake with flaky gluten-friendly pastry layers and custard cream.",
-                  price: "From Â£40",
+                  price: "From £40",
                   image: "/images/gluten-friendly/gluten-friendly-napoleon.jpg",
                 },
                 {
                   name: "Gluten-Friendly Chocolate Cake",
                   description:
                     "Rich chocolate cake made with gluten-friendly flour. Perfect for chocolate lovers with celiac disease.",
-                  price: "From Â£35",
+                  price: "From £35",
                   image: "/images/gluten-friendly/gluten-friendly-chocolate.jpg",
                 },
                 {
                   name: "Gluten-Friendly Vanilla Cake",
                   description:
                     "Light and fluffy vanilla cake with gluten-friendly flour. Classic flavor for any celebration.",
-                  price: "From Â£32",
+                  price: "From £32",
                   image: "/images/gluten-friendly/gluten-friendly-vanilla.jpg",
                 },
                 {
                   name: "Custom Gluten-Friendly Cakes",
                   description:
                     "Personalized gluten-friendly cakes for any occasion. Wedding cakes, birthday cakes, and celebration cakes.",
-                  price: "From Â£45",
+                  price: "From £45",
                   image: "/images/gluten-friendly/custom-gluten-friendly.jpg",
                 },
               ].map((cake, index) => (
@@ -341,19 +341,19 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     Gluten-Friendly Ingredients We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Certified gluten-friendly flour blends
+                    • Certified gluten-friendly flour blends
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Almond flour and coconut flour
+                    • Almond flour and coconut flour
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Gluten-friendly baking powder and xanthan gum
+                    • Gluten-friendly baking powder and xanthan gum
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Certified gluten-friendly vanilla and extracts
+                    • Certified gluten-friendly vanilla and extracts
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ All ingredients tested for gluten contamination
+                    • All ingredients tested for gluten contamination
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -361,19 +361,19 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     Our Safety Protocols:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Dedicated gluten-friendly preparation area
+                    • Dedicated gluten-friendly preparation area
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Separate utensils and equipment
+                    • Separate utensils and equipment
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Staff trained in celiac safety
+                    • Staff trained in celiac safety
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Regular testing for gluten contamination
+                    • Regular testing for gluten contamination
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Clear labeling and allergen information
+                    • Clear labeling and allergen information
                   </Typography>
                 </Grid>
               </Grid>
@@ -434,8 +434,8 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     </Typography>
                     <Box sx={{ display: "flex", mt: 1 }}>
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Typography key={i} sx={{ color: "#FEF102" }}>
-                          â­
+                        <Typography key={i} sx={{ color: "#FFD700" }}>
+                          ⭐
                         </Typography>
                       ))}
                     </Box>
@@ -504,4 +504,3 @@ export default function GlutenFriendlyUkrainianCakesPage() {
     </>
   );
 }
-
