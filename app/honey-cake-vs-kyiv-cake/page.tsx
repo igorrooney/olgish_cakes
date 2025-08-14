@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -266,8 +266,8 @@ export default function HoneyCakeVsKyivCakePage() {
                     },
                     {
                       feature: "Price Range",
-                      honeyCake: "£35-£50",
-                      kyiv: "£40-£60",
+                      honeyCake: "Â£35-Â£50",
+                      kyiv: "Â£40-Â£60",
                     },
                   ].map((row, index) => (
                     <TableRow
@@ -395,19 +395,19 @@ export default function HoneyCakeVsKyivCakePage() {
                     Choose Honey Cake If:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You love honey and warm spices
+                    â€¢ You love honey and warm spices
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You prefer softer, more traditional textures
+                    â€¢ You prefer softer, more traditional textures
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You're celebrating family gatherings or holidays
+                    â€¢ You're celebrating family gatherings or holidays
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You want a cake with rich cultural history
+                    â€¢ You want a cake with rich cultural history
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ You're looking for a more affordable option
+                    â€¢ You're looking for a more affordable option
                   </Typography>
                 </Paper>
               </Grid>
@@ -425,19 +425,19 @@ export default function HoneyCakeVsKyivCakePage() {
                     Choose Kyiv Cake If:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You're a chocolate lover
+                    â€¢ You're a chocolate lover
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You prefer sophisticated, elegant desserts
+                    â€¢ You prefer sophisticated, elegant desserts
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You're celebrating special occasions or events
+                    â€¢ You're celebrating special occasions or events
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ You want to impress guests with unique flavors
+                    â€¢ You want to impress guests with unique flavors
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ You're looking for a premium dessert experience
+                    â€¢ You're looking for a premium dessert experience
                   </Typography>
                 </Paper>
               </Grid>

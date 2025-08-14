@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -73,7 +73,7 @@ export default function HowToMakeHoneyCakePage() {
       "Mix honey, eggs, sugar, and butter in a large bowl",
       "Add flour and baking soda, mix until smooth",
       "Divide dough into 8-10 portions and roll out thin layers",
-      "Bake each layer at 350°F for 8-10 minutes",
+      "Bake each layer at 350Â°F for 8-10 minutes",
       "Mix sour cream, heavy cream, and powdered sugar for filling",
       "Layer cake with cream filling between each layer",
       "Refrigerate for at least 3 hours before serving",
@@ -133,7 +133,7 @@ export default function HowToMakeHoneyCakePage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x�� Recipe Overview
+            ðŸ¯ Recipe Overview
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -141,12 +141,12 @@ export default function HowToMakeHoneyCakePage() {
                 Preparation Time:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Prep Time: 30 minutes
+                â€¢ Prep Time: 30 minutes
                 <br />
-                ⬢ Cook Time: 45 minutes
+                â€¢ Cook Time: 45 minutes
                 <br />
-                ⬢ Total Time: 4 hours (including chilling)
-                <br />⬢ Servings: 8-10 people
+                â€¢ Total Time: 4 hours (including chilling)
+                <br />â€¢ Servings: 8-10 people
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -154,12 +154,12 @@ export default function HowToMakeHoneyCakePage() {
                 Difficulty Level:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Skill Level: Intermediate
+                â€¢ Skill Level: Intermediate
                 <br />
-                ⬢ Equipment: Rolling pin, baking sheets
+                â€¢ Equipment: Rolling pin, baking sheets
                 <br />
-                ⬢ Special Techniques: Layering, cream filling
-                <br />⬢ Storage: Refrigerate up to 5 days
+                â€¢ Special Techniques: Layering, cream filling
+                <br />â€¢ Storage: Refrigerate up to 5 days
               </Typography>
             </Grid>
           </Grid>
@@ -176,7 +176,7 @@ export default function HowToMakeHoneyCakePage() {
               color: "#2E3192",
             }}
           >
-            �x� Ingredients
+            ðŸ“ Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -244,7 +244,7 @@ export default function HowToMakeHoneyCakePage() {
               color: "#2E3192",
             }}
           >
-            �x�⬍�x�� Step-by-Step Instructions
+            ðŸ‘©â€ðŸ³ Step-by-Step Instructions
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -253,49 +253,49 @@ export default function HowToMakeHoneyCakePage() {
                 title: "Prepare the Dough",
                 description:
                   "In a large bowl, mix honey, eggs, sugar, and softened butter until well combined. Add flour and baking soda, mix until you have a smooth, slightly sticky dough.",
-                icon: "�x��",
+                icon: "ðŸ¥£",
               },
               {
                 step: "2",
                 title: "Divide and Rest",
                 description:
                   "Divide the dough into 8-10 equal portions. Wrap each portion in plastic wrap and refrigerate for 30 minutes to make rolling easier.",
-                icon: "⏰",
+                icon: "â°",
               },
               {
                 step: "3",
                 title: "Roll Out Layers",
                 description:
                   "On a floured surface, roll each portion into a thin circle (about 8-9 inches in diameter). Use a plate as a template to cut perfect circles.",
-                icon: "�x",
+                icon: "ðŸ”„",
               },
               {
                 step: "4",
                 title: "Bake the Layers",
                 description:
-                  "Bake each layer at 350°F (175°C) for 8-10 minutes until golden brown. Let cool completely on a wire rack.",
-                icon: "�x�",
+                  "Bake each layer at 350Â°F (175Â°C) for 8-10 minutes until golden brown. Let cool completely on a wire rack.",
+                icon: "ðŸ”¥",
               },
               {
                 step: "5",
                 title: "Prepare the Filling",
                 description:
                   "Mix sour cream, heavy cream, powdered sugar, and vanilla extract until smooth and creamy. Refrigerate until ready to use.",
-                icon: "�x�",
+                icon: "ðŸ¥„",
               },
               {
                 step: "6",
                 title: "Assemble the Cake",
                 description:
                   "Place one layer on a serving plate, spread with cream filling, and repeat with remaining layers. Cover the top and sides with remaining cream.",
-                icon: "�x}",
+                icon: "ðŸŽ‚",
               },
               {
                 step: "7",
                 title: "Chill and Serve",
                 description:
                   "Refrigerate the cake for at least 3 hours (preferably overnight) to allow the flavors to meld and the cream to set properly.",
-                icon: "�️",
+                icon: "â„ï¸",
               },
             ].map((instruction, index) => (
               <Grid item xs={12} key={index}>
@@ -341,7 +341,7 @@ export default function HowToMakeHoneyCakePage() {
               color: "#2E3192",
             }}
           >
-            �x� Tips and Variations
+            ðŸ’¡ Tips and Variations
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -351,16 +351,16 @@ export default function HowToMakeHoneyCakePage() {
                 </Typography>
                 <List>
                   <ListItem>
-                    <ListItemText primary="⬢ Use high-quality honey for the best flavor" />
+                    <ListItemText primary="â€¢ Use high-quality honey for the best flavor" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Don't overbake the layers - they should be golden, not dark" />
+                    <ListItemText primary="â€¢ Don't overbake the layers - they should be golden, not dark" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Let the cake chill overnight for the best texture" />
+                    <ListItemText primary="â€¢ Let the cake chill overnight for the best texture" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Use full-fat sour cream for the richest filling" />
+                    <ListItemText primary="â€¢ Use full-fat sour cream for the richest filling" />
                   </ListItem>
                 </List>
               </Paper>
@@ -372,16 +372,16 @@ export default function HowToMakeHoneyCakePage() {
                 </Typography>
                 <List>
                   <ListItem>
-                    <ListItemText primary="⬢ Add chopped walnuts to the cream filling" />
+                    <ListItemText primary="â€¢ Add chopped walnuts to the cream filling" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Use different types of honey for unique flavors" />
+                    <ListItemText primary="â€¢ Use different types of honey for unique flavors" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Add a layer of fresh berries between cream layers" />
+                    <ListItemText primary="â€¢ Add a layer of fresh berries between cream layers" />
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="⬢ Decorate with honey drizzle and edible flowers" />
+                    <ListItemText primary="â€¢ Decorate with honey drizzle and edible flowers" />
                   </ListItem>
                 </List>
               </Paper>

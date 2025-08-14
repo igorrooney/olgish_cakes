@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -100,7 +100,7 @@ export default function UkrainianCelebrationsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x}0 Ukrainian Celebrations Throughout the Year
+            ðŸŽ‰ Ukrainian Celebrations Throughout the Year
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian celebrations are deeply rooted in both Christian traditions and ancient pagan
@@ -124,7 +124,7 @@ export default function UkrainianCelebrationsPage() {
               color: "#2E3192",
             }}
           >
-            �️ Winter Celebrations
+            â„ï¸ Winter Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -132,21 +132,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Christmas (Rizdvo)",
                 date: "January 7th",
                 description: "Traditional Christmas celebration with honey cake and kutia",
-                icon: "�x}",
+                icon: "ðŸŽ„",
                 cakes: "Honey Cake, Kutia, Pampushky",
               },
               {
                 title: "New Year (Novyi Rik)",
                 date: "January 1st",
                 description: "Celebrating the new year with festive cakes and pastries",
-                icon: "�x}`",
+                icon: "ðŸŽŠ",
                 cakes: "Honey Cake, Kyiv Cake, Festive Pastries",
               },
               {
                 title: "Epiphany (Vodokhreshche)",
                 date: "January 19th",
                 description: "Blessing of water and traditional sweet breads",
-                icon: "�x�",
+                icon: "ðŸ’§",
                 cakes: "Sweet Bread, Honey Cookies",
               },
             ].map((celebration, index) => (
@@ -201,7 +201,7 @@ export default function UkrainianCelebrationsPage() {
               color: "#2E3192",
             }}
           >
-            �xR� Spring Celebrations
+            ðŸŒ¸ Spring Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -209,21 +209,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Easter (Velykden)",
                 date: "Variable",
                 description: "The most important Christian holiday with traditional Easter bread",
-                icon: "�x�a",
+                icon: "ðŸ¥š",
                 cakes: "Paska, Babka, Honey Cake",
               },
               {
                 title: "Maslenitsa",
                 date: "February/March",
                 description: "Butter week celebration with pancakes and sweet treats",
-                icon: "�x�~",
+                icon: "ðŸ¥ž",
                 cakes: "Blini, Sweet Pancakes, Honey Cake",
               },
               {
                 title: "Annunciation",
                 date: "April 7th",
                 description: "Celebration of spring with light, sweet pastries",
-                icon: "�xR�",
+                icon: "ðŸŒº",
                 cakes: "Light Pastries, Honey Cookies",
               },
             ].map((celebration, index) => (
@@ -278,7 +278,7 @@ export default function UkrainianCelebrationsPage() {
               color: "#2E3192",
             }}
           >
-            �ܬ️ Summer Celebrations
+            â˜€ï¸ Summer Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -286,21 +286,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Ivan Kupala",
                 date: "July 7th",
                 description: "Ancient summer solstice celebration with wildflower decorations",
-                icon: "�xR�",
+                icon: "ðŸŒ»",
                 cakes: "Flower-decorated Cakes, Honey Cake",
               },
               {
                 title: "Harvest Festival",
                 date: "August",
                 description: "Celebrating the harvest with grain-based desserts",
-                icon: "�xR�",
+                icon: "ðŸŒ¾",
                 cakes: "Grain Cakes, Honey Cake, Fruit Pastries",
               },
               {
                 title: "Assumption (Uspennya)",
                 date: "August 28th",
                 description: "Religious celebration with blessed bread and cakes",
-                icon: "�x"�",
+                icon: "ðŸ™",
                 cakes: "Blessed Bread, Honey Cake, Sweet Pastries",
               },
             ].map((celebration, index) => (
@@ -355,7 +355,7 @@ export default function UkrainianCelebrationsPage() {
               color: "#2E3192",
             }}
           >
-            �x� Autumn Celebrations
+            ðŸ‚ Autumn Celebrations
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -363,21 +363,21 @@ export default function UkrainianCelebrationsPage() {
                 title: "Intercession (Pokrova)",
                 date: "October 14th",
                 description: "Celebration of protection with traditional cakes",
-                icon: "�x:�️",
+                icon: "ðŸ›¡ï¸",
                 cakes: "Protection Cakes, Honey Cake, Kyiv Cake",
               },
               {
                 title: "St. Michael's Day",
                 date: "November 21st",
                 description: "Honoring the archangel with special pastries",
-                icon: "�a️",
+                icon: "âš”ï¸",
                 cakes: "Michael's Cakes, Honey Pastries",
               },
               {
                 title: "St. Andrew's Day",
                 date: "December 13th",
                 description: "Winter preparation with hearty cakes",
-                icon: "�️",
+                icon: "â„ï¸",
                 cakes: "Winter Cakes, Honey Cake, Nuts and Dried Fruits",
               },
             ].map((celebration, index) => (
@@ -432,7 +432,7 @@ export default function UkrainianCelebrationsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x�:️ Cultural Significance of Ukrainian Celebrations
+            ðŸ›ï¸ Cultural Significance of Ukrainian Celebrations
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>

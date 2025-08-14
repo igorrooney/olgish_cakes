@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -100,7 +100,7 @@ export default function UkrainianBakingTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x�� Historical Roots of Ukrainian Baking
+            ðŸº Historical Roots of Ukrainian Baking
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian baking traditions date back centuries, with roots in ancient Slavic culture.
@@ -125,7 +125,7 @@ export default function UkrainianBakingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �xR� Traditional Ukrainian Baking Ingredients
+            ðŸŒ¾ Traditional Ukrainian Baking Ingredients
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -133,38 +133,38 @@ export default function UkrainianBakingTraditionsPage() {
                 title: "Honey",
                 description:
                   "The golden nectar of Ukrainian baking, used in everything from honey cake to traditional pastries",
-                icon: "�x��",
+                icon: "ðŸ¯",
                 details: "Ukrainian honey is prized for its rich flavor and medicinal properties",
               },
               {
                 title: "Wheat Flour",
                 description:
                   "High-quality wheat flour forms the foundation of most Ukrainian baked goods",
-                icon: "�xR�",
+                icon: "ðŸŒ¾",
                 details: "Traditionally stone-ground for the best texture and flavor",
               },
               {
                 title: "Sour Cream",
                 description: "Essential for rich, creamy fillings and tender cake layers",
-                icon: "�x�:",
+                icon: "ðŸ¥›",
                 details: "Full-fat sour cream adds moisture and authentic flavor",
               },
               {
                 title: "Butter",
                 description: "Used generously in traditional recipes for rich, flaky textures",
-                icon: "�x��",
+                icon: "ðŸ§ˆ",
                 details: "High-quality butter is crucial for authentic taste",
               },
               {
                 title: "Eggs",
                 description: "Fresh farm eggs provide structure and richness to Ukrainian desserts",
-                icon: "�x�a",
+                icon: "ðŸ¥š",
                 details: "Traditionally from free-range chickens for the best quality",
               },
               {
                 title: "Vanilla",
                 description: "Natural vanilla adds warmth and depth to traditional recipes",
-                icon: "�xR�",
+                icon: "ðŸŒ¿",
                 details: "Often used in combination with other natural flavorings",
               },
             ].map((ingredient, index) => (
@@ -209,7 +209,7 @@ export default function UkrainianBakingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �x�⬍�x�� Traditional Ukrainian Baking Techniques
+            ðŸ‘©â€ðŸ³ Traditional Ukrainian Baking Techniques
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -217,40 +217,40 @@ export default function UkrainianBakingTraditionsPage() {
                 title: "Layered Baking",
                 description:
                   "Creating thin, delicate layers that are baked separately and assembled with cream fillings",
-                icon: "�x�~",
+                icon: "ðŸ¥ž",
                 technique: "Each layer is rolled thin and baked individually for perfect texture",
               },
               {
                 title: "Slow Fermentation",
                 description:
                   "Allowing dough to develop flavor through natural fermentation processes",
-                icon: "⏰",
+                icon: "â°",
                 technique:
                   "Traditional recipes often require overnight resting for optimal results",
               },
               {
                 title: "Hand Kneading",
                 description: "Using hands to develop gluten and create the perfect dough texture",
-                icon: "�x��",
+                icon: "ðŸ¤²",
                 technique: "Manual kneading ensures proper gluten development and texture",
               },
               {
                 title: "Precise Temperature Control",
                 description: "Maintaining exact temperatures for consistent baking results",
-                icon: "�xR�️",
+                icon: "ðŸŒ¡ï¸",
                 technique: "Traditional ovens required careful temperature monitoring",
               },
               {
                 title: "Natural Sweeteners",
                 description: "Using honey and natural sugars instead of refined sweeteners",
-                icon: "�x��",
+                icon: "ðŸ¯",
                 technique: "Honey provides both sweetness and moisture to baked goods",
               },
               {
                 title: "Cream Assembly",
                 description:
                   "Carefully layering cream fillings between cake layers for perfect balance",
-                icon: "�x�",
+                icon: "ðŸ¥„",
                 technique: "Each layer is carefully spread with cream for even distribution",
               },
             ].map((technique, index) => (
@@ -295,7 +295,7 @@ export default function UkrainianBakingTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x�:️ Cultural Significance of Ukrainian Baking
+            ðŸ›ï¸ Cultural Significance of Ukrainian Baking
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -332,7 +332,7 @@ export default function UkrainianBakingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �xRx Modern Revival of Ukrainian Baking
+            ðŸŒŸ Modern Revival of Ukrainian Baking
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, fontSize: "1.1rem", textAlign: "center" }}>
             Today, Ukrainian baking traditions are experiencing a renaissance, with modern bakers
@@ -344,23 +344,23 @@ export default function UkrainianBakingTraditionsPage() {
               {
                 title: "Traditional Recipes",
                 description: "Preserving authentic recipes and techniques for future generations",
-                icon: "�xS",
+                icon: "ðŸ“œ",
               },
               {
                 title: "Modern Adaptations",
                 description:
                   "Adapting traditional recipes for contemporary tastes and dietary needs",
-                icon: "�S�",
+                icon: "âœ¨",
               },
               {
                 title: "Global Influence",
                 description: "Sharing Ukrainian baking traditions with the world",
-                icon: "�xR�",
+                icon: "ðŸŒ",
               },
               {
                 title: "Cultural Preservation",
                 description: "Ensuring Ukrainian baking heritage continues to thrive",
-                icon: "�x��",
+                icon: "ðŸº",
               },
             ].map((aspect, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>

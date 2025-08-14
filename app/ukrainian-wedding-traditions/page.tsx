@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -100,7 +100,7 @@ export default function UkrainianWeddingTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x Ukrainian Wedding Traditions
+            ðŸ’’ Ukrainian Wedding Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian weddings are rich in tradition and symbolism, combining ancient pagan customs
@@ -124,26 +124,26 @@ export default function UkrainianWeddingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �x� Pre-Wedding Traditions
+            ðŸ’ Pre-Wedding Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Matchmaking (Svatanie)",
                 description: "Traditional matchmaking ceremony with sweet breads and honey",
-                icon: "�x��",
+                icon: "ðŸ¤",
                 cakes: "Sweet Bread, Honey Cake, Traditional Pastries",
               },
               {
                 title: "Engagement (Zaruchyny)",
                 description: "Official engagement celebration with family and friends",
-                icon: "�x�",
+                icon: "ðŸ’",
                 cakes: "Engagement Cake, Honey Cake, Sweet Treats",
               },
               {
                 title: "Bachelorette Party (Divych-vechir)",
                 description: "Traditional pre-wedding celebration for the bride",
-                icon: "�x�",
+                icon: "ðŸ‘°",
                 cakes: "Bridal Cakes, Honey Pastries, Sweet Breads",
               },
             ].map((tradition, index) => (
@@ -192,26 +192,26 @@ export default function UkrainianWeddingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �x}` Wedding Day Traditions
+            ðŸŽŠ Wedding Day Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Wedding Ceremony",
                 description: "Traditional church ceremony with blessing of bread",
-                icon: "�:�",
+                icon: "â›ª",
                 cakes: "Blessed Bread, Honey Cake, Wedding Cake",
               },
               {
                 title: "Wedding Feast (Vesillia)",
                 description: "Grand celebration with multiple courses and desserts",
-                icon: "�x��️",
+                icon: "ðŸ½ï¸",
                 cakes: "Wedding Cake, Honey Cake, Kyiv Cake, Pastries",
               },
               {
                 title: "Bread and Salt Ceremony",
                 description: "Traditional welcome with bread, salt, and honey",
-                icon: "�x�~",
+                icon: "ðŸž",
                 cakes: "Traditional Bread, Honey, Sweet Treats",
               },
             ].map((tradition, index) => (
@@ -260,32 +260,32 @@ export default function UkrainianWeddingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �x} Traditional Ukrainian Wedding Cakes
+            ðŸŽ‚ Traditional Ukrainian Wedding Cakes
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Honey Cake (Medovik)",
                 description: "Symbolizes the sweetness of married life and prosperity",
-                icon: "�x��",
+                icon: "ðŸ¯",
                 significance: "Sweetness and prosperity in marriage",
               },
               {
                 title: "Kyiv Cake",
                 description: "Elegant layered cake perfect for wedding celebrations",
-                icon: "�x�:️",
+                icon: "ðŸ›ï¸",
                 significance: "Elegance and sophistication",
               },
               {
                 title: "Wedding Bread (Korovai)",
                 description: "Traditional decorated bread symbolizing fertility and abundance",
-                icon: "�xR�",
+                icon: "ðŸŒ¾",
                 significance: "Fertility and abundance",
               },
               {
                 title: "Sweet Pastries",
                 description: "Various traditional pastries served throughout the celebration",
-                icon: "�x��",
+                icon: "ðŸ¥",
                 significance: "Joy and celebration",
               },
             ].map((cake, index) => (
@@ -334,26 +334,26 @@ export default function UkrainianWeddingTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            �x�� Post-Wedding Traditions
+            ðŸ  Post-Wedding Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Bread Breaking",
                 description: "Couple breaks bread together to symbolize unity",
-                icon: "�x�",
+                icon: "ðŸ¥–",
                 cakes: "Traditional Bread, Honey Cake",
               },
               {
                 title: "Honeymoon (Medovyi misiats)",
                 description: "Traditional honeymoon period with sweet treats",
-                icon: "�x��",
+                icon: "ðŸ¯",
                 cakes: "Honey Cake, Sweet Pastries, Traditional Desserts",
               },
               {
                 title: "First Visit Home",
                 description: "Newlyweds visit parents with traditional gifts",
-                icon: "�x��",
+                icon: "ðŸ¡",
                 cakes: "Gift Cakes, Honey Cake, Traditional Bread",
               },
             ].map((tradition, index) => (
@@ -402,7 +402,7 @@ export default function UkrainianWeddingTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x�:️ Cultural Significance of Ukrainian Wedding Traditions
+            ðŸ›ï¸ Cultural Significance of Ukrainian Wedding Traditions
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>

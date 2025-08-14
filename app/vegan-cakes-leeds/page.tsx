@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
@@ -121,7 +121,7 @@ export default function VeganCakesLeedsPage() {
           <Box sx={{ mb: 6 }}>
             <Alert severity="info" sx={{ borderRadius: 2, fontSize: "1.1rem" }}>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                �xR� All our vegan cakes are certified plant-based and made with premium vegan
+                ðŸŒ± All our vegan cakes are certified plant-based and made with premium vegan
                 ingredients. No dairy, eggs, or animal products used.
               </Typography>
             </Alert>
@@ -141,25 +141,25 @@ export default function VeganCakesLeedsPage() {
                   title: "Authentic Ukrainian Flavors",
                   description:
                     "Traditional Ukrainian cake recipes adapted for vegan diets without compromising on taste or texture.",
-                  icon: "�x!��x!�",
+                  icon: "ðŸ‡ºðŸ‡¦",
                 },
                 {
                   title: "Premium Plant-Based Ingredients",
                   description:
                     "High-quality vegan ingredients including plant-based milk, vegan butter, and natural sweeteners.",
-                  icon: "�xR�",
+                  icon: "ðŸŒ¿",
                 },
                 {
                   title: "Dairy-Free & Egg-Free",
                   description:
                     "Completely free from dairy, eggs, and all animal products. Suitable for strict vegan diets.",
-                  icon: "�x�:�R",
+                  icon: "ðŸ¥›âŒ",
                 },
                 {
                   title: "Custom Vegan Designs",
                   description:
                     "Beautiful custom designs for all occasions. Wedding cakes, birthday cakes, and celebration cakes.",
-                  icon: "�x}�",
+                  icon: "ðŸŽ¨",
                 },
               ].map((feature, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -210,42 +210,42 @@ export default function VeganCakesLeedsPage() {
                   name: "Vegan Honey Cake",
                   description:
                     "Traditional Ukrainian honey cake made with plant-based ingredients. Layers of honey-infused sponge with vegan cream filling.",
-                  price: "From £35",
+                  price: "From Â£35",
                   image: "/images/vegan-cakes/vegan-honey-cake.jpg",
                 },
                 {
                   name: "Vegan Kyiv Cake",
                   description:
                     "Dairy-free version of the classic Kyiv cake. Rich chocolate layers with vegan meringue and hazelnut filling.",
-                  price: "From £40",
+                  price: "From Â£40",
                   image: "/images/vegan-cakes/vegan-kyiv-cake.jpg",
                 },
                 {
                   name: "Vegan Napoleon",
                   description:
                     "Plant-based Napoleon cake with flaky vegan pastry layers and dairy-free custard cream.",
-                  price: "From £38",
+                  price: "From Â£38",
                   image: "/images/vegan-cakes/vegan-napoleon.jpg",
                 },
                 {
                   name: "Vegan Chocolate Cake",
                   description:
                     "Rich chocolate cake made with dark chocolate and plant-based milk. Perfect for chocolate lovers.",
-                  price: "From £32",
+                  price: "From Â£32",
                   image: "/images/vegan-cakes/vegan-chocolate.jpg",
                 },
                 {
                   name: "Vegan Fruit Cake",
                   description:
                     "Light and fresh fruit cake with seasonal berries and vegan cream. Refreshing and delicious.",
-                  price: "From £30",
+                  price: "From Â£30",
                   image: "/images/vegan-cakes/vegan-fruit.jpg",
                 },
                 {
                   name: "Custom Vegan Cakes",
                   description:
                     "Personalized vegan cakes for any occasion. Wedding cakes, birthday cakes, and celebration cakes.",
-                  price: "From £45",
+                  price: "From Â£45",
                   image: "/images/vegan-cakes/custom-vegan.jpg",
                 },
               ].map((cake, index) => (
@@ -341,19 +341,19 @@ export default function VeganCakesLeedsPage() {
                     Plant-Based Alternatives We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Oat milk, almond milk, and coconut milk
+                    â€¢ Oat milk, almond milk, and coconut milk
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Vegan butter and margarine
+                    â€¢ Vegan butter and margarine
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Flax seeds and chia seeds for egg replacement
+                    â€¢ Flax seeds and chia seeds for egg replacement
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Aquafaba (chickpea water) for meringue
+                    â€¢ Aquafaba (chickpea water) for meringue
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ Natural sweeteners and organic ingredients
+                    â€¢ Natural sweeteners and organic ingredients
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -361,19 +361,19 @@ export default function VeganCakesLeedsPage() {
                     What We Never Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Dairy products (milk, cream, butter)
+                    â€¢ Dairy products (milk, cream, butter)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Eggs or egg products
+                    â€¢ Eggs or egg products
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Honey (replaced with agave or maple syrup)
+                    â€¢ Honey (replaced with agave or maple syrup)
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    ⬢ Gelatin or animal-based thickeners
+                    â€¢ Gelatin or animal-based thickeners
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ Any animal-derived ingredients
+                    â€¢ Any animal-derived ingredients
                   </Typography>
                 </Grid>
               </Grid>
@@ -435,7 +435,7 @@ export default function VeganCakesLeedsPage() {
                     <Box sx={{ display: "flex", mt: 1 }}>
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Typography key={i} sx={{ color: "#FEF102" }}>
-                          ⭐
+                          â­
                         </Typography>
                       ))}
                     </Box>

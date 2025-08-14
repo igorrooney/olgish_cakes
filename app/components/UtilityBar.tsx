@@ -1,4 +1,4 @@
-�"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
@@ -100,7 +100,7 @@ export function UtilityBar() {
               variant="body2"
               sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
             >
-              5��& (127+)
+              5â˜… (127+)
             </Typography>
           </Box>
         </Box>

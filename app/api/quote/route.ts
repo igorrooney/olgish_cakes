@@ -1,4 +1,4 @@
-�import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 if (!process.env.RESEND_API_KEY) {
@@ -68,55 +68,57 @@ export async function POST(request: NextRequest) {
     const flavorsArray = flavors ? flavors.split(",").filter(Boolean) : [];
     const dietaryArray = dietaryRequirements ? dietaryRequirements.split(",").filter(Boolean) : [];
 
-    // Create email content (plain text)
+    // Create email content
     const emailContent = `
-============================================================
-<� NEW CUSTOM CAKE QUOTE REQUEST
-============================================================
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+                         ðŸŽ‚ NEW CUSTOM CAKE QUOTE REQUEST
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
 
 CUSTOMER INFORMATION
---------------------
-- Name: ${name}
-- Email: ${email}
-- Phone: ${phone}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+â€¢ Name: ${name}
+â€¢ Email: ${email}
+â€¢ Phone: ${phone}
 
 EVENT DETAILS
---------------
-- Occasion: ${occasion}
-- Date Needed: ${formattedDate}
-- Number of Guests: ${guestCount || "Not specified"}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+â€¢ Occasion: ${occasion}
+â€¢ Date Needed: ${formattedDate}
+â€¢ Number of Guests: ${guestCount || "Not specified"}
 
 CAKE SPECIFICATIONS
--------------------
-- Cake Type: ${cakeType}
-- Design Style: ${designStyle || "Not specified"}
-- Budget Range: ${budget}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+â€¢ Cake Type: ${cakeType}
+â€¢ Design Style: ${designStyle || "Not specified"}
+â€¢ Budget Range: ${budget}
 
 FLAVOR PREFERENCES
-------------------
-${flavorsArray.length > 0 ? flavorsArray.map(flavor => `- ${flavor}`).join("\n") : "- No specific flavors selected"}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+${flavorsArray.length > 0 ? flavorsArray.map(flavor => `â€¢ ${flavor}`).join("\n") : "â€¢ No specific flavors selected"}
 
 DIETARY REQUIREMENTS
---------------------
-${dietaryArray.length > 0 ? dietaryArray.map(req => `- ${req}`).join("\n") : "- No dietary restrictions"}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+${dietaryArray.length > 0 ? dietaryArray.map(req => `â€¢ ${req}`).join("\n") : "â€¢ No dietary restrictions"}
 
 SPECIAL REQUESTS
-----------------
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ${specialRequests || "No special requests"}
 
 ${
   designImage
-    ? `DESIGN REFERENCE
-----------------
-- Image attached: ${designImage.name}`
+    ? `
+DESIGN REFERENCE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+â€¢ Image attached: ${designImage.name}
+`
     : ""
 }
 
-============================================================
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
 Best regards,
 Olgish Cakes
-olgishcakes.co.uk
-============================================================`.trim();
+        olgishcakes.co.uk
+â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”`.trim();
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -193,7 +195,7 @@ olgishcakes.co.uk
       position: relative;
     }
     .list-item:before {
-      content: "-";
+      content: "â€¢";
       color: #2E3192;
       font-weight: bold;
       position: absolute;
@@ -241,14 +243,14 @@ olgishcakes.co.uk
 <body>
   <div class="container">
     <div class="header">
-      <h1><� New Custom Cake Quote Request</h1>
+      <h1>ðŸŽ‚ New Custom Cake Quote Request</h1>
       <p style="margin: 10px 0 0 0; opacity: 0.9;">Professional quote inquiry from website</p>
     </div>
     
     <div class="content">
       <div class="section">
         <div class="section-title">
-          =d Customer Information
+          ðŸ‘¤ Customer Information
         </div>
         <div class="info-grid">
           <div class="info-item">
@@ -268,7 +270,7 @@ olgishcakes.co.uk
 
       <div class="section">
         <div class="section-title">
-          =� Event Details
+          ðŸ“… Event Details
         </div>
         <div class="info-grid">
           <div class="info-item">
@@ -288,7 +290,7 @@ olgishcakes.co.uk
 
       <div class="section">
         <div class="section-title">
-          <� Cake Specifications
+          ðŸŽ‚ Cake Specifications
         </div>
         <div class="info-grid">
           <div class="info-item">
@@ -302,13 +304,13 @@ olgishcakes.co.uk
         </div>
         
         <div class="budget-highlight">
-          <strong>=� Budget Range:</strong> ${budget}
+          <strong>ðŸ’° Budget Range:</strong> ${budget}
         </div>
       </div>
 
       <div class="section">
         <div class="section-title">
-          <p Flavor Preferences
+          ðŸ¯ Flavor Preferences
         </div>
         ${
           flavorsArray.length > 0
@@ -319,7 +321,7 @@ olgishcakes.co.uk
 
       <div class="section">
         <div class="section-title">
-          � Dietary Requirements
+          âš ï¸ Dietary Requirements
         </div>
         ${
           dietaryArray.length > 0
@@ -333,7 +335,7 @@ olgishcakes.co.uk
           ? `
       <div class="section">
         <div class="section-title">
-          =� Special Requests
+          ðŸ’­ Special Requests
         </div>
         <div class="special-requests">
           ${specialRequests.replace(/\n/g, "<br>")}
@@ -348,7 +350,7 @@ olgishcakes.co.uk
           ? `
       <div class="section">
         <div class="section-title">
-          =� Design Reference
+          ðŸ–¼ï¸ Design Reference
         </div>
         <p><strong>Image attached:</strong> ${designImage.name}</p>
         <img src="data:${designImage.type};base64,${base64Image}" alt="Design Reference" class="design-image">
@@ -374,7 +376,7 @@ olgishcakes.co.uk
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
       replyTo: email,
-      subject: `�x} Quote Request: ${name} - ${occasion} ${cakeType}`,
+      subject: `ðŸŽ‚ Quote Request: ${name} - ${occasion} ${cakeType}`,
       html: htmlContent,
       text: emailContent,
       attachments: designImage
@@ -399,3 +401,4 @@ olgishcakes.co.uk
     return NextResponse.json({ error: "Failed to send quote request" }, { status: 500 });
   }
 }
+

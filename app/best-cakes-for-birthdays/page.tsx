@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -111,7 +111,7 @@ export default async function BestCakesForBirthdaysPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x} Choosing the Perfect Birthday Cake
+            ðŸŽ‚ Choosing the Perfect Birthday Cake
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             A birthday cake is more than just dessert - it's the centerpiece of your celebration.
@@ -164,42 +164,42 @@ export default async function BestCakesForBirthdaysPage() {
               {
                 title: "Traditional Honey Cake",
                 description: "Classic Ukrainian honey cake with rich layers and creamy filling",
-                icon: "�x��",
+                icon: "ðŸ¯",
                 bestFor: "Traditional celebrations, honey lovers",
                 size: "6-8 inches",
               },
               {
                 title: "Kyiv Cake",
                 description: "Elegant layered cake with nuts and chocolate decoration",
-                icon: "�x�:️",
+                icon: "ðŸ›ï¸",
                 bestFor: "Sophisticated celebrations, nut lovers",
                 size: "8-10 inches",
               },
               {
                 title: "Custom Birthday Cakes",
                 description: "Personalized designs with your favorite themes and flavors",
-                icon: "�x}�",
+                icon: "ðŸŽ¨",
                 bestFor: "Personal celebrations, themed parties",
                 size: "Custom sizes",
               },
               {
                 title: "Mini Birthday Cakes",
                 description: "Perfect individual portions for intimate celebrations",
-                icon: "�x��",
+                icon: "ðŸ§",
                 bestFor: "Small gatherings, individual treats",
                 size: "Individual portions",
               },
               {
                 title: "Celebration Cakes",
                 description: "Festive designs perfect for milestone birthdays",
-                icon: "�x}0",
+                icon: "ðŸŽ‰",
                 bestFor: "Milestone celebrations, large parties",
                 size: "10-12 inches",
               },
               {
                 title: "Seasonal Birthday Cakes",
                 description: "Cakes featuring seasonal flavors and decorations",
-                icon: "�xR�",
+                icon: "ðŸŒ¸",
                 bestFor: "Seasonal celebrations, fresh ingredients",
                 size: "8-10 inches",
               },
@@ -252,7 +252,7 @@ export default async function BestCakesForBirthdaysPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x}� Birthday Cake Selection Guide
+            ðŸŽ¯ Birthday Cake Selection Guide
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -260,14 +260,14 @@ export default async function BestCakesForBirthdaysPage() {
                 Consider These Factors:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                ⬢ Number of guests (portion size)
+                â€¢ Number of guests (portion size)
                 <br />
-                ⬢ Birthday person's favorite flavors
+                â€¢ Birthday person's favorite flavors
                 <br />
-                ⬢ Party theme and decorations
+                â€¢ Party theme and decorations
                 <br />
-                ⬢ Dietary restrictions
-                <br />⬢ Budget and timeline
+                â€¢ Dietary restrictions
+                <br />â€¢ Budget and timeline
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -275,14 +275,14 @@ export default async function BestCakesForBirthdaysPage() {
                 Popular Birthday Flavors:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                ⬢ Traditional honey cake
+                â€¢ Traditional honey cake
                 <br />
-                ⬢ Chocolate and vanilla combinations
+                â€¢ Chocolate and vanilla combinations
                 <br />
-                ⬢ Fruit-flavored cakes
+                â€¢ Fruit-flavored cakes
                 <br />
-                ⬢ Nut and caramel flavors
-                <br />⬢ Seasonal specialties
+                â€¢ Nut and caramel flavors
+                <br />â€¢ Seasonal specialties
               </Typography>
             </Grid>
           </Grid>
@@ -299,7 +299,7 @@ export default async function BestCakesForBirthdaysPage() {
               color: "#2E3192",
             }}
           >
-            �x� Birthday Cake Sizing Guide
+            ðŸ“ Birthday Cake Sizing Guide
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -307,25 +307,25 @@ export default async function BestCakesForBirthdaysPage() {
                 size: "6-inch",
                 servings: "6-8 people",
                 bestFor: "Intimate celebrations, couples",
-                icon: "�x�",
+                icon: "ðŸ‘«",
               },
               {
                 size: "8-inch",
                 servings: "10-12 people",
                 bestFor: "Small family gatherings",
-                icon: "�x�⬍�x�⬍�x�⬍�x�",
+                icon: "ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦",
               },
               {
                 size: "10-inch",
                 servings: "15-20 people",
                 bestFor: "Medium-sized parties",
-                icon: "�x}0",
+                icon: "ðŸŽ‰",
               },
               {
                 size: "12-inch",
                 servings: "25-30 people",
                 bestFor: "Large celebrations",
-                icon: "�x}`",
+                icon: "ðŸŽŠ",
               },
             ].map((size, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
@@ -369,7 +369,7 @@ export default async function BestCakesForBirthdaysPage() {
               color: "#2E3192",
             }}
           >
-            �x� Birthday Cake Ordering Tips
+            ðŸ’¡ Birthday Cake Ordering Tips
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -378,12 +378,12 @@ export default async function BestCakesForBirthdaysPage() {
                   Planning Your Order:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  ⬢ Order 3-5 days in advance for standard cakes
+                  â€¢ Order 3-5 days in advance for standard cakes
                   <br />
-                  ⬢ Order 1-2 weeks for custom designs
+                  â€¢ Order 1-2 weeks for custom designs
                   <br />
-                  ⬢ Consider delivery timing for your party
-                  <br />⬢ Plan for cake storage and serving
+                  â€¢ Consider delivery timing for your party
+                  <br />â€¢ Plan for cake storage and serving
                 </Typography>
               </Paper>
             </Grid>
@@ -393,12 +393,12 @@ export default async function BestCakesForBirthdaysPage() {
                   Special Requests:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  ⬢ Personalization with names or messages
+                  â€¢ Personalization with names or messages
                   <br />
-                  ⬢ Dietary restrictions (vegan, gluten-free)
+                  â€¢ Dietary restrictions (vegan, gluten-free)
                   <br />
-                  ⬢ Special decorations or themes
-                  <br />⬢ Delivery to party venue
+                  â€¢ Special decorations or themes
+                  <br />â€¢ Delivery to party venue
                 </Typography>
               </Paper>
             </Grid>

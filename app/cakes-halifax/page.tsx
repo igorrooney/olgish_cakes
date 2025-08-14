@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -64,7 +64,7 @@ export default async function CakesHalifaxPage() {
               longitude: "-1.8577",
             },
             openingHours: "Mo-Su 00:00-23:59",
-            priceRange: "££",
+            priceRange: "Â£Â£",
             servesCuisine: "Ukrainian",
             areaServed: {
               "@type": "City",
@@ -229,22 +229,22 @@ export default async function CakesHalifaxPage() {
                     Delivery Areas in Halifax:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Halifax Town Centre
+                    â€¢ Halifax Town Centre
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Sowerby Bridge
+                    â€¢ Sowerby Bridge
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Elland
+                    â€¢ Elland
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Brighouse
+                    â€¢ Brighouse
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Hebden Bridge
+                    â€¢ Hebden Bridge
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ And surrounding areas
+                    â€¢ And surrounding areas
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -252,16 +252,16 @@ export default async function CakesHalifaxPage() {
                     Delivery Information:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Delivery Fee: £15-20
+                    â€¢ Delivery Fee: Â£15-20
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Delivery Time: 1-2 hours
+                    â€¢ Delivery Time: 1-2 hours
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    ⬢ Order Lead Time: 3-5 days
+                    â€¢ Order Lead Time: 3-5 days
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    ⬢ Fresh delivery on celebration day
+                    â€¢ Fresh delivery on celebration day
                   </Typography>
                 </Grid>
               </Grid>

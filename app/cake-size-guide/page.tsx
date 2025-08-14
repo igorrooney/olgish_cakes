@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
 
 export default function CakeSizeGuidePage() {
   const sizes = [
-    { size: "6-inch", servings: "6-8", bestFor: "Small gatherings, couples", icon: "�x�" },
-    { size: "8-inch", servings: "10-12", bestFor: "Family celebrations", icon: "�x�⬍�x�⬍�x�⬍�x�" },
-    { size: "10-inch", servings: "15-20", bestFor: "Medium parties", icon: "�x}0" },
-    { size: "12-inch", servings: "25-30", bestFor: "Large events", icon: "�x}`" },
-    { size: "2-tier", servings: "30-40", bestFor: "Weddings, big birthdays", icon: "�x�" },
-    { size: "3-tier", servings: "50+", bestFor: "Weddings, corporate", icon: "�x��" },
+    { size: "6-inch", servings: "6-8", bestFor: "Small gatherings, couples", icon: "ðŸ‘«" },
+    { size: "8-inch", servings: "10-12", bestFor: "Family celebrations", icon: "ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦" },
+    { size: "10-inch", servings: "15-20", bestFor: "Medium parties", icon: "ðŸŽ‰" },
+    { size: "12-inch", servings: "25-30", bestFor: "Large events", icon: "ðŸŽŠ" },
+    { size: "2-tier", servings: "30-40", bestFor: "Weddings, big birthdays", icon: "ðŸ’" },
+    { size: "3-tier", servings: "50+", bestFor: "Weddings, corporate", icon: "ðŸ¢" },
   ];
 
   return (

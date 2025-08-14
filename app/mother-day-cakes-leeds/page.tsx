@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function MothersDayCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -108,7 +108,7 @@ export default async function MothersDayCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            �xR� Special Mother's Day Offer �xR�
+            ðŸŒ¸ Special Mother's Day Offer ðŸŒ¸
           </Typography>
           <Typography
             variant="h3"
@@ -175,32 +175,32 @@ export default async function MothersDayCakesPage() {
               {
                 title: "Beautiful Designs",
                 description: "Special Mother's Day decorations and floral designs",
-                icon: "�xR�",
+                icon: "ðŸŒº",
               },
               {
                 title: "Personalized Messages",
                 description: "Add a special message or name to your cake",
-                icon: "�x�",
+                icon: "ðŸ’",
               },
               {
                 title: "Traditional Flavors",
                 description: "Authentic Ukrainian honey cake and Kyiv cake",
-                icon: "�x��",
+                icon: "ðŸ¯",
               },
               {
                 title: "Fresh Ingredients",
                 description: "Made with the finest ingredients and lots of love",
-                icon: "❤️",
+                icon: "â¤ï¸",
               },
               {
                 title: "Reliable Delivery",
                 description: "On-time delivery to make Mother's Day special",
-                icon: "�x}�",
+                icon: "ðŸŽ",
               },
               {
                 title: "Special Packaging",
                 description: "Beautiful presentation for the perfect gift",
-                icon: "�x}�",
+                icon: "ðŸŽ€",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -241,7 +241,7 @@ export default async function MothersDayCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x& Mother's Day Ordering Information
+            ðŸ“… Mother's Day Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -249,10 +249,10 @@ export default async function MothersDayCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Standard Delivery: Order by March 8th
+                â€¢ Standard Delivery: Order by March 8th
                 <br />
-                ⬢ Express Delivery: Order by March 9th
-                <br />⬢ Same Day Delivery: Available until 2 PM on Mother's Day
+                â€¢ Express Delivery: Order by March 9th
+                <br />â€¢ Same Day Delivery: Available until 2 PM on Mother's Day
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -260,12 +260,12 @@ export default async function MothersDayCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Personalized cake toppers
+                â€¢ Personalized cake toppers
                 <br />
-                ⬢ Special Mother's Day packaging
+                â€¢ Special Mother's Day packaging
                 <br />
-                ⬢ Gift cards available
-                <br />⬢ Surprise delivery options
+                â€¢ Gift cards available
+                <br />â€¢ Surprise delivery options
               </Typography>
             </Grid>
           </Grid>

@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -64,28 +64,28 @@ export default function CakeDecoratingServicesPage() {
     {
       name: "Custom Cake Design",
       description: "Personalized cake designs for any occasion.",
-      icon: "�x}�",
+      icon: "ðŸŽ¨",
     },
     {
       name: "Fondant Work",
       description: "Smooth fondant finishes and creative shapes.",
-      icon: "�x��",
+      icon: "ðŸ°",
     },
     {
       name: "Sugar Flowers",
       description: "Handcrafted sugar flowers for elegant cakes.",
-      icon: "�xR�",
+      icon: "ðŸŒ¸",
     },
-    { name: "Edible Prints", description: "Custom edible images and prints.", icon: "�x�️" },
+    { name: "Edible Prints", description: "Custom edible images and prints.", icon: "ðŸ–¼ï¸" },
     {
       name: "Sculpted Cakes",
       description: "3D sculpted cakes for unique celebrations.",
-      icon: "�x�",
+      icon: "ðŸ—¿",
     },
     {
       name: "Themed Cakes",
       description: "Cakes for birthdays, weddings, and special events.",
-      icon: "�x}",
+      icon: "ðŸŽ‚",
     },
   ];
 

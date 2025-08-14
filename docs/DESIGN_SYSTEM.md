@@ -1,8 +1,8 @@
-�# Ukrainian Design System for Olgish Cakes
+﻿# Ukrainian Design System for Olgish Cakes
 
 A comprehensive design system inspired by Ukrainian culture and traditional colors, designed specifically for the Olgish Cakes website.
 
-## �x}� Color Palette
+## ðŸŽ¨ Color Palette
 
 ### Primary Ukrainian Colors
 
@@ -64,7 +64,7 @@ colors.background.warm; // #FEF9F0 - Very light honey
 - **Cards and Sections**: Use white for content areas
 - **Subtle Backgrounds**: Use cream for form fields and secondary content
 
-## �x� Typography
+## ðŸ“ Typography
 
 ### Font Families
 
@@ -116,7 +116,7 @@ typography.fontWeight.extrabold; // 800 - Extra bold display text
 - Use normal weight (400) for regular text
 - Use medium weight (500) for emphasized text
 
-## �x� Spacing
+## ðŸ“ Spacing
 
 ### Spacing Scale
 
@@ -140,7 +140,7 @@ spacing["5xl"]; // 8rem (128px) - Extra large section spacing
 - Prefer the spacing scale over arbitrary values
 - Use larger spacing for sections and smaller spacing for components
 
-## �x� Border Radius
+## ðŸ”² Border Radius
 
 ### Border Radius Scale
 
@@ -164,7 +164,7 @@ borderRadius.full; // 9999px - Fully rounded
 - Use `borderRadius['2xl']` for cards and content containers
 - Use `borderRadius.full` for avatars and circular elements
 
-## �x}� Shadows
+## ðŸŽ­ Shadows
 
 ### Shadow Scale
 
@@ -188,7 +188,7 @@ shadows.none; // No shadow
 - Use `shadows.lg` for modals and overlays
 - Use `shadows.inner` for pressed button states
 
-## �x�� Components
+## ðŸ§© Components
 
 ### Buttons
 
@@ -255,7 +255,7 @@ import { components } from '@/lib/design-system';
 />
 ```
 
-## �x� Responsive Design
+## ðŸ“± Responsive Design
 
 ### Breakpoints
 
@@ -290,7 +290,7 @@ sx={{
 }}
 ```
 
-## �x}� Animations
+## ðŸŽ¬ Animations
 
 ### Animation Tokens
 
@@ -317,7 +317,7 @@ animation.transitions.slow; // all 0.5s ease-in-out
 - Use normal transitions for most UI changes
 - Use slow transitions for complex animations and page transitions
 
-## �x}� Best Practices
+## ðŸŽ¯ Best Practices
 
 ### Color Usage
 
@@ -347,7 +347,7 @@ animation.transitions.slow; // all 0.5s ease-in-out
 3. **Accessibility**: Ensure components are accessible
 4. **Performance**: Optimize components for performance
 
-## �x� Implementation
+## ðŸ”§ Implementation
 
 ### Importing the Design System
 
@@ -423,7 +423,7 @@ module.exports = {
 };
 ```
 
-## �xa Resources
+## ðŸ“š Resources
 
 - [Ukrainian Flag Colors](https://en.wikipedia.org/wiki/Flag_of_Ukraine)
 - [Ukrainian Traditional Desserts](https://en.wikipedia.org/wiki/Ukrainian_cuisine#Desserts)

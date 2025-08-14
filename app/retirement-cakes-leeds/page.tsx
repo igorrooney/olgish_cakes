@@ -1,4 +1,4 @@
-�import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function RetirementCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "££",
+    priceRange: "Â£Â£",
   };
 
   return (
@@ -108,7 +108,7 @@ export default async function RetirementCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            �x}0 Special Retirement Celebration Offer �x}0
+            ðŸŽ‰ Special Retirement Celebration Offer ðŸŽ‰
           </Typography>
           <Typography variant="h4" sx={{ mb: 2, fontSize: { xs: "1.5rem", md: "2rem" } }}>
             Free Personalization on Retirement Cakes
@@ -171,32 +171,32 @@ export default async function RetirementCakesPage() {
               {
                 title: "Milestone Celebration",
                 description: "Special designs perfect for retirement celebrations",
-                icon: "�x}`",
+                icon: "ðŸŽŠ",
               },
               {
                 title: "Custom Personalization",
                 description: "Add names, dates, and personal messages",
-                icon: "�S�️",
+                icon: "âœï¸",
               },
               {
                 title: "Traditional Flavors",
                 description: "Authentic Ukrainian honey cake and Kyiv cake",
-                icon: "�x��",
+                icon: "ðŸº",
               },
               {
                 title: "Party Sizes",
                 description: "Available in sizes perfect for retirement parties",
-                icon: "�x}",
+                icon: "ðŸŽ‚",
               },
               {
                 title: "Professional Delivery",
                 description: "Reliable delivery to your retirement party venue",
-                icon: "�xaa",
+                icon: "ðŸšš",
               },
               {
                 title: "Beautiful Presentation",
                 description: "Stunning presentation for this special occasion",
-                icon: "�S�",
+                icon: "âœ¨",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -237,7 +237,7 @@ export default async function RetirementCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            �x& Retirement Cake Ordering Information
+            ðŸ“… Retirement Cake Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -245,12 +245,12 @@ export default async function RetirementCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Standard Delivery: Order 3 days in advance
+                â€¢ Standard Delivery: Order 3 days in advance
                 <br />
-                ⬢ Express Delivery: Order 2 days in advance
+                â€¢ Express Delivery: Order 2 days in advance
                 <br />
-                ⬢ Custom Designs: Order 5 days in advance
-                <br />⬢ Large Orders: Order 1 week in advance
+                â€¢ Custom Designs: Order 5 days in advance
+                <br />â€¢ Large Orders: Order 1 week in advance
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -258,12 +258,12 @@ export default async function RetirementCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                ⬢ Custom retirement cake toppers
+                â€¢ Custom retirement cake toppers
                 <br />
-                ⬢ Special celebration packaging
+                â€¢ Special celebration packaging
                 <br />
-                ⬢ Venue delivery and setup
-                <br />⬢ Personalized messages and designs
+                â€¢ Venue delivery and setup
+                <br />â€¢ Personalized messages and designs
               </Typography>
             </Grid>
           </Grid>
