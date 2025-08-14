@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Alice } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
@@ -12,17 +12,9 @@ import Footer from "./components/Footer";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import Script from "next/script";
 
-const inter = Inter({
+const alice = Alice({
   subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  fallback: ["system-ui", "arial"],
-  variable: "--font-inter",
-  adjustFontFallback: false,
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ["latin"],
+  weight: "400",
   variable: "--font-playfair-display",
   display: "swap",
   preload: true,
@@ -157,14 +149,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" className={`${inter.variable} ${playfairDisplay.variable}`}>
+    <html lang="en-GB" className={`${alice.variable}`}>
       <head>
         {/* Critical CSS inlining */}
         <style
           dangerouslySetInnerHTML={{
             __html: `
               /* Critical CSS for above-the-fold content */
-              body { margin: 0; font-family: var(--font-inter), system-ui, arial; }
+              body { margin: 0; font-family: var(--font-playfair-display), Georgia, serif; }
               .critical-loading { opacity: 0; transition: opacity 0.3s; }
               .critical-loaded { opacity: 1; }
               
@@ -395,7 +387,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.className} ${playfairDisplay.variable} critical-loading`}>
+      <body className={`${alice.className} ${alice.variable} critical-loading`}>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
