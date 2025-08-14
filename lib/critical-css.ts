@@ -7,7 +7,7 @@ export const criticalCSS = `
   /* Critical CSS for above-the-fold content */
   body {
     margin: 0;
-    font-family: var(--font-inter), system-ui, arial;
+    font-family: var(--font-playfair-display), Georgia, serif;
     line-height: 1.6;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -181,8 +181,8 @@ export function injectCriticalCSS(): string {
 
 // Function to remove critical CSS after main CSS loads
 export function removeCriticalCSS(): void {
-  if (typeof window !== 'undefined') {
-    const criticalCSSElement = document.getElementById('critical-css');
+  if (typeof window !== "undefined") {
+    const criticalCSSElement = document.getElementById("critical-css");
     if (criticalCSSElement) {
       criticalCSSElement.remove();
     }
@@ -191,13 +191,12 @@ export function removeCriticalCSS(): void {
 
 // Function to check if main CSS is loaded
 export function isMainCSSLoaded(): boolean {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const styleSheets = Array.from(document.styleSheets);
-    return styleSheets.some(sheet => 
-      sheet.href && (
-        sheet.href.includes('_next/static/css') ||
-        sheet.href.includes('globals.css')
-      )
+    return styleSheets.some(
+      sheet =>
+        sheet.href &&
+        (sheet.href.includes("_next/static/css") || sheet.href.includes("globals.css"))
     );
   }
   return false;
@@ -205,13 +204,13 @@ export function isMainCSSLoaded(): boolean {
 
 // Function to handle CSS loading
 export function handleCSSLoading(): void {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Remove critical CSS after main CSS loads
     const checkCSSLoaded = () => {
       if (isMainCSSLoaded()) {
         removeCriticalCSS();
-        document.body.classList.remove('critical-loading');
-        document.body.classList.add('critical-loaded');
+        document.body.classList.remove("critical-loading");
+        document.body.classList.add("critical-loaded");
       } else {
         // Check again after a short delay
         setTimeout(checkCSSLoaded, 100);
@@ -221,4 +220,4 @@ export function handleCSSLoading(): void {
     // Start checking after a short delay
     setTimeout(checkCSSLoaded, 50);
   }
-} 
+}
