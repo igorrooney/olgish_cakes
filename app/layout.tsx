@@ -7,6 +7,7 @@ import { theme } from "@/lib/theme";
 import { designTokens } from "@/lib/design-system";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "./components/Header";
 import UtilityBar from "./components/UtilityBar";
 import Footer from "./components/Footer";
@@ -421,6 +422,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ThemeProvider>
         </EmotionCacheProvider>
         <Analytics />
+        <SpeedInsights />
 
         {/* Critical CSS loading script */}
         <Script id="critical-css-loader" strategy="afterInteractive">
