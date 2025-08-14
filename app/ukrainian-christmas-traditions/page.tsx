@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
@@ -97,7 +97,7 @@ export default function UkrainianChristmasTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸŽ„ Ukrainian Christmas Traditions
+            �x} Ukrainian Christmas Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian Christmas is celebrated on January 7th according to the Julian calendar. This
@@ -121,26 +121,26 @@ export default function UkrainianChristmasTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            ðŸ•¯ï¸ Pre-Christmas Traditions
+            �x"�️ Pre-Christmas Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Advent Fast",
                 description: "40-day fasting period preparing for Christmas celebration",
-                icon: "â°",
+                icon: "⏰",
                 cakes: "Simple Breads, Honey Cookies, Fasting Cakes",
               },
               {
                 title: "Christmas Eve (Sviata Vecheria)",
                 description: "Traditional 12-dish meatless dinner on Christmas Eve",
-                icon: "ðŸ½ï¸",
+                icon: "�x��️",
                 cakes: "Kutia, Honey Cake, Traditional Breads",
               },
               {
                 title: "Didukh Preparation",
                 description: "Preparing traditional wheat sheaf for Christmas decoration",
-                icon: "ðŸŒ¾",
+                icon: "�xR�",
                 cakes: "Wheat-based Cakes, Honey Bread",
               },
             ].map((tradition, index) => (
@@ -185,26 +185,26 @@ export default function UkrainianChristmasTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            ðŸŽŠ Christmas Day Traditions
+            �x}` Christmas Day Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Christmas Service",
                 description: "Traditional church service with blessing of food",
-                icon: "â›ª",
+                icon: "�:�",
                 cakes: "Blessed Bread, Honey Cake, Christmas Cake",
               },
               {
                 title: "Christmas Feast",
                 description: "Grand celebration with traditional Ukrainian dishes",
-                icon: "ðŸ–",
+                icon: "�x�",
                 cakes: "Christmas Cake, Honey Cake, Kyiv Cake, Pastries",
               },
               {
                 title: "Caroling (Kolyadky)",
                 description: "Traditional caroling with sweet treats and gifts",
-                icon: "ðŸŽµ",
+                icon: "�x}�",
                 cakes: "Honey Cookies, Sweet Breads, Traditional Cakes",
               },
             ].map((tradition, index) => (
@@ -249,32 +249,32 @@ export default function UkrainianChristmasTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            ðŸŽ‚ Traditional Ukrainian Christmas Cakes
+            �x} Traditional Ukrainian Christmas Cakes
           </Typography>
           <Grid container spacing={3}>
             {[
               {
                 title: "Kutia",
                 description: "Traditional wheat berry pudding with honey and poppy seeds",
-                icon: "ðŸŒ¾",
+                icon: "�xR�",
                 significance: "Prosperity and family unity",
               },
               {
                 title: "Honey Cake (Medovik)",
                 description: "Layered honey cake symbolizing the sweetness of life",
-                icon: "ðŸ¯",
+                icon: "�x��",
                 significance: "Sweetness and prosperity",
               },
               {
                 title: "Christmas Bread (Korovai)",
                 description: "Decorated bread symbolizing abundance and family",
-                icon: "ðŸž",
+                icon: "�x�~",
                 significance: "Abundance and family unity",
               },
               {
                 title: "Kyiv Cake",
                 description: "Elegant layered cake perfect for Christmas celebrations",
-                icon: "ðŸ›ï¸",
+                icon: "�x�:️",
                 significance: "Elegance and celebration",
               },
             ].map((cake, index) => (
@@ -319,7 +319,7 @@ export default function UkrainianChristmasTraditionsPage() {
               color: "#2E3192",
             }}
           >
-            ðŸŽ Post-Christmas Traditions
+            �x}� Post-Christmas Traditions
           </Typography>
           <Grid container spacing={3}>
             {[
@@ -327,21 +327,21 @@ export default function UkrainianChristmasTraditionsPage() {
                 title: "Epiphany (Vodokhreshche)",
                 date: "January 19th",
                 description: "Blessing of water and traditional sweet breads",
-                icon: "ðŸ’§",
+                icon: "�x�",
                 cakes: "Blessed Bread, Honey Cake, Sweet Pastries",
               },
               {
                 title: "Old New Year",
                 date: "January 14th",
                 description: "Celebration of the old calendar new year",
-                icon: "ðŸŽŠ",
+                icon: "�x}`",
                 cakes: "New Year Cake, Honey Cake, Traditional Desserts",
               },
               {
                 title: "Malanka",
                 date: "January 13th",
                 description: "Traditional folk celebration with sweet treats",
-                icon: "ðŸŽ­",
+                icon: "�x}�",
                 cakes: "Traditional Cakes, Honey Pastries, Sweet Breads",
               },
             ].map((tradition, index) => (
@@ -392,7 +392,7 @@ export default function UkrainianChristmasTraditionsPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸ›ï¸ Cultural Significance of Ukrainian Christmas
+            �x�:️ Cultural Significance of Ukrainian Christmas
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>

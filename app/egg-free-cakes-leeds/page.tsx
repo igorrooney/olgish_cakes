@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function EggFreeCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "Â£Â£",
+    priceRange: "££",
   };
 
   return (
@@ -107,7 +107,7 @@ export default async function EggFreeCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸ¥š Egg-Free Baking Information
+            �x�a Egg-Free Baking Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -115,12 +115,12 @@ export default async function EggFreeCakesPage() {
                 Our Egg-Free Promise:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ All egg-free cakes are made in a dedicated egg-free environment
+                ⬢ All egg-free cakes are made in a dedicated egg-free environment
                 <br />
-                â€¢ We use traditional Ukrainian recipes adapted for egg-free baking
+                ⬢ We use traditional Ukrainian recipes adapted for egg-free baking
                 <br />
-                â€¢ All ingredients are carefully selected and verified egg-free
-                <br />â€¢ Cross-contamination prevention protocols in place
+                ⬢ All ingredients are carefully selected and verified egg-free
+                <br />⬢ Cross-contamination prevention protocols in place
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -128,14 +128,14 @@ export default async function EggFreeCakesPage() {
                 Egg Substitutes We Use:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ Flaxseed meal and water
+                ⬢ Flaxseed meal and water
                 <br />
-                â€¢ Applesauce
+                ⬢ Applesauce
                 <br />
-                â€¢ Mashed bananas
+                ⬢ Mashed bananas
                 <br />
-                â€¢ Commercial egg replacers
-                <br />â€¢ Aquafaba (chickpea water)
+                ⬢ Commercial egg replacers
+                <br />⬢ Aquafaba (chickpea water)
               </Typography>
             </Grid>
           </Grid>
@@ -181,32 +181,32 @@ export default async function EggFreeCakesPage() {
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors without compromising on taste",
-                icon: "ðŸº",
+                icon: "�x��",
               },
               {
                 title: "Safe for Allergies",
                 description: "Dedicated egg-free baking environment and protocols",
-                icon: "ðŸ›¡ï¸",
+                icon: "�x:�️",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest egg-free ingredients and substitutes",
-                icon: "â­",
+                icon: "⭐",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in egg-free Ukrainian baking",
-                icon: "ðŸ‘©â€ðŸ³",
+                icon: "�x�⬍�x��",
               },
               {
                 title: "Same Texture",
                 description: "Achieving the perfect texture without eggs",
-                icon: "ðŸ¥„",
+                icon: "�x�",
               },
               {
                 title: "All Occasions",
                 description: "Perfect for birthdays, weddings, and celebrations",
-                icon: "ðŸŽ‰",
+                icon: "�x}0",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -247,7 +247,7 @@ export default async function EggFreeCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸ“‹ Egg-Free Cake Ordering Information
+            �x9 Egg-Free Cake Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -255,12 +255,12 @@ export default async function EggFreeCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                â€¢ Standard Orders: 3 days in advance
+                ⬢ Standard Orders: 3 days in advance
                 <br />
-                â€¢ Custom Designs: 5 days in advance
+                ⬢ Custom Designs: 5 days in advance
                 <br />
-                â€¢ Large Orders: 1 week in advance
-                <br />â€¢ Emergency Orders: Call for availability
+                ⬢ Large Orders: 1 week in advance
+                <br />⬢ Emergency Orders: Call for availability
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -268,12 +268,12 @@ export default async function EggFreeCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                â€¢ Allergen information provided
+                ⬢ Allergen information provided
                 <br />
-                â€¢ Ingredient lists available
+                ⬢ Ingredient lists available
                 <br />
-                â€¢ Cross-contamination prevention
-                <br />â€¢ Special dietary consultations
+                ⬢ Cross-contamination prevention
+                <br />⬢ Special dietary consultations
               </Typography>
             </Grid>
           </Grid>

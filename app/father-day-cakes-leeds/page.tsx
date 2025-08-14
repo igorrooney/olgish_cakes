@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -51,7 +51,7 @@ export default async function FathersDayCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "Â£Â£",
+    priceRange: "££",
   };
 
   return (
@@ -108,7 +108,7 @@ export default async function FathersDayCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            ðŸŽ¯ Special Father's Day Offer ðŸŽ¯
+            �x}� Special Father's Day Offer �x}�
           </Typography>
           <Typography
             variant="h3"
@@ -175,32 +175,32 @@ export default async function FathersDayCakesPage() {
               {
                 title: "Rich Flavors",
                 description: "Bold, traditional Ukrainian flavors that Dad will love",
-                icon: "ðŸ°",
+                icon: "�x��",
               },
               {
                 title: "Unique Designs",
                 description: "Special Father's Day themes and decorations",
-                icon: "ðŸŽ¨",
+                icon: "�x}�",
               },
               {
                 title: "Traditional Recipes",
                 description: "Authentic Ukrainian honey cake and Kyiv cake",
-                icon: "ðŸº",
+                icon: "�x��",
               },
               {
                 title: "Quality Ingredients",
                 description: "Made with premium ingredients for the best taste",
-                icon: "â­",
+                icon: "⭐",
               },
               {
                 title: "Reliable Delivery",
                 description: "On-time delivery to make Father's Day special",
-                icon: "ðŸŽ",
+                icon: "�x}�",
               },
               {
                 title: "Personal Touch",
                 description: "Add personal messages or custom decorations",
-                icon: "ðŸ’",
+                icon: "�x�",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -241,7 +241,7 @@ export default async function FathersDayCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸ“… Father's Day Ordering Information
+            �x& Father's Day Ordering Information
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -249,10 +249,10 @@ export default async function FathersDayCakesPage() {
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                â€¢ Standard Delivery: Order by June 14th
+                ⬢ Standard Delivery: Order by June 14th
                 <br />
-                â€¢ Express Delivery: Order by June 15th
-                <br />â€¢ Same Day Delivery: Available until 2 PM on Father's Day
+                ⬢ Express Delivery: Order by June 15th
+                <br />⬢ Same Day Delivery: Available until 2 PM on Father's Day
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -260,12 +260,12 @@ export default async function FathersDayCakesPage() {
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                â€¢ Custom cake toppers
+                ⬢ Custom cake toppers
                 <br />
-                â€¢ Special Father's Day packaging
+                ⬢ Special Father's Day packaging
                 <br />
-                â€¢ Gift cards available
-                <br />â€¢ Surprise delivery options
+                ⬢ Gift cards available
+                <br />⬢ Surprise delivery options
               </Typography>
             </Grid>
           </Grid>

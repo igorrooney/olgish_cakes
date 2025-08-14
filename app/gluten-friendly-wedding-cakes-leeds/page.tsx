@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -52,7 +52,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "Â£Â£",
+    priceRange: "££",
   };
 
   return (
@@ -109,7 +109,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            ðŸŒ¾ Special Gluten-Friendly Wedding Package
+            �xR� Special Gluten-Friendly Wedding Package
           </Typography>
           <Typography
             variant="h3"
@@ -177,32 +177,32 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               {
                 title: "Gluten-Friendly",
                 description: "Made with gluten-friendly ingredients and careful preparation",
-                icon: "ðŸŒ¾",
+                icon: "�xR�",
               },
               {
                 title: "Wedding Perfect",
                 description: "Stunning designs perfect for your special day",
-                icon: "ðŸ’’",
+                icon: "�x",
               },
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors adapted for gluten-friendly diets",
-                icon: "ðŸº",
+                icon: "�x��",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest gluten-friendly ingredients",
-                icon: "â­",
+                icon: "⭐",
               },
               {
                 title: "Custom Designs",
                 description: "Personalized to match your wedding theme",
-                icon: "ðŸŽ¨",
+                icon: "�x}�",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in gluten-friendly Ukrainian baking",
-                icon: "ðŸ‘©â€ðŸ³",
+                icon: "�x�⬍�x��",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -243,7 +243,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸŒ¾ Our Gluten-Friendly Ingredients
+            �xR� Our Gluten-Friendly Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -251,14 +251,14 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                 Gluten-Friendly Flours:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ Almond flour and coconut flour
+                ⬢ Almond flour and coconut flour
                 <br />
-                â€¢ Rice flour and tapioca flour
+                ⬢ Rice flour and tapioca flour
                 <br />
-                â€¢ Gluten-free oat flour
+                ⬢ Gluten-free oat flour
                 <br />
-                â€¢ Buckwheat flour
-                <br />â€¢ Certified gluten-free flour blends
+                ⬢ Buckwheat flour
+                <br />⬢ Certified gluten-free flour blends
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -266,14 +266,14 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                 Quality Guarantee:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ Certified gluten-friendly ingredients
+                ⬢ Certified gluten-friendly ingredients
                 <br />
-                â€¢ Dedicated gluten-friendly preparation area
+                ⬢ Dedicated gluten-friendly preparation area
                 <br />
-                â€¢ Cross-contamination prevention
+                ⬢ Cross-contamination prevention
                 <br />
-                â€¢ Same great taste and texture
-                <br />â€¢ Safe for gluten sensitivities
+                ⬢ Same great taste and texture
+                <br />⬢ Safe for gluten sensitivities
               </Typography>
             </Grid>
           </Grid>
@@ -290,7 +290,7 @@ export default async function GlutenFriendlyWeddingCakesPage() {
               color: "#2E3192",
             }}
           >
-            ðŸ“‹ Gluten-Friendly Wedding Cake Ordering
+            �x9 Gluten-Friendly Wedding Cake Ordering
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -299,12 +299,12 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  â€¢ Standard Orders: 4 weeks in advance
+                  ⬢ Standard Orders: 4 weeks in advance
                   <br />
-                  â€¢ Custom Designs: 6 weeks in advance
+                  ⬢ Custom Designs: 6 weeks in advance
                   <br />
-                  â€¢ Large Wedding Cakes: 8 weeks in advance
-                  <br />â€¢ Last-minute Orders: Call for availability
+                  ⬢ Large Wedding Cakes: 8 weeks in advance
+                  <br />⬢ Last-minute Orders: Call for availability
                 </Typography>
               </Paper>
             </Grid>
@@ -314,12 +314,12 @@ export default async function GlutenFriendlyWeddingCakesPage() {
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  â€¢ Free gluten-friendly cake tasting session
+                  ⬢ Free gluten-friendly cake tasting session
                   <br />
-                  â€¢ Custom gluten-friendly cake designs
+                  ⬢ Custom gluten-friendly cake designs
                   <br />
-                  â€¢ Wedding venue delivery and setup
-                  <br />â€¢ Gluten-friendly ingredient lists provided
+                  ⬢ Wedding venue delivery and setup
+                  <br />⬢ Gluten-friendly ingredient lists provided
                 </Typography>
               </Paper>
             </Grid>

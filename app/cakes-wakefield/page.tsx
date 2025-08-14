@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -76,7 +76,7 @@ export default async function CakesWakefieldPage() {
               longitude: "-1.4977",
             },
             openingHours: "Mo-Su 00:00-23:59",
-            priceRange: "Â£Â£",
+            priceRange: "££",
             servesCuisine: "Ukrainian",
             areaServed: {
               "@type": "City",
@@ -149,25 +149,25 @@ export default async function CakesWakefieldPage() {
                   title: "Fresh Delivery to Wakefield",
                   description:
                     "All cakes are delivered fresh to Wakefield on the day of your celebration",
-                  icon: "ðŸšš",
+                  icon: "�xaa",
                 },
                 {
                   title: "Authentic Ukrainian Flavors",
                   description:
                     "Traditional Ukrainian recipes including honey cake, Kyiv cake, and other authentic Ukrainian desserts",
-                  icon: "ðŸ‡ºðŸ‡¦",
+                  icon: "�x!��x!�",
                 },
                 {
                   title: "Custom Cake Design",
                   description:
                     "Personalized cake design service for weddings, birthdays, and special celebrations in Wakefield",
-                  icon: "ðŸŽ¨",
+                  icon: "�x}�",
                 },
                 {
                   title: "Professional Service",
                   description:
                     "Professional cake delivery service with careful handling to ensure your cake arrives in perfect condition",
-                  icon: "â­",
+                  icon: "⭐",
                 },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -257,22 +257,22 @@ export default async function CakesWakefieldPage() {
                     Delivery Areas in Wakefield:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Wakefield City Centre
+                    ⬢ Wakefield City Centre
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Castleford
+                    ⬢ Castleford
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Pontefract
+                    ⬢ Pontefract
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Normanton
+                    ⬢ Normanton
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Featherstone
+                    ⬢ Featherstone
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ And surrounding areas
+                    ⬢ And surrounding areas
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -280,16 +280,16 @@ export default async function CakesWakefieldPage() {
                     Delivery Information:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Delivery Fee: Â£15-20
+                    ⬢ Delivery Fee: £15-20
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Delivery Time: 1-2 hours
+                    ⬢ Delivery Time: 1-2 hours
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
-                    â€¢ Order Lead Time: 3-5 days
+                    ⬢ Order Lead Time: 3-5 days
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Fresh delivery on celebration day
+                    ⬢ Fresh delivery on celebration day
                   </Typography>
                 </Grid>
               </Grid>

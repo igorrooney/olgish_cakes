@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
@@ -322,7 +322,7 @@ export default function HoneyCakeHistoryPage() {
                     </Typography>
                     {era.innovations.map((innovation, idx) => (
                       <Typography key={idx} variant="body2" sx={{ mb: 1, color: "text.secondary" }}>
-                        â€¢ {innovation}
+                        ⬢ {innovation}
                       </Typography>
                     ))}
                   </Paper>

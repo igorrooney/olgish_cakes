@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -52,7 +52,7 @@ export default async function VeganWeddingCakesPage() {
       name: "Leeds",
     },
     servesCuisine: "Ukrainian",
-    priceRange: "Â£Â£",
+    priceRange: "££",
   };
 
   return (
@@ -109,7 +109,7 @@ export default async function VeganWeddingCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 2, fontSize: { xs: "1.8rem", md: "2.5rem" } }}>
-            ðŸŒ± Special Vegan Wedding Package
+            �xR� Special Vegan Wedding Package
           </Typography>
           <Typography
             variant="h3"
@@ -176,32 +176,32 @@ export default async function VeganWeddingCakesPage() {
               {
                 title: "100% Vegan",
                 description: "Completely plant-based ingredients, no animal products",
-                icon: "ðŸŒ±",
+                icon: "�xR�",
               },
               {
                 title: "Wedding Perfect",
                 description: "Stunning designs perfect for your special day",
-                icon: "ðŸ’’",
+                icon: "�x",
               },
               {
                 title: "Traditional Taste",
                 description: "Authentic Ukrainian flavors adapted for vegan diets",
-                icon: "ðŸº",
+                icon: "�x��",
               },
               {
                 title: "Quality Ingredients",
                 description: "Only the finest plant-based ingredients",
-                icon: "â­",
+                icon: "⭐",
               },
               {
                 title: "Custom Designs",
                 description: "Personalized to match your wedding theme",
-                icon: "ðŸŽ¨",
+                icon: "�x}�",
               },
               {
                 title: "Expert Baking",
                 description: "Years of experience in vegan Ukrainian baking",
-                icon: "ðŸ‘©â€ðŸ³",
+                icon: "�x�⬍�x��",
               },
             ].map((feature, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -242,7 +242,7 @@ export default async function VeganWeddingCakesPage() {
           }}
         >
           <Typography variant="h3" sx={{ mb: 3, fontSize: { xs: "1.8rem", md: "2.2rem" } }}>
-            ðŸŒ± Our Vegan Ingredients
+            �xR� Our Vegan Ingredients
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -250,14 +250,14 @@ export default async function VeganWeddingCakesPage() {
                 Plant-Based Substitutes:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ Almond milk and coconut milk
+                ⬢ Almond milk and coconut milk
                 <br />
-                â€¢ Vegan butter and margarine
+                ⬢ Vegan butter and margarine
                 <br />
-                â€¢ Flax eggs and chia eggs
+                ⬢ Flax eggs and chia eggs
                 <br />
-                â€¢ Aquafaba for meringues
-                <br />â€¢ Plant-based cream alternatives
+                ⬢ Aquafaba for meringues
+                <br />⬢ Plant-based cream alternatives
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -265,14 +265,14 @@ export default async function VeganWeddingCakesPage() {
                 Quality Guarantee:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                â€¢ 100% plant-based ingredients
+                ⬢ 100% plant-based ingredients
                 <br />
-                â€¢ No animal products or by-products
+                ⬢ No animal products or by-products
                 <br />
-                â€¢ Certified vegan ingredients
+                ⬢ Certified vegan ingredients
                 <br />
-                â€¢ Ethical and sustainable sourcing
-                <br />â€¢ Same great taste and texture
+                ⬢ Ethical and sustainable sourcing
+                <br />⬢ Same great taste and texture
               </Typography>
             </Grid>
           </Grid>
@@ -289,7 +289,7 @@ export default async function VeganWeddingCakesPage() {
               color: "#2E3192",
             }}
           >
-            ðŸ“‹ Vegan Wedding Cake Ordering
+            �x9 Vegan Wedding Cake Ordering
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -298,12 +298,12 @@ export default async function VeganWeddingCakesPage() {
                   Order Deadlines:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  â€¢ Standard Orders: 4 weeks in advance
+                  ⬢ Standard Orders: 4 weeks in advance
                   <br />
-                  â€¢ Custom Designs: 6 weeks in advance
+                  ⬢ Custom Designs: 6 weeks in advance
                   <br />
-                  â€¢ Large Wedding Cakes: 8 weeks in advance
-                  <br />â€¢ Last-minute Orders: Call for availability
+                  ⬢ Large Wedding Cakes: 8 weeks in advance
+                  <br />⬢ Last-minute Orders: Call for availability
                 </Typography>
               </Paper>
             </Grid>
@@ -313,12 +313,12 @@ export default async function VeganWeddingCakesPage() {
                   Special Services:
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  â€¢ Free vegan cake tasting session
+                  ⬢ Free vegan cake tasting session
                   <br />
-                  â€¢ Custom vegan cake designs
+                  ⬢ Custom vegan cake designs
                   <br />
-                  â€¢ Wedding venue delivery and setup
-                  <br />â€¢ Vegan ingredient lists provided
+                  ⬢ Wedding venue delivery and setup
+                  <br />⬢ Vegan ingredient lists provided
                 </Typography>
               </Paper>
             </Grid>

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
@@ -34,34 +34,34 @@ export default function CakePreservationPage() {
       title: "Room Temperature Storage",
       description:
         "Most cakes can be stored at room temperature for up to 2 days in an airtight container.",
-      icon: "ðŸ ",
+      icon: "�x��",
     },
     {
       title: "Refrigeration",
       description:
         "Cakes with cream or fresh fruit should be refrigerated and consumed within 3 days.",
-      icon: "â„ï¸",
+      icon: "�️",
     },
     {
       title: "Freezing Cakes",
       description:
         "Wrap cakes tightly and freeze for up to 3 months. Thaw in the fridge overnight.",
-      icon: "ðŸ§Š",
+      icon: "�x�`",
     },
     {
       title: "Avoid Sunlight",
       description: "Keep cakes away from direct sunlight to prevent melting and drying.",
-      icon: "â˜€ï¸",
+      icon: "�ܬ️",
     },
     {
       title: "Use Cake Domes",
       description: "Cake domes help maintain moisture and protect from air exposure.",
-      icon: "ðŸŽ‚",
+      icon: "�x}",
     },
     {
       title: "Label and Date",
       description: "Label cakes before freezing to keep track of freshness.",
-      icon: "ðŸ·ï¸",
+      icon: "�x��️",
     },
   ];
 

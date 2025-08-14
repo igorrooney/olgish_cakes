@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import {
   Container,
   Typography,
@@ -59,27 +59,27 @@ const corporateServices = [
     title: "Office Celebrations",
     description:
       "Birthday cakes, retirement parties, promotions, and team celebrations with Ukrainian flair.",
-    icon: "ðŸŽ‰",
-    price: "From Â£25 per person",
+    icon: "�x}0",
+    price: "From £25 per person",
   },
   {
     title: "Business Meetings",
     description:
       "Professional catering for board meetings, client presentations, and corporate events.",
-    icon: "ðŸ’¼",
-    price: "From Â£20 per person",
+    icon: "�x�",
+    price: "From £20 per person",
   },
   {
     title: "Conference Catering",
     description: "Large-scale catering for conferences, seminars, and corporate training events.",
-    icon: "ðŸ¢",
-    price: "From Â£15 per person",
+    icon: "�x��",
+    price: "From £15 per person",
   },
   {
     title: "Corporate Gifts",
     description: "Ukrainian cakes as corporate gifts for clients, partners, and employees.",
-    icon: "ðŸŽ",
-    price: "From Â£35 per cake",
+    icon: "�x}�",
+    price: "From £35 per cake",
   },
 ];
 
@@ -87,7 +87,7 @@ const corporatePackages = [
   {
     name: "Starter Package",
     description: "Perfect for small office celebrations and team meetings",
-    price: "Â£150",
+    price: "£150",
     serves: "10-15 people",
     includes: [
       "1 large Ukrainian cake",
@@ -100,7 +100,7 @@ const corporatePackages = [
   {
     name: "Business Package",
     description: "Ideal for medium-sized corporate events and client meetings",
-    price: "Â£300",
+    price: "£300",
     serves: "25-35 people",
     includes: [
       "2 large Ukrainian cakes",
@@ -114,7 +114,7 @@ const corporatePackages = [
   {
     name: "Corporate Package",
     description: "Comprehensive catering for large conferences and major events",
-    price: "Â£500",
+    price: "£500",
     serves: "50-75 people",
     includes: [
       "3 large Ukrainian cakes",
@@ -316,7 +316,7 @@ export default function CorporateCakesLeedsPage() {
                           variant="body2"
                           sx={{ mb: 1, color: "text.secondary" }}
                         >
-                          â€¢ {item}
+                          ⬢ {item}
                         </Typography>
                       ))}
                     </Box>
@@ -362,19 +362,19 @@ export default function CorporateCakesLeedsPage() {
                     Professional Service:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Reliable delivery and setup
+                    ⬢ Reliable delivery and setup
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Professional presentation
+                    ⬢ Professional presentation
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Flexible scheduling
+                    ⬢ Flexible scheduling
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Corporate branding options
+                    ⬢ Corporate branding options
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Dietary requirement accommodation
+                    ⬢ Dietary requirement accommodation
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -382,19 +382,19 @@ export default function CorporateCakesLeedsPage() {
                     Quality Assurance:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Fresh, handmade cakes
+                    ⬢ Fresh, handmade cakes
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Premium ingredients
+                    ⬢ Premium ingredients
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Authentic Ukrainian recipes
+                    ⬢ Authentic Ukrainian recipes
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
-                    â€¢ Consistent quality
+                    ⬢ Consistent quality
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    â€¢ Food safety compliance
+                    ⬢ Food safety compliance
                   </Typography>
                 </Grid>
               </Grid>

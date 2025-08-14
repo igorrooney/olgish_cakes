@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+�import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -51,48 +51,48 @@ export default function CakeFlavorGuidePage() {
     {
       name: "Honey Cake (Medovik)",
       description: "Classic Ukrainian honey cake with layers of honey and cream.",
-      icon: "ðŸ¯",
+      icon: "�x��",
     },
     {
       name: "Kyiv Cake",
       description: "Nutty meringue layers with chocolate and buttercream.",
-      icon: "ðŸ¥œ",
+      icon: "�x�S",
     },
     {
       name: "Chocolate Cake",
       description: "Rich chocolate sponge with decadent chocolate ganache.",
-      icon: "ðŸ«",
+      icon: "�x��",
     },
     {
       name: "Vanilla Cream Cake",
       description: "Light vanilla sponge with creamy vanilla filling.",
-      icon: "ðŸ¦",
+      icon: "�x��",
     },
     {
       name: "Berry Cake",
       description: "Sponge cake with fresh berries and whipped cream.",
-      icon: "ðŸ“",
+      icon: "�x�",
     },
     {
       name: "Caramel Cake",
       description: "Caramel sponge with salted caramel filling.",
-      icon: "ðŸ®",
+      icon: "�x��",
     },
     {
       name: "Lemon Cake",
       description: "Zesty lemon sponge with lemon curd and cream.",
-      icon: "ðŸ‹",
+      icon: "�x�9",
     },
     {
       name: "Nut-Free Cake",
       description: "Delicious cakes made without nuts for allergy-friendly celebrations.",
-      icon: "ðŸš«ðŸ¥œ",
+      icon: "�xa��x�S",
     },
-    { name: "Vegan Cake", description: "Plant-based cakes with a variety of flavors.", icon: "ðŸŒ±" },
+    { name: "Vegan Cake", description: "Plant-based cakes with a variety of flavors.", icon: "�xR�" },
     {
       name: "Gluten-Friendly Cake",
       description: "Cakes made with gluten-friendly ingredients.",
-      icon: "ðŸŒ¾",
+      icon: "�xR�",
     },
   ];
 
