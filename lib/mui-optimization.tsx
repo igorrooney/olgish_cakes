@@ -85,6 +85,10 @@ export { default as InfoIcon } from "@mui/icons-material/Info";
 export { default as SecurityIcon } from "@mui/icons-material/Security";
 export { default as ErrorIcon } from "@mui/icons-material/Error";
 export { default as ShoppingCartIcon } from "@mui/icons-material/ShoppingCart";
+export { default as CalendarTodayIcon } from "@mui/icons-material/CalendarToday";
+export { default as AccessTimeIcon } from "@mui/icons-material/AccessTime";
+export { default as LocalOfferIcon } from "@mui/icons-material/LocalOffer";
+export { default as EventIcon } from "@mui/icons-material/Event";
 
 // Date picker components - fixed export syntax
 export { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -94,6 +98,10 @@ export { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 // Core providers and baseline
 export { default as ThemeProvider } from "@mui/material/styles/ThemeProvider";
 export { default as CssBaseline } from "@mui/material/CssBaseline";
+
+// Hooks
+export { useTheme } from "@mui/material/styles";
+export { default as useMediaQuery } from "@mui/material/useMediaQuery";
 
 // Types
 export type { SelectChangeEvent } from "@mui/material/Select";
