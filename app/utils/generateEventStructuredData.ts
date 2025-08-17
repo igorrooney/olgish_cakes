@@ -28,6 +28,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     location: {
       "@type": "Place",
       name: event.location,
+      url: `https://www.google.com/maps/search/${encodeURIComponent(event.location)}`,
     },
     organizer: {
       "@type": "Organization",

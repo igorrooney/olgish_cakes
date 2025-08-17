@@ -10,6 +10,9 @@ import type { Metadata } from "next";
 
 export const revalidate = getRevalidateTime();
 
+// Force static generation
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: "Gift Hampers | Luxury Ukrainian Gift Baskets | Olgish Cakes",
   description:
@@ -44,7 +47,8 @@ export const metadata: Metadata = {
 };
 
 export default async function GiftHampersPage() {
-  const hampers = await getAllGiftHampers();
+  // Force static data for build-time generation
+  const hampers = await getAllGiftHampers(false);
 
   const localBusinessData = {
     "@context": "https://schema.org",

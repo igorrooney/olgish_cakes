@@ -9,6 +9,9 @@ import { Metadata } from "next";
 // Enable revalidation for this page
 export const revalidate = getRevalidateTime();
 
+// Force static generation
+export const dynamic = 'force-static';
+
 export const metadata: Metadata = {
   title: "All Cakes | Ukrainian Cakes Collection | Honey Cake (Medovik) | Olgish Cakes",
   description:
@@ -45,7 +48,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CakesPage() {
-  const cakes = await getAllCakes();
+  // Force static data for build-time generation
+  const cakes = await getAllCakes(false);
 
   // Local Business structured data
   const localBusinessData = {

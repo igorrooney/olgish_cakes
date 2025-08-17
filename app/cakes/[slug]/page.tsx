@@ -11,6 +11,25 @@ import { CakeStructuredData } from "@/app/components/CakeStructuredData";
 // Enable revalidation for this page
 export const revalidate = getRevalidateTime();
 
+// Generate static params for all cakes at build time
+export async function generateStaticParams() {
+  const query = `*[_type == "cake" && defined(slug.current)] {
+    "slug": slug.current
+  }`;
+
+  try {
+    const sanityClient = getClient(false); // Use production client
+    const cakes = await sanityClient.fetch(query);
+
+    return cakes.map((cake: { slug: string }) => ({
+      slug: cake.slug,
+    }));
+  } catch (error) {
+    console.error("Error generating static params for cakes:", error);
+    return [];
+  }
+}
+
 async function getCake(slug: string, preview = false): Promise<Cake | null> {
   const query = `*[_type == "cake" && slug.current == $slug][0] {
     _id,

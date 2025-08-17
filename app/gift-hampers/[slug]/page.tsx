@@ -14,6 +14,25 @@ import { urlFor as buildImageUrl } from "@/sanity/lib/image";
 
 export const revalidate = getRevalidateTime();
 
+// Generate static params for all gift hampers at build time
+export async function generateStaticParams() {
+  const query = `*[_type == "giftHamper" && defined(slug.current)] {
+    "slug": slug.current
+  }`;
+  
+  try {
+    const sanityClient = getClient(false); // Use production client
+    const hampers = await sanityClient.fetch(query);
+    
+    return hampers.map((hamper: { slug: string }) => ({
+      slug: hamper.slug,
+    }));
+  } catch (error) {
+    console.error("Error generating static params for gift hampers:", error);
+    return [];
+  }
+}
+
 async function getGiftHamper(slug: string, preview = false): Promise<GiftHamper | null> {
   const query = `*[_type == "giftHamper" && slug.current == $slug][0] {
     _id,
