@@ -117,7 +117,11 @@ const deliveryAreas = [
   "Huddersfield",
 ];
 
-export function OrderPageClient() {
+interface OrderPageClientProps {
+  testimonials?: any[];
+}
+
+export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
   const [selectedOption, setSelectedOption] = useState<string>("browse-catalog");
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -851,7 +855,7 @@ export function OrderPageClient() {
         </Box>
 
         {/* Customer Testimonials Section */}
-        <OrderTestimonials />
+        <OrderTestimonials testimonials={testimonials} />
 
         {/* FAQ Section */}
         <Box component="section" sx={{ py: { xs: 6, md: 8 } }}>
@@ -1018,7 +1022,8 @@ export function OrderPageClient() {
                       bgcolor: "rgba(255,255,255,0.1)",
                     },
                   }}
-                size="large">
+                  size="large"
+                >
                   Contact Us
                 </Button>
               </Box>

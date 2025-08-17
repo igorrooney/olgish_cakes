@@ -17,9 +17,6 @@ import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
 
 const { colors, typography, spacing, shadows } = designTokens;
 
-// Performance monitoring
-const startTime = performance.now();
-
 interface PageProps {
   cake: Cake;
 }
@@ -27,18 +24,6 @@ interface PageProps {
 export function CakePageClient({ cake }: PageProps) {
   const [designType, setDesignType] = useState<DesignType>("standard");
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-
-  // Performance monitoring
-  useMemo(() => {
-    const loadTime = performance.now() - startTime;
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "cake_page_load", {
-        cake_name: cake.name,
-        load_time: loadTime,
-        design_type: designType,
-      });
-    }
-  }, [cake.name, designType]);
 
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
   const currentPrice =
@@ -48,12 +33,14 @@ export function CakePageClient({ cake }: PageProps) {
     (newDesignType: DesignType) => {
       setDesignType(newDesignType);
 
-      // Track design type changes for analytics
-      if (typeof window !== "undefined" && window.gtag) {
-        window.gtag("event", "design_type_change", {
-          cake_name: cake.name,
-          design_type: newDesignType,
-          price: newDesignType === "individual" ? cake.pricing.individual : cake.pricing.standard,
+      // Throttled analytics tracking
+      if (typeof window !== "undefined" && window.gtag && window.requestIdleCallback) {
+        window.requestIdleCallback(() => {
+          window.gtag("event", "design_type_change", {
+            cake_name: cake.name,
+            design_type: newDesignType,
+            price: newDesignType === "individual" ? cake.pricing.individual : cake.pricing.standard,
+          });
         });
       }
     },
@@ -63,13 +50,15 @@ export function CakePageClient({ cake }: PageProps) {
   const handleOrderClick = useCallback(() => {
     setIsOrderModalOpen(true);
 
-    // Track order button clicks
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "begin_checkout", {
-        cake_name: cake.name,
-        design_type: designType,
-        price: currentPrice,
-        currency: "GBP",
+    // Track order button clicks with idle callback
+    if (typeof window !== "undefined" && window.gtag && window.requestIdleCallback) {
+      window.requestIdleCallback(() => {
+        window.gtag("event", "begin_checkout", {
+          cake_name: cake.name,
+          design_type: designType,
+          price: currentPrice,
+          currency: "GBP",
+        });
       });
     }
   }, [cake.name, designType, currentPrice]);

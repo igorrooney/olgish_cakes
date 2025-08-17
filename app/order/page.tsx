@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { OrderPageClient } from "./OrderPageClient";
 import { OrderPageSEO } from "./OrderPageSEO";
+import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 
 export const metadata: Metadata = {
   title: "Order Professional Cakes Online | Olgish Cakes Leeds",
@@ -68,10 +69,13 @@ export const metadata: Metadata = {
 };
 
 export default async function OrderPage() {
+  // Fetch testimonials server-side for better performance
+  const testimonials = await getFeaturedTestimonials(3).catch(() => []);
+
   return (
     <>
       <OrderPageSEO />
-      <OrderPageClient />
+      <OrderPageClient testimonials={testimonials} />
     </>
   );
 }
