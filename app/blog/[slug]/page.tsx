@@ -8,6 +8,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 
+// Generate static params for all blog posts at build time
+export async function generateStaticParams() {
+  const query = groq`*[_type == "post" && defined(slug.current)] {
+    "slug": slug.current
+  }`;
+  
+  try {
+    const posts = await client.fetch(query);
+    return posts.map((post: { slug: string }) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error("Error generating static params for blog posts:", error);
+    return [];
+  }
+}
+
 interface BlogPost {
   _id: string;
   title: string;

@@ -33,12 +33,19 @@ import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedGiftHampers } from "./utils/fetchGiftHampers";
 import Image from "next/image";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
+import { getFeaturedMarketEvents } from "./utils/fetchMarketSchedule";
+import MarketSchedule from "./components/MarketSchedule";
+import {
+  generateEventsListStructuredData,
+  generateEventSEOMetadata,
+} from "./utils/generateEventStructuredData";
 
-export const metadata: Metadata = {
-  title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
-  description:
-    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire. Order now!",
-  keywords: [
+export async function generateMetadata(): Promise<Metadata> {
+  // Fetch market events for dynamic metadata
+  const marketEvents = await getFeaturedMarketEvents(3);
+  const eventSEO = generateEventSEOMetadata(marketEvents);
+
+  const baseKeywords = [
     "Ukrainian cakes Leeds",
     "honey cake",
     "Medovik",
@@ -62,80 +69,109 @@ export const metadata: Metadata = {
     "honey cake recipe",
     "Kyiv cake recipe",
     "Ukrainian baking Leeds",
-  ].join(", "),
-  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
-  creator: "Olgish Cakes",
-  publisher: "Olgish Cakes",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL("https://olgishcakes.co.uk"),
-  alternates: {
-    canonical: "https://olgishcakes.co.uk",
-  },
-  openGraph: {
-    title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
-    description:
-      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.",
-    url: "https://olgishcakes.co.uk",
-    siteName: "Olgish Cakes",
-    images: [
-      {
-        url: "https://olgishcakes.co.uk/images/hero-cake.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Premium Ukrainian Cakes Leeds - Authentic Honey Cake (Medovik) - Olgish Cakes",
-        type: "image/jpeg",
-      },
-    ],
-    locale: "en_GB",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes",
-    description:
-      "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating.",
-    images: ["https://olgishcakes.co.uk/images/hero-cake.jpg"],
-    creator: "@olgish_cakes",
-    site: "@olgish_cakes",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+  ];
+
+  // Add event-specific keywords if available
+  const allKeywords = eventSEO.additionalKeywords
+    ? [...baseKeywords, ...eventSEO.additionalKeywords]
+    : baseKeywords;
+
+  // Enhanced description with event information
+  let description =
+    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.";
+
+  if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
+    description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
+  }
+
+  // Enhanced title with event information
+  let title = "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes";
+  if (eventSEO.nextEventLocation) {
+    title = `Ukrainian Cakes at ${eventSEO.nextEventLocation} | Olgish Cakes Leeds`;
+  }
+
+  return {
+    title,
+    description,
+    keywords: allKeywords.join(", "),
+    authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+    creator: "Olgish Cakes",
+    publisher: "Olgish Cakes",
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    metadataBase: new URL("https://olgishcakes.co.uk"),
+    alternates: {
+      canonical: "https://olgishcakes.co.uk",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://olgishcakes.co.uk",
+      siteName: "Olgish Cakes",
+      images: [
+        {
+          url: "https://olgishcakes.co.uk/images/hero-cake.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Premium Ukrainian Cakes Leeds - Authentic Honey Cake (Medovik) - Olgish Cakes",
+          type: "image/jpeg",
+        },
+      ],
+      locale: "en_GB",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: description.length > 200 ? description.substring(0, 197) + "..." : description,
+      images: ["https://olgishcakes.co.uk/images/hero-cake.jpg"],
+      creator: "@olgish_cakes",
+      site: "@olgish_cakes",
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  verification: {
-    google: "your-google-verification-code",
-  },
-  other: {
-    "geo.region": "GB-ENG",
-    "geo.placename": "Leeds",
-    "geo.position": "53.8008;-1.5491",
-    ICBM: "53.8008, -1.5491",
-    rating: "5",
-    rating_count: "127",
-    price_range: "££",
-    cuisine: "Ukrainian",
-    payment: "cash, credit card, bank transfer",
-    delivery: "yes",
-    takeout: "yes",
-    "business:contact_data:street_address": "Allerton Grange",
-    "business:contact_data:locality": "Leeds",
-    "business:contact_data:postal_code": "LS17",
-    "business:contact_data:country_name": "United Kingdom",
-    "business:contact_data:phone_number": "+44 786 721 8194",
-    "business:contact_data:email": "hello@olgishcakes.co.uk",
-  },
-};
+    verification: {
+      google: "your-google-verification-code",
+    },
+    other: {
+      "geo.region": "GB-ENG",
+      "geo.placename": "Leeds",
+      "geo.position": "53.8008;-1.5491",
+      ICBM: "53.8008, -1.5491",
+      rating: "5",
+      rating_count: "127",
+      price_range: "££",
+      cuisine: "Ukrainian",
+      payment: "cash, credit card, bank transfer",
+      delivery: "yes",
+      takeout: "yes",
+      "business:contact_data:street_address": "Allerton Grange",
+      "business:contact_data:locality": "Leeds",
+      "business:contact_data:postal_code": "LS17",
+      "business:contact_data:country_name": "United Kingdom",
+      "business:contact_data:phone_number": "+44 786 721 8194",
+      "business:contact_data:email": "hello@olgishcakes.co.uk",
+      // Add event-specific metadata
+      ...(eventSEO.totalUpcomingEvents && {
+        "events:count": eventSEO.totalUpcomingEvents.toString(),
+        "events:next_date": eventSEO.nextEventDate,
+        "events:next_location": eventSEO.nextEventLocation,
+      }),
+    },
+  };
+}
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -159,11 +195,15 @@ const sourceIcons = {
 } as const;
 
 export default async function Home() {
-  const [featuredCakes, testimonials, featuredHampers] = await Promise.all([
+  const [featuredCakes, testimonials, featuredHampers, marketEvents] = await Promise.all([
     getFeaturedCakes(),
     getFeaturedTestimonials(3),
     getFeaturedGiftHampers(),
+    getFeaturedMarketEvents(3),
   ]);
+
+  // Generate events structured data
+  const eventsStructuredData = generateEventsListStructuredData(marketEvents);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -258,6 +298,14 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+
+      {/* Events structured data */}
+      {eventsStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsStructuredData) }}
+        />
+      )}
 
       {/* Mobile Performance Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -404,6 +452,17 @@ export default async function Home() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Market Schedule Section */}
+      {marketEvents && marketEvents.length > 0 && (
+        <MarketSchedule
+          events={marketEvents}
+          title="Find us at your local market!"
+          subtitle="Meet us in person and taste our authentic Ukrainian cakes at these upcoming markets"
+          maxEvents={3}
+          showAllLink={true}
+        />
       )}
 
       {/* Features Section */}
