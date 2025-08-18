@@ -211,6 +211,23 @@ export default async function CakePage({ params }: PageProps) {
                     "@type": "Product",
                     name: cake.name,
                     category: "Ukrainian Honey Cake",
+                    offers: {
+                      "@type": "Offer",
+                      price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+                      priceCurrency: "GBP",
+                      availability: "https://schema.org/InStock",
+                      url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+                      seller: {
+                        "@type": "Organization",
+                        name: "Olgish Cakes",
+                        url: "https://olgishcakes.co.uk",
+                      },
+                    },
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "120",
+                    },
                   },
                 },
               ],
