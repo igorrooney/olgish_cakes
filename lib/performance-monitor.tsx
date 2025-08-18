@@ -4,6 +4,12 @@
 
 import { useEffect } from "react";
 
+// Type declarations for Performance API
+interface LayoutShift extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
 interface PerformanceMetrics {
   fcp?: number;
   lcp?: number;
@@ -43,8 +49,11 @@ export function usePerformanceMonitor() {
     let clsScore = 0;
     const clsObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
-        if (!entry.hadRecentInput) {
-          clsScore += (entry as any).value;
+        if (entry.entryType === "layout-shift") {
+          const clsEntry = entry as LayoutShift;
+          if (!clsEntry.hadRecentInput) {
+            clsScore += clsEntry.value;
+          }
         }
       }
       metrics.cls = clsScore;

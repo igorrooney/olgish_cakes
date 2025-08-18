@@ -43,6 +43,51 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://olgishcakes.co.uk/cookies",
   },
+  keywords: [
+    "cookie policy Olgish Cakes",
+    "Ukrainian bakery cookies",
+    "website cookie usage",
+    "cake shop cookies",
+    "Ukrainian cake cookies",
+    "bakery website cookies",
+    "cake order cookies",
+    "Ukrainian dessert cookies",
+    "bakery cookie policy",
+    "cake service cookies",
+    "Ukrainian cake website",
+    "bakery cookie usage",
+    "cake order website",
+    "Ukrainian cake policy",
+    "bakery cookie management",
+    "cake shop cookie policy",
+  ],
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+  },
 };
 
 export default function CookiePolicyPage() {

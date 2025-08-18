@@ -162,8 +162,8 @@ export default function UkrainianCakeGuidePage() {
 
   return (
     <>
-      <StructuredData type="Article" data={structuredData} />
-      <StructuredData type="FAQPage" data={faqData} />
+      <StructuredData type="article" data={structuredData} />
+      <StructuredData type="faq" data={faqData} />
 
       <main role="main">
         <Container maxWidth="lg" sx={{ py: 4 }}>

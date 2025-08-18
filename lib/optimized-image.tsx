@@ -3,7 +3,7 @@
  */
 
 import Image from "next/image";
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useEffect } from "react";
 import { Box } from "@mui/material";
 
 interface OptimizedImageProps {
@@ -143,7 +143,7 @@ export function withIntersectionObserver<T extends { src: string }>(
       }
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (!ref) return;
 
       const observer = new IntersectionObserver(observerCallback, {

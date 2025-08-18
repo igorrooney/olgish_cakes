@@ -6,7 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { testimonialQuery, testimonialCountQuery } from "@/sanity/lib/queries";
 
 // Force static generation
-export const dynamic = 'force-static';
+export const dynamic = "force-static";
 export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
@@ -39,6 +39,51 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://olgishcakes.co.uk/testimonials",
+  },
+  keywords: [
+    "customer testimonials Olgish Cakes",
+    "Ukrainian bakery reviews",
+    "cake shop testimonials",
+    "Ukrainian cake reviews",
+    "bakery customer feedback",
+    "cake shop reviews Leeds",
+    "Ukrainian bakery testimonials",
+    "cake delivery reviews",
+    "wedding cake testimonials",
+    "birthday cake reviews",
+    "honey cake testimonials",
+    "Medovik cake reviews",
+    "Ukrainian dessert reviews",
+    "bakery customer satisfaction",
+    "cake shop feedback Leeds",
+    "Ukrainian cake shop reviews",
+  ],
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
   },
 };
 

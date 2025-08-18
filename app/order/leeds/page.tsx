@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     images: ["/images/olgish-cakes-logo-bakery-brand.png"],
   },
   alternates: {
-    canonical: "https://olgishcakes.co.uk/order/leeds",
+    canonical: "https://olgishcakes.co.uk/order",
   },
   robots: {
-    index: true,
+    index: false,
     follow: true,
     googleBot: {
-      index: true,
+      index: false,
       follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
@@ -62,4 +62,4 @@ export const metadata: Metadata = {
 
 export default async function LeedsOrderPage() {
   return <OrderPageClient />;
-} 
+}

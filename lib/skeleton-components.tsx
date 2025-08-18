@@ -201,18 +201,19 @@ export const GridSkeleton = memo(function GridSkeleton({
   itemComponent: ItemComponent = TestimonialSkeleton,
 }: GridSkeletonProps) {
   return (
-    <div
-      className="grid gap-4"
-      style={{
-        gridTemplateColumns: `repeat(${columns.xs}, 1fr)`,
-        "@media (min-width: 768px)": {
-          gridTemplateColumns: `repeat(${columns.md}, 1fr)`,
+    <Box
+      sx={{
+        display: "grid",
+        gap: 2,
+        gridTemplateColumns: {
+          xs: `repeat(${columns.xs}, 1fr)`,
+          md: `repeat(${columns.md}, 1fr)`,
         },
       }}
     >
       {Array.from({ length: items }, (_, index) => (
         <ItemComponent key={index} />
       ))}
-    </div>
+    </Box>
   );
 });

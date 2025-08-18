@@ -43,6 +43,51 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://olgishcakes.co.uk/terms",
   },
+  keywords: [
+    "terms of service Olgish Cakes",
+    "Ukrainian bakery terms",
+    "cake order terms",
+    "delivery terms conditions",
+    "cake service policies",
+    "Ukrainian cake terms",
+    "bakery legal agreement",
+    "cake order policies",
+    "delivery conditions Leeds",
+    "cake service terms",
+    "Ukrainian dessert terms",
+    "cake order agreement",
+    "bakery terms conditions",
+    "cake delivery policies",
+    "Ukrainian cake service terms",
+    "bakery legal terms",
+  ],
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+  },
 };
 
 export default function TermsOfServicePage() {

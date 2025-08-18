@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   Button,
@@ -57,6 +57,102 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, maxEvents);
 
+  // Generate comprehensive structured data for market events
+  const marketScheduleStructuredData = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Upcoming Market Events",
+      description: "Find Olgish Cakes at local markets in Leeds and Yorkshire",
+      url: "https://olgishcakes.co.uk/market-schedule",
+      numberOfItems: upcomingEvents.length,
+      itemListElement: upcomingEvents.map((event, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Event",
+          name: event.title,
+          description: event.description || `Meet Olgish Cakes at ${event.location}`,
+          startDate: event.date,
+          endDate: event.date, // Assuming same day events
+          location: {
+            "@type": "Place",
+            name: event.location,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Leeds",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+          },
+          organizer: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+            url: "https://olgishcakes.co.uk",
+            description: "Authentic Ukrainian honey cakes made with love in Leeds",
+          },
+          offers: {
+            "@type": "Offer",
+            description: "Ukrainian honey cakes and traditional desserts",
+            category: "Food & Beverage",
+            availability: "https://schema.org/InStock",
+          },
+          // Local business context
+          isRelatedTo: {
+            "@type": "LocalBusiness",
+            name: "Olgish Cakes",
+            url: "https://olgishcakes.co.uk",
+            description: "Authentic Ukrainian honey cakes made with love in Leeds",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "Allerton Grange",
+              addressLocality: "Leeds",
+              addressRegion: "West Yorkshire",
+              postalCode: "LS17",
+              addressCountry: "GB",
+            },
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Ukrainian Cake Collection",
+              description: "Traditional Ukrainian honey cakes and custom designs",
+              itemListElement: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "Ukrainian Honey Cake",
+                    description: "Traditional Ukrainian honey cake (Medovik)",
+                  },
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "Kyiv Cake",
+                    description: "Traditional Kyiv cake with chocolate and nuts",
+                  },
+                },
+              ],
+            },
+          },
+        },
+      })),
+      // Organization context
+      publisher: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+        url: "https://olgishcakes.co.uk",
+        logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+        description: "Authentic Ukrainian honey cakes made with love in Leeds",
+      },
+    }),
+    [upcomingEvents]
+  );
+
   if (upcomingEvents.length === 0) {
     return null;
   }
@@ -82,7 +178,17 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
       className="py-24 bg-gradient-to-br from-secondary/5 via-white to-primary/5"
+      role="region"
+      aria-labelledby="market-schedule-heading"
     >
+      {/* Enhanced Structured Data for Market Events */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(marketScheduleStructuredData),
+        }}
+      />
+
       <Container className="px-6 md:px-8">
         <AnimatedDiv
           initial={{ opacity: 0 }}
@@ -97,14 +203,17 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
           </div>
 
           <Typography
-            component="span"
-            className="text-primary font-medium block text-lg"
-            sx={{ mb: 3 }}
+            id="market-schedule-heading"
+            component="h2"
+            variant="h3"
+            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
+            sx={{
+              background: "linear-gradient(135deg, #2E3192 0%, #1BFFFF 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
           >
-            Market Schedule
-          </Typography>
-
-          <Typography variant="h2" className="font-bold text-gray-900" sx={{ mb: 3 }}>
             {title}
           </Typography>
 

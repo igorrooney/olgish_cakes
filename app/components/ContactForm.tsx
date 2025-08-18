@@ -25,7 +25,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 
 // Configure dayjs for British locale
 dayjs.locale("en-gb");
@@ -88,6 +88,119 @@ export function ContactForm({
 
   const isSubmitting = externalIsSubmitting ?? internalIsSubmitting;
   const submitStatus = externalSubmitStatus ?? internalSubmitStatus;
+
+  // Generate comprehensive structured data for contact form
+  const contactFormStructuredData = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      name: isOrderForm ? "Cake Order Form" : "Contact Form",
+      description: isOrderForm
+        ? "Order your custom Ukrainian honey cake from Olgish Cakes in Leeds"
+        : "Get in touch with Olgish Cakes for custom cake inquiries and orders",
+      url: "https://olgishcakes.co.uk/contact",
+      mainEntity: {
+        "@type": "ContactForm",
+        name: isOrderForm ? "Cake Order Form" : "Contact Form",
+        description: "Contact form for cake inquiries and orders",
+        provider: {
+          "@type": "Organization",
+          name: "Olgish Cakes",
+          url: "https://olgishcakes.co.uk",
+          description: "Authentic Ukrainian honey cakes made with love in Leeds",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Allerton Grange",
+            addressLocality: "Leeds",
+            addressRegion: "West Yorkshire",
+            postalCode: "LS17",
+            addressCountry: "GB",
+          },
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: "+44 786 721 8194",
+            email: "hello@olgishcakes.co.uk",
+            contactType: "customer service",
+            areaServed: {
+              "@type": "City",
+              name: "Leeds",
+            },
+            availableLanguage: "English",
+          },
+        },
+        // Form fields structured data
+        hasPart: [
+          {
+            "@type": "PropertyValueSpecification",
+            valueName: "name",
+            valueRequired: true,
+            description: "Your full name",
+          },
+          {
+            "@type": "PropertyValueSpecification",
+            valueName: "email",
+            valueRequired: true,
+            description: "Your email address",
+          },
+          {
+            "@type": "PropertyValueSpecification",
+            valueName: "phone",
+            valueRequired: true,
+            description: "Your phone number",
+          },
+          {
+            "@type": "PropertyValueSpecification",
+            valueName: "message",
+            valueRequired: true,
+            description: "Your message or cake requirements",
+          },
+        ],
+      },
+      // Local business context
+      isPartOf: {
+        "@type": "LocalBusiness",
+        name: "Olgish Cakes",
+        url: "https://olgishcakes.co.uk",
+        description: "Authentic Ukrainian honey cakes made with love in Leeds",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Allerton Grange",
+          addressLocality: "Leeds",
+          addressRegion: "West Yorkshire",
+          postalCode: "LS17",
+          addressCountry: "GB",
+        },
+        areaServed: {
+          "@type": "City",
+          name: "Leeds",
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Ukrainian Cake Collection",
+          description: "Traditional Ukrainian honey cakes and custom designs",
+          itemListElement: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Product",
+                name: "Ukrainian Honey Cake",
+                description: "Traditional Ukrainian honey cake (Medovik)",
+              },
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Product",
+                name: "Custom Wedding Cakes",
+                description: "Custom designed wedding cakes",
+              },
+            },
+          ],
+        },
+      },
+    }),
+    [isOrderForm]
+  );
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = event.target;
@@ -177,12 +290,22 @@ export function ContactForm({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+      {/* Enhanced Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(contactFormStructuredData),
+        }}
+      />
+
       <Box
         component="form"
         id="contact-form"
         onSubmit={handleSubmit}
         role="form"
-        aria-label="Contact form"
+        aria-label={isOrderForm ? "Cake order form" : "Contact form"}
+        itemScope
+        itemType="https://schema.org/ContactForm"
       >
         <Stack spacing={spacing.lg}>
           {[
