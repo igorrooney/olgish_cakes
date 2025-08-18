@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Box, Typography, Grid, Card, CardContent, Rating, Chip } from "@mui/material";
-import { motion } from "framer-motion";
+import { memo, useMemo } from "react";
+import { Box, Typography, Grid, Card, CardContent, Rating, Chip, Skeleton } from "@mui/material";
 import { colors } from "@/lib/design-system";
-import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 import type { Testimonial } from "@/app/types/testimonial";
 import { InstagramIcon, FacebookIcon, GoogleIcon } from "@/lib/mui-optimization";
+import { TestimonialSkeleton } from "@/lib/skeleton-components";
+import dynamic from "next/dynamic";
+
+// Lazy load motion for better performance
+const MotionDiv = dynamic(() => import("framer-motion").then(mod => mod.motion.div), {
+  loading: () => <div />,
+  ssr: false,
+});
 
 const sourceIcons = {
   instagram: <InstagramIcon />,
@@ -14,34 +20,22 @@ const sourceIcons = {
   google: <GoogleIcon />,
 } as const;
 
-export function OrderTestimonials() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
+interface OrderTestimonialsProps {
+  testimonials?: Testimonial[];
+}
 
-  useEffect(() => {
-    async function fetchTestimonials() {
-      try {
-        const featuredTestimonials = await getFeaturedTestimonials(3);
-        setTestimonials(featuredTestimonials);
-      } catch (error) {
-        console.error("Error fetching testimonials:", error);
-        // Fallback to empty array if fetch fails
-        setTestimonials([]);
-      } finally {
-        setLoading(false);
-      }
-    }
+export const OrderTestimonials = memo(function OrderTestimonials({
+  testimonials = [],
+}: OrderTestimonialsProps) {
+  const displayTestimonials = useMemo(() => testimonials.slice(0, 3), [testimonials]);
 
-    fetchTestimonials();
-  }, []);
-
-  if (loading) {
+  if (displayTestimonials.length === 0) {
     return (
       <Box component="section" sx={{ py: { xs: 6, md: 8 } }}>
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
         >
           <Typography
             variant="h2"
@@ -71,38 +65,21 @@ export function OrderTestimonials() {
           <Grid container spacing={4}>
             {[1, 2, 3].map(index => (
               <Grid item xs={12} md={4} key={index}>
-                <Card sx={{ height: "100%", p: 3 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <Rating value={5} readOnly sx={{ color: colors.secondary.main }} />
-                  </Box>
-                  <Typography variant="body1" sx={{ mb: 2, fontStyle: "italic" }}>
-                    Loading testimonial...
-                  </Typography>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Loading...
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Loading...
-                  </Typography>
-                </Card>
+                <TestimonialSkeleton showImage={false} variant="compact" />
               </Grid>
             ))}
           </Grid>
-        </motion.div>
+        </MotionDiv>
       </Box>
     );
   }
 
-  if (testimonials.length === 0) {
-    return null; // Don't show testimonials section if no testimonials available
-  }
-
   return (
     <Box component="section" sx={{ py: { xs: 6, md: 8 } }}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
+      <MotionDiv
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
       >
         <Typography
           variant="h2"
@@ -131,7 +108,7 @@ export function OrderTestimonials() {
         </Typography>
 
         <Grid container spacing={4}>
-          {testimonials.map((testimonial, index) => (
+          {displayTestimonials.map((testimonial, index) => (
             <Grid item xs={12} md={4} key={testimonial._id}>
               <Card sx={{ height: "100%", p: 3 }}>
                 <Box
@@ -190,7 +167,7 @@ export function OrderTestimonials() {
             </Grid>
           ))}
         </Grid>
-      </motion.div>
+      </MotionDiv>
     </Box>
   );
-}
+});

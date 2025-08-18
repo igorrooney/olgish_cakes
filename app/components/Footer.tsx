@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Divider, Chip, TextField } from "@mui/material";
+import { useMemo } from "react";
+import { Divider, Chip } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -25,9 +25,9 @@ import {
   AccessibleIconButton,
   TouchTargetWrapper,
 } from "@/lib/ui-components";
-import { Box, Grid, Stack, Typography, Button } from "@/lib/mui-optimization";
+import { Box, Grid, Stack, Typography } from "@/lib/mui-optimization";
 
-const { colors, typography, spacing, shadows } = designTokens;
+const { colors, typography, spacing, shadows, borderRadius } = designTokens;
 
 // Feature flag: control visibility of Gift Hampers links (default enabled)
 const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
@@ -99,510 +99,534 @@ const footerLinks = {
 const contactInfo = {
   email: "hello@olgishcakes.co.uk",
   phone: "+44 786 721 8194",
-  address: "Based in Allerton Grange, Leeds LS17",
-  social: [
-    {
-      name: "Instagram",
-      icon: InstagramIcon,
-      href: "https://www.instagram.com/olgish_cakes/",
-      hoverColor: "#E1306C",
-    },
-    {
-      name: "Facebook",
-      icon: FacebookIcon,
-      href: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
-      hoverColor: "#1877F2",
-    },
-    {
-      name: "WhatsApp",
-      icon: WhatsAppIcon,
-      href: `https://wa.me/447867218194`,
-      hoverColor: "#25D366",
-    },
-  ],
+  address: "Allerton Grange, Leeds, LS17",
+  socialMedia: {
+    facebook: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
+    instagram: "https://www.instagram.com/olgish_cakes/",
+    whatsapp: "https://wa.me/447867218194",
+  },
 };
 
-const trustSignals = [
-  { icon: StarIcon, text: "5-Star Rated", color: (theme: any) => colors.secondary.main },
-  { icon: VerifiedIcon, text: "Verified Business", color: "#4CAF50" },
-  { icon: LocalShippingIcon, text: "Free Delivery", color: "#2196F3" },
-  { icon: SecurityIcon, text: "Secure Orders", color: "#9C27B0" },
-];
-
+// Enhanced Footer component with comprehensive SEO
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-  const [email, setEmail] = useState("");
-
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle newsletter signup
-    console.log("Newsletter signup:", email);
-    setEmail("");
-  };
+  // Generate comprehensive structured data for footer
+  const footerStructuredData = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Footer",
+      name: "Olgish Cakes Footer",
+      description:
+        "Footer navigation and contact information for Olgish Cakes Ukrainian Bakery in Leeds",
+      url: "https://olgishcakes.co.uk",
+      mainEntity: [
+        {
+          "@type": "SiteNavigationElement",
+          name: "Cake Categories",
+          description: "Navigation to different types of Ukrainian cakes",
+          url: "https://olgishcakes.co.uk/cakes",
+          hasPart: footerLinks.cakes.map(link => ({
+            "@type": "WebPage",
+            name: link.name,
+            url: `https://olgishcakes.co.uk${link.href}`,
+            description: `${link.name} from Olgish Cakes in Leeds`,
+          })),
+        },
+        {
+          "@type": "SiteNavigationElement",
+          name: "Services",
+          description: "Cake services and additional offerings",
+          url: "https://olgishcakes.co.uk/services",
+          hasPart: footerLinks.services.map(link => ({
+            "@type": "Service",
+            name: link.name,
+            url: `https://olgishcakes.co.uk${link.href}`,
+            provider: {
+              "@type": "Organization",
+              name: "Olgish Cakes",
+              url: "https://olgishcakes.co.uk",
+            },
+          })),
+        },
+        {
+          "@type": "SiteNavigationElement",
+          name: "Locations",
+          description: "Cake delivery areas and locations served",
+          url: "https://olgishcakes.co.uk/delivery-areas",
+          hasPart: footerLinks.locations.map(link => ({
+            "@type": "WebPage",
+            name: link.name,
+            url: `https://olgishcakes.co.uk${link.href}`,
+            description: `${link.name} - Ukrainian cake delivery`,
+          })),
+        },
+      ],
+      // Contact information structured data
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: contactInfo.phone,
+        email: contactInfo.email,
+        contactType: "customer service",
+        areaServed: {
+          "@type": "City",
+          name: "Leeds",
+        },
+        availableLanguage: "English",
+      },
+      // Organization information
+      publisher: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+        url: "https://olgishcakes.co.uk",
+        logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+        description: "Authentic Ukrainian honey cakes made with love in Leeds",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Allerton Grange",
+          addressLocality: "Leeds",
+          addressRegion: "West Yorkshire",
+          postalCode: "LS17",
+          addressCountry: "GB",
+        },
+        sameAs: [contactInfo.socialMedia.facebook, contactInfo.socialMedia.instagram],
+      },
+    }),
+    []
+  );
 
   return (
-    <Box
-      component="footer"
+    <footer
       role="contentinfo"
-      aria-label="Site footer"
-      sx={{
-        backgroundColor: colors.background.paper,
-        borderTop: `1px solid ${colors.border.light}`,
-      }}
+      aria-label="Site footer with navigation and contact information"
+      itemScope
+      itemType="https://schema.org/Footer"
     >
-      <DesignContainer>
-        {/* Main Footer Content */}
-        <Box sx={{ py: spacing["4xl"] }}>
-          <Grid container spacing={6} aria-label="Footer links">
-            {/* Brand Column */}
-            <Grid item xs={12} md={4} aria-label="Footer brand info">
-              <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.lg }}>
-                <Link href="/" style={{ textDecoration: "none" }} aria-label="Olgish Cakes - Home">
-                  <Image
-                    src="/images/olgish-cakes-logo-bakery-brand.png"
-                    alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Authentic Ukrainian Desserts Yorkshire"
-                    width={200}
-                    height={85}
-                    style={{
-                      height: "auto",
-                      maxHeight: "85px",
-                      width: "auto",
-                      maxWidth: "200px",
-                      marginBottom: spacing.md,
-                    }}
-                  />
-                </Link>
-                <BodyText
-                  sx={{
-                    color: colors.text.secondary,
-                    lineHeight: typography.lineHeight.relaxed,
-                    mb: spacing.md,
-                  }}
-                >
-                  Handcrafted Ukrainian cakes made with love in Leeds. Traditional recipes, premium
-                  ingredients, and exceptional taste for your special occasions.
-                </BodyText>
+      {/* Enhanced Structured Data for Footer */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(footerStructuredData),
+        }}
+      />
 
-                {/* Contact Info */}
-                <Box sx={{ display: "flex", flexDirection: "column", gap: spacing.sm }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <EmailIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
-                    <BodyText
-                      sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
-                    >
-                      <Link
-                        href="mailto:hello@olgishcakes.co.uk"
-                        style={{ textDecoration: "none" }}
-                        aria-label={`Email us at ${contactInfo.email}`}
-                      >
-                        {contactInfo.email}
-                      </Link>
-                    </BodyText>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <PhoneIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
-                    <BodyText
-                      sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
-                    >
-                      <Link
-                        href="tel:+447867218194"
-                        aria-label={`Call us at ${contactInfo.phone}`}
-                        title={`Call us at ${contactInfo.phone}`}
-                      >
-                        {contactInfo.phone}
-                      </Link>
-                    </BodyText>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
-                    <LocationOnIcon sx={{ color: colors.text.secondary, fontSize: 18 }} />
-                    <BodyText
-                      sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
-                    >
-                      {contactInfo.address}
-                    </BodyText>
-                  </Box>
-                </Box>
+      {/* Main Footer Content */}
+      <Box
+        component="section"
+        aria-labelledby="footer-navigation-heading"
+        sx={{
+          backgroundColor: colors.background.subtle,
+          py: { xs: spacing.xl, md: spacing["4xl"] },
+        }}
+      >
+        <DesignContainer maxWidth="lg">
+          <Typography
+            id="footer-navigation-heading"
+            variant="h6"
+            component="h2"
+            sx={{ display: "none" }}
+          >
+            Footer Navigation
+          </Typography>
 
-                {/* Social Links */}
-                <Box>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.text.primary,
-                      mb: spacing.sm,
-                    }}
+          <Grid container spacing={4}>
+            {/* Cakes Section */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  color: colors.text.primary,
+                  fontWeight: typography.fontWeight.semibold,
+                  mb: spacing.md,
+                }}
+              >
+                Our Cakes
+              </Typography>
+              <Stack spacing={spacing.sm}>
+                {footerLinks.cakes.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`View ${link.name} page`}
+                    title={`${link.name} - Olgish Cakes Leeds`}
                   >
-                    Follow Us
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: spacing.md }}>
-                    {contactInfo.social.map(social => (
-                      <AccessibleIconButton
-                        key={social.name}
-                        component="a"
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        ariaLabel={`Follow us on ${social.name}`}
-                        title={`Follow us on ${social.name}`}
-                        sx={{
-                          color: colors.text.secondary,
-                          transition: "all 0.2s ease-in-out",
-                          "&:hover": {
-                            color: social.hoverColor,
-                            transform: "translateY(-2px)",
-                          },
-                        }}
-                      >
-                        <social.icon />
-                      </AccessibleIconButton>
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {link.name}
+                    </Typography>
+                  </Link>
+                ))}
+              </Stack>
             </Grid>
 
-            {/* Footer Links */}
-            <Grid item xs={12} md={8}>
-              <Grid container spacing={4}>
-                <Grid item xs={6} sm={3}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.text.primary,
-                      mb: spacing.md,
-                      fontSize: typography.fontSize.base,
-                    }}
+            {/* Services Section */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  color: colors.text.primary,
+                  fontWeight: typography.fontWeight.semibold,
+                  mb: spacing.md,
+                }}
+              >
+                Services
+              </Typography>
+              <Stack spacing={spacing.sm}>
+                {footerLinks.services.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`View ${link.name} service page`}
+                    title={`${link.name} - Olgish Cakes Leeds`}
                   >
-                    Our Cakes
-                  </Typography>
-                  <Stack spacing={1}>
-                    {footerLinks.cakes.map(link => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        style={{ textDecoration: "none" }}
-                        aria-label={`Navigate to ${link.name} page`}
-                      >
-                        <BodyText
-                          sx={{
-                            color: colors.text.secondary,
-                            fontSize: typography.fontSize.sm,
-                            transition: "color 0.2s ease-in-out",
-                            "&:hover": {
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          {link.name}
-                        </BodyText>
-                      </Link>
-                    ))}
-                  </Stack>
-                </Grid>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {link.name}
+                    </Typography>
+                  </Link>
+                ))}
+              </Stack>
+            </Grid>
 
-                <Grid item xs={6} sm={3}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.text.primary,
-                      mb: spacing.md,
-                      fontSize: typography.fontSize.base,
-                    }}
+            {/* Locations Section */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  color: colors.text.primary,
+                  fontWeight: typography.fontWeight.semibold,
+                  mb: spacing.md,
+                }}
+              >
+                Delivery Areas
+              </Typography>
+              <Stack spacing={spacing.sm}>
+                {footerLinks.locations.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`View ${link.name} delivery area`}
+                    title={`${link.name} - Ukrainian Cake Delivery`}
                   >
-                    Services
-                  </Typography>
-                  <Stack spacing={1}>
-                    {footerLinks.services.map(link => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        style={{ textDecoration: "none" }}
-                        aria-label={`Navigate to ${link.name} page`}
-                      >
-                        <BodyText
-                          sx={{
-                            color: colors.text.secondary,
-                            fontSize: typography.fontSize.sm,
-                            transition: "color 0.2s ease-in-out",
-                            "&:hover": {
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          {link.name}
-                        </BodyText>
-                      </Link>
-                    ))}
-                  </Stack>
-                </Grid>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {link.name}
+                    </Typography>
+                  </Link>
+                ))}
+              </Stack>
+            </Grid>
 
-                <Grid item xs={6} sm={3}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.text.primary,
-                      mb: spacing.md,
-                      fontSize: typography.fontSize.base,
-                    }}
+            {/* Company Section */}
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  color: colors.text.primary,
+                  fontWeight: typography.fontWeight.semibold,
+                  mb: spacing.md,
+                }}
+              >
+                Company
+              </Typography>
+              <Stack spacing={spacing.sm}>
+                {footerLinks.company.map(link => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`View ${link.name} page`}
+                    title={`${link.name} - Olgish Cakes Leeds`}
                   >
-                    Locations
-                  </Typography>
-                  <Stack spacing={1}>
-                    {footerLinks.locations.map(link => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        style={{ textDecoration: "none" }}
-                        aria-label={`Navigate to ${link.name} page`}
-                      >
-                        <BodyText
-                          sx={{
-                            color: colors.text.secondary,
-                            fontSize: typography.fontSize.sm,
-                            transition: "color 0.2s ease-in-out",
-                            "&:hover": {
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          {link.name}
-                        </BodyText>
-                      </Link>
-                    ))}
-                  </Stack>
-                </Grid>
-
-                <Grid item xs={6} sm={3}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: typography.fontWeight.bold,
-                      color: colors.text.primary,
-                      mb: spacing.md,
-                      fontSize: typography.fontSize.base,
-                    }}
-                  >
-                    Company
-                  </Typography>
-                  <Stack spacing={1}>
-                    {footerLinks.company.map(link => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        style={{ textDecoration: "none" }}
-                        aria-label={`Navigate to ${link.name} page`}
-                      >
-                        <BodyText
-                          sx={{
-                            color: colors.text.secondary,
-                            fontSize: typography.fontSize.sm,
-                            transition: "color 0.2s ease-in-out",
-                            "&:hover": {
-                              color: colors.primary.main,
-                            },
-                          }}
-                        >
-                          {link.name}
-                        </BodyText>
-                      </Link>
-                    ))}
-                  </Stack>
-                </Grid>
-              </Grid>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {link.name}
+                    </Typography>
+                  </Link>
+                ))}
+              </Stack>
             </Grid>
           </Grid>
-        </Box>
 
-        {/* Trust Signals & Social Proof Section */}
-        <Box
-          sx={{
-            py: spacing["2xl"],
-            borderTop: `1px solid ${colors.border.light}`,
-            background: `linear-gradient(135deg, ${colors.primary.main}04 0%, ${colors.primary.main}02 100%)`,
-          }}
-        >
+          <Divider sx={{ my: spacing.xl, borderColor: colors.border.light }} />
+
+          {/* Contact & Social Section */}
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography
-                variant="h4"
+                variant="h6"
+                component="h3"
                 sx={{
-                  fontWeight: typography.fontWeight.bold,
                   color: colors.text.primary,
-                  mb: spacing.sm,
-                  fontSize: { xs: typography.fontSize.lg, md: typography.fontSize.xl },
-                }}
-              >
-                Trusted by 127+ Happy Customers
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: colors.text.secondary,
+                  fontWeight: typography.fontWeight.semibold,
                   mb: spacing.md,
-                  fontSize: typography.fontSize.base,
-                  lineHeight: 1.6,
                 }}
               >
-                Join our community of satisfied customers who choose Olgish Cakes for their special
-                occasions. Authentic Ukrainian baking with 5★ rating and same-day delivery across
-                Yorkshire.
+                Contact Information
               </Typography>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: spacing.sm }}>
-                <Chip
-                  label="⭐ 5★ Rating"
-                  sx={{
-                    backgroundColor: colors.secondary.main,
-                    color: "white",
-                    fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.sm,
-                  }}
-                />
-                <Chip
-                  label="🏆 #1 Ukrainian Bakery Leeds"
-                  sx={{
-                    backgroundColor: colors.primary.main,
-                    color: "white",
-                    fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.sm,
-                  }}
-                />
-                <Chip
-                  label="🚚 Same-Day Delivery"
-                  sx={{
-                    backgroundColor: colors.primary.dark,
-                    color: "white",
-                    fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.sm,
-                  }}
-                />
-              </Box>
+              <Stack spacing={spacing.md}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                  <PhoneIcon sx={{ color: colors.primary.main }} />
+                  <Link
+                    href={`tel:${contactInfo.phone}`}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`Call us at ${contactInfo.phone}`}
+                    title={`Call Olgish Cakes at ${contactInfo.phone}`}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                      }}
+                    >
+                      {contactInfo.phone}
+                    </Typography>
+                  </Link>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                  <EmailIcon sx={{ color: colors.primary.main }} />
+                  <Link
+                    href={`mailto:${contactInfo.email}`}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`Send email to ${contactInfo.email}`}
+                    title={`Email Olgish Cakes at ${contactInfo.email}`}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: colors.text.secondary,
+                        "&:hover": {
+                          color: colors.primary.main,
+                        },
+                        transition: "color 0.2s ease-in-out",
+                      }}
+                    >
+                      {contactInfo.email}
+                    </Typography>
+                  </Link>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                  <LocationOnIcon sx={{ color: colors.primary.main }} />
+                  <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+                    {contactInfo.address}
+                  </Typography>
+                </Box>
+              </Stack>
             </Grid>
+
             <Grid item xs={12} md={6}>
-              <Box sx={{ textAlign: { xs: "left", md: "right" } }}>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    color: colors.text.primary,
-                    mb: spacing.sm,
-                    fontWeight: typography.fontWeight.bold,
-                  }}
-                >
-                  Quick Contact
-                </Typography>
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  color: colors.text.primary,
+                  fontWeight: typography.fontWeight.semibold,
+                  mb: spacing.md,
+                }}
+              >
+                Follow Us
+              </Typography>
+              <Stack direction="row" spacing={spacing.md}>
                 <Link
-                  href="tel:+447867218194"
-                  style={{ textDecoration: "none" }}
-                  aria-label="Call us at +44 786 721 8194"
+                  href={contactInfo.socialMedia.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit our Facebook page"
+                  title="Olgish Cakes Facebook Page"
                 >
-                  <Typography
-                    variant="body2"
+                  <AccessibleIconButton
+                    ariaLabel="Facebook"
+                    title="Facebook"
                     sx={{
                       color: colors.text.secondary,
-                      mb: spacing.sm,
-                      fontSize: typography.fontSize.sm,
-                      cursor: "pointer",
-                      transition: "color 0.2s ease",
-                      display: "block",
                       "&:hover": {
                         color: colors.primary.main,
-                        textDecoration: "underline",
+                        backgroundColor: colors.background.warm,
                       },
+                      transition: "all 0.2s ease-in-out",
                     }}
                   >
-                    📞 +44 786 721 8194
-                  </Typography>
+                    <FacebookIcon />
+                  </AccessibleIconButton>
                 </Link>
                 <Link
-                  href="mailto:hello@olgishcakes.co.uk"
-                  style={{ textDecoration: "none" }}
-                  aria-label="Email us at hello@olgishcakes.co.uk"
+                  href={contactInfo.socialMedia.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit our Instagram profile"
+                  title="Olgish Cakes Instagram Profile"
                 >
-                  <Typography
-                    variant="body2"
+                  <AccessibleIconButton
+                    ariaLabel="Instagram"
+                    title="Instagram"
                     sx={{
                       color: colors.text.secondary,
-                      mb: spacing.md,
-                      fontSize: typography.fontSize.sm,
-                      cursor: "pointer",
-                      transition: "color 0.2s ease",
-                      display: "block",
                       "&:hover": {
                         color: colors.primary.main,
-                        textDecoration: "underline",
+                        backgroundColor: colors.background.warm,
                       },
+                      transition: "all 0.2s ease-in-out",
                     }}
                   >
-                    📧 hello@olgishcakes.co.uk
-                  </Typography>
+                    <InstagramIcon />
+                  </AccessibleIconButton>
                 </Link>
+                <Link
+                  href={contactInfo.socialMedia.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Contact us on WhatsApp"
+                  title="Contact Olgish Cakes on WhatsApp"
+                >
+                  <AccessibleIconButton
+                    ariaLabel="WhatsApp"
+                    title="WhatsApp"
+                    sx={{
+                      color: colors.text.secondary,
+                      "&:hover": {
+                        color: colors.primary.main,
+                        backgroundColor: colors.background.warm,
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                  >
+                    <WhatsAppIcon />
+                  </AccessibleIconButton>
+                </Link>
+              </Stack>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: spacing.xl, borderColor: colors.border.light }} />
+
+          {/* Bottom Section */}
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: spacing.sm }}>
+                <Image
+                  src="/images/olgish-cakes-logo-bakery-brand.png"
+                  alt="Olgish Cakes - Ukrainian Bakery Leeds"
+                  width={120}
+                  height={40}
+                  priority={false}
+                  title="Olgish Cakes - Authentic Ukrainian Bakery in Leeds"
+                />
                 <Typography
                   variant="body2"
                   sx={{
                     color: colors.text.secondary,
-                    fontSize: typography.fontSize.sm,
-                    fontStyle: "italic",
+                    fontWeight: typography.fontWeight.medium,
                   }}
                 >
-                  Serving Leeds, York, Bradford, Halifax & surrounding areas
+                  Authentic Ukrainian Cakes in Leeds
                 </Typography>
               </Box>
             </Grid>
-          </Grid>
-        </Box>
 
-        {/* Bottom Bar */}
-        <Box
-          sx={{
-            py: spacing.lg,
-            borderTop: `1px solid ${colors.border.light}`,
-          }}
-        >
-          <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
-              <BodyText sx={{ color: colors.text.secondary }}>
-                © {currentYear} Olgish Cakes. All rights reserved. Handcrafted Ukrainian cakes in
-                Leeds.
-              </BodyText>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: spacing.md,
-                  justifyContent: { xs: "flex-start", md: "flex-end" },
-                  flexWrap: "wrap",
-                }}
-              >
+              <Stack direction="row" spacing={spacing.md} justifyContent="flex-end">
                 {footerLinks.legal.map(link => (
                   <Link
-                    key={link.name}
+                    key={link.href}
                     href={link.href}
                     style={{ textDecoration: "none" }}
-                    aria-label={`Navigate to ${link.name}`}
+                    aria-label={`View ${link.name}`}
+                    title={`${link.name} - Olgish Cakes`}
                   >
-                    <BodyText
+                    <Typography
+                      variant="caption"
                       sx={{
                         color: colors.text.secondary,
-                        fontSize: typography.fontSize.sm,
-                        transition: "color 0.2s ease-in-out",
                         "&:hover": {
                           color: colors.primary.main,
                         },
+                        transition: "color 0.2s ease-in-out",
+                        cursor: "pointer",
                       }}
                     >
                       {link.name}
-                    </BodyText>
+                    </Typography>
                   </Link>
                 ))}
-              </Box>
+              </Stack>
             </Grid>
           </Grid>
-        </Box>
-      </DesignContainer>
-    </Box>
+
+          {/* Copyright */}
+          <Box sx={{ mt: spacing.xl, textAlign: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: colors.text.secondary,
+                "& a": {
+                  color: colors.primary.main,
+                  textDecoration: "none",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                },
+              }}
+            >
+              © {new Date().getFullYear()} Olgish Cakes. All rights reserved. | Made with ❤️ in
+              Leeds, Yorkshire |
+              <Link href="/privacy" aria-label="Privacy Policy">
+                {" "}
+                Privacy Policy
+              </Link>{" "}
+              |
+              <Link href="/terms" aria-label="Terms of Service">
+                {" "}
+                Terms of Service
+              </Link>
+            </Typography>
+          </Box>
+        </DesignContainer>
+      </Box>
+    </footer>
   );
 }

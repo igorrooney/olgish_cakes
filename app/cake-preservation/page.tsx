@@ -26,6 +26,33 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://olgishcakes.co.uk/cake-preservation",
   },
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+  },
 };
 
 export default function CakePreservationPage() {

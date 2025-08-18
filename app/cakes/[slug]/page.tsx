@@ -8,8 +8,8 @@ import { Metadata } from "next";
 import { getRevalidateTime } from "@/app/utils/fetchCakes";
 import { CakeStructuredData } from "@/app/components/CakeStructuredData";
 
-// Enable revalidation for this page
-export const revalidate = getRevalidateTime();
+// Enable revalidation for this page with optimization
+export const revalidate = 3600; // 1 hour for better performance
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {

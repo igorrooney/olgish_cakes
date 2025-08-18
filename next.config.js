@@ -24,6 +24,9 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
+  // Enhanced performance optimizations
+  optimizeFonts: true,
+  trailingSlash: false,
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],

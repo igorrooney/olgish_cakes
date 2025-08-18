@@ -27,6 +27,33 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://olgishcakes.co.uk/cake-flavor-guide",
   },
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+  },
 };
 
 export default function CakeFlavorGuidePage() {
@@ -166,7 +193,11 @@ export default function CakeFlavorGuidePage() {
                   <Typography variant="h3" sx={{ mb: 2, fontSize: "3rem" }}>
                     {item.icon}
                   </Typography>
-                  <Typography variant="h3" component="h3" sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}>
+                  <Typography
+                    variant="h3"
+                    component="h3"
+                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                  >
                     {item.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

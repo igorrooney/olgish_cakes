@@ -44,10 +44,10 @@ export const metadata: Metadata = {
     canonical: "https://olgishcakes.co.uk/order",
   },
   robots: {
-    index: true,
+    index: false,
     follow: true,
     googleBot: {
-      index: true,
+      index: false,
       follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
@@ -60,7 +60,6 @@ export default async function AmpOrderPage() {
   return (
     <>
       {/* AMP-specific optimizations */}
-      <link rel="amphtml" href="https://olgishcakes.co.uk/order/amp" />
       <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
       <meta name="format-detection" content="telephone=no" />
 

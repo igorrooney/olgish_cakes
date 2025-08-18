@@ -36,6 +36,51 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://olgishcakes.co.uk/faq",
   },
+  keywords: [
+    "FAQ Ukrainian cakes Leeds",
+    "honey cake questions",
+    "Medovik cake FAQ",
+    "Ukrainian bakery Leeds questions",
+    "cake ordering FAQ",
+    "cake delivery questions",
+    "custom cake inquiries",
+    "wedding cake questions",
+    "birthday cake FAQ",
+    "Ukrainian dessert questions",
+    "cake pricing FAQ",
+    "cake ingredients questions",
+    "allergen information",
+    "cake storage questions",
+    "cake delivery areas",
+    "cake consultation FAQ",
+  ],
+  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
+  creator: "Olgish Cakes",
+  publisher: "Olgish Cakes",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://olgishcakes.co.uk"),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
+  },
+  other: {
+    "geo.region": "GB-ENG",
+    "geo.placename": "Leeds",
+  },
 };
 
 export default async function FAQPage() {
