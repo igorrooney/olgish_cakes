@@ -2,6 +2,13 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import sharp from "sharp";
 
+// Set Sharp's pixel limit to handle large SVGs
+sharp.cache(false);
+sharp.concurrency(1);
+
+// Set environment variable for Sharp pixel limit
+process.env.SHARP_PIXEL_LIMIT = "268402689";
+
 interface GeneratedIconSpec {
   outputPath: string;
   size: number;
@@ -33,8 +40,15 @@ async function renderPngFromSvg(
   options: { background?: string | null; marginRatio?: number }
 ): Promise<Buffer> {
   const { background = null, marginRatio = 0 } = options;
+  
+  // Use much lower density for large SVGs to avoid pixel limit issues
+  const density = size > 128 ? 96 : 192;
+  
   if (marginRatio === 0 && !background) {
-    return sharp(inputSvgPath, { density: 384 })
+    return sharp(inputSvgPath, { 
+      density,
+      limitInputPixels: 268402689 // 16384 x 16384
+    })
       .resize({ width: size, height: size, fit: "contain" })
       .png()
       .toBuffer();
@@ -42,7 +56,10 @@ async function renderPngFromSvg(
 
   const innerSize = Math.round(size * (1 - 2 * marginRatio));
   const offset = Math.round(size * marginRatio);
-  const renderedSvgPng = await sharp(inputSvgPath, { density: 384 })
+  const renderedSvgPng = await sharp(inputSvgPath, { 
+    density,
+    limitInputPixels: 268402689 // 16384 x 16384
+  })
     .resize({ width: innerSize, height: innerSize, fit: "contain" })
     .png()
     .toBuffer();

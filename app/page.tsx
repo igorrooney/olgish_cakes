@@ -351,7 +351,6 @@ export default async function Home() {
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  textShadow: "0 8px 32px rgba(0,0,0,0.3)",
                   marginBottom: 6,
                 }}
               >

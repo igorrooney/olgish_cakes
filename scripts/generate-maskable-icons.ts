@@ -2,6 +2,13 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import sharp from "sharp";
 
+// Set Sharp's pixel limit to handle large SVGs
+sharp.cache(false);
+sharp.concurrency(1);
+
+// Set environment variable for Sharp pixel limit
+process.env.SHARP_PIXEL_LIMIT = "268402689";
+
 async function generateMaskableIcons() {
   const brandBlue = "#2E3192";
   const inputSvgPath = path.resolve("app", "icon.svg");
@@ -21,7 +28,13 @@ async function generateMaskableIcons() {
     const innerSize = Math.round(size * (1 - 2 * marginRatio));
     const offset = Math.round(size * marginRatio);
 
-    const renderedSvgPng = await sharp(inputSvgPath, { density: 384 })
+    // Use lower density for large SVGs to avoid pixel limit issues
+    const density = size > 128 ? 96 : 192;
+
+    const renderedSvgPng = await sharp(inputSvgPath, { 
+      density,
+      limitInputPixels: 268402689 // 16384 x 16384
+    })
       .resize({
         width: innerSize,
         height: innerSize,
