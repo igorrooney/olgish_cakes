@@ -83,7 +83,7 @@ export const metadata: Metadata = {
 export default function HowToOrderPage() {
   return (
     <>
-      <Script
+      <script
         id="how-to-order-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
