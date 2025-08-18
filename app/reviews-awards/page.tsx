@@ -181,7 +181,7 @@ const awards = [
 export default function ReviewsAwardsPage() {
   return (
     <>
-      <Script
+      <script
         id="reviews-awards-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{

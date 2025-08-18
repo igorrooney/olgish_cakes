@@ -121,34 +121,8 @@ export default function AboutPage() {
 
   return (
     <>
-      {/* Enhanced Google Analytics */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXXXXXXXXX', {
-            page_title: 'About Olgish Cakes',
-            page_location: 'https://olgishcakes.co.uk/about',
-            custom_map: {
-              'custom_dimension1': 'page_type',
-              'custom_dimension2': 'content_category'
-            }
-          });
-          gtag('event', 'page_view', {
-            page_type: 'about',
-            content_category: 'company_information',
-            custom_parameter: 'ukrainian_baker_leeds'
-          });
-        `}
-      </Script>
-
       {/* Performance optimization scripts */}
-      <Script id="performance-optimization" strategy="beforeInteractive">
+      <Script id="performance-optimization" strategy="afterInteractive">
         {`
           // Preload critical resources
           if ('connection' in navigator) {
@@ -181,24 +155,24 @@ export default function AboutPage() {
       </Script>
 
       {/* Enhanced Structured Data */}
-      <Script id="organization-schema" type="application/ld+json">
+      <script id="organization-schema" type="application/ld+json">
         {JSON.stringify(organizationSchema)}
-      </Script>
+      </script>
 
-      <Script id="local-business-schema" type="application/ld+json">
+      <script id="local-business-schema" type="application/ld+json">
         {JSON.stringify(localBusinessSchema)}
-      </Script>
+      </script>
 
-      <Script id="webpage-schema" type="application/ld+json">
+      <script id="webpage-schema" type="application/ld+json">
         {JSON.stringify(webPageSchema)}
-      </Script>
+      </script>
 
-      <Script id="person-schema" type="application/ld+json">
+      <script id="person-schema" type="application/ld+json">
         {JSON.stringify(personSchema)}
-      </Script>
+      </script>
 
       {/* FAQ Schema for About page */}
-      <Script id="about-faq-schema" type="application/ld+json">
+      <script id="about-faq-schema" type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
@@ -245,7 +219,7 @@ export default function AboutPage() {
             },
           ],
         })}
-      </Script>
+      </script>
 
       <AboutContent />
     </>
