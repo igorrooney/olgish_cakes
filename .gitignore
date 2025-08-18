@@ -25,7 +25,14 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+.env.production
+.env.development
+env.local
+
+# Keep environment template files (safe to commit)
+!env.*.template
 
 # vercel
 .vercel
