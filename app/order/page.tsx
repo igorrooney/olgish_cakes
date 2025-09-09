@@ -58,9 +58,6 @@ export const metadata: Metadata = {
       "application/rss+xml": "https://olgishcakes.co.uk/feed.xml",
     },
   },
-  other: {
-    amphtml: "https://olgishcakes.co.uk/order/amp",
-  },
   robots: {
     index: true,
     follow: true,
