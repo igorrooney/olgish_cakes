@@ -74,6 +74,24 @@ export default {
             list: ["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"],
           },
         },
+        {
+          name: "faq",
+          title: "FAQ",
+          type: "array",
+          description: "Optional FAQs to display as rich results",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "question", title: "Question", type: "string", validation: (Rule: any) => Rule.required() },
+                { name: "answer", title: "Answer", type: "text", validation: (Rule: any) => Rule.required() },
+              ],
+              preview: {
+                select: { title: "question", subtitle: "answer" },
+              },
+            },
+          ],
+        },
       ],
     },
     {

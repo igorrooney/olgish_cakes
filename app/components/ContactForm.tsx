@@ -36,6 +36,9 @@ const MotionBox = motion.create(Box);
 
 interface FormData {
   name: string;
+  address?: string;
+  city?: string;
+  postcode?: string;
   email: string;
   phone: string;
   cakeInterest?: string;
@@ -53,6 +56,13 @@ interface ContactFormProps {
   buttonText?: string;
   showImageUpload?: boolean;
   showButton?: boolean;
+  showAddress?: boolean;
+  showDate?: boolean;
+  showPostcode?: boolean;
+  showCity?: boolean;
+  requireMessage?: boolean;
+  // When true, suppresses rendering of JSON-LD to avoid duplicates in modals
+  suppressStructuredData?: boolean;
 }
 
 const formFieldAnimation = {
@@ -70,9 +80,18 @@ export function ContactForm({
   buttonText = isOrderForm ? "Send Order Inquiry" : "Send Message",
   showImageUpload = false,
   showButton = true,
+  showAddress = false,
+  showDate = true,
+  showPostcode = false,
+  showCity = false,
+  requireMessage = true,
+  suppressStructuredData = false,
 }: ContactFormProps = {}) {
   const [formData, setFormData] = useState<FormData>({
     name: "",
+    address: "",
+    city: "",
+    postcode: "",
     email: "",
     phone: "",
     cakeInterest: "",
@@ -213,6 +232,10 @@ export function ContactForm({
     setInternalSubmitStatus(null);
   }
 
+  function formatPostcode(value: string) {
+    return value.replace(/\s+/g, "").toUpperCase().replace(/([A-Z]{1,2}\d[A-Z\d]?)(\d[A-Z]{2})/, "$1 $2");
+  }
+
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
@@ -247,12 +270,21 @@ export function ContactForm({
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
+      if (formData.address) {
+        formDataToSend.append("address", formData.address);
+      }
+      if (formData.city) {
+        formDataToSend.append("city", formData.city);
+      }
+      if (formData.postcode) {
+        formDataToSend.append("postcode", formData.postcode);
+      }
       formDataToSend.append("email", formData.email);
       formDataToSend.append("phone", formData.phone);
       if (formData.cakeInterest) {
         formDataToSend.append("cakeInterest", formData.cakeInterest);
       }
-      if (formData.dateNeeded) {
+      if (showDate && formData.dateNeeded) {
         formDataToSend.append("dateNeeded", formData.dateNeeded.toISOString());
       }
       formDataToSend.append("message", formData.message);
@@ -273,6 +305,9 @@ export function ContactForm({
       setInternalSubmitStatus("success");
       setFormData({
         name: "",
+        address: "",
+        city: "",
+        postcode: "",
         email: "",
         phone: "",
         cakeInterest: "",
@@ -290,13 +325,15 @@ export function ContactForm({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
-      {/* Enhanced Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(contactFormStructuredData),
-        }}
-      />
+      {/* Enhanced Structured Data for SEO (suppressed when embedded in modal) */}
+      {!suppressStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(contactFormStructuredData),
+          }}
+        />
+      )}
 
       <Box
         component="form"
@@ -323,6 +360,61 @@ export function ContactForm({
               aria-label="Full name"
               aria-required="true"
             />,
+            showAddress ? (
+              <StyledTextField
+                key="address"
+                label="Address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                fullWidth
+                disabled={isSubmitting}
+                placeholder="Enter your address"
+                size="medium"
+                aria-label="Address"
+                aria-required="true"
+              />
+            ) : null,
+            showCity ? (
+              <StyledTextField
+                key="city"
+                label="City"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+                fullWidth
+                disabled={isSubmitting}
+                placeholder="Enter your city"
+                size="medium"
+                aria-label="City"
+                aria-required="true"
+              />
+            ) : null,
+            showPostcode ? (
+              <StyledTextField
+                key="postcode"
+                label="Postcode"
+                name="postcode"
+                value={formData.postcode}
+                onChange={handleChange}
+                onBlur={() =>
+                  setFormData(prev => ({ ...prev, postcode: formatPostcode(prev.postcode || "") }))
+                }
+                required
+                fullWidth
+                disabled={isSubmitting}
+                placeholder="e.g. LS1 2AB"
+                size="medium"
+                inputProps={{
+                  pattern: "^[A-Za-z]{1,2}\\d[A-Za-z\\d]? ?\\d[A-Za-z]{2}$",
+                  title: "Enter a valid UK postcode (e.g. LS1 2AB)",
+                }}
+                aria-label="Postcode"
+                aria-required="true"
+              />
+            ) : null,
             <StyledTextField
               key="email"
               label="Email Address"
@@ -371,35 +463,37 @@ export function ContactForm({
             </MotionBox>
           )}
 
-          <MotionBox {...formFieldAnimation} transition={{ delay: 0.4 }}>
-            <DatePicker
-              label="Date Needed"
-              value={formData.dateNeeded}
-              onChange={handleDateChange}
-              disabled={isSubmitting}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  size: "medium",
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: borderRadius.lg,
-                      backgroundColor: colors.background.paper,
-                      "& fieldset": {
-                        borderColor: colors.border.medium,
-                      },
-                      "&:hover fieldset": {
-                        borderColor: colors.border.dark,
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: colors.primary.main,
+          {showDate && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.4 }}>
+              <DatePicker
+                label="Date Needed"
+                value={formData.dateNeeded}
+                onChange={handleDateChange}
+                disabled={isSubmitting}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    size: "medium",
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: borderRadius.lg,
+                        backgroundColor: colors.background.paper,
+                        "& fieldset": {
+                          borderColor: colors.border.medium,
+                        },
+                        "&:hover fieldset": {
+                          borderColor: colors.border.dark,
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: colors.primary.main,
+                        },
                       },
                     },
                   },
-                },
-              }}
-            />
-          </MotionBox>
+                }}
+              />
+            </MotionBox>
+          )}
 
           <MotionBox {...formFieldAnimation} transition={{ delay: 0.5 }}>
             <StyledTextField
@@ -407,7 +501,7 @@ export function ContactForm({
               name="message"
               value={formData.message}
               onChange={handleChange}
-              required
+              required={requireMessage}
               fullWidth
               multiline
               rows={4}
@@ -418,6 +512,7 @@ export function ContactForm({
                   : "How can we help you?"
               }
               size="medium"
+              aria-required={requireMessage ? "true" : undefined}
             />
           </MotionBox>
 
