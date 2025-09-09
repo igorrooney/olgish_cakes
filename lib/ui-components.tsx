@@ -1,7 +1,7 @@
 // UI Components Library using Ukrainian Design System
 // This file provides pre-styled components using our design tokens
 
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   Button,
   Card,
@@ -573,21 +573,14 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
 );
 
 // Accessible IconButton Component with WCAG touch target compliance
-export const AccessibleIconButton = ({
-  children,
-  ariaLabel,
-  title,
-  component,
-  href,
-  ...props
-}: {
+export const AccessibleIconButton = forwardRef<HTMLElement, {
   children: React.ReactNode;
   ariaLabel: string;
   title?: string;
   component?: any;
   href?: string;
   [key: string]: any;
-}) => {
+}>(({ children, ariaLabel, title, component, href, ...props }, ref) => {
   const iconButtonStyles = {
     minWidth: "48px", // WCAG touch target requirement with extra padding
     minHeight: "48px", // WCAG touch target requirement with extra padding
@@ -618,6 +611,7 @@ export const AccessibleIconButton = ({
   if (component === "a" || href) {
     return (
       <IconButton
+        ref={ref as any}
         component={component || "a"}
         href={href}
         aria-label={ariaLabel}
@@ -632,11 +626,17 @@ export const AccessibleIconButton = ({
 
   // Default button behavior
   return (
-    <IconButton aria-label={ariaLabel} title={title || ariaLabel} sx={iconButtonStyles} {...props}>
+    <IconButton
+      ref={ref as any}
+      aria-label={ariaLabel}
+      title={title || ariaLabel}
+      sx={iconButtonStyles}
+      {...props}
+    >
       {children}
     </IconButton>
   );
-};
+});
 
 export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
   <AccessibleIconButton

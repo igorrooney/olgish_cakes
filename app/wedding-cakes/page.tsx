@@ -290,7 +290,7 @@ export default async function WeddingCakesPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     {service.title}
@@ -423,7 +423,7 @@ export default async function WeddingCakesPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}

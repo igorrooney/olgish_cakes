@@ -335,7 +335,7 @@ export default function UkrainianBakingClassesPage() {
                         </Grid>
                       </Grid>
 
-                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                      <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                         What's Included:
                       </Typography>
                       <Box sx={{ mb: 3 }}>
@@ -388,7 +388,7 @@ export default function UkrainianBakingClassesPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Weekly Classes:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -405,7 +405,7 @@ export default function UkrainianBakingClassesPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Special Events:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -536,7 +536,7 @@ export default function UkrainianBakingClassesPage() {
                     </Typography>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ fontWeight: 600, color: "primary.main" }}
                     >
                       {testimonial.name}

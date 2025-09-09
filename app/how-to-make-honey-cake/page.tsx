@@ -139,7 +139,7 @@ export default function HowToMakeHoneyCakePage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Preparation Time:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -152,7 +152,7 @@ export default function HowToMakeHoneyCakePage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Difficulty Level:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -316,7 +316,7 @@ export default function HowToMakeHoneyCakePage() {
                     <Box>
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ color: colors.primary.main, fontWeight: "bold" }}
                       >
                         Step {instruction.step}: {instruction.title}

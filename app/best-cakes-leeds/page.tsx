@@ -219,7 +219,7 @@ export default function BestCakesLeedsPage() {
             <Typography variant="h3" className="text-3xl font-bold mb-4">
               Experience the Best Cakes in Leeds
             </Typography>
-            <Typography variant="h4" component="h4" className="text-xl mb-6">
+            <Typography variant="h4" component="h3" className="text-xl mb-6">
               Join hundreds of satisfied customers who choose Olgish Cakes for their special
               occasions.
             </Typography>

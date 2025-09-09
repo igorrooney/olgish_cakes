@@ -41,7 +41,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
   title = "Find Us at Local Markets!",
   subtitle = "Meet us in person and taste our authentic Ukrainian cakes at these upcoming markets",
   showAllLink = true,
-  maxEvents = 3,
+  maxEvents = 10,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -177,7 +177,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
-      className="py-24 bg-gradient-to-br from-secondary/5 via-white to-primary/5"
+      className="py-24 bg-gradient-to-br from-secondary/5 via-white to-primary/5 pt-0"
       role="region"
       aria-labelledby="market-schedule-heading"
     >
@@ -248,7 +248,6 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
               // Format time for display
               const formattedTime = `${event.startTime} - ${event.endTime}`;
 
-              // Get image URL
               const imageUrl = event.image?.asset?.url
                 ? urlFor(event.image).width(600).height(400).url()
                 : "/images/pattern.svg";
@@ -279,45 +278,16 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                       }}
                     >
                       {/* Event Image */}
-                      {event.image && (
-                        <Box className="relative h-48 overflow-hidden">
-                          <Image
-                            src={imageUrl}
-                            alt={event.image.alt || `${event.title} market event`}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-
-                          {/* Featured badge */}
-                          {event.featured && (
-                            <Chip
-                              label="Featured Event"
-                              className="absolute top-4 left-4 bg-secondary text-primary-dark font-semibold"
-                              sx={{
-                                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                              }}
-                            />
-                          )}
-
-                          {/* Date badge */}
-                          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-center shadow-lg">
-                            <Typography
-                              variant="caption"
-                              className="text-primary font-medium block text-xs uppercase tracking-wide"
-                            >
-                              {eventDate.toLocaleDateString("en-GB", { month: "short" })}
-                            </Typography>
-                            <Typography
-                              variant="h3"
-                              className="text-primary-dark font-bold text-lg leading-none"
-                            >
-                              {eventDate.getDate()}
-                            </Typography>
-                          </div>
-                        </Box>
-                      )}
+                      <Box className="relative h-48 overflow-hidden">
+                        <Image
+                          src={imageUrl}
+                          alt={event.image?.alt || `${event.title} market event`}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      </Box>
 
                       <CardContent className="p-6">
                         {/* Status indicators */}
@@ -518,6 +488,15 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                   sx={{ py: 3 }}
                 >
                   Get in Touch
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  component={Link}
+                  href="/market-schedule"
+                  className="px-8 py-3 text-lg font-semibold"
+                >
+                  View Full Market Schedule
                 </Button>
                 <Button
                   variant="outlined"

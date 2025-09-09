@@ -143,6 +143,7 @@ const navigationBase = [
     ],
   },
   { name: "Gallery", href: "/cake-gallery" },
+  { name: "Local Market", href: "/market-schedule" },
   { name: "Blog", href: "/blog" },
   {
     name: "Company",
@@ -153,6 +154,7 @@ const navigationBase = [
       { name: "FAQ", href: "/faq" },
       { name: "Customer Stories", href: "/customer-stories" },
       { name: "Ukrainian Community", href: "/ukrainian-community-leeds" },
+      { name: "Local Market", href: "/market-schedule" },
       { name: "Charity Events", href: "/charity-events" },
       { name: "Delivery Areas", href: "/delivery-areas" },
       { name: "Contact", href: "/contact" },

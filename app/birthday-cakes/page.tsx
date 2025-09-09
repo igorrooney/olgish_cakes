@@ -377,10 +377,10 @@ export default async function BirthdayCakesPage() {
                     <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                       {option.size}
                     </Typography>
-                    <Typography variant="h4" component="h4" sx={{ mb: 1, color: "text.secondary" }}>
+                    <Typography variant="h4" component="h3" sx={{ mb: 1, color: "text.secondary" }}>
                       {option.serves}
                     </Typography>
-                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                       {option.price}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -525,7 +525,7 @@ export default async function BirthdayCakesPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}
@@ -553,7 +553,7 @@ export default async function BirthdayCakesPage() {
             >
               Ready to Order Your Birthday Cake?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us today to start planning your perfect birthday celebration
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

@@ -218,6 +218,7 @@ export default function HowToOrderPage() {
             }}
           >
             <Typography
+              component="h2"
               variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -326,7 +327,7 @@ export default function HowToOrderPage() {
                     }}
                   >
                     <Box sx={{ textAlign: "center", mb: 3 }}>
-                      <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
+                      <Typography component="span" variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {step.icon}
                       </Typography>
                       <Box
@@ -349,7 +350,7 @@ export default function HowToOrderPage() {
                       </Box>
                       <Typography
                         variant="h3"
-                        component="h4"
+                        component="h3"
                         sx={{ fontWeight: 600, color: "primary.main" }}
                       >
                         {step.title}
@@ -411,6 +412,7 @@ export default function HowToOrderPage() {
             }}
           >
             <Typography
+              component="h2"
               variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -475,12 +477,12 @@ export default function HowToOrderPage() {
                       borderColor: "divider",
                     }}
                   >
-                    <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
+                    <Typography component="span" variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                       {consultation.icon}
                     </Typography>
                     <Typography
                       variant="h3"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {consultation.type}
@@ -513,6 +515,7 @@ export default function HowToOrderPage() {
             }}
           >
             <Typography
+              component="h2"
               variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -573,12 +576,12 @@ export default function HowToOrderPage() {
                     }}
                   >
                     <Box sx={{ textAlign: "center", mb: 3 }}>
-                      <Typography variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
+                      <Typography component="span" variant="h2" sx={{ fontSize: "2.5rem", mb: 2 }}>
                         {payment.icon}
                       </Typography>
                       <Typography
                         variant="h3"
-                        component="h4"
+                        component="h3"
                         sx={{ fontWeight: 600, color: "primary.main" }}
                       >
                         {payment.method}
@@ -630,6 +633,7 @@ export default function HowToOrderPage() {
             }}
           >
             <Typography
+              component="h2"
               variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -682,8 +686,8 @@ export default function HowToOrderPage() {
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <Box sx={{ p: 3, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
                     <Typography
-                      variant="h4"
-                      component="h4"
+                      variant="h3"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {timeline.type}
@@ -709,6 +713,7 @@ export default function HowToOrderPage() {
           {/* Call to Action */}
           <Box sx={{ textAlign: "center", py: 6 }}>
             <Typography
+              component="h2"
               variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
@@ -720,7 +725,7 @@ export default function HowToOrderPage() {
             >
               Ready to Order Your Cake?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us today to start your cake ordering journey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

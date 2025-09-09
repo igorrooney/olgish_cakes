@@ -169,7 +169,7 @@ export default function UkrainianCelebrationsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
@@ -246,7 +246,7 @@ export default function UkrainianCelebrationsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
@@ -323,7 +323,7 @@ export default function UkrainianCelebrationsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
@@ -400,7 +400,7 @@ export default function UkrainianCelebrationsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {celebration.title}
@@ -438,7 +438,7 @@ export default function UkrainianCelebrationsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Family and Community:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -448,7 +448,7 @@ export default function UkrainianCelebrationsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Religious and Cultural Heritage:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>

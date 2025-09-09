@@ -166,7 +166,7 @@ export default function UkrainianWeddingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -234,7 +234,7 @@ export default function UkrainianWeddingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -308,7 +308,7 @@ export default function UkrainianWeddingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {cake.title}
@@ -376,7 +376,7 @@ export default function UkrainianWeddingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -408,7 +408,7 @@ export default function UkrainianWeddingTraditionsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Community and Family:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -418,7 +418,7 @@ export default function UkrainianWeddingTraditionsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Symbolism and Meaning:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>

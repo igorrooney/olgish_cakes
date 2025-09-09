@@ -75,6 +75,7 @@ const footerLinksBase = {
     { name: "Contact", href: "/contact" },
     { name: "Reviews & Awards", href: "/reviews-awards" },
     { name: "Blog", href: "/blog" },
+    { name: "Local Market", href: "/market-schedule" },
     { name: "FAQ", href: "/faq" },
     { name: "Gallery", href: "/cake-gallery" },
     { name: "Customer Stories", href: "/customer-stories" },

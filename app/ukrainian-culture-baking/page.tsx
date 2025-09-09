@@ -298,7 +298,7 @@ export default function UkrainianCultureBakingPage() {
                       </Typography>
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ fontWeight: 600, color: "primary.main" }}
                       >
                         {ingredient.ingredient}
@@ -412,7 +412,7 @@ export default function UkrainianCultureBakingPage() {
                       </Typography>
                       <Typography
                         variant="h3"
-                        component="h4"
+                        component="h3"
                         sx={{ fontWeight: 600, color: "primary.main" }}
                       >
                         {celebration.celebration}
@@ -513,7 +513,7 @@ export default function UkrainianCultureBakingPage() {
                     </Typography>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {principle.principle}
@@ -591,7 +591,7 @@ export default function UkrainianCultureBakingPage() {
                   <Box sx={{ mb: 3 }}>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {aspect.aspect}
@@ -622,7 +622,7 @@ export default function UkrainianCultureBakingPage() {
             >
               Experience Ukrainian Culture Through Baking
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Order authentic Ukrainian cakes and experience the rich cultural heritage of Ukrainian
               baking
             </Typography>

@@ -185,6 +185,11 @@ export default function DeliveryAreasPage() {
                 mb: 4,
               }}
             />
+            <Box sx={{ mt: 2 }}>
+              <Button component={Link} href="/market-schedule" variant="outlined" color="primary">
+                See Where To Find Us Locally (Market Schedule)
+              </Button>
+            </Box>
           </Box>
 
           {/* Delivery Service Features */}
@@ -233,7 +238,7 @@ export default function DeliveryAreasPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     {service.title}
@@ -412,12 +417,12 @@ export default function DeliveryAreasPage() {
                     >
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ mb: 1, fontWeight: 600, color: "primary.main" }}
                       >
                         {zone.zone}
                       </Typography>
-                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 700 }}>
+                      <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 700 }}>
                         {zone.fee}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -493,7 +498,7 @@ export default function DeliveryAreasPage() {
                     </Typography>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {option.title}
@@ -584,7 +589,7 @@ export default function DeliveryAreasPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}
@@ -612,7 +617,7 @@ export default function DeliveryAreasPage() {
             >
               Ready to Order Your Cake?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to check delivery availability in your area
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -625,6 +630,16 @@ export default function DeliveryAreasPage() {
                 sx={{ px: 4, py: 2 }}
               >
                 Check Delivery Availability
+              </Button>
+              <Button
+                component={Link}
+                href="/market-schedule"
+                variant="outlined"
+                color="primary"
+                size="large"
+                sx={{ px: 4, py: 2 }}
+              >
+                Visit Our Local Market Stall
               </Button>
               <Button
                 component={Link}

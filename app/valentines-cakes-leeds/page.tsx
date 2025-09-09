@@ -161,7 +161,7 @@ export default function ValentinesCakesLeedsPage() {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h4" component="h4" color="primary" className="text-xl mb-2">
+                  <Typography variant="h4" component="h3" color="primary" className="text-xl mb-2">
                     {cake.name}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 mb-4">
@@ -169,7 +169,7 @@ export default function ValentinesCakesLeedsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     className="text-2xl font-bold text-gray-900 mb-4"
                   >
                     {cake.price}
@@ -198,7 +198,7 @@ export default function ValentinesCakesLeedsPage() {
             <Typography variant="h3" className="text-3xl font-bold mb-4">
               Make This Valentine's Day Special
             </Typography>
-            <Typography variant="h4" component="h4" className="text-xl mb-6">
+            <Typography variant="h4" component="h3" className="text-xl mb-6">
               Order your perfect Valentine's Day cake today and make your celebration unforgettable.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

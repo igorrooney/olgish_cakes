@@ -226,7 +226,7 @@ export default function GiftCardsPage() {
                     </Typography>
                     <Typography
                       variant="h3"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {benefit.title}
@@ -278,7 +278,7 @@ export default function GiftCardsPage() {
                       >
                         £{option.value}
                       </Typography>
-                      <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                      <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                         {option.title}
                       </Typography>
                       <Typography
@@ -452,7 +452,7 @@ export default function GiftCardsPage() {
                     </Typography>
                     <Typography
                       variant="h3"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {occasion.occasion}
@@ -535,7 +535,7 @@ export default function GiftCardsPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}

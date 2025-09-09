@@ -261,7 +261,7 @@ export default async function CakesYorkPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Areas in York:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -284,7 +284,7 @@ export default async function CakesYorkPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Options:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -354,7 +354,7 @@ export default async function CakesYorkPage() {
                     </Typography>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ fontWeight: 600, color: "primary.main" }}
                     >
                       {testimonial.name}

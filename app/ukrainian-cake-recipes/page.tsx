@@ -318,7 +318,7 @@ export default function UkrainianCakeRecipesPage() {
                       </Typography>
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {technique.technique}
@@ -398,7 +398,7 @@ export default function UkrainianCakeRecipesPage() {
             >
               Ready to Try Ukrainian Baking?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Order our authentic Ukrainian cakes or join our baking classes to learn these
               traditional techniques
             </Typography>

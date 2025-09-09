@@ -187,7 +187,7 @@ export default function UkrainianBakingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main }}
                   >
                     {ingredient.title}
@@ -277,7 +277,7 @@ export default function UkrainianBakingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main }}
                   >
                     {technique.title}
@@ -309,7 +309,7 @@ export default function UkrainianBakingTraditionsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Family Traditions:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -319,7 +319,7 @@ export default function UkrainianBakingTraditionsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Celebrations and Holidays:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -390,7 +390,7 @@ export default function UkrainianBakingTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main }}
                   >
                     {aspect.title}
