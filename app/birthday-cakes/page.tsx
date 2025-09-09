@@ -140,6 +140,7 @@ export default async function BirthdayCakesPage() {
         price: service.price,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
+        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       })),
     },
   };

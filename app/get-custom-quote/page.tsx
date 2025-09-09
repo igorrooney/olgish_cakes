@@ -121,6 +121,7 @@ const structuredData = {
     priceCurrency: "GBP",
     description: "Free consultation and quote for custom cakes",
     availability: "https://schema.org/InStock",
+    priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
