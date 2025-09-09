@@ -221,14 +221,14 @@ export function generateAdvancedStructuredData(data: {
         description:
           "Award-winning Ukrainian bakery in Leeds specializing in authentic honey cakes, custom wedding cakes, and traditional Eastern European desserts.",
         url: baseUrl,
-        telephone: "+44 113 XXX XXXX", // Replace with actual phone
+        telephone: "+44 786 721 8194",
         email: "hello@olgishcakes.co.uk",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "123 Example Street", // Replace with actual address
+          streetAddress: "Allerton Grange",
           addressLocality: "Leeds",
           addressRegion: "West Yorkshire",
-          postalCode: "LS1 1XX", // Replace with actual postcode
+          postalCode: "LS17",
           addressCountry: "GB",
         },
         geo: {

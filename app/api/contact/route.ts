@@ -20,6 +20,9 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const name = formData.get("name") as string;
+    const address = formData.get("address") as string | null;
+    const city = formData.get("city") as string | null;
+    const postcode = formData.get("postcode") as string | null;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
     const message = formData.get("message") as string;
@@ -29,7 +32,8 @@ export async function POST(request: NextRequest) {
     const cakeInterest = formData.get("cakeInterest") as string;
     const isOrderForm = formData.get("isOrderForm") === "true";
 
-    if (!name || !email || !message) {
+    const isMessageRequired = !(formData.get("isOrderForm") === "true");
+    if (!name || !email || (isMessageRequired && !message)) {
       return NextResponse.json({ error: "Name, email, and message are required" }, { status: 400 });
     }
 
@@ -69,8 +73,11 @@ export async function POST(request: NextRequest) {
 CUSTOMER INFORMATION
 ──────────────────
 • Name: ${name}
+${address ? `• Address: ${address}` : ""}
 • Email: ${email}
 • Phone: ${phone}
+${city ? `• City: ${city}` : ""}
+${postcode ? `• Postcode: ${postcode}` : ""}
 ${formattedDate ? `• Required Date: ${formattedDate}` : ""}
 ${cakeInterest ? `• Cake Interest: ${cakeInterest}` : ""}
 
@@ -163,8 +170,11 @@ Olgish Cakes
     <div class="section">
       <div class="section-title">Customer Information</div>
       <div class="info-item">• Name: ${name}</div>
+      ${address ? `<div class="info-item">• Address: ${address}</div>` : ""}
+      ${city ? `<div class="info-item">• City: ${city}</div>` : ""}
       <div class="info-item">• Email: ${email}</div>
       <div class="info-item">• Phone: ${phone}</div>
+      ${postcode ? `<div class="info-item">• Postcode: ${postcode}</div>` : ""}
       ${formattedDate ? `<div class="info-item">• Required Date: ${formattedDate}</div>` : ""}
       ${cakeInterest ? `<div class="info-item">• Cake Interest: ${cakeInterest}</div>` : ""}
     </div>

@@ -161,6 +161,25 @@ export default async function GiftHamperPage({ params }: PageProps) {
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
             },
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "GB",
+              returnFees: "https://schema.org/FreeReturn",
+              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 14
+            }
+          },
+          potentialAction: {
+            "@type": "OrderAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#order`,
+              actionPlatform: [
+                "https://schema.org/DesktopWebPlatform",
+                "https://schema.org/MobileWebPlatform"
+              ]
+            },
+            description: "Send an order enquiry for this gift hamper"
           },
           aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "127" },
           ...(hamper.ingredients?.length
@@ -196,6 +215,21 @@ export default async function GiftHamperPage({ params }: PageProps) {
             : {}),
         } as const;
 
+        const faqJsonLd = (hamper?.seo as any)?.faq && Array.isArray((hamper?.seo as any)?.faq)
+          ? {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: ((hamper?.seo as any).faq as any[])
+                .filter(q => q?.question && q?.answer)
+                .slice(0, 6)
+                .map(q => ({
+                  "@type": "Question",
+                  name: q.question,
+                  acceptedAnswer: { "@type": "Answer", text: q.answer }
+                }))
+            }
+          : null;
+
         const breadcrumbJsonLd = {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
@@ -226,6 +260,12 @@ export default async function GiftHamperPage({ params }: PageProps) {
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
+            {faqJsonLd && (
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+              />
+            )}
           </>
         );
       })()}

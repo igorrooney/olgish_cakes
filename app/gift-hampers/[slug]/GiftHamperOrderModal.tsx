@@ -42,12 +42,22 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
   const [_submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const isFree = (hamper.price || 0) === 0;
 
   async function handleSubmit(formData: any) {
     setIsSubmitting(true);
     try {
       const data = new FormData();
       data.append("name", formData.name);
+      if (formData.address) {
+        data.append("address", formData.address);
+      }
+      if (formData.city) {
+        data.append("city", formData.city);
+      }
+      if (formData.postcode) {
+        data.append("postcode", formData.postcode);
+      }
       data.append("email", formData.email);
       data.append("phone", formData.phone);
       if (formData.dateNeeded) {
@@ -181,6 +191,12 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
                 isOrderForm
                 hideCakeInterest
                 showButton={false}
+                showAddress={isFree}
+                showPostcode={isFree}
+                showCity={isFree}
+                showDate={!isFree}
+                requireMessage={!isFree}
+                suppressStructuredData
               />
             </MotionBox>
 
