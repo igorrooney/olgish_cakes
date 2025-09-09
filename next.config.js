@@ -243,6 +243,11 @@ const nextConfig = {
         destination: "/cakes",
         permanent: true,
       },
+      {
+        source: "/order/amp",
+        destination: "/order",
+        permanent: true,
+      },
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml
