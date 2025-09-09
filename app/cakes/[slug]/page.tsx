@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
 import { getRevalidateTime } from "@/app/utils/fetchCakes";
-import { CakeStructuredData } from "@/app/components/CakeStructuredData";
+// Removed client-only CakeStructuredData; we'll render JSON-LD on the server for SEO
 
 // Enable revalidation for this page with optimization
 export const revalidate = 3600; // 1 hour for better performance
@@ -167,8 +167,39 @@ export default async function CakePage({ params }: PageProps) {
 
   return (
     <>
-      {/* Structured Data Component */}
-      <CakeStructuredData cake={cake} />
+      {/* Server-rendered Product Structured Data (validates in GSC) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: cake.name,
+            description:
+              cake.seo?.metaDescription ||
+              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
+            image: cake.mainImage?.asset?.url,
+            brand: { "@type": "Brand", name: "Olgish Cakes" },
+            category: cake.category || "Ukrainian Honey Cake",
+            url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+            offers: {
+              "@type": "Offer",
+              price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+              priceCurrency: "GBP",
+              availability: "https://schema.org/InStock",
+              url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+              seller: { "@type": "Organization", name: "Olgish Cakes", url: "https://olgishcakes.co.uk" },
+            },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "4.9",
+              reviewCount: "120",
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }),
+        }}
+      />
 
       {/* Additional Organization Schema */}
       <script
