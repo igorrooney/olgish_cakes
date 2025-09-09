@@ -34,6 +34,7 @@ import { getFeaturedGiftHampers } from "./utils/fetchGiftHampers";
 import Image from "next/image";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 import { getFeaturedMarketEvents } from "./utils/fetchMarketSchedule";
+import { getPriceValidUntil } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
 import {
   generateEventsListStructuredData,
@@ -283,6 +284,7 @@ export default async function Home() {
             price: cake.pricing.standard,
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
+            priceValidUntil: getPriceValidUntil(30),
             seller: {
               "@id": "https://olgishcakes.co.uk/#organization",
             },

@@ -4,6 +4,7 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
+import { getPriceValidUntil } from "../utils/seo";
 import { Button } from "@mui/material";
 
 export const metadata: Metadata = {
@@ -104,6 +105,7 @@ export default async function TraditionalUkrainianCakesPage() {
           price: cake.price,
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
+          priceValidUntil: getPriceValidUntil(30),
           seller: {
             "@type": "Organization",
             name: "Olgish Cakes",

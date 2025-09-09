@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
+import { getPriceValidUntil } from "../utils/seo";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
@@ -111,6 +112,7 @@ export default function CakeFlavorsPage() {
         offers: {
           "@type": "Offer",
           availability: "https://schema.org/InStock",
+          priceValidUntil: getPriceValidUntil(30),
           seller: {
             "@type": "Organization",
             name: "Olgish Cakes",

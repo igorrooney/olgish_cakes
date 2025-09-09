@@ -9,6 +9,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { useState, memo, useMemo, useCallback } from "react";
 import { designTokens } from "@/lib/design-system";
 import { ProductCard, CategoryChip, PriceDisplay, OutlineButton } from "@/lib/ui-components";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -88,6 +89,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         price: price,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
+        priceValidUntil: getPriceValidUntil(30),
         url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
         seller: {
           "@type": "Organization",

@@ -11,6 +11,7 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
 import { urlFor as buildImageUrl } from "@/sanity/lib/image";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 export const revalidate = getRevalidateTime();
 
@@ -155,6 +156,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             price: hamper.price,
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
+            priceValidUntil: getPriceValidUntil(30),
             url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
             seller: {
               "@type": "Organization",
