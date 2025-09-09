@@ -616,6 +616,13 @@ export function generateEventSchema(event: {
     location: {
       "@type": "Place",
       name: event.location,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Leeds",
+        addressRegion: "West Yorkshire",
+        postalCode: "LS17",
+        addressCountry: "GB",
+      },
     },
     organizer: {
       "@type": "Organization",

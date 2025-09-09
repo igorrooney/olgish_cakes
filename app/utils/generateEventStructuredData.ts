@@ -29,6 +29,13 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
       "@type": "Place",
       name: event.location,
       url: `https://www.google.com/maps/search/${encodeURIComponent(event.location)}`,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Leeds",
+        addressRegion: "West Yorkshire",
+        postalCode: "LS17",
+        addressCountry: "GB",
+      },
     },
     organizer: {
       "@type": "Organization",
