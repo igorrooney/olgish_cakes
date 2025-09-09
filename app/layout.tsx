@@ -318,13 +318,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
                 "https://www.instagram.com/olgish_cakes/",
               ],
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "5",
-                reviewCount: "127",
-                bestRating: "5",
-                worstRating: "1",
-              },
+              // Aggregate ratings are provided on Product and review pages to avoid duplication
               hasOfferCatalog: {
                 "@type": "OfferCatalog",
                 name: "Ukrainian Cakes Menu",
