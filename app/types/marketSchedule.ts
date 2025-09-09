@@ -86,6 +86,14 @@ export interface MarketScheduleStructuredData {
     "@type": "Place";
     name: string;
     url: string;
+    address?: {
+      "@type": "PostalAddress";
+      streetAddress?: string;
+      addressLocality?: string;
+      addressRegion?: string;
+      postalCode?: string;
+      addressCountry?: string;
+    };
     geo?: {
       "@type": "GeoCoordinates";
       latitude: number;
