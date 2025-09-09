@@ -621,6 +621,10 @@ export function generateEventSchema(event: {
       "@type": "Organization",
       name: event.organizer,
     },
+    performer: {
+      "@type": "Organization",
+      name: event.organizer,
+    },
   };
 }
 

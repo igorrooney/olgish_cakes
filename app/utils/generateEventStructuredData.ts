@@ -37,6 +37,12 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
       email: "hello@olgishcakes.co.uk",
       telephone: "+44 786 721 8194",
     },
+    // Set performer to the bakery by default to satisfy Event rich results
+    performer: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk",
+    },
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     url: eventId,

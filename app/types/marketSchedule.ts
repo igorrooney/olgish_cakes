@@ -99,6 +99,11 @@ export interface MarketScheduleStructuredData {
     email?: string;
     telephone?: string;
   };
+  performer?: {
+    "@type": "Organization" | "Person";
+    name: string;
+    url?: string;
+  };
   offers?: {
     "@type": "Offer";
     availability: string;
