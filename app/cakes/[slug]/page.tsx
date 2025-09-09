@@ -166,6 +166,13 @@ export default async function CakePage({ params }: PageProps) {
     notFound();
   }
 
+  // Ensure image is always present and absolute for Product JSON-LD
+  const productImageUrl = cake?.mainImage?.asset?.url
+    ? (cake.mainImage.asset.url.startsWith("http")
+        ? cake.mainImage.asset.url
+        : `https://olgishcakes.co.uk${cake.mainImage.asset.url}`)
+    : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
+
   return (
     <>
       {/* Server-rendered Product Structured Data (validates in GSC) */}
@@ -179,7 +186,7 @@ export default async function CakePage({ params }: PageProps) {
             description:
               cake.seo?.metaDescription ||
               (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
-            image: cake.mainImage?.asset?.url,
+            image: [productImageUrl],
             brand: { "@type": "Brand", name: "Olgish Cakes" },
             category: cake.category || "Ukrainian Honey Cake",
             url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
