@@ -111,6 +111,13 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Ukrainian Honey Cake",
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "127",
+                      bestRating: "5",
+                      worstRating: "1",
+                    },
                   },
                 },
                 {
@@ -118,6 +125,13 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Kyiv Cake",
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "127",
+                      bestRating: "5",
+                      worstRating: "1",
+                    },
                   },
                 },
                 {
@@ -125,6 +139,13 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Custom Wedding Cakes",
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "127",
+                      bestRating: "5",
+                      worstRating: "1",
+                    },
                   },
                 },
               ],

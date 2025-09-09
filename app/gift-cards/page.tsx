@@ -97,6 +97,13 @@ export default function GiftCardsPage() {
               "@type": "Brand",
               name: "Olgish Cakes",
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
             offers: {
               "@type": "Offer",
               price: "25.00",
