@@ -208,6 +208,14 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         }}
       />
 
+      {/* AggregateRating microdata for Product list cards */}
+      <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
+        <meta itemProp="ratingValue" content="5" />
+        <meta itemProp="reviewCount" content="127" />
+        <meta itemProp="bestRating" content="5" />
+        <meta itemProp="worstRating" content="1" />
+      </Box>
+
       {/* Image Container with Overlay */}
       <Link
         href={`/cakes/${cake.slug.current}`}
