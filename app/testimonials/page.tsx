@@ -120,15 +120,7 @@ export default async function TestimonialsPage({
       },
     },
     mainEntity: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "5.0",
-        reviewCount: totalCount.toString(),
-        bestRating: "5",
-        worstRating: "1",
-      },
+      "@id": "https://olgishcakes.co.uk/#organization",
     },
   };
 

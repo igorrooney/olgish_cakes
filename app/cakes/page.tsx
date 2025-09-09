@@ -78,10 +78,9 @@ export default async function CakesPage() {
     priceRange: "££",
     servesCuisine: "Ukrainian",
     hasMenu: "https://olgishcakes.co.uk/cakes",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "50",
+    // Reference central organization for any ratings to avoid duplicate aggregate ratings
+    mainEntityOfPage: {
+      "@id": "https://olgishcakes.co.uk/#organization",
     },
   };
 
