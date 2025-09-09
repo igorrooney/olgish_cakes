@@ -51,10 +51,9 @@ const structuredData = {
   },
   openingHours: "Mo-Su 00:00-23:59",
   priceRange: "££",
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "5",
-    reviewCount: "127",
+  // Avoid duplicating aggregate ratings across multiple JSON-LD blocks
+  mainEntityOfPage: {
+    "@id": "https://olgishcakes.co.uk/#organization",
   },
   servesCuisine: "Ukrainian",
   areaServed: "Leeds",
