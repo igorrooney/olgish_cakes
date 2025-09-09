@@ -79,6 +79,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     "@type": "Offer",
     availability: "https://schema.org/InStock",
     validFrom: startDateTime,
+    url: eventId,
     price: "0",
     priceCurrency: "GBP",
   };

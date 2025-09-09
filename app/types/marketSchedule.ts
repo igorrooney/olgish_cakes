@@ -116,6 +116,7 @@ export interface MarketScheduleStructuredData {
     "@type": "Offer";
     availability: string;
     validFrom?: string;
+    url?: string;
     price?: string;
     priceCurrency?: string;
   };
