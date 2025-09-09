@@ -155,25 +155,35 @@ export default function AboutPage() {
       </Script>
 
       {/* Enhanced Structured Data */}
-      <script id="organization-schema" type="application/ld+json">
-        {JSON.stringify(organizationSchema)}
-      </script>
+      <script
+        id="organization-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
 
-      <script id="local-business-schema" type="application/ld+json">
-        {JSON.stringify(localBusinessSchema)}
-      </script>
+      <script
+        id="local-business-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
 
-      <script id="webpage-schema" type="application/ld+json">
-        {JSON.stringify(webPageSchema)}
-      </script>
+      <script
+        id="webpage-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
 
-      <script id="person-schema" type="application/ld+json">
-        {JSON.stringify(personSchema)}
-      </script>
+      <script
+        id="person-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
 
       {/* FAQ Schema for About page */}
-      <script id="about-faq-schema" type="application/ld+json">
-        {JSON.stringify({
+      <script
+        id="about-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
           mainEntity: [
@@ -218,8 +228,8 @@ export default function AboutPage() {
               },
             },
           ],
-        })}
-      </script>
+        }) }}
+      />
 
       <AboutContent />
     </>
