@@ -40,6 +40,12 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
   useEffect(() => {
     if (!cake.structuredData?.enableProductSchema) return;
 
+    const absoluteImageUrl = cake.mainImage?.asset?.url
+      ? (cake.mainImage.asset.url.startsWith("http")
+          ? cake.mainImage.asset.url
+          : `https://olgishcakes.co.uk${cake.mainImage.asset.url}`)
+      : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
+
     const structuredData: any = {
       "@context": "https://schema.org",
       "@type": "Product",
@@ -50,7 +56,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         name: cake.structuredData?.brand || "Olgish Cakes",
       },
       category: cake.category || "Traditional Ukrainian Cakes",
-      ...(cake.mainImage?.asset?.url && { image: cake.mainImage.asset.url }),
+      image: [absoluteImageUrl],
       offers: {
         "@type": "Offer",
         price: cake.pricing.standard,

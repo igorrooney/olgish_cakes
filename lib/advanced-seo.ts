@@ -153,6 +153,7 @@ export function generateAdvancedMetaDescription(
 export function generateAdvancedStructuredData(data: {
   name: string;
   description: string;
+  imageUrl?: string;
   price?: number;
   rating?: number;
   reviewCount?: number;
@@ -161,6 +162,11 @@ export function generateAdvancedStructuredData(data: {
   location?: string;
 }) {
   const baseUrl = "https://olgishcakes.co.uk";
+  const imageUrl = data.imageUrl && data.imageUrl.startsWith("http")
+    ? data.imageUrl
+    : data.imageUrl
+    ? `${baseUrl}${data.imageUrl}`
+    : `${baseUrl}/images/placeholder-cake.jpg`;
 
   return {
     "@context": "https://schema.org",
@@ -171,6 +177,7 @@ export function generateAdvancedStructuredData(data: {
         "@id": `${baseUrl}/product/${data.name.toLowerCase().replace(/\s+/g, "-")}`,
         name: data.name,
         description: data.description,
+        image: [imageUrl],
         category: data.category,
         brand: {
           "@type": "Brand",
