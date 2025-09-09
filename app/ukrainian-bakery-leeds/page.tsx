@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getPriceValidUntil } from "../utils/seo";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
@@ -87,6 +88,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "@type": "Offer",
                 price: "25",
                 priceCurrency: "GBP",
+                priceValidUntil: getPriceValidUntil(30),
               },
             },
             {
@@ -98,6 +100,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "@type": "Offer",
                 price: "30",
                 priceCurrency: "GBP",
+                priceValidUntil: getPriceValidUntil(30),
               },
             },
           ],
