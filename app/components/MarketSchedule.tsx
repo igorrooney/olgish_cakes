@@ -91,11 +91,14 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
             url: "https://olgishcakes.co.uk",
             description: "Authentic Ukrainian honey cakes made with love in Leeds",
           },
+          isAccessibleForFree: true,
           offers: {
             "@type": "Offer",
             description: "Ukrainian honey cakes and traditional desserts",
             category: "Food & Beverage",
             availability: "https://schema.org/InStock",
+            price: "0",
+            priceCurrency: "GBP",
           },
           // Local business context
           isRelatedTo: {
