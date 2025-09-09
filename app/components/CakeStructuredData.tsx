@@ -56,6 +56,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         price: cake.pricing.standard,
         priceCurrency: "GBP",
         availability: `https://schema.org/${cake.structuredData?.availability || "InStock"}`,
+        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
         seller: {
           "@type": "Organization",
           name: "Olgish Cakes",
