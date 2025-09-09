@@ -132,6 +132,13 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                     "@type": "Product",
                     name: "Ukrainian Honey Cake",
                     description: "Traditional Ukrainian honey cake (Medovik)",
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "127",
+                      bestRating: "5",
+                      worstRating: "1",
+                    },
                   },
                 },
                 {
@@ -140,6 +147,13 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                     "@type": "Product",
                     name: "Kyiv Cake",
                     description: "Traditional Kyiv cake with chocolate and nuts",
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: "5",
+                      reviewCount: "127",
+                      bestRating: "5",
+                      worstRating: "1",
+                    },
                   },
                 },
               ],

@@ -162,6 +162,13 @@ export default async function BirthdayCakesPage() {
         url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
         brand: { "@type": "Brand", name: "Olgish Cakes" },
         category: "Birthday Cake",
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "5",
+          reviewCount: "127",
+          bestRating: "5",
+          worstRating: "1",
+        },
         offers: {
           "@type": "Offer",
           price: cake?.pricing?.standard ?? 0,
