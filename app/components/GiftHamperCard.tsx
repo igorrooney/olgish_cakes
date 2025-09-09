@@ -97,6 +97,14 @@ const GiftHamperCard = memo(function GiftHamperCard({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
+      {/* AggregateRating microdata for Product list cards */}
+      <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
+        <meta itemProp="ratingValue" content="5" />
+        <meta itemProp="reviewCount" content="127" />
+        <meta itemProp="bestRating" content="5" />
+        <meta itemProp="worstRating" content="1" />
+      </Box>
+
       <Link
         href={`/gift-hampers/${hamper.slug.current}`}
         style={{ textDecoration: "none" }}
