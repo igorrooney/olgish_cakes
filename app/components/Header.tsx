@@ -8,6 +8,9 @@ import {
 } from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   AppBar,
   Collapse,
@@ -32,7 +35,7 @@ import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
 import { NavigationStructuredData } from "./NavigationStructuredData";
 import { usePerformanceMonitor } from "./PerformanceMonitor";
 
-const { colors, typography, spacing, shadows } = designTokens;
+const { colors, typography, spacing, shadows, borderRadius } = designTokens;
 
 // Feature flag: control visibility of Gift Hampers in navigation (default enabled)
 const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
@@ -971,6 +974,45 @@ export function Header() {
                   </Link>
                 );
               })}
+              {/* Professional desktop search - aligned right */}
+              <Box
+                component="form"
+                role="search"
+                method="GET"
+                action="/search"
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  alignItems: "center",
+                  ml: 1,
+                  width: { md: 200, lg: 240 },
+                }}
+              >
+                <TextField
+                  name="q"
+                  size="small"
+                  placeholder="Search cakes, pages"
+                  fullWidth
+                  inputProps={{ "aria-label": "Search site" }}
+                  variant="outlined"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: borderRadius.lg,
+                      backgroundColor: "#fff",
+                      boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton type="submit" aria-label="Submit search">
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+
               {/* Order Now Button (desktop) */}
               <Link
                 href="/order"
@@ -1120,6 +1162,35 @@ export function Header() {
                   Order Your Cake Now
                 </Button>
               </Link>
+            </Box>
+
+            {/* Mobile search - compact, pill, with icon */}
+            <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
+              <Box component="form" role="search" method="GET" action="/search" sx={{ display: "flex", gap: 1 }}>
+                <TextField
+                  name="q"
+                  placeholder="Search site"
+                  size="small"
+                  fullWidth
+                  inputProps={{ "aria-label": "Search site" }}
+                  variant="outlined"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: borderRadius.lg,
+                      backgroundColor: "#fff",
+                    },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton type="submit" aria-label="Submit search" size="small">
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
             </Box>
 
             {/* Call Us Button (mobile) */}
