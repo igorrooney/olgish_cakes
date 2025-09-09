@@ -245,15 +245,7 @@ const nextConfig = {
       },
     ];
   },
-  // Enhanced rewrites for better URL structure
-  async rewrites() {
-    return [
-      {
-        source: "/sitemap.xml",
-        destination: "/api/sitemap",
-      },
-    ];
-  },
+  // Note: rely on Next.js app/sitemap.ts for /sitemap.xml
   // Environment variables for SEO
   env: {
     SITE_URL: "https://olgishcakes.co.uk",
