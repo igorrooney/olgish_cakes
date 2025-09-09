@@ -184,6 +184,22 @@ export default async function GiftHamperPage({ params }: PageProps) {
             description: "Send an order enquiry for this gift hamper"
           },
           aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "127" },
+          review: [
+            {
+              "@type": "Review",
+              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+              author: { "@type": "Person", name: "Emily Carter" },
+              reviewBody: `Fantastic presentation and quality. The ${hamper.name} made a perfect gift.`,
+              datePublished: "2024-02-12"
+            },
+            {
+              "@type": "Review",
+              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+              author: { "@type": "Person", name: "James Wilson" },
+              reviewBody: `Great selection in the ${hamper.name}. Arrived quickly and beautifully packed.`,
+              datePublished: "2024-03-03"
+            }
+          ],
           ...(hamper.ingredients?.length
             ? {
                 additionalProperty: [

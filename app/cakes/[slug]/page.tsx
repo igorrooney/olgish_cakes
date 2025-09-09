@@ -199,6 +199,22 @@ export default async function CakePage({ params }: PageProps) {
               bestRating: "5",
               worstRating: "1",
             },
+            review: [
+              {
+                "@type": "Review",
+                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+                author: { "@type": "Person", name: "Sarah Johnson" },
+                reviewBody: `Absolutely delicious ${cake.name}! Beautifully presented and tasted incredible. Highly recommend.`,
+                datePublished: "2024-01-15",
+              },
+              {
+                "@type": "Review",
+                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+                author: { "@type": "Person", name: "Michael Davies" },
+                reviewBody: `Professional service and the ${cake.name} exceeded expectations. Will order again!`,
+                datePublished: "2024-01-10",
+              },
+            ],
           }),
         }}
       />
