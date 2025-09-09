@@ -78,6 +78,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     structuredData.offers = {
       "@type": "Offer",
       availability: "https://schema.org/InStock",
+      validFrom: startDateTime,
       price: "0", // Free market attendance
       priceCurrency: "GBP",
     };

@@ -97,6 +97,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
             description: "Ukrainian honey cakes and traditional desserts",
             category: "Food & Beverage",
             availability: "https://schema.org/InStock",
+            validFrom: `${event.date}T${event.startTime}:00Z`,
             price: "0",
             priceCurrency: "GBP",
           },
