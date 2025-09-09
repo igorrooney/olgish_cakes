@@ -4,6 +4,7 @@
  */
 
 import { Metadata } from "next";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 // Advanced keyword research and targeting
 export const ADVANCED_SEO_CONFIG = {
@@ -187,6 +188,7 @@ export function generateAdvancedStructuredData(data: {
           price: data.price || 25,
           priceCurrency: "GBP",
           availability: `https://schema.org/${data.availability || "InStock"}`,
+          priceValidUntil: getPriceValidUntil(30),
           seller: {
             "@type": "Organization",
             name: "Olgish Cakes",

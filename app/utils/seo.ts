@@ -128,6 +128,13 @@ export function generateCanonicalUrl(path: string): string {
   return `${SEO_CONFIG.siteUrl}${path}`;
 }
 
+// Compute ISO date (YYYY-MM-DD) for Offer.priceValidUntil
+export function getPriceValidUntil(daysFromNow: number = 30): string {
+  const date = new Date();
+  date.setDate(date.getDate() + daysFromNow);
+  return date.toISOString().split("T")[0];
+}
+
 export function generateOpenGraphImage(imageUrl: string, title: string) {
   return {
     url: imageUrl.startsWith("http") ? imageUrl : `${SEO_CONFIG.siteUrl}${imageUrl}`,
@@ -485,6 +492,7 @@ export function generateProductSchema(product: {
       price: product.price,
       priceCurrency: product.currency || "GBP",
       availability: product.availability || "https://schema.org/InStock",
+      priceValidUntil: getPriceValidUntil(30),
       seller: {
         "@id": `${SEO_CONFIG.siteUrl}/#organization`,
       },

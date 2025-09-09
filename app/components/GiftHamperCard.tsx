@@ -9,6 +9,7 @@ import { useCallback, useMemo, useState, memo } from "react";
 import { designTokens } from "@/lib/design-system";
 import { ProductCard, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 import { GiftHamper } from "@/types/giftHamper";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -64,6 +65,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         price: price,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
+        priceValidUntil: getPriceValidUntil(30),
         url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
       },
     }),

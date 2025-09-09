@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
+import { getPriceValidUntil } from "../utils/seo";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
@@ -101,6 +102,7 @@ export default function GiftCardsPage() {
               price: "25.00",
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
+              priceValidUntil: getPriceValidUntil(30),
               seller: {
                 "@type": "Bakery",
                 name: "Olgish Cakes",
