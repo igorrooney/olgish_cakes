@@ -126,4 +126,5 @@ export interface MarketScheduleStructuredData {
     | "https://schema.org/EventCancelled"
     | "https://schema.org/EventPostponed";
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode";
+  isAccessibleForFree?: boolean;
 }
