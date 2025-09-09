@@ -326,7 +326,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {
                     "@type": "Offer",
                     itemOffered: {
-                      "@type": "Product",
+                      "@type": "Service",
                       name: "Traditional Honey Cake (Medovik)",
                       category: "Ukrainian Honey Cake",
                       description: "Authentic Ukrainian honey cake with traditional recipe",
@@ -335,7 +335,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {
                     "@type": "Offer",
                     itemOffered: {
-                      "@type": "Product",
+                      "@type": "Service",
                       name: "Kyiv Cake",
                       category: "Ukrainian Traditional Cake",
                       description: "Classic Kyiv cake with hazelnut meringue",

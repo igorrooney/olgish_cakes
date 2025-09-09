@@ -287,6 +287,13 @@ export default async function Home() {
               "@id": "https://olgishcakes.co.uk/#organization",
             },
           },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.9",
+            reviewCount: "120",
+            bestRating: "5",
+            worstRating: "1",
+          },
         },
       })),
     },
