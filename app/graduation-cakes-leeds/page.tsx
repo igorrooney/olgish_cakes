@@ -145,7 +145,7 @@ export default function GraduationCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",
@@ -168,7 +168,7 @@ export default function GraduationCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",
@@ -191,7 +191,7 @@ export default function GraduationCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{
                       fontWeight: 600,
                       color: "primary.main",

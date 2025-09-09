@@ -108,40 +108,46 @@ export function UtilityBar() {
         {/* Right: Socials */}
         <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 } }}>
           <Tooltip title="Instagram">
-            <AccessibleIconButton
-              component="a"
-              href="https://www.instagram.com/olgish_cakes/"
-              target="_blank"
-              rel="noopener noreferrer"
-              ariaLabel="Open Instagram"
-              sx={{ color: colors.text.secondary, "&:hover": { color: "#E1306C" } }}
-            >
-              <InstagramIcon fontSize="small" />
-            </AccessibleIconButton>
+            <Box component="span" sx={{ display: "inline-flex" }}>
+              <AccessibleIconButton
+                component="a"
+                href="https://www.instagram.com/olgish_cakes/"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Open Instagram"
+                sx={{ color: colors.text.secondary, "&:hover": { color: "#E1306C" } }}
+              >
+                <InstagramIcon fontSize="small" />
+              </AccessibleIconButton>
+            </Box>
           </Tooltip>
           <Tooltip title="Facebook">
-            <AccessibleIconButton
-              component="a"
-              href="https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB"
-              target="_blank"
-              rel="noopener noreferrer"
-              ariaLabel="Open Facebook"
-              sx={{ color: colors.text.secondary, "&:hover": { color: "#1877F2" } }}
-            >
-              <FacebookIcon fontSize="small" />
-            </AccessibleIconButton>
+            <Box component="span" sx={{ display: "inline-flex" }}>
+              <AccessibleIconButton
+                component="a"
+                href="https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB"
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Open Facebook"
+                sx={{ color: colors.text.secondary, "&:hover": { color: "#1877F2" } }}
+              >
+                <FacebookIcon fontSize="small" />
+              </AccessibleIconButton>
+            </Box>
           </Tooltip>
           <Tooltip title="WhatsApp">
-            <AccessibleIconButton
-              component="a"
-              href={`https://wa.me/447867218194`}
-              target="_blank"
-              rel="noopener noreferrer"
-              ariaLabel="Chat on WhatsApp"
-              sx={{ color: colors.text.secondary, "&:hover": { color: "#25D366" } }}
-            >
-              <WhatsAppIcon fontSize="small" />
-            </AccessibleIconButton>
+            <Box component="span" sx={{ display: "inline-flex" }}>
+              <AccessibleIconButton
+                component="a"
+                href={`https://wa.me/447867218194`}
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Chat on WhatsApp"
+                sx={{ color: colors.text.secondary, "&:hover": { color: "#25D366" } }}
+              >
+                <WhatsAppIcon fontSize="small" />
+              </AccessibleIconButton>
+            </Box>
           </Tooltip>
         </Box>
       </DesignContainer>

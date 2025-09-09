@@ -200,7 +200,7 @@ export default function ChristmasCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Traditional Honey Cake
@@ -219,7 +219,7 @@ export default function ChristmasCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Kyiv Cake
@@ -238,7 +238,7 @@ export default function ChristmasCakesLeedsPage() {
                 <Box sx={{ textAlign: "center", p: 3 }}>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
                     Chocolate Christmas Cake
@@ -283,7 +283,7 @@ export default function ChristmasCakesLeedsPage() {
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
-                <Typography variant="h4" component="h4" sx={{ mb: 3, color: "primary.main" }}>
+                <Typography variant="h4" component="h3" sx={{ mb: 3, color: "primary.main" }}>
                   Ordering Information
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
@@ -300,7 +300,7 @@ export default function ChristmasCakesLeedsPage() {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="h4" component="h4" sx={{ mb: 3, color: "primary.main" }}>
+                <Typography variant="h4" component="h3" sx={{ mb: 3, color: "primary.main" }}>
                   Christmas Cake Features
                 </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

@@ -44,28 +44,30 @@ export function DevTools() {
     <>
       {/* Toggle Icon */}
       <Tooltip title="Developer Tools" placement="left">
-        <AccessibleIconButton
-          onClick={toggleVisibility}
-          ariaLabel="Toggle developer tools"
-          sx={{
-            position: "fixed",
-            bottom: 16,
-            right: isVisible ? 220 : 16,
-            zIndex: 1001,
-            backgroundColor: "primary.main",
-            color: "white",
-            width: 48,
-            height: 48,
-            boxShadow: 3,
-            "&:hover": {
-              backgroundColor: "primary.dark",
-              transform: "scale(1.1)",
-            },
-            transition: "all 0.3s ease-in-out",
-          }}
-        >
-          {isVisible ? <CloseIcon /> : <SettingsIcon />}
-        </AccessibleIconButton>
+        <Box component="span" sx={{ display: "inline-flex" }}>
+          <AccessibleIconButton
+            onClick={toggleVisibility}
+            ariaLabel="Toggle developer tools"
+            sx={{
+              position: "fixed",
+              bottom: 16,
+              right: isVisible ? 220 : 16,
+              zIndex: 1001,
+              backgroundColor: "primary.main",
+              color: "white",
+              width: 48,
+              height: 48,
+              boxShadow: 3,
+              "&:hover": {
+                backgroundColor: "primary.dark",
+                transform: "scale(1.1)",
+              },
+              transition: "all 0.3s ease-in-out",
+            }}
+          >
+            {isVisible ? <CloseIcon /> : <SettingsIcon />}
+          </AccessibleIconButton>
+        </Box>
       </Tooltip>
 
       {/* Dev Tools Panel */}
@@ -106,13 +108,15 @@ export function DevTools() {
               <SettingsIcon sx={{ fontSize: 16 }} />
               Dev Tools
             </Typography>
-            <AccessibleIconButton
-              onClick={toggleVisibility}
-              ariaLabel="Close developer tools"
-              sx={{ p: 0.5 }}
-            >
-              <CloseIcon sx={{ fontSize: 16 }} />
-            </AccessibleIconButton>
+            <Box component="span" sx={{ display: "inline-flex" }}>
+              <AccessibleIconButton
+                onClick={toggleVisibility}
+                ariaLabel="Close developer tools"
+                sx={{ p: 0.5 }}
+              >
+                <CloseIcon sx={{ fontSize: 16 }} />
+              </AccessibleIconButton>
+            </Box>
           </Box>
 
           {message && (

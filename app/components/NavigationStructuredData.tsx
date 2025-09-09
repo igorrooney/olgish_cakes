@@ -55,6 +55,7 @@ export const NavigationStructuredData = memo(({ navigation }: NavigationStructur
   return (
     <script
       type="application/ld+json"
+      suppressHydrationWarning
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
     />
   );

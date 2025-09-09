@@ -306,7 +306,7 @@ export default function CorporateCakesLeedsPage() {
                       </Typography>
                     </Box>
 
-                    <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                    <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                       Package Includes:
                     </Typography>
                     <Box sx={{ mb: 3 }}>
@@ -358,7 +358,7 @@ export default function CorporateCakesLeedsPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Professional Service:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -378,7 +378,7 @@ export default function CorporateCakesLeedsPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Quality Assurance:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -445,7 +445,7 @@ export default function CorporateCakesLeedsPage() {
                   >
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {client.company}
@@ -531,7 +531,7 @@ export default function CorporateCakesLeedsPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}

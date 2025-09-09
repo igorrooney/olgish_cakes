@@ -156,7 +156,7 @@ export default function HalloweenCakesLeedsPage() {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h4" component="h4" color="primary" className="text-xl mb-2">
+                  <Typography variant="h4" component="h3" color="primary" className="text-xl mb-2">
                     {cake.name}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 mb-4">
@@ -197,7 +197,7 @@ export default function HalloweenCakesLeedsPage() {
             <Typography variant="h3" className="text-3xl font-bold mb-4">
               Make Your Halloween Spooky
             </Typography>
-            <Typography variant="h4" component="h4" className="text-xl mb-6">
+            <Typography variant="h4" component="h3" className="text-xl mb-6">
               Order your spooktacular Halloween cakes today and make your celebration frightfully
               fun and delicious.
             </Typography>

@@ -166,7 +166,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -234,7 +234,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -308,7 +308,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {cake.title}
@@ -379,7 +379,7 @@ export default function UkrainianChristmasTraditionsPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main, fontWeight: "bold" }}
                   >
                     {tradition.title}
@@ -417,7 +417,7 @@ export default function UkrainianChristmasTraditionsPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Family and Community:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
@@ -427,7 +427,7 @@ export default function UkrainianChristmasTraditionsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Spiritual and Cultural Heritage:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>

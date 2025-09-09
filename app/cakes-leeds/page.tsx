@@ -408,7 +408,7 @@ export default async function CakesLeedsPage() {
                   <Box sx={{ mb: 3 }}>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {benefit.title}

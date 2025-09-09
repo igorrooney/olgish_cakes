@@ -447,6 +447,21 @@ export default function BlogPage() {
             </Grid>
           </Box>
 
+          {/* Market Recaps CTA */}
+          <Box sx={{ mt: 8, textAlign: "center" }}>
+            <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+              <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                See Us In Person at Local Markets
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
+                Check our upcoming stall locations, dates and times.
+              </Typography>
+              <Button component={Link} href="/market-schedule" variant="contained" color="primary">
+                View Market Schedule
+              </Button>
+            </Paper>
+          </Box>
+
           {/* Newsletter Signup */}
           <Box sx={{ mt: 8, textAlign: "center" }}>
             <Paper

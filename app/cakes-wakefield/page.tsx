@@ -253,7 +253,7 @@ export default async function CakesWakefieldPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Areas in Wakefield:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -276,7 +276,7 @@ export default async function CakesWakefieldPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Delivery Information:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, opacity: 0.9 }}>
@@ -309,7 +309,7 @@ export default async function CakesWakefieldPage() {
             >
               Ready to Order Your Ukrainian Cake in Wakefield?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to discuss your cake requirements and delivery options
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

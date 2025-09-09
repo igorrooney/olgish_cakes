@@ -344,10 +344,11 @@ export default async function Home() {
 
             <AnimatedDiv variants={fadeInUp} className="mb-8">
               <Typography
+                component="h1"
                 variant="h1"
                 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-tight"
                 sx={{
-                  background: `linear-gradient(135deg, #FFFFFF 0%, ${colors.secondary.main} 50%, #FFFFFF 100%)`,
+                  background: `linear-gradient(135deg, #FFFFFF 0%, ${colors.primary.main} 50%, #FFFFFF 100%)`,
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -362,7 +363,8 @@ export default async function Home() {
 
             <AnimatedDiv variants={fadeInUp} className="mb-12">
               <Typography
-                variant="h2"
+                component="p"
+                variant="body1"
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-100 mx-auto font-light"
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
@@ -392,6 +394,16 @@ export default async function Home() {
                   className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center"
                 >
                   Get Custom Quote
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  size="large"
+                  component={Link}
+                  href="/market-schedule"
+                  className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center"
+                >
+                  Find Us at Local Markets
                 </Button>
               </div>
             </AnimatedDiv>
@@ -487,6 +499,7 @@ export default async function Home() {
               Why Choose Olgish Cakes
             </Typography>
             <Typography
+              component="h2"
               variant="h2"
               className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ mb: 3 }}
@@ -595,6 +608,7 @@ export default async function Home() {
                     Our Heritage
                   </Typography>
                   <Typography
+                    component="h2"
                     variant="h2"
                     className="text-3xl sm:text-4xl md:text-5xl font-bold"
                     sx={{ mb: 4 }}
@@ -675,6 +689,7 @@ export default async function Home() {
               Customer Stories
             </Typography>
             <Typography
+              component="h2"
               variant="h2"
               className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ marginBottom: 4 }}
@@ -895,6 +910,7 @@ export default async function Home() {
               Our Services
             </Typography>
             <Typography
+              component="h2"
               variant="h2"
               className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ mb: 6 }}
@@ -1012,8 +1028,8 @@ export default async function Home() {
               >
                 <Box sx={{ textAlign: "center" }}>
                   <Typography
-                    variant="h3"
-                    component="h3"
+                    variant="h2"
+                    component="h2"
                     sx={{
                       fontWeight: typography.fontWeight.bold,
                       color: colors.text.primary,

@@ -255,7 +255,7 @@ export default async function DairyFreeCakesLeedsPage() {
                     <Box sx={{ p: 3, textAlign: "center" }}>
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {alt.alternative}

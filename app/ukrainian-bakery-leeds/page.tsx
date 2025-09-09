@@ -339,7 +339,7 @@ export default async function UkrainianBakeryLeedsPage() {
                   <Box sx={{ mb: 3 }}>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {tradition.title}
@@ -409,7 +409,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 >
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 2, color: "white", fontWeight: 600 }}
                   >
                     Ukrainian Baking Expertise

@@ -273,7 +273,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                     <Box sx={{ p: 3 }}>
                       <Typography
                         variant="h4"
-                        component="h4"
+                        component="h3"
                         sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                       >
                         {cake.name}
@@ -293,7 +293,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                       >
                         <Typography
                           variant="h4"
-                          component="h4"
+                          component="h3"
                           sx={{ fontWeight: 600, color: "primary.main" }}
                         >
                           {cake.price}
@@ -337,7 +337,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
               </Typography>
               <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Gluten-Friendly Ingredients We Use:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -357,7 +357,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h4" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                     Our Safety Protocols:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 1, opacity: 0.9 }}>
@@ -449,7 +449,7 @@ export default function GlutenFriendlyUkrainianCakesPage() {
           <Box sx={{ textAlign: "center" }}>
             <Typography
               variant="h4"
-              component="h4"
+              component="h3"
               sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
             >
               Ready to Order Your Gluten-Friendly Ukrainian Cake?

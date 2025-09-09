@@ -218,7 +218,7 @@ export default async function RetirementCakesPage() {
                   </Typography>
                   <Typography
                     variant="h4"
-                    component="h4"
+                    component="h3"
                     sx={{ mb: 1, color: colors.primary.main }}
                   >
                     {feature.title}
@@ -247,7 +247,7 @@ export default async function RetirementCakesPage() {
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Order Deadlines:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
@@ -260,7 +260,7 @@ export default async function RetirementCakesPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="h4" component="h4" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h3" sx={{ mb: 2 }}>
                 Special Services:
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>

@@ -284,7 +284,7 @@ export default function AllergenInformationPage() {
                       </Typography>
                       <Typography
                         variant="h3"
-                        component="h4"
+                        component="h3"
                         sx={{ fontWeight: 600, color: "primary.main" }}
                       >
                         {allergen.allergen}
@@ -511,7 +511,7 @@ export default function AllergenInformationPage() {
                   <Box sx={{ p: 3, border: "1px solid", borderColor: "divider", borderRadius: 2 }}>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {cake.cake}
@@ -614,7 +614,7 @@ export default function AllergenInformationPage() {
                     </Box>
                     <Typography
                       variant="h4"
-                      component="h4"
+                      component="h3"
                       sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                     >
                       {step.title}
@@ -642,7 +642,7 @@ export default function AllergenInformationPage() {
             >
               Have Dietary Requirements?
             </Typography>
-            <Typography variant="h4" component="h4" sx={{ mb: 4, color: "text.secondary" }}>
+            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
               Contact us to discuss your specific dietary needs and find the perfect Ukrainian cake
               for you
             </Typography>
