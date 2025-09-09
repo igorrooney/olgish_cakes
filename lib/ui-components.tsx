@@ -30,6 +30,7 @@ import {
   PhoneIcon,
 } from "@/lib/mui-optimization";
 import { designTokens } from "./design-system";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows, components } = designTokens;
 
@@ -505,6 +506,7 @@ export const PriceDisplay = ({
       </Typography>
       <meta itemProp="priceCurrency" content="GBP" />
       <meta itemProp="availability" content="https://schema.org/InStock" />
+      <meta itemProp="priceValidUntil" content={getPriceValidUntil(30)} />
     </Box>
   );
 };
