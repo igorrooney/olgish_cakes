@@ -145,11 +145,45 @@ export default async function BirthdayCakesPage() {
     },
   };
 
+  // Server-rendered Product list to avoid client-only JSON-LD being missed by crawlers
+  const productListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Birthday Cakes",
+    description:
+      "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavors and modern designs.",
+    url: "https://olgishcakes.co.uk/birthday-cakes",
+    itemListElement: birthdayCakes.map((cake: any, index: number) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: cake.name,
+        url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+        brand: { "@type": "Brand", name: "Olgish Cakes" },
+        category: "Birthday Cake",
+        offers: {
+          "@type": "Offer",
+          price: cake?.pricing?.standard ?? 0,
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+          priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split("T")[0],
+        },
+      },
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productListJsonLd) }}
       />
       <Box
         sx={{
