@@ -52,6 +52,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     },
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    isAccessibleForFree: true,
     url: eventId,
   };
 
@@ -73,16 +74,14 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     structuredData.image = event.image.asset.url;
   }
 
-  // Add offers information
-  if (event.specialOffers && event.specialOffers.length > 0) {
-    structuredData.offers = {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      validFrom: startDateTime,
-      price: "0", // Free market attendance
-      priceCurrency: "GBP",
-    };
-  }
+  // Always include offers for Events to satisfy Rich Results requirements
+  structuredData.offers = {
+    "@type": "Offer",
+    availability: "https://schema.org/InStock",
+    validFrom: startDateTime,
+    price: "0",
+    priceCurrency: "GBP",
+  };
 
   // Add contact information if available
   if (event.contactInfo) {
