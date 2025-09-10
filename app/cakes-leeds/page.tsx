@@ -111,6 +111,7 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Ukrainian Honey Cake",
+                    image: "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
                     aggregateRating: {
                       "@type": "AggregateRating",
                       ratingValue: "5",
@@ -125,6 +126,7 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Kyiv Cake",
+                    image: "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
                     aggregateRating: {
                       "@type": "AggregateRating",
                       ratingValue: "5",
@@ -139,6 +141,7 @@ export default async function CakesLeedsPage() {
                   itemOffered: {
                     "@type": "Product",
                     name: "Custom Wedding Cakes",
+                    image: "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
                     aggregateRating: {
                       "@type": "AggregateRating",
                       ratingValue: "5",

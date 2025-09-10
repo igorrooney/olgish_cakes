@@ -95,6 +95,7 @@ export default async function TraditionalUkrainianCakesPage() {
         "@type": "Product",
         name: cake.name,
         description: cake.description,
+        image: "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
         category: "Traditional Ukrainian Cake",
         brand: {
           "@type": "Brand",
