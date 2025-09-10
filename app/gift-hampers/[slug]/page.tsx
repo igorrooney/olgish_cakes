@@ -68,13 +68,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const metaTitle = hamper.seo?.metaTitle || `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
+  const isCakeByPost = hamper.slug?.current === "cake-by-post";
+  const metaTitle =
+    (isCakeByPost &&
+      "Cake by Post – Letterbox Honey Cake | Free UK Delivery | Olgish Cakes") ||
+    hamper.seo?.metaTitle ||
+    `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
   const metaDescription =
+    (isCakeByPost &&
+      "Traditional Ukrainian honey cake by post. Letterbox‑friendly pack of 2 slices, vacuum‑packed for freshness. Free UK delivery. Order online.") ||
     hamper.seo?.metaDescription ||
     (hamper.shortDescription
       ? blocksToText(hamper.shortDescription).substring(0, 160)
       : `${hamper.name} premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.`);
   const keywords =
+    (isCakeByPost &&
+      "cake by post, letterbox cake, cake in the post, buy cake by post, honey cake by post, letterbox friendly cake, cake delivery UK") ||
     hamper.seo?.keywords?.join(", ") ||
     `${hamper.name}, gift hamper, luxury hamper, gourmet hamper, Leeds gift hamper, Yorkshire hamper, food gift UK`;
   const canonicalUrl =

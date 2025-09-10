@@ -108,6 +108,10 @@ const navigationBase = [
   {
     name: "Gift Hampers",
     href: "/gift-hampers",
+    dropdown: [
+      { name: "All Gift Hampers", href: "/gift-hampers" },
+      { name: "Cake by Post", href: "/gift-hampers/cake-by-post" },
+    ],
   },
   {
     name: "Get a Quote",
@@ -119,6 +123,8 @@ const navigationBase = [
     dropdown: [
       { name: "Custom Cake Design", href: "/custom-cake-design" },
       { name: "Cake Delivery", href: "/cake-delivery" },
+      { name: "Buy Cake Online", href: "/buy-cake" },
+      { name: "Leeds Bakery", href: "/leeds-bakery" },
       { name: "Cake Decorating Services", href: "/cake-decorating-services" },
       { name: "Cake Photography", href: "/cake-photography" },
       { name: "Cake Preservation", href: "/cake-preservation" },
@@ -340,6 +346,7 @@ export function Header() {
   const [servicesMenuAnchor, setServicesMenuAnchor] = useState<null | HTMLElement>(null);
   const [learnMenuAnchor, setLearnMenuAnchor] = useState<null | HTMLElement>(null);
   const [companyMenuAnchor, setCompanyMenuAnchor] = useState<null | HTMLElement>(null);
+  const [giftHampersMenuAnchor, setGiftHampersMenuAnchor] = useState<null | HTMLElement>(null);
 
   // Mobile gestures hook
   const { triggerHapticFeedback } = useMobileGestures({
@@ -443,11 +450,20 @@ export function Header() {
     setCompanyMenuAnchor(null);
   }, []);
 
+  const handleGiftHampersMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setGiftHampersMenuAnchor(event.currentTarget);
+  }, []);
+
+  const handleGiftHampersMenuClose = useCallback(() => {
+    setGiftHampersMenuAnchor(null);
+  }, []);
+
   // Memoized computed values
   const isCakesMenuOpen = Boolean(cakesMenuAnchor);
   const isServicesMenuOpen = Boolean(servicesMenuAnchor);
   const isLearnMenuOpen = Boolean(learnMenuAnchor);
   const isCompanyMenuOpen = Boolean(companyMenuAnchor);
+  const isGiftHampersMenuOpen = Boolean(giftHampersMenuAnchor);
 
   // Memoized mobile menu styles
   const mobileDrawerStyles = useMemo(
@@ -775,26 +791,34 @@ export function Header() {
                   const isServicesMenu = item.name === "Services";
                   const isLearnMenu = item.name === "Learn";
                   const isCompanyMenu = item.name === "Company";
-                  const menuAnchor = isServicesMenu
-                    ? servicesMenuAnchor
-                    : isLearnMenu
-                      ? learnMenuAnchor
-                      : companyMenuAnchor;
-                  const isMenuOpen = isServicesMenu
-                    ? isServicesMenuOpen
-                    : isLearnMenu
-                      ? isLearnMenuOpen
-                      : isCompanyMenuOpen;
-                  const handleMenuOpen = isServicesMenu
-                    ? handleServicesMenuOpen
-                    : isLearnMenu
-                      ? handleLearnMenuOpen
-                      : handleCompanyMenuOpen;
-                  const handleMenuClose = isServicesMenu
-                    ? handleServicesMenuClose
-                    : isLearnMenu
-                      ? handleLearnMenuClose
-                      : handleCompanyMenuClose;
+                  const isGiftHampersMenu = item.name === "Gift Hampers";
+
+                  let menuAnchor: null | HTMLElement = null;
+                  let isMenuOpen = false;
+                  let handleMenuOpen: (event: React.MouseEvent<HTMLElement>) => void = () => {};
+                  let handleMenuClose: () => void = () => {};
+
+                  if (isServicesMenu) {
+                    menuAnchor = servicesMenuAnchor;
+                    isMenuOpen = isServicesMenuOpen;
+                    handleMenuOpen = handleServicesMenuOpen;
+                    handleMenuClose = handleServicesMenuClose;
+                  } else if (isLearnMenu) {
+                    menuAnchor = learnMenuAnchor;
+                    isMenuOpen = isLearnMenuOpen;
+                    handleMenuOpen = handleLearnMenuOpen;
+                    handleMenuClose = handleLearnMenuClose;
+                  } else if (isGiftHampersMenu) {
+                    menuAnchor = giftHampersMenuAnchor;
+                    isMenuOpen = isGiftHampersMenuOpen;
+                    handleMenuOpen = handleGiftHampersMenuOpen;
+                    handleMenuClose = handleGiftHampersMenuClose;
+                  } else if (isCompanyMenu) {
+                    menuAnchor = companyMenuAnchor;
+                    isMenuOpen = isCompanyMenuOpen;
+                    handleMenuOpen = handleCompanyMenuOpen;
+                    handleMenuClose = handleCompanyMenuClose;
+                  }
 
                   return (
                     <Box key={item.name}>

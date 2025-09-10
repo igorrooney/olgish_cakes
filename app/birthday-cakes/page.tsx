@@ -3,21 +3,22 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/mate
 import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
 import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes | Olgish Cakes",
+    "Birthday Cakes Leeds – Custom Designs, Themed & Ukrainian Flavours | Olgish Cakes",
   description:
-    "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
+    "Custom birthday cakes in Leeds for children and adults. Themed designs, Ukrainian favourites like honey cake (Medovik), delivery available. Prices from £35.",
   keywords:
-    "birthday cakes Leeds, custom birthday cakes, honey cake birthday cakes, Medovik birthday cakes, children's birthday cakes, themed birthday cakes, birthday cake delivery Leeds, Ukrainian birthday cakes, party cakes Leeds, celebration cakes",
+    "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
-      "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
+      "Birthday Cakes Leeds – Custom & Themed Designs",
     description:
-      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
+      "Custom birthday cakes for all ages with Ukrainian flavours like honey cake. Delivery available across Leeds.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -34,9 +35,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Birthday Cakes Leeds | Custom Birthday Cakes | Honey Cake (Medovik) Birthday Cakes | Children's Birthday Cakes",
+      "Birthday Cakes Leeds – Custom & Themed Designs",
     description:
-      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages. Children's birthday cakes, themed cakes, and celebration cakes with traditional Ukrainian flavors like honey cake (Medovik).",
+      "Custom birthday cakes with Ukrainian flavours. Delivery available across Leeds.",
     images: ["https://olgishcakes.co.uk/images/birthday-cakes.jpg"],
   },
   alternates: {
@@ -108,7 +109,7 @@ export default async function BirthdayCakesPage() {
     "@type": "Service",
     name: "Birthday Cakes Leeds",
     description:
-      "Beautiful custom birthday cakes in Leeds. Ukrainian-inspired birthday cakes for all ages with traditional Ukrainian flavors like honey cake (Medovik).",
+      "Custom birthday cakes in Leeds for children and adults. Themed designs and Ukrainian flavours like honey cake (Medovik).",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     provider: {
       "@type": "Organization",
@@ -144,6 +145,28 @@ export default async function BirthdayCakesPage() {
       })),
     },
   };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Do you make themed children's birthday cakes?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes. We create custom themes tailored to your child's interests." }
+      },
+      {
+        "@type": "Question",
+        name: "Can you deliver birthday cakes in Leeds?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes, delivery across Leeds is available. Same‑day may be possible—please ask." }
+      },
+      {
+        "@type": "Question",
+        name: "What are the starting prices?",
+        acceptedAnswer: { "@type": "Answer", text: "Prices start from £35 for a 6‑inch cake. Final price depends on size and design." }
+      }
+    ]
+  } as const;
 
   // Server-rendered Product list to avoid client-only JSON-LD being missed by crawlers
   const productListJsonLd = {
@@ -193,6 +216,10 @@ export default async function BirthdayCakesPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <script
         type="application/ld+json"
@@ -439,6 +466,11 @@ export default async function BirthdayCakesPage() {
               ))}
             </Grid>
           </Paper>
+
+          <AreasWeCover
+            title="Birthday Cake Delivery Areas"
+            subtitle="We deliver birthday cakes across Leeds and nearby towns."
+          />
 
           {/* Birthday Cake Flavors */}
           <Paper

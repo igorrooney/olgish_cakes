@@ -4,20 +4,21 @@ import { getAllCakes } from "../utils/fetchCakes";
 import { blocksToText } from "@/types/cake";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes | Olgish Cakes",
+    "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup | Olgish Cakes",
   description:
-    "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs. Wedding cake consultation and delivery service available.",
+    "Bespoke wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and professional venue setup and delivery.",
   keywords:
-    "wedding cakes Leeds, Ukrainian wedding cakes, honey cake wedding cakes, Medovik wedding cakes, custom wedding cakes Leeds, wedding cake consultation, wedding cake delivery Leeds, traditional wedding cakes, luxury wedding cakes, wedding cake design",
+    "wedding cakes Leeds, custom wedding cakes Leeds, wedding cake tasting Leeds, wedding cake consultation Leeds, venue setup wedding cake Leeds, honey cake wedding cake, Ukrainian wedding cakes, luxury wedding cakes",
   openGraph: {
     title:
-      "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
+      "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
     description:
-      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs. Wedding cake consultation and delivery service available.",
+      "Bespoke wedding cakes in Leeds with Ukrainian flavours. Design consultation, private tasting and professional delivery with venue setup.",
     url: "https://olgishcakes.co.uk/wedding-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -34,9 +35,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Wedding Cakes Leeds | Ukrainian Wedding Cakes | Honey Cake (Medovik) Wedding Cakes | Custom Wedding Cakes",
+      "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
     description:
-      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
+      "Bespoke Ukrainian-inspired wedding cakes with tasting, consultation and venue setup.",
     images: ["https://olgishcakes.co.uk/images/wedding-cakes.jpg"],
   },
   alternates: {
@@ -112,7 +113,7 @@ export default async function WeddingCakesPage() {
     "@type": "Service",
     name: "Wedding Cakes Leeds",
     description:
-      "Beautiful custom wedding cakes in Leeds. Ukrainian-inspired wedding cakes with traditional flavors like honey cake (Medovik) and modern designs.",
+      "Bespoke wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and venue setup.",
     url: "https://olgishcakes.co.uk/wedding-cakes",
     provider: {
       "@type": "Organization",
@@ -175,11 +176,37 @@ export default async function WeddingCakesPage() {
     },
   };
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Do you offer wedding cake tastings?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes. We arrange private tastings during the design stage." }
+      },
+      {
+        "@type": "Question",
+        name: "Can you deliver and set up at my venue?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes, delivery and full venue setup are available across Leeds and nearby areas." }
+      },
+      {
+        "@type": "Question",
+        name: "How far in advance should I book?",
+        acceptedAnswer: { "@type": "Answer", text: "We recommend booking 6–12 weeks in advance. Short‑notice orders may be possible." }
+      }
+    ]
+  } as const;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <Box
         sx={{
@@ -437,6 +464,11 @@ export default async function WeddingCakesPage() {
               ))}
             </Grid>
           </Paper>
+
+          <AreasWeCover
+            title="Wedding Cake Delivery Areas"
+            subtitle="Professional wedding cake delivery and venue setup across Leeds and nearby towns."
+          />
 
           {/* Wedding Cake Flavors */}
           <Paper

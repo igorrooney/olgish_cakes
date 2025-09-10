@@ -50,6 +50,8 @@ const footerLinksBase = {
   services: [
     { name: "Custom Cake Design", href: "/custom-cake-design" },
     { name: "Cake Delivery", href: "/cake-delivery" },
+    { name: "Buy Cake Online", href: "/buy-cake" },
+    { name: "Leeds Bakery", href: "/leeds-bakery" },
     { name: "Cake Decorating Services", href: "/cake-decorating-services" },
     { name: "Cake Photography", href: "/cake-photography" },
     { name: "Cake Preservation", href: "/cake-preservation" },

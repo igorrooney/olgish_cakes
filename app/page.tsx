@@ -1019,6 +1019,37 @@ export default async function Home() {
         </Container>
       </AnimatedSection>
 
+      {/* Popular Searches - internal links for high-intent queries */}
+      <AnimatedSection
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="py-16 bg-gray-50"
+      >
+        <Container className="px-6 md:px-8">
+          <AnimatedDiv className="text-center mb-8">
+            <Typography component="h2" variant="h2" className="text-3xl font-bold">
+              Popular searches
+            </Typography>
+            <Typography variant="subtitle1" className="text-gray-600 max-w-2xl mx-auto mt-2" mt={2} mx="auto">
+              Quick links people often look for when ordering cakes in Leeds
+            </Typography>
+          </AnimatedDiv>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href="/leeds-bakery" className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors" aria-label="Leeds bakery">
+              Leeds bakery
+            </Link>
+            <Link href="/buy-cake" className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors" aria-label="Buy cake online">
+              Buy cake online
+            </Link>
+            <Link href="/gift-hampers/cake-by-post" className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors" aria-label="Cake by post">
+              Cake by post
+            </Link>
+          </div>
+        </Container>
+      </AnimatedSection>
+
       {/* Contact CTA Section */}
       <AnimatedSection
         initial={{ opacity: 0 }}
