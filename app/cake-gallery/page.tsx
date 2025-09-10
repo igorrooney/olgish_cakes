@@ -45,45 +45,14 @@ export default async function CakeGalleryPage() {
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "ImageGallery",
+    "@type": "ItemList",
     name: "Cake Gallery - Ukrainian Cake Designs",
-    description:
-      "Explore our beautiful collection of Ukrainian cakes and custom designs. From traditional Ukrainian desserts to modern celebration cakes.",
     url: "https://olgishcakes.co.uk/cake-gallery",
-    publisher: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-      },
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: allCakes.map((cake, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        item: {
-          "@type": "Product",
-          name: cake.name,
-          description: cake.description,
-          image: `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
-          url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-          category: cake.category,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-          },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5",
-            reviewCount: "127",
-            bestRating: "5",
-            worstRating: "1",
-          },
-        },
-      })),
-    },
+    itemListElement: allCakes.map((cake, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+    })),
   };
 
   return (

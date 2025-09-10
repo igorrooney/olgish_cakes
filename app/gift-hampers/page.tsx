@@ -125,10 +125,6 @@ export default async function GiftHampersPage() {
             "@type": "ListItem",
             position: index + 1,
             url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-            name: h.name,
-            ...(h.images?.[0]?.asset?._ref
-              ? { image: urlFor(h.images[0]).width(1200).height(1200).url() }
-              : {}),
           })),
         } as const;
 
