@@ -128,4 +128,11 @@ export interface MarketScheduleStructuredData {
     | "https://schema.org/EventPostponed";
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode";
   isAccessibleForFree?: boolean;
+  aggregateRating?: {
+    "@type": "AggregateRating";
+    ratingValue: string;
+    reviewCount: string;
+    bestRating?: string;
+    worstRating?: string;
+  };
 }
