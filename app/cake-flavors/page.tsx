@@ -104,6 +104,7 @@ export default function CakeFlavorsPage() {
         "@type": "Product",
         name: flavor.name,
         description: flavor.description,
+        image: "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
         category: "Ukrainian Cake",
         brand: {
           "@type": "Brand",

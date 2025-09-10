@@ -159,6 +159,12 @@ export default async function BirthdayCakesPage() {
       item: {
         "@type": "Product",
         name: cake.name,
+        image:
+          cake?.mainImage?.asset?.url
+            ? (cake.mainImage.asset.url.startsWith("http")
+                ? cake.mainImage.asset.url
+                : `https://olgishcakes.co.uk${cake.mainImage.asset.url}`)
+            : "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
         url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
         brand: { "@type": "Brand", name: "Olgish Cakes" },
         category: "Birthday Cake",
