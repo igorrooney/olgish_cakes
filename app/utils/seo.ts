@@ -135,6 +135,17 @@ export function getPriceValidUntil(daysFromNow: number = 30): string {
   return date.toISOString().split("T")[0];
 }
 
+// Reusable Merchant Return Policy for Offers (required by Merchant listings)
+export function getMerchantReturnPolicy() {
+  return {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "GB",
+    returnFees: "https://schema.org/FreeReturn",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+  } as const;
+}
+
 export function generateOpenGraphImage(imageUrl: string, title: string) {
   return {
     url: imageUrl.startsWith("http") ? imageUrl : `${SEO_CONFIG.siteUrl}${imageUrl}`,
@@ -496,6 +507,7 @@ export function generateProductSchema(product: {
       seller: {
         "@id": `${SEO_CONFIG.siteUrl}/#organization`,
       },
+      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
     },
     ...(product.aggregateRating && {
       aggregateRating: {

@@ -10,6 +10,7 @@ import { useState, memo, useMemo, useCallback } from "react";
 import { designTokens } from "@/lib/design-system";
 import { ProductCard, CategoryChip, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { getMerchantReturnPolicy } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -105,6 +106,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           value: "1",
           unitCode: "DAY",
         },
+        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
       },
       image: {
         "@type": "ImageObject",

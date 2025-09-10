@@ -5,6 +5,7 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { AreasWeCover } from "../components/AreasWeCover";
 
 export const metadata: Metadata = {
   title:
@@ -116,11 +117,37 @@ export default async function UkrainianBakeryLeedsPage() {
     },
   };
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Do you deliver across Leeds?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes, we deliver across Leeds and nearby towns. See our delivery areas." }
+      },
+      {
+        "@type": "Question",
+        name: "What is your most popular cake?",
+        acceptedAnswer: { "@type": "Answer", text: "Our authentic Ukrainian honey cake (Medovik) is the bestseller." }
+      },
+      {
+        "@type": "Question",
+        name: "Can I order a custom cake?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes. We create custom birthday and wedding cakes with Ukrainian flavours." }
+      }
+    ]
+  } as const;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <Box
         sx={{
@@ -355,6 +382,8 @@ export default async function UkrainianBakeryLeedsPage() {
               ))}
             </Grid>
           </Paper>
+
+          <AreasWeCover subtitle="Proudly serving Leeds and nearby Yorkshire towns with authentic Ukrainian cakes." />
 
           {/* Meet Our Ukrainian Baker */}
           <Paper

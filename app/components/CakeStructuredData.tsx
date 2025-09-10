@@ -68,6 +68,13 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
           name: "Olgish Cakes",
           url: "https://olgishcakes.co.uk",
         },
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "GB",
+          returnFees: "https://schema.org/FreeReturn",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 14,
+        },
       },
       aggregateRating: {
         "@type": "AggregateRating",
