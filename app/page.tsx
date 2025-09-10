@@ -258,47 +258,10 @@ export default async function Home() {
     mainEntity: {
       "@type": "ItemList",
       name: "Featured Ukrainian Cakes",
-      description: "Our most popular Ukrainian honey cakes and traditional desserts",
       itemListElement: featuredCakes.map((cake, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        item: {
-          "@type": "Product",
-          name: cake.name,
-          description: cake.description,
-          url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-          image: {
-            "@type": "ImageObject",
-            url:
-              cake.mainImage?.asset?.url || "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
-            width: 800,
-            height: 600,
-            loading: "lazy",
-          },
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-          },
-          category: "Ukrainian Honey Cake",
-          offers: {
-            "@type": "Offer",
-            price: cake.pricing.standard,
-            priceCurrency: "GBP",
-            availability: "https://schema.org/InStock",
-            priceValidUntil: getPriceValidUntil(30),
-            seller: {
-              "@id": "https://olgishcakes.co.uk/#organization",
-            },
-            shippingDetails: getOfferShippingDetails(),
-          },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.9",
-            reviewCount: "120",
-            bestRating: "5",
-            worstRating: "1",
-          },
-        },
+        url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
       })),
     },
   };
