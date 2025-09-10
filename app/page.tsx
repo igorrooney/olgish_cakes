@@ -37,10 +37,7 @@ import { getFeaturedMarketEvents } from "./utils/fetchMarketSchedule";
 import { getPriceValidUntil } from "./utils/seo";
 import { getOfferShippingDetails } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
-import {
-  generateEventsListStructuredData,
-  generateEventSEOMetadata,
-} from "./utils/generateEventStructuredData";
+import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -204,8 +201,7 @@ export default async function Home() {
     getFeaturedMarketEvents(3),
   ]);
 
-  // Generate events structured data
-  const eventsStructuredData = generateEventsListStructuredData(marketEvents);
+  // Events structured data is injected by the MarketSchedule component to avoid duplication
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -255,15 +251,6 @@ export default async function Home() {
         },
       ],
     },
-    mainEntity: {
-      "@type": "ItemList",
-      name: "Featured Ukrainian Cakes",
-      itemListElement: featuredCakes.map((cake, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-      })),
-    },
   };
 
   return (
@@ -273,13 +260,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      {/* Events structured data */}
-      {eventsStructuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsStructuredData) }}
-        />
-      )}
+      
 
       {/* Mobile Performance Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
