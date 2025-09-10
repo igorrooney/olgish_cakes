@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import { getRevalidateTime } from "@/app/utils/fetchCakes";
 // Removed client-only CakeStructuredData; we'll render JSON-LD on the server for SEO
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { getMerchantReturnPolicy } from "@/app/utils/seo";
 
 // Enable revalidation for this page with optimization
 export const revalidate = 3600; // 1 hour for better performance
@@ -198,6 +199,7 @@ export default async function CakePage({ params }: PageProps) {
               priceValidUntil: getPriceValidUntil(30),
               url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
               seller: { "@type": "Organization", name: "Olgish Cakes", url: "https://olgishcakes.co.uk" },
+              hasMerchantReturnPolicy: getMerchantReturnPolicy(),
             },
             aggregateRating: {
               "@type": "AggregateRating",
@@ -279,6 +281,7 @@ export default async function CakePage({ params }: PageProps) {
                         name: "Olgish Cakes",
                         url: "https://olgishcakes.co.uk",
                       },
+                      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                     },
                     aggregateRating: {
                       "@type": "AggregateRating",

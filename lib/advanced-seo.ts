@@ -5,6 +5,7 @@
 
 import { Metadata } from "next";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { getMerchantReturnPolicy } from "@/app/utils/seo";
 
 // Advanced keyword research and targeting
 export const ADVANCED_SEO_CONFIG = {
@@ -210,6 +211,7 @@ export function generateAdvancedStructuredData(data: {
             "@type": "Place",
             name: "Leeds, West Yorkshire, UK",
           },
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
         aggregateRating: data.rating
           ? {
