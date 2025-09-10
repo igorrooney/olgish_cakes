@@ -68,12 +68,24 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
           name: "Olgish Cakes",
           url: "https://olgishcakes.co.uk",
         },
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "GBP" },
+          shippingDestination: { "@type": "DefinedRegion", addressCountry: "GB" },
+          deliveryTime: {
+            "@type": "ShippingDeliveryTime",
+            handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+            transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+          },
+          appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+        },
         hasMerchantReturnPolicy: {
           "@type": "MerchantReturnPolicy",
           applicableCountry: "GB",
           returnFees: "https://schema.org/FreeReturn",
           returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
           merchantReturnDays: 14,
+          returnMethod: "https://schema.org/ReturnByMail",
         },
       },
       aggregateRating: {

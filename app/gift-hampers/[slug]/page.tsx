@@ -12,6 +12,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
 import { urlFor as buildImageUrl } from "@/sanity/lib/image";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
 
 export const revalidate = getRevalidateTime();
 
@@ -172,13 +173,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
             },
-            hasMerchantReturnPolicy: {
-              "@type": "MerchantReturnPolicy",
-              applicableCountry: "GB",
-              returnFees: "https://schema.org/FreeReturn",
-              returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-              merchantReturnDays: 14
-            }
+            shippingDetails: getOfferShippingDetails(),
+            hasMerchantReturnPolicy: getMerchantReturnPolicy()
           },
           potentialAction: {
             "@type": "OrderAction",

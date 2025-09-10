@@ -35,6 +35,7 @@ import Image from "next/image";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
 import { getFeaturedMarketEvents } from "./utils/fetchMarketSchedule";
 import { getPriceValidUntil } from "./utils/seo";
+import { getOfferShippingDetails } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
 import {
   generateEventsListStructuredData,
@@ -288,6 +289,7 @@ export default async function Home() {
             seller: {
               "@id": "https://olgishcakes.co.uk/#organization",
             },
+            shippingDetails: getOfferShippingDetails(),
           },
           aggregateRating: {
             "@type": "AggregateRating",
