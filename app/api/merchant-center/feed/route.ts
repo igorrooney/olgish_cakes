@@ -3,6 +3,7 @@ import { client } from "@/sanity/lib/client";
 import { getAllCakes } from "@/app/utils/fetchCakes";
 import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
 import { unstable_cache } from "next/cache";
+import { urlFor } from "@/sanity/lib/image";
 
 // Cached function to generate the product feed
 const generateProductFeed = unstable_cache(
@@ -53,8 +54,15 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error generating merchant center feed:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: 'Failed to generate product feed' },
+      { 
+        error: 'Failed to generate product feed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -62,20 +70,33 @@ export async function GET(request: NextRequest) {
 
 function generateCakeItem(cake: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-  const imageUrl = cake.mainImage?.asset?.url 
-    ? (cake.mainImage.asset.url.startsWith('http') 
-        ? cake.mainImage.asset.url 
-        : `https://cdn.sanity.io${cake.mainImage.asset.url}`)
+  
+  // Get the main image - try mainImage first, then fallback to designs.standard
+  const mainImage = cake.mainImage?.asset?._ref 
+    ? cake.mainImage 
+    : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.standard?.[0];
+  
+  const imageUrl = mainImage?.asset?._ref 
+    ? urlFor(mainImage).width(800).height(800).url()
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || 25;
   const availability = cake.structuredData?.availability || 'in stock';
   
+  // Handle description properly (could be array or string)
+  const description = Array.isArray(cake.shortDescription) 
+    ? cake.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    : Array.isArray(cake.description)
+    ? cake.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    : cake.shortDescription || cake.description || `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`;
+  
   return `
     <item>
       <g:id>cake_${cake._id}</g:id>
       <g:title>${escapeXml(cake.name)} - Traditional Ukrainian Honey Cake</g:title>
-      <g:description>${escapeXml(cake.shortDescription || cake.description || `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`)}</g:description>
+      <g:description>${escapeXml(description)}</g:description>
       <g:link>${productUrl}</g:link>
       <g:image_link>${imageUrl}</g:image_link>
       <g:price>${price} GBP</g:price>
@@ -130,19 +151,28 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-  const imageUrl = hamper.mainImage?.asset?.url 
-    ? (hamper.mainImage.asset.url.startsWith('http') 
-        ? hamper.mainImage.asset.url 
-        : `https://cdn.sanity.io${hamper.mainImage.asset.url}`)
+  const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) || 
+                   hamper.images?.find((img: any) => img.asset?._ref) || 
+                   hamper.images?.[0];
+  
+  const imageUrl = mainImage?.asset?._ref 
+    ? urlFor(mainImage).width(800).height(800).url()
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;
+  
+  // Handle description properly (could be array or string)
+  const description = Array.isArray(hamper.shortDescription) 
+    ? hamper.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    : Array.isArray(hamper.description)
+    ? hamper.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    : hamper.shortDescription || hamper.description || `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`;
   
   return `
     <item>
       <g:id>hamper_${hamper._id}</g:id>
       <g:title>${escapeXml(hamper.name)} - Ukrainian Gift Hamper</g:title>
-      <g:description>${escapeXml(hamper.shortDescription || hamper.description || `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`)}</g:description>
+      <g:description>${escapeXml(description)}</g:description>
       <g:link>${productUrl}</g:link>
       <g:image_link>${imageUrl}</g:image_link>
       <g:price>${price} GBP</g:price>
@@ -193,8 +223,9 @@ function generateHamperItem(hamper: any, baseUrl: string): string {
     </item>`;
 }
 
-function escapeXml(text: string): string {
-  return text
+function escapeXml(text: string | undefined | null): string {
+  if (!text) return '';
+  return String(text)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
