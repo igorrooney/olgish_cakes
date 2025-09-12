@@ -90,6 +90,7 @@ const footerLinksBase = {
     { name: "Return Policy", href: "/return-policy" },
     { name: "Cookie Policy", href: "/cookies" },
     { name: "Allergen Info", href: "/allergen-information" },
+    { name: "Accessibility", href: "/accessibility" },
   ],
 };
 
