@@ -146,6 +146,9 @@ export default async function GiftHamperPage({ params }: PageProps) {
           .filter(img => Boolean(img.asset?._ref))
           .slice(0, 5)
           .map(img => buildImageUrl(img).width(1200).height(1200).url());
+        const imagesForJsonLd = imageUrls.length > 0
+          ? imageUrls
+          : ["https://olgishcakes.co.uk/images/placeholder-cake.jpg"];
 
         const productJsonLd = {
           "@context": "https://schema.org",
@@ -160,7 +163,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
           brand: { "@type": "Brand", name: "Olgish Cakes" },
           category: hamper.category || "Gift Hamper",
-          ...(imageUrls.length > 0 ? { image: imageUrls } : {}),
+          image: imagesForJsonLd,
           offers: {
             "@type": "Offer",
             price: hamper.price,
