@@ -87,6 +87,7 @@ const footerLinksBase = {
   legal: [
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Terms of Service", href: "/terms" },
+    { name: "Return Policy", href: "/return-policy" },
     { name: "Cookie Policy", href: "/cookies" },
     { name: "Allergen Info", href: "/allergen-information" },
   ],
@@ -625,6 +626,11 @@ export default function Footer() {
               <Link href="/terms" aria-label="Terms of Service">
                 {" "}
                 Terms of Service
+              </Link>{" "}
+              |
+              <Link href="/return-policy" aria-label="Return Policy">
+                {" "}
+                Return Policy
               </Link>
             </Typography>
           </Box>
