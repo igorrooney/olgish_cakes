@@ -79,7 +79,7 @@ function generateCakeItem(cake: any, baseUrl: string): string {
       cake.designs?.standard?.[0];
   
   const imageUrl = mainImage?.asset?._ref 
-    ? urlFor(mainImage).width(800).height(800).url()
+    ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || 25;
@@ -122,11 +122,11 @@ function generateCakeItem(cake: any, baseUrl: string): string {
       ${cake.ingredients ? `<g:additional_image_link>${imageUrl}</g:additional_image_link>` : ''}
       <g:age_group>all</g:age_group>
       <g:gender>all</g:gender>
-      <g:size>${cake.size || '6'} inch</g:size>
+      <g:size>${escapeXml(cake.size || '6')} inch</g:size>
       <g:color>Traditional</g:color>
       <g:material>Fresh ingredients</g:material>
       <g:pattern>Traditional Ukrainian design</g:pattern>
-      <g:item_group_id>cake_${cake.category || 'honey-cake'}</g:item_group_id>
+      <g:item_group_id>cake_${escapeXml(cake.category || 'honey-cake')}</g:item_group_id>
       <g:adult>no</g:adult>
       <g:multipack>1</g:multipack>
       <g:is_bundle>no</g:is_bundle>
@@ -156,7 +156,7 @@ function generateHamperItem(hamper: any, baseUrl: string): string {
                    hamper.images?.[0];
   
   const imageUrl = mainImage?.asset?._ref 
-    ? urlFor(mainImage).width(800).height(800).url()
+    ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;
@@ -200,7 +200,7 @@ function generateHamperItem(hamper: any, baseUrl: string): string {
       <g:color>Traditional</g:color>
       <g:material>Premium ingredients</g:material>
       <g:pattern>Ukrainian traditional</g:pattern>
-      <g:item_group_id>hamper_${hamper.category || 'gift-hamper'}</g:item_group_id>
+      <g:item_group_id>hamper_${escapeXml(hamper.category || 'gift-hamper')}</g:item_group_id>
       <g:adult>no</g:adult>
       <g:multipack>1</g:multipack>
       <g:is_bundle>yes</g:is_bundle>
