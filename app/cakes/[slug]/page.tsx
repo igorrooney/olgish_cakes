@@ -184,24 +184,60 @@ export default async function CakePage({ params }: PageProps) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Product",
+            "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`,
             name: cake.name,
             description:
               cake.seo?.metaDescription ||
               (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
             image: [productImageUrl],
-            brand: { "@type": "Brand", name: "Olgish Cakes" },
+            brand: { 
+              "@type": "Brand", 
+              name: "Olgish Cakes",
+              logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
+            },
+            manufacturer: {
+              "@type": "Organization",
+              name: "Olgish Cakes",
+              url: "https://olgishcakes.co.uk",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Leeds",
+                addressRegion: "West Yorkshire",
+                addressCountry: "GB",
+              },
+            },
             category: cake.category || "Ukrainian Honey Cake",
             url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+            sku: `cake_${cake._id}`,
+            gtin: `cake_${cake._id}`,
+            mpn: cake._id,
             offers: {
               "@type": "Offer",
+              "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#offer`,
               price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
+              condition: "https://schema.org/NewCondition",
               priceValidUntil: getPriceValidUntil(30),
               url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-              seller: { "@type": "Organization", name: "Olgish Cakes", url: "https://olgishcakes.co.uk" },
+              seller: { 
+                "@type": "Organization", 
+                name: "Olgish Cakes", 
+                url: "https://olgishcakes.co.uk" 
+              },
               shippingDetails: getOfferShippingDetails(),
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+              eligibleTransactionVolume: {
+                "@type": "PriceSpecification",
+                price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+                priceCurrency: "GBP",
+                valueAddedTaxIncluded: true,
+              },
+              acceptedPaymentMethod: [
+                "https://schema.org/CreditCard",
+                "https://schema.org/PaymentByTransfer",
+                "https://schema.org/PaymentByBankTransfer",
+              ],
             },
             aggregateRating: {
               "@type": "AggregateRating",

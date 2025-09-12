@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { generateGoogleMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import { generateCakeMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
 
 interface CakeStructuredDataProps {
   cake: {
@@ -42,7 +42,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
     if (!cake.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
-    const structuredData = generateGoogleMerchantCenterSchema(cake as any, 'cake');
+    const structuredData = generateCakeMerchantCenterSchema(cake);
 
     // Add keywords if available
     if (cake.seo?.keywords && cake.seo.keywords.length > 0) {

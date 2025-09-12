@@ -153,6 +153,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
         const productJsonLd = {
           "@context": "https://schema.org",
           "@type": "Product",
+          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
           name: hamper.name,
           description: hamper.shortDescription?.length
             ? Array.isArray(hamper.shortDescription)
@@ -161,14 +162,34 @@ export default async function GiftHamperPage({ params }: PageProps) {
                   .join(" ")
               : String(hamper.shortDescription)
             : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-          brand: { "@type": "Brand", name: "Olgish Cakes" },
+          brand: { 
+            "@type": "Brand", 
+            name: "Olgish Cakes",
+            logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
+          },
+          manufacturer: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+            url: "https://olgishcakes.co.uk",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Leeds",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+          },
           category: hamper.category || "Gift Hamper",
           image: imagesForJsonLd,
+          sku: `hamper_${hamper._id}`,
+          gtin: `hamper_${hamper._id}`,
+          mpn: hamper._id,
           offers: {
             "@type": "Offer",
+            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#offer`,
             price: hamper.price,
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
+            condition: "https://schema.org/NewCondition",
             priceValidUntil: getPriceValidUntil(30),
             url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
             seller: {
