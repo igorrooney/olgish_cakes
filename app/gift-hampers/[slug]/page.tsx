@@ -72,19 +72,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const isCakeByPost = hamper.slug?.current === "cake-by-post";
   const metaTitle =
     (isCakeByPost &&
-      "Cake by Post – Letterbox Honey Cake | Free UK Delivery | Olgish Cakes") ||
+      "Cake by Post | Letterbox Cake Delivery UK – OlgishCakes") ||
     hamper.seo?.metaTitle ||
     `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
   const metaDescription =
     (isCakeByPost &&
-      "Traditional Ukrainian honey cake by post. Letterbox‑friendly pack of 2 slices, vacuum‑packed for freshness. Free UK delivery. Order online.") ||
+      "Order delicious cake by post with OlgishCakes. Freshly baked, beautifully packed, and delivered straight to your letterbox anywhere in the UK. Perfect for birthdays, anniversaries & surprises.") ||
     hamper.seo?.metaDescription ||
     (hamper.shortDescription
       ? blocksToText(hamper.shortDescription).substring(0, 160)
       : `${hamper.name} premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.`);
   const keywords =
     (isCakeByPost &&
-      "cake by post, letterbox cake, cake in the post, buy cake by post, honey cake by post, letterbox friendly cake, cake delivery UK") ||
+      "cake by post, cakes delivered by post, letterbox cakes, order cake online UK, postal cakes UK, cake delivery by post, cake by post UK, cakes delivered UK, honey cake by post, letterbox friendly cake, surprise cake delivery, birthday cake by post, anniversary cake delivery, cake gift by post") ||
     hamper.seo?.keywords?.join(", ") ||
     `${hamper.name}, gift hamper, luxury hamper, gourmet hamper, Leeds gift hamper, Yorkshire hamper, food gift UK`;
   const canonicalUrl =
@@ -150,18 +150,21 @@ export default async function GiftHamperPage({ params }: PageProps) {
           ? imageUrls
           : ["https://olgishcakes.co.uk/images/placeholder-cake.jpg"];
 
+        const isCakeByPost = hamper.slug?.current === "cake-by-post";
         const productJsonLd = {
           "@context": "https://schema.org",
           "@type": "Product",
           "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
           name: hamper.name,
-          description: hamper.shortDescription?.length
-            ? Array.isArray(hamper.shortDescription)
-              ? hamper.shortDescription
-                  .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
-                  .join(" ")
-              : String(hamper.shortDescription)
-            : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
+          description: isCakeByPost 
+            ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
+            : hamper.shortDescription?.length
+              ? Array.isArray(hamper.shortDescription)
+                ? hamper.shortDescription
+                    .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
+                    .join(" ")
+                : String(hamper.shortDescription)
+              : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
           brand: { 
             "@type": "Brand", 
             name: "Olgish Cakes",
@@ -178,7 +181,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               addressCountry: "GB",
             },
           },
-          category: hamper.category || "Gift Hamper",
+          category: isCakeByPost ? "Cake by Post" : (hamper.category || "Gift Hamper"),
           image: imagesForJsonLd,
           sku: `hamper_${hamper._id}`,
           gtin: `hamper_${hamper._id}`,
@@ -262,20 +265,67 @@ export default async function GiftHamperPage({ params }: PageProps) {
             : {}),
         } as const;
 
-        const faqJsonLd = (hamper?.seo as any)?.faq && Array.isArray((hamper?.seo as any)?.faq)
+        const faqJsonLd = isCakeByPost 
           ? {
               "@context": "https://schema.org",
               "@type": "FAQPage",
-              mainEntity: ((hamper?.seo as any).faq as any[])
-                .filter(q => q?.question && q?.answer)
-                .slice(0, 6)
-                .map(q => ({
+              mainEntity: [
+                {
                   "@type": "Question",
-                  name: q.question,
-                  acceptedAnswer: { "@type": "Answer", text: q.answer }
-                }))
+                  name: "What is cake by post?",
+                  acceptedAnswer: { 
+                    "@type": "Answer", 
+                    text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK." 
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "How long does cake by post stay fresh?",
+                  acceptedAnswer: { 
+                    "@type": "Answer", 
+                    text: "Our cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. We recommend consuming within 3-4 days for the best taste experience." 
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "Do you deliver cake by post to all UK addresses?",
+                  acceptedAnswer: { 
+                    "@type": "Answer", 
+                    text: "Yes, we deliver our cake by post service to all UK mainland addresses. We offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact us directly." 
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "What types of cake can be sent by post?",
+                  acceptedAnswer: { 
+                    "@type": "Answer", 
+                    text: "We specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. Our cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
+                  }
+                },
+                {
+                  "@type": "Question",
+                  name: "How do I order cake by post?",
+                  acceptedAnswer: { 
+                    "@type": "Answer", 
+                    text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. We'll pack and ship your cake within 2-3 working days." 
+                  }
+                }
+              ]
             }
-          : null;
+          : (hamper?.seo as any)?.faq && Array.isArray((hamper?.seo as any)?.faq)
+            ? {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: ((hamper?.seo as any).faq as any[])
+                  .filter(q => q?.question && q?.answer)
+                  .slice(0, 6)
+                  .map(q => ({
+                    "@type": "Question",
+                    name: q.question,
+                    acceptedAnswer: { "@type": "Answer", text: q.answer }
+                  }))
+              }
+            : null;
 
         const breadcrumbJsonLd = {
           "@context": "https://schema.org",

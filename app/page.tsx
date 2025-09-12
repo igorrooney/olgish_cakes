@@ -992,6 +992,9 @@ export default async function Home() {
             <Link href="/gift-hampers/cake-by-post" className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors" aria-label="Cake by post">
               Cake by post
             </Link>
+            <Link href="/cake-by-post-service" className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors" aria-label="Cake by post service">
+              Cake by post service
+            </Link>
           </div>
         </Container>
       </AnimatedSection>
