@@ -120,6 +120,37 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
+                  price: "35",
+                  priceCurrency: "GBP",
+                  availability: "https://schema.org/InStock",
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: 0,
+                      currency: "GBP",
+                    },
+                    shippingDestination: {
+                      "@type": "DefinedRegion",
+                      addressCountry: "GB",
+                    },
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 0,
+                        maxValue: 1,
+                        unitCode: "DAY",
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 1,
+                        maxValue: 3,
+                        unitCode: "DAY",
+                      },
+                    },
+                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+                  },
                 },
                 {
                   "@type": "Offer",
@@ -135,6 +166,37 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
+                  price: "40",
+                  priceCurrency: "GBP",
+                  availability: "https://schema.org/InStock",
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: 0,
+                      currency: "GBP",
+                    },
+                    shippingDestination: {
+                      "@type": "DefinedRegion",
+                      addressCountry: "GB",
+                    },
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 0,
+                        maxValue: 1,
+                        unitCode: "DAY",
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 1,
+                        maxValue: 3,
+                        unitCode: "DAY",
+                      },
+                    },
+                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+                  },
                 },
                 {
                   "@type": "Offer",
@@ -149,6 +211,37 @@ export default async function CakesLeedsPage() {
                       bestRating: "5",
                       worstRating: "1",
                     },
+                  },
+                  price: "150",
+                  priceCurrency: "GBP",
+                  availability: "https://schema.org/InStock",
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: 0,
+                      currency: "GBP",
+                    },
+                    shippingDestination: {
+                      "@type": "DefinedRegion",
+                      addressCountry: "GB",
+                    },
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 0,
+                        maxValue: 1,
+                        unitCode: "DAY",
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: 1,
+                        maxValue: 3,
+                        unitCode: "DAY",
+                      },
+                    },
+                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
                   },
                 },
               ],
