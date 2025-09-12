@@ -76,6 +76,37 @@ export async function OrderPageStructuredData() {
                 name: "Honey Cake",
                 description: "Traditional Ukrainian honey cake with premium ingredients",
               },
+              price: "35",
+              priceCurrency: "GBP",
+              availability: "https://schema.org/InStock",
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: 0,
+                  currency: "GBP",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  addressCountry: "GB",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 0,
+                    maxValue: 1,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 1,
+                    maxValue: 3,
+                    unitCode: "DAY",
+                  },
+                },
+                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+              },
             },
             {
               "@type": "Offer",
@@ -84,6 +115,37 @@ export async function OrderPageStructuredData() {
                 name: "Wedding Cakes",
                 description: "Custom wedding cakes with professional design",
               },
+              price: "150",
+              priceCurrency: "GBP",
+              availability: "https://schema.org/InStock",
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: 0,
+                  currency: "GBP",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  addressCountry: "GB",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 0,
+                    maxValue: 1,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 1,
+                    maxValue: 3,
+                    unitCode: "DAY",
+                  },
+                },
+                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+              },
             },
             {
               "@type": "Offer",
@@ -91,6 +153,37 @@ export async function OrderPageStructuredData() {
                 "@type": "Product",
                 name: "Birthday Cakes",
                 description: "Personalized birthday cakes for all ages",
+              },
+              price: "45",
+              priceCurrency: "GBP",
+              availability: "https://schema.org/InStock",
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: 0,
+                  currency: "GBP",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  addressCountry: "GB",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 0,
+                    maxValue: 1,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 1,
+                    maxValue: 3,
+                    unitCode: "DAY",
+                  },
+                },
+                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
               },
             },
           ],
