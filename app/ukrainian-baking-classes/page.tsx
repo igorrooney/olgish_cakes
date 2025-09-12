@@ -137,6 +137,7 @@ export default function UkrainianBakingClassesPage() {
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
             },
+            image: "https://olgishcakes.co.uk/images/ukrainian-baking-classes.jpg",
             url: "https://olgishcakes.co.uk/ukrainian-baking-classes",
           }),
         }}

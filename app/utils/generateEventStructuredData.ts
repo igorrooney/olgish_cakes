@@ -76,10 +76,12 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     };
   }
 
-  // Add image if available
-  if (event.image?.asset?.url) {
-    structuredData.image = event.image.asset.url;
-  }
+  // Add image - use event image if available, otherwise use fallback
+  structuredData.image = event.image?.asset?.url 
+    ? (event.image.asset.url.startsWith("http")
+        ? event.image.asset.url
+        : `https://olgishcakes.co.uk${event.image.asset.url}`)
+    : "https://olgishcakes.co.uk/images/market-event-placeholder.jpg";
 
   // Include offers without a zero price (free entry indicated via isAccessibleForFree)
   structuredData.offers = {

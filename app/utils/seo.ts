@@ -687,6 +687,7 @@ export function generateEventSchema(event: {
       "@type": "Organization",
       name: event.organizer,
     },
+    image: "https://olgishcakes.co.uk/images/event-placeholder.jpg",
   };
 }
 
