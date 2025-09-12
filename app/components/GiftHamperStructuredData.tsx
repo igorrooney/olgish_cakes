@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { generateGoogleMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import { generateHamperMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
 
 interface GiftHamperStructuredDataProps {
   hamper: {
@@ -39,7 +39,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
     if (!hamper.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
-    const structuredData = generateGoogleMerchantCenterSchema(hamper as any, 'hamper');
+    const structuredData = generateHamperMerchantCenterSchema(hamper);
 
     // Add keywords if available
     if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {

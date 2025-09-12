@@ -71,26 +71,35 @@ export async function GET(request: NextRequest) {
 function generateCakeItem(cake: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
   
-  // Get the main image - try mainImage first, then fallback to designs.standard
+  // Enhanced image detection - try multiple sources
   const mainImage = cake.mainImage?.asset?._ref 
     ? cake.mainImage 
     : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
       cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
-      cake.designs?.standard?.[0];
+      cake.designs?.standard?.[0] ||
+      cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.individual?.[0];
   
   const imageUrl = mainImage?.asset?._ref 
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
-  const price = cake.pricing?.standard || 25;
+  const price = cake.pricing?.standard || cake.pricing?.from || 25;
   const availability = cake.structuredData?.availability || 'in stock';
   
   // Handle description properly (could be array or string)
-  const description = Array.isArray(cake.shortDescription) 
+  let description = Array.isArray(cake.shortDescription) 
     ? cake.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : Array.isArray(cake.description)
     ? cake.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : cake.shortDescription || cake.description || `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`;
+    : cake.shortDescription || cake.description || '';
+  
+  // Enhance description for SEO if too short
+  if (!description || description.length < 100) {
+    const enhancedDescription = `${cake.name} - Traditional Ukrainian honey cake handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Available in various sizes with custom designs. Free delivery across Leeds and surrounding areas.`;
+    description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
+  }
   
   return `
     <item>
@@ -159,14 +168,20 @@ function generateHamperItem(hamper: any, baseUrl: string): string {
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
-  const price = hamper.price || 35;
+  const price = hamper.price || hamper.pricing?.standard || 35;
   
   // Handle description properly (could be array or string)
-  const description = Array.isArray(hamper.shortDescription) 
+  let description = Array.isArray(hamper.shortDescription) 
     ? hamper.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : Array.isArray(hamper.description)
     ? hamper.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : hamper.shortDescription || hamper.description || `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`;
+    : hamper.shortDescription || hamper.description || '';
+  
+  // Enhance description for SEO if too short
+  if (!description || description.length < 100) {
+    const enhancedDescription = `${hamper.name} - Beautiful Ukrainian gift hamper handmade with authentic recipes in Leeds, Yorkshire. Perfect for special occasions, birthdays, anniversaries, and celebrations. Thoughtfully curated selection of traditional treats. Free delivery across Leeds and surrounding areas.`;
+    description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
+  }
   
   return `
     <item>
