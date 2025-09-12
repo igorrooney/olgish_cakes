@@ -3,18 +3,16 @@
 import { useEffect } from "react";
 import { generateGoogleMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
 
-interface CakeStructuredDataProps {
-  cake: {
+interface GiftHamperStructuredDataProps {
+  hamper: {
+    _id: string;
     name: string;
     slug: {
       current: string;
     };
     description?: any[];
     shortDescription?: any[];
-    pricing: {
-      standard: number;
-      individual: number;
-    };
+    price: number;
     mainImage?: {
       asset?: {
         url?: string;
@@ -24,7 +22,6 @@ interface CakeStructuredDataProps {
     ingredients?: string[];
     allergens?: string[];
     category?: string;
-    size?: string;
     seo?: {
       metaDescription?: string;
       keywords?: string[];
@@ -37,26 +34,26 @@ interface CakeStructuredDataProps {
   };
 }
 
-export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
+export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataProps) {
   useEffect(() => {
-    if (!cake.structuredData?.enableProductSchema) return;
+    if (!hamper.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
-    const structuredData = generateGoogleMerchantCenterSchema(cake as any, 'cake');
+    const structuredData = generateGoogleMerchantCenterSchema(hamper as any, 'hamper');
 
     // Add keywords if available
-    if (cake.seo?.keywords && cake.seo.keywords.length > 0) {
-      structuredData.keywords = cake.seo.keywords.join(", ");
+    if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {
+      structuredData.keywords = hamper.seo.keywords.join(", ");
     }
 
     // Create script element
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.text = JSON.stringify(structuredData);
-    script.id = "cake-structured-data";
+    script.id = "hamper-structured-data";
 
     // Remove existing script if present
-    const existingScript = document.getElementById("cake-structured-data");
+    const existingScript = document.getElementById("hamper-structured-data");
     if (existingScript) {
       existingScript.remove();
     }
@@ -66,12 +63,12 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
 
     // Cleanup on unmount
     return () => {
-      const scriptToRemove = document.getElementById("cake-structured-data");
+      const scriptToRemove = document.getElementById("hamper-structured-data");
       if (scriptToRemove) {
         scriptToRemove.remove();
       }
     };
-  }, [cake]);
+  }, [hamper]);
 
   return null;
 }
