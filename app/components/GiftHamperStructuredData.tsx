@@ -43,7 +43,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
 
     // Add keywords if available
     if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {
-      structuredData.keywords = hamper.seo.keywords.join(", ");
+      (structuredData as any).keywords = hamper.seo.keywords.join(", ");
     }
 
     // Create script element

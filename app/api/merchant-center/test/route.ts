@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     <lastBuildDate>${new Date().toISOString()}</lastBuildDate>
     
     ${testProducts.map(product => {
-      if (product.pricing) {
+      if ('pricing' in product) {
         return generateCakeItem(product, baseUrl);
       } else {
         return generateHamperItem(product, baseUrl);

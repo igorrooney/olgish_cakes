@@ -46,7 +46,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
 
     // Add keywords if available
     if (cake.seo?.keywords && cake.seo.keywords.length > 0) {
-      structuredData.keywords = cake.seo.keywords.join(", ");
+      (structuredData as any).keywords = cake.seo.keywords.join(", ");
     }
 
     // Create script element

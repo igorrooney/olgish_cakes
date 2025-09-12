@@ -146,10 +146,11 @@ function generateCakeMerchantCenterSchema(cake: Cake, baseUrl: string) {
 
 function generateHamperMerchantCenterSchema(hamper: GiftHamper, baseUrl: string) {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-  const imageUrl = hamper.mainImage?.asset?.url 
-    ? (hamper.mainImage.asset.url.startsWith('http') 
-        ? hamper.mainImage.asset.url 
-        : `https://cdn.sanity.io${hamper.mainImage.asset.url}`)
+  const mainImage = hamper.images?.find(img => img.isMain) || hamper.images?.[0];
+  const imageUrl = mainImage?.asset?.url 
+    ? (mainImage.asset.url.startsWith('http') 
+        ? mainImage.asset.url 
+        : `https://cdn.sanity.io${mainImage.asset.url}`)
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;

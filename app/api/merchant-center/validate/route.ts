@@ -10,6 +10,18 @@ export async function GET(request: NextRequest) {
       getAllGiftHampers(),
     ]);
 
+    const cakeValidations = cakes.map(cake => validateCakeProduct(cake));
+    const hamperValidations = giftHampers.map(hamper => validateHamperProduct(hamper));
+    
+    // Collect all errors and warnings
+    const allErrors: string[] = [];
+    const allWarnings: string[] = [];
+    
+    [...cakeValidations, ...hamperValidations].forEach(product => {
+      if (product.errors) allErrors.push(...product.errors);
+      if (product.warnings) allWarnings.push(...product.warnings);
+    });
+
     const validationResults = {
       summary: {
         totalProducts: cakes.length + giftHampers.length,
@@ -17,17 +29,11 @@ export async function GET(request: NextRequest) {
         giftHampers: giftHampers.length,
         timestamp: new Date().toISOString(),
       },
-      cakes: cakes.map(cake => validateCakeProduct(cake)),
-      giftHampers: giftHampers.map(hamper => validateHamperProduct(hamper)),
-      errors: [],
-      warnings: [],
+      cakes: cakeValidations,
+      giftHampers: hamperValidations,
+      errors: allErrors,
+      warnings: allWarnings,
     };
-
-    // Collect all errors and warnings
-    [...validationResults.cakes, ...validationResults.giftHampers].forEach(product => {
-      if (product.errors) validationResults.errors.push(...product.errors);
-      if (product.warnings) validationResults.warnings.push(...product.warnings);
-    });
 
     return NextResponse.json(validationResults, {
       headers: {
