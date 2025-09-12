@@ -10,6 +10,7 @@ import { designTokens } from "@/lib/design-system";
 import { ProductCard, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 import { GiftHamper } from "@/types/giftHamper";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -54,12 +55,14 @@ const GiftHamperCard = memo(function GiftHamperCard({
     () => ({
       "@context": "https://schema.org",
       "@type": "Product",
+      "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
       name: hamper.name,
       description: hamper.shortDescription
         ? blocksToText(hamper.shortDescription)
         : `${hamper.name} gift hamper`,
       category: hamper.category || "Gift Hamper",
       brand: { "@type": "Brand", name: "Olgish Cakes" },
+      image: [imageUrl],
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: "5",
@@ -74,6 +77,13 @@ const GiftHamperCard = memo(function GiftHamperCard({
         availability: "https://schema.org/InStock",
         priceValidUntil: getPriceValidUntil(30),
         url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
+        seller: {
+          "@type": "Organization",
+          name: "Olgish Cakes",
+          url: "https://olgishcakes.co.uk",
+        },
+        shippingDetails: getOfferShippingDetails(),
+        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
       },
     }),
     [hamper, price]
