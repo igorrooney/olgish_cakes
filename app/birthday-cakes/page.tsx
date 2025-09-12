@@ -206,6 +206,34 @@ export default async function BirthdayCakesPage() {
           priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
             .toISOString()
             .split("T")[0],
+          shippingDetails: {
+            "@type": "OfferShippingDetails",
+            shippingRate: {
+              "@type": "MonetaryAmount",
+              value: 0,
+              currency: "GBP",
+            },
+            shippingDestination: {
+              "@type": "DefinedRegion",
+              addressCountry: "GB",
+            },
+            deliveryTime: {
+              "@type": "ShippingDeliveryTime",
+              handlingTime: {
+                "@type": "QuantitativeValue",
+                minValue: 0,
+                maxValue: 1,
+                unitCode: "DAY",
+              },
+              transitTime: {
+                "@type": "QuantitativeValue",
+                minValue: 1,
+                maxValue: 3,
+                unitCode: "DAY",
+              },
+            },
+            appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+          },
         },
       },
     })),
