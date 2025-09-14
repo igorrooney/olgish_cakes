@@ -48,6 +48,7 @@ async function getCake(slug: string, preview = false): Promise<Cake | null> {
     ingredients,
     allergens,
     mainImage,
+    images,
     seo,
     structuredData
   }`;
