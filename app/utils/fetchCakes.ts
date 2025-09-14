@@ -49,6 +49,10 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
       _type,
       asset
     },
+    images {
+      _type,
+      asset
+    },
     designs {
       standard[] {
         _type,
@@ -131,6 +135,10 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
     size,
     pricing,
     mainImage {
+      _type,
+      asset
+    },
+    images {
       _type,
       asset
     },
