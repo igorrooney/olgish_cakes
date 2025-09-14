@@ -234,7 +234,10 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
       cake.designs?.standard?.[0] ||
       cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
       cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
-      cake.designs?.individual?.[0];
+      cake.designs?.individual?.[0] ||
+      // Fallback to images array (for legacy data like Honey Cake)
+      cake.images?.find((img: any) => img.asset?._ref) ||
+      cake.images?.[0];
   
   // Import urlFor dynamically to avoid build issues
   let urlFor: any;
@@ -385,8 +388,9 @@ export function validateMerchantCenterProduct(product: any): {
   const hasDesignImages = product.designs?.standard?.some((img: any) => img.asset?._ref) ||
                          product.designs?.individual?.some((img: any) => img.asset?._ref);
   const hasHamperImages = product.images?.some((img: any) => img.asset?._ref);
+  const hasLegacyImages = product.images?.some((img: any) => img.asset?._ref);
   
-  if (!hasMainImage && !hasDesignImages && !hasHamperImages) {
+  if (!hasMainImage && !hasDesignImages && !hasHamperImages && !hasLegacyImages) {
     errors.push('No product images found - this will cause Google Merchant Center validation failures');
   } else {
     // Check if images have valid asset references
@@ -399,6 +403,14 @@ export function validateMerchantCenterProduct(product: any): {
       ) || [];
       if (invalidDesignImages.length > 0) {
         warnings.push(`${invalidDesignImages.length} design images have invalid asset references`);
+      }
+    }
+    if (hasLegacyImages) {
+      const invalidLegacyImages = product.images?.filter((img: any) => 
+        img.asset?._ref === undefined || img.asset?._ref === null
+      ) || [];
+      if (invalidLegacyImages.length > 0) {
+        warnings.push(`${invalidLegacyImages.length} legacy images have invalid asset references`);
       }
     }
   }
