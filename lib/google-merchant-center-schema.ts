@@ -236,8 +236,20 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
       cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
       cake.designs?.individual?.[0];
   
+  // Import urlFor dynamically to avoid build issues
+  let urlFor: any;
+  try {
+    urlFor = require('@/sanity/lib/image').urlFor;
+  } catch (error) {
+    // Fallback for build environments where dynamic import might fail
+    console.warn('Could not import urlFor, using fallback image URL generation');
+    urlFor = (image: any) => ({
+      width: () => ({ height: () => ({ url: () => `${baseUrl}/images/placeholder-cake.jpg` }) })
+    });
+  }
+  
   const imageUrl = mainImage?.asset?._ref 
-    ? mainImage.asset.url
+    ? urlFor(mainImage).width(800).height(800).url()
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || cake.pricing?.from || 25;
@@ -287,8 +299,20 @@ export function generateHamperMerchantCenterSchema(hamper: any): any {
                    hamper.images?.find((img: any) => img.asset?._ref) || 
                    hamper.images?.[0];
   
+  // Import urlFor dynamically to avoid build issues
+  let urlFor: any;
+  try {
+    urlFor = require('@/sanity/lib/image').urlFor;
+  } catch (error) {
+    // Fallback for build environments where dynamic import might fail
+    console.warn('Could not import urlFor, using fallback image URL generation');
+    urlFor = (image: any) => ({
+      width: () => ({ height: () => ({ url: () => `${baseUrl}/images/placeholder-cake.jpg` }) })
+    });
+  }
+  
   const imageUrl = mainImage?.asset?._ref 
-    ? mainImage.asset.url
+    ? urlFor(mainImage).width(800).height(800).url()
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || hamper.pricing?.standard || 35;
@@ -363,7 +387,20 @@ export function validateMerchantCenterProduct(product: any): {
   const hasHamperImages = product.images?.some((img: any) => img.asset?._ref);
   
   if (!hasMainImage && !hasDesignImages && !hasHamperImages) {
-    warnings.push('No product images found');
+    errors.push('No product images found - this will cause Google Merchant Center validation failures');
+  } else {
+    // Check if images have valid asset references
+    if (hasMainImage && !product.mainImage.asset._ref) {
+      errors.push('Main image asset reference is invalid');
+    }
+    if (hasDesignImages) {
+      const invalidDesignImages = product.designs?.standard?.filter((img: any) => 
+        img.asset?._ref === undefined || img.asset?._ref === null
+      ) || [];
+      if (invalidDesignImages.length > 0) {
+        warnings.push(`${invalidDesignImages.length} design images have invalid asset references`);
+      }
+    }
   }
 
   // Description validation
