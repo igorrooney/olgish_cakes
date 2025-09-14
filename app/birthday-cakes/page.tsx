@@ -182,12 +182,32 @@ export default async function BirthdayCakesPage() {
       item: {
         "@type": "Product",
         name: cake.name,
-        image:
-          cake?.mainImage?.asset?.url
-            ? (cake.mainImage.asset.url.startsWith("http")
-                ? cake.mainImage.asset.url
-                : `https://olgishcakes.co.uk${cake.mainImage.asset.url}`)
-            : "https://olgishcakes.co.uk/images/placeholder-cake.jpg",
+        image: (() => {
+          // Import urlFor dynamically to avoid build issues
+          let urlFor: any;
+          try {
+            urlFor = require('@/sanity/lib/image').urlFor;
+          } catch (error) {
+            // Fallback for build environments where dynamic import might fail
+            urlFor = (image: any) => ({
+              width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
+            });
+          }
+          
+          // Get the best available image
+          const mainImage = cake.mainImage?.asset?._ref 
+            ? cake.mainImage 
+            : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
+              cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+              cake.designs?.standard?.[0] ||
+              cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
+              cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+              cake.designs?.individual?.[0];
+          
+          return mainImage?.asset?._ref 
+            ? urlFor(mainImage).width(800).height(800).url()
+            : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
+        })(),
         url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
         brand: { "@type": "Brand", name: "Olgish Cakes" },
         category: "Birthday Cake",

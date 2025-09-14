@@ -123,6 +123,7 @@ const navigationBase = [
     dropdown: [
       { name: "Custom Cake Design", href: "/custom-cake-design" },
       { name: "Cake Delivery", href: "/cake-delivery" },
+      { name: "Cake by Post Service", href: "/cake-by-post-service" },
       { name: "Buy Cake Online", href: "/buy-cake" },
       { name: "Leeds Bakery", href: "/leeds-bakery" },
       { name: "Cake Decorating Services", href: "/cake-decorating-services" },
