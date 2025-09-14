@@ -66,10 +66,22 @@ export async function GET(request: NextRequest) {
 // Helper functions (copied from main feed for test endpoint)
 function generateCakeItem(cake: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-  const imageUrl = cake.mainImage?.asset?.url 
-    ? (cake.mainImage.asset.url.startsWith('http') 
-        ? cake.mainImage.asset.url 
-        : `https://cdn.sanity.io${cake.mainImage.asset.url}`)
+  
+  // Get the best available image
+  const mainImage = cake.mainImage?.asset?._ref 
+    ? cake.mainImage 
+    : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.standard?.[0] ||
+      cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.individual?.[0] ||
+      // Fallback to images array (for legacy data like Honey Cake)
+      cake.images?.find((img: any) => img.asset?._ref) ||
+      cake.images?.[0];
+  
+  const imageUrl = mainImage?.asset?._ref 
+    ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || 25;
@@ -93,10 +105,15 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-  const imageUrl = hamper.mainImage?.asset?.url 
-    ? (hamper.mainImage.asset.url.startsWith('http') 
-        ? hamper.mainImage.asset.url 
-        : `https://cdn.sanity.io${hamper.mainImage.asset.url}`)
+  
+  // Get the best available image
+  const mainImage = hamper.mainImage?.asset?._ref 
+    ? hamper.mainImage 
+    : hamper.images?.find((img: any) => img.asset?._ref) ||
+      hamper.images?.[0];
+  
+  const imageUrl = mainImage?.asset?._ref 
+    ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;
