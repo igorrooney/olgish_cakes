@@ -66,8 +66,14 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       }
       data.append(
         "message",
-        `\nGift Hamper: ${hamper.name}\nPrice: £${hamper.price}\nCategory: ${hamper.category || "N/A"}\n\n${formData.message}\n`
+        `\nGift Hamper: ${hamper.name}\nPrice: £${hamper.price}\nCategory: ${hamper.category || "N/A"}\n\n${formData.message || "No additional message provided"}\n`
       );
+      if (formData.giftNote) {
+        data.append("giftNote", formData.giftNote);
+      }
+      if (formData.note) {
+        data.append("note", formData.note);
+      }
       // Explicitly mark as order form so API uses order subject
       data.append("isOrderForm", "true");
 
@@ -194,7 +200,9 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
                 showPostcode={true}
                 showCity={true}
                 showDate={true}
-                requireMessage={true}
+                requireMessage={false}
+                showGiftNote={true}
+                showNote={true}
                 suppressStructuredData
               />
             </MotionBox>
