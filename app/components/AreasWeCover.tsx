@@ -15,7 +15,7 @@ interface AreasWeCoverProps {
 
 export function AreasWeCover({
   title = "Areas We Cover",
-  subtitle = "Cake delivery and wedding/birthday cake service across Leeds and nearby towns.",
+  subtitle = "Cake delivery and wedding/birthday cake service across Leeds and around towns.",
   areas = [
     { label: "Leeds", href: "/cakes-leeds" },
     { label: "York", href: "/cakes-york" },

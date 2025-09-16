@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   title:
     "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup | Olgish Cakes",
   description:
-    "Bespoke wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and professional venue setup and delivery.",
+    "Special wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and professional venue setup and delivery.",
   keywords:
     "wedding cakes Leeds, custom wedding cakes Leeds, wedding cake tasting Leeds, wedding cake consultation Leeds, venue setup wedding cake Leeds, honey cake wedding cake, Ukrainian wedding cakes, luxury wedding cakes",
   openGraph: {
     title:
       "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
     description:
-      "Bespoke wedding cakes in Leeds with Ukrainian flavours. Design consultation, private tasting and professional delivery with venue setup.",
+      "Special wedding cakes in Leeds with Ukrainian flavours. Design consultation, private tasting and professional delivery with venue setup.",
     url: "https://olgishcakes.co.uk/wedding-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title:
       "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
     description:
-      "Bespoke Ukrainian-inspired wedding cakes with tasting, consultation and venue setup.",
+      "Special Ukrainian-inspired wedding cakes with tasting, consultation and venue setup.",
     images: ["https://olgishcakes.co.uk/images/wedding-cakes.jpg"],
   },
   alternates: {
@@ -85,25 +85,25 @@ export default async function WeddingCakesPage() {
     {
       name: "Custom Design Wedding Cakes",
       description:
-        "Every wedding cake is uniquely designed to match your wedding theme and personal style",
+        "Every wedding cake is made special to match your wedding theme and personal style",
       price: "From £80",
     },
     {
       name: "Ukrainian Flavors Wedding Cakes",
       description:
-        "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for a unique wedding experience",
+        "Old Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
       price: "From £90",
     },
     {
       name: "Wedding Cake Consultation",
       description:
-        "Personal consultation to discuss design, flavors, and wedding cake requirements",
+        "Personal consultation to talk about design, flavors, and wedding cake needs",
       price: "Free",
     },
     {
       name: "Wedding Cake Delivery",
       description:
-        "Professional delivery and setup service to your wedding venue in Leeds and surrounding areas",
+        "Professional delivery and setup service to your wedding venue in Leeds and around areas",
       price: "From £20",
     },
   ];
@@ -113,7 +113,7 @@ export default async function WeddingCakesPage() {
     "@type": "Service",
     name: "Wedding Cakes Leeds",
     description:
-      "Bespoke wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and venue setup.",
+      "Special wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and venue setup.",
     url: "https://olgishcakes.co.uk/wedding-cakes",
     provider: {
       "@type": "Organization",
@@ -183,17 +183,17 @@ export default async function WeddingCakesPage() {
       {
         "@type": "Question",
         name: "Do you offer wedding cake tastings?",
-        acceptedAnswer: { "@type": "Answer", text: "Yes. We arrange private tastings during the design stage." }
+        acceptedAnswer: { "@type": "Answer", text: "Yes. I arrange private tastings during the design stage." }
       },
       {
         "@type": "Question",
         name: "Can you deliver and set up at my venue?",
-        acceptedAnswer: { "@type": "Answer", text: "Yes, delivery and full venue setup are available across Leeds and nearby areas." }
+        acceptedAnswer: { "@type": "Answer", text: "Yes, delivery and full venue setup are available across Leeds and around areas." }
       },
       {
         "@type": "Question",
         name: "How far in advance should I book?",
-        acceptedAnswer: { "@type": "Answer", text: "We recommend booking 6–12 weeks in advance. Short‑notice orders may be possible." }
+        acceptedAnswer: { "@type": "Answer", text: "I recommend booking 6–12 weeks in advance. Short‑notice orders may be possible." }
       }
     ]
   } as const;
@@ -255,9 +255,9 @@ export default async function WeddingCakesPage() {
                 fontWeight: 400,
               }}
             >
-              Create the perfect centerpiece for your special day with our custom wedding cakes.
-              Combining Ukrainian traditions with modern elegance, each wedding cake is a unique
-              masterpiece crafted with love and attention to detail.
+              Create the perfect centerpiece for your special day with my custom wedding cakes.
+              Mixing Ukrainian traditions with modern elegance, each wedding cake is special
+              masterpiece made with love and care.
             </Typography>
             <Chip
               label="Custom Wedding Cake Design"
@@ -278,25 +278,25 @@ export default async function WeddingCakesPage() {
               {
                 title: "Custom Design",
                 description:
-                  "Every wedding cake is uniquely designed to match your wedding theme and personal style",
+                  "Every wedding cake is made special to match your wedding theme and personal style",
                 icon: "🎨",
               },
               {
                 title: "Ukrainian Flavors",
                 description:
-                  "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for a unique wedding experience",
+                  "Old Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
                 icon: "🇺🇦",
               },
               {
                 title: "Wedding Consultation",
                 description:
-                  "Personal consultation to discuss design, flavors, and wedding cake requirements",
+                  "Personal consultation to talk about design, flavors, and wedding cake needs",
                 icon: "💍",
               },
               {
                 title: "Wedding Delivery",
                 description:
-                  "Professional delivery and setup service to your wedding venue in Leeds and surrounding areas",
+                  "Professional delivery and setup service to your wedding venue in Leeds and around areas",
                 icon: "🚚",
               },
             ].map((service, index) => (
@@ -353,8 +353,8 @@ export default async function WeddingCakesPage() {
                   Custom Wedding Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                  Every wedding cake is custom-designed to match your unique vision. Contact us to
-                  discuss your wedding cake requirements and view our portfolio.
+                  Every wedding cake is custom-designed to match your unique vision. Contact me to
+                  discuss your wedding cake requirements and view my portfolio.
                 </Typography>
                 <Button
                   component={Link}
@@ -408,25 +408,25 @@ export default async function WeddingCakesPage() {
                   step: "1",
                   title: "Initial Consultation",
                   description:
-                    "We meet to discuss your wedding theme, color scheme, guest count, and cake preferences. This can be in-person, over the phone, or via video call.",
+                    "I meet with you to talk about your wedding theme, color scheme, guest count, and cake preferences. This can be in-person, over the phone, or via video call.",
                 },
                 {
                   step: "2",
                   title: "Design & Tasting",
                   description:
-                    "We create a custom design proposal and arrange a tasting session with our signature Ukrainian flavors and traditional wedding cake options.",
+                    "I create a custom design proposal and arrange a tasting session with my signature Ukrainian flavors and old wedding cake options.",
                 },
                 {
                   step: "3",
                   title: "Final Design",
                   description:
-                    "After the tasting, we finalize the design, flavors, and all details. A 50% deposit secures your wedding date.",
+                    "After the tasting, I finalize the design, flavors, and all details. A 50% deposit secures your wedding date.",
                 },
                 {
                   step: "4",
                   title: "Creation & Delivery",
                   description:
-                    "Your wedding cake is carefully crafted and delivered to your venue on your special day, with professional setup included.",
+                    "Your wedding cake is carefully made and delivered to your venue on your special day, with professional setup included.",
                 },
               ].map((step, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -467,7 +467,7 @@ export default async function WeddingCakesPage() {
 
           <AreasWeCover
             title="Wedding Cake Delivery Areas"
-            subtitle="Professional wedding cake delivery and venue setup across Leeds and nearby towns."
+            subtitle="Professional wedding cake delivery and venue setup across Leeds and around towns."
           />
 
           {/* Wedding Cake Flavors */}
@@ -496,7 +496,7 @@ export default async function WeddingCakesPage() {
               Wedding Cake Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our wedding cakes feature a unique blend of traditional Ukrainian flavors and classic
+              My wedding cakes feature a unique blend of old Ukrainian flavors and classic
               wedding cake options. From the delicate honey layers of honey cake to the rich
               chocolate of Kyiv cake, each flavor tells a story of Ukrainian tradition while
               creating a memorable wedding experience.
@@ -546,7 +546,7 @@ export default async function WeddingCakesPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Let us create the perfect wedding cake for your special day. Contact us today to
+              Let me create the perfect wedding cake for your special day. Contact me today to
               schedule your wedding cake consultation and tasting session.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

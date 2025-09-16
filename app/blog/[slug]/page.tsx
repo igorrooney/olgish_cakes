@@ -307,10 +307,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Ready to Order Your Perfect Cake?
             </Typography>
             <Typography variant="h4" className="text-blue-100 mb-6">
-              Inspired by our blog? Let us create a custom cake for your special occasion.
+              Inspired by my blog? Let me create a custom cake for your special occasion.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/cakes" aria-label="Browse our cake collection">
+              <Link href="/cakes" aria-label="Browse my cake collection">
                 <Button
                   size="large"
                   sx={{
@@ -319,10 +319,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     "&:hover": { bgcolor: "yellow.600" },
                   }}
                 >
-                  Browse Our Cakes
+                  Browse My Cakes
                 </Button>
               </Link>
-              <Link href="/contact" aria-label="Contact us for custom cakes">
+              <Link href="/contact" aria-label="Contact me for custom cakes">
                 <Button
                   size="large"
                   variant="outlined"
@@ -332,7 +332,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     "&:hover": { bgcolor: "white", color: "blue.700" },
                   }}
                 >
-                  Contact Us
+                  Contact Me
                 </Button>
               </Link>
             </div>

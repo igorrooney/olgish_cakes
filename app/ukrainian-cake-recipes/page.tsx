@@ -5,16 +5,16 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe | Olgish Cakes",
+    "Ukrainian Cake Recipes | Old Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe | Olgish Cakes",
   description:
-    "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
+    "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and old Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
   keywords:
-    "Ukrainian cake recipes, traditional Ukrainian baking, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking techniques, traditional medovik recipe",
+    "Ukrainian cake recipes, old Ukrainian baking, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian dessert recipes, real Ukrainian cakes, Ukrainian baking techniques, old medovik recipe",
   openGraph: {
     title:
-      "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
+      "Ukrainian Cake Recipes | Old Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
-      "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
+      "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and old Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
     url: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
     siteName: "Olgish Cakes",
     images: [
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Recipes | Traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
+      "Ukrainian Cake Recipes | Old Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
     description:
-      "Discover authentic Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts.",
+      "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and old Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-cake-recipes.jpg"],
   },
   alternates: {
@@ -52,7 +52,7 @@ export default function UkrainianCakeRecipesPage() {
             "@context": "https://schema.org",
             "@type": "WebPage",
             name: "Ukrainian Cake Recipes",
-            description: "Explore traditional Ukrainian cake recipes and baking tips.",
+            description: "Explore old Ukrainian cake recipes and baking tips.",
             url: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
           }),
         }}
@@ -78,7 +78,7 @@ export default function UkrainianCakeRecipesPage() {
                 lineHeight: 1.2,
               }}
             >
-              Traditional Ukrainian Cake Recipes
+              Old Ukrainian Cake Recipes
             </Typography>
             <Typography
               variant="h2"
@@ -91,12 +91,12 @@ export default function UkrainianCakeRecipesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover the authentic recipes and techniques behind traditional Ukrainian cakes. From
-              honey cake to Kyiv cake, learn the secrets of Ukrainian baking that have been passed
-              down through generations.
+              Discover the real recipes and techniques behind old Ukrainian cakes. From honey cake
+              to Kyiv cake, learn the secrets of Ukrainian baking that have been passed down through
+              generations.
             </Typography>
             <Chip
-              label="Authentic Ukrainian Baking Recipes"
+              label="Real Ukrainian Baking Recipes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -177,7 +177,7 @@ export default function UkrainianCakeRecipesPage() {
                 {
                   name: "Poppy Seed Roll (Makivnyk)",
                   description:
-                    "Traditional Ukrainian poppy seed roll with soft yeast dough and sweet filling",
+                    "Old Ukrainian poppy seed roll with soft yeast dough and sweet filling",
                   ingredients: [
                     "Poppy Seeds",
                     "Yeast Dough",
@@ -307,7 +307,7 @@ export default function UkrainianCakeRecipesPage() {
                   {
                     technique: "Sour Cream Filling",
                     description:
-                      "Traditional Ukrainian sour cream filling requires proper straining and resting for the perfect consistency",
+                      "Old Ukrainian sour cream filling requires proper straining and resting for the perfect consistency",
                     icon: "🥛",
                   },
                 ].map((technique, index) => (
@@ -399,8 +399,7 @@ export default function UkrainianCakeRecipesPage() {
               Ready to Try Ukrainian Baking?
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Order our authentic Ukrainian cakes or join our baking classes to learn these
-              traditional techniques
+              Order my real Ukrainian cakes or join my baking classes to learn these old techniques
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

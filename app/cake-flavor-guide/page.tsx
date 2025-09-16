@@ -6,13 +6,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Flavor Guide | Ukrainian Cake Flavors | Olgish Cakes",
   description:
-    "Explore our Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
+    "Explore my Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
   keywords:
     "cake flavor guide, Ukrainian cake flavors, best cake flavors, birthday cake flavors, wedding cake flavors",
   openGraph: {
     title: "Cake Flavor Guide | Ukrainian Cake Flavors",
     description:
-      "Explore our Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
+      "Explore my Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
     url: "https://olgishcakes.co.uk/cake-flavor-guide",
     images: ["https://olgishcakes.co.uk/images/cake-flavor-guide.jpg"],
     type: "article",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Flavor Guide | Ukrainian Cake Flavors",
     description:
-      "Explore our Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
+      "Explore my Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
     images: ["https://olgishcakes.co.uk/images/cake-flavor-guide.jpg"],
   },
   alternates: {
@@ -166,7 +166,7 @@ export default function CakeFlavorGuidePage() {
                 mx: "auto",
               }}
             >
-              Explore our most popular Ukrainian cake flavors. Find the perfect flavor for your next
+              Explore my most popular Ukrainian cake flavors. Find the perfect flavor for your next
               celebration!
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

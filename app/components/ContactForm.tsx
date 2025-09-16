@@ -44,6 +44,8 @@ interface FormData {
   cakeInterest?: string;
   dateNeeded: Dayjs | null;
   message: string;
+  giftNote?: string;
+  note?: string;
   designImage?: File;
 }
 
@@ -61,6 +63,8 @@ interface ContactFormProps {
   showPostcode?: boolean;
   showCity?: boolean;
   requireMessage?: boolean;
+  showGiftNote?: boolean;
+  showNote?: boolean;
   // When true, suppresses rendering of JSON-LD to avoid duplicates in modals
   suppressStructuredData?: boolean;
 }
@@ -85,6 +89,8 @@ export function ContactForm({
   showPostcode = false,
   showCity = false,
   requireMessage = true,
+  showGiftNote = false,
+  showNote = false,
   suppressStructuredData = false,
 }: ContactFormProps = {}) {
   const [formData, setFormData] = useState<FormData>({
@@ -97,6 +103,8 @@ export function ContactForm({
     cakeInterest: "",
     dateNeeded: null,
     message: "",
+    giftNote: "",
+    note: "",
   });
   const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
   const [internalSubmitStatus, setInternalSubmitStatus] = useState<"success" | "error" | null>(
@@ -288,6 +296,12 @@ export function ContactForm({
         formDataToSend.append("dateNeeded", formData.dateNeeded.toISOString());
       }
       formDataToSend.append("message", formData.message);
+      if (formData.giftNote) {
+        formDataToSend.append("giftNote", formData.giftNote);
+      }
+      if (formData.note) {
+        formDataToSend.append("note", formData.note);
+      }
       if (formData.designImage) {
         formDataToSend.append("designImage", formData.designImage);
       }
@@ -345,9 +359,9 @@ export function ContactForm({
         itemType="https://schema.org/ContactForm"
       >
         <Stack spacing={spacing.lg}>
-          {[
+          {/* Personal Information Section */}
+          <MotionBox {...formFieldAnimation} transition={{ delay: 0.1 }}>
             <StyledTextField
-              key="name"
               label="Full Name"
               name="name"
               value={formData.name}
@@ -359,10 +373,46 @@ export function ContactForm({
               size="medium"
               aria-label="Full name"
               aria-required="true"
-            />,
-            showAddress ? (
+            />
+          </MotionBox>
+
+          <MotionBox {...formFieldAnimation} transition={{ delay: 0.2 }}>
+            <StyledTextField
+              label="Email Address"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              fullWidth
+              disabled={isSubmitting}
+              placeholder="Enter your email address"
+              size="medium"
+              aria-label="Email address"
+              aria-required="true"
+            />
+          </MotionBox>
+
+          <MotionBox {...formFieldAnimation} transition={{ delay: 0.3 }}>
+            <StyledTextField
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              fullWidth
+              disabled={isSubmitting}
+              placeholder="Enter your phone number"
+              size="medium"
+              aria-label="Phone number"
+              aria-required="true"
+            />
+          </MotionBox>
+
+          {/* Address Information Section */}
+          {showAddress && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.4 }}>
               <StyledTextField
-                key="address"
                 label="Address"
                 name="address"
                 value={formData.address}
@@ -375,10 +425,12 @@ export function ContactForm({
                 aria-label="Address"
                 aria-required="true"
               />
-            ) : null,
-            showCity ? (
+            </MotionBox>
+          )}
+
+          {showCity && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.5 }}>
               <StyledTextField
-                key="city"
                 label="City"
                 name="city"
                 value={formData.city}
@@ -391,10 +443,12 @@ export function ContactForm({
                 aria-label="City"
                 aria-required="true"
               />
-            ) : null,
-            showPostcode ? (
+            </MotionBox>
+          )}
+
+          {showPostcode && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.6 }}>
               <StyledTextField
-                key="postcode"
                 label="Postcode"
                 name="postcode"
                 value={formData.postcode}
@@ -414,57 +468,12 @@ export function ContactForm({
                 aria-label="Postcode"
                 aria-required="true"
               />
-            ) : null,
-            <StyledTextField
-              key="email"
-              label="Email Address"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              fullWidth
-              disabled={isSubmitting}
-              placeholder="Enter your email address"
-              size="medium"
-              aria-label="Email address"
-              aria-required="true"
-            />,
-            <StyledTextField
-              key="phone"
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              fullWidth
-              disabled={isSubmitting}
-              placeholder="Enter your phone number"
-              size="medium"
-            />,
-          ].map((field, index) => (
-            <MotionBox key={index} {...formFieldAnimation} transition={{ delay: index * 0.1 }}>
-              {field}
-            </MotionBox>
-          ))}
-
-          {!hideCakeInterest && (
-            <MotionBox {...formFieldAnimation} transition={{ delay: 0.3 }}>
-              <StyledTextField
-                label="Cake Interest"
-                name="cakeInterest"
-                value={formData.cakeInterest}
-                onChange={handleChange}
-                fullWidth
-                disabled={isSubmitting}
-                placeholder="What type of cake are you interested in?"
-                size="medium"
-              />
             </MotionBox>
           )}
 
+          {/* Order Details Section */}
           {showDate && (
-            <MotionBox {...formFieldAnimation} transition={{ delay: 0.4 }}>
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.7 }}>
               <DatePicker
                 label="Date Needed"
                 value={formData.dateNeeded}
@@ -495,29 +504,140 @@ export function ContactForm({
             </MotionBox>
           )}
 
-          <MotionBox {...formFieldAnimation} transition={{ delay: 0.5 }}>
-            <StyledTextField
-              label="Message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required={requireMessage}
-              fullWidth
-              multiline
-              rows={4}
-              disabled={isSubmitting}
-              placeholder={
-                isOrderForm
-                  ? "Tell us about your cake requirements, any special requests, or dietary restrictions..."
-                  : "How can we help you?"
-              }
-              size="medium"
-              aria-required={requireMessage ? "true" : undefined}
-            />
-          </MotionBox>
+          {!hideCakeInterest && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.8 }}>
+              <StyledTextField
+                label="Cake Interest"
+                name="cakeInterest"
+                value={formData.cakeInterest}
+                onChange={handleChange}
+                fullWidth
+                disabled={isSubmitting}
+                placeholder="What type of cake are you interested in?"
+                size="medium"
+              />
+            </MotionBox>
+          )}
+
+          {/* Order Requirements Section */}
+          {showNote && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 0.9 }}>
+              <StyledTextField
+                label="Additional Notes (Optional)"
+                name="note"
+                value={formData.note}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={3}
+                disabled={isSubmitting}
+                placeholder="Any special instructions, dietary requirements, or additional information..."
+                size="medium"
+                helperText="Please provide any special requirements or additional information for your order"
+                FormHelperTextProps={{
+                  sx: {
+                    color: "text.secondary",
+                    fontSize: "0.875rem",
+                    mt: 1,
+                  },
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: borderRadius.lg,
+                    backgroundColor: colors.background.paper,
+                    "& fieldset": {
+                      borderColor: colors.border.medium,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: colors.border.dark,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: colors.primary.main,
+                    },
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    fontSize: typography.fontSize.base,
+                    color: colors.text.primary,
+                  },
+                }}
+              />
+            </MotionBox>
+          )}
+
+          {/* Messages Section */}
+          {requireMessage && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 1.0 }}>
+              <StyledTextField
+                label="Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required={requireMessage}
+                fullWidth
+                multiline
+                rows={4}
+                disabled={isSubmitting}
+                placeholder={
+                  isOrderForm
+                    ? "Tell us about your cake requirements, any special requests, or dietary restrictions..."
+                    : "How can we help you?"
+                }
+                size="medium"
+                aria-required={requireMessage ? "true" : undefined}
+              />
+            </MotionBox>
+          )}
+
+          {/* Gift Personalization Section */}
+          {showGiftNote && (
+            <MotionBox {...formFieldAnimation} transition={{ delay: 1.1 }}>
+              <StyledTextField
+                label="Gift Note (Optional)"
+                name="giftNote"
+                value={formData.giftNote}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={3}
+                disabled={isSubmitting}
+                placeholder="Add a personal message to include with your gift..."
+                size="medium"
+                helperText="This message will be included with your gift hamper delivery"
+                FormHelperTextProps={{
+                  sx: {
+                    color: "text.secondary",
+                    fontSize: "0.875rem",
+                    mt: 1,
+                  },
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: borderRadius.lg,
+                    backgroundColor: colors.background.paper,
+                    "& fieldset": {
+                      borderColor: colors.border.medium,
+                    },
+                    "&:hover fieldset": {
+                      borderColor: colors.border.dark,
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: colors.primary.main,
+                    },
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    fontSize: typography.fontSize.base,
+                    color: colors.text.primary,
+                    fontStyle: "italic",
+                  },
+                }}
+              />
+            </MotionBox>
+          )}
 
           {showImageUpload && (
-            <MotionBox {...formFieldAnimation} transition={{ delay: 0.6 }}>
+            <MotionBox {...formFieldAnimation} transition={{ delay: 1.2 }}>
               <Box
                 sx={{
                   border: `2px dashed ${colors.border.medium}`,

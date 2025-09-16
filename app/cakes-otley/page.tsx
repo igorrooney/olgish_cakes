@@ -4,15 +4,15 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Otley | Ukrainian Cakes Otley | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Otley | Ukrainian Cakes Otley | Old Ukrainian Cakes | Olgish Cakes",
   description:
-    "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Otley. Order now for special occasions.",
+    "Old Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley. Order now for special occasions.",
   keywords:
-    "cakes Otley, Ukrainian cakes Otley, honey cake Otley, Kyiv cake Otley, traditional Ukrainian cakes Otley, cake delivery Otley",
+    "cakes Otley, Ukrainian cakes Otley, honey cake Otley, Kyiv cake Otley, old Ukrainian cakes Otley, cake delivery Otley",
   openGraph: {
     title: "Cakes Otley | Ukrainian Cakes Otley",
     description:
-      "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Otley.",
+      "Old Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley.",
     url: "https://olgishcakes.co.uk/cakes-otley",
     images: ["https://olgishcakes.co.uk/images/cakes-otley.jpg"],
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Otley | Ukrainian Cakes Otley",
     description:
-      "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Otley.",
+      "Old Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley.",
     images: ["https://olgishcakes.co.uk/images/cakes-otley.jpg"],
   },
   alternates: {
@@ -41,7 +41,7 @@ export default function CakesOtleyPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Otley Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Otley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Otley and surrounding areas.",
+              "Fresh, handmade cakes in Otley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Otley and around areas.",
             url: "https://olgishcakes.co.uk/cakes-otley",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
@@ -108,12 +108,12 @@ export default function CakesOtleyPage() {
                 lineHeight: 1.6,
               }}
             >
-              Traditional Ukrainian cakes delivered to Otley. Handcrafted honey cake, Kyiv cake, and
-              authentic Ukrainian desserts made with love in Leeds and delivered fresh to your door
+              Old Ukrainian cakes delivered to Otley. Handcrafted honey cake, Kyiv cake, and
+              real Ukrainian desserts made with love in Leeds and delivered fresh to your door
               in Otley.
             </Typography>
             <Chip
-              label="Traditional Ukrainian Cakes Otley"
+              label="Old Ukrainian Cakes Otley"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -144,8 +144,8 @@ export default function CakesOtleyPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Experience authentic Ukrainian cakes in Otley. Contact us to place your order and
-              enjoy traditional Ukrainian flavors delivered to your door.
+              Experience real Ukrainian cakes in Otley. Contact me to place your order and
+              enjoy old Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

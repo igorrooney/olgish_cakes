@@ -104,27 +104,27 @@ export default function HowToOrderPage() {
               {
                 "@type": "HowToStep",
                 name: "Initial Contact",
-                text: "Contact us via phone (+44 786 721 8194), email (hello@olgishcakes.co.uk), or our online form to discuss your cake requirements.",
+                text: "Contact me via phone (+44 786 721 8194), email (hello@olgishcakes.co.uk), or my online form to discuss your cake requirements.",
               },
               {
                 "@type": "HowToStep",
                 name: "Consultation",
-                text: "We'll discuss your vision, preferences, dietary requirements, and event details including cake design, theme, flavor, and size selection.",
+                text: "I'll discuss your vision, preferences, dietary requirements, and event details including cake design, theme, flavor, and size selection.",
               },
               {
                 "@type": "HowToStep",
                 name: "Design & Quote",
-                text: "We'll create a custom design proposal and provide a detailed quote with pricing breakdown and delivery details.",
+                text: "I'll create a custom design proposal and provide a detailed quote with pricing breakdown and delivery details.",
               },
               {
                 "@type": "HowToStep",
                 name: "Confirmation & Deposit",
-                text: "Once you're happy with the design and quote, we'll confirm your order. A 50% deposit is required to secure your order.",
+                text: "Once you're happy with the design and quote, I'll confirm your order. A 50% deposit is required to secure your order.",
               },
               {
                 "@type": "HowToStep",
                 name: "Cake Creation",
-                text: "We'll create your cake with regular updates and photos during the process, including quality control checks.",
+                text: "I'll create your cake with regular updates and photos during the process, including quality control checks.",
               },
               {
                 "@type": "HowToStep",
@@ -177,8 +177,8 @@ export default function HowToOrderPage() {
                 lineHeight: 1.6,
               }}
             >
-              Ordering your perfect Ukrainian cake is easy! Follow our simple step-by-step process
-              to get your custom cake from consultation to delivery. We're here to make your cake
+              Ordering your perfect Ukrainian cake is easy! Follow my simple step-by-step process
+              to get your custom cake from consultation to delivery. I'm here to make your cake
               ordering experience smooth and enjoyable.
             </Typography>
             <Chip
@@ -237,7 +237,7 @@ export default function HowToOrderPage() {
                   step: "1",
                   title: "Initial Contact",
                   description:
-                    "Contact us via phone, email, or our online form to discuss your cake requirements",
+                    "Contact me via phone, email, or my online form to discuss your cake requirements",
                   details: [
                     "Call us: +44 786 721 8194",
                     "Email: hello@olgishcakes.co.uk",
@@ -254,7 +254,7 @@ export default function HowToOrderPage() {
                   step: "2",
                   title: "Consultation",
                   description:
-                    "We'll discuss your vision, preferences, dietary requirements, and event details",
+                    "I'll discuss your vision, preferences, dietary requirements, and event details",
                   details: [
                     "Cake design and theme discussion",
                     "Flavor and size selection",
@@ -266,7 +266,7 @@ export default function HowToOrderPage() {
                 {
                   step: "3",
                   title: "Design & Quote",
-                  description: "We'll create a custom design proposal and provide a detailed quote",
+                  description: "I'll create a custom design proposal and provide a detailed quote",
                   details: [
                     "Custom design sketches or descriptions",
                     "Detailed pricing breakdown",
@@ -279,7 +279,7 @@ export default function HowToOrderPage() {
                   step: "4",
                   title: "Confirmation & Deposit",
                   description:
-                    "Once you're happy with the design and quote, we'll confirm your order",
+                    "Once you're happy with the design and quote, I'll confirm your order",
                   details: [
                     "50% deposit required to secure your order",
                     "Order confirmation sent via email",
@@ -292,7 +292,7 @@ export default function HowToOrderPage() {
                   step: "5",
                   title: "Cake Creation",
                   description:
-                    "We'll create your cake with regular updates and photos during the process",
+                    "I'll create your cake with regular updates and photos during the process",
                   details: [
                     "Regular progress updates",
                     "Photos of cake creation process",
@@ -426,8 +426,8 @@ export default function HowToOrderPage() {
               Consultation Details
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our consultation process is designed to understand your vision and create the perfect
-              cake for your special occasion. We offer multiple consultation options to suit your
+              My consultation process is designed to understand your vision and create the perfect
+              cake for your special occasion. I offer multiple consultation options to suit your
               preferences.
             </Typography>
             <Grid container spacing={4}>
@@ -452,7 +452,7 @@ export default function HowToOrderPage() {
                   type: "In-Person Consultation",
                   icon: "👥",
                   description:
-                    "Personal consultation at our location with cake tasting and design discussion",
+                    "Personal consultation at my location with cake tasting and design discussion",
                   duration: "45-60 minutes",
                   bestFor: "Wedding cakes and complex designs",
                 },
@@ -647,8 +647,8 @@ export default function HowToOrderPage() {
               Ordering Timeline
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Planning ahead ensures the best results for your cake. Here's our recommended timeline
-              for different types of orders.
+              Planning ahead makes sure the best results for your cake. Here's my recommended
+              timeline for different types of orders.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -656,7 +656,7 @@ export default function HowToOrderPage() {
                   type: "Standard Cakes",
                   notice: "1 week minimum",
                   recommended: "2-3 weeks",
-                  description: "Traditional Ukrainian cakes and simple custom designs",
+                  description: "Old Ukrainian cakes and simple custom designs",
                   process: "Design consultation → Order confirmation → Cake creation → Delivery",
                 },
                 {
@@ -726,7 +726,7 @@ export default function HowToOrderPage() {
               Ready to Order Your Cake?
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us today to start your cake ordering journey
+              Contact me today to start your cake ordering journey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -747,7 +747,7 @@ export default function HowToOrderPage() {
                 size="large"
                 sx={{ px: 4, py: 2 }}
               >
-                View Our Cakes
+                View My Cakes
               </Button>
             </Box>
           </Box>

@@ -116,8 +116,8 @@ export default function BestCakesByPostPage() {
               lineHeight: 1.6,
             }}
           >
-            Discover the perfect cake by post options for surprising your loved ones anywhere in the UK. 
-            From traditional recipes to modern delivery innovations.
+            Find the best cake by post options for surprising your family and friends anywhere in UK. 
+            From old recipes to new ways of sending cakes.
           </Typography>
           
           <Typography variant="body2" color="text.secondary">
@@ -141,10 +141,9 @@ export default function BestCakesByPostPage() {
           </Typography>
           
           <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-            Sending cake by post has become increasingly popular in the UK, offering a convenient and 
-            delightful way to surprise friends and family. Whether you're celebrating a birthday, 
-            anniversary, or just want to show someone you care, cake delivery by post brings joy 
-            directly to their door.
+            Sending cake by post is getting more popular in UK, it's easy and nice way to surprise 
+            friends and family. Whether you celebrate birthday, anniversary, or just want to show 
+            someone you care, cake delivery by post brings happiness right to their door.
           </Typography>
 
           <Typography
@@ -157,7 +156,7 @@ export default function BestCakesByPostPage() {
               color: colors.text.primary,
             }}
           >
-            Top Cake by Post Options in the UK
+            Best Cake by Post Options in UK
           </Typography>
 
           <Grid container spacing={4} sx={{ mb: 6 }}>
@@ -165,30 +164,30 @@ export default function BestCakesByPostPage() {
               <Card sx={{ height: "100%", p: 3, borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
                 <CardContent>
                   <Typography component="h3" variant="h5" sx={{ mb: 2, fontWeight: typography.fontWeight.semibold }}>
-                    Traditional Ukrainian Honey Cake
+                    Ukrainian Honey Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                    Our signature honey cake (honey cake) is perfect for postal delivery. This traditional 
-                    Ukrainian delicacy features layers of honey-infused sponge with creamy filling, 
-                    vacuum-packed to maintain freshness during transit.
+                    My special honey cake (honey cake) is perfect for sending by post. This old 
+                    Ukrainian treat has layers of honey sponge with creamy filling, 
+                    packed in special way to stay fresh during delivery.
                   </Typography>
                   <List>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
-                        primary="Letterbox-friendly packaging"
-                        secondary="Fits through standard UK letterboxes"
+                        primary="Fits through letterbox"
+                        secondary="Goes through normal UK letterboxes"
                       />
                     </ListItem>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
-                        primary="7-day freshness guarantee"
-                        secondary="Vacuum-packed for optimal preservation"
+                        primary="7-day freshness promise"
+                        secondary="Packed special way to keep fresh"
                       />
                     </ListItem>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
                         primary="Free UK delivery"
-                        secondary="Delivered within 2-3 working days"
+                        secondary="Comes in 2-3 working days"
                       />
                     </ListItem>
                   </List>
@@ -203,27 +202,27 @@ export default function BestCakesByPostPage() {
                     Celebration Cakes by Post
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                    Perfect for birthdays, anniversaries, and special occasions. Our celebration cakes 
-                    are designed specifically for postal delivery, ensuring they arrive in perfect 
-                    condition to make someone's day extra special.
+                    Good for birthdays, anniversaries, and special days. My celebration cakes 
+                    are made special for sending by post, so they come in good 
+                    condition to make someone's day better.
                   </Typography>
                   <List>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
-                        primary="Personalized messaging"
-                        secondary="Include a custom message with your cake"
+                        primary="Personal message"
+                        secondary="I can put special message with your cake"
                       />
                     </ListItem>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
                         primary="Gift wrapping available"
-                        secondary="Beautiful presentation for special occasions"
+                        secondary="Nice presentation for special days"
                       />
                     </ListItem>
                     <ListItem sx={{ px: 0 }}>
                       <ListItemText 
-                        primary="Multiple size options"
-                        secondary="Choose from individual portions to sharing sizes"
+                        primary="Different sizes"
+                        secondary="Choose from small portions to big sharing sizes"
                       />
                     </ListItem>
                   </List>
@@ -242,36 +241,36 @@ export default function BestCakesByPostPage() {
               color: colors.text.primary,
             }}
           >
-            What Makes a Great Cake by Post?
+            What Makes Good Cake by Post?
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-            Not all cakes are suitable for postal delivery. The best cakes by post share several key characteristics:
+            Not all cakes are good for sending by post. The best cakes by post have these important things:
           </Typography>
 
           <List sx={{ mb: 4 }}>
             <ListItem>
               <ListItemText 
-                primary="Durability"
-                secondary="Cakes that can withstand shipping without losing their shape or taste"
+                primary="Strong"
+                secondary="Cakes that can handle shipping without losing shape or taste"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
-                primary="Freshness preservation"
-                secondary="Packaging and ingredients that maintain quality during transit"
+                primary="Stays fresh"
+                secondary="Packaging and ingredients that keep quality during delivery"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
-                primary="Letterbox compatibility"
-                secondary="Packages that fit through standard UK letterboxes for convenience"
+                primary="Fits letterbox"
+                secondary="Packages that go through normal UK letterboxes for easy delivery"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
-                primary="Consistent quality"
-                secondary="Reliable taste and texture that customers can depend on"
+                primary="Always good"
+                secondary="Reliable taste and texture that people can trust"
               />
             </ListItem>
           </List>
@@ -290,32 +289,32 @@ export default function BestCakesByPostPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-            To ensure the best experience when ordering cake by post, consider these helpful tips:
+            To get best experience when ordering cake by post, think about these helpful tips:
           </Typography>
 
           <List sx={{ mb: 4 }}>
             <ListItem>
               <ListItemText 
-                primary="Plan ahead"
-                secondary="Order a few days in advance to allow for baking and shipping time"
+                primary="Plan early"
+                secondary="Order few days before to give time for baking and shipping"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
                 primary="Check delivery areas"
-                secondary="Confirm that your recipient's address is within the delivery area"
+                secondary="Make sure the address is in delivery area"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
-                primary="Consider the recipient"
-                secondary="Think about their preferences, dietary restrictions, and the occasion"
+                primary="Think about who gets it"
+                secondary="Think about what they like, food allergies, and the occasion"
               />
             </ListItem>
             <ListItem>
               <ListItemText 
-                primary="Add a personal touch"
-                secondary="Include a personalized message to make the gift even more special"
+                primary="Add personal touch"
+                secondary="Include special message to make the gift even better"
               />
             </ListItem>
           </List>
@@ -334,15 +333,15 @@ export default function BestCakesByPostPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7 }}>
-            Cake by post offers a unique way to surprise someone special. Whether you're celebrating 
-            a milestone, showing appreciation, or simply brightening someone's day, a delicious cake 
-            delivered to their door is a gesture that's sure to be remembered.
+            Cake by post is special way to surprise someone you care about. Whether you celebrate 
+            something important, show you appreciate them, or just make their day better, a good cake 
+            delivered to their door is something they will remember.
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 6, lineHeight: 1.7 }}>
-            At Olgish Cakes, we specialize in traditional Ukrainian honey cake that's perfect for 
-            postal delivery. Our letterbox-friendly packaging and vacuum-sealed freshness ensure 
-            that your surprise arrives in perfect condition, ready to delight the recipient.
+            At Olgish Cakes, I specialize in old Ukrainian honey cake that's perfect for 
+            sending by post. My letterbox-friendly packaging and special freshness packing make sure 
+            that your surprise comes in good condition, ready to make the person happy.
           </Typography>
 
           {/* Call to Action */}
@@ -360,8 +359,8 @@ export default function BestCakesByPostPage() {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
-              Discover our traditional Ukrainian honey cake by post service. Perfect for surprising 
-              loved ones anywhere in the UK with our delicious, letterbox-friendly delivery.
+              Try my old Ukrainian honey cake by post service. Perfect for surprising 
+              family and friends anywhere in UK with my good, letterbox-friendly delivery.
             </Typography>
             
             <Button

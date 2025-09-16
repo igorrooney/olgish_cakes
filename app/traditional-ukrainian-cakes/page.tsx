@@ -8,15 +8,15 @@ import { getPriceValidUntil } from "../utils/seo";
 import { Button } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts | Olgish Cakes",
+  title: "Old Ukrainian Cakes Leeds | Real Ukrainian Desserts | Olgish Cakes",
   description:
-    "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes. Order authentic Ukrainian desserts.",
+    "Discover real old Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using old Ukrainian recipes. Order real Ukrainian desserts.",
   keywords:
-    "traditional Ukrainian cakes Leeds, authentic Ukrainian desserts, honey cake Leeds, Kyiv cake Leeds, Ukrainian honey cake, traditional Ukrainian baking, Ukrainian cake recipes, authentic Ukrainian sweets",
+    "old Ukrainian cakes Leeds, real Ukrainian desserts, honey cake Leeds, Kyiv cake Leeds, Ukrainian honey cake, old Ukrainian baking, Ukrainian cake recipes, real Ukrainian sweets",
   openGraph: {
-    title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
+    title: "Old Ukrainian Cakes Leeds | Real Ukrainian Desserts",
     description:
-      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+      "Discover real old Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using old Ukrainian recipes.",
     url: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Traditional Ukrainian Cakes Leeds | Authentic Ukrainian Desserts",
+    title: "Old Ukrainian Cakes Leeds | Real Ukrainian Desserts",
     description:
-      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+      "Discover real old Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using old Ukrainian recipes.",
     images: ["https://olgishcakes.co.uk/images/traditional-ukrainian-cakes.jpg"],
   },
   alternates: {
@@ -50,7 +50,7 @@ export default async function TraditionalUkrainianCakesPage() {
     {
       name: "Medovik (Honey Cake)",
       description:
-        "The most beloved Ukrainian cake with delicate honey-infused layers and smooth sour cream filling",
+        "The most beloved Ukrainian cake with delicate honey-infused layers and smooth old Ukrainian sour cream filling",
       price: "From £25",
     },
     {
@@ -68,7 +68,7 @@ export default async function TraditionalUkrainianCakesPage() {
     {
       name: "Poppy Seed Roll (Makivnyk)",
       description:
-        "Traditional Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
+        "Old Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
       price: "From £20",
     },
   ];
@@ -76,9 +76,9 @@ export default async function TraditionalUkrainianCakesPage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Traditional Ukrainian Cakes",
+    name: "Old Ukrainian Cakes",
     description:
-      "Discover authentic traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using time-honored Ukrainian recipes.",
+      "Discover real old Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using old Ukrainian recipes.",
     url: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
     publisher: {
       "@type": "Organization",
@@ -171,7 +171,7 @@ export default async function TraditionalUkrainianCakesPage() {
             <Breadcrumbs
               items={[
                 { label: "Home", href: "/" },
-                { label: "Traditional Ukrainian Cakes", href: "/traditional-ukrainian-cakes" },
+                { label: "Old Ukrainian Cakes", href: "/traditional-ukrainian-cakes" },
               ]}
             />
           </Box>
@@ -190,7 +190,7 @@ export default async function TraditionalUkrainianCakesPage() {
                 lineHeight: 1.2,
               }}
             >
-              Traditional Ukrainian Cakes
+              Old Ukrainian Cakes
             </Typography>
             <Typography
               variant="h2"
@@ -203,12 +203,12 @@ export default async function TraditionalUkrainianCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Experience the authentic taste of Ukraine with our handcrafted traditional cakes. Each
-              recipe has been passed down through generations, bringing the warmth and tradition of
-              Ukrainian baking to Leeds.
+              Discover the real taste of Ukraine with my handcrafted old cakes. Each recipe has been
+              passed down through generations, bringing the warmth and old traditions of Ukrainian
+              baking to Leeds.
             </Typography>
             <Chip
-              label="Authentic Ukrainian Recipes"
+              label="Real Ukrainian Recipes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -224,27 +224,27 @@ export default async function TraditionalUkrainianCakesPage() {
           <Grid container spacing={4} sx={{ mb: { xs: 6, md: 8 } }}>
             {[
               {
-                title: "Time-Honored Recipes",
+                title: "Old Recipes",
                 description:
-                  "Each cake follows authentic Ukrainian recipes passed down through generations",
+                  "Each cake follows real Ukrainian recipes passed down through generations",
                 icon: "🏺",
               },
               {
                 title: "Premium Ingredients",
                 description:
-                  "We use only the finest ingredients, including traditional Ukrainian honey and poppy seeds",
+                  "I use only the finest ingredients, including old Ukrainian honey and poppy seeds",
                 icon: "🌟",
               },
               {
                 title: "Handcrafted with Love",
                 description:
-                  "Every cake is meticulously crafted by our expert Ukrainian baker Olga",
+                  "Every cake is meticulously crafted by Ukrainian baker Olga",
                 icon: "💝",
               },
               {
-                title: "Traditional Techniques",
+                title: "Old Techniques",
                 description:
-                  "Authentic Ukrainian baking methods ensure the genuine taste and texture",
+                  "Old Ukrainian baking methods make sure the real taste and texture",
                 icon: "👩‍🍳",
               },
             ].map((feature, index) => (
@@ -292,17 +292,17 @@ export default async function TraditionalUkrainianCakesPage() {
                 textAlign: "center",
               }}
             >
-              Our Traditional Ukrainian Collection
+              My Old Ukrainian Collection
             </Typography>
 
             {traditionalCakes.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
                 <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
-                  Our Traditional Ukrainian Cakes
+                  My Old Ukrainian Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                  We are currently preparing our traditional Ukrainian cake collection. Please check
-                  back soon for authentic Ukrainian desserts!
+                  I am currently preparing my old Ukrainian cake collection. Please check back soon
+                  for real Ukrainian desserts!
                 </Typography>
                 <Button
                   component={Link}
@@ -348,26 +348,24 @@ export default async function TraditionalUkrainianCakesPage() {
                 textAlign: "center",
               }}
             >
-              The Tradition of Ukrainian Baking
+              Old Ukrainian Baking Traditions
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-              Ukrainian baking traditions date back centuries, with each region of Ukraine having
-              its own unique recipes and techniques. Our traditional cakes represent the heart of
-              Ukrainian culinary heritage, bringing together the finest ingredients and time-honored
-              methods.
+              Ukrainian baking traditions date back centuries, with each region of Ukraine having its
+              own unique recipes and techniques. My old cakes represent the heart of Ukrainian
+              culinary heritage, bringing together the finest ingredients and old methods.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-              From the delicate layers of honey cake to the rich flavors of Kyiv cake, each
-              traditional Ukrainian dessert tells a story of family, celebration, and the warmth of
-              Ukrainian hospitality. These recipes have been cherished and preserved through
-              generations, ensuring that the authentic taste of Ukraine continues to delight people
-              around the world.
+              From the delicate layers of honey cake to the rich flavors of Kyiv cake, each old
+              Ukrainian dessert tells a story of family, celebration, and the warmth of Ukrainian
+              hospitality. These recipes have been cherished and preserved through generations,
+              making sure the real taste of Ukraine continues to delight people around the world.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-              At Olgish Cakes, we honor these traditions by using authentic Ukrainian recipes and
-              techniques, bringing the genuine taste of Ukrainian baking to our community in Leeds.
-              Every cake is crafted with the same love and attention to detail that Ukrainian bakers
-              have practiced for generations.
+              At Olgish Cakes, I honor these traditions by using real Ukrainian recipes and
+              techniques, bringing the real taste of Ukrainian baking to my community in Leeds. Every
+              cake is crafted with the same love and attention to detail that Ukrainian bakers have
+              practiced for generations.
             </Typography>
           </Paper>
 
@@ -382,16 +380,16 @@ export default async function TraditionalUkrainianCakesPage() {
                 mb: 3,
               }}
             >
-              Experience Authentic Ukrainian Flavors
+              Taste Real Ukrainian Flavors
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Order your traditional Ukrainian cake today and taste the authentic flavors that have
-              been cherished for generations. Perfect for celebrations, special occasions, or simply
-              to experience the warmth of Ukrainian hospitality.
+              Order your old Ukrainian cake today and taste the real flavors that have been cherished
+              for generations. Perfect for celebrations, special occasions, or simply to experience
+              the warmth of Ukrainian hospitality.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -402,7 +400,7 @@ export default async function TraditionalUkrainianCakesPage() {
                 size="large"
                 sx={{ px: 4, py: 1.5 }}
               >
-                Order Traditional Cake
+                Order Old Cake
               </Button>
               <Button
                 component={Link}

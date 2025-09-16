@@ -7,13 +7,13 @@ import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes | Olgish Cakes",
   description:
-    "Discover Ukrainian celebrations and festivals throughout the year. Learn about traditional cakes and desserts served during these special occasions.",
+    "Discover Ukrainian celebrations and festivals throughout the year. Learn about old cakes and desserts served during these special occasions.",
   keywords:
     "Ukrainian celebrations, Ukrainian festivals, traditional Ukrainian cakes, Ukrainian holidays, Ukrainian cultural events",
   openGraph: {
     title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes",
     description:
-      "Discover Ukrainian celebrations and festivals throughout the year. Learn about traditional cakes and desserts served during these special occasions.",
+      "Discover Ukrainian celebrations and festivals throughout the year. Learn about old cakes and desserts served during these special occasions.",
     url: "https://olgishcakes.co.uk/ukrainian-celebrations",
     images: ["https://olgishcakes.co.uk/images/ukrainian-celebrations.jpg"],
     type: "article",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ukrainian Celebrations | Traditional Ukrainian Festivals and Cakes",
     description:
-      "Discover Ukrainian celebrations and festivals throughout the year. Learn about traditional cakes and desserts served during these special occasions.",
+      "Discover Ukrainian celebrations and festivals throughout the year. Learn about old cakes and desserts served during these special occasions.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-celebrations.jpg"],
   },
   alternates: {
@@ -81,7 +81,7 @@ export default function UkrainianCelebrationsPage() {
             }}
           >
             Discover the rich tapestry of Ukrainian celebrations throughout the year. Each festival
-            has its own traditional cakes and desserts.
+            has its own old cakes and desserts.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Chip label="Traditional Festivals" color="primary" />
@@ -105,13 +105,13 @@ export default function UkrainianCelebrationsPage() {
             🎉 Ukrainian Celebrations Throughout the Year
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
-            Ukrainian celebrations are deeply rooted in both Christian traditions and ancient pagan
+            Ukrainian celebrations are deeply rooted in both Christian traditions and old pagan
             customs. Each celebration has its own unique cakes and desserts that reflect the season,
-            religious significance, and cultural heritage.
+            religious meaning, and cultural heritage.
           </Typography>
           <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
             From the winter solstice to harvest festivals, these celebrations bring families
-            together and preserve the rich culinary traditions of Ukraine.
+            together and keep the rich culinary traditions of Ukraine.
           </Typography>
         </Paper>
 
@@ -473,7 +473,7 @@ export default function UkrainianCelebrationsPage() {
             Celebrate Ukrainian Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Order traditional Ukrainian cakes for your celebrations and keep these precious cultural
+            Order old Ukrainian cakes for your celebrations and keep these precious cultural
             traditions alive
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

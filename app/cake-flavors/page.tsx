@@ -6,16 +6,16 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Old Ukrainian Desserts | Olgish Cakes",
   description:
-    "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
+    "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about old Ukrainian desserts and their cultural meaning.",
   keywords:
     "Ukrainian cake flavors, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian honey cake, Ukrainian cake recipes, authentic Ukrainian sweets, Ukrainian dessert flavors, traditional medovik",
   openGraph: {
     title:
-      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
+      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Old Ukrainian Desserts",
     description:
-      "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural significance.",
+      "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about old Ukrainian desserts and their cultural meaning.",
     url: "https://olgishcakes.co.uk/cake-flavors",
     siteName: "Olgish Cakes",
     images: [
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Traditional Ukrainian Desserts",
+      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | Old Ukrainian Desserts",
     description:
-      "Discover authentic Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more.",
+      "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-cake-flavors.jpg"],
   },
   alternates: {
@@ -179,12 +179,12 @@ export default function CakeFlavorsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover the authentic flavors of Ukrainian cakes. From traditional honey cake to
-              modern variations, explore our range of delicious Ukrainian cake flavors and
+              Discover the real flavors of Ukrainian cakes. From old honey cake to
+              modern variations, explore my range of delicious Ukrainian cake flavors and
               ingredients.
             </Typography>
             <Chip
-              label="Authentic Ukrainian Flavors"
+              label="Real Ukrainian Flavors"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -210,7 +210,7 @@ export default function CakeFlavorsPage() {
                 textAlign: "center",
               }}
             >
-              Traditional Ukrainian Cake Flavors
+              Old Ukrainian Cake Flavors
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -367,20 +367,20 @@ export default function CakeFlavorsPage() {
               Modern Ukrainian-Inspired Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              While we honor traditional Ukrainian recipes, we also create modern interpretations
+              While I honor old Ukrainian recipes, I also create modern interpretations
               that blend Ukrainian techniques with contemporary flavors, appealing to today's
               diverse tastes.
             </Typography>
             <Grid container spacing={3}>
               {[
-                "Vanilla Bean with Ukrainian Twist - Classic vanilla enhanced with traditional Ukrainian spices",
+                "Vanilla Bean with Ukrainian Twist - Classic vanilla enhanced with old Ukrainian spices",
                 "Chocolate Fudge Ukrainian Style - Rich chocolate layers with Ukrainian cream cheese frosting",
-                "Lemon Poppy Seed - Light and refreshing with traditional Ukrainian poppy seeds",
+                "Lemon Poppy Seed - Light and refreshing with old Ukrainian poppy seeds",
                 "Red Velvet Ukrainian - Classic red velvet with Ukrainian cream cheese and honey notes",
-                "Strawberry Cream - Fresh strawberries with traditional Ukrainian sour cream filling",
-                "Carrot Cake Ukrainian - Traditional carrot cake with Ukrainian spices and honey glaze",
+                "Strawberry Cream - Fresh strawberries with old Ukrainian sour cream filling",
+                "Carrot Cake Ukrainian - Old carrot cake with Ukrainian spices and honey glaze",
                 "Coffee Walnut - Rich coffee flavor with Ukrainian walnut filling",
-                "Orange Almond - Citrus freshness with traditional Ukrainian almond paste",
+                "Orange Almond - Citrus freshness with old Ukrainian almond paste",
               ].map((flavor, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -589,7 +589,7 @@ export default function CakeFlavorsPage() {
               Experience Ukrainian Flavors
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Order your favorite Ukrainian cake flavor today and taste the authentic flavors of
+              Order your favorite Ukrainian cake flavor today and taste the real flavors of
               Ukraine
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

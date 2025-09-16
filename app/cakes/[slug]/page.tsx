@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
 import { getRevalidateTime } from "@/app/utils/fetchCakes";
-// Removed client-only CakeStructuredData; we'll render JSON-LD on the server for SEO
+// Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { getMerchantReturnPolicy } from "@/app/utils/seo";
 import { getOfferShippingDetails } from "@/app/utils/seo";
@@ -76,16 +76,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Use SEO fields if available, otherwise generate from content
   const metaTitle =
     cake.seo?.metaTitle ||
-    `${cake.name} | Olgish Cakes - Traditional Ukrainian Honey Cakes in Leeds`;
+    `${cake.name} | Olgish Cakes - Old Ukrainian Honey Cakes in Leeds`;
   const metaDescription =
     cake.seo?.metaDescription ||
     (cake.shortDescription
       ? blocksToText(cake.shortDescription).substring(0, 160)
-      : `Traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with authentic recipes. Free UK delivery.`);
+      : `Old Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
 
   const keywords =
     cake.seo?.keywords?.join(", ") ||
-    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
+    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, old Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
 
   const canonicalUrl =
     cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
@@ -213,7 +213,7 @@ export default async function CakePage({ params }: PageProps) {
             name: cake.name,
             description:
               cake.seo?.metaDescription ||
-              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
+              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} old Ukrainian honey cake`),
             image: [productImageUrl],
             brand: { 
               "@type": "Brand", 
@@ -302,7 +302,7 @@ export default async function CakePage({ params }: PageProps) {
             url: "https://olgishcakes.co.uk",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
             description:
-              "Authentic Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+              "Real Ukrainian honey cakes made with love in Leeds. Old recipes, premium ingredients, and exceptional taste.",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
             address: {
@@ -404,7 +404,7 @@ export default async function CakePage({ params }: PageProps) {
                 name: `How long does it take to make a ${cake.name}?`,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: `Our ${cake.name} is freshly baked to order and typically takes 2-3 working days to prepare. For custom designs, please allow 3-7 working days.`,
+                  text: `My ${cake.name} is freshly baked to order and typically takes 2-3 working days to prepare. For custom designs, please allow 3-7 working days.`,
                 },
               },
               {
@@ -412,7 +412,7 @@ export default async function CakePage({ params }: PageProps) {
                 name: `Can I customize the ${cake.name} design?`,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: `Yes! We offer both standard and custom designs for our ${cake.name}. Custom designs allow for personalization while maintaining the authentic Ukrainian taste.`,
+                  text: `Yes! I offer both standard and custom designs for my ${cake.name}. Custom designs allow for personalization while keeping the real Ukrainian taste.`,
                 },
               },
               {
@@ -420,7 +420,7 @@ export default async function CakePage({ params }: PageProps) {
                 name: `Is delivery available for the ${cake.name}?`,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes, we offer free UK delivery on all our cakes. We deliver to Leeds, York, Bradford, Halifax, Huddersfield, and surrounding areas.",
+                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and around areas.",
                 },
               },
               {

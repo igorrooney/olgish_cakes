@@ -49,14 +49,14 @@ export async function generateMetadata(): Promise<Metadata> {
     "honey cake",
     "Medovik",
     "Kyiv cake",
-    "traditional Ukrainian desserts",
+    "old Ukrainian desserts",
     "Ukrainian bakery Leeds",
     "custom cakes Leeds",
     "wedding cakes Leeds",
     "birthday cakes Leeds",
     "cake delivery Leeds",
-    "authentic Ukrainian cakes",
-    "traditional medovik",
+    "real Ukrainian cakes",
+    "old medovik",
     "best Ukrainian cakes Leeds",
     "honey cake delivery Yorkshire",
     "Ukrainian bakery near me",
@@ -77,14 +77,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Enhanced description with event information
   let description =
-    "🏆 #1 Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.";
+    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old desserts. 5★ rating, same-day delivery Yorkshire.";
 
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
   }
 
   // Enhanced title with event information
-  let title = "Ukrainian Cakes Leeds | Authentic Honey Cake | Olgish Cakes";
+  let title = "Ukrainian Cakes Leeds | Real Honey Cake | Olgish Cakes";
   if (eventSEO.nextEventLocation) {
     title = `Ukrainian Cakes at ${eventSEO.nextEventLocation} | Olgish Cakes Leeds`;
   }
@@ -115,7 +115,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "https://olgishcakes.co.uk/images/hero-cake.jpg",
           width: 1200,
           height: 630,
-          alt: "Premium Ukrainian Cakes Leeds - Authentic Honey Cake (Medovik) - Olgish Cakes",
+          alt: "Premium Ukrainian Cakes Leeds - Real Honey Cake (Medovik) - Olgish Cakes",
           type: "image/jpeg",
         },
       ],
@@ -209,7 +209,7 @@ export default async function Home() {
     "@id": "https://olgishcakes.co.uk/#webpage",
     name: "Olgish Cakes - #1 Ukrainian Cakes Leeds",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
     url: "https://olgishcakes.co.uk",
     isPartOf: {
       "@id": "https://olgishcakes.co.uk/#website",
@@ -224,7 +224,7 @@ export default async function Home() {
       url: "https://olgishcakes.co.uk",
       logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
       description:
-        "Authentic Ukrainian bakery in Leeds, specializing in traditional honey cakes and desserts",
+        "Real Ukrainian bakery in Leeds, specializing in old honey cakes and desserts",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Leeds",
@@ -291,7 +291,7 @@ export default async function Home() {
           >
             <AnimatedDiv variants={fadeInUp} className="mb-8">
               <Chip
-                label="Handmade Traditional Ukrainian Cakes"
+                label="Handmade Old Ukrainian Cakes"
                 className="bg-white/20 text-white border-white/30 mb-6 backdrop-blur-sm"
                 sx={{ fontSize: "1rem", padding: "12px 24px" }}
               />
@@ -310,9 +310,9 @@ export default async function Home() {
                   marginBottom: 6,
                 }}
               >
-                Crafted with
+                Made with
                 <br />
-                Ukrainian Love
+                Ukrainian Heart
               </Typography>
             </AnimatedDiv>
 
@@ -323,8 +323,8 @@ export default async function Home() {
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-100 mx-auto font-light"
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
-                Experience the authentic taste of Ukrainian tradition, where every cake tells a
-                story of heritage, craftsmanship, and unforgettable moments
+                Taste the real Ukrainian tradition – every cake has story of family,
+                old recipes, and special moments that I share with you
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
@@ -338,7 +338,7 @@ export default async function Home() {
                   className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center"
                   endIcon={<ArrowForwardIcon />}
                 >
-                  Explore Our Collection
+                  Explore My Collection
                 </Button>
                 <Button
                   variant="outlined"
@@ -424,8 +424,8 @@ export default async function Home() {
       {marketEvents && marketEvents.length > 0 && (
         <MarketSchedule
           events={marketEvents}
-          title="Find us at your local market!"
-          subtitle="Meet us in person and taste our authentic Ukrainian cakes at these upcoming markets"
+          title="Find me at your local market!"
+          subtitle="Meet me in person and taste my real Ukrainian cakes at these upcoming markets"
           maxEvents={3}
           showAllLink={true}
         />
@@ -451,7 +451,7 @@ export default async function Home() {
               className="text-primary font-medium block text-lg"
               sx={{ mb: 3 }}
             >
-              Why Choose Olgish Cakes
+              Why People Choose Us
             </Typography>
             <Typography
               component="h2"
@@ -459,11 +459,10 @@ export default async function Home() {
               className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ mb: 3 }}
             >
-              Excellence in Every Bite
+              Good Taste in Every Piece
             </Typography>
             <Typography component="span" className="text-lg sm:text-xl text-gray-600 block">
-              We combine traditional Ukrainian recipes with modern craftsmanship to deliver
-              exceptional cakes
+              We mix old Ukrainian recipes with new ways to make really good cakes
             </Typography>
           </AnimatedDiv>
 
@@ -471,30 +470,30 @@ export default async function Home() {
             {[
               {
                 icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
-                title: "Artisanal Craftsmanship",
+                title: "Made by Hand",
                 description:
-                  "Every cake is handcrafted by our expert bakers using traditional Ukrainian techniques passed down through generations",
+                  "Every cake we make by hand using old Ukrainian ways that my family taught me",
                 color: "from-blue-50 to-blue-100",
               },
               {
                 icon: <VerifiedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
-                title: "Premium Ingredients",
+                title: "Good Ingredients",
                 description:
-                  "We source only the finest, freshest ingredients to ensure exceptional taste and quality in every creation",
+                  "We use only best and fresh ingredients so every cake tastes really good",
                 color: "from-yellow-50 to-yellow-100",
               },
               {
                 icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Fresh Delivery",
                 description:
-                  "We deliver fresh, beautiful cakes right to your doorstep across Leeds and surrounding Yorkshire areas",
+                  "We bring fresh, nice cakes to your door in Leeds and around Yorkshire",
                 color: "from-blue-50 to-blue-100",
               },
               {
                 icon: <FavoriteIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Made with Love",
                 description:
-                  "Each creation is infused with the warmth and passion of Ukrainian hospitality and family tradition",
+                  "Every cake I make with love and care, like Ukrainian families always do",
                 color: "from-yellow-50 to-yellow-100",
               },
             ].map((feature, index) => (
@@ -560,7 +559,7 @@ export default async function Home() {
                     className="text-primary font-medium block text-lg"
                     sx={{ mb: 4 }}
                   >
-                    Our Heritage
+                    Our Story
                   </Typography>
                   <Typography
                     component="h2"
@@ -568,7 +567,7 @@ export default async function Home() {
                     className="text-3xl sm:text-4xl md:text-5xl font-bold"
                     sx={{ mb: 4 }}
                   >
-                    Ukrainian Tradition Meets Modern Artistry
+                    Ukrainian Tradition with Modern Touch
                   </Typography>
                 </AnimatedDiv>
 
@@ -577,18 +576,17 @@ export default async function Home() {
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    At Olgish Cakes, we honor the rich culinary heritage of Ukraine while embracing
-                    contemporary design trends. Our master bakers combine traditional recipes passed
-                    down through generations with innovative techniques to create cakes that are
-                    both visually stunning and incredibly delicious.
+                    At Olgish Cakes, I keep the old Ukrainian ways of baking but also try new things. 
+                    I use recipes from my family and mix them with new ideas to make cakes that look 
+                    beautiful and taste really good.
                   </Typography>
                   <Typography
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    From our signature honey cake layers to our intricate floral decorations, every
-                    element reflects our commitment to authenticity and excellence. We believe that
-                    every celebration deserves a cake that tells a story.
+                    From our special honey cake layers to beautiful flower decorations, everything 
+                    shows how much I care about real Ukrainian taste. I think every celebration 
+                    needs a cake that has meaning.
                   </Typography>
                 </AnimatedDiv>
 
@@ -602,7 +600,7 @@ export default async function Home() {
                       className="px-8 py-4 text-lg font-semibold"
                       endIcon={<ArrowForwardIcon />}
                     >
-                      Discover Our Journey
+                      Learn About Me
                     </Button>
                     <Button
                       variant="outlined"
@@ -641,7 +639,7 @@ export default async function Home() {
               className="text-primary font-medium block text-lg"
               sx={{ marginBottom: 4 }}
             >
-              Customer Stories
+              What People Say
             </Typography>
             <Typography
               component="h2"
@@ -652,8 +650,7 @@ export default async function Home() {
               What Our Customers Say
             </Typography>
             <Typography variant="subtitle1" className="text-lg sm:text-xl text-gray-600 mx-auto">
-              Real experiences from our valued customers who have celebrated their special moments
-              with our cakes
+              Real stories from people who tried our cakes for their special days
             </Typography>
           </AnimatedDiv>
 
@@ -862,7 +859,7 @@ export default async function Home() {
               className="text-primary font-medium block text-lg"
               sx={{ mb: 4 }}
             >
-              Our Services
+              What We Do
             </Typography>
             <Typography
               component="h2"
@@ -870,10 +867,10 @@ export default async function Home() {
               className="text-3xl sm:text-4xl md:text-5xl font-bold"
               sx={{ mb: 6 }}
             >
-              Complete Cake Solutions
+              All Kinds of Cakes
             </Typography>
             <Typography variant="subtitle1" className="text-lg sm:text-xl text-gray-600 mx-auto">
-              From custom designs to special occasions, we provide comprehensive cake services
+              From special designs to celebrations, we make all kinds of cakes for you
             </Typography>
           </AnimatedDiv>
 
@@ -881,37 +878,37 @@ export default async function Home() {
             {[
               {
                 icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
-                title: "Custom Cake Design",
+                title: "Special Cake Design",
                 description:
-                  "Personalized cakes designed to match your vision and occasion perfectly",
+                  "Cakes made just for you, exactly how you want for your special day",
                 features: [
-                  "Unique designs",
-                  "Personal consultation",
-                  "Multiple revisions",
-                  "Quality guarantee",
+                  "Different designs",
+                  "Talk with me about what you want",
+                  "I can change things if you want",
+                  "I promise it will be good",
                 ],
               },
               {
                 icon: <CelebrationIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
-                title: "Special Occasions",
+                title: "Special Days",
                 description:
                   "Weddings, birthdays, anniversaries, and all your important celebrations",
                 features: [
                   "Wedding cakes",
                   "Birthday cakes",
                   "Anniversary cakes",
-                  "Corporate events",
+                  "Work parties",
                 ],
               },
               {
                 icon: <LocalShippingIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Delivery Service",
-                description: "Fresh delivery across Leeds and surrounding Yorkshire areas",
+                description: "Fresh delivery in Leeds and around Yorkshire",
                 features: [
                   "Same-day delivery",
-                  "Careful handling",
-                  "Timely arrival",
-                  "Setup service",
+                  "I handle carefully",
+                  "Comes on time",
+                  "I can set up for you",
                 ],
               },
             ].map((service, index) => (
@@ -976,10 +973,10 @@ export default async function Home() {
         <Container className="px-6 md:px-8">
           <AnimatedDiv className="text-center mb-8">
             <Typography component="h2" variant="h2" className="text-3xl font-bold">
-              Popular searches
+              People Often Look For
             </Typography>
             <Typography variant="subtitle1" className="text-gray-600 max-w-2xl mx-auto mt-2" mt={2} mx="auto">
-              Quick links people often look for when ordering cakes in Leeds
+              Quick links for people who want to order cakes in Leeds
             </Typography>
           </AnimatedDiv>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -1026,7 +1023,7 @@ export default async function Home() {
                       fontFamily: typography.fontFamily.display,
                     }}
                   >
-                    Ready to Order Your Perfect Cake?
+                    Ready to Order Your Cake?
                   </Typography>
                   <Typography
                     variant="body1"
@@ -1038,8 +1035,8 @@ export default async function Home() {
                       textAlign: "center",
                     }}
                   >
-                    Contact us today to discuss your cake requirements and get a personalized quote.
-                    We're here to make your special occasion even more memorable.
+                    Contact me today to talk about what cake you want and get a price.
+                    I'm here to make your special day even better.
                   </Typography>
                   <Box
                     sx={{
@@ -1071,7 +1068,7 @@ export default async function Home() {
                           },
                         }}
                       >
-                        Get Quote Now
+                        Get Price Now
                       </Button>
                     </Link>
                     <Link

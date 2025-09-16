@@ -7,14 +7,14 @@ export const metadata: Metadata = {
   title:
     "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts | Olgish Cakes",
   description:
-    "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural significance of Ukrainian cakes. Authentic Ukrainian baking culture.",
+    "Discover the rich cultural heritage of Ukrainian baking. Old Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes. Real Ukrainian baking culture.",
   keywords:
     "Ukrainian culture baking, Ukrainian baking traditions, traditional Ukrainian desserts, Ukrainian dessert culture, Ukrainian cake history, Ukrainian baking heritage, authentic Ukrainian baking",
   openGraph: {
     title:
       "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
     description:
-      "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural significance of Ukrainian cakes. Authentic Ukrainian baking culture.",
+      "Discover the rich cultural heritage of Ukrainian baking. Old Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes. Real Ukrainian baking culture.",
     url: "https://olgishcakes.co.uk/ukrainian-culture-baking",
     siteName: "Olgish Cakes",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title:
       "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
     description:
-      "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural significance of Ukrainian cakes.",
+      "Discover the rich cultural heritage of Ukrainian baking. Old Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-culture-baking.jpg"],
   },
   alternates: {
@@ -92,9 +92,9 @@ export default function UkrainianCultureBakingPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover the rich cultural heritage of Ukrainian baking traditions. From ancient
-              recipes passed down through generations to the cultural significance of every
-              ingredient, explore the authentic world of Ukrainian dessert culture.
+              Discover the rich cultural heritage of Ukrainian baking traditions. From old
+              recipes passed down through generations to the cultural meaning of every
+              ingredient, explore the real world of Ukrainian dessert culture.
             </Typography>
             <Chip
               label="Authentic Ukrainian Heritage"
@@ -556,35 +556,35 @@ export default function UkrainianCultureBakingPage() {
               Modern Ukrainian Baking
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              While we honor traditional Ukrainian recipes and techniques, modern Ukrainian baking
-              also embraces contemporary innovations while maintaining authentic flavors and
-              cultural significance.
+              While I honor old Ukrainian recipes and techniques, modern Ukrainian baking
+              also embraces contemporary innovations while keeping real flavors and
+              cultural meaning.
             </Typography>
             <Grid container spacing={4}>
               {[
                 {
-                  aspect: "Traditional Techniques",
+                  aspect: "Old Techniques",
                   description:
-                    "We preserve traditional Ukrainian baking methods while incorporating modern quality standards and food safety practices.",
-                  innovation: "Maintains authentic taste with modern safety standards",
+                    "I keep old Ukrainian baking methods while adding modern quality standards and food safety practices.",
+                  innovation: "Keeps real taste with modern safety standards",
                 },
                 {
                   aspect: "Ingredient Quality",
                   description:
-                    "We use the finest ingredients available while staying true to traditional Ukrainian flavor profiles and recipes.",
-                  innovation: "Premium ingredients enhance traditional flavors",
+                    "I use the finest ingredients available while staying true to old Ukrainian flavor profiles and recipes.",
+                  innovation: "Premium ingredients make old flavors better",
                 },
                 {
                   aspect: "Cultural Preservation",
                   description:
-                    "Every cake we make preserves Ukrainian cultural heritage and traditions for future generations.",
+                    "Every cake I make keeps Ukrainian cultural heritage and traditions for future generations.",
                   innovation: "Keeps Ukrainian culture alive through baking",
                 },
                 {
                   aspect: "Modern Accessibility",
                   description:
-                    "We make traditional Ukrainian cakes accessible to modern audiences while maintaining authentic cultural significance.",
-                  innovation: "Bridges traditional culture with modern lifestyles",
+                    "I make old Ukrainian cakes accessible to modern audiences while keeping real cultural meaning.",
+                  innovation: "Bridges old culture with modern lifestyles",
                 },
               ].map((aspect, index) => (
                 <Grid item xs={12} sm={6} key={index}>
@@ -623,7 +623,7 @@ export default function UkrainianCultureBakingPage() {
               Experience Ukrainian Culture Through Baking
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Order authentic Ukrainian cakes and experience the rich cultural heritage of Ukrainian
+              Order real Ukrainian cakes and experience the rich cultural heritage of Ukrainian
               baking
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

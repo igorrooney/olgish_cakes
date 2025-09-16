@@ -24,11 +24,11 @@ import {
 export const metadata: Metadata = {
   title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
   description:
-    "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+    "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
   openGraph: {
     title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
     description:
-      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
     url: "https://olgishcakes.co.uk/contact",
     siteName: "Olgish Cakes",
     images: [
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
     description:
-      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes. Contact us via phone, email, WhatsApp, or our online form.",
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
     images: ["https://olgishcakes.co.uk/images/contact.jpg"],
   },
   alternates: {
@@ -110,7 +110,7 @@ export default function ContactPage() {
     "@type": "ContactPage",
     name: "Contact Olgish Cakes",
     description:
-      "Get in touch with Olgish Cakes in Leeds for custom cake orders, inquiries, or quotes.",
+      "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices.",
     url: "https://olgishcakes.co.uk/contact",
     mainEntity: {
       "@type": "Organization",
@@ -176,7 +176,7 @@ export default function ContactPage() {
         }}
       >
         <Typography variant="h1" component="h1" gutterBottom align="center" sx={{ mb: 5 }}>
-          Contact Us
+          Contact Me
         </Typography>
         <Grid container spacing={5} alignItems="stretch">
           {/* Left Column: Contact Info & Social Links */}
@@ -197,8 +197,8 @@ export default function ContactPage() {
                 Get in Touch
               </Typography>
               <Typography variant="body1" sx={{ mb: 3 }}>
-                Reach out via phone, email, or social media. We're happy to answer questions or
-                discuss custom cake orders.
+                Reach out via phone, email, or social media. I'm happy to answer questions or
+                talk about custom cake orders.
               </Typography>
               <Divider sx={{ mb: 3 }} />
               <Stack spacing={2} sx={{ mb: 3 }}>
@@ -243,7 +243,7 @@ export default function ContactPage() {
               {/* Social Links Section */}
               <Box>
                 <Typography variant="h2" component="h2" gutterBottom>
-                  Follow Us
+                  Follow Me
                 </Typography>
                 <Stack direction="row" spacing={2}>
                   <Link
@@ -251,7 +251,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Follow us on Instagram"
+                    aria-label="Follow me on Instagram"
                     sx={{ "&:hover": { color: "#E1306C" } }}
                   >
                     <InstagramIcon fontSize="large" />
@@ -261,7 +261,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     color="text.secondary"
-                    aria-label="Follow us on Facebook"
+                    aria-label="Follow me on Facebook"
                     sx={{ "&:hover": { color: "#1877F2" } }}
                   >
                     <FacebookIcon fontSize="large" />
@@ -286,10 +286,10 @@ export default function ContactPage() {
               }}
             >
               <Typography variant="h2" component="h2" gutterBottom>
-                Send Us a Message
+                Send Me a Message
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Use the form below to send us a direct message.
+                Use the form below to send me a direct message.
               </Typography>
               <ContactForm />
             </Paper>

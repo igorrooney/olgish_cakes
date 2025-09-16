@@ -18,13 +18,13 @@ import { getFeaturedTestimonials } from "../utils/fetchTestimonials";
 export const metadata: Metadata = {
   title: "Customer Stories | Cake Testimonials | Olgish Cakes",
   description:
-    "Read real customer stories and testimonials about Olgish Cakes. Discover why our customers love our Ukrainian cakes and service.",
+    "Read real customer stories and testimonials about Olgish Cakes. Discover why my customers love my Ukrainian cakes and service.",
   keywords:
     "customer stories, cake testimonials, Olgish Cakes reviews, Ukrainian cake reviews, customer feedback",
   openGraph: {
     title: "Customer Stories | Cake Testimonials",
     description:
-      "Read real customer stories and testimonials about Olgish Cakes. Discover why our customers love our Ukrainian cakes and service.",
+      "Read real customer stories and testimonials about Olgish Cakes. Discover why my customers love my Ukrainian cakes and service.",
     url: "https://olgishcakes.co.uk/customer-stories",
     images: ["https://olgishcakes.co.uk/images/customer-stories.jpg"],
     type: "website",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Customer Stories | Cake Testimonials",
     description:
-      "Read real customer stories and testimonials about Olgish Cakes. Discover why our customers love our Ukrainian cakes and service.",
+      "Read real customer stories and testimonials about Olgish Cakes. Discover why my customers love my Ukrainian cakes and service.",
     images: ["https://olgishcakes.co.uk/images/customer-stories.jpg"],
   },
   alternates: {
@@ -95,7 +95,7 @@ export default async function CustomerStoriesPage() {
                 mx: "auto",
               }}
             >
-              Read real stories and testimonials from our happy customers. Discover why Olgish Cakes
+              Read real stories and testimonials from my happy customers. Discover why Olgish Cakes
               is the top choice for Ukrainian cakes in Leeds.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

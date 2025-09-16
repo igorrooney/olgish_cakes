@@ -111,31 +111,31 @@ export default function UkrainianCakeGuidePage() {
     {
       name: "Medovik (Honey Cake)",
       description:
-        "The crown jewel of Ukrainian desserts, featuring delicate honey layers with tangy sour cream filling",
-      origin: "Traditional family recipe dating back centuries",
+        "The best Ukrainian dessert, with delicate honey layers and tangy sour cream filling",
+      origin: "Old family recipe from many centuries ago",
       occasions: "Celebrations, holidays, family gatherings",
-      characteristics: "Light layers, complex honey flavor, creamy texture",
+      characteristics: "Light layers, complex honey taste, creamy texture",
     },
     {
       name: "Kyivsky Tort (Kiev Cake)",
-      description: "Elegant cake with meringue layers, buttercream, and roasted nuts",
-      origin: "Created in Kiev, became Ukrainian classic",
+      description: "Nice cake with meringue layers, buttercream, and roasted nuts",
+      origin: "Made in Kiev, became Ukrainian classic",
       occasions: "Special celebrations, formal events",
       characteristics: "Crunchy meringue, rich buttercream, decorative nuts",
     },
     {
       name: "Smetannyk (Sour Cream Cake)",
-      description: "Rich, moist cake made with generous amounts of Ukrainian sour cream",
-      origin: "Traditional peasant cake, elevated to modern delicacy",
+      description: "Rich, moist cake made with lots of Ukrainian sour cream",
+      origin: "Old peasant cake, made into modern delicacy",
       occasions: "Everyday celebrations, tea time",
-      characteristics: "Dense texture, tangy flavor, incredibly moist",
+      characteristics: "Dense texture, tangy taste, very moist",
     },
     {
       name: "Makoviy Tort (Poppy Seed Cake)",
-      description: "Traditional cake featuring ground poppy seeds in both layers and filling",
-      origin: "Eastern European tradition, Ukrainian interpretation",
+      description: "Old cake with ground poppy seeds in both layers and filling",
+      origin: "Eastern European tradition, Ukrainian way",
       occasions: "Christmas, Easter, religious celebrations",
-      characteristics: "Nutty poppy flavor, dark appearance, festive decoration",
+      characteristics: "Nutty poppy taste, dark look, festive decoration",
     },
   ];
 
@@ -179,7 +179,7 @@ export default function UkrainianCakeGuidePage() {
                 color: "#2E3192", // Brand primary color
               }}
             >
-              The Ultimate Guide to Ukrainian Cakes in Leeds
+              Complete Guide to Ukrainian Cakes in Leeds
             </Typography>
             <Typography
               variant="h2"
@@ -192,18 +192,18 @@ export default function UkrainianCakeGuidePage() {
                 mx: "auto",
               }}
             >
-              Discover the rich tradition of Ukrainian baking, from authentic medovik honey cake to
-              modern wedding masterpieces. Your complete guide to understanding, appreciating, and
-              ordering the finest Ukrainian cakes in Yorkshire.
+              Learn about Ukrainian baking tradition, from real medovik honey cake to
+              modern wedding cakes. Your complete guide to understanding, enjoying, and
+              ordering the best Ukrainian cakes in Yorkshire.
             </Typography>
 
             <Box
               sx={{ display: "flex", gap: 1, justifyContent: "center", flexWrap: "wrap", mb: 4 }}
             >
-              <Chip label="Traditional Recipes" color="primary" />
+              <Chip label="Old Recipes" color="primary" />
               <Chip label="Cultural Heritage" color="primary" variant="outlined" />
               <Chip label="Modern Designs" color="primary" />
-              <Chip label="Expert Techniques" color="primary" variant="outlined" />
+              <Chip label="Good Techniques" color="primary" variant="outlined" />
             </Box>
           </Box>
 
@@ -214,20 +214,20 @@ export default function UkrainianCakeGuidePage() {
               component="h2"
               sx={{ mb: 3, fontSize: "2rem", fontWeight: 600 }}
             >
-              The Cultural Significance of Ukrainian Cakes
+              Why Ukrainian Cakes Are Special
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Ukrainian cake-making is more than just baking—it's a cultural art form that has been
-              passed down through generations. Each cake tells a story of tradition, family
-              heritage, and the rich culinary landscape of Ukraine. In Leeds, this tradition
-              continues to flourish, bringing authentic flavors and time-honored techniques to
-              Yorkshire's diverse food scene.
+              Ukrainian cake-making is more than just baking—it's cultural art that has been
+              passed down through many generations. Each cake tells story of tradition, family
+              history, and rich food culture of Ukraine. In Leeds, this tradition
+              still grows, bringing real flavors and old techniques to
+              Yorkshire's different food scene.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
               The most famous of all Ukrainian cakes is the <strong>medovik</strong> (honey cake), a
-              delicate masterpiece that showcases the Ukrainian approach to balancing sweetness with
-              complexity. Unlike its Russian counterpart, Ukrainian honey cake emphasizes lighter
-              layers and the distinctive tang of authentic sour cream, creating a dessert that's
+              delicate masterpiece that shows Ukrainian way of balancing sweet taste with
+              complex flavors. Unlike Russian version, Ukrainian honey cake has lighter
+              layers and special tang of real sour cream, making dessert that's
               both comforting and sophisticated.
             </Typography>
           </Box>
@@ -239,7 +239,7 @@ export default function UkrainianCakeGuidePage() {
               component="h2"
               sx={{ mb: 4, fontSize: "2rem", fontWeight: 600 }}
             >
-              Traditional Ukrainian Cake Varieties
+              Ukrainian Cake Types
             </Typography>
             <Grid container spacing={4}>
               {cakeTypes.map((cake, index) => (
@@ -292,12 +292,12 @@ export default function UkrainianCakeGuidePage() {
               component="h2"
               sx={{ mb: 4, fontSize: "2rem", fontWeight: 600 }}
             >
-              Traditional Ukrainian Baking Techniques
+              Ukrainian Baking Techniques
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Ukrainian cake baking involves specialized techniques that have been refined over
-              centuries. These methods are what give Ukrainian cakes their distinctive textures and
-              flavors, setting them apart from other European baking traditions.
+              Ukrainian cake baking uses special techniques that have been improved over
+              many centuries. These methods are what give Ukrainian cakes their special textures and
+              tastes, making them different from other European baking traditions.
             </Typography>
 
             {bakingTechniques.map((technique, index) => (
@@ -346,16 +346,16 @@ export default function UkrainianCakeGuidePage() {
               Ukrainian Cakes in Modern Celebrations
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Today's Ukrainian cake artists in Leeds are masterfully blending traditional flavors
-              with contemporary design aesthetics. Wedding cakes featuring classic medovik flavors
-              can be elegantly styled for modern ceremonies, while maintaining the authentic taste
+              Today's Ukrainian cake makers in Leeds are mixing old flavors
+              with modern design looks. Wedding cakes with classic medovik flavors
+              can be styled nicely for modern ceremonies, while keeping the real taste
               that makes Ukrainian desserts so special.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Custom Ukrainian-inspired cakes offer couples and celebration hosts the opportunity to
-              honor cultural heritage while creating stunning centerpieces that wow guests. From
-              multi-tier wedding cakes with honey cake layers to birthday celebrations featuring
-              traditional poppy seed elements, the possibilities are endless.
+              Custom Ukrainian-inspired cakes give couples and celebration hosts chance to
+              honor cultural heritage while creating beautiful centerpieces that impress guests. From
+              multi-tier wedding cakes with honey cake layers to birthday celebrations with
+              old poppy seed elements, the possibilities are endless.
             </Typography>
           </Box>
 
@@ -396,14 +396,14 @@ export default function UkrainianCakeGuidePage() {
               component="h2"
               sx={{ mb: 3, fontSize: "1.8rem", fontWeight: 600 }}
             >
-              Experience Authentic Ukrainian Cakes in Leeds
+              Try Real Ukrainian Cakes in Leeds
             </Typography>
             <Typography
               variant="body1"
               sx={{ mb: 4, lineHeight: 1.8, maxWidth: "600px", mx: "auto" }}
             >
-              Ready to taste the authentic flavors of Ukraine? Olgish Cakes brings traditional
-              recipes and modern artistry together to create unforgettable desserts for your special
+              Ready to taste the real flavors of Ukraine? Olgish Cakes brings old
+              recipes and modern art together to create unforgettable desserts for your special
               occasions.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -421,7 +421,7 @@ export default function UkrainianCakeGuidePage() {
                     "&:hover": { backgroundColor: "#1e2062" },
                   }}
                 >
-                  Browse Our Cakes
+                  See My Cakes
                 </Typography>
               </Link>
               <Link href="/contact" passHref>
@@ -438,7 +438,7 @@ export default function UkrainianCakeGuidePage() {
                     "&:hover": { backgroundColor: "#f0f0f8" },
                   }}
                 >
-                  Book Consultation
+                  Contact Me
                 </Typography>
               </Link>
             </Box>

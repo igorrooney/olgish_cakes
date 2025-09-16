@@ -4,15 +4,15 @@ import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes | Olgish Cakes",
+  title: "Easter Cakes Leeds | Old Ukrainian Easter Cakes | Olgish Cakes",
   description:
-    "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with authentic recipes. Same-day delivery available in Leeds and surrounding areas.",
+    "Order old Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with real recipes. Same-day delivery available in Leeds and around areas.",
   keywords:
     "easter cakes leeds, ukrainian easter cakes, paska, babka, traditional easter cakes, easter cake delivery leeds",
   openGraph: {
     title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
     description:
-      "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with authentic recipes.",
+      "Order old Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with real recipes.",
     type: "website",
     url: "https://olgishcakes.co.uk/easter-cakes-leeds",
     images: [
@@ -34,7 +34,7 @@ const structuredData = {
   "@type": "Service",
   name: "Easter Cakes Leeds",
   description:
-    "Traditional Ukrainian Easter cakes in Leeds including Paska and Babka. Authentic recipes and Easter-themed designs.",
+    "Old Ukrainian Easter cakes in Leeds including Paska and Babka. Real recipes and Easter-themed designs.",
   provider: {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
@@ -63,22 +63,22 @@ const structuredData = {
 
 const easterCakes = [
   {
-    name: "Traditional Paska",
-    description: "Authentic Ukrainian Easter bread with rich, sweet dough and decorative cross",
+    name: "Old Paska",
+    description: "Real Ukrainian Easter bread with rich, sweet dough and decorative cross",
     price: "£35",
-    features: ["Traditional recipe", "Sweet dough", "Decorative cross", "Easter symbols"],
+    features: ["Old recipe", "Sweet dough", "Decorative cross", "Easter symbols"],
   },
   {
     name: "Babka Easter Cake",
     description: "Classic Ukrainian babka with raisins, nuts, and Easter decorations",
     price: "£40",
-    features: ["Raisins and nuts", "Rich flavor", "Easter decorations", "Traditional recipe"],
+    features: ["Raisins and nuts", "Rich flavor", "Easter decorations", "Old recipe"],
   },
   {
     name: "Easter Honey Cake",
     description: "Ukrainian honey cake with layers of sweet honey cream",
     price: "£45",
-    features: ["Honey layers", "Sweet cream", "Easter design", "Traditional Ukrainian"],
+    features: ["Honey layers", "Sweet cream", "Easter design", "Old Ukrainian"],
   },
   {
     name: "Spring Flower Cake",
@@ -112,8 +112,8 @@ export default function EasterCakesLeedsPage() {
             component="h2"
             className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
           >
-            Celebrate Easter with our traditional Ukrainian Easter cakes. From authentic Paska to
-            beautiful Easter-themed designs, we'll make your celebration special.
+            Celebrate Easter with my old Ukrainian Easter cakes. From real Paska to beautiful
+            Easter-themed designs, I'll make your celebration special.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/cakes" aria-label="Browse our Easter cake collection">
@@ -143,7 +143,7 @@ export default function EasterCakesLeedsPage() {
         {/* Popular Easter Cakes */}
         <section className="mb-16">
           <Typography variant="h3" className="text-3xl font-bold text-center mb-12">
-            Traditional Easter Cakes
+            Old Easter Cakes
           </Typography>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {easterCakes.map((cake, index) => (
@@ -195,11 +195,11 @@ export default function EasterCakesLeedsPage() {
         <section className="text-center">
           <Box sx={{ bgcolor: "green.600", borderRadius: 2, p: 4, color: "white" }}>
             <Typography variant="h3" className="text-3xl font-bold mb-4">
-              Celebrate Easter with Tradition
+              Celebrate Easter with Old Traditions
             </Typography>
             <Typography variant="h4" component="h3" className="text-xl mb-6">
-              Order your traditional Ukrainian Easter cakes today and make your celebration
-              authentic and special.
+              Order your old Ukrainian Easter cakes today and make your celebration real and
+              special.
             </Typography>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/cakes" aria-label="Browse our complete cake collection">
@@ -220,7 +220,7 @@ export default function EasterCakesLeedsPage() {
                     "&:hover": { bgcolor: "white", color: "green.600" },
                   }}
                 >
-                  Contact Us
+                  Contact Me
                 </Button>
               </Link>
             </div>

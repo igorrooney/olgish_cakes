@@ -7,13 +7,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Best Cakes Leeds | Top Rated Ukrainian Cakes | Olgish Cakes",
   description:
-    "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, traditional recipes, and custom designs. Rated #1 by customers. Same-day delivery available.",
+    "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, old recipes, and custom designs. Rated #1 by customers. Same-day delivery available.",
   keywords:
     "best cakes leeds, top cakes leeds, ukrainian cakes leeds, award winning cakes, best bakery leeds",
   openGraph: {
     title: "Best Cakes Leeds | Top Rated Ukrainian Cakes",
     description:
-      "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, traditional recipes, and custom designs.",
+      "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, old recipes, and custom designs.",
     type: "website",
     url: "https://olgishcakes.co.uk/best-cakes-leeds",
     images: [
@@ -35,7 +35,7 @@ const structuredData = {
   "@type": "LocalBusiness",
   name: "Olgish Cakes - Best Cakes in Leeds",
   description:
-    "Award-winning Ukrainian cakes in Leeds. Traditional recipes, custom designs, and exceptional quality.",
+    "Award-winning Ukrainian cakes in Leeds. Old recipes, custom designs, and exceptional quality.",
   url: "https://olgishcakes.co.uk",
   telephone: "+44 786 721 8194",
   address: {
@@ -61,12 +61,12 @@ const structuredData = {
 
 const bestCakes = [
   {
-    name: "Traditional Honey Cake",
-    description: "Our signature Ukrainian honey cake with layers of sweet honey cream",
+    name: "Old Honey Cake",
+    description: "My signature Ukrainian honey cake with layers of sweet honey cream",
     rating: "5.0",
     reviews: "89",
     price: "£45",
-    features: ["Traditional recipe", "Honey layers", "Sweet cream", "Customer favorite"],
+    features: ["Old recipe", "Honey layers", "Sweet cream", "Customer favorite"],
   },
   {
     name: "Kyiv Cake",
@@ -74,7 +74,7 @@ const bestCakes = [
     rating: "5.0",
     reviews: "67",
     price: "£50",
-    features: ["Hazelnut meringue", "Chocolate layers", "Traditional", "Premium quality"],
+    features: ["Hazelnut meringue", "Chocolate layers", "Old", "Premium quality"],
   },
   {
     name: "Wedding Cake Deluxe",
@@ -123,8 +123,8 @@ export default function BestCakesLeedsPage() {
             component="h2"
             className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
           >
-            Discover the best Ukrainian cakes in Leeds. From traditional honey cake to custom
-            designs, we create exceptional cakes for every celebration.
+            Discover the best Ukrainian cakes in Leeds. From old honey cake to custom
+            designs, I create exceptional cakes for every celebration.
           </Typography>
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="flex items-center gap-2">
@@ -164,7 +164,7 @@ export default function BestCakesLeedsPage() {
         {/* Best Selling Cakes */}
         <section className="mb-16">
           <Typography variant="h3" className="text-3xl font-bold text-center mb-12">
-            Our Best Selling Cakes
+            My Best Selling Cakes
           </Typography>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {bestCakes.map((cake, index) => (

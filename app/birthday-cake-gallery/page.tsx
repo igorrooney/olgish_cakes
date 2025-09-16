@@ -7,13 +7,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Birthday Cake Gallery | Ukrainian Birthday Cakes | Olgish Cakes",
   description:
-    "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
+    "Browse my birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
   keywords:
     "birthday cake gallery, Ukrainian birthday cakes, birthday cake designs, birthday cake inspiration, birthday cake photos",
   openGraph: {
     title: "Birthday Cake Gallery | Ukrainian Birthday Cakes",
     description:
-      "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
+      "Browse my birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
     url: "https://olgishcakes.co.uk/birthday-cake-gallery",
     images: ["https://olgishcakes.co.uk/images/birthday-cake-gallery.jpg"],
     type: "website",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Birthday Cake Gallery | Ukrainian Birthday Cakes",
     description:
-      "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
+      "Browse my birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
     images: ["https://olgishcakes.co.uk/images/birthday-cake-gallery.jpg"],
   },
   alternates: {
@@ -40,7 +40,7 @@ export default async function BirthdayCakeGalleryPage() {
     "@type": "WebPage",
     name: "Birthday Cake Gallery",
     description:
-      "Browse our birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
+      "Browse my birthday cake gallery. See beautiful Ukrainian birthday cakes, custom designs, and inspiration for your next celebration.",
     url: "https://olgishcakes.co.uk/birthday-cake-gallery",
   };
 
@@ -83,7 +83,7 @@ export default async function BirthdayCakeGalleryPage() {
               mx: "auto",
             }}
           >
-            Explore our gallery of beautiful Ukrainian birthday cakes and custom designs. Get
+            Explore my gallery of beautiful Ukrainian birthday cakes and custom designs. Get
             inspired for your next celebration!
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

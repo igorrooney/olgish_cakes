@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   title:
     "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews | Trustpilot Reviews",
   description:
-    "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes, delivery service, and custom cake designs.",
+    "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about my Ukrainian cakes, delivery service, and custom cake designs.",
   keywords:
     "Olgish Cakes reviews, Ukrainian bakery reviews Leeds, customer testimonials, cake delivery reviews, wedding cake reviews, Trustpilot reviews, bakery awards Leeds",
   openGraph: {
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
-      "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes.",
+      "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about my Ukrainian cakes.",
     url: "https://olgishcakes.co.uk/reviews-awards",
     siteName: "Olgish Cakes",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
     description:
-      "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers.",
+      "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers.",
     images: ["https://olgishcakes.co.uk/images/reviews-awards.jpg"],
   },
   alternates: {
@@ -190,7 +190,7 @@ export default function ReviewsAwardsPage() {
             "@type": "ItemList",
             name: "Customer Reviews and Awards",
             description:
-              "Read authentic customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about our Ukrainian cakes, delivery service, and custom cake designs.",
+              "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about my Ukrainian cakes, delivery service, and custom cake designs.",
             itemListElement: [
               {
                 "@type": "Review",
@@ -276,8 +276,8 @@ export default function ReviewsAwardsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Read authentic reviews from our satisfied customers and see the awards we've received
-              for our Ukrainian cakes and exceptional service. Real testimonials from real customers
+              Read real reviews from my satisfied customers and see the awards I've received for my
+              Ukrainian cakes and exceptional service. Real testimonials from real customers
               across Leeds and Yorkshire.
             </Typography>
             <Box
@@ -576,8 +576,8 @@ export default function ReviewsAwardsPage() {
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Experience the authentic taste of Ukrainian cakes that our customers love. Order today
-              and become part of our growing family of satisfied customers.
+              Taste the real flavors of Ukrainian cakes that my customers love. Order today and
+              become part of my growing family of satisfied customers.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -612,7 +612,7 @@ export default function ReviewsAwardsPage() {
                   },
                 }}
               >
-                Contact Us
+                Contact Me
               </Button>
             </Box>
           </Box>

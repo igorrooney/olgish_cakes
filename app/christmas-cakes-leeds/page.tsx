@@ -4,15 +4,15 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
+  title: "Christmas Cakes Leeds | Old Ukrainian Christmas Cakes | Olgish Cakes",
   description:
-    "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
+    "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
   keywords:
     "Christmas cakes Leeds, Ukrainian Christmas cakes, honey cake, Kyiv cake, Christmas desserts, traditional Christmas cakes, Ukrainian bakery Leeds",
   openGraph: {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
-      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
+      "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     url: "https://olgishcakes.co.uk/christmas-cakes-leeds",
     images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
-      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
+      "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
   },
   alternates: {
@@ -41,7 +41,7 @@ export default function ChristmasCakesLeedsPage() {
             "@type": "Service",
             name: "Christmas Cakes Leeds",
             description:
-              "Traditional Ukrainian Christmas cakes in Leeds. Order festive cakes for the holidays.",
+              "Old Ukrainian Christmas cakes in Leeds. Order festive cakes for the holidays.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -99,12 +99,12 @@ export default function ChristmasCakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate Christmas with traditional Ukrainian Christmas cakes and honey cake.
-              Handcrafted with love in Leeds, our Christmas cakes bring the authentic taste of
-              Ukrainian Christmas celebrations to your home.
+              Celebrate Christmas with old Ukrainian Christmas cakes and honey cake.
+              Handcrafted with love in Leeds, my Christmas cakes bring the real taste of Ukrainian
+              Christmas celebrations to your home.
             </Typography>
             <Chip
-              label="Traditional Ukrainian Christmas Cakes"
+              label="Old Ukrainian Christmas Cakes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -157,12 +157,12 @@ export default function ChristmasCakesLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  Our Christmas cakes are made using traditional Ukrainian recipes passed down
-                  through generations. Each cake is handcrafted with premium ingredients, including
+                  My Christmas cakes are made using old Ukrainian recipes passed down through
+                  generations. Each cake is handcrafted with premium ingredients, including
                   pure honey, farm-fresh eggs, and real butter.
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                  We also offer modern variations of Christmas cakes, including Kyiv cake, chocolate
+                  I also offer modern variations of Christmas cakes, including Kyiv cake, chocolate
                   Christmas cakes, and gluten-friendly Christmas cake options for those with dietary
                   restrictions.
                 </Typography>
@@ -193,7 +193,7 @@ export default function ChristmasCakesLeedsPage() {
                 textAlign: "center",
               }}
             >
-              Our Christmas Cake Collection
+              My Christmas Cake Collection
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={4}>
@@ -203,14 +203,14 @@ export default function ChristmasCakesLeedsPage() {
                     component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
-                    Traditional Honey Cake
+                    Old Honey Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
                     Classic Ukrainian honey cake with multiple layers of honey sponge and rich sour
                     cream frosting. Decorated with festive Christmas patterns.
                   </Typography>
                   <Chip
-                    label="Traditional Recipe"
+                    label="Old Recipe"
                     sx={{ backgroundColor: "primary.main", color: "white" }}
                   />
                 </Box>
@@ -291,8 +291,8 @@ export default function ChristmasCakesLeedsPage() {
                   days in advance to ensure availability and proper preparation time.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Delivery:</strong> We offer free delivery across Leeds and surrounding
-                  areas. Christmas cakes are delivered fresh on your chosen date.
+                  <strong>Delivery:</strong> I offer free delivery across Leeds and around areas.
+                  Christmas cakes are delivered fresh on your chosen date.
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
                   <strong>Customization:</strong> All Christmas cakes can be customized with your
@@ -388,8 +388,8 @@ export default function ChristmasCakesLeedsPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Celebrate Christmas with authentic Ukrainian Christmas cakes. Contact us to place your
-              order and ensure you have the perfect Christmas cakes for your celebration.
+              Celebrate Christmas with real Ukrainian Christmas cakes. Contact me to place your order
+              and make sure you have the perfect Christmas cakes for your celebration.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

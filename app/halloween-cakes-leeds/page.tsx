@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 export const metadata: Metadata = {
   title: "Halloween Cakes Leeds | Spooky Custom Cakes | Olgish Cakes",
   description:
-    "Order spooky Halloween cakes in Leeds. Pumpkin cakes, ghost designs, and Halloween-themed creations. Same-day delivery available in Leeds and surrounding areas.",
+    "Order spooky Halloween cakes in Leeds. Pumpkin cakes, ghost designs, and Halloween-themed creations. Same-day delivery available in Leeds and around areas.",
   keywords:
     "halloween cakes leeds, spooky cakes, pumpkin cakes, ghost cakes, halloween cake delivery leeds",
   openGraph: {

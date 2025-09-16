@@ -11,13 +11,13 @@ export const metadata: Metadata = {
   title:
     "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes | Olgish Cakes",
   description:
-    "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+    "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with old flavors.",
   keywords:
     "celebration cakes Leeds, party cakes, anniversary cakes, graduation cakes, special occasion cakes, Ukrainian celebration cakes, custom celebration cakes Leeds, event cakes",
   openGraph: {
     title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
     description:
-      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with old flavors.",
     url: "https://olgishcakes.co.uk/celebration-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -168,8 +168,8 @@ export default async function CelebrationCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate every special moment with our beautiful Ukrainian celebration cakes. From
-              birthdays to anniversaries, we create cakes that make your celebrations unforgettable.
+              Celebrate every special moment with my beautiful Ukrainian celebration cakes. From
+              birthdays to anniversaries, I create cakes that make your celebrations unforgettable.
             </Typography>
             <Chip
               label="Custom Celebration Cake Design"
@@ -187,30 +187,30 @@ export default async function CelebrationCakesPage() {
           {/* Celebration Types */}
           <Grid container spacing={4} sx={{ mb: { xs: 6, md: 8 } }}>
             {[
-              {
-                title: "Anniversary Cakes",
-                description:
-                  "Elegant anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavors",
-                icon: "💕",
-              },
-              {
-                title: "Graduation Cakes",
-                description:
-                  "Achievement celebration cakes perfect for graduations, promotions, and academic milestones",
-                icon: "🎓",
-              },
-              {
-                title: "Retirement Cakes",
-                description:
-                  "Special retirement cakes honoring years of hard work and new beginnings",
-                icon: "🌅",
-              },
-              {
-                title: "Housewarming Cakes",
-                description:
-                  "Warm welcome cakes for new homes, featuring cozy designs and traditional Ukrainian hospitality",
-                icon: "🏠",
-              },
+                {
+                  title: "Anniversary Cakes",
+                  description:
+                    "Nice anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavors",
+                  icon: "💕",
+                },
+                {
+                  title: "Graduation Cakes",
+                  description:
+                    "Achievement celebration cakes perfect for graduations, promotions, and academic milestones",
+                  icon: "🎓",
+                },
+                {
+                  title: "Retirement Cakes",
+                  description:
+                    "Special retirement cakes honoring years of hard work and new beginnings",
+                  icon: "🌅",
+                },
+                {
+                  title: "Housewarming Cakes",
+                  description:
+                    "Warm welcome cakes for new homes, featuring cozy designs and old Ukrainian hospitality",
+                  icon: "🏠",
+                },
             ].map((celebration, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Paper
@@ -260,12 +260,12 @@ export default async function CelebrationCakesPage() {
                   "Professional corporate celebration cakes for business milestones and team achievements",
                 icon: "🏢",
               },
-              {
-                title: "Cultural Cakes",
-                description:
-                  "Traditional Ukrainian celebration cakes honoring cultural heritage and family traditions",
-                icon: "🇺🇦",
-              },
+                {
+                  title: "Cultural Cakes",
+                  description:
+                    "Old Ukrainian celebration cakes honoring cultural heritage and family traditions",
+                  icon: "🇺🇦",
+                },
             ].map((celebration, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Paper
@@ -317,7 +317,7 @@ export default async function CelebrationCakesPage() {
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
                   Every celebration cake is custom-designed to match your special occasion. Contact
-                  us to discuss your celebration cake requirements and view our portfolio.
+                  me to talk about your celebration cake needs and view my portfolio.
                 </Typography>
                 <Button
                   component={Link}
@@ -366,8 +366,8 @@ export default async function CelebrationCakesPage() {
               Ukrainian Celebration Traditions
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Ukrainian celebrations are rich with tradition and meaning. Our celebration cakes
-              incorporate these cultural elements while creating modern, beautiful designs for your
+              Ukrainian celebrations are rich with tradition and meaning. My celebration cakes
+              include these cultural elements while creating modern, beautiful designs for your
               special occasions.
             </Typography>
             <Grid container spacing={4}>
@@ -433,8 +433,8 @@ export default async function CelebrationCakesPage() {
               Celebration Cake Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our celebration cakes feature a selection of flavors perfect for special occasions.
-              From traditional Ukrainian favorites to classic celebration flavors, we have something
+              My celebration cakes feature a selection of flavors perfect for special occasions.
+              From old Ukrainian favorites to classic celebration flavors, I have something
               for every taste and occasion.
             </Typography>
             <Grid container spacing={3}>
@@ -481,7 +481,7 @@ export default async function CelebrationCakesPage() {
               Ready to Celebrate?
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us today to start planning your perfect celebration cake
+              Contact me today to start planning your perfect celebration cake
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

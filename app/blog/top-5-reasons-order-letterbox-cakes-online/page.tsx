@@ -154,7 +154,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
               lineHeight: 1.6,
             }}
           >
-            Discover why ordering letterbox cakes online is revolutionizing how we surprise our loved ones. 
+            Discover why ordering letterbox cakes online is changing how we surprise our loved ones. 
             From convenience to freshness, here's why this delivery method is becoming so popular.
           </Typography>
           
@@ -182,7 +182,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
             In recent years, letterbox cakes have transformed the way we think about cake delivery. 
             This innovative approach combines the convenience of online shopping with the joy of 
             receiving a surprise treat. But what makes ordering letterbox cakes online so appealing? 
-            Let's explore the top 5 reasons that are driving this trend.
+            I'll explore the top 5 reasons that are driving this trend.
           </Typography>
 
           {/* Top 5 Reasons */}
@@ -362,7 +362,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7 }}>
-            At Olgish Cakes, we've perfected the art of letterbox cake delivery. Our traditional 
+            At Olgish Cakes, I've perfected the art of letterbox cake delivery. My old 
             Ukrainian honey cake is specially designed for postal delivery, featuring:
           </Typography>
 
@@ -372,8 +372,8 @@ export default function Top5ReasonsLetterboxCakesPage() {
                 <Typography sx={{ fontSize: "1.5rem" }}>🍯</Typography>
               </ListItemIcon>
               <ListItemText 
-                primary="Traditional Ukrainian Honey Cake"
-                secondary="Authentic recipe with honey-infused layers and creamy filling"
+                primary="Old Ukrainian Honey Cake"
+                secondary="Real recipe with honey-infused layers and creamy filling"
               />
             </ListItem>
             <ListItem>
@@ -421,7 +421,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
               Join thousands of satisfied customers who have discovered the joy of letterbox cake delivery. 
-              Surprise someone special today with our traditional Ukrainian honey cake.
+              Surprise someone special today with my old Ukrainian honey cake.
             </Typography>
             
             <Button

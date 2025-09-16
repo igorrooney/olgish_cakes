@@ -60,7 +60,7 @@ export default function CakeByPostServicePage() {
             "@type": "Service",
             "@id": "https://olgishcakes.co.uk/cake-by-post-service#service",
             name: "Cake by Post Service",
-            description: "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK.",
+            description: "Old Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK.",
             provider: {
               "@type": "Organization",
               name: "Olgish Cakes",
@@ -84,7 +84,7 @@ export default function CakeByPostServicePage() {
               name: "Cake by Post Products",
               itemListElement: {
                 "@type": "Product",
-                name: "Traditional Ukrainian Honey Cake by Post",
+                name: "Old Ukrainian Honey Cake by Post",
                 description: "Letterbox-friendly pack of 2 slices, vacuum-packed for freshness",
                 offers: {
                   "@type": "Offer",
@@ -130,7 +130,7 @@ export default function CakeByPostServicePage() {
                 name: "How long does cake by post stay fresh?",
                 acceptedAnswer: { 
                   "@type": "Answer", 
-                  text: "Our cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. We recommend consuming within 3-4 days for the best taste experience." 
+                  text: "My cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. I recommend consuming within 3-4 days for the best taste experience." 
                 }
               },
               {
@@ -138,7 +138,7 @@ export default function CakeByPostServicePage() {
                 name: "Do you deliver cake by post to all UK addresses?",
                 acceptedAnswer: { 
                   "@type": "Answer", 
-                  text: "Yes, we deliver our cake by post service to all UK mainland addresses. We offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact us directly." 
+                  text: "Yes, I deliver my cake by post service to all UK mainland addresses. I offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact me directly." 
                 }
               },
               {
@@ -146,7 +146,7 @@ export default function CakeByPostServicePage() {
                 name: "What types of cake can be sent by post?",
                 acceptedAnswer: { 
                   "@type": "Answer", 
-                  text: "We specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. Our cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
+                  text: "I specialize in old Ukrainian honey cake (honey cake) that's perfect for postal delivery. My cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
                 }
               },
               {
@@ -154,7 +154,7 @@ export default function CakeByPostServicePage() {
                 name: "How do I order cake by post?",
                 acceptedAnswer: { 
                   "@type": "Answer", 
-                  text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. We'll pack and ship your cake within 2-3 working days." 
+                  text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. I'll pack and ship your cake within 2-3 working days." 
                 }
               }
             ]

@@ -70,7 +70,7 @@ export default function BuyCakePage() {
             </Typography>
             <Grid container spacing={3}>
               {[
-                { name: "Medovik (Honey Cake)", url: "/cakes/medovik", desc: "Authentic Ukrainian honey cake" },
+                { name: "Medovik (Honey Cake)", url: "/cakes/medovik", desc: "Real Ukrainian honey cake" },
                 { name: "Kyiv Cake", url: "/cakes/kyiv-cake", desc: "Classic Kyiv meringue cake" },
               ].map((p, idx) => (
                 <Grid item xs={12} sm={6} key={idx}>

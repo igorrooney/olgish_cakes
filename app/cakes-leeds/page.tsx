@@ -9,13 +9,13 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes | Olgish Cakes",
   description:
-    "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and surrounding areas.",
+    "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Leeds and around areas.",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and surrounding areas.",
+      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Leeds and around areas.",
     url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
+      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {
@@ -294,8 +294,8 @@ export default async function CakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Handcrafted Ukrainian cakes made fresh in Leeds. From traditional Ukrainian desserts
-              to custom celebration cakes, we bring authentic flavors and beautiful designs to our
+              Handcrafted Ukrainian cakes made fresh in Leeds. From old Ukrainian desserts
+              to custom celebration cakes, I bring real flavors and beautiful designs to our
               local community.
             </Typography>
             <Chip
@@ -317,19 +317,19 @@ export default async function CakesLeedsPage() {
               {
                 title: "Made in Leeds",
                 description:
-                  "All our cakes are freshly baked in our Leeds kitchen using traditional Ukrainian recipes",
+                  "All my cakes are freshly baked in my Leeds kitchen using old Ukrainian recipes",
                 icon: "🏠",
               },
               {
                 title: "Local Delivery",
                 description:
-                  "Fast delivery service across Leeds and surrounding areas, ensuring your cake arrives fresh",
+                  "Fast delivery service across Leeds and around areas, making sure your cake arrives fresh",
                 icon: "🚚",
               },
               {
                 title: "Ukrainian Traditions",
                 description:
-                  "Authentic Ukrainian baking techniques and flavors brought to the Leeds community",
+                  "Real Ukrainian baking techniques and flavors brought to the Leeds community",
                 icon: "🇺🇦",
               },
               {
@@ -435,8 +435,8 @@ export default async function CakesLeedsPage() {
               Serving Leeds and Surrounding Areas
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              We're proud to serve the Leeds community and surrounding areas with our authentic
-              Ukrainian cakes. Our local delivery service ensures that your fresh, handmade cakes
+              I'm proud to serve the Leeds community and around areas with my real
+              Ukrainian cakes. My local delivery service makes sure that your fresh, handmade cakes
               arrive at your doorstep or venue in perfect condition.
             </Typography>
             <Grid container spacing={3}>

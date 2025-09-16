@@ -4,15 +4,15 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Skipton | Ukrainian Cakes Skipton | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Skipton | Ukrainian Cakes Skipton | Old Ukrainian Cakes | Olgish Cakes",
   description:
-    "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton. Order now for special occasions.",
+    "Old Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton. Order now for special occasions.",
   keywords:
     "cakes Skipton, Ukrainian cakes Skipton, honey cake Skipton, Kyiv cake Skipton, traditional Ukrainian cakes Skipton, cake delivery Skipton",
   openGraph: {
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
-      "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
+      "Old Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton.",
     url: "https://olgishcakes.co.uk/cakes-skipton",
     images: ["https://olgishcakes.co.uk/images/cakes-skipton.jpg"],
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Skipton | Ukrainian Cakes Skipton",
     description:
-      "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Skipton.",
+      "Old Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton.",
     images: ["https://olgishcakes.co.uk/images/cakes-skipton.jpg"],
   },
   alternates: {
@@ -108,12 +108,12 @@ export default function CakesSkiptonPage() {
                 lineHeight: 1.6,
               }}
             >
-              Traditional Ukrainian cakes delivered to Skipton. Handcrafted honey cake, Kyiv cake,
-              and authentic Ukrainian desserts made with love in Leeds and delivered fresh to your
+              Old Ukrainian cakes delivered to Skipton. Handcrafted honey cake, Kyiv cake,
+              and real Ukrainian desserts made with love in Leeds and delivered fresh to your
               door in Skipton.
             </Typography>
             <Chip
-              label="Traditional Ukrainian Cakes Skipton"
+              label="Old Ukrainian Cakes Skipton"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -144,8 +144,8 @@ export default function CakesSkiptonPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Experience authentic Ukrainian cakes in Skipton. Contact us to place your order and
-              enjoy traditional Ukrainian flavors delivered to your door.
+              Experience real Ukrainian cakes in Skipton. Contact me to place your order and
+              enjoy old Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

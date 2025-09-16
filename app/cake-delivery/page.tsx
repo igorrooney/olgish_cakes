@@ -8,13 +8,13 @@ import { AreasWeCover } from "../components/AreasWeCover";
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds – Same‑day Options, Venue Setup | Olgish Cakes",
   description:
-    "Professional cake delivery across Leeds and nearby areas with careful handling and optional venue setup for weddings. Same‑day options when available. Prices from £5.",
+    "Professional cake delivery across Leeds and around areas with careful handling and optional venue setup for weddings. Same‑day options when available. Prices from £5.",
   keywords:
     "cake delivery Leeds, same day cake delivery Leeds, wedding cake delivery Leeds, birthday cake delivery Leeds, celebration cake delivery, venue setup wedding cakes, local cake delivery Leeds, Wakefield cake delivery, York cake delivery, Bradford cake delivery",
   openGraph: {
     title: "Cake Delivery Leeds – Same‑day Options, Venue Setup",
     description:
-      "Professional cake delivery across Leeds and nearby areas. Optional wedding cake setup at your venue. Same‑day options when available.",
+      "Professional cake delivery across Leeds and around areas. Optional wedding cake setup at your venue. Same‑day options when available.",
     url: "https://olgishcakes.co.uk/cake-delivery",
     siteName: "Olgish Cakes",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds – Same‑day Options, Venue Setup",
     description:
-      "Professional cake delivery across Leeds and nearby areas with careful handling and venue setup for weddings.",
+      "Professional cake delivery across Leeds and around areas with careful handling and venue setup for weddings.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
@@ -79,7 +79,7 @@ export default function CakeDeliveryPage() {
             "@type": "Service",
             name: "Cake Delivery Leeds",
             description:
-              "Professional cake delivery service in Leeds and nearby areas. Wedding cake delivery with venue setup, birthday cake delivery, and celebration cake delivery.",
+              "Professional cake delivery service in Leeds and around areas. Wedding cake delivery with venue setup, birthday cake delivery, and celebration cake delivery.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -152,7 +152,7 @@ export default function CakeDeliveryPage() {
                 name: "Which areas do you deliver to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "We deliver across Leeds and nearby areas including Wakefield, Bradford, York, Harrogate and more."
+                  text: "I deliver across Leeds and around areas including Wakefield, Bradford, York, Harrogate and more."
                 }
               },
               {
@@ -227,8 +227,8 @@ export default function CakeDeliveryPage() {
                 lineHeight: 1.6,
               }}
             >
-              Reliable cake delivery service across Leeds and surrounding areas. We ensure your
-              Ukrainian cakes arrive fresh, safe, and beautifully presented for your special
+              Reliable cake delivery service across Leeds and around areas. I make sure your
+              Ukrainian cakes arrive fresh, safe, and nicely presented for your special
               occasions.
             </Typography>
             <Chip
@@ -267,7 +267,7 @@ export default function CakeDeliveryPage() {
               },
               {
                 title: "Local Leeds Delivery",
-                description: "Fast delivery service across Leeds and surrounding areas",
+                description: "Fast delivery service across Leeds and around areas",
                 icon: "🚚",
               },
             ].map((service, index) => (
@@ -328,9 +328,9 @@ export default function CakeDeliveryPage() {
               Delivery Areas
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              We provide professional cake delivery service across Leeds and surrounding areas. Our
-              delivery team ensures your cake arrives safely and on time, with careful handling and
-              professional setup when required.
+              I provide professional cake delivery service across Leeds and around areas. My
+              delivery team makes sure your cake arrives safely and on time, with careful handling and
+              professional setup when needed.
             </Typography>
             <Grid container spacing={3}>
               {[
@@ -349,7 +349,7 @@ export default function CakeDeliveryPage() {
                 "Beeston",
                 "Hunslet",
                 "Holbeck",
-                "And surrounding areas",
+                "And around areas",
               ].map((area, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -371,7 +371,7 @@ export default function CakeDeliveryPage() {
 
           <AreasWeCover
             title="Cake Delivery Areas"
-            subtitle="We deliver cakes across Leeds and nearby towns. Choose your town to learn more."
+            subtitle="I deliver cakes across Leeds and around towns. Choose your town to learn more."
           />
 
           {/* Delivery Process */}
@@ -582,8 +582,8 @@ export default function CakeDeliveryPage() {
               Cake Delivery Tips
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              To ensure your cake arrives in perfect condition, we follow strict delivery protocols
-              and provide helpful tips for receiving your cake.
+              To make sure your cake arrives in perfect condition, I follow strict delivery
+              protocols and provide helpful tips for receiving your cake.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -645,7 +645,7 @@ export default function CakeDeliveryPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Ready to order your cake with professional delivery service? Contact us to discuss
+              Ready to order your cake with professional delivery service? Contact me to discuss
               your delivery requirements and get a quote for your area.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -705,7 +705,7 @@ export default function CakeDeliveryPage() {
             },
             {
               q: "Which areas do you cover?",
-              a: "Leeds and nearby areas such as Wakefield, Bradford, York and Harrogate.",
+              a: "Leeds and around areas such as Wakefield, Bradford, York and Harrogate.",
             },
             { q: "How much does delivery cost?", a: "From £5 in Leeds. Distance and setup may affect pricing." },
             { q: "Can you set up wedding cakes at the venue?", a: "Yes, we offer full delivery and professional setup." },
