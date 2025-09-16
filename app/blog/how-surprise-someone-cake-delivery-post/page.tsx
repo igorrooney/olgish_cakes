@@ -156,7 +156,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
             }}
           >
             Discover the art of creating perfect surprise moments with cake delivery by post. 
-            Learn expert tips for timing, messaging, and creating unforgettable experiences.
+            Learn my tips for timing, messaging, and creating unforgettable experiences.
           </Typography>
           
           <Typography variant="body2" color="text.secondary">
@@ -181,7 +181,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
           
           <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
             There's something magical about surprising someone with cake delivery by post. Unlike 
-            traditional gifts that require the recipient to be present, cake delivery creates a 
+            old gifts that require the recipient to be present, cake delivery creates a 
             moment of unexpected joy that can brighten anyone's day. But creating the perfect 
             surprise requires careful planning and attention to detail.
           </Typography>
@@ -400,9 +400,9 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 6, lineHeight: 1.7 }}>
-            At Olgish Cakes, we understand the power of surprise. Our traditional Ukrainian honey 
-            cake is perfect for creating these magical moments, with its authentic taste and 
-            letterbox-friendly packaging ensuring your surprise arrives in perfect condition.
+            At Olgish Cakes, I understand the power of surprise. My old Ukrainian honey 
+            cake is perfect for creating these magical moments, with its real taste and 
+            letterbox-friendly packaging making sure your surprise arrives in perfect condition.
           </Typography>
 
           {/* Call to Action */}
@@ -420,7 +420,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
-              Start planning your perfect cake delivery surprise today. Our traditional Ukrainian 
+              Start planning your perfect cake delivery surprise today. My old Ukrainian 
               honey cake is ready to bring joy to someone special in your life.
             </Typography>
             

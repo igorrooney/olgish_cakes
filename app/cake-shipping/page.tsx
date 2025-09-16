@@ -148,7 +148,7 @@ export default function CakeShippingPage() {
               mx: "auto",
             }}
           >
-            Learn about our cake shipping and delivery options. Nationwide shipping, local delivery,
+            Learn about my cake shipping and delivery options. Nationwide shipping, local delivery,
             and safe packaging for your cakes.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -165,7 +165,7 @@ export default function CakeShippingPage() {
                 Nationwide Shipping
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                We ship cakes across the UK with secure packaging and fast delivery.
+                I ship cakes across the UK with secure packaging and fast delivery.
               </Typography>
             </Paper>
           </Grid>
@@ -175,7 +175,7 @@ export default function CakeShippingPage() {
                 Local Delivery
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Same-day and next-day delivery available in Leeds and surrounding areas.
+                Same-day and next-day delivery available in Leeds and around areas.
               </Typography>
             </Paper>
           </Grid>
@@ -185,7 +185,7 @@ export default function CakeShippingPage() {
                 Safe Packaging
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                All cakes are packaged securely to ensure they arrive fresh and beautiful.
+                All cakes are packaged securely to make sure they arrive fresh and beautiful.
               </Typography>
             </Paper>
           </Grid>

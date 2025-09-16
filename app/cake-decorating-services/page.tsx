@@ -19,13 +19,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Decorating Services | Custom Cake Design | Olgish Cakes",
   description:
-    "Professional cake decorating services in Leeds. Custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
+    "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
   keywords:
     "cake decorating services, custom cake design, cake decoration Leeds, wedding cake decoration, birthday cake decoration",
   openGraph: {
     title: "Cake Decorating Services | Custom Cake Design",
     description:
-      "Professional cake decorating services in Leeds. Custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
+      "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
     url: "https://olgishcakes.co.uk/cake-decorating-services",
     images: ["https://olgishcakes.co.uk/images/cake-decorating-services.jpg"],
     type: "website",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Decorating Services | Custom Cake Design",
     description:
-      "Professional cake decorating services in Leeds. Custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
+      "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
     images: ["https://olgishcakes.co.uk/images/cake-decorating-services.jpg"],
   },
   alternates: {
@@ -74,7 +74,7 @@ export default function CakeDecoratingServicesPage() {
     "@context": "https://schema.org",
     "@type": "Service",
     name: "Cake Decorating Services",
-    description: "Professional cake decorating and custom cake design in Leeds",
+    description: "Professional cake decorating and custom cake design in Leeds by Ukrainian baker Olga",
     provider: {
       "@type": "Organization",
       name: "Olgish Cakes",
@@ -162,7 +162,7 @@ export default function CakeDecoratingServicesPage() {
               }}
             >
               Professional cake decorating and custom cake design for weddings, birthdays, and
-              special occasions in Leeds.
+              special occasions in Leeds. I bring real Ukrainian style and attention to detail.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Chip label="Custom Design" color="primary" />

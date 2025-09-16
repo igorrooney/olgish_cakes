@@ -8,11 +8,11 @@ import { getFaqs } from "../utils/fetchFaqs";
 export const metadata: Metadata = {
   title: "FAQ | Olgish Cakes - Frequently Asked Questions",
   description:
-    "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+    "Find answers to common questions about my Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
   openGraph: {
     title: "FAQ | Olgish Cakes - Frequently Asked Questions",
     description:
-      "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+      "Find answers to common questions about my Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
     url: "https://olgishcakes.co.uk/faq",
     siteName: "Olgish Cakes",
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "FAQ | Olgish Cakes - Frequently Asked Questions",
     description:
-      "Find answers to common questions about our Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
+      "Find answers to common questions about my Ukrainian-style cakes, ordering process, delivery options, and more at Olgish Cakes in Leeds.",
     images: ["https://olgishcakes.co.uk/images/faq.jpg"],
   },
   alternates: {
@@ -171,7 +171,7 @@ export default async function FAQPage() {
                 fontWeight: 400,
               }}
             >
-              Everything you need to know about our Ukrainian-style cakes
+              Everything you need to know about my Ukrainian-style cakes
             </Typography>
           </Box>
 
@@ -186,7 +186,7 @@ export default async function FAQPage() {
                 fontSize: "1.1rem",
               }}
             >
-              Have a specific question about our Ukrainian-style cakes?
+              Have a specific question about my Ukrainian-style cakes?
             </Typography>
             <Button
               component={Link}
@@ -209,7 +209,7 @@ export default async function FAQPage() {
                 transition: "all 0.3s ease",
               }}
             >
-              Contact Us
+              Contact Me
             </Button>
           </Box>
         </Container>

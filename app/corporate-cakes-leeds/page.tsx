@@ -139,7 +139,7 @@ export default function CorporateCakesLeedsPage() {
             "@context": "https://schema.org",
             "@type": "Service",
             name: "Corporate Cakes Leeds",
-            description: "Custom corporate cakes for business events in Leeds.",
+            description: "Custom corporate cakes for business events in Leeds. I bring real Ukrainian cakes with professional setup and delivery.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -194,9 +194,9 @@ export default function CorporateCakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Professional corporate catering with authentic Ukrainian cakes. Office celebrations,
-              business meetings, conferences, and corporate events. Delicious Ukrainian cakes
-              delivered to your workplace with professional service.
+              Professional corporate catering with real Ukrainian cakes. Office celebrations,
+              business meetings, conferences, and corporate events. I deliver to your workplace
+              with professional service.
             </Typography>
             <Chip
               label="Professional Corporate Catering Service"
@@ -476,25 +476,25 @@ export default function CorporateCakesLeedsPage() {
                   step: "1",
                   title: "Initial Consultation",
                   description:
-                    "Contact us to discuss your corporate catering needs, event details, and dietary requirements.",
+                    "Contact me to discuss your corporate catering needs, event details, and dietary requirements.",
                 },
                 {
                   step: "2",
                   title: "Custom Quote",
                   description:
-                    "We'll provide a detailed quote based on your requirements, including delivery and setup options.",
+                    "I'll provide a detailed quote based on your requirements, including delivery and setup options.",
                 },
                 {
                   step: "3",
                   title: "Confirmation & Planning",
                   description:
-                    "Once confirmed, we'll plan the delivery schedule and coordinate with your team.",
+                    "Once confirmed, I'll plan the delivery schedule and coordinate with your team.",
                 },
                 {
                   step: "4",
                   title: "Delivery & Setup",
                   description:
-                    "Professional delivery and setup at your venue, ensuring everything is perfect for your event.",
+                    "Professional delivery and setup at your venue, making sure everything is perfect for your event.",
                 },
               ].map((step, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -558,8 +558,8 @@ export default function CorporateCakesLeedsPage() {
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Contact us today to discuss your corporate catering needs. We'll provide a custom
-              quote and ensure your next business event is memorable with authentic Ukrainian cakes.
+              Contact me today to discuss your corporate catering needs. I'll provide a custom
+              quote and make sure your next business event is memorable with real Ukrainian cakes.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

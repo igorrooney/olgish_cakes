@@ -18,11 +18,11 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
   description:
-    "Olgish Cakes accessibility statement. We are committed to making our Ukrainian bakery website accessible to all users, including those with disabilities. WCAG 2.1 compliance information.",
+    "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users, including those with disabilities. WCAG 2.1 compliance information.",
   openGraph: {
     title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
     description:
-      "Olgish Cakes accessibility statement. We are committed to making our Ukrainian bakery website accessible to all users, including those with disabilities.",
+      "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users, including those with disabilities.",
     url: "https://olgishcakes.co.uk/accessibility",
     siteName: "Olgish Cakes",
     images: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
     description:
-      "Olgish Cakes accessibility statement. We are committed to making our Ukrainian bakery website accessible to all users.",
+      "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users.",
     images: ["https://olgishcakes.co.uk/images/accessibility-statement.jpg"],
   },
   alternates: {
@@ -170,19 +170,19 @@ export default function AccessibilityStatementPage() {
 
             <Alert severity="info" sx={{ mb: 4, borderRadius: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                Olgish Cakes is committed to ensuring digital accessibility for all users, including
-                those with disabilities. We are continually improving the user experience for
-                everyone and applying the relevant accessibility standards.
+                Olgish Cakes is committed to making digital accessibility for all users, including
+                those with disabilities. I am always improving the user experience for
+                everyone and using the relevant accessibility standards.
               </Typography>
             </Alert>
 
             <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
-              1. Our Commitment
+              1. My Commitment
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
               Olgish Cakes is committed to providing a website that is accessible to the widest
-              possible audience, regardless of technology or ability. We actively work to increase
-              the accessibility and usability of our website and in doing so adhere to many of the
+              possible audience, regardless of technology or ability. I actively work to increase
+              the accessibility and usability of my website and in doing so follow many of the
               available standards and guidelines.
             </Typography>
 
@@ -200,16 +200,16 @@ export default function AccessibilityStatementPage() {
             </Typography>
 
             <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
-              3. Measures We've Taken
+              3. Measures I've Taken
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              To make our website accessible, we have implemented the following measures:
+              To make my website accessible, I have implemented the following measures:
             </Typography>
             <List>
               <ListItem>
                 <ListItemText
                   primary="Semantic HTML Structure"
-                  secondary="We use proper heading hierarchy and semantic HTML elements to ensure screen readers can navigate content effectively"
+                  secondary="I use proper heading hierarchy and semantic HTML elements to make sure screen readers can navigate content effectively"
                 />
               </ListItem>
               <ListItem>
@@ -221,13 +221,13 @@ export default function AccessibilityStatementPage() {
               <ListItem>
                 <ListItemText
                   primary="Keyboard Navigation"
-                  secondary="Our website can be navigated using only a keyboard, without requiring a mouse"
+                  secondary="My website can be navigated using only a keyboard, without requiring a mouse"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="Color Contrast"
-                  secondary="We ensure sufficient color contrast between text and background colors for readability"
+                  secondary="I make sure sufficient color contrast between text and background colors for readability"
                 />
               </ListItem>
               <ListItem>
@@ -239,7 +239,7 @@ export default function AccessibilityStatementPage() {
               <ListItem>
                 <ListItemText
                   primary="Responsive Design"
-                  secondary="Our website adapts to different screen sizes and devices for optimal viewing"
+                  secondary="My website adapts to different screen sizes and devices for optimal viewing"
                 />
               </ListItem>
               <ListItem>
@@ -260,25 +260,25 @@ export default function AccessibilityStatementPage() {
               4. Known Accessibility Issues
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We are aware of the following accessibility issues on our website:
+              I am aware of the following accessibility issues on my website:
             </Typography>
             <List>
               <ListItem>
                 <ListItemText
                   primary="Third-Party Content"
-                  secondary="Some third-party content (such as embedded social media feeds) may not be fully accessible. We are working with our providers to improve this."
+                  secondary="Some third-party content (such as embedded social media feeds) may not be fully accessible. I am working with my providers to improve this."
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="PDF Documents"
-                  secondary="Some downloadable PDF documents may not be fully accessible to screen readers. We are working to provide alternative formats."
+                  secondary="Some downloadable PDF documents may not be fully accessible to screen readers. I am working to provide alternative formats."
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="Video Content"
-                  secondary="Some video content may not have captions or transcripts. We are working to add these features."
+                  secondary="Some video content may not have captions or transcripts. I am working to add these features."
                 />
               </ListItem>
             </List>
@@ -287,7 +287,7 @@ export default function AccessibilityStatementPage() {
               5. Ongoing Improvements
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We are continuously working to improve the accessibility of our website. Our ongoing
+              I am continuously working to improve the accessibility of my website. My ongoing
               efforts include:
             </Typography>
             <List>
@@ -309,8 +309,8 @@ export default function AccessibilityStatementPage() {
               6. How to Report Accessibility Issues
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We welcome your feedback on the accessibility of our website. If you encounter any
-              accessibility barriers, please let us know:
+              I welcome your feedback on the accessibility of my website. If you encounter any
+              accessibility barriers, please let me know:
             </Typography>
             <List>
               <ListItem>
@@ -344,7 +344,7 @@ export default function AccessibilityStatementPage() {
             </List>
 
             <Typography variant="body1" sx={{ mb: 3 }}>
-              When contacting us, please include:
+              When contacting me, please include:
             </Typography>
             <List>
               <ListItem>
@@ -365,32 +365,32 @@ export default function AccessibilityStatementPage() {
               7. Alternative Access Methods
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              If you have difficulty accessing any part of our website, we offer alternative ways to
-              access our services:
+              If you have difficulty accessing any part of my website, I offer alternative ways to
+              access my services:
             </Typography>
             <List>
               <ListItem>
                 <ListItemText
                   primary="Phone Orders"
-                  secondary="Call us at +44 786 721 8194 to place orders or get information"
+                  secondary="Call me at +44 786 721 8194 to place orders or get information"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="Email Support"
-                  secondary="Email us at hello@olgishcakes.co.uk for assistance"
+                  secondary="Email me at hello@olgishcakes.co.uk for assistance"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="In-Person Visits"
-                  secondary="Visit us at our location in Allerton Grange, Leeds"
+                  secondary="Visit me at my location in Allerton Grange, Leeds"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="Social Media"
-                  secondary="Connect with us on Facebook and Instagram for updates and support"
+                  secondary="Connect with me on Facebook and Instagram for updates and support"
                 />
               </ListItem>
             </List>
@@ -401,7 +401,7 @@ export default function AccessibilityStatementPage() {
             <Typography variant="body1" sx={{ mb: 3 }}>
               This accessibility statement is made in accordance with the Equality Act 2010 and the
               Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility
-              Regulations 2018. We are committed to ensuring our website is accessible to all users
+              Regulations 2018. I am committed to making sure my website is accessible to all users
               and complies with relevant accessibility standards.
             </Typography>
 
@@ -409,7 +409,7 @@ export default function AccessibilityStatementPage() {
               9. Testing and Evaluation
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We regularly test our website for accessibility using:
+              I regularly test my website for accessibility using:
             </Typography>
             <List>
               <ListItem>
@@ -430,8 +430,8 @@ export default function AccessibilityStatementPage() {
               10. Updates to This Statement
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              We will review and update this accessibility statement regularly to reflect any changes
-              to our website or accessibility practices. The last update date is shown at the top
+              I will review and update this accessibility statement regularly to reflect any changes
+              to my website or accessibility practices. The last update date is shown at the top
               of this page.
             </Typography>
 
@@ -451,8 +451,8 @@ export default function AccessibilityStatementPage() {
                 Need Help?
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                If you need assistance accessing any part of our website or have questions about
-                our accessibility features, please don't hesitate to contact us.
+                If you need assistance accessing any part of my website or have questions about
+                my accessibility features, please don't hesitate to contact me.
               </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
                 <Chip

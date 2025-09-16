@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title:
     "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes | Olgish Cakes",
   description:
-    "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
+    "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
   keywords:
     "allergen information, gluten-friendly cakes Leeds, dairy-free Ukrainian cakes, nut-free cakes, vegan cakes Leeds, food allergies, dietary requirements, safe cakes",
   openGraph: {
     title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
+      "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
     url: "https://olgishcakes.co.uk/allergen-information",
     siteName: "Olgish Cakes",
     images: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
+      "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
     images: ["https://olgishcakes.co.uk/images/allergen-information.jpg"],
   },
   alternates: {
@@ -84,7 +84,7 @@ export default function AllergenInformationPage() {
     "@type": "WebPage",
     name: "Allergen Information - Olgish Cakes",
     description:
-      "Complete allergen information for our Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
+      "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
     url: "https://olgishcakes.co.uk/allergen-information",
     publisher: {
       "@type": "Organization",
@@ -98,7 +98,7 @@ export default function AllergenInformationPage() {
       "@type": "Article",
       headline: "Allergen Information",
       description:
-        "Complete allergen information for our Ukrainian cakes. Safe cake options for all dietary requirements.",
+        "Complete allergen information for my Ukrainian cakes. Safe cake options for all dietary requirements.",
       author: {
         "@type": "Organization",
         name: "Olgish Cakes",
@@ -166,9 +166,9 @@ export default function AllergenInformationPage() {
                 lineHeight: 1.6,
               }}
             >
-              Your safety and dietary needs are our priority. We provide comprehensive allergen
-              information and accommodate various dietary requirements while maintaining the
-              authentic taste of Ukrainian cakes.
+              Your safety and dietary needs are my priority. I provide comprehensive allergen
+              information and accommodate various dietary requirements while keeping the
+              real taste of Ukrainian cakes.
             </Typography>
             <Chip
               label="Safe Cake Options for Everyone"
@@ -189,9 +189,9 @@ export default function AllergenInformationPage() {
               Important Notice:
             </Typography>
             <Typography variant="body2">
-              While we take every precaution to accommodate dietary requirements, our kitchen
-              handles multiple allergens. Cross-contamination may occur. Please inform us of any
-              allergies when ordering, and we'll take extra precautions for severe allergies.
+              While I take every precaution to accommodate dietary requirements, my kitchen
+              handles multiple allergens. Cross-contamination may occur. Please inform me of any
+              allergies when ordering, and I'll take extra precautions for severe allergies.
             </Typography>
           </Alert>
 
@@ -218,7 +218,7 @@ export default function AllergenInformationPage() {
                 textAlign: "center",
               }}
             >
-              Common Allergens in Our Cakes
+              Common Allergens in My Cakes
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -331,9 +331,9 @@ export default function AllergenInformationPage() {
               Dietary Accommodations
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              We're committed to making our Ukrainian cakes accessible to everyone. We can adapt our
-              traditional recipes to accommodate various dietary requirements while maintaining
-              authentic flavors.
+              I'm committed to making my Ukrainian cakes accessible to everyone. I can adapt my
+              old recipes to accommodate various dietary requirements while keeping
+              real flavors.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -341,7 +341,7 @@ export default function AllergenInformationPage() {
                   diet: "Gluten-Friendly",
                   icon: "🌾❌",
                   description:
-                    "Traditional Ukrainian cakes adapted with gluten-friendly flour blends that maintain authentic texture and taste",
+                    "Old Ukrainian cakes adapted with gluten-friendly flour blends that keep real texture and taste",
                   options: [
                     "Gluten-friendly Medovik",
                     "Gluten-friendly Kyiv cake",
@@ -365,7 +365,7 @@ export default function AllergenInformationPage() {
                   diet: "Vegan",
                   icon: "🌱",
                   description:
-                    "Completely plant-based Ukrainian cakes using traditional techniques with modern vegan ingredients",
+                    "Completely plant-based Ukrainian cakes using old techniques with modern vegan ingredients",
                   options: ["Vegan Medovik", "Vegan Kyiv cake", "Vegan cream fillings"],
                   notice: "No animal products used",
                 },
@@ -373,7 +373,7 @@ export default function AllergenInformationPage() {
                   diet: "Nut-Free",
                   icon: "🥜❌",
                   description:
-                    "Traditional recipes adapted to exclude nuts while maintaining authentic Ukrainian flavors",
+                    "Old recipes adapted to exclude nuts while keeping real Ukrainian flavors",
                   options: ["Nut-free Kyiv cake", "Nut-free fillings", "Alternative toppings"],
                   notice: "Made in a kitchen that handles nuts",
                 },
@@ -389,7 +389,7 @@ export default function AllergenInformationPage() {
                   diet: "Low-Sugar",
                   icon: "🍯",
                   description:
-                    "Traditional Ukrainian cakes with reduced sugar content using natural sweeteners",
+                    "Old Ukrainian cakes with reduced sugar content using natural sweeteners",
                   options: ["Low-sugar Medovik", "Low-sugar fillings", "Natural sweeteners"],
                   notice: "Still contains some natural sugars",
                 },
@@ -471,7 +471,7 @@ export default function AllergenInformationPage() {
               Allergen Information Chart
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              This chart shows which allergens are present in our traditional Ukrainian cakes. We
+              This chart shows which allergens are present in my old Ukrainian cakes. I
               can adapt any cake to accommodate your dietary requirements.
             </Typography>
             <Grid container spacing={3}>
@@ -577,7 +577,7 @@ export default function AllergenInformationPage() {
                   step: "2",
                   title: "Detailed Consultation",
                   description:
-                    "We'll discuss your specific requirements and recommend the best options for your dietary needs",
+                    "I'll discuss your specific requirements and recommend the best options for your dietary needs",
                 },
                 {
                   step: "3",
@@ -643,7 +643,7 @@ export default function AllergenInformationPage() {
               Have Dietary Requirements?
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us to discuss your specific dietary needs and find the perfect Ukrainian cake
+              Contact me to discuss your specific dietary needs and find the perfect Ukrainian cake
               for you
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

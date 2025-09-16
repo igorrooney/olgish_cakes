@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   title:
     "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York | Olgish Cakes",
   description:
-    "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
+    "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering York and around areas.",
   keywords:
     "cakes York, Ukrainian cakes York, custom cakes York, wedding cakes York, birthday cakes York, cake delivery York, bakery York, traditional Ukrainian cakes York",
   openGraph: {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering York and around areas.",
     url: "https://olgishcakes.co.uk/cakes-york",
     siteName: "Olgish Cakes",
     images: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-york.jpg"],
   },
   alternates: {
@@ -124,9 +124,9 @@ export default async function CakesYorkPage() {
                 lineHeight: 1.6,
               }}
             >
-              Experience authentic Ukrainian cakes delivered fresh to York. From traditional honey
-              cake to custom celebration cakes, we bring the taste of Ukraine to your doorstep in
-              York and surrounding areas.
+              Experience real Ukrainian cakes delivered fresh to York. From old honey
+              cake to custom celebration cakes, I bring the taste of Ukraine to your doorstep in
+              York and around areas.
             </Typography>
             <Chip
               label="Fresh Delivery to York"
@@ -151,16 +151,16 @@ export default async function CakesYorkPage() {
             </Typography>
             <Grid container spacing={4}>
               {[
-                {
-                  title: "Fresh Delivery to York",
-                  description:
-                    "Professional delivery service covering York city centre and surrounding areas. Same-day and next-day delivery available.",
+              {
+                title: "Fresh Delivery to York",
+                description:
+                  "Professional delivery service covering York city centre and around areas. Same-day and next-day delivery available.",
                   icon: "🚚",
                 },
                 {
-                  title: "Authentic Ukrainian Recipes",
+                  title: "Real Ukrainian Recipes",
                   description:
-                    "Traditional Ukrainian cakes made with authentic recipes passed down through generations. Experience the real taste of Ukraine.",
+                    "Old Ukrainian cakes made with real recipes passed down through generations. Experience the real taste of Ukraine.",
                   icon: "🇺🇦",
                 },
                 {
@@ -381,7 +381,7 @@ export default async function CakesYorkPage() {
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Contact us today to discuss your cake requirements, get a quote, or place an order for
+              Contact me today to talk about your cake needs, get a price, or place an order for
               delivery to York.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

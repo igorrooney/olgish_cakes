@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title:
     "Birthday Cakes Leeds – Custom Designs, Themed & Ukrainian Flavours | Olgish Cakes",
   description:
-    "Custom birthday cakes in Leeds for children and adults. Themed designs, Ukrainian favourites like honey cake (Medovik), delivery available. Prices from £35.",
+    "Custom birthday cakes in Leeds for children and adults. Themed designs, Ukrainian favorites like honey cake (Medovik), delivery available. Prices from £35.",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
@@ -89,7 +89,7 @@ export default async function BirthdayCakesPage() {
     },
     {
       name: "Adult Birthday Cakes",
-      description: "Elegant and sophisticated birthday cakes for adults",
+      description: "Nice and sophisticated birthday cakes for adults",
       price: "From £45",
     },
     {
@@ -99,7 +99,7 @@ export default async function BirthdayCakesPage() {
     },
     {
       name: "Ukrainian Birthday Cakes",
-      description: "Traditional Ukrainian birthday cakes like honey cake (Medovik)",
+      description: "Old Ukrainian birthday cakes like honey cake (Medovik)",
       price: "From £40",
     },
   ];
@@ -153,7 +153,7 @@ export default async function BirthdayCakesPage() {
       {
         "@type": "Question",
         name: "Do you make themed children's birthday cakes?",
-        acceptedAnswer: { "@type": "Answer", text: "Yes. We create custom themes tailored to your child's interests." }
+        acceptedAnswer: { "@type": "Answer", text: "Yes. I create custom themes tailored to your child's interests." }
       },
       {
         "@type": "Question",
@@ -320,8 +320,8 @@ export default async function BirthdayCakesPage() {
                 fontWeight: 400,
               }}
             >
-              Make every birthday special with our custom birthday cakes. From children's themed
-              cakes to elegant adult celebrations, we create personalized birthday cakes that bring
+              Make every birthday special with my custom birthday cakes. From children's themed
+              cakes to nice adult celebrations, I create personalized birthday cakes that bring
               joy and Ukrainian tradition to your special day.
             </Typography>
             <Chip
@@ -349,7 +349,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Adult Birthday Cakes",
                 description:
-                  "Elegant and sophisticated birthday cakes for adults, featuring Ukrainian flavors and modern designs",
+                  "Nice and sophisticated birthday cakes for adults, featuring Ukrainian flavors and modern designs",
                 icon: "🎉",
               },
               {
@@ -361,7 +361,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Ukrainian Birthday Cakes",
                 description:
-                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with authentic flavors and cultural significance",
+                  "Old Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with real flavors and cultural meaning",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (
@@ -418,8 +418,8 @@ export default async function BirthdayCakesPage() {
                   Custom Birthday Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                  Every birthday cake is custom-designed to match your unique vision. Contact us to
-                  discuss your birthday cake requirements and view our portfolio.
+                  Every birthday cake is custom-designed to match your unique vision. Contact me to
+                  discuss your birthday cake requirements and view my portfolio.
                 </Typography>
                 <Button
                   component={Link}
@@ -517,7 +517,7 @@ export default async function BirthdayCakesPage() {
 
           <AreasWeCover
             title="Birthday Cake Delivery Areas"
-            subtitle="We deliver birthday cakes across Leeds and nearby towns."
+            subtitle="I deliver birthday cakes across Leeds and around towns."
           />
 
           {/* Birthday Cake Flavors */}
@@ -682,7 +682,7 @@ export default async function BirthdayCakesPage() {
               Ready to Order Your Birthday Cake?
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us today to start planning your perfect birthday celebration
+              Contact me today to start planning your perfect birthday celebration
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

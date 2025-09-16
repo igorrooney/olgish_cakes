@@ -16,16 +16,16 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
+    "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
   description:
-    "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
+    "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
   keywords:
     "Ukrainian cake recipes, traditional Ukrainian desserts, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian baking blog, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking tips, traditional medovik",
   openGraph: {
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
+      "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
+      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     url: "https://olgishcakes.co.uk/blog",
     siteName: "Olgish Cakes",
     images: [
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
+      "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover authentic Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
+      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg"],
   },
   alternates: {
@@ -82,9 +82,9 @@ export const metadata: Metadata = {
 const blogPosts = [
   {
     id: 1,
-    title: "Traditional Honey Cake Recipe: The Perfect Ukrainian Honey Cake",
+    title: "Old Honey Cake Recipe: The Perfect Ukrainian Honey Cake",
     excerpt:
-      "Learn the authentic recipe for honey cake, Ukraine's beloved honey cake. Discover the secrets to creating the perfect layers and creamy filling.",
+      "Learn the real recipe for honey cake, Ukraine's beloved honey cake. Discover the secrets to creating the perfect layers and creamy filling.",
     image: "/images/blog/honey-cake-recipe.jpg",
     category: "Recipes",
     readTime: "8 min read",
@@ -106,7 +106,7 @@ const blogPosts = [
     id: 3,
     title: "Ukrainian Baking Traditions: From Generation to Generation",
     excerpt:
-      "Discover how Ukrainian baking traditions have been passed down through generations and the cultural significance of traditional desserts.",
+      "Discover how Ukrainian baking traditions have been passed down through generations and the cultural meaning of old desserts.",
     image: "/images/blog/ukrainian-baking-traditions.jpg",
     category: "Culture",
     readTime: "10 min read",
@@ -117,7 +117,7 @@ const blogPosts = [
     id: 4,
     title: "Essential Ukrainian Baking Tools and Ingredients",
     excerpt:
-      "A comprehensive guide to the essential tools and ingredients needed for authentic Ukrainian baking, from traditional equipment to modern alternatives.",
+      "A comprehensive guide to the essential tools and ingredients needed for real Ukrainian baking, from old equipment to modern alternatives.",
     image: "/images/blog/baking-tools-ingredients.jpg",
     category: "Tips",
     readTime: "7 min read",
@@ -139,7 +139,7 @@ const blogPosts = [
     id: 6,
     title: "Customer Story: A Ukrainian Wedding Cake in Leeds",
     excerpt:
-      "Read the heartwarming story of how we created the perfect Ukrainian wedding cake for a couple celebrating their heritage in Leeds.",
+      "Read the heartwarming story of how I created the perfect Ukrainian wedding cake for a couple celebrating their heritage in Leeds.",
     image: "/images/blog/ukrainian-wedding-cake-story.jpg",
     category: "Stories",
     readTime: "5 min read",
@@ -154,7 +154,7 @@ export default function BlogPage() {
     "@type": "Blog",
     name: "Ukrainian Baking Blog",
     description:
-      "Discover authentic Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind traditional Ukrainian desserts.",
+      "Discover real Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind old Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/blog",
     publisher: {
       "@type": "Organization",
@@ -239,12 +239,12 @@ export default function BlogPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover authentic Ukrainian cake recipes, baking tips, cultural stories, and the
-              secrets behind traditional Ukrainian desserts. From honey cake to Kyiv cake, learn the
+              Discover real Ukrainian cake recipes, baking tips, cultural stories, and the
+              secrets behind old Ukrainian desserts. From honey cake to Kyiv cake, learn the
               art of Ukrainian baking from professional baker Olga.
             </Typography>
             <Chip
-              label="Authentic Ukrainian Recipes & Stories"
+              label="Real Ukrainian Recipes & Stories"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -332,15 +332,15 @@ export default function BlogPage() {
                       }}
                     />
                     <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, lineHeight: 1.2 }}>
-                      Traditional Honey Cake Recipe: The Perfect Ukrainian Honey Cake
+                      Old Honey Cake Recipe: The Perfect Ukrainian Honey Cake
                     </Typography>
                     <Typography
                       variant="body1"
                       sx={{ mb: 3, color: "text.secondary", lineHeight: 1.6 }}
                     >
-                      Learn the authentic recipe for honey cake, Ukraine's beloved honey cake.
+                      Learn the real recipe for honey cake, Ukraine's beloved honey cake.
                       Discover the secrets to creating the perfect layers and creamy filling that
-                      make this traditional dessert so special.
+                      make this old dessert so special.
                     </Typography>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
                       <Typography variant="caption" sx={{ color: "text.secondary" }}>

@@ -37,7 +37,7 @@ const footerLinksBase = {
     { name: "All Cakes", href: "/cakes" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },
     { name: "Birthday Cakes", href: "/birthday-cakes" },
-    { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
+    { name: "Old Ukrainian", href: "/traditional-ukrainian-cakes" },
     { name: "Easter Cakes", href: "/easter-cakes-leeds" },
     { name: "Christmas Cakes", href: "/christmas-cakes-leeds" },
     { name: "Valentine's Cakes", href: "/valentines-cakes-leeds" },
@@ -183,7 +183,7 @@ export default function Footer() {
         name: "Olgish Cakes",
         url: "https://olgishcakes.co.uk",
         logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-        description: "Authentic Ukrainian honey cakes made with love in Leeds",
+        description: "Real Ukrainian honey cakes made with love in Leeds",
         address: {
           "@type": "PostalAddress",
           streetAddress: "Allerton Grange",
@@ -244,7 +244,7 @@ export default function Footer() {
                   mb: spacing.md,
                 }}
               >
-                Our Cakes
+                My Cakes
               </Typography>
               <Stack spacing={spacing.sm}>
                 {footerLinks.cakes.map(link => (
@@ -481,7 +481,7 @@ export default function Footer() {
                   href={contactInfo.socialMedia.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Visit our Facebook page"
+                  aria-label="Visit my Facebook page"
                   title="Olgish Cakes Facebook Page"
                 >
                   <AccessibleIconButton
@@ -503,7 +503,7 @@ export default function Footer() {
                   href={contactInfo.socialMedia.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Visit our Instagram profile"
+                  aria-label="Visit my Instagram profile"
                   title="Olgish Cakes Instagram Profile"
                 >
                   <AccessibleIconButton
@@ -525,7 +525,7 @@ export default function Footer() {
                   href={contactInfo.socialMedia.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Contact us on WhatsApp"
+                  aria-label="Contact me on WhatsApp"
                   title="Contact Olgish Cakes on WhatsApp"
                 >
                   <AccessibleIconButton
@@ -559,7 +559,7 @@ export default function Footer() {
                   width={120}
                   height={40}
                   priority={false}
-                  title="Olgish Cakes - Authentic Ukrainian Bakery in Leeds"
+                  title="Olgish Cakes - Real Ukrainian Bakery in Leeds"
                 />
                 <Typography
                   variant="body2"
@@ -568,7 +568,7 @@ export default function Footer() {
                     fontWeight: typography.fontWeight.medium,
                   }}
                 >
-                  Authentic Ukrainian Cakes in Leeds
+                  Real Ukrainian Cakes in Leeds
                 </Typography>
               </Box>
             </Grid>

@@ -457,7 +457,7 @@ export default function UkrainianBakingClassesPage() {
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                     The studio is easily accessible by public transport and has parking available
-                    nearby.
+                    around.
                   </Typography>
                 </Paper>
               </Grid>

@@ -191,7 +191,7 @@ export default function CakeCareStoragePage() {
               }}
             >
               Learn how to properly store and care for your Ukrainian cakes to maintain their
-              freshness, flavor, and beautiful appearance. Our expert tips ensure your cake stays
+              freshness, flavor, and beautiful appearance. My expert tips make sure your cake stays
               perfect until serving.
             </Typography>
             <Chip
@@ -368,8 +368,8 @@ export default function CakeCareStoragePage() {
               Ukrainian Cake Specific Care
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Each traditional Ukrainian cake has unique characteristics that require specific care
-              methods to maintain their authentic taste and texture.
+              Each old Ukrainian cake has unique characteristics that require specific care
+              methods to maintain their real taste and texture.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -667,7 +667,7 @@ export default function CakeCareStoragePage() {
               Need More Cake Care Advice?
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us for personalized cake care advice and professional storage recommendations
+              Contact me for personalized cake care advice and professional storage recommendations
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

@@ -20,13 +20,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost | Olgish Cakes",
   description:
-    "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for authentic Ukrainian cakes in Leeds.",
+    "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for real Ukrainian cakes in Leeds.",
   keywords:
     "cake pricing guide, Ukrainian cake prices, custom cake cost, cake prices Leeds, wedding cake pricing, birthday cake prices, cake pricing structure, transparent cake pricing",
   openGraph: {
     title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost",
     description:
-      "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for authentic Ukrainian cakes in Leeds.",
+      "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for real Ukrainian cakes in Leeds.",
     url: "https://olgishcakes.co.uk/cake-pricing",
     siteName: "Olgish Cakes",
     images: [
@@ -101,7 +101,7 @@ export default function CakePricingPage() {
     "@type": "Service",
     name: "Ukrainian Cake Pricing Guide",
     description:
-      "Transparent pricing for authentic Ukrainian cakes. Our pricing structure reflects the quality, craftsmanship, and cultural significance of traditional Ukrainian baking.",
+            "Transparent pricing for real Ukrainian cakes. My pricing structure reflects the quality, craftsmanship, and cultural meaning of old Ukrainian baking.",
     url: "https://olgishcakes.co.uk/cake-pricing",
     provider: {
       "@type": "Organization",
@@ -230,8 +230,8 @@ export default function CakePricingPage() {
                 lineHeight: 1.6,
               }}
             >
-              Transparent cake pricing for all our Ukrainian cakes. From traditional honey cake to
-              custom designs, we offer competitive prices for quality ingredients and expert
+              Transparent cake pricing for all my Ukrainian cakes. From old honey cake to
+              custom designs, I offer competitive prices for quality ingredients and expert
               craftsmanship.
             </Typography>
             <Chip
@@ -270,12 +270,12 @@ export default function CakePricingPage() {
                 textAlign: "center",
               }}
             >
-              Our Pricing Philosophy
+              My Pricing Philosophy
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              We believe in fair, transparent pricing that reflects the quality and cultural
-              significance of our Ukrainian cakes. Every price includes the finest ingredients,
-              traditional techniques, and personal craftsmanship.
+              I believe in fair, transparent pricing that reflects the quality and cultural
+              meaning of my Ukrainian cakes. Every price includes the finest ingredients,
+              old techniques, and personal craftsmanship.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -283,22 +283,22 @@ export default function CakePricingPage() {
                   principle: "Quality Ingredients",
                   icon: "🌟",
                   description:
-                    "We use only the finest ingredients, including traditional Ukrainian honey, premium flour, and fresh dairy products",
-                  impact: "Higher ingredient costs ensure authentic taste and quality",
+                    "I use only the finest ingredients, including old Ukrainian honey, premium flour, and fresh dairy products",
+                  impact: "Higher ingredient costs make sure real taste and quality",
                 },
                 {
-                  principle: "Traditional Techniques",
+                  principle: "Old Techniques",
                   icon: "👩‍🍳",
                   description:
-                    "Each cake is handcrafted using traditional Ukrainian baking methods passed down through generations",
-                  impact: "Time-intensive traditional methods require skilled craftsmanship",
+                    "Each cake is handcrafted using old Ukrainian baking methods passed down through generations",
+                  impact: "Time-intensive old methods require skilled craftsmanship",
                 },
                 {
-                  principle: "Cultural Authenticity",
+                  principle: "Cultural Meaning",
                   icon: "🇺🇦",
                   description:
-                    "Our cakes preserve Ukrainian cultural heritage and traditional recipes",
-                  impact: "Cultural significance and authenticity add unique value",
+                    "My cakes keep Ukrainian cultural heritage and old recipes",
+                  impact: "Cultural meaning and real taste add unique value",
                 },
                 {
                   principle: "Personal Service",
@@ -370,7 +370,7 @@ export default function CakePricingPage() {
               Pricing by Size
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our pricing is based on cake size and complexity. Larger cakes offer better value per
+              My pricing is based on cake size and complexity. Larger cakes offer better value per
               serving, while smaller cakes are perfect for intimate celebrations.
             </Typography>
 
@@ -616,22 +616,22 @@ export default function CakePricingPage() {
                 textAlign: "center",
               }}
             >
-              Why Choose Our Ukrainian Cakes?
+              Why Choose My Ukrainian Cakes?
             </Typography>
             <Grid container spacing={4}>
               {[
                 {
-                  benefit: "Authentic Ukrainian Taste",
+                  benefit: "Real Ukrainian Taste",
                   icon: "🇺🇦",
                   description:
-                    "Traditional recipes and techniques ensure authentic Ukrainian flavors that you can't find elsewhere",
+                    "Old recipes and techniques make sure real Ukrainian flavors that you can't find elsewhere",
                   value: "Unique cultural experience",
                 },
                 {
                   benefit: "Premium Quality",
                   icon: "🌟",
                   description:
-                    "Only the finest ingredients and traditional methods create exceptional taste and quality",
+                    "Only the finest ingredients and old methods create exceptional taste and quality",
                   value: "Superior taste and texture",
                 },
                 {
@@ -644,7 +644,7 @@ export default function CakePricingPage() {
                 {
                   benefit: "Cultural Heritage",
                   icon: "🏛️",
-                  description: "Support Ukrainian culture and preserve traditional baking heritage",
+                  description: "Support Ukrainian culture and keep old baking heritage",
                   value: "Cultural significance",
                 },
                 {
@@ -800,7 +800,7 @@ export default function CakePricingPage() {
               Ready to Order Your Ukrainian Cake?
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us for a personalized quote and start your cake ordering journey
+              Contact me for a personalized quote and start your cake ordering journey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -821,7 +821,7 @@ export default function CakePricingPage() {
                 size="large"
                 sx={{ px: 4, py: 2 }}
               >
-                View Our Cakes
+                View My Cakes
               </Button>
             </Box>
           </Box>

@@ -4,16 +4,16 @@ import Link from "next/link";
 import { AreasWeCover } from "../components/AreasWeCover";
 
 export const metadata: Metadata = {
-  title: "Leeds Bakery – Authentic Ukrainian Cakes, Same‑day Delivery | Olgish Cakes",
+  title: "Leeds Bakery – Real Ukrainian Cakes, Same‑day Delivery | Olgish Cakes",
   description:
-    "Looking for the best bakery in Leeds? Try authentic Ukrainian cakes including honey cake (Medovik) and Kyiv cake. Same‑day options, delivery across Leeds.",
+    "Looking for the best bakery in Leeds? Try real Ukrainian cakes including honey cake (Medovik) and Kyiv cake. Same‑day options, delivery across Leeds.",
   keywords:
     "leeds bakery, bakery leeds, best bakery leeds, cakes leeds, ukrainian bakery leeds, buy cake leeds, cake delivery leeds",
   alternates: { canonical: "https://olgishcakes.co.uk/leeds-bakery" },
   openGraph: {
-    title: "Leeds Bakery – Authentic Ukrainian Cakes",
+    title: "Leeds Bakery – Real Ukrainian Cakes",
     description:
-      "Authentic Ukrainian cakes in Leeds. Same‑day options and delivery across Leeds.",
+      "Real Ukrainian cakes in Leeds. Same‑day options and delivery across Leeds.",
     url: "https://olgishcakes.co.uk/leeds-bakery",
     siteName: "Olgish Cakes",
     images: [{ url: "https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg", width: 1200, height: 630 }],
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Leeds Bakery – Authentic Ukrainian Cakes",
-    description: "Authentic Ukrainian cakes with delivery across Leeds.",
+    title: "Leeds Bakery – Real Ukrainian Cakes",
+    description: "Real Ukrainian cakes with delivery across Leeds.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg"],
   },
 };
@@ -33,9 +33,9 @@ export default function LeedsBakeryPage() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
-      { "@type": "Question", name: "Do you deliver in Leeds?", acceptedAnswer: { "@type": "Answer", text: "Yes, we deliver across Leeds with prices from £5." } },
-      { "@type": "Question", name: "Do you offer same‑day cakes?", acceptedAnswer: { "@type": "Answer", text: "Sometimes, depending on time and stock. Please contact us to check." } },
-      { "@type": "Question", name: "What cakes are most popular?", acceptedAnswer: { "@type": "Answer", text: "Our signature Ukrainian honey cake (Medovik) and Kyiv cake." } },
+      { "@type": "Question", name: "Do you deliver in Leeds?", acceptedAnswer: { "@type": "Answer", text: "Yes, I deliver across Leeds with prices from £5." } },
+      { "@type": "Question", name: "Do you offer same‑day cakes?", acceptedAnswer: { "@type": "Answer", text: "Sometimes, depending on time and stock. Please contact me to check." } },
+      { "@type": "Question", name: "What cakes are most popular?", acceptedAnswer: { "@type": "Answer", text: "My signature Ukrainian honey cake (Medovik) and Kyiv cake." } },
     ],
   } as const;
 
@@ -49,7 +49,7 @@ export default function LeedsBakeryPage() {
               Leeds Bakery – Ukrainian Cakes
             </Typography>
             <Typography variant="h2" component="h2" sx={{ color: "text.secondary", maxWidth: "800px", mx: "auto", mb: 4, lineHeight: 1.6 }}>
-              Freshly baked Ukrainian cakes – Medovik (honey cake), Kyiv cake and more. Order online with delivery across Leeds.
+              Freshly baked Ukrainian cakes – Medovik (honey cake), Kyiv cake and more. Order online with delivery across Leeds. I bring the real taste of Ukraine.
             </Typography>
             <Chip label="Same‑day options" sx={{ backgroundColor: "primary.main", color: "white", fontSize: "1.1rem", px: 3, py: 1, mb: 4 }} />
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -64,11 +64,11 @@ export default function LeedsBakeryPage() {
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
-              Why Choose Our Leeds Bakery
+              Why Choose My Leeds Bakery
             </Typography>
             <Grid container spacing={3}>
               {[
-                { title: "Authentic Ukrainian recipes", desc: "Traditional flavours made from scratch" },
+                { title: "Real Ukrainian recipes", desc: "Old flavours made from scratch" },
                 { title: "Hand‑crafted to order", desc: "Fresh, personalised cakes for every occasion" },
                 { title: "Delivery across Leeds", desc: "Careful handling and optional venue setup" },
                 { title: "5★ customer rating", desc: "Trusted by Leeds customers" },
@@ -83,7 +83,7 @@ export default function LeedsBakeryPage() {
             </Grid>
           </Paper>
 
-          <AreasWeCover subtitle="Order from anywhere in Leeds and nearby towns – we’ll deliver." />
+          <AreasWeCover subtitle="Order from anywhere in Leeds and around towns – I’ll deliver." />
         </Container>
       </Box>
     </>

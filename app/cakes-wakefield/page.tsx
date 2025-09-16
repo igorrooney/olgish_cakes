@@ -10,14 +10,14 @@ export const metadata: Metadata = {
   title:
     "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield | Olgish Cakes",
   description:
-    "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and surrounding areas.",
+    "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
   keywords:
     "cakes Wakefield, Ukrainian cakes Wakefield, custom cakes Wakefield, wedding cakes Wakefield, birthday cakes Wakefield, cake delivery Wakefield, bakery Wakefield, traditional Ukrainian cakes Wakefield",
   openGraph: {
     title:
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
-      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and surrounding areas.",
+      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title:
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
-      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
+      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-wakefield.jpg"],
   },
   alternates: {
@@ -125,8 +125,8 @@ export default async function CakesWakefieldPage() {
                 lineHeight: 1.6,
               }}
             >
-              Authentic Ukrainian cakes delivered fresh to Wakefield. From traditional honey cake
-              and Kyiv cake to custom celebration cakes, we bring the authentic taste of Ukraine to
+              Real Ukrainian cakes delivered fresh to Wakefield. From old honey cake
+              and Kyiv cake to custom celebration cakes, I bring the real taste of Ukraine to
               your special occasions in Wakefield.
             </Typography>
             <Chip
@@ -152,9 +152,9 @@ export default async function CakesWakefieldPage() {
                   icon: "🚚",
                 },
                 {
-                  title: "Authentic Ukrainian Flavors",
+                  title: "Real Ukrainian Flavors",
                   description:
-                    "Traditional Ukrainian recipes including honey cake, Kyiv cake, and other authentic Ukrainian desserts",
+                    "Old Ukrainian recipes including honey cake, Kyiv cake, and other real Ukrainian desserts",
                   icon: "🇺🇦",
                 },
                 {
@@ -166,7 +166,7 @@ export default async function CakesWakefieldPage() {
                 {
                   title: "Professional Service",
                   description:
-                    "Professional cake delivery service with careful handling to ensure your cake arrives in perfect condition",
+                    "Professional cake delivery service with careful handling to make sure your cake arrives in perfect condition",
                   icon: "⭐",
                 },
               ].map((service, index) => (
@@ -310,7 +310,7 @@ export default async function CakesWakefieldPage() {
               Ready to Order Your Ukrainian Cake in Wakefield?
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us to discuss your cake requirements and delivery options
+              Contact me to talk about your cake needs and delivery options
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

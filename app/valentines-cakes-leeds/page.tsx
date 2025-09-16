@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 export const metadata: Metadata = {
   title: "Valentine's Day Cakes Leeds | Romantic Custom Cakes | Olgish Cakes",
   description:
-    "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs. Same-day delivery available in Leeds and surrounding areas.",
+    "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs. Same-day delivery available in Leeds and around areas.",
   keywords:
     "valentine's day cakes leeds, romantic cakes, heart shaped cakes, chocolate cakes, valentine cakes delivery leeds",
   openGraph: {
@@ -117,8 +117,8 @@ export default function ValentinesCakesLeedsPage() {
             component="h2"
             className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
           >
-            Celebrate love with our beautiful Valentine's Day cakes. From romantic heart-shaped
-            designs to luxurious chocolate creations, we'll make your special day unforgettable.
+            Celebrate love with my beautiful Valentine's Day cakes. From romantic heart-shaped
+            designs to luxurious chocolate creations, I'll make your special day unforgettable.
           </Typography>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/cakes" aria-label="Browse our Valentine's Day cake collection">
@@ -129,7 +129,7 @@ export default function ValentinesCakesLeedsPage() {
                 Browse Valentine's Cakes
               </Button>
             </Link>
-            <Link href="/contact" aria-label="Contact us for custom Valentine's Day cake design">
+            <Link href="/contact" aria-label="Contact me for custom Valentine's Day cake design">
               <Button
                 size="large"
                 variant="outlined"
@@ -210,7 +210,7 @@ export default function ValentinesCakesLeedsPage() {
                   Browse All Cakes
                 </Button>
               </Link>
-              <Link href="/contact" aria-label="Contact us for custom cake design">
+              <Link href="/contact" aria-label="Contact me for custom cake design">
                 <Button
                   size="large"
                   variant="outlined"

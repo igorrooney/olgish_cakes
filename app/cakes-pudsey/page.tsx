@@ -6,15 +6,15 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Pudsey | Ukrainian Cakes Pudsey | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Pudsey | Ukrainian Cakes Pudsey | Old Ukrainian Cakes | Olgish Cakes",
   description:
-    "Traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Pudsey. Order now for special occasions.",
+    "Old Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey. Order now for special occasions.",
   keywords:
-    "cakes Pudsey, Ukrainian cakes Pudsey, honey cake Pudsey, Kyiv cake Pudsey, traditional Ukrainian cakes Pudsey, cake delivery Pudsey",
+    "cakes Pudsey, Ukrainian cakes Pudsey, honey cake Pudsey, Kyiv cake Pudsey, old Ukrainian cakes Pudsey, cake delivery Pudsey",
   openGraph: {
     title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
     description:
-      "Traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Pudsey.",
+      "Old Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey.",
     url: "https://olgishcakes.co.uk/cakes-pudsey",
     images: ["https://olgishcakes.co.uk/images/cakes-pudsey.jpg"],
     type: "website",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
     description:
-      "Traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Pudsey.",
+      "Old Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey.",
     images: ["https://olgishcakes.co.uk/images/cakes-pudsey.jpg"],
   },
   alternates: {
@@ -39,7 +39,7 @@ export default async function CakesPudseyPage() {
     "@type": "WebPage",
     name: "Ukrainian Cakes in Pudsey",
     description:
-      "Authentic Ukrainian cakes available in Pudsey, Leeds. Traditional recipes and custom designs.",
+      "Real Ukrainian cakes available in Pudsey, Leeds. Old recipes and custom designs.",
     url: "https://olgishcakes.co.uk/cakes-pudsey",
   };
 
@@ -74,7 +74,7 @@ export default async function CakesPudseyPage() {
                 color: "#005BBB",
               }}
             >
-              Traditional Ukrainian Cakes in Pudsey
+              Old Ukrainian Cakes in Pudsey
             </Typography>
             <Typography
               variant="h2"
@@ -86,13 +86,13 @@ export default async function CakesPudseyPage() {
                 mx: "auto",
               }}
             >
-              Authentic Ukrainian honey cake, Kyiv cake, and traditional desserts delivered to your
+              Real Ukrainian honey cake, Kyiv cake, and old desserts delivered to your
               door in Pudsey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Chip label="Free Delivery" color="primary" />
               <Chip label="Handcrafted" color="secondary" />
-              <Chip label="Traditional Recipes" color="primary" />
+              <Chip label="Old Recipes" color="primary" />
               <Chip label="Fresh Daily" color="secondary" />
             </Box>
           </Box>
@@ -111,7 +111,7 @@ export default async function CakesPudseyPage() {
               🚚 Fast Delivery to Pudsey
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We deliver our traditional Ukrainian cakes to Pudsey and surrounding areas. Same-day
+              I deliver my old Ukrainian cakes to Pudsey and around areas. Same-day
               delivery available for orders placed before 2 PM.
             </Typography>
             <Grid container spacing={2}>
@@ -173,13 +173,13 @@ export default async function CakesPudseyPage() {
                 color: "#005BBB",
               }}
             >
-              Why Pudsey Chooses Our Ukrainian Cakes
+              Why Pudsey Chooses My Ukrainian Cakes
             </Typography>
             <Grid container spacing={3}>
               {[
                 {
-                  title: "Traditional Recipes",
-                  description: "Authentic Ukrainian recipes passed down through generations",
+                  title: "Old Recipes",
+                  description: "Real Ukrainian recipes passed down through generations",
                   icon: "🏺",
                 },
                 {
@@ -204,7 +204,7 @@ export default async function CakesPudseyPage() {
                 },
                 {
                   title: "Local Service",
-                  description: "Supporting the local community with authentic Ukrainian baking",
+                  description: "Supporting the local community with real Ukrainian baking",
                   icon: "🤝",
                 },
               ].map((feature, index) => (
@@ -249,7 +249,7 @@ export default async function CakesPudseyPage() {
               Ready to Order Your Ukrainian Cake?
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-              Experience the authentic taste of Ukraine with our traditional cakes delivered to
+              Experience the real taste of Ukraine with my old cakes delivered to
               Pudsey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
@@ -277,7 +277,7 @@ export default async function CakesPudseyPage() {
                   "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
                 }}
               >
-                Contact Us
+                Contact Me
               </Button>
             </Box>
           </Box>

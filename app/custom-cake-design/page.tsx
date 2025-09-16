@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title:
     "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes | Olgish Cakes",
   description:
-    "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+    "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with old flavors. Free consultation available.",
   keywords:
     "custom cake design Leeds, personalized cakes Leeds, wedding cake design, birthday cake design, celebration cakes Leeds, custom cake consultation, unique cake designs, Ukrainian cake design",
   openGraph: {
     title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
     description:
-      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with old flavors. Free consultation available.",
     url: "https://olgishcakes.co.uk/custom-cake-design",
     siteName: "Olgish Cakes",
     images: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
     description:
-      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with old flavors.",
     images: ["https://olgishcakes.co.uk/images/custom-cake-design.jpg"],
   },
   alternates: {
@@ -43,7 +43,7 @@ export default function CustomCakeDesignPage() {
   const designServices = [
     {
       name: "Wedding Cake Design",
-      description: "Elegant wedding cakes designed to match your wedding theme and personal style",
+      description: "Nice wedding cakes designed to match your wedding theme and personal style",
       price: "From £80",
     },
     {
@@ -59,7 +59,7 @@ export default function CustomCakeDesignPage() {
     {
       name: "Ukrainian Design Cakes",
       description:
-        "Traditional Ukrainian-inspired designs with authentic flavors and cultural elements",
+        "Old Ukrainian-inspired designs with real flavors and cultural elements",
       price: "From £50",
     },
   ];
@@ -95,7 +95,7 @@ export default function CustomCakeDesignPage() {
     "@type": "Service",
     name: "Custom Cake Design Leeds",
     description:
-      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with old flavors.",
     url: "https://olgishcakes.co.uk/custom-cake-design",
     provider: {
       "@type": "Organization",
@@ -191,8 +191,8 @@ export default function CustomCakeDesignPage() {
                 lineHeight: 1.6,
               }}
             >
-              Transform your vision into a stunning custom cake. Our personalized cake design
-              service combines Ukrainian traditions with modern creativity to create unique,
+              Transform your vision into a beautiful custom cake. My personalized cake design
+              service mixes Ukrainian traditions with modern creativity to create special,
               beautiful cakes for your special occasions.
             </Typography>
             <Chip
@@ -214,7 +214,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Wedding Cakes",
                 description:
-                  "Elegant wedding cakes designed to match your wedding theme and personal style",
+                  "Nice wedding cakes designed to match your wedding theme and personal style",
                 icon: "💍",
               },
               {
@@ -232,7 +232,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Ukrainian Designs",
                 description:
-                  "Traditional Ukrainian-inspired designs with authentic flavors and cultural elements",
+                  "Old Ukrainian-inspired designs with real flavors and cultural elements",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (

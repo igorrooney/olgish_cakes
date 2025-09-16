@@ -374,7 +374,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "-0.02em", md: "-0.01em" },
                 }}
               >
-                Meet Our Professional Baker
+                Meet the Baker
               </Typography>
               <Typography
                 variant="h2"
@@ -390,7 +390,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "0.01em", md: "0.02em" },
                 }}
               >
-                Authentic Ukrainian Cakes & Traditional Desserts in Leeds
+                Real Ukrainian Cakes & Old Desserts in Leeds
               </Typography>
             </motion.div>
           </motion.div>
@@ -543,7 +543,7 @@ export default function AboutContent() {
                         font: "font-normal sm:font-medium",
                       }}
                     >
-                      Traditional Ukrainian baking with modern expertise
+                      Old Ukrainian baking with new knowledge
                     </Typography>
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <AccessibleIconButton
@@ -590,7 +590,7 @@ export default function AboutContent() {
                       font: "font-bold",
                     }}
                   >
-                    Professional Ukrainian Baker in Leeds
+                    Ukrainian Baker in Leeds
                   </Typography>
 
                   <Typography
@@ -603,10 +603,9 @@ export default function AboutContent() {
                       mb: { xs: 2, sm: 3 },
                     }}
                   >
-                    I am <strong>Olga Ieromenko</strong>, a professionally-trained Ukrainian baker
-                    who moved to Leeds in 2022. My passion for authentic Ukrainian baking led me to
-                    complete both Level 2 and Level 3 Patisserie courses at Leeds City College,
-                    where I honed my skills in traditional and contemporary baking techniques.
+                    I am <strong>Olga Ieromenko</strong>, Ukrainian baker who came to Leeds in 2022. 
+                    I love real Ukrainian baking so much that I went to Leeds City College to learn 
+                    Level 2 and Level 3 Patisserie courses, where I got better at old and new baking ways.
                   </Typography>
 
                   <Typography
@@ -619,13 +618,10 @@ export default function AboutContent() {
                       mb: { xs: 3, sm: 4 },
                     }}
                   >
-                    My mission is to share the rich heritage of Ukrainian baking with the UK,
-                    offering a unique blend of traditional recipes and contemporary presentation.
-                    From authentic Ukrainian honey cake (Medovik) and Kyiv cake to seasonal
-                    specialties and custom celebration cakes, each creation is a celebration of both
-                    Ukrainian culture and modern patisserie excellence. Our traditional Medovik
-                    recipe has been passed down through generations, ensuring the authentic taste of
-                    Ukrainian honey cake delivery across Yorkshire.
+                    I want to share Ukrainian baking with people in UK, mixing old recipes with new ways to make them look nice.
+                    From real Ukrainian honey cake (Medovik) and Kyiv cake to special cakes for different times of year and 
+                    custom celebration cakes, every cake I make celebrates Ukrainian culture and good taste. My family's Medovik
+                    recipe comes from many generations, so you get real Ukrainian honey cake taste when I deliver across Yorkshire.
                   </Typography>
 
                   {/* Contact Information */}
@@ -646,7 +642,7 @@ export default function AboutContent() {
                         fontWeight: 600,
                       }}
                     >
-                      Get in Touch
+                      Contact Me
                     </Typography>
                     <Stack spacing={1}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -717,7 +713,7 @@ export default function AboutContent() {
                   font: "font-bold",
                 }}
               >
-                Professional Qualifications
+                My Qualifications
               </Typography>
 
               <Grid container spacing={4}>
@@ -790,7 +786,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
-                Our Professional Services
+                What I Do
               </Typography>
 
               <Grid container spacing={4}>
@@ -843,7 +839,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
-                Why Choose Olgish Cakes?
+                Why Choose Me?
               </Typography>
 
               <Grid container spacing={3}>
@@ -894,7 +890,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "-0.01em", md: "0" },
                 }}
               >
-                Our Ukrainian Heritage
+                My Ukrainian Heritage
               </Typography>
 
               <Grid container spacing={4}>
@@ -909,10 +905,9 @@ export default function AboutContent() {
                       mb: { xs: 2, sm: 3 },
                     }}
                   >
-                    Rooted in Ukrainian culinary traditions, Olgish Cakes represents a fusion of
-                    time-honored recipes and innovative techniques. Our journey began with a passion
-                    for bringing authentic Ukrainian flavors to Leeds, where baking is not just a
-                    craft but a cherished cultural tradition.
+                    My baking comes from Ukrainian food traditions, mixing old recipes with new ways. 
+                    I started because I wanted to bring real Ukrainian taste to Leeds, where baking is not just 
+                    work but something special from my culture.
                   </Typography>
 
                   <Typography
@@ -923,10 +918,9 @@ export default function AboutContent() {
                       color: "text.secondary",
                     }}
                   >
-                    The name "Olgish" embodies our philosophy: combining my name, Olga, with the
-                    essence of deliciousness. This represents our commitment to creating not just
-                    visually stunning, but exceptionally flavorful confections that honor both
-                    Ukrainian heritage and contemporary tastes.
+                    The name "Olgish" comes from my name Olga and the word "delicious". This shows 
+                    how I want to make cakes that not only look beautiful but taste really good, 
+                    honoring both Ukrainian traditions and what people like today.
                   </Typography>
                 </Grid>
 
@@ -943,15 +937,15 @@ export default function AboutContent() {
                       variant="h4"
                       sx={{ mb: 3, color: colors.ukrainian.blue, fontWeight: 600 }}
                     >
-                      Traditional Ukrainian Specialties
+                      Ukrainian Specialties
                     </Typography>
                     <Stack spacing={2}>
                       {[
-                        "Honey Cake (Medovik) - Our signature traditional dessert",
-                        "Kyiv Cake - Premium handmade Ukrainian cake with cashew nuts",
+                        "Honey Cake (Medovik) - My special old dessert",
+                        "Kyiv Cake - Handmade Ukrainian cake with cashew nuts",
                         "Sacher Torte - Rich chocolate cake with apricot jam",
-                        "Napoleon Cake - Traditional layered cake with fresh cream",
-                        "Seasonal Cakes - Christmas, Easter, and holiday specialties",
+                        "Napoleon Cake - Old layered cake with fresh cream",
+                        "Seasonal Cakes - Christmas, Easter, and holiday specials",
                         "Custom Celebration Cakes - Weddings, birthdays, and events",
                       ].map((item, index) => (
                         <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -980,10 +974,10 @@ export default function AboutContent() {
               }}
             >
               <Typography variant="h3" sx={{ mb: 3, fontWeight: 700 }}>
-                Ready to Experience Authentic Ukrainian Baking?
+                Ready to Try Real Ukrainian Baking?
               </Typography>
               <Typography variant="h4" sx={{ mb: 4, opacity: 0.9 }}>
-                Order your traditional Ukrainian cakes or custom celebration cake today
+                Order your old Ukrainian cakes or special celebration cake today
               </Typography>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center">
                 <Button
@@ -1002,7 +996,7 @@ export default function AboutContent() {
                     },
                   }}
                 >
-                  View Our Cakes
+                  See My Cakes
                 </Button>
                 <Button
                   variant="outlined"
@@ -1021,7 +1015,7 @@ export default function AboutContent() {
                     },
                   }}
                 >
-                  Get in Touch
+                  Contact Me
                 </Button>
               </Stack>
             </Box>

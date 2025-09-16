@@ -9,13 +9,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Bradford | Ukrainian Cakes Bradford | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
-    "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford. Order now for special occasions.",
+    "Old Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford. Order now for special occasions.",
   keywords:
     "cakes Bradford, Ukrainian cakes Bradford, honey cake Bradford, Kyiv cake Bradford, traditional Ukrainian cakes Bradford, cake delivery Bradford",
   openGraph: {
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
-      "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
+      "Old Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford.",
     url: "https://olgishcakes.co.uk/cakes-bradford",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
     type: "website",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Bradford | Ukrainian Cakes Bradford",
     description:
-      "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and authentic Ukrainian desserts delivered to Bradford.",
+      "Old Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford.",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
   },
   alternates: {
@@ -113,8 +113,8 @@ export default async function CakesBradfordPage() {
                 lineHeight: 1.6,
               }}
             >
-              Traditional Ukrainian cakes delivered to Bradford. Handcrafted honey cake, Kyiv cake,
-              and authentic Ukrainian desserts made with love in Leeds and delivered fresh to your
+              Old Ukrainian cakes delivered to Bradford. Handcrafted honey cake, Kyiv cake,
+              and real Ukrainian desserts made with love in Leeds and delivered fresh to your
               door in Bradford.
             </Typography>
             <Chip
@@ -149,8 +149,8 @@ export default async function CakesBradfordPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Experience authentic Ukrainian cakes in Bradford. Contact us to place your order and
-              enjoy traditional Ukrainian flavors delivered to your door.
+              Experience real Ukrainian cakes in Bradford. Contact me to place your order and
+              enjoy old Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

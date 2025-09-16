@@ -5,13 +5,13 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Cake Preservation | How to Store Cakes | Olgish Cakes",
   description:
-    "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+    "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and old Ukrainian cakes.",
   keywords:
     "cake preservation, how to store cakes, cake storage tips, wedding cake storage, birthday cake storage",
   openGraph: {
     title: "Cake Preservation | How to Store Cakes",
     description:
-      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and old Ukrainian cakes.",
     url: "https://olgishcakes.co.uk/cake-preservation",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
     type: "article",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Preservation | How to Store Cakes",
     description:
-      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and old Ukrainian cakes.",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
   },
   alternates: {
@@ -103,7 +103,7 @@ export default function CakePreservationPage() {
             "@type": "HowTo",
             name: "How to Preserve and Store Cakes",
             description:
-              "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+              "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and old Ukrainian cakes.",
             image: "https://olgishcakes.co.uk/images/cake-preservation.jpg",
             totalTime: "PT5M",
             estimatedCost: {
@@ -180,13 +180,13 @@ export default function CakePreservationPage() {
             }}
           >
             Learn how to preserve and store your cakes for maximum freshness. Tips for weddings,
-            birthdays, and traditional Ukrainian cakes.
+            birthdays, and old Ukrainian cakes.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Chip label="Storage Tips" color="primary" />
             <Chip label="Wedding Cakes" color="secondary" />
             <Chip label="Birthday Cakes" color="primary" />
-            <Chip label="Traditional Cakes" color="secondary" />
+            <Chip label="Old Cakes" color="secondary" />
           </Box>
         </Box>
         <Grid container spacing={3}>

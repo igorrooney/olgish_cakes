@@ -19,13 +19,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery | Olgish Cakes",
   description:
-    "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+    "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
   keywords:
     "cake delivery Leeds, cake delivery areas, local cake delivery, cake delivery West Yorkshire, same day cake delivery Leeds, next day cake delivery, Ukrainian cake delivery",
   openGraph: {
     title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
     description:
-      "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+      "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
     url: "https://olgishcakes.co.uk/delivery-areas",
     siteName: "Olgish Cakes",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
     description:
-      "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire.",
+      "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
@@ -63,7 +63,7 @@ export default function DeliveryAreasPage() {
             "@type": "Service",
             name: "Cake Delivery Leeds",
             description:
-              "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+              "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -170,8 +170,8 @@ export default function DeliveryAreasPage() {
                 lineHeight: 1.6,
               }}
             >
-              Fresh, beautiful cakes delivered right to your doorstep across Leeds and surrounding
-              areas. Our local delivery service ensures your Ukrainian cakes arrive in perfect
+              Fresh, beautiful cakes delivered right to your doorstep across Leeds and around
+              areas. My local delivery service makes sure your Ukrainian cakes arrive in perfect
               condition for your special occasions.
             </Typography>
             <Chip
@@ -204,7 +204,7 @@ export default function DeliveryAreasPage() {
               {
                 title: "Local Service",
                 description:
-                  "Local delivery service covering Leeds and surrounding areas with personal attention to detail",
+                  "Local delivery service covering Leeds and around areas with personal attention to detail",
                 icon: "📍",
               },
               {
@@ -274,18 +274,18 @@ export default function DeliveryAreasPage() {
                 textAlign: "center",
               }}
             >
-              Our Delivery Areas
+              My Delivery Areas
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              We deliver fresh Ukrainian cakes across Leeds and surrounding areas in West Yorkshire.
-              Our local delivery service ensures your cake arrives fresh and beautiful for your
+              I deliver fresh Ukrainian cakes across Leeds and around areas in West Yorkshire. My
+              local delivery service makes sure your cake arrives fresh and beautiful for your
               special occasion.
             </Typography>
 
             {/* Leeds Areas */}
             <Box sx={{ mb: 6 }}>
               <Typography variant="h4" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
-                Leeds City & Surrounding Areas
+                Leeds City & Around Areas
               </Typography>
               <Grid container spacing={3}>
                 {[
@@ -538,7 +538,7 @@ export default function DeliveryAreasPage() {
                 textAlign: "center",
               }}
             >
-              Our Delivery Process
+              My Delivery Process
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -546,7 +546,7 @@ export default function DeliveryAreasPage() {
                   step: "1",
                   title: "Order Confirmation",
                   description:
-                    "We confirm your order and delivery details, including address, date, and preferred time slot",
+                    "I confirm your order and delivery details, including address, date, and preferred time slot",
                 },
                 {
                   step: "2",
@@ -558,13 +558,13 @@ export default function DeliveryAreasPage() {
                   step: "3",
                   title: "Delivery Day",
                   description:
-                    "On delivery day, we contact you to confirm timing and ensure someone is available to receive the cake",
+                    "On delivery day, I contact you to confirm timing and make sure someone is available to receive the cake",
                 },
                 {
                   step: "4",
                   title: "Safe Delivery",
                   description:
-                    "Your cake is delivered with care, and we ensure it's properly placed and ready for your celebration",
+                    "Your cake is delivered with care, and I make sure it's properly placed and ready for your celebration",
                 },
               ].map((step, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -618,7 +618,7 @@ export default function DeliveryAreasPage() {
               Ready to Order Your Cake?
             </Typography>
             <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact us to check delivery availability in your area
+              Contact me to check delivery availability in your area
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button
@@ -639,7 +639,7 @@ export default function DeliveryAreasPage() {
                 size="large"
                 sx={{ px: 4, py: 2 }}
               >
-                Visit Our Local Market Stall
+                Visit My Local Market Stall
               </Button>
               <Button
                 component={Link}
@@ -649,7 +649,7 @@ export default function DeliveryAreasPage() {
                 size="large"
                 sx={{ px: 4, py: 2 }}
               >
-                View Our Cakes
+                View My Cakes
               </Button>
             </Box>
           </Box>

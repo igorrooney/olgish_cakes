@@ -17,11 +17,11 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
   description:
-    "Learn about Olgish Cakes' return and refund policy for Ukrainian cakes and traditional desserts. Our commitment to customer satisfaction and quality assurance.",
+    "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
   openGraph: {
     title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
     description:
-      "Learn about Olgish Cakes' return and refund policy for Ukrainian cakes and traditional desserts. Our commitment to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
     url: "https://olgishcakes.co.uk/return-policy",
     siteName: "Olgish Cakes",
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
     description:
-      "Learn about Olgish Cakes' return and refund policy for Ukrainian cakes and traditional desserts. Our commitment to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
     images: ["https://olgishcakes.co.uk/images/return-policy.jpg"],
   },
   alternates: {
@@ -100,7 +100,7 @@ export default function ReturnPolicyPage() {
     "@type": "WebPage",
     name: "Return Policy - Olgish Cakes",
     description:
-      "Learn about Olgish Cakes' return and refund policy for Ukrainian cakes and traditional desserts. Our commitment to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
     url: "https://olgishcakes.co.uk/return-policy",
     publisher: {
       "@type": "Organization",
@@ -113,7 +113,7 @@ export default function ReturnPolicyPage() {
     mainEntity: {
       "@type": "Article",
       headline: "Return Policy",
-      description: "Learn about Olgish Cakes' return and refund policy for Ukrainian cakes and traditional desserts.",
+      description: "Learn about my return and refund policy for Ukrainian cakes and old desserts.",
       author: {
         "@type": "Organization",
         name: "Olgish Cakes",
@@ -172,8 +172,8 @@ export default function ReturnPolicyPage() {
 
             <Alert severity="info" sx={{ mb: 4, borderRadius: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                We want you to be completely satisfied with your Ukrainian cake and traditional dessert order. 
-                Please read our return policy carefully to understand your rights and our procedures.
+                I want you to be completely satisfied with your Ukrainian cake and old dessert order. 
+                Please read my return policy carefully to understand your rights and my procedures.
               </Typography>
             </Alert>
 
@@ -181,8 +181,8 @@ export default function ReturnPolicyPage() {
               1. General Return Policy
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              Due to the perishable nature of our products, we have specific return policies designed to ensure 
-              food safety while maintaining customer satisfaction. All returns must be initiated within 24 hours 
+              Due to the perishable nature of my products, I have specific return policies designed to make sure 
+              food safety while keeping customer satisfaction. All returns must be initiated within 24 hours 
               of delivery or collection.
             </Typography>
 
@@ -190,7 +190,7 @@ export default function ReturnPolicyPage() {
               2. Eligible Returns
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We will accept returns in the following circumstances:
+              I will accept returns in the following circumstances:
             </Typography>
             <List>
               <ListItem>
@@ -223,7 +223,7 @@ export default function ReturnPolicyPage() {
               3. Non-Eligible Returns
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              We cannot accept returns for the following reasons:
+              I cannot accept returns for the following reasons:
             </Typography>
             <List>
               <ListItem>
@@ -261,8 +261,8 @@ export default function ReturnPolicyPage() {
             <List>
               <ListItem>
                 <ListItemText
-                  primary="Step 1: Contact Us"
-                  secondary="Email us at hello@olgishcakes.co.uk or call +44 786 721 8194 within 24 hours"
+                  primary="Step 1: Contact Me"
+                  secondary="Email me at hello@olgishcakes.co.uk or call +44 786 721 8194 within 24 hours"
                 />
               </ListItem>
               <ListItem>
@@ -274,13 +274,13 @@ export default function ReturnPolicyPage() {
               <ListItem>
                 <ListItemText
                   primary="Step 3: Return Authorization"
-                  secondary="We will review your request and provide return instructions if approved"
+                  secondary="I will review your request and provide return instructions if approved"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText
                   primary="Step 4: Return or Refund"
-                  secondary="We will arrange collection or provide a full refund within 5-7 business days"
+                  secondary="I will arrange collection or provide a full refund within 5-7 business days"
                 />
               </ListItem>
             </List>
@@ -378,8 +378,8 @@ export default function ReturnPolicyPage() {
               7. Quality Assurance
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              We take pride in the quality of our Ukrainian cakes and traditional desserts. 
-              Our quality assurance process includes:
+              I take pride in the quality of my Ukrainian cakes and old desserts. 
+              My quality assurance process includes:
             </Typography>
             <List>
               <ListItem>
@@ -403,9 +403,9 @@ export default function ReturnPolicyPage() {
               8. Customer Satisfaction Guarantee
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              We are committed to your satisfaction. If you're not completely happy with your order, 
-              we will work with you to resolve the issue. Our goal is to ensure every customer 
-              enjoys the authentic taste of Ukrainian cakes and traditional desserts.
+              I am committed to your satisfaction. If you're not completely happy with your order, 
+              I will work with you to resolve the issue. My goal is to make sure every customer 
+              enjoys the real taste of Ukrainian cakes and old desserts.
             </Typography>
 
             <Box sx={{ 
