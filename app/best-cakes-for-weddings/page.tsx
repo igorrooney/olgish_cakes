@@ -9,13 +9,13 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes | Olgish Cakes",
   description:
-    "Discover the best cakes for weddings with my comprehensive wedding cake guide. Old Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
+    "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
   keywords:
     "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavors, wedding cake designs, wedding cake advice",
   openGraph: {
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
-      "Discover the best cakes for weddings with my comprehensive wedding cake guide. Old Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
+      "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
     url: "https://olgishcakes.co.uk/best-cakes-for-weddings",
     siteName: "Olgish Cakes",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
     description:
-      "Discover the best cakes for weddings with my comprehensive wedding cake guide. Old Ukrainian wedding cakes, modern designs, and my advice.",
+      "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice.",
     images: ["https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg"],
   },
   alternates: {
@@ -58,7 +58,7 @@ export default async function BestCakesForWeddingsPage() {
             "@type": "HowTo",
             name: "How to Choose the Best Wedding Cake",
             description:
-              "Discover the best cakes for weddings with my comprehensive wedding cake guide. Old Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
+              "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
             image: "https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg",
             totalTime: "PT15M",
             estimatedCost: {
@@ -141,7 +141,7 @@ export default async function BestCakesForWeddingsPage() {
               }}
             >
               Discover the perfect wedding cake for your special day. My Ukrainian wedding cakes
-              combine old elegance with modern design to create unforgettable wedding
+              combine traditional elegance with modern design to create unforgettable wedding
               celebrations.
             </Typography>
             <Chip
@@ -174,10 +174,10 @@ export default async function BestCakesForWeddingsPage() {
             <Grid container spacing={4}>
               {[
                 {
-                  name: "Old Ukrainian Honey Cake",
+                  name: "Traditional Ukrainian Honey Cake",
                   description:
-                    "Perfect for couples who want to honor Ukrainian heritage with an old honey cake featuring delicate layers and rich honey flavor",
-                  bestFor: "Ukrainian heritage weddings, old celebrations",
+                    "Perfect for couples who want to honor Ukrainian heritage with an traditional honey cake featuring delicate layers and rich honey flavor",
+                  bestFor: "Ukrainian heritage weddings, traditional celebrations",
                   servingSize: "Serves 80-100 guests",
                   price: "From £200",
                   icon: "🍯",
@@ -305,10 +305,10 @@ export default async function BestCakesForWeddingsPage() {
                     factor: "Wedding Style",
                     advice: "Match your cake style to your wedding theme and venue",
                     tips: [
-                      "Old: Classic white wedding cake",
+                      "traditional: Classic white wedding cake",
                       "Rustic: Naked cake with fresh flowers",
                       "Modern: Geometric designs and metallic accents",
-                      "Ukrainian: Old honey cake or Kyiv cake",
+                      "Ukrainian: traditional honey cake or Kyiv cake",
                     ],
                   },
                   {

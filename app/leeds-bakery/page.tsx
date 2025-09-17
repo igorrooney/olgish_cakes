@@ -68,7 +68,7 @@ export default function LeedsBakeryPage() {
             </Typography>
             <Grid container spacing={3}>
               {[
-                { title: "Real Ukrainian recipes", desc: "Old flavours made from scratch" },
+                { title: "Real Ukrainian recipes", desc: "Traditional flavours made from scratch" },
                 { title: "Hand‑crafted to order", desc: "Fresh, personalised cakes for every occasion" },
                 { title: "Delivery across Leeds", desc: "Careful handling and optional venue setup" },
                 { title: "5★ customer rating", desc: "Trusted by Leeds customers" },

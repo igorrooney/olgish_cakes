@@ -37,7 +37,7 @@ const footerLinksBase = {
     { name: "All Cakes", href: "/cakes" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },
     { name: "Birthday Cakes", href: "/birthday-cakes" },
-    { name: "Old Ukrainian", href: "/traditional-ukrainian-cakes" },
+    { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
     { name: "Easter Cakes", href: "/easter-cakes-leeds" },
     { name: "Christmas Cakes", href: "/christmas-cakes-leeds" },
     { name: "Valentine's Cakes", href: "/valentines-cakes-leeds" },

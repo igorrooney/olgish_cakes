@@ -181,7 +181,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
           
           <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
             There's something magical about surprising someone with cake delivery by post. Unlike 
-            old gifts that require the recipient to be present, cake delivery creates a 
+            traditional gifts that require the recipient to be present, cake delivery creates a 
             moment of unexpected joy that can brighten anyone's day. But creating the perfect 
             surprise requires careful planning and attention to detail.
           </Typography>
@@ -400,7 +400,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 6, lineHeight: 1.7 }}>
-            At Olgish Cakes, I understand the power of surprise. My old Ukrainian honey 
+            At Olgish Cakes, I understand the power of surprise. My traditional Ukrainian honey 
             cake is perfect for creating these magical moments, with its real taste and 
             letterbox-friendly packaging making sure your surprise arrives in perfect condition.
           </Typography>
@@ -420,7 +420,7 @@ export default function HowToSurpriseWithCakeDeliveryPage() {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
-              Start planning your perfect cake delivery surprise today. My old Ukrainian 
+              Start planning your perfect cake delivery surprise today. My traditional Ukrainian 
               honey cake is ready to bring joy to someone special in your life.
             </Typography>
             

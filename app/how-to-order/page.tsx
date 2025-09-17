@@ -656,7 +656,7 @@ export default function HowToOrderPage() {
                   type: "Standard Cakes",
                   notice: "1 week minimum",
                   recommended: "2-3 weeks",
-                  description: "Old Ukrainian cakes and simple custom designs",
+                  description: "Traditional Ukrainian cakes and simple custom designs",
                   process: "Design consultation → Order confirmation → Cake creation → Delivery",
                 },
                 {

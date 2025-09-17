@@ -7,15 +7,15 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Halifax | Ukrainian Cakes Halifax | Old Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Halifax | Ukrainian Cakes Halifax | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
-    "Old Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax. Order now for special occasions.",
+    "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax. Order now for special occasions.",
   keywords:
-    "cakes Halifax, Ukrainian cakes Halifax, honey cake Halifax, Kyiv cake Halifax, old Ukrainian cakes Halifax, cake delivery Halifax",
+    "cakes Halifax, Ukrainian cakes Halifax, honey cake Halifax, Kyiv cake Halifax, traditional Ukrainian cakes Halifax, cake delivery Halifax",
   openGraph: {
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
-      "Old Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
+      "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
     url: "https://olgishcakes.co.uk/cakes-halifax",
     images: ["https://olgishcakes.co.uk/images/cakes-halifax.jpg"],
     type: "website",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Halifax | Ukrainian Cakes Halifax",
     description:
-      "Old Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
+      "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
     images: ["https://olgishcakes.co.uk/images/cakes-halifax.jpg"],
   },
   alternates: {
@@ -46,7 +46,7 @@ export default async function CakesHalifaxPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Halifax Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Halifax and around areas.",
+              "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and around areas.",
             url: "https://olgishcakes.co.uk/cakes-halifax",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
@@ -114,12 +114,12 @@ export default async function CakesHalifaxPage() {
                 lineHeight: 1.6,
               }}
             >
-              Old Ukrainian cakes delivered to Halifax. Handcrafted honey cake, Kyiv cake,
+              Traditional Ukrainian cakes delivered to Halifax. Handcrafted honey cake, Kyiv cake,
               and real Ukrainian desserts made with love in Leeds and delivered fresh to your
               door in Halifax.
             </Typography>
             <Chip
-              label="Old Ukrainian Cakes Halifax"
+              label="Traditional Ukrainian Cakes Halifax"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -150,7 +150,7 @@ export default async function CakesHalifaxPage() {
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
               Experience real Ukrainian cakes in Halifax. Contact me to place your order and
-              enjoy old Ukrainian flavors delivered to your door.
+              enjoy traditional Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

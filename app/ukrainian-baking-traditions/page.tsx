@@ -7,13 +7,13 @@ import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking | Olgish Cakes",
   description:
-    "Discover the rich history and traditions of Ukrainian baking. Learn about old techniques, ingredients, and cultural meaning of Ukrainian desserts.",
+    "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
   keywords:
     "Ukrainian baking traditions, traditional Ukrainian baking, Ukrainian dessert history, Ukrainian cake traditions, Ukrainian baking culture",
   openGraph: {
     title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
     description:
-      "Discover the rich history and traditions of Ukrainian baking. Learn about old techniques, ingredients, and cultural meaning of Ukrainian desserts.",
+      "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/ukrainian-baking-traditions",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-traditions.jpg"],
     type: "article",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
     description:
-      "Discover the rich history and traditions of Ukrainian baking. Learn about old techniques, ingredients, and cultural meaning of Ukrainian desserts.",
+      "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-traditions.jpg"],
   },
   alternates: {
@@ -80,8 +80,8 @@ export default function UkrainianBakingTraditionsPage() {
               mx: "auto",
             }}
           >
-            Discover the rich history and cultural meaning of old Ukrainian baking.
-            From old techniques to modern interpretations.
+            Discover the rich history and cultural meaning of traditional Ukrainian baking.
+            From traditional techniques to modern interpretations.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Chip label="Cultural Heritage" color="primary" />
@@ -105,9 +105,9 @@ export default function UkrainianBakingTraditionsPage() {
             🏺 Historical Roots of Ukrainian Baking
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
-            Ukrainian baking traditions date back centuries, with roots in old Slavic culture.
+            Ukrainian baking traditions date back centuries, with roots in traditional Slavic culture.
             The fertile soil of Ukraine, known as the "breadbasket of Europe," provided abundant
-            wheat, honey, and dairy products that became the foundation of old baking.
+            wheat, honey, and dairy products that became the foundation of traditional baking.
           </Typography>
           <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
             These traditions were passed down through generations, with each family developing their
@@ -346,20 +346,20 @@ export default function UkrainianBakingTraditionsPage() {
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, fontSize: "1.1rem", textAlign: "center" }}>
             Today, Ukrainian baking traditions are experiencing a renaissance, with modern bakers
-            combining old techniques with contemporary approaches. This revival makes sure that
+            combining traditional techniques with contemporary approaches. This revival makes sure that
             these precious cultural traditions continue to thrive and evolve.
           </Typography>
           <Grid container spacing={3}>
             {[
               {
-                title: "Old Recipes",
+                title: "Traditional Recipes",
                 description: "Keeping real recipes and techniques for future generations",
                 icon: "📜",
               },
               {
                 title: "Modern Adaptations",
                 description:
-                  "Adapting old recipes for contemporary tastes and dietary needs",
+                  "Adapting traditional recipes for contemporary tastes and dietary needs",
                 icon: "✨",
               },
               {
@@ -418,7 +418,7 @@ export default function UkrainianBakingTraditionsPage() {
             Experience Ukrainian Baking Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Taste the real flavors of old Ukrainian baking with my handcrafted cakes
+            Taste the real flavors of traditional Ukrainian baking with my handcrafted cakes
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button

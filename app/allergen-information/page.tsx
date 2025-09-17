@@ -332,7 +332,7 @@ export default function AllergenInformationPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               I'm committed to making my Ukrainian cakes accessible to everyone. I can adapt my
-              old recipes to accommodate various dietary requirements while keeping
+              traditional recipes to accommodate various dietary requirements while keeping
               real flavors.
             </Typography>
             <Grid container spacing={4}>
@@ -341,7 +341,7 @@ export default function AllergenInformationPage() {
                   diet: "Gluten-Friendly",
                   icon: "🌾❌",
                   description:
-                    "Old Ukrainian cakes adapted with gluten-friendly flour blends that keep real texture and taste",
+                    "Traditional Ukrainian cakes adapted with gluten-friendly flour blends that keep real texture and taste",
                   options: [
                     "Gluten-friendly Medovik",
                     "Gluten-friendly Kyiv cake",
@@ -365,7 +365,7 @@ export default function AllergenInformationPage() {
                   diet: "Vegan",
                   icon: "🌱",
                   description:
-                    "Completely plant-based Ukrainian cakes using old techniques with modern vegan ingredients",
+                    "Completely plant-based Ukrainian cakes using traditional techniques with modern vegan ingredients",
                   options: ["Vegan Medovik", "Vegan Kyiv cake", "Vegan cream fillings"],
                   notice: "No animal products used",
                 },
@@ -373,7 +373,7 @@ export default function AllergenInformationPage() {
                   diet: "Nut-Free",
                   icon: "🥜❌",
                   description:
-                    "Old recipes adapted to exclude nuts while keeping real Ukrainian flavors",
+                    "Traditional recipes adapted to exclude nuts while keeping real Ukrainian flavors",
                   options: ["Nut-free Kyiv cake", "Nut-free fillings", "Alternative toppings"],
                   notice: "Made in a kitchen that handles nuts",
                 },
@@ -389,7 +389,7 @@ export default function AllergenInformationPage() {
                   diet: "Low-Sugar",
                   icon: "🍯",
                   description:
-                    "Old Ukrainian cakes with reduced sugar content using natural sweeteners",
+                    "Traditional Ukrainian cakes with reduced sugar content using natural sweeteners",
                   options: ["Low-sugar Medovik", "Low-sugar fillings", "Natural sweeteners"],
                   notice: "Still contains some natural sugars",
                 },
@@ -471,7 +471,7 @@ export default function AllergenInformationPage() {
               Allergen Information Chart
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              This chart shows which allergens are present in my old Ukrainian cakes. I
+              This chart shows which allergens are present in my traditional Ukrainian cakes. I
               can adapt any cake to accommodate your dietary requirements.
             </Typography>
             <Grid container spacing={3}>

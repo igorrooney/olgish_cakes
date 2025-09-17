@@ -117,7 +117,7 @@ export default function BestCakesByPostPage() {
             }}
           >
             Find the best cake by post options for surprising your family and friends anywhere in UK. 
-            From old recipes to new ways of sending cakes.
+            From traditional recipes to new ways of sending cakes.
           </Typography>
           
           <Typography variant="body2" color="text.secondary">
@@ -167,7 +167,7 @@ export default function BestCakesByPostPage() {
                     Ukrainian Honey Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                    My special honey cake (honey cake) is perfect for sending by post. This old 
+                    My special honey cake (honey cake) is perfect for sending by post. This traditional 
                     Ukrainian treat has layers of honey sponge with creamy filling, 
                     packed in special way to stay fresh during delivery.
                   </Typography>
@@ -339,7 +339,7 @@ export default function BestCakesByPostPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 6, lineHeight: 1.7 }}>
-            At Olgish Cakes, I specialize in old Ukrainian honey cake that's perfect for 
+            At Olgish Cakes, I specialize in traditional Ukrainian honey cake that's perfect for 
             sending by post. My letterbox-friendly packaging and special freshness packing make sure 
             that your surprise comes in good condition, ready to make the person happy.
           </Typography>
@@ -359,7 +359,7 @@ export default function BestCakesByPostPage() {
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
-              Try my old Ukrainian honey cake by post service. Perfect for surprising 
+              Try my traditional Ukrainian honey cake by post service. Perfect for surprising 
               family and friends anywhere in UK with my good, letterbox-friendly delivery.
             </Typography>
             

@@ -10,14 +10,14 @@ export const metadata: Metadata = {
   title:
     "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield | Olgish Cakes",
   description:
-    "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
+    "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
   keywords:
     "cakes Wakefield, Ukrainian cakes Wakefield, custom cakes Wakefield, wedding cakes Wakefield, birthday cakes Wakefield, cake delivery Wakefield, bakery Wakefield, traditional Ukrainian cakes Wakefield",
   openGraph: {
     title:
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
-      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
+      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title:
       "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
     description:
-      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
+      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-wakefield.jpg"],
   },
   alternates: {
@@ -125,7 +125,7 @@ export default async function CakesWakefieldPage() {
                 lineHeight: 1.6,
               }}
             >
-              Real Ukrainian cakes delivered fresh to Wakefield. From old honey cake
+              Real Ukrainian cakes delivered fresh to Wakefield. From traditional honey cake
               and Kyiv cake to custom celebration cakes, I bring the real taste of Ukraine to
               your special occasions in Wakefield.
             </Typography>
@@ -154,7 +154,7 @@ export default async function CakesWakefieldPage() {
                 {
                   title: "Real Ukrainian Flavors",
                   description:
-                    "Old Ukrainian recipes including honey cake, Kyiv cake, and other real Ukrainian desserts",
+                    "Traditional Ukrainian recipes including honey cake, Kyiv cake, and other real Ukrainian desserts",
                   icon: "🇺🇦",
                 },
                 {

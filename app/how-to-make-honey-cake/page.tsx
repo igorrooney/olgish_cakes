@@ -16,24 +16,24 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "How to Make Honey Cake | Old Ukrainian Honey Cake Recipe | Olgish Cakes",
+  title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe | Olgish Cakes",
   description:
-    "Learn how to make real Ukrainian honey cake (Medovik) with my old recipe. Step-by-step instructions for the perfect honey cake layers and cream filling.",
+    "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake layers and cream filling.",
   keywords:
     "how to make honey cake, Ukrainian honey cake recipe, Medovik recipe, traditional honey cake, honey cake layers, Ukrainian baking",
   openGraph: {
-    title: "How to Make Honey Cake | Old Ukrainian Honey Cake Recipe",
+    title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe",
     description:
-      "Learn how to make real Ukrainian honey cake (Medovik) with my old recipe. Step-by-step instructions for the perfect honey cake.",
+      "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake.",
     url: "https://olgishcakes.co.uk/how-to-make-honey-cake",
     images: ["https://olgishcakes.co.uk/images/honey-cake-recipe.jpg"],
     type: "article",
   },
   twitter: {
     card: "summary_large_image",
-    title: "How to Make Honey Cake | Old Ukrainian Honey Cake Recipe",
+    title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe",
     description:
-      "Learn how to make real Ukrainian honey cake (Medovik) with my old recipe. Step-by-step instructions for the perfect honey cake.",
+      "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake.",
     images: ["https://olgishcakes.co.uk/images/honey-cake-recipe.jpg"],
   },
   alternates: {
@@ -45,7 +45,7 @@ export default function HowToMakeHoneyCakePage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Recipe",
-    name: "Old Ukrainian Honey Cake (Medovik)",
+    name: "Traditional Ukrainian Honey Cake (Medovik)",
     description: "Real Ukrainian honey cake recipe with step-by-step instructions",
     author: {
       "@type": "Organization",
@@ -101,7 +101,7 @@ export default function HowToMakeHoneyCakePage() {
               color: colors.primary.main,
             }}
           >
-            How to Make Old Ukrainian Honey Cake
+            How to Make traditional Ukrainian Honey Cake
           </Typography>
           <Typography
             variant="h2"
@@ -117,7 +117,7 @@ export default function HowToMakeHoneyCakePage() {
             instructions for perfect layers and creamy filling.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Chip label="Old Recipe" color="primary" />
+            <Chip label="Traditional Recipe" color="primary" />
             <Chip label="Step-by-Step" color="secondary" />
             <Chip label="8-10 Servings" color="primary" />
             <Chip label="4 Hours Total" color="secondary" />
@@ -413,7 +413,7 @@ export default function HowToMakeHoneyCakePage() {
             Prefer to Order Instead?
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Don't have time to bake? Order my real Ukrainian honey cake made with old recipes
+            Don't have time to bake? Order my real Ukrainian honey cake made with traditional recipes
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button

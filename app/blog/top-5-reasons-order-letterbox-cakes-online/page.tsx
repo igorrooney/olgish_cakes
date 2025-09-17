@@ -362,7 +362,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7 }}>
-            At Olgish Cakes, I've perfected the art of letterbox cake delivery. My old 
+            At Olgish Cakes, I've perfected the art of letterbox cake delivery. My traditional 
             Ukrainian honey cake is specially designed for postal delivery, featuring:
           </Typography>
 
@@ -372,7 +372,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
                 <Typography sx={{ fontSize: "1.5rem" }}>🍯</Typography>
               </ListItemIcon>
               <ListItemText 
-                primary="Old Ukrainian Honey Cake"
+                primary="Traditional Ukrainian Honey Cake"
                 secondary="Real recipe with honey-infused layers and creamy filling"
               />
             </ListItem>
@@ -421,7 +421,7 @@ export default function Top5ReasonsLetterboxCakesPage() {
             
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, maxWidth: "600px", mx: "auto" }}>
               Join thousands of satisfied customers who have discovered the joy of letterbox cake delivery. 
-              Surprise someone special today with my old Ukrainian honey cake.
+              Surprise someone special today with my traditional Ukrainian honey cake.
             </Typography>
             
             <Button

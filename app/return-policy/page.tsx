@@ -17,11 +17,11 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
   description:
-    "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
+    "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
   openGraph: {
     title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
     description:
-      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
     url: "https://olgishcakes.co.uk/return-policy",
     siteName: "Olgish Cakes",
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
     description:
-      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
     images: ["https://olgishcakes.co.uk/images/return-policy.jpg"],
   },
   alternates: {
@@ -100,7 +100,7 @@ export default function ReturnPolicyPage() {
     "@type": "WebPage",
     name: "Return Policy - Olgish Cakes",
     description:
-      "Learn about my return and refund policy for Ukrainian cakes and old desserts. I am committed to customer satisfaction and quality assurance.",
+      "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
     url: "https://olgishcakes.co.uk/return-policy",
     publisher: {
       "@type": "Organization",
@@ -113,7 +113,7 @@ export default function ReturnPolicyPage() {
     mainEntity: {
       "@type": "Article",
       headline: "Return Policy",
-      description: "Learn about my return and refund policy for Ukrainian cakes and old desserts.",
+      description: "Learn about my return and refund policy for Ukrainian cakes and traditional desserts.",
       author: {
         "@type": "Organization",
         name: "Olgish Cakes",
@@ -172,7 +172,7 @@ export default function ReturnPolicyPage() {
 
             <Alert severity="info" sx={{ mb: 4, borderRadius: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                I want you to be completely satisfied with your Ukrainian cake and old dessert order. 
+                I want you to be completely satisfied with your Ukrainian cake and traditional dessert order. 
                 Please read my return policy carefully to understand your rights and my procedures.
               </Typography>
             </Alert>
@@ -378,7 +378,7 @@ export default function ReturnPolicyPage() {
               7. Quality Assurance
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              I take pride in the quality of my Ukrainian cakes and old desserts. 
+              I take pride in the quality of my Ukrainian cakes and traditional desserts. 
               My quality assurance process includes:
             </Typography>
             <List>
@@ -405,7 +405,7 @@ export default function ReturnPolicyPage() {
             <Typography variant="body1" sx={{ mb: 3 }}>
               I am committed to your satisfaction. If you're not completely happy with your order, 
               I will work with you to resolve the issue. My goal is to make sure every customer 
-              enjoys the real taste of Ukrainian cakes and old desserts.
+              enjoys the real taste of Ukrainian cakes and traditional desserts.
             </Typography>
 
             <Box sx={{ 

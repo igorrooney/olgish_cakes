@@ -33,7 +33,7 @@ async function clearCache() {
     });
 
     console.log("\n🎉 Your content should now be up to date!");
-    console.log("💡 Tip: If you're still seeing old content, try refreshing your browser");
+    console.log("💡 Tip: If you're still seeing traditional content, try refreshing your browser");
   } catch (error) {
     console.error("❌ Error clearing cache:", error);
     process.exit(1);

@@ -56,7 +56,7 @@ const navigationBase = [
         },
         { name: "Birthday Cakes", href: "/birthday-cakes", description: "Celebrate in style" },
         {
-          name: "Old Ukrainian",
+          name: "Traditional Ukrainian",
           href: "/traditional-ukrainian-cakes",
           description: "Real Ukrainian flavors",
         },
@@ -566,7 +566,7 @@ export function Header() {
                 >
                   <Image
                     src="/images/olgish-cakes-logo-bakery-brand.png"
-                    alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Old Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Real Ukrainian Desserts Yorkshire"
+                    alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Real Ukrainian Desserts Yorkshire"
                     width={180}
                     height={85}
                     priority

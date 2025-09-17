@@ -49,14 +49,14 @@ export async function generateMetadata(): Promise<Metadata> {
     "honey cake",
     "Medovik",
     "Kyiv cake",
-    "old Ukrainian desserts",
+    "traditional Ukrainian desserts",
     "Ukrainian bakery Leeds",
     "custom cakes Leeds",
     "wedding cakes Leeds",
     "birthday cakes Leeds",
     "cake delivery Leeds",
     "real Ukrainian cakes",
-    "old medovik",
+    "traditional medovik",
     "best Ukrainian cakes Leeds",
     "honey cake delivery Yorkshire",
     "Ukrainian bakery near me",
@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Enhanced description with event information
   let description =
-    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old desserts. 5★ rating, same-day delivery Yorkshire.";
+    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.";
 
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
@@ -209,7 +209,7 @@ export default async function Home() {
     "@id": "https://olgishcakes.co.uk/#webpage",
     name: "Olgish Cakes - #1 Ukrainian Cakes Leeds",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
     url: "https://olgishcakes.co.uk",
     isPartOf: {
       "@id": "https://olgishcakes.co.uk/#website",
@@ -224,7 +224,7 @@ export default async function Home() {
       url: "https://olgishcakes.co.uk",
       logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
       description:
-        "Real Ukrainian bakery in Leeds, specializing in old honey cakes and desserts",
+        "Real Ukrainian bakery in Leeds, specializing in traditional honey cakes and desserts",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Leeds",
@@ -291,7 +291,7 @@ export default async function Home() {
           >
             <AnimatedDiv variants={fadeInUp} className="mb-8">
               <Chip
-                label="Handmade Old Ukrainian Cakes"
+                label="Handmade Traditional Ukrainian Cakes"
                 className="bg-white/20 text-white border-white/30 mb-6 backdrop-blur-sm"
                 sx={{ fontSize: "1rem", padding: "12px 24px" }}
               />
@@ -324,7 +324,7 @@ export default async function Home() {
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
                 Taste the real Ukrainian tradition – every cake has story of family,
-                old recipes, and special moments that I share with you
+                traditional recipes, and special moments that I share with you
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
@@ -462,7 +462,7 @@ export default async function Home() {
               Good Taste in Every Piece
             </Typography>
             <Typography component="span" className="text-lg sm:text-xl text-gray-600 block">
-              We mix old Ukrainian recipes with new ways to make really good cakes
+              We mix traditional Ukrainian recipes with new ways to make really good cakes
             </Typography>
           </AnimatedDiv>
 
@@ -472,7 +472,7 @@ export default async function Home() {
                 icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Made by Hand",
                 description:
-                  "Every cake we make by hand using old Ukrainian ways that my family taught me",
+                  "Every cake we make by hand using traditional Ukrainian ways that my family taught me",
                 color: "from-blue-50 to-blue-100",
               },
               {
@@ -576,7 +576,7 @@ export default async function Home() {
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    At Olgish Cakes, I keep the old Ukrainian ways of baking but also try new things. 
+                    At Olgish Cakes, I keep the traditional Ukrainian ways of baking but also try new things. 
                     I use recipes from my family and mix them with new ideas to make cakes that look 
                     beautiful and taste really good.
                   </Typography>

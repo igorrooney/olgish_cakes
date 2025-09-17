@@ -390,7 +390,7 @@ export default function AboutContent() {
                   letterSpacing: { xs: "0.01em", md: "0.02em" },
                 }}
               >
-                Real Ukrainian Cakes & Old Desserts in Leeds
+                Real Ukrainian Cakes & Traditional Desserts in Leeds
               </Typography>
             </motion.div>
           </motion.div>
@@ -543,7 +543,7 @@ export default function AboutContent() {
                         font: "font-normal sm:font-medium",
                       }}
                     >
-                      Old Ukrainian baking with new knowledge
+                      Traditional Ukrainian baking with new knowledge
                     </Typography>
                     <Stack direction="row" spacing={1} justifyContent="center">
                       <AccessibleIconButton
@@ -605,7 +605,7 @@ export default function AboutContent() {
                   >
                     I am <strong>Olga Ieromenko</strong>, Ukrainian baker who came to Leeds in 2022. 
                     I love real Ukrainian baking so much that I went to Leeds City College to learn 
-                    Level 2 and Level 3 Patisserie courses, where I got better at old and new baking ways.
+                    Level 2 and Level 3 Patisserie courses, where I got better at traditional and new baking ways.
                   </Typography>
 
                   <Typography
@@ -618,7 +618,7 @@ export default function AboutContent() {
                       mb: { xs: 3, sm: 4 },
                     }}
                   >
-                    I want to share Ukrainian baking with people in UK, mixing old recipes with new ways to make them look nice.
+                    I want to share Ukrainian baking with people in UK, mixing traditional recipes with new ways to make them look nice.
                     From real Ukrainian honey cake (Medovik) and Kyiv cake to special cakes for different times of year and 
                     custom celebration cakes, every cake I make celebrates Ukrainian culture and good taste. My family's Medovik
                     recipe comes from many generations, so you get real Ukrainian honey cake taste when I deliver across Yorkshire.
@@ -905,7 +905,7 @@ export default function AboutContent() {
                       mb: { xs: 2, sm: 3 },
                     }}
                   >
-                    My baking comes from Ukrainian food traditions, mixing old recipes with new ways. 
+                    My baking comes from Ukrainian food traditions, mixing traditional recipes with new ways. 
                     I started because I wanted to bring real Ukrainian taste to Leeds, where baking is not just 
                     work but something special from my culture.
                   </Typography>
@@ -941,10 +941,10 @@ export default function AboutContent() {
                     </Typography>
                     <Stack spacing={2}>
                       {[
-                        "Honey Cake (Medovik) - My special old dessert",
+                        "Honey Cake (Medovik) - My special traditional dessert",
                         "Kyiv Cake - Handmade Ukrainian cake with cashew nuts",
                         "Sacher Torte - Rich chocolate cake with apricot jam",
-                        "Napoleon Cake - Old layered cake with fresh cream",
+                        "Napoleon Cake - traditional layered cake with fresh cream",
                         "Seasonal Cakes - Christmas, Easter, and holiday specials",
                         "Custom Celebration Cakes - Weddings, birthdays, and events",
                       ].map((item, index) => (
@@ -977,7 +977,7 @@ export default function AboutContent() {
                 Ready to Try Real Ukrainian Baking?
               </Typography>
               <Typography variant="h4" sx={{ mb: 4, opacity: 0.9 }}>
-                Order your old Ukrainian cakes or special celebration cake today
+                Order your traditional Ukrainian cakes or special celebration cake today
               </Typography>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center">
                 <Button

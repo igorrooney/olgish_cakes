@@ -77,7 +77,7 @@ In Sanity Studio, content editors can now use:
 
 - Existing string-based short descriptions will need to be migrated to rich text format
 - The `blocksToText()` utility function is used for SEO and accessibility purposes
-- All components gracefully handle both old string format and new rich text format
+- All components gracefully handle both traditional string format and new rich text format
 
 ## Benefits
 

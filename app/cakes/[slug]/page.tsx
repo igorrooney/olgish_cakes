@@ -76,16 +76,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Use SEO fields if available, otherwise generate from content
   const metaTitle =
     cake.seo?.metaTitle ||
-    `${cake.name} | Olgish Cakes - Old Ukrainian Honey Cakes in Leeds`;
+    `${cake.name} | Olgish Cakes - traditional Ukrainian Honey Cakes in Leeds`;
   const metaDescription =
     cake.seo?.metaDescription ||
     (cake.shortDescription
       ? blocksToText(cake.shortDescription).substring(0, 160)
-      : `Old Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
+      : `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
 
   const keywords =
     cake.seo?.keywords?.join(", ") ||
-    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, old Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
+    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
 
   const canonicalUrl =
     cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
@@ -213,7 +213,7 @@ export default async function CakePage({ params }: PageProps) {
             name: cake.name,
             description:
               cake.seo?.metaDescription ||
-              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} old Ukrainian honey cake`),
+              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
             image: [productImageUrl],
             brand: { 
               "@type": "Brand", 
@@ -302,7 +302,7 @@ export default async function CakePage({ params }: PageProps) {
             url: "https://olgishcakes.co.uk",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
             description:
-              "Real Ukrainian honey cakes made with love in Leeds. Old recipes, premium ingredients, and exceptional taste.",
+              "Real Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
             address: {

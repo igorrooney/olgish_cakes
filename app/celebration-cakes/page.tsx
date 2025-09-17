@@ -11,13 +11,13 @@ export const metadata: Metadata = {
   title:
     "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes | Olgish Cakes",
   description:
-    "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with old flavors.",
+    "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
   keywords:
     "celebration cakes Leeds, party cakes, anniversary cakes, graduation cakes, special occasion cakes, Ukrainian celebration cakes, custom celebration cakes Leeds, event cakes",
   openGraph: {
     title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
     description:
-      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with old flavors.",
+      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
     url: "https://olgishcakes.co.uk/celebration-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -208,7 +208,7 @@ export default async function CelebrationCakesPage() {
                 {
                   title: "Housewarming Cakes",
                   description:
-                    "Warm welcome cakes for new homes, featuring cozy designs and old Ukrainian hospitality",
+                    "Warm welcome cakes for new homes, featuring cozy designs and traditional Ukrainian hospitality",
                   icon: "🏠",
                 },
             ].map((celebration, index) => (
@@ -263,7 +263,7 @@ export default async function CelebrationCakesPage() {
                 {
                   title: "Cultural Cakes",
                   description:
-                    "Old Ukrainian celebration cakes honoring cultural heritage and family traditions",
+                    "Traditional Ukrainian celebration cakes honoring cultural heritage and family traditions",
                   icon: "🇺🇦",
                 },
             ].map((celebration, index) => (
@@ -390,7 +390,7 @@ export default async function CelebrationCakesPage() {
                 {
                   title: "Modern Ukrainian",
                   description:
-                    "Contemporary interpretations of Ukrainian traditions, blending old and new for today's celebrations",
+                    "Contemporary interpretations of Ukrainian traditions, blending traditional and new for today's celebrations",
                 },
               ].map((tradition, index) => (
                 <Grid item xs={12} sm={6} key={index}>
@@ -434,7 +434,7 @@ export default async function CelebrationCakesPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               My celebration cakes feature a selection of flavors perfect for special occasions.
-              From old Ukrainian favorites to classic celebration flavors, I have something
+              From traditional Ukrainian favorites to classic celebration flavors, I have something
               for every taste and occasion.
             </Typography>
             <Grid container spacing={3}>

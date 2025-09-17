@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide | Olgish Cakes",
   description:
-    "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from old honey cake to modern designs.",
+    "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
   keywords:
     "best cakes for birthdays, Ukrainian birthday cakes, birthday cake guide, honey cake birthday, traditional birthday cakes",
   openGraph: {
     title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
     description:
-      "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from old honey cake to modern designs.",
+      "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
     url: "https://olgishcakes.co.uk/best-cakes-for-birthdays",
     images: ["https://olgishcakes.co.uk/images/best-cakes-for-birthdays.jpg"],
     type: "article",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
     description:
-      "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from old honey cake to modern designs.",
+      "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
     images: ["https://olgishcakes.co.uk/images/best-cakes-for-birthdays.jpg"],
   },
   alternates: {
@@ -89,12 +89,12 @@ export default async function BestCakesForBirthdaysPage() {
               mx: "auto",
             }}
           >
-            Discover the perfect Ukrainian birthday cake for your celebration. From old
+            Discover the perfect Ukrainian birthday cake for your celebration. From traditional
             honey cake to modern designs, find the cake that makes your day special.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Chip label="Birthday Guide" color="primary" />
-            <Chip label="Old Cakes" color="secondary" />
+            <Chip label="Traditional Cakes" color="secondary" />
             <Chip label="Modern Designs" color="primary" />
             <Chip label="Perfect Celebrations" color="secondary" />
           </Box>
@@ -115,7 +115,7 @@ export default async function BestCakesForBirthdaysPage() {
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             A birthday cake is more than just dessert - it's the centerpiece of your celebration.
-            Ukrainian birthday cakes combine old flavors with modern presentation to create
+            Ukrainian birthday cakes combine traditional flavors with modern presentation to create
             unforgettable birthday memories.
           </Typography>
           <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
@@ -162,10 +162,10 @@ export default async function BestCakesForBirthdaysPage() {
           <Grid container spacing={3}>
             {[
               {
-                title: "Old Honey Cake",
+                title: "Traditional Honey Cake",
                 description: "Classic Ukrainian honey cake with rich layers and creamy filling",
                 icon: "🍯",
-                bestFor: "Old celebrations, honey lovers",
+                bestFor: "Traditional celebrations, honey lovers",
                 size: "6-8 inches",
               },
               {
@@ -275,7 +275,7 @@ export default async function BestCakesForBirthdaysPage() {
                 Popular Birthday Flavors:
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                • Old honey cake
+                • traditional honey cake
                 <br />
                 • Chocolate and vanilla combinations
                 <br />
@@ -419,7 +419,7 @@ export default async function BestCakesForBirthdaysPage() {
             Order Your Perfect Birthday Cake
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Make your birthday celebration special with an old Ukrainian birthday cake
+            Make your birthday celebration special with an traditional Ukrainian birthday cake
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button
