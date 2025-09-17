@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Pudsey | Ukrainian Cakes Pudsey | traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Pudsey | Ukrainian Cakes Pudsey | Traditional Ukrainian Cakes | Olgish Cakes",
   description:
     "traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey. Order now for special occasions.",
   keywords:
