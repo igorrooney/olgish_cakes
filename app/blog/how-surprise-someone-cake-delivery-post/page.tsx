@@ -5,8 +5,8 @@ import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
 export const metadata: Metadata = {
-  title: "How to Surprise Someone with Honey Cake Delivery by Post | Creative Ideas 2025",
-  description: "Learn creative ways to surprise someone with honey cake delivery by post. Discover timing tips, personal touches, and memorable surprise ideas for birthdays, anniversaries, and special occasions.",
+  title: "How to Surprise Someone with Cake Delivery by Post UK | Postal Cake Ideas Leeds",
+  description: "Creative ideas how to surprise your loved ones with cake delivery by post. Some tips from my experience to make special moments more memorable with postal cake surprises. Perfect for birthdays, anniversaries, and special occasions.",
   keywords: [
     "surprise honey cake delivery",
     "honey cake delivery surprise ideas",
@@ -147,10 +147,10 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 4, fontSize: "1.1rem", lineHeight: 1.7 }}>
-              There's something magical about surprising someone with a delicious traditional Ukrainian honey cake delivered straight to their door. 
-              Whether it's a birthday, anniversary, or just because, honey cake delivery by post offers the perfect way to 
-              show someone you care. Here's your complete guide to creating unforgettable honey cake surprises.
-              Learn more about <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>our complete cake by post guide</Link> and discover the <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>top 5 reasons to order honey cake by post online</Link>.
+              There's something special about surprising someone with traditional Ukrainian honey cake delivered to their door. 
+              Whether it's birthday, anniversary, or just because you care, honey cake delivery by post is perfect way to 
+              show someone you think about them. Here's my guide to creating nice honey cake surprises, from my experience.
+              Learn more about <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>my complete cake by post guide</Link> and discover <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>why order honey cake by post online</Link>.
             </Typography>
 
             {/* Table of Contents */}
@@ -235,8 +235,8 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              Timing is everything when it comes to cake surprises. The right timing can make your surprise even more memorable, 
-              while poor timing can ruin the moment. Here's how to get it perfect:
+              Timing is very important for cake surprises. Right timing makes surprise more special, 
+              but wrong timing can spoil the moment. From my experience, here's how to get it right:
             </Typography>
 
             <Grid container spacing={3} sx={{ mb: 4 }}>

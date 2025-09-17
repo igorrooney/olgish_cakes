@@ -5,8 +5,8 @@ import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
 export const metadata: Metadata = {
-  title: "Best Honey Cake You Can Send by Post UK | Letterbox-Friendly Delivery 2025",
-  description: "Discover why traditional Ukrainian honey cake is the best cake you can send by post in the UK. Perfect for letterbox delivery with authentic taste and freshness.",
+  title: "Best Honey Cake You Can Send by Post UK 2025 | Letterbox Friendly Cakes Leeds",
+  description: "Find out which cakes are perfect for sending by post in UK. I learned from experience which ones travel good and how to make sure your postal cakes arrive in perfect condition. Working with customers from Leeds and all over UK.",
   keywords: [
     "best honey cake by post UK",
     "honey cake letterbox delivery",
@@ -175,7 +175,7 @@ export default function BestCakesByPostUKPage() {
                 color: "primary.main",
               }}
             >
-              Best Honey Cake You Can Send by Post UK
+              Best Honey Cake You Can Send by Post UK 2025 | Letterbox Friendly Cakes Leeds
             </Typography>
 
             <Typography
@@ -188,14 +188,14 @@ export default function BestCakesByPostUKPage() {
                 lineHeight: 1.4,
               }}
             >
-              Discover why traditional Ukrainian honey cake is perfect for letterbox delivery
+              Find out why traditional Ukrainian honey cake is perfect for letterbox delivery
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 4, fontSize: "1.1rem", lineHeight: 1.7 }}>
-              Sending honey cake by post has become incredibly popular in the UK, especially for surprising loved ones on special occasions. 
-              Traditional Ukrainian honey cake (Medovik) is specifically designed for postal delivery, making it the perfect choice for 
-              letterbox-friendly cake delivery. Here's why honey cake is the best cake you can send by post.
-              For a complete guide, check out our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>comprehensive cake by post guide</Link>.
+              When customers started asking me to send cakes by post from my Leeds bakery, I tried many different types. 
+              But traditional Ukrainian honey cake (we call it Medovik) works best for postal delivery. 
+              Here's why honey cake is the best cake you can send by post, from my experience.
+              For complete guide, check out my <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>comprehensive cake by post guide</Link>.
             </Typography>
 
             {/* Table of Contents */}
@@ -280,33 +280,34 @@ export default function BestCakesByPostUKPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              Traditional Ukrainian honey cake (Medovik) is specifically designed for postal delivery. Unlike other cakes, 
-              honey cake has unique properties that make it the ideal choice for sending by post:
+              When I first started sending cakes by post from my Leeds bakery, I tried many different types. But traditional 
+              Ukrainian honey cake (we call it Medovik) works best. Unlike other cakes, honey cake has special properties 
+              that make it perfect for sending by post:
             </Typography>
 
             <List sx={{ mb: 4 }}>
               <ListItem>
                 <ListItemText 
-                  primary="Dense, moist texture that doesn't crumble"
-                  secondary="Honey cake's layered structure holds together perfectly during transport"
+                  primary="Dense texture that doesn't break"
+                  secondary="Honey cake has many thin layers that stick together good, so it doesn't crumble during transport"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText 
-                  primary="Natural preservation from honey"
-                  secondary="Honey acts as a natural preservative, keeping the cake fresh for days"
+                  primary="Honey keeps it fresh naturally"
+                  secondary="In Ukraine, we always use honey in cakes because it keeps them fresh for long time without fridge"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText 
-                  primary="No refrigeration required"
-                  secondary="Traditional honey cake stays fresh at room temperature for up to 7 days"
+                  primary="No fridge needed"
+                  secondary="My honey cake stays fresh at room temperature for up to 7 days, perfect for postal delivery"
                 />
               </ListItem>
               <ListItem>
                 <ListItemText 
-                  primary="Perfect letterbox size"
-                  secondary="Our honey cakes are specifically sized to fit through standard UK letterboxes"
+                  primary="Right size for letterbox"
+                  secondary="I make my honey cakes exactly right size to fit through normal UK letterboxes"
                 />
               </ListItem>
             </List>
@@ -321,8 +322,8 @@ export default function BestCakesByPostUKPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              Our traditional Ukrainian honey cake (Medovik) is made using centuries-old techniques that make it 
-              perfect for postal delivery. The recipe has been specifically adapted for modern postal requirements:
+              My traditional Ukrainian honey cake (Medovik) is made using my grandmother's recipe from Ukraine. 
+              I had to change it little bit to work good for postal delivery, but the main ingredients and method stay the same:
             </Typography>
 
             <Grid container spacing={3} sx={{ mb: 6 }}>
@@ -332,8 +333,8 @@ export default function BestCakesByPostUKPage() {
                     🍯 Authentic Ingredients
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    Made with pure honey, fresh eggs, and traditional Ukrainian techniques. No artificial preservatives 
-                    or additives - just natural ingredients that preserve the cake naturally.
+                    I use only real honey, fresh eggs, and traditional Ukrainian way of making. No chemicals or artificial 
+                    stuff - just natural ingredients that keep the cake fresh naturally, like my grandmother taught me.
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: "success.main" }}>
                     ✅ Pure honey | ✅ Fresh ingredients | ✅ Traditional recipe

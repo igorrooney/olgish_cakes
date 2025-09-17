@@ -5,8 +5,8 @@ import Link from "next/link";
 import { TocLink } from "./TocLink";
 
 export const metadata: Metadata = {
-  title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025",
-  description: "Everything you need to know about honey cake by post in the UK. Discover why traditional Ukrainian honey cake is perfect for letterbox delivery and how to surprise loved ones.",
+  title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+  description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
   keywords: [
     "honey cake by post UK",
     "honey cake letterbox delivery",
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     "Ukrainian cake by post"
   ],
   openGraph: {
-    title: "Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025",
-    description: "Everything you need to know about cake by post in the UK. Discover the best letterbox-friendly cakes, delivery options, and how to surprise loved ones with delicious postal cakes.",
+    title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     url: "https://olgishcakes.co.uk/blog/cake-by-post-uk-complete-guide",
     siteName: "Olgish Cakes",
     images: [
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025",
-    description: "Everything you need to know about cake by post in the UK. Discover the best letterbox-friendly cakes, delivery options, and how to surprise loved ones.",
+    title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     images: ["https://olgishcakes.co.uk/images/cake-by-post-guide.jpg"],
   },
   alternates: {
@@ -82,8 +82,8 @@ export default function CakeByPostGuidePage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "Honey Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025",
-    description: "Everything you need to know about honey cake by post in the UK. Discover why traditional Ukrainian honey cake is perfect for letterbox delivery and how to surprise loved ones.",
+    headline: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     author: {
       "@type": "Organization",
       name: "Olgish Cakes",
@@ -122,7 +122,7 @@ export default function CakeByPostGuidePage() {
         name: "What is honey cake by post?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Honey cake by post is a traditional Ukrainian cake (Medovik) that is specially designed for postal delivery. It's vacuum-packed and sized to fit through standard UK letterboxes, making it perfect for surprising loved ones anywhere in the UK."
+          text: "Honey cake by post is traditional Ukrainian cake (we call it Medovik) that I make specially for sending by post. It's packed in special way and made right size to fit through UK letterboxes, so you can surprise your family anywhere in UK."
         }
       },
       {
@@ -130,7 +130,7 @@ export default function CakeByPostGuidePage() {
         name: "Why is honey cake perfect for postal delivery?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Honey cake is perfect for postal delivery because it has natural preservation properties from honey, a dense structure that prevents crumbling, and is specially sized to fit through letterboxes. It stays fresh for up to 7 days without refrigeration."
+          text: "Honey cake is perfect for postal delivery because honey keeps it fresh naturally, it doesn't break easily during transport, and I make it right size for letterboxes. It stays good for up to 7 days without fridge."
         }
       },
       {
@@ -138,7 +138,7 @@ export default function CakeByPostGuidePage() {
         name: "How long does honey cake by post stay fresh?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Honey cake by post stays fresh for up to 7 days when properly stored. The honey acts as a natural preservative, and the vacuum packaging helps maintain freshness during postal delivery."
+          text: "My honey cake stays fresh for up to 7 days when you keep it properly. The honey keeps it fresh naturally, and special packaging helps it stay good during postal delivery."
         }
       },
       {
@@ -146,7 +146,7 @@ export default function CakeByPostGuidePage() {
         name: "Can I send honey cake by post to any UK address?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, we deliver honey cake by post to any UK address. Our cakes are specially designed to fit through standard UK letterboxes, so they can be delivered even when no one is home."
+          text: "Yes, I can send honey cake by post to any address in UK. My cakes are made to fit through normal UK letterboxes, so they can be delivered even when nobody is home."
         }
       },
       {
@@ -154,7 +154,7 @@ export default function CakeByPostGuidePage() {
         name: "What occasions are perfect for honey cake by post?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Honey cake by post is perfect for birthdays, anniversaries, just because moments, holidays, and any special occasion where you want to surprise someone with a delicious traditional Ukrainian treat."
+          text: "Honey cake by post is perfect for birthdays, anniversaries, holidays, or just when you want to surprise someone with nice traditional Ukrainian cake. Any special moment is good time for honey cake!"
         }
       }
     ]
@@ -254,7 +254,7 @@ export default function CakeByPostGuidePage() {
                 lineHeight: 1.2,
               }}
             >
-              Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025
+              Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds
             </Typography>
             
             <Typography
@@ -267,8 +267,8 @@ export default function CakeByPostGuidePage() {
                 lineHeight: 1.6,
               }}
             >
-              Everything you need to know about sending delicious traditional Ukrainian honey cake through the post in the UK. 
-              From why honey cake is perfect for postal delivery to ensuring perfect delivery, this comprehensive guide covers it all.
+              Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. 
+              From my experience running cake business in Leeds, I will tell you why honey cake is perfect for postal delivery and how to make sure it arrives fresh.
             </Typography>
           </Box>
 
@@ -366,14 +366,14 @@ export default function CakeByPostGuidePage() {
                   1. What is Cake by Post?
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  Cake by post is a convenient way to send delicious cakes through the mail, allowing you to surprise 
-                  loved ones anywhere in the UK without being physically present. This service has become increasingly 
-                  popular, especially for special occasions like birthdays, anniversaries, and holidays.
+                  When I started my cake business in Leeds, I never thought about sending cakes by post. But then customers 
+                  started asking me - "Can you send cake to my daughter in London?" or "My mum lives in Manchester, can she get your honey cake?" 
+                  So I learned how to make cakes that travel good through the post.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  The concept involves specially designed cakes that can fit through standard UK letterboxes, 
-                  ensuring delivery even when the recipient isn't home. These cakes are typically vacuum-packed 
-                  to maintain freshness during transit and can stay fresh for several days.
+                  The idea is simple - make cakes that fit through normal UK letterboxes, so even if nobody is home, 
+                  the cake still arrives. I use special packaging that keeps cakes fresh for few days, and honey cake 
+                  is perfect for this because it doesn't go bad quickly like other cakes.
                 </Typography>
               </Box>
 
@@ -387,9 +387,9 @@ export default function CakeByPostGuidePage() {
                   2. Why Honey Cake is Perfect for Postal Delivery
                 </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Traditional Ukrainian honey cake (Medovik) is specifically designed for postal delivery.
-              Unlike other cakes, honey cake has unique properties that make it the ideal choice for sending by post.
-              Learn more about <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>why honey cake is the best cake for postal delivery</Link>.
+              In Ukraine, we make honey cake (we call it Medovik) for special occasions, and it's perfect for sending by post. 
+              My grandmother taught me this recipe, and I never thought it would work so good for postal delivery until I tried it.
+              You can read more about <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>why honey cake is best for postal delivery</Link>.
             </Typography>
                 
                 <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -399,8 +399,8 @@ export default function CakeByPostGuidePage() {
                         🍯 Natural Preservation
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        Honey acts as a natural preservative, keeping the cake fresh for up to 7 days without refrigeration. 
-                        This makes it perfect for postal delivery across the UK.
+                        In Ukraine, we always use honey in cakes because it keeps them fresh for long time. I tested this 
+                        with my honey cake - it stays good for up to 7 days without fridge, which is perfect for sending by post.
                       </Typography>
                     </Card>
                   </Grid>
@@ -411,8 +411,8 @@ export default function CakeByPostGuidePage() {
                         📦 Dense Structure
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        The layered structure of honey cake is dense and stable, preventing it from crumbling or 
-                        getting damaged during postal transport. Each layer holds together perfectly.
+                        When I first tried to send regular cake by post, it arrived all broken. But honey cake is different - 
+                        it has many thin layers that stick together good, so it doesn't break during transport. Each layer stays in place.
                       </Typography>
                     </Card>
                   </Grid>
@@ -423,8 +423,8 @@ export default function CakeByPostGuidePage() {
                         📏 Letterbox Perfect
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        Our honey cakes are specially sized to fit through standard UK letterboxes (25cm x 5cm), 
-                        ensuring easy delivery without requiring someone to be home.
+                        I had to learn the hard way about UK letterbox sizes! First cakes I sent were too big and got returned. 
+                        Now I make them exactly right size (25cm x 5cm) so they fit through any letterbox in UK.
                       </Typography>
                     </Card>
                   </Grid>
@@ -435,8 +435,8 @@ export default function CakeByPostGuidePage() {
                         🏺 Traditional Recipe
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        Made using centuries-old Ukrainian techniques with pure honey, fresh eggs, and natural ingredients. 
-                        No artificial preservatives needed - just authentic, traditional baking.
+                        This is my grandmother's recipe from Ukraine, made with real honey, fresh eggs, and natural ingredients. 
+                        No chemicals or artificial stuff - just like we make it at home. That's why it tastes so good and stays fresh.
                       </Typography>
                     </Card>
                   </Grid>
@@ -453,32 +453,32 @@ export default function CakeByPostGuidePage() {
                   3. How Cake by Post Works
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  The cake by post process is designed to be simple and reliable:
+                  When you order cake by post from me, here's what happens:
                 </Typography>
                 
                 <List sx={{ mb: 4 }}>
                   <ListItem>
                     <ListItemText 
-                      primary="Step 1: Order Online" 
-                      secondary="Choose your cake and provide the recipient's address and delivery instructions"
+                      primary="Step 1: You Order Online" 
+                      secondary="Tell me what cake you want and where to send it. I need the address and any special instructions"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemText 
-                      primary="Step 2: Fresh Baking" 
-                      secondary="We bake your cake fresh and cut it into letterbox-friendly portions"
+                      primary="Step 2: I Bake Fresh" 
+                      secondary="I make your cake fresh in my kitchen in Leeds and cut it into pieces that fit through letterbox"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemText 
-                      primary="Step 3: Secure Packaging" 
-                      secondary="Each slice is vacuum-packed and placed in specially designed letterbox packaging"
+                      primary="Step 3: I Pack Carefully" 
+                      secondary="Each piece goes in special packaging that keeps it fresh and safe during transport"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemText 
-                      primary="Step 4: Delivery" 
-                      secondary="We ship within 2-3 working days with tracking information provided"
+                      primary="Step 4: I Send It" 
+                      secondary="I post it within 2-3 days and give you tracking number so you can see where it is"
                     />
                   </ListItem>
                 </List>
@@ -494,7 +494,8 @@ export default function CakeByPostGuidePage() {
                   4. Packaging and Freshness
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  Proper packaging is crucial for successful cake by post delivery. Our packaging process includes:
+                  Packaging is very important for cake by post. I learned this the hard way when first cakes arrived broken! 
+                  Now I use special packaging that keeps cakes safe:
                 </Typography>
                 
                 <Grid container spacing={3}>
