@@ -228,7 +228,7 @@ export default async function Home() {
     },
     author: {
       "@type": "Person",
-      name: testimonial.name
+      name: testimonial.customerName
     },
     reviewRating: {
       "@type": "Rating",
@@ -236,7 +236,7 @@ export default async function Home() {
       bestRating: "5",
       worstRating: "1"
     },
-    reviewBody: testimonial.review || testimonial.cake ? `Amazing ${testimonial.cake} from Olgish Cakes!` : "Excellent service and delicious cakes!",
+    reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
     datePublished: testimonial.date || "2024-01-01"
   }));
 
