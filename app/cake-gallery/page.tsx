@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio | Olgish Cakes",
   description:
-    "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and old Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
+    "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
   keywords:
     "cake gallery, Ukrainian cake designs, custom cake portfolio, wedding cake gallery, birthday cake designs, celebration cake photos, cake inspiration, Ukrainian dessert gallery",
   openGraph: {
     title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
     description:
-      "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and old Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
+      "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
     url: "https://olgishcakes.co.uk/cake-gallery",
     siteName: "Olgish Cakes",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
     description:
-      "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and old Ukrainian desserts.",
+      "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cake-gallery.jpg"],
   },
   alternates: {
@@ -105,7 +105,7 @@ export default async function CakeGalleryPage() {
                 lineHeight: 1.6,
               }}
             >
-              Explore my beautiful collection of Ukrainian cakes. From old honey cake to
+              Explore my beautiful collection of Ukrainian cakes. From traditional honey cake to
               custom designs, discover the artistry and craftsmanship behind each creation.
             </Typography>
             <Chip
@@ -149,7 +149,7 @@ export default async function CakeGalleryPage() {
             <Grid container spacing={4}>
               {[
                 {
-                  category: "Old Ukrainian",
+                  category: "Traditional Ukrainian",
                   icon: "🇺🇦",
                   description: "Real Ukrainian cakes like Medovik, Kyiv cake, and Napoleon",
                   count: allCakes.filter(cake => cake.category === "traditional").length,
@@ -221,22 +221,22 @@ export default async function CakeGalleryPage() {
                 textAlign: "center",
               }}
             >
-              Old Ukrainian Cakes
+              Traditional Ukrainian Cakes
             </Typography>
             <Typography
               variant="body1"
               sx={{ mb: 4, textAlign: "center", color: "text.secondary" }}
             >
-              Real Ukrainian cakes made with old recipes and techniques
+              Real Ukrainian cakes made with traditional recipes and techniques
             </Typography>
 
             {allCakes.filter(cake => cake.category === "traditional").length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8 }}>
                 <Typography variant="h3" component="h3" color="text.secondary" sx={{ mb: 2 }}>
-                  Old Ukrainian Cakes
+                  Traditional Ukrainian Cakes
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                  My old Ukrainian cake collection features real recipes from Ukraine.
+                  My traditional Ukrainian cake collection features real recipes from Ukraine.
                   Contact me to learn more about my Ukrainian desserts.
                 </Typography>
                 <Button
@@ -246,7 +246,7 @@ export default async function CakeGalleryPage() {
                   color="primary"
                   size="large"
                 >
-                  Order Old Cake
+                  Order traditional Cake
                 </Button>
               </Box>
             ) : (

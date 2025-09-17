@@ -9,13 +9,13 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes | Olgish Cakes",
   description:
-    "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Leeds and around areas.",
+    "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Local cake delivery in Leeds and around areas.",
+      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
     url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
+      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {
@@ -294,7 +294,7 @@ export default async function CakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Handcrafted Ukrainian cakes made fresh in Leeds. From old Ukrainian desserts
+              Handcrafted Ukrainian cakes made fresh in Leeds. From traditional Ukrainian desserts
               to custom celebration cakes, I bring real flavors and beautiful designs to our
               local community.
             </Typography>
@@ -317,7 +317,7 @@ export default async function CakesLeedsPage() {
               {
                 title: "Made in Leeds",
                 description:
-                  "All my cakes are freshly baked in my Leeds kitchen using old Ukrainian recipes",
+                  "All my cakes are freshly baked in my Leeds kitchen using traditional Ukrainian recipes",
                 icon: "🏠",
               },
               {

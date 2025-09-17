@@ -112,7 +112,7 @@ export default function UkrainianCakeGuidePage() {
       name: "Medovik (Honey Cake)",
       description:
         "The best Ukrainian dessert, with delicate honey layers and tangy sour cream filling",
-      origin: "Old family recipe from many centuries ago",
+      origin: "Traditional family recipe from many centuries ago",
       occasions: "Celebrations, holidays, family gatherings",
       characteristics: "Light layers, complex honey taste, creamy texture",
     },
@@ -126,13 +126,13 @@ export default function UkrainianCakeGuidePage() {
     {
       name: "Smetannyk (Sour Cream Cake)",
       description: "Rich, moist cake made with lots of Ukrainian sour cream",
-      origin: "Old peasant cake, made into modern delicacy",
+      origin: "Traditional peasant cake, made into modern delicacy",
       occasions: "Everyday celebrations, tea time",
       characteristics: "Dense texture, tangy taste, very moist",
     },
     {
       name: "Makoviy Tort (Poppy Seed Cake)",
-      description: "Old cake with ground poppy seeds in both layers and filling",
+      description: "Traditional cake with ground poppy seeds in both layers and filling",
       origin: "Eastern European tradition, Ukrainian way",
       occasions: "Christmas, Easter, religious celebrations",
       characteristics: "Nutty poppy taste, dark look, festive decoration",
@@ -200,7 +200,7 @@ export default function UkrainianCakeGuidePage() {
             <Box
               sx={{ display: "flex", gap: 1, justifyContent: "center", flexWrap: "wrap", mb: 4 }}
             >
-              <Chip label="Old Recipes" color="primary" />
+              <Chip label="Traditional Recipes" color="primary" />
               <Chip label="Cultural Heritage" color="primary" variant="outlined" />
               <Chip label="Modern Designs" color="primary" />
               <Chip label="Good Techniques" color="primary" variant="outlined" />
@@ -220,7 +220,7 @@ export default function UkrainianCakeGuidePage() {
               Ukrainian cake-making is more than just baking—it's cultural art that has been
               passed down through many generations. Each cake tells story of tradition, family
               history, and rich food culture of Ukraine. In Leeds, this tradition
-              still grows, bringing real flavors and old techniques to
+              still grows, bringing real flavors and traditional techniques to
               Yorkshire's different food scene.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -346,7 +346,7 @@ export default function UkrainianCakeGuidePage() {
               Ukrainian Cakes in Modern Celebrations
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Today's Ukrainian cake makers in Leeds are mixing old flavors
+              Today's Ukrainian cake makers in Leeds are mixing traditional flavors
               with modern design looks. Wedding cakes with classic medovik flavors
               can be styled nicely for modern ceremonies, while keeping the real taste
               that makes Ukrainian desserts so special.
@@ -355,7 +355,7 @@ export default function UkrainianCakeGuidePage() {
               Custom Ukrainian-inspired cakes give couples and celebration hosts chance to
               honor cultural heritage while creating beautiful centerpieces that impress guests. From
               multi-tier wedding cakes with honey cake layers to birthday celebrations with
-              old poppy seed elements, the possibilities are endless.
+              traditional poppy seed elements, the possibilities are endless.
             </Typography>
           </Box>
 
@@ -402,7 +402,7 @@ export default function UkrainianCakeGuidePage() {
               variant="body1"
               sx={{ mb: 4, lineHeight: 1.8, maxWidth: "600px", mx: "auto" }}
             >
-              Ready to taste the real flavors of Ukraine? Olgish Cakes brings old
+              Ready to taste the real flavors of Ukraine? Olgish Cakes brings traditional
               recipes and modern art together to create unforgettable desserts for your special
               occasions.
             </Typography>

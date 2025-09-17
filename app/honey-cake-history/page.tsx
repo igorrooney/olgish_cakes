@@ -92,8 +92,8 @@ export default function HoneyCakeHistoryPage() {
               }}
             >
               Learn the interesting story behind honey cake, Ukraine's favorite honey cake. From
-              old origins to modern celebrations, explore the cultural meaning and
-              old preparation ways of this famous Ukrainian dessert.
+              traditional origins to modern celebrations, explore the cultural meaning and
+              traditional preparation ways of this famous Ukrainian dessert.
             </Typography>
             <Chip
               label="Ukrainian Honey Cake Heritage"
@@ -114,7 +114,7 @@ export default function HoneyCakeHistoryPage() {
               variant="h3"
               sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
             >
-              Old Origins
+              Traditional Origins
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
@@ -139,7 +139,7 @@ export default function HoneyCakeHistoryPage() {
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
                     Honey cake, meaning "honey cake" in Ukrainian, has roots that go back to
-                    old Slavic traditions. Using honey as sweetener came before
+                    traditional Slavic traditions. Using honey as sweetener came before
                     sugar was widely available in Eastern Europe.
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -276,7 +276,7 @@ export default function HoneyCakeHistoryPage() {
                   period: "Early 20th Century",
                   title: "Modern Times",
                   description:
-                    "Introduction of modern baking equipment and techniques, while keeping old flavors and methods.",
+                    "Introduction of modern baking equipment and techniques, while keeping traditional flavors and methods.",
                   innovations: ["Electric ovens", "Precise measurements", "Consistent quality"],
                 },
                 {
@@ -337,7 +337,7 @@ export default function HoneyCakeHistoryPage() {
               variant="h3"
               sx={{ mb: 4, textAlign: "center", color: "primary.main", fontWeight: 600 }}
             >
-              Old Preparation Methods
+              Traditional Preparation Methods
             </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
@@ -357,7 +357,7 @@ export default function HoneyCakeHistoryPage() {
                     The Art of Layering
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-                    Old honey cake preparation is hard work that requires
+                    Traditional honey cake preparation is hard work that requires
                     patience and skill. Each layer is rolled out separately and baked to get
                     the perfect thinness and texture.
                   </Typography>
@@ -431,7 +431,7 @@ export default function HoneyCakeHistoryPage() {
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
                     Ukrainian bakeries around the world, including mine in Leeds, continue to
-                    keep and share this old recipe with new audiences.
+                    keep and share this traditional recipe with new audiences.
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -441,7 +441,7 @@ export default function HoneyCakeHistoryPage() {
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
                     Gluten-friendly, vegan, and dairy-free versions make sure that everyone can enjoy
-                    this old Ukrainian dessert, no matter what dietary restrictions they have.
+                    this traditional Ukrainian dessert, no matter what dietary restrictions they have.
                   </Typography>
                 </Grid>
               </Grid>
@@ -462,7 +462,7 @@ export default function HoneyCakeHistoryPage() {
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
               Taste the real flavors of Ukrainian tradition with my handcrafted honey cake
-              cakes. Made using old recipes and techniques, my honey cake brings the rich
+              cakes. Made using traditional recipes and techniques, my honey cake brings the rich
               history and cultural heritage of Ukraine to your table.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

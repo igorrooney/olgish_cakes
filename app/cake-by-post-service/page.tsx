@@ -60,7 +60,7 @@ export default function CakeByPostServicePage() {
             "@type": "Service",
             "@id": "https://olgishcakes.co.uk/cake-by-post-service#service",
             name: "Cake by Post Service",
-            description: "Old Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK.",
+            description: "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK.",
             provider: {
               "@type": "Organization",
               name: "Olgish Cakes",
@@ -84,7 +84,7 @@ export default function CakeByPostServicePage() {
               name: "Cake by Post Products",
               itemListElement: {
                 "@type": "Product",
-                name: "Old Ukrainian Honey Cake by Post",
+                name: "Traditional Ukrainian Honey Cake by Post",
                 description: "Letterbox-friendly pack of 2 slices, vacuum-packed for freshness",
                 offers: {
                   "@type": "Offer",
@@ -146,7 +146,7 @@ export default function CakeByPostServicePage() {
                 name: "What types of cake can be sent by post?",
                 acceptedAnswer: { 
                   "@type": "Answer", 
-                  text: "I specialize in old Ukrainian honey cake (honey cake) that's perfect for postal delivery. My cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
+                  text: "I specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. My cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
                 }
               },
               {

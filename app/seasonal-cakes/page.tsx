@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   title:
     "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes | Olgish Cakes",
   description:
-    "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Old seasonal flavors and celebrations.",
+    "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
   keywords:
     "seasonal cakes Leeds, Christmas cakes, Easter cakes, holiday Ukrainian cakes, seasonal Ukrainian desserts, Christmas honey cake, Easter cake traditions, holiday cake delivery Leeds",
   openGraph: {
     title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
     description:
-      "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Old seasonal flavors and celebrations.",
+      "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
     url: "https://olgishcakes.co.uk/seasonal-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -149,7 +149,7 @@ export default async function SeasonalCakesPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate every season with old Ukrainian cakes. From Christmas honey cake to
+              Celebrate every season with traditional Ukrainian cakes. From Christmas honey cake to
               Easter celebrations, my seasonal cakes honor Ukrainian traditions and bring the
               real taste of Ukraine to your holiday table.
             </Typography>
@@ -199,7 +199,7 @@ export default async function SeasonalCakesPage() {
                 sx={{ color: "text.secondary", maxWidth: "600px", mx: "auto" }}
               >
                 Christmas in Ukraine is time of rich traditions and special cakes. My Christmas
-                collection features old flavors and designs that honor Ukrainian Christmas
+                collection features traditional flavors and designs that honor Ukrainian Christmas
                 celebrations.
               </Typography>
             </Box>
@@ -304,7 +304,7 @@ export default async function SeasonalCakesPage() {
                 sx={{ color: "text.secondary", maxWidth: "600px", mx: "auto" }}
               >
                 Easter is one of the most important celebrations in Ukrainian culture. My Easter
-                cakes feature old symbols and flavors that honor this sacred holiday.
+                cakes feature traditional symbols and flavors that honor this sacred holiday.
               </Typography>
             </Box>
 

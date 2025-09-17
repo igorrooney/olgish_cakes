@@ -143,12 +143,12 @@ pnpm run lighthouse
 
 ## Redirect Strategy
 
-### Old Domain Redirects
+### traditional Domain Redirects
 
-If you have any old domains, set up 301 redirects:
+If you have any traditional domains, set up 301 redirects:
 
 - `olgish-cakes.vercel.app` → `olgishcakes.co.uk`
-- Any other old domains → `olgishcakes.co.uk`
+- Any other traditional domains → `olgishcakes.co.uk`
 
 ## Security Considerations
 

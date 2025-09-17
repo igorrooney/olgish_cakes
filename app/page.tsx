@@ -49,14 +49,14 @@ export async function generateMetadata(): Promise<Metadata> {
     "honey cake",
     "Medovik",
     "Kyiv cake",
-    "old Ukrainian desserts",
+    "traditional Ukrainian desserts",
     "Ukrainian bakery Leeds",
     "custom cakes Leeds",
     "wedding cakes Leeds",
     "birthday cakes Leeds",
     "cake delivery Leeds",
     "real Ukrainian cakes",
-    "old medovik",
+    "traditional medovik",
     "best Ukrainian cakes Leeds",
     "honey cake delivery Yorkshire",
     "Ukrainian bakery near me",
@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Enhanced description with event information
   let description =
-    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old desserts. 5★ rating, same-day delivery Yorkshire.";
+    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.";
 
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
@@ -203,13 +203,50 @@ export default async function Home() {
 
   // Events structured data is injected by the MarketSchedule component to avoid duplication
 
+  // Review schema for testimonials
+  const reviewSchema = testimonials.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    itemReviewed: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk"
+    },
+    ratingValue: "5.0",
+    reviewCount: testimonials.length,
+    bestRating: "5",
+    worstRating: "1"
+  } : null;
+
+  const individualReviews = testimonials.map((testimonial: Testimonial) => ({
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk"
+    },
+    author: {
+      "@type": "Person",
+      name: testimonial.customerName
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: testimonial.rating || 5,
+      bestRating: "5",
+      worstRating: "1"
+    },
+    reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
+    datePublished: testimonial.date || "2024-01-01"
+  }));
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": "https://olgishcakes.co.uk/#webpage",
     name: "Olgish Cakes - #1 Ukrainian Cakes Leeds",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & old Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      "🏆 #1 Rated Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
     url: "https://olgishcakes.co.uk",
     isPartOf: {
       "@id": "https://olgishcakes.co.uk/#website",
@@ -224,7 +261,7 @@ export default async function Home() {
       url: "https://olgishcakes.co.uk",
       logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
       description:
-        "Real Ukrainian bakery in Leeds, specializing in old honey cakes and desserts",
+        "Real Ukrainian bakery in Leeds, specializing in traditional honey cakes and desserts",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Leeds",
@@ -259,6 +296,19 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {reviewSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+        />
+      )}
+      {individualReviews.map((review, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(review) }}
+        />
+      ))}
 
       
 
@@ -291,7 +341,7 @@ export default async function Home() {
           >
             <AnimatedDiv variants={fadeInUp} className="mb-8">
               <Chip
-                label="Handmade Old Ukrainian Cakes"
+                label="Handmade Traditional Ukrainian Cakes"
                 className="bg-white/20 text-white border-white/30 mb-6 backdrop-blur-sm"
                 sx={{ fontSize: "1rem", padding: "12px 24px" }}
               />
@@ -324,7 +374,7 @@ export default async function Home() {
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
                 Taste the real Ukrainian tradition – every cake has story of family,
-                old recipes, and special moments that I share with you
+                traditional recipes, and special moments that I share with you
               </Typography>
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
@@ -393,7 +443,7 @@ export default async function Home() {
                     <div className="relative aspect-square overflow-hidden rounded-2xl shadow-sm bg-white">
                       <Image
                         src={url}
-                        alt={`${h.name} - gift hamper`}
+                        alt={`${h.name} - traditional Ukrainian gift hamper, cake by post UK, letterbox delivery, honey cake by post`}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
@@ -419,6 +469,67 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* Cake by Post Section */}
+      <section aria-label="Cake by Post Service" className="py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center mb-6">
+            Cake by Post UK
+          </h2>
+          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+            Send delicious traditional Ukrainian honey cake by post anywhere in the UK. 
+            Perfect for birthdays, anniversaries, and surprises.
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8 items-center mb-10">
+            <div>
+              <h3 className="text-2xl font-semibold mb-4">Why Choose Our Cake by Post Service?</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Traditional Ukrainian honey cake designed for postal delivery
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Fits through standard UK letterboxes
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Vacuum-packed for freshness
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Delivered anywhere in the UK
+                </li>
+              </ul>
+            </div>
+            <div className="text-center">
+              <div className="bg-gray-100 rounded-lg p-8 mb-6">
+                <CakeOutlinedIcon className="text-6xl text-primary-600 mx-auto mb-4" />
+                <h4 className="text-xl font-semibold mb-2">Honey Cake by Post</h4>
+                <p className="text-gray-600">Perfect for any occasion</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <a
+              href="/gift-hampers/cake-by-post-service"
+              className="inline-block bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-full px-8 py-3 mr-4"
+              aria-label="Order cake by post"
+            >
+              Order Cake by Post
+            </a>
+            <a
+              href="/blog/cake-by-post-uk-complete-guide"
+              className="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors rounded-full px-6 py-3"
+              aria-label="Learn about cake by post"
+            >
+              Learn More
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Market Schedule Section */}
       {marketEvents && marketEvents.length > 0 && (
@@ -462,7 +573,7 @@ export default async function Home() {
               Good Taste in Every Piece
             </Typography>
             <Typography component="span" className="text-lg sm:text-xl text-gray-600 block">
-              We mix old Ukrainian recipes with new ways to make really good cakes
+              We mix traditional Ukrainian recipes with new ways to make really good cakes
             </Typography>
           </AnimatedDiv>
 
@@ -472,7 +583,7 @@ export default async function Home() {
                 icon: <CakeOutlinedIcon sx={{ fontSize: 48, color: colors.primary.main }} />,
                 title: "Made by Hand",
                 description:
-                  "Every cake we make by hand using old Ukrainian ways that my family taught me",
+                  "Every cake we make by hand using traditional Ukrainian ways that my family taught me",
                 color: "from-blue-50 to-blue-100",
               },
               {
@@ -576,7 +687,7 @@ export default async function Home() {
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    At Olgish Cakes, I keep the old Ukrainian ways of baking but also try new things. 
+                    At Olgish Cakes, I keep the traditional Ukrainian ways of baking but also try new things. 
                     I use recipes from my family and mix them with new ideas to make cakes that look 
                     beautiful and taste really good.
                   </Typography>

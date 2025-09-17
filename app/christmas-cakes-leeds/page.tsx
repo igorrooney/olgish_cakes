@@ -4,15 +4,15 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Christmas Cakes Leeds | Old Ukrainian Christmas Cakes | Olgish Cakes",
+  title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
   description:
-    "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
+    "Celebrate Christmas with Traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
   keywords:
     "Christmas cakes Leeds, Ukrainian Christmas cakes, honey cake, Kyiv cake, Christmas desserts, traditional Christmas cakes, Ukrainian bakery Leeds",
   openGraph: {
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
-      "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
+      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     url: "https://olgishcakes.co.uk/christmas-cakes-leeds",
     images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
     description:
-      "Celebrate Christmas with old Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
+      "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],
   },
   alternates: {
@@ -41,7 +41,7 @@ export default function ChristmasCakesLeedsPage() {
             "@type": "Service",
             name: "Christmas Cakes Leeds",
             description:
-              "Old Ukrainian Christmas cakes in Leeds. Order festive cakes for the holidays.",
+              "Traditional Ukrainian Christmas cakes in Leeds. Order festive cakes for the holidays.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -99,12 +99,12 @@ export default function ChristmasCakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate Christmas with old Ukrainian Christmas cakes and honey cake.
+              Celebrate Christmas with traditional Ukrainian Christmas cakes and honey cake.
               Handcrafted with love in Leeds, my Christmas cakes bring the real taste of Ukrainian
               Christmas celebrations to your home.
             </Typography>
             <Chip
-              label="Old Ukrainian Christmas Cakes"
+              label="Traditional Ukrainian Christmas Cakes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -157,7 +157,7 @@ export default function ChristmasCakesLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  My Christmas cakes are made using old Ukrainian recipes passed down through
+                  My Christmas cakes are made using traditional Ukrainian recipes passed down through
                   generations. Each cake is handcrafted with premium ingredients, including
                   pure honey, farm-fresh eggs, and real butter.
                 </Typography>
@@ -203,14 +203,14 @@ export default function ChristmasCakesLeedsPage() {
                     component="h3"
                     sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}
                   >
-                    Old Honey Cake
+                    Traditional Honey Cake
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
                     Classic Ukrainian honey cake with multiple layers of honey sponge and rich sour
                     cream frosting. Decorated with festive Christmas patterns.
                   </Typography>
                   <Chip
-                    label="Old Recipe"
+                    label="Traditional Recipe"
                     sx={{ backgroundColor: "primary.main", color: "white" }}
                   />
                 </Box>

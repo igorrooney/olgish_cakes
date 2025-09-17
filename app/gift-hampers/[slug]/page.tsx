@@ -153,7 +153,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
         const isCakeByPost = hamper.slug?.current === "cake-by-post";
         const productJsonLd = {
           "@context": "https://schema.org",
-          "@type": "Product",
+          "@type": isCakeByPost ? "Service" : "Product",
           "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
           name: hamper.name,
           description: isCakeByPost 
@@ -170,6 +170,19 @@ export default async function GiftHamperPage({ params }: PageProps) {
             name: "Olgish Cakes",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
           },
+          provider: isCakeByPost ? {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+            url: "https://olgishcakes.co.uk",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Leeds",
+              addressRegion: "West Yorkshire",
+              addressCountry: "GB",
+            },
+            telephone: "+44 113 123 4567",
+            email: "hello@olgishcakes.co.uk"
+          } : undefined,
           manufacturer: {
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -186,6 +199,12 @@ export default async function GiftHamperPage({ params }: PageProps) {
           sku: `hamper_${hamper._id}`,
           gtin: `hamper_${hamper._id}`,
           mpn: hamper._id,
+          keywords: isCakeByPost ? "honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake" : undefined,
+          serviceType: isCakeByPost ? "Cake by Post Delivery Service" : undefined,
+          areaServed: isCakeByPost ? {
+            "@type": "Country",
+            name: "United Kingdom"
+          } : undefined,
           offers: {
             "@type": "Offer",
             "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#offer`,

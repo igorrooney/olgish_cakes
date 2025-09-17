@@ -16,16 +16,16 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
+    "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
   description:
-    "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
+    "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
   keywords:
     "Ukrainian cake recipes, traditional Ukrainian desserts, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian baking blog, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking tips, traditional medovik",
   openGraph: {
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik)",
+      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
+      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     url: "https://olgishcakes.co.uk/blog",
     siteName: "Olgish Cakes",
     images: [
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Old Ukrainian Desserts | Honey Cake (Medovik)",
+      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make old Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
+      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg"],
   },
   alternates: {
@@ -82,7 +82,18 @@ export const metadata: Metadata = {
 const blogPosts = [
   {
     id: 1,
-    title: "Old Honey Cake Recipe: The Perfect Ukrainian Honey Cake",
+    title: "Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025",
+    excerpt:
+      "Everything you need to know about cake by post in the UK. Discover the best letterbox-friendly cakes, delivery options, and how to surprise loved ones with delicious postal cakes.",
+    image: "/images/blog/cake-by-post-guide.jpg",
+    category: "Guide",
+    readTime: "12 min read",
+    date: "2025-01-15",
+    slug: "cake-by-post-uk-complete-guide",
+  },
+  {
+    id: 2,
+    title: "Traditional Honey Cake Recipe: The Perfect Ukrainian Honey Cake",
     excerpt:
       "Learn the real recipe for honey cake, Ukraine's beloved honey cake. Discover the secrets to creating the perfect layers and creamy filling.",
     image: "/images/blog/honey-cake-recipe.jpg",
@@ -92,7 +103,7 @@ const blogPosts = [
     slug: "traditional-honey-cake-recipe",
   },
   {
-    id: 2,
+    id: 3,
     title: "The History of Kyiv Cake: A Ukrainian Classic",
     excerpt:
       "Explore the fascinating history behind Kyiv cake, from its royal origins to becoming a symbol of Ukrainian culinary heritage.",
@@ -103,10 +114,10 @@ const blogPosts = [
     slug: "kyiv-cake-history",
   },
   {
-    id: 3,
+    id: 4,
     title: "Ukrainian Baking Traditions: From Generation to Generation",
     excerpt:
-      "Discover how Ukrainian baking traditions have been passed down through generations and the cultural meaning of old desserts.",
+      "Discover how Ukrainian baking traditions have been passed down through generations and the cultural meaning of traditional desserts.",
     image: "/images/blog/ukrainian-baking-traditions.jpg",
     category: "Culture",
     readTime: "10 min read",
@@ -114,10 +125,10 @@ const blogPosts = [
     slug: "ukrainian-baking-traditions",
   },
   {
-    id: 4,
+    id: 5,
     title: "Essential Ukrainian Baking Tools and Ingredients",
     excerpt:
-      "A comprehensive guide to the essential tools and ingredients needed for real Ukrainian baking, from old equipment to modern alternatives.",
+      "A comprehensive guide to the essential tools and ingredients needed for real Ukrainian baking, from traditional equipment to modern alternatives.",
     image: "/images/blog/baking-tools-ingredients.jpg",
     category: "Tips",
     readTime: "7 min read",
@@ -125,7 +136,7 @@ const blogPosts = [
     slug: "ukrainian-baking-tools-ingredients",
   },
   {
-    id: 5,
+    id: 6,
     title: "Seasonal Ukrainian Cakes: Celebrating Throughout the Year",
     excerpt:
       "Explore how Ukrainian cakes change with the seasons, from Christmas honey cake to Easter celebrations and summer fruit cakes.",
@@ -136,7 +147,7 @@ const blogPosts = [
     slug: "seasonal-ukrainian-cakes",
   },
   {
-    id: 6,
+    id: 7,
     title: "Customer Story: A Ukrainian Wedding Cake in Leeds",
     excerpt:
       "Read the heartwarming story of how I created the perfect Ukrainian wedding cake for a couple celebrating their heritage in Leeds.",
@@ -154,7 +165,7 @@ export default function BlogPage() {
     "@type": "Blog",
     name: "Ukrainian Baking Blog",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind old Ukrainian desserts.",
+      "Discover real Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind traditional Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/blog",
     publisher: {
       "@type": "Organization",
@@ -240,7 +251,7 @@ export default function BlogPage() {
               }}
             >
               Discover real Ukrainian cake recipes, baking tips, cultural stories, and the
-              secrets behind old Ukrainian desserts. From honey cake to Kyiv cake, learn the
+              secrets behind traditional Ukrainian desserts. From honey cake to Kyiv cake, learn the
               art of Ukrainian baking from professional baker Olga.
             </Typography>
             <Chip
@@ -262,7 +273,7 @@ export default function BlogPage() {
               Browse by Category
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
-              {["All", "Recipes", "Culture", "Tips", "Seasonal", "Stories"].map(category => (
+              {["All", "Guide", "Recipes", "Culture", "Tips", "Seasonal", "Stories"].map(category => (
                 <Chip
                   key={category}
                   label={category}
@@ -306,7 +317,7 @@ export default function BlogPage() {
                   <Box
                     sx={{
                       height: { xs: 300, md: 400 },
-                      backgroundImage: "url(/images/blog/honey-cake-recipe.jpg)",
+                      backgroundImage: "url(/images/blog/cake-by-post-guide.jpg)",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -323,7 +334,7 @@ export default function BlogPage() {
                     }}
                   >
                     <Chip
-                      label="Recipes"
+                      label="Guide"
                       sx={{
                         mb: 2,
                         backgroundColor: "primary.main",
@@ -332,28 +343,28 @@ export default function BlogPage() {
                       }}
                     />
                     <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, lineHeight: 1.2 }}>
-                      Old Honey Cake Recipe: The Perfect Ukrainian Honey Cake
+                      Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025
                     </Typography>
                     <Typography
                       variant="body1"
                       sx={{ mb: 3, color: "text.secondary", lineHeight: 1.6 }}
                     >
-                      Learn the real recipe for honey cake, Ukraine's beloved honey cake.
-                      Discover the secrets to creating the perfect layers and creamy filling that
-                      make this old dessert so special.
+                      Everything you need to know about cake by post in the UK. Discover the best 
+                      letterbox-friendly cakes, delivery options, and how to surprise loved ones with 
+                      delicious postal cakes.
                     </Typography>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
                       <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        January 15, 2024
+                        January 15, 2025
                       </Typography>
                       <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        • 8 min read
+                        • 12 min read
                       </Typography>
                     </Box>
                     <Button
                       variant="contained"
                       component={Link}
-                      href="/blog/traditional-honey-cake-recipe"
+                      href="/blog/cake-by-post-uk-complete-guide"
                       sx={{
                         backgroundColor: "primary.main",
                         alignSelf: "flex-start",
@@ -362,12 +373,67 @@ export default function BlogPage() {
                         },
                       }}
                     >
-                      Read Full Recipe
+                      Read Complete Guide
                     </Button>
                   </CardContent>
                 </Grid>
               </Grid>
             </Paper>
+          </Box>
+
+          {/* Cake by Post Section */}
+          <Box sx={{ mb: 6 }}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
+            >
+              Cake by Post Guides
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ height: "100%", borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
+                  <CardContent sx={{ p: 4 }}>
+                    <Typography variant="h5" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                      Complete Cake by Post Guide
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
+                      Everything you need to know about sending cake by post in the UK. 
+                      Learn about the best cakes for postal delivery and how to surprise loved ones.
+                    </Typography>
+                    <Button
+                      component={Link}
+                      href="/blog/cake-by-post-uk-complete-guide"
+                      variant="contained"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Read Complete Guide
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ height: "100%", borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
+                  <CardContent sx={{ p: 4 }}>
+                    <Typography variant="h5" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
+                      Why Choose Honey Cake by Post
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
+                      Discover why traditional Ukrainian honey cake is perfect for postal delivery. 
+                      Learn about its unique properties and benefits.
+                    </Typography>
+                    <Button
+                      component={Link}
+                      href="/blog/best-cakes-you-can-send-by-post-uk"
+                      variant="outlined"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Learn About Honey Cake
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           </Box>
 
           {/* Blog Posts Grid */}

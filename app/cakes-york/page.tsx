@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   title:
     "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York | Olgish Cakes",
   description:
-    "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering York and around areas.",
+    "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
   keywords:
     "cakes York, Ukrainian cakes York, custom cakes York, wedding cakes York, birthday cakes York, cake delivery York, bakery York, traditional Ukrainian cakes York",
   openGraph: {
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts. Professional cake delivery service covering York and around areas.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
     url: "https://olgishcakes.co.uk/cakes-york",
     siteName: "Olgish Cakes",
     images: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and old Ukrainian desserts.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-york.jpg"],
   },
   alternates: {
@@ -124,7 +124,7 @@ export default async function CakesYorkPage() {
                 lineHeight: 1.6,
               }}
             >
-              Experience real Ukrainian cakes delivered fresh to York. From old honey
+              Experience real Ukrainian cakes delivered fresh to York. From traditional honey
               cake to custom celebration cakes, I bring the taste of Ukraine to your doorstep in
               York and around areas.
             </Typography>
@@ -160,7 +160,7 @@ export default async function CakesYorkPage() {
                 {
                   title: "Real Ukrainian Recipes",
                   description:
-                    "Old Ukrainian cakes made with real recipes passed down through generations. Experience the real taste of Ukraine.",
+                    "Traditional Ukrainian cakes made with real recipes passed down through generations. Experience the real taste of Ukraine.",
                   icon: "🇺🇦",
                 },
                 {

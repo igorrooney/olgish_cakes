@@ -101,7 +101,7 @@ export default function CakePricingPage() {
     "@type": "Service",
     name: "Ukrainian Cake Pricing Guide",
     description:
-            "Transparent pricing for real Ukrainian cakes. My pricing structure reflects the quality, craftsmanship, and cultural meaning of old Ukrainian baking.",
+            "Transparent pricing for real Ukrainian cakes. My pricing structure reflects the quality, craftsmanship, and cultural meaning of traditional Ukrainian baking.",
     url: "https://olgishcakes.co.uk/cake-pricing",
     provider: {
       "@type": "Organization",
@@ -230,7 +230,7 @@ export default function CakePricingPage() {
                 lineHeight: 1.6,
               }}
             >
-              Transparent cake pricing for all my Ukrainian cakes. From old honey cake to
+              Transparent cake pricing for all my Ukrainian cakes. From traditional honey cake to
               custom designs, I offer competitive prices for quality ingredients and expert
               craftsmanship.
             </Typography>
@@ -275,7 +275,7 @@ export default function CakePricingPage() {
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               I believe in fair, transparent pricing that reflects the quality and cultural
               meaning of my Ukrainian cakes. Every price includes the finest ingredients,
-              old techniques, and personal craftsmanship.
+              traditional techniques, and personal craftsmanship.
             </Typography>
             <Grid container spacing={4}>
               {[
@@ -283,21 +283,21 @@ export default function CakePricingPage() {
                   principle: "Quality Ingredients",
                   icon: "🌟",
                   description:
-                    "I use only the finest ingredients, including old Ukrainian honey, premium flour, and fresh dairy products",
+                    "I use only the finest ingredients, including traditional Ukrainian honey, premium flour, and fresh dairy products",
                   impact: "Higher ingredient costs make sure real taste and quality",
                 },
                 {
-                  principle: "Old Techniques",
+                  principle: "Traditional Techniques",
                   icon: "👩‍🍳",
                   description:
-                    "Each cake is handcrafted using old Ukrainian baking methods passed down through generations",
-                  impact: "Time-intensive old methods require skilled craftsmanship",
+                    "Each cake is handcrafted using traditional Ukrainian baking methods passed down through generations",
+                  impact: "Time-intensive traditional methods require skilled craftsmanship",
                 },
                 {
                   principle: "Cultural Meaning",
                   icon: "🇺🇦",
                   description:
-                    "My cakes keep Ukrainian cultural heritage and old recipes",
+                    "My cakes keep Ukrainian cultural heritage and traditional recipes",
                   impact: "Cultural meaning and real taste add unique value",
                 },
                 {
@@ -624,14 +624,14 @@ export default function CakePricingPage() {
                   benefit: "Real Ukrainian Taste",
                   icon: "🇺🇦",
                   description:
-                    "Old recipes and techniques make sure real Ukrainian flavors that you can't find elsewhere",
+                    "Traditional recipes and techniques make sure real Ukrainian flavors that you can't find elsewhere",
                   value: "Unique cultural experience",
                 },
                 {
                   benefit: "Premium Quality",
                   icon: "🌟",
                   description:
-                    "Only the finest ingredients and old methods create exceptional taste and quality",
+                    "Only the finest ingredients and traditional methods create exceptional taste and quality",
                   value: "Superior taste and texture",
                 },
                 {
@@ -644,7 +644,7 @@ export default function CakePricingPage() {
                 {
                   benefit: "Cultural Heritage",
                   icon: "🏛️",
-                  description: "Support Ukrainian culture and keep old baking heritage",
+                  description: "Support Ukrainian culture and keep traditional baking heritage",
                   value: "Cultural significance",
                 },
                 {

@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   title:
     "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts | Olgish Cakes",
   description:
-    "Real Ukrainian bakery in Leeds. Old Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
+    "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
   keywords:
     "Ukrainian bakery Leeds, Ukrainian cakes Leeds, authentic Ukrainian desserts, traditional Ukrainian baking, Ukrainian baker Leeds, honey cake Leeds, Medovik Leeds, Kyiv cake Leeds, Ukrainian sweets Leeds, traditional medovik",
   openGraph: {
     title:
       "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
     description:
-      "Real Ukrainian bakery in Leeds. Old Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
+      "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
     url: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title:
       "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
     description:
-      "Real Ukrainian bakery in Leeds. Old Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
+      "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg"],
   },
   alternates: {
@@ -249,7 +249,7 @@ export default async function UkrainianBakeryLeedsPage() {
             >
               Welcome to the only real Ukrainian bakery in Leeds. Founded by professional
               Ukrainian baker Olga, I bring the real taste of Ukraine to our local community
-              with old recipes and techniques.
+              with traditional recipes and techniques.
             </Typography>
             <Chip
               label="Authentic Ukrainian Baking"
@@ -274,14 +274,14 @@ export default async function UkrainianBakeryLeedsPage() {
                 icon: "👩‍🍳",
               },
               {
-                title: "Old Recipes",
+                title: "Traditional Recipes",
                 description: "Real Ukrainian cake recipes passed down through generations",
                 icon: "📜",
               },
               {
                 title: "Ukrainian Ingredients",
                 description:
-                  "Old Ukrainian ingredients including honey, poppy seeds, and sour cream",
+                  "Traditional Ukrainian ingredients including honey, poppy seeds, and sour cream",
                 icon: "🇺🇦",
               },
               {
@@ -470,12 +470,12 @@ export default async function UkrainianBakeryLeedsPage() {
               <Grid item xs={12} md={6}>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
                   <strong>Olga Ieromenko</strong> is my professional Ukrainian baker who brings
-                  real Ukrainian baking traditions to Leeds. Trained in old Ukrainian
+                  real Ukrainian baking traditions to Leeds. Trained in traditional Ukrainian
                   baking techniques, Olga moved to Leeds in 2022 and founded Olgish Cakes to share
                   the real taste of Ukraine with our local community.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  With years of experience in Ukrainian baking, Olga specializes in old
+                  With years of experience in Ukrainian baking, Olga specializes in traditional
                   Ukrainian cakes like honey cake, Kyiv cake, and other real Ukrainian
                   desserts. Her passion for keeping Ukrainian culinary heritage drives every cake
                   she creates.
@@ -591,7 +591,7 @@ export default async function UkrainianBakeryLeedsPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Taste the real flavors of Ukraine right here in Leeds. Order your old
+              Taste the real flavors of Ukraine right here in Leeds. Order your traditional
               Ukrainian cake today and experience the warmth of Ukrainian hospitality.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

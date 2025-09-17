@@ -91,7 +91,7 @@ export default async function WeddingCakesPage() {
     {
       name: "Ukrainian Flavors Wedding Cakes",
       description:
-        "Old Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
+        "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
       price: "From £90",
     },
     {
@@ -284,7 +284,7 @@ export default async function WeddingCakesPage() {
               {
                 title: "Ukrainian Flavors",
                 description:
-                  "Old Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
+                  "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
                 icon: "🇺🇦",
               },
               {
@@ -414,7 +414,7 @@ export default async function WeddingCakesPage() {
                   step: "2",
                   title: "Design & Tasting",
                   description:
-                    "I create a custom design proposal and arrange a tasting session with my signature Ukrainian flavors and old wedding cake options.",
+                    "I create a custom design proposal and arrange a tasting session with my signature Ukrainian flavors and traditional wedding cake options.",
                 },
                 {
                   step: "3",
@@ -496,7 +496,7 @@ export default async function WeddingCakesPage() {
               Wedding Cake Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              My wedding cakes feature a unique blend of old Ukrainian flavors and classic
+              My wedding cakes feature a unique blend of traditional Ukrainian flavors and classic
               wedding cake options. From the delicate honey layers of honey cake to the rich
               chocolate of Kyiv cake, each flavor tells a story of Ukrainian tradition while
               creating a memorable wedding experience.

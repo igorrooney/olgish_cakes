@@ -6,13 +6,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes | Olgish Cakes",
   description:
-    "Celebrate your anniversary with old Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs. Order now for anniversary celebrations.",
+    "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs. Order now for anniversary celebrations.",
   keywords:
     "anniversary cakes Leeds, Ukrainian anniversary cakes, anniversary celebration cakes, personalized anniversary cakes, anniversary cake delivery Leeds",
   openGraph: {
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
-      "Celebrate your anniversary with old Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
+      "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
     url: "https://olgishcakes.co.uk/anniversary-cakes-leeds",
     images: ["https://olgishcakes.co.uk/images/anniversary-cakes-leeds.jpg"],
     type: "website",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
     description:
-      "Celebrate your anniversary with old Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
+      "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
     images: ["https://olgishcakes.co.uk/images/anniversary-cakes-leeds.jpg"],
   },
   alternates: {
@@ -136,12 +136,12 @@ export default function AnniversaryCakesLeedsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Celebrate your anniversary with old Ukrainian anniversary cakes. Handcrafted
+              Celebrate your anniversary with traditional Ukrainian anniversary cakes. Handcrafted
               with love in Leeds, my anniversary cakes bring the real taste of Ukrainian
               celebrations to your special day.
             </Typography>
             <Chip
-              label="Old Ukrainian Anniversary Cakes"
+              label="Traditional Ukrainian Anniversary Cakes"
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",

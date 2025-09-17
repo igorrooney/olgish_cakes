@@ -99,7 +99,7 @@ export default async function BirthdayCakesPage() {
     },
     {
       name: "Ukrainian Birthday Cakes",
-      description: "Old Ukrainian birthday cakes like honey cake (Medovik)",
+      description: "Traditional Ukrainian birthday cakes like honey cake (Medovik)",
       price: "From £40",
     },
   ];
@@ -361,7 +361,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Ukrainian Birthday Cakes",
                 description:
-                  "Old Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with real flavors and cultural meaning",
+                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with real flavors and cultural meaning",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (

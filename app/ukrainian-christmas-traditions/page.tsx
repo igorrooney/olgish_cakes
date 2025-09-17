@@ -7,13 +7,13 @@ import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
   description:
-    "Discover old Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
+    "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
   keywords:
     "Ukrainian Christmas traditions, Ukrainian Christmas cakes, traditional Ukrainian Christmas, Christmas customs Ukraine, Ukrainian holiday cakes",
   openGraph: {
     title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
     description:
-      "Discover old Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
+      "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
     url: "https://olgishcakes.co.uk/ukrainian-christmas-traditions",
     images: ["https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg"],
     type: "article",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
     description:
-      "Discover old Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
+      "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg"],
   },
   alternates: {
@@ -106,11 +106,11 @@ export default function UkrainianChristmasTraditionsPage() {
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, fontSize: "1.1rem" }}>
             Ukrainian Christmas is celebrated on January 7th according to the Julian calendar. This
-            beautiful holiday combines Christian traditions with old pagan customs, creating a
+            beautiful holiday combines Christian traditions with traditional pagan customs, creating a
             unique celebration that lasts for several days.
           </Typography>
           <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
-            Central to these celebrations are old cakes and desserts that symbolize
+            Central to these celebrations are traditional cakes and desserts that symbolize
             prosperity, family unity, and the sweetness of the holiday season.
           </Typography>
         </Paper>
@@ -348,9 +348,9 @@ export default function UkrainianChristmasTraditionsPage() {
                 cakes: "Blessed Bread, Honey Cake, Sweet Pastries",
               },
               {
-                title: "Old New Year",
+                title: "Traditional New Year",
                 date: "January 14th",
-                description: "Celebration of the old calendar new year",
+                description: "Celebration of the traditional calendar new year",
                 icon: "🎊",
                 cakes: "New Year Cake, Honey Cake, Traditional Desserts",
               },
@@ -452,7 +452,7 @@ export default function UkrainianChristmasTraditionsPage() {
             Celebrate Ukrainian Christmas Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Order old Ukrainian Christmas cakes and make your holiday celebration truly
+            Order traditional Ukrainian Christmas cakes and make your holiday celebration truly
             special
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

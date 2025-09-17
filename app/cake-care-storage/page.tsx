@@ -368,7 +368,7 @@ export default function CakeCareStoragePage() {
               Ukrainian Cake Specific Care
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Each old Ukrainian cake has unique characteristics that require specific care
+              Each traditional Ukrainian cake has unique characteristics that require specific care
               methods to maintain their real taste and texture.
             </Typography>
             <Grid container spacing={4}>
