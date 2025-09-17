@@ -109,7 +109,7 @@ export const metadata: Metadata = {
         url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
         width: 1200,
         height: 630,
-        alt: "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik)",
+        alt: "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) | Cake by Post UK | Letterbox Delivery | Traditional Ukrainian Bakery",
         type: "image/png",
       },
     ],

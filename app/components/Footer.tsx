@@ -48,6 +48,7 @@ const footerLinksBase = {
     { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
   ],
   services: [
+    { name: "Cake by Post UK Guide", href: "/blog/cake-by-post-uk-complete-guide" },
     { name: "Custom Cake Design", href: "/custom-cake-design" },
     { name: "Cake Delivery", href: "/cake-delivery" },
     { name: "Buy Cake Online", href: "/buy-cake" },

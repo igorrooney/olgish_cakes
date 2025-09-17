@@ -140,6 +140,7 @@ const navigationBase = [
     name: "Learn",
     href: "/ukrainian-cake-recipes",
     dropdown: [
+      { name: "Cake by Post UK Guide", href: "/blog/cake-by-post-uk-complete-guide" },
       { name: "Ukrainian Cake Recipes", href: "/ukrainian-cake-recipes" },
       { name: "Best Cakes for Weddings", href: "/best-cakes-for-weddings" },
       { name: "Best Cakes for Birthdays", href: "/best-cakes-for-birthdays" },

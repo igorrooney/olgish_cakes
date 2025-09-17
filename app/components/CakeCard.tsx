@@ -48,15 +48,16 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
     return mainImage?.asset?._ref ? urlFor(mainImage).width(800).height(800).url() : placeholderUrl;
   }, [mainImage, placeholderUrl]);
 
-  // Generate SEO-optimized alt text with location context
+  // Generate SEO-optimized alt text with location context and target keywords
   const imageAltText = useMemo(() => {
     const baseAlt = `${cake.name} - ${cake.category} honey cake`;
     const description =
       cake.shortDescription && cake.shortDescription.length > 0
         ? ` - ${blocksToText(cake.shortDescription)}`
         : "";
+    const keywords = " traditional Ukrainian cake, letterbox delivery, cake by post UK";
     const location = " by Olgish Cakes in Leeds, Yorkshire";
-    return `${baseAlt}${description}${location}`;
+    return `${baseAlt}${description}${keywords}${location}`;
   }, [cake.name, cake.category, cake.shortDescription]);
 
   // Enhanced structured data for better SEO

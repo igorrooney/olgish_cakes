@@ -36,14 +36,14 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.2,
             }}
           >
-            Cake by Post – Delicious Cakes Delivered Anywhere in the UK
+            Cake by Post UK | Letterbox Cake Delivery | Order Online
           </Typography>
           
           <Typography
             component="p"
             variant="h5"
             sx={{
-              mb: spacing["2xl"],
+              mb: spacing.lg,
               color: colors.text.secondary,
               maxWidth: "800px",
               mx: "auto",
@@ -51,8 +51,23 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Surprise your loved ones with our traditional Ukrainian honey cake delivered straight to their letterbox. 
-            Freshly baked, beautifully packed, and perfect for any occasion.
+            Send delicious cake by post anywhere in the UK! Our traditional Ukrainian honey cake is specially designed for letterbox delivery. 
+            Freshly baked, vacuum-packed, and delivered straight to their door - perfect for birthdays, anniversaries, and surprises.
+          </Typography>
+          
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{
+              mb: spacing["2xl"],
+              color: colors.text.secondary,
+              maxWidth: "800px",
+              mx: "auto",
+              fontSize: { xs: "1rem", md: "1.1rem" },
+              lineHeight: 1.6,
+            }}
+          >
+            Learn more about our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>complete guide to cake by post delivery</Link> or discover the <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>best honey cake for postal delivery</Link>.
           </Typography>
         </Container>
       </Box>
@@ -217,13 +232,29 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
             component="h2"
             variant="h3"
             sx={{
-              mb: spacing["2xl"],
+              mb: spacing.lg,
               textAlign: "center",
               fontWeight: typography.fontWeight.bold,
               color: colors.text.primary,
             }}
           >
             How Our Cake by Post Service Works
+          </Typography>
+          
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{
+              mb: spacing["2xl"],
+              textAlign: "center",
+              color: colors.text.secondary,
+              maxWidth: "800px",
+              mx: "auto",
+              fontSize: "1.1rem",
+              lineHeight: 1.6,
+            }}
+          >
+            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>top 5 reasons to order honey cake by post online</Link>.
           </Typography>
           
           <Grid container spacing={4}>

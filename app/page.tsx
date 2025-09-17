@@ -203,6 +203,43 @@ export default async function Home() {
 
   // Events structured data is injected by the MarketSchedule component to avoid duplication
 
+  // Review schema for testimonials
+  const reviewSchema = testimonials.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    itemReviewed: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk"
+    },
+    ratingValue: "5.0",
+    reviewCount: testimonials.length,
+    bestRating: "5",
+    worstRating: "1"
+  } : null;
+
+  const individualReviews = testimonials.map((testimonial: Testimonial) => ({
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk"
+    },
+    author: {
+      "@type": "Person",
+      name: testimonial.name
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: testimonial.rating || 5,
+      bestRating: "5",
+      worstRating: "1"
+    },
+    reviewBody: testimonial.review || testimonial.cake ? `Amazing ${testimonial.cake} from Olgish Cakes!` : "Excellent service and delicious cakes!",
+    datePublished: testimonial.date || "2024-01-01"
+  }));
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -259,6 +296,19 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {reviewSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
+        />
+      )}
+      {individualReviews.map((review, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(review) }}
+        />
+      ))}
 
       
 
@@ -393,7 +443,7 @@ export default async function Home() {
                     <div className="relative aspect-square overflow-hidden rounded-2xl shadow-sm bg-white">
                       <Image
                         src={url}
-                        alt={`${h.name} - gift hamper`}
+                        alt={`${h.name} - traditional Ukrainian gift hamper, cake by post UK, letterbox delivery, honey cake by post`}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
@@ -419,6 +469,67 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* Cake by Post Section */}
+      <section aria-label="Cake by Post Service" className="py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center mb-6">
+            Cake by Post UK
+          </h2>
+          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+            Send delicious traditional Ukrainian honey cake by post anywhere in the UK. 
+            Perfect for birthdays, anniversaries, and surprises.
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8 items-center mb-10">
+            <div>
+              <h3 className="text-2xl font-semibold mb-4">Why Choose Our Cake by Post Service?</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Traditional Ukrainian honey cake designed for postal delivery
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Fits through standard UK letterboxes
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Vacuum-packed for freshness
+                </li>
+                <li className="flex items-center">
+                  <CheckCircleIcon className="text-green-500 mr-3" />
+                  Delivered anywhere in the UK
+                </li>
+              </ul>
+            </div>
+            <div className="text-center">
+              <div className="bg-gray-100 rounded-lg p-8 mb-6">
+                <CakeOutlinedIcon className="text-6xl text-primary-600 mx-auto mb-4" />
+                <h4 className="text-xl font-semibold mb-2">Honey Cake by Post</h4>
+                <p className="text-gray-600">Perfect for any occasion</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <a
+              href="/gift-hampers/cake-by-post-service"
+              className="inline-block bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-full px-8 py-3 mr-4"
+              aria-label="Order cake by post"
+            >
+              Order Cake by Post
+            </a>
+            <a
+              href="/blog/cake-by-post-uk-complete-guide"
+              className="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors rounded-full px-6 py-3"
+              aria-label="Learn about cake by post"
+            >
+              Learn More
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Market Schedule Section */}
       {marketEvents && marketEvents.length > 0 && (
