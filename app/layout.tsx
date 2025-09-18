@@ -11,6 +11,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "./components/Header";
 import UtilityBar from "./components/UtilityBar";
 import Footer from "./components/Footer";
+import { ScrollToTop } from "./components/ScrollToTop";
+import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import Script from "next/script";
 
@@ -421,8 +423,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Header />
                 <main className="flex-grow">{children}</main>
                 <Footer />
-                <DynamicCookieConsent />
-                <DynamicDevTools />
+                      <ScrollToTop />
+                      <WebVitalsMonitor />
+                      <DynamicCookieConsent />
+                      <DynamicDevTools />
               </div>
             </Providers>
           </ThemeProvider>

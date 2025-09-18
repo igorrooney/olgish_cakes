@@ -5,35 +5,35 @@ import {
   Box,
   Grid,
   Paper,
-  Chip,
   Button,
-  Card,
-  CardContent,
-  CardMedia,
+  Stack,
 } from "@mui/material";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
+import BlogClient from "./BlogClient";
+import { getBlogPosts, getBlogCategories, BlogPost } from "@/lib/sanity-blog";
+import { CategoryLinks } from "../components/CategoryLinks";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik) | Olgish Cakes",
+    "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes | Olgish Cakes Leeds",
   description:
-    "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more. Professional baking guidance from Ukrainian baker Olga.",
+    "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
   keywords:
-    "Ukrainian cake recipes, traditional Ukrainian desserts, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian baking blog, Ukrainian dessert recipes, authentic Ukrainian cakes, Ukrainian baking tips, traditional medovik",
+    "cake business blog, wedding cake trends, corporate cakes, custom cake design, cake business tips, professional cake decorator, Leeds cake specialist, Ukrainian cake business, event planning, cake industry insights",
   openGraph: {
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
+      "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
+      "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
     url: "https://olgishcakes.co.uk/blog",
     siteName: "Olgish Cakes",
     images: [
       {
-        url: "https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg",
+        url: "https://olgishcakes.co.uk/images/professional-cake-business-blog.jpg",
         width: 1200,
         height: 630,
-        alt: "Ukrainian Cake Recipes and Baking Blog - Honey Cake (Medovik) - Olgish Cakes",
+        alt: "Professional Cake Business Blog - Wedding Cakes, Corporate Events & Custom Cakes - Olgish Cakes",
       },
     ],
     locale: "en_GB",
@@ -42,10 +42,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Recipes & Baking Blog | Traditional Ukrainian Desserts | Honey Cake (Medovik)",
+      "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, and cultural stories. Learn to make traditional Ukrainian desserts like honey cake (Medovik), Kyiv cake, and more.",
-    images: ["https://olgishcakes.co.uk/images/ukrainian-baking-blog.jpg"],
+      "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
+    images: ["https://olgishcakes.co.uk/images/professional-cake-business-blog.jpg"],
   },
   alternates: {
     canonical: "https://olgishcakes.co.uk/blog",
@@ -79,93 +79,41 @@ export const metadata: Metadata = {
   },
 };
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025",
-    excerpt:
-      "Everything you need to know about cake by post in the UK. Discover the best letterbox-friendly cakes, delivery options, and how to surprise loved ones with delicious postal cakes.",
-    image: "/images/blog/cake-by-post-guide.jpg",
-    category: "Guide",
-    readTime: "12 min read",
-    date: "2025-01-15",
-    slug: "cake-by-post-uk-complete-guide",
-  },
-  {
-    id: 2,
-    title: "Traditional Honey Cake Recipe: The Perfect Ukrainian Honey Cake",
-    excerpt:
-      "Learn the real recipe for honey cake, Ukraine's beloved honey cake. Discover the secrets to creating the perfect layers and creamy filling.",
-    image: "/images/blog/honey-cake-recipe.jpg",
-    category: "Recipes",
-    readTime: "8 min read",
-    date: "2024-01-15",
-    slug: "traditional-honey-cake-recipe",
-  },
-  {
-    id: 3,
-    title: "The History of Kyiv Cake: A Ukrainian Classic",
-    excerpt:
-      "Explore the fascinating history behind Kyiv cake, from its royal origins to becoming a symbol of Ukrainian culinary heritage.",
-    image: "/images/blog/kyiv-cake-history.jpg",
-    category: "Culture",
-    readTime: "6 min read",
-    date: "2024-01-10",
-    slug: "kyiv-cake-history",
-  },
-  {
-    id: 4,
-    title: "Ukrainian Baking Traditions: From Generation to Generation",
-    excerpt:
-      "Discover how Ukrainian baking traditions have been passed down through generations and the cultural meaning of traditional desserts.",
-    image: "/images/blog/ukrainian-baking-traditions.jpg",
-    category: "Culture",
-    readTime: "10 min read",
-    date: "2024-01-05",
-    slug: "ukrainian-baking-traditions",
-  },
-  {
-    id: 5,
-    title: "Essential Ukrainian Baking Tools and Ingredients",
-    excerpt:
-      "A comprehensive guide to the essential tools and ingredients needed for real Ukrainian baking, from traditional equipment to modern alternatives.",
-    image: "/images/blog/baking-tools-ingredients.jpg",
-    category: "Tips",
-    readTime: "7 min read",
-    date: "2024-01-01",
-    slug: "ukrainian-baking-tools-ingredients",
-  },
-  {
-    id: 6,
-    title: "Seasonal Ukrainian Cakes: Celebrating Throughout the Year",
-    excerpt:
-      "Explore how Ukrainian cakes change with the seasons, from Christmas honey cake to Easter celebrations and summer fruit cakes.",
-    image: "/images/blog/seasonal-ukrainian-cakes.jpg",
-    category: "Seasonal",
-    readTime: "9 min read",
-    date: "2023-12-28",
-    slug: "seasonal-ukrainian-cakes",
-  },
-  {
-    id: 7,
-    title: "Customer Story: A Ukrainian Wedding Cake in Leeds",
-    excerpt:
-      "Read the heartwarming story of how I created the perfect Ukrainian wedding cake for a couple celebrating their heritage in Leeds.",
-    image: "/images/blog/ukrainian-wedding-cake-story.jpg",
-    category: "Stories",
-    readTime: "5 min read",
-    date: "2023-12-20",
-    slug: "ukrainian-wedding-cake-story",
-  },
-];
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  // Fetch blog posts and categories from Sanity
+  const [blogPosts, categories] = await Promise.all([
+    getBlogPosts({ status: 'published', limit: 20 }),
+    getBlogCategories()
+  ])
+
+  // Transform Sanity data to match the expected format
+  const transformedPosts = blogPosts.map((post: BlogPost) => ({
+    id: post._id,
+    title: post.title,
+    excerpt: post.excerpt,
+    description: post.description || post.excerpt, // Use description if available, fallback to excerpt
+    image: post.cardImage?.asset?.url || post.featuredImage?.asset?.url || null,
+    category: post.category,
+    readTime: post.readTime,
+    viewCount: post.viewCount || 0,
+    date: post.publishDate ? new Date(post.publishDate).toISOString().split('T')[0] : new Date(post._createdAt).toISOString().split('T')[0],
+    publishDate: post.publishDate || post._createdAt,
+    slug: post.slug.current,
+    featured: post.featured || false,
+  }))
+
+  // Add "All" category
+  const allCategories = [
+    { name: "All", count: transformedPosts.length },
+    ...categories
+  ]
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "Ukrainian Baking Blog",
+    name: "Professional Cake Business Blog",
     description:
-      "Discover real Ukrainian cake recipes, baking tips, cultural stories, and the secrets behind traditional Ukrainian desserts.",
+      "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
     url: "https://olgishcakes.co.uk/blog",
     publisher: {
       "@type": "Organization",
@@ -177,7 +125,7 @@ export default function BlogPage() {
     },
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: blogPosts.map((post, index) => ({
+      itemListElement: transformedPosts.map((post, index) => ({
         "@type": "ListItem",
         position: index + 1,
         item: {
@@ -185,7 +133,7 @@ export default function BlogPage() {
           headline: post.title,
           description: post.excerpt,
           url: `https://olgishcakes.co.uk/blog/${post.slug}`,
-          datePublished: post.date,
+          datePublished: post.publishDate,
           author: {
             "@type": "Person",
             name: "Olga",
@@ -207,9 +155,9 @@ export default function BlogPage() {
       />
       <Box
         sx={{
-          background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)",
+          backgroundColor: "#ffffff",
           minHeight: "100vh",
-          py: { xs: 4, md: 8 },
+          py: { xs: 4, md: 6 },
         }}
       >
         <Container maxWidth="lg">
@@ -224,345 +172,30 @@ export default function BlogPage() {
           </Box>
 
           {/* Hero Section */}
-          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
             <Typography
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
-                color: "primary.main",
-                mb: 3,
-                lineHeight: 1.2,
+                color: "#2E3192",
+                mb: 2,
+                lineHeight: 1.1,
+                letterSpacing: "-0.02em",
               }}
             >
-              Ukrainian Baking Blog
+              Blog
             </Typography>
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{
-                color: "text.secondary",
-                maxWidth: "800px",
-                mx: "auto",
-                mb: 4,
-                lineHeight: 1.6,
-              }}
-            >
-              Discover real Ukrainian cake recipes, baking tips, cultural stories, and the
-              secrets behind traditional Ukrainian desserts. From honey cake to Kyiv cake, learn the
-              art of Ukrainian baking from professional baker Olga.
-            </Typography>
-            <Chip
-              label="Real Ukrainian Recipes & Stories"
-              sx={{
-                backgroundColor: "primary.main",
-                color: "white",
-                fontSize: "1.1rem",
-                px: 3,
-                py: 1,
-                mb: 4,
-              }}
-            />
           </Box>
 
-          {/* Category Filter */}
-          <Box sx={{ mb: 6, textAlign: "center" }}>
-            <Typography variant="h3" component="h3" sx={{ mb: 2, color: "text.secondary" }}>
-              Browse by Category
-            </Typography>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
-              {["All", "Guide", "Recipes", "Culture", "Tips", "Seasonal", "Stories"].map(category => (
-                <Chip
-                  key={category}
-                  label={category}
-                  variant={category === "All" ? "filled" : "outlined"}
-                  sx={{
-                    backgroundColor: category === "All" ? "primary.main" : "transparent",
-                    color: category === "All" ? "white" : "primary.main",
-                    borderColor: "primary.main",
-                    "&:hover": {
-                      backgroundColor: "primary.main",
-                      color: "white",
-                    },
-                  }}
-                />
-              ))}
-            </Box>
-          </Box>
+              {/* Category Links for Internal SEO */}
+              <CategoryLinks 
+                categories={categories.map(cat => cat.name)} 
+              />
 
-          {/* Featured Post */}
-          <Box sx={{ mb: 8 }}>
-            <Typography
-              variant="h3"
-              component="h3"
-              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
-            >
-              Featured Article
-            </Typography>
-            <Paper
-              elevation={3}
-              sx={{
-                borderRadius: 3,
-                overflow: "hidden",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  transition: "transform 0.3s ease-in-out",
-                },
-              }}
-            >
-              <Grid container>
-                <Grid item xs={12} md={6}>
-                  <Box
-                    sx={{
-                      height: { xs: 300, md: 400 },
-                      backgroundImage: "url(/images/blog/cake-by-post-guide.jpg)",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <CardContent
-                    sx={{
-                      p: 4,
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Chip
-                      label="Guide"
-                      sx={{
-                        mb: 2,
-                        backgroundColor: "primary.main",
-                        color: "white",
-                        alignSelf: "flex-start",
-                      }}
-                    />
-                    <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, lineHeight: 1.2 }}>
-                      Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ mb: 3, color: "text.secondary", lineHeight: 1.6 }}
-                    >
-                      Everything you need to know about cake by post in the UK. Discover the best 
-                      letterbox-friendly cakes, delivery options, and how to surprise loved ones with 
-                      delicious postal cakes.
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        January 15, 2025
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                        • 12 min read
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      component={Link}
-                      href="/blog/cake-by-post-uk-complete-guide"
-                      sx={{
-                        backgroundColor: "primary.main",
-                        alignSelf: "flex-start",
-                        "&:hover": {
-                          backgroundColor: "primary.dark",
-                        },
-                      }}
-                    >
-                      Read Complete Guide
-                    </Button>
-                  </CardContent>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Box>
-
-          {/* Cake by Post Section */}
-          <Box sx={{ mb: 6 }}>
-            <Typography
-              variant="h3"
-              component="h3"
-              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
-            >
-              Cake by Post Guides
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: "100%", borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Typography variant="h5" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
-                      Complete Cake by Post Guide
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
-                      Everything you need to know about sending cake by post in the UK. 
-                      Learn about the best cakes for postal delivery and how to surprise loved ones.
-                    </Typography>
-                    <Button
-                      component={Link}
-                      href="/blog/cake-by-post-uk-complete-guide"
-                      variant="contained"
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Read Complete Guide
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: "100%", borderRadius: 3, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
-                  <CardContent sx={{ p: 4 }}>
-                    <Typography variant="h5" component="h4" sx={{ mb: 2, fontWeight: 600 }}>
-                      Why Choose Honey Cake by Post
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
-                      Discover why traditional Ukrainian honey cake is perfect for postal delivery. 
-                      Learn about its unique properties and benefits.
-                    </Typography>
-                    <Button
-                      component={Link}
-                      href="/blog/best-cakes-you-can-send-by-post-uk"
-                      variant="outlined"
-                      sx={{ borderRadius: 2 }}
-                    >
-                      Learn About Honey Cake
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-
-          {/* Blog Posts Grid */}
-          <Box>
-            <Typography
-              variant="h3"
-              component="h3"
-              sx={{ mb: 4, color: "primary.main", fontWeight: 600 }}
-            >
-              Latest Articles
-            </Typography>
-            <Grid container spacing={4}>
-              {blogPosts.slice(1).map(post => (
-                <Grid item xs={12} sm={6} md={4} key={post.id}>
-                  <Card
-                    sx={{
-                      height: "100%",
-                      borderRadius: 3,
-                      overflow: "hidden",
-                      "&:hover": {
-                        transform: "translateY(-4px)",
-                        transition: "transform 0.3s ease-in-out",
-                        boxShadow: 4,
-                      },
-                    }}
-                  >
-                    <CardMedia component="img" height="200" image={post.image} alt={post.title} />
-                    <CardContent sx={{ p: 3 }}>
-                      <Chip
-                        label={post.category}
-                        sx={{ mb: 2, backgroundColor: "primary.main", color: "white" }}
-                      />
-                      <Typography
-                        variant="h4"
-                        component="h5"
-                        sx={{ mb: 2, fontWeight: 600, lineHeight: 1.3 }}
-                      >
-                        {post.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ mb: 2, color: "text.secondary", lineHeight: 1.5 }}
-                      >
-                        {post.excerpt}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                          {new Date(post.date).toLocaleDateString("en-GB", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                          • {post.readTime}
-                        </Typography>
-                      </Box>
-                      <Button
-                        variant="outlined"
-                        component={Link}
-                        href={`/blog/${post.slug}`}
-                        sx={{
-                          borderColor: "primary.main",
-                          color: "primary.main",
-                          "&:hover": {
-                            backgroundColor: "primary.main",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        Read More
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-
-          {/* Market Recaps CTA */}
-          <Box sx={{ mt: 8, textAlign: "center" }}>
-            <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
-              <Typography variant="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
-                See Us In Person at Local Markets
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
-                Check our upcoming stall locations, dates and times.
-              </Typography>
-              <Button component={Link} href="/market-schedule" variant="contained" color="primary">
-                View Market Schedule
-              </Button>
-            </Paper>
-          </Box>
-
-          {/* Newsletter Signup */}
-          <Box sx={{ mt: 8, textAlign: "center" }}>
-            <Paper
-              elevation={2}
-              sx={{
-                p: 4,
-                borderRadius: 3,
-                background: "linear-gradient(135deg, #005BBB 0%, #FFD700 100%)",
-                color: "white",
-              }}
-            >
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
-                Stay Updated with Ukrainian Baking
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
-                Get the latest Ukrainian recipes, baking tips, and cultural stories delivered to
-                your inbox.
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  backgroundColor: "white",
-                  color: "primary.main",
-                  px: 4,
-                  py: 1.5,
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.9)",
-                  },
-                }}
-              >
-                Subscribe to Newsletter
-              </Button>
-            </Paper>
-          </Box>
+              {/* Client Component for Interactive Features */}
+              <BlogClient blogPosts={transformedPosts} categories={allCategories} />
         </Container>
       </Box>
     </>

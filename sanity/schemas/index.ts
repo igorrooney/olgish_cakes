@@ -1,5 +1,6 @@
 import cake from "./cake";
 import testimonial from "./testimonial";
 import faq from "./faq";
+import blogPost from "./blogPost";
 
-export const schemaTypes = [cake, testimonial, faq];
+export const schemaTypes = [cake, testimonial, faq, blogPost];

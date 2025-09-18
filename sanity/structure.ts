@@ -9,6 +9,7 @@ export const structure: StructureResolver = S =>
       S.documentTypeListItem("giftHamper").title("Gift Hampers"),
       S.documentTypeListItem("testimonial").title("Testimonials"),
       S.documentTypeListItem("faq").title("FAQs"),
+      S.documentTypeListItem("blogPost").title("Blog Posts"),
       S.divider(),
       // Market Schedule section
       S.listItem()

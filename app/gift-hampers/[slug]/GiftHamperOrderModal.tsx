@@ -260,10 +260,10 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
               {isSubmitting ? (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <CircularProgress size={20} sx={{ color: "inherit" }} />
-                  Sending Order Inquiry...
+                  Sending Order...
                 </Box>
               ) : (
-                "Send Order Inquiry"
+                "Send Order"
               )}
             </Button>
           </DialogActions>

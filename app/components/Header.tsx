@@ -155,7 +155,7 @@ const navigationBase = [
   },
   { name: "Gallery", href: "/cake-gallery" },
   { name: "Local Market", href: "/market-schedule" },
-  // { name: "Blog", href: "/blog" },
+  { name: "Blog", href: "/blog" },
   {
     name: "Company",
     href: "/about",
