@@ -14,9 +14,12 @@ async function getCakes() {
 }
 
 async function getBlogPosts() {
-  const query = `*[_type == "post"] {
+  const query = `*[_type == "blogPost" && status == "published"] {
     slug,
     _updatedAt,
+    publishDate,
+    featured,
+    category,
     seo {
       priority,
       changefreq
@@ -70,21 +73,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     (post: {
       slug: { current: string };
       _updatedAt: string;
+      publishDate?: string;
+      featured?: boolean;
+      category?: string;
       seo?: { priority?: number; changefreq?: string };
-    }) => ({
-      url: `${baseUrl}/blog/${post.slug.current}`,
-      lastModified: new Date(post._updatedAt),
-      changeFrequency:
-        (post.seo?.changefreq as
+    }) => {
+      // Higher priority for featured posts and recent content
+      const isRecent = post.publishDate && 
+        new Date(post.publishDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days
+      const basePriority = post.featured ? 0.8 : (isRecent ? 0.7 : 0.6);
+      
+      // More frequent updates for trending categories
+      const trendingCategories = ['wedding-cakes', 'birthday-cakes', 'custom-cakes', 'ukrainian-cakes'];
+      const isTrending = post.category && trendingCategories.includes(post.category.toLowerCase());
+      const changeFreq = isTrending ? 'weekly' : 'monthly';
+      
+      return {
+        url: `${baseUrl}/blog/${post.slug.current}`,
+        lastModified: new Date(post.publishDate || post._updatedAt),
+        changeFrequency: (post.seo?.changefreq as
           | "always"
           | "hourly"
           | "daily"
           | "weekly"
           | "monthly"
           | "yearly"
-          | "never") || "monthly",
-      priority: post.seo?.priority || 0.6,
-    })
+          | "never") || changeFreq,
+        priority: post.seo?.priority || basePriority,
+      };
+    }
   );
 
   const giftHamperRoutes = giftHampers.map(

@@ -11,6 +11,8 @@ import {
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
 import BlogClient from "./BlogClient";
+import { getBlogPosts, getBlogCategories, BlogPost } from "@/lib/sanity-blog";
+import { CategoryLinks } from "../components/CategoryLinks";
 
 export const metadata: Metadata = {
   title:
@@ -77,61 +79,35 @@ export const metadata: Metadata = {
   },
 };
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "Cake by Post UK: Complete Guide to Letterbox Cake Delivery 2025 | Best Postal Cakes Leeds",
-    excerpt:
-      "Everything what you need to know about sending cakes by post in UK. I will tell you about best cakes for letterbox, how delivery works, and how to surprise your family with nice postal cakes. From my experience running cake business in Leeds.",
-    image: undefined, // No image provided - will use brand logo
-    category: "Business Guide",
-    readTime: "12 min read",
-    date: "2025-09-17",
-    slug: "cake-by-post-uk-complete-guide",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Best Cakes You Can Send by Post UK 2025 | Letterbox Friendly Cakes Leeds",
-    excerpt:
-      "Find out which cakes are perfect for sending by post in UK. I learned from experience which ones travel good and how to make sure your postal cakes arrive in perfect condition. Working with customers from Leeds and all over UK.",
-    image: null, // No image provided - will use brand logo
-    category: "Cake by Post",
-    readTime: "8 min read",
-    date: "2025-09-16",
-    slug: "best-cakes-you-can-send-by-post-uk",
-  },
-  {
-    id: 3,
-    title: "How to Surprise Someone with Cake Delivery by Post UK | Postal Cake Ideas Leeds",
-    excerpt:
-      "Creative ideas how to surprise your loved ones with cake delivery by post. Some tips from my experience to make special moments more memorable with postal cake surprises. Perfect for birthdays, anniversaries, and special occasions.",
-    image: undefined, // No image provided - will use placeholder
-    category: "Cake by Post",
-    readTime: "6 min read",
-    date: "2025-09-15",
-    slug: "how-surprise-someone-cake-delivery-post",
-  },
-  {
-    id: 4,
-    title: "Why Order Letterbox Cakes Online UK 2025 | Best Postal Cake Delivery Leeds",
-    excerpt:
-      "Why letterbox cakes are becoming more popular choice for many customers. Discover the benefits of ordering cakes online for postal delivery from my experience. Convenient, fresh, and perfect for any occasion.",
-    image: null, // No image provided - will use placeholder
-    category: "Cake by Post",
-    readTime: "5 min read",
-    date: "2025-09-14",
-    slug: "top-5-reasons-order-letterbox-cakes-online",
-  },
-];
 
-const categories = [
-  { name: "All", count: blogPosts.length },
-  { name: "Business Guide", count: blogPosts.filter(post => post.category === "Business Guide").length },
-  { name: "Cake by Post", count: blogPosts.filter(post => post.category === "Cake by Post").length },
-];
+export default async function BlogPage() {
+  // Fetch blog posts and categories from Sanity
+  const [blogPosts, categories] = await Promise.all([
+    getBlogPosts({ status: 'published', limit: 20 }),
+    getBlogCategories()
+  ])
 
-export default function BlogPage() {
+  // Transform Sanity data to match the expected format
+  const transformedPosts = blogPosts.map((post: BlogPost) => ({
+    id: post._id,
+    title: post.title,
+    excerpt: post.excerpt,
+    description: post.description || post.excerpt, // Use description if available, fallback to excerpt
+    image: post.cardImage?.asset?.url || post.featuredImage?.asset?.url || null,
+    category: post.category,
+    readTime: post.readTime,
+    viewCount: post.viewCount || 0,
+    date: post.publishDate ? new Date(post.publishDate).toISOString().split('T')[0] : new Date(post._createdAt).toISOString().split('T')[0],
+    publishDate: post.publishDate || post._createdAt,
+    slug: post.slug.current,
+    featured: post.featured || false,
+  }))
+
+  // Add "All" category
+  const allCategories = [
+    { name: "All", count: transformedPosts.length },
+    ...categories
+  ]
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -149,7 +125,7 @@ export default function BlogPage() {
     },
     mainEntity: {
       "@type": "ItemList",
-      itemListElement: blogPosts.map((post, index) => ({
+      itemListElement: transformedPosts.map((post, index) => ({
         "@type": "ListItem",
         position: index + 1,
         item: {
@@ -157,7 +133,7 @@ export default function BlogPage() {
           headline: post.title,
           description: post.excerpt,
           url: `https://olgishcakes.co.uk/blog/${post.slug}`,
-          datePublished: post.date,
+          datePublished: post.publishDate,
           author: {
             "@type": "Person",
             name: "Olga",
@@ -213,8 +189,13 @@ export default function BlogPage() {
             </Typography>
           </Box>
 
-          {/* Client Component for Interactive Features */}
-          <BlogClient blogPosts={blogPosts} categories={categories} />
+              {/* Category Links for Internal SEO */}
+              <CategoryLinks 
+                categories={categories.map(cat => cat.name)} 
+              />
+
+              {/* Client Component for Interactive Features */}
+              <BlogClient blogPosts={transformedPosts} categories={allCategories} />
         </Container>
       </Box>
     </>
