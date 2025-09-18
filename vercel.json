@@ -9,10 +9,6 @@
     {
       "path": "/api/publish-scheduled-posts", 
       "schedule": "0 15 * * *"
-    },
-    {
-      "path": "/api/publish-scheduled-posts",
-      "schedule": "0 18 * * *"
     }
   ]
 }
