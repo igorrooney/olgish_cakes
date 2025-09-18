@@ -42,3 +42,9 @@ env.local
 next-env.d.ts
 
 .vercel
+
+# Sanity backups
+/backups/
+*.tar.gz
+*.zip
+backup-*.json
