@@ -94,12 +94,28 @@ export default async function CelebrationCakesPage() {
                     "@type": "Service",
                     name: "Anniversary Cakes",
                   },
+                  hasMerchantReturnPolicy: {
+                    "@type": "MerchantReturnPolicy",
+                    applicableCountry: "GB",
+                    returnFees: "https://schema.org/FreeReturn",
+                    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    merchantReturnDays: 14,
+                    returnMethod: "https://schema.org/ReturnByMail",
+                  },
                 },
                 {
                   "@type": "Offer",
                   itemOffered: {
                     "@type": "Service",
                     name: "Graduation Cakes",
+                  },
+                  hasMerchantReturnPolicy: {
+                    "@type": "MerchantReturnPolicy",
+                    applicableCountry: "GB",
+                    returnFees: "https://schema.org/FreeReturn",
+                    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    merchantReturnDays: 14,
+                    returnMethod: "https://schema.org/ReturnByMail",
                   },
                 },
                 {
@@ -108,12 +124,28 @@ export default async function CelebrationCakesPage() {
                     "@type": "Service",
                     name: "Retirement Cakes",
                   },
+                  hasMerchantReturnPolicy: {
+                    "@type": "MerchantReturnPolicy",
+                    applicableCountry: "GB",
+                    returnFees: "https://schema.org/FreeReturn",
+                    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    merchantReturnDays: 14,
+                    returnMethod: "https://schema.org/ReturnByMail",
+                  },
                 },
                 {
                   "@type": "Offer",
                   itemOffered: {
                     "@type": "Service",
                     name: "Baby Shower Cakes",
+                  },
+                  hasMerchantReturnPolicy: {
+                    "@type": "MerchantReturnPolicy",
+                    applicableCountry: "GB",
+                    returnFees: "https://schema.org/FreeReturn",
+                    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    merchantReturnDays: 14,
+                    returnMethod: "https://schema.org/ReturnByMail",
                   },
                 },
               ],

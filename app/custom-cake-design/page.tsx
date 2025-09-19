@@ -127,6 +127,14 @@ export default function CustomCakeDesignPage() {
         price: service.price,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "GB",
+          returnFees: "https://schema.org/FreeReturn",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 14,
+          returnMethod: "https://schema.org/ReturnByMail",
+        },
       })),
     },
     mainEntity: {
