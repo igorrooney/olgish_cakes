@@ -128,6 +128,14 @@ export default function BestCakesByPostUKPage() {
         "@type": "Organization",
         name: "Olgish Cakes",
         url: "https://olgishcakes.co.uk"
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "GB",
+        returnFees: "https://schema.org/FreeReturn",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
       }
     },
     aggregateRating: {
