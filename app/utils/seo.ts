@@ -602,7 +602,13 @@ export function generateReviewSchema(review: {
     },
     datePublished: review.datePublished,
     itemReviewed: {
-      "@id": `${SEO_CONFIG.siteUrl}/#organization`,
+      "@type": "Product",
+      name: "Ukrainian Cakes",
+      description: "Traditional Ukrainian honey cake and authentic desserts",
+      brand: {
+        "@type": "Brand",
+        name: "Olgish Cakes"
+      }
     },
   };
 }
