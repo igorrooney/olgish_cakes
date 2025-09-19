@@ -134,6 +134,14 @@ export default function CakePricingPage() {
           price: cake.price,
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
+          hasMerchantReturnPolicy: {
+            "@type": "MerchantReturnPolicy",
+            applicableCountry: "GB",
+            returnFees: "https://schema.org/FreeReturn",
+            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+            merchantReturnDays: 14,
+            returnMethod: "https://schema.org/ReturnByMail",
+          },
           shippingDetails: {
             "@type": "OfferShippingDetails",
             shippingRate: {
@@ -178,6 +186,14 @@ export default function CakePricingPage() {
           price: cake.startingPrice,
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
+          hasMerchantReturnPolicy: {
+            "@type": "MerchantReturnPolicy",
+            applicableCountry: "GB",
+            returnFees: "https://schema.org/FreeReturn",
+            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+            merchantReturnDays: 14,
+            returnMethod: "https://schema.org/ReturnByMail",
+          },
         })),
       ],
     },

@@ -173,6 +173,14 @@ export async function OrderPageStructuredData() {
               price: "45",
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
+              hasMerchantReturnPolicy: {
+                "@type": "MerchantReturnPolicy",
+                applicableCountry: "GB",
+                returnFees: "https://schema.org/FreeReturn",
+                returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+                merchantReturnDays: 14,
+                returnMethod: "https://schema.org/ReturnByMail",
+              },
               shippingDetails: {
                 "@type": "OfferShippingDetails",
                 shippingRate: {
@@ -217,6 +225,14 @@ export async function OrderPageStructuredData() {
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         validFrom: "2024-01-01",
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "GB",
+          returnFees: "https://schema.org/FreeReturn",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 14,
+          returnMethod: "https://schema.org/ReturnByMail",
+        },
       },
     },
     breadcrumb: {
