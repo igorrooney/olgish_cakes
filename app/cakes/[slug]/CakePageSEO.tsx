@@ -99,6 +99,14 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
         },
         appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
       },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "GB",
+        returnFees: "https://schema.org/FreeReturn",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+      },
     },
     category: cake.category,
     additionalProperty: [
