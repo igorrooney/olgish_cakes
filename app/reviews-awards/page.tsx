@@ -195,8 +195,13 @@ export default function ReviewsAwardsPage() {
               {
                 "@type": "Review",
                 itemReviewed: {
-                  "@type": "Bakery",
-                  name: "Olgish Cakes",
+                  "@type": "Product",
+                  name: "Ukrainian Wedding Cake",
+                  description: "Traditional Ukrainian wedding cake from Olgish Cakes",
+                  brand: {
+                    "@type": "Brand",
+                    name: "Olgish Cakes"
+                  }
                 },
                 reviewRating: {
                   "@type": "Rating",
@@ -214,8 +219,13 @@ export default function ReviewsAwardsPage() {
               {
                 "@type": "Review",
                 itemReviewed: {
-                  "@type": "Bakery",
-                  name: "Olgish Cakes",
+                  "@type": "Product",
+                  name: "Ukrainian Wedding Cake",
+                  description: "Traditional Ukrainian wedding cake from Olgish Cakes",
+                  brand: {
+                    "@type": "Brand",
+                    name: "Olgish Cakes"
+                  }
                 },
                 reviewRating: {
                   "@type": "Rating",

@@ -208,9 +208,13 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "AggregateRating",
     itemReviewed: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-      url: "https://olgishcakes.co.uk"
+      "@type": "Product",
+      name: "Ukrainian Cakes",
+      description: "Traditional Ukrainian honey cake and other authentic desserts",
+      brand: {
+        "@type": "Brand",
+        name: "Olgish Cakes"
+      }
     },
     ratingValue: "5.0",
     reviewCount: testimonials.length,
@@ -222,9 +226,13 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Review",
     itemReviewed: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-      url: "https://olgishcakes.co.uk"
+      "@type": "Product",
+      name: testimonial.cakeType || "Ukrainian Cake",
+      description: `${testimonial.cakeType || "Ukrainian cake"} from Olgish Cakes`,
+      brand: {
+        "@type": "Brand",
+        name: "Olgish Cakes"
+      }
     },
     author: {
       "@type": "Person",
