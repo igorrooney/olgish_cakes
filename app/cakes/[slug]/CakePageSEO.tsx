@@ -166,6 +166,15 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
     review: [
       {
         "@type": "Review",
+        itemReviewed: {
+          "@type": "Product",
+          name: cakeName,
+          description: cake.description,
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes"
+          }
+        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
@@ -182,6 +191,15 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
       },
       {
         "@type": "Review",
+        itemReviewed: {
+          "@type": "Product",
+          name: cakeName,
+          description: cake.description,
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes"
+          }
+        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
