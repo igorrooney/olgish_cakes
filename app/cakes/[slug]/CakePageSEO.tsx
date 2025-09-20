@@ -170,6 +170,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
           "@type": "Rating",
           ratingValue: "5",
           bestRating: "5",
+          worstRating: "1",
         },
         author: {
           "@type": "Person",
@@ -185,6 +186,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
           "@type": "Rating",
           ratingValue: "5",
           bestRating: "5",
+          worstRating: "1",
         },
         author: {
           "@type": "Person",

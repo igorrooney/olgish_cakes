@@ -153,7 +153,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
         const isCakeByPost = hamper.slug?.current === "cake-by-post";
         const productJsonLd = {
           "@context": "https://schema.org",
-          "@type": isCakeByPost ? "Service" : "Product",
+          "@type": "Product",
           "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
           name: hamper.name,
           description: isCakeByPost 
@@ -170,19 +170,6 @@ export default async function GiftHamperPage({ params }: PageProps) {
             name: "Olgish Cakes",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
           },
-          provider: isCakeByPost ? {
-            "@type": "Organization",
-            name: "Olgish Cakes",
-            url: "https://olgishcakes.co.uk",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Leeds",
-              addressRegion: "West Yorkshire",
-              addressCountry: "GB",
-            },
-            telephone: "+44 113 123 4567",
-            email: "hello@olgishcakes.co.uk"
-          } : undefined,
           manufacturer: {
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -194,17 +181,29 @@ export default async function GiftHamperPage({ params }: PageProps) {
               addressCountry: "GB",
             },
           },
-          category: isCakeByPost ? "Cake by Post" : (hamper.category || "Gift Hamper"),
+          category: isCakeByPost ? "Food & Beverage > Baked Goods > Cakes" : (hamper.category || "Gift Hamper"),
           image: imagesForJsonLd,
           sku: `hamper_${hamper._id}`,
           gtin: `hamper_${hamper._id}`,
           mpn: hamper._id,
           keywords: isCakeByPost ? "honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake" : undefined,
-          serviceType: isCakeByPost ? "Cake by Post Delivery Service" : undefined,
-          areaServed: isCakeByPost ? {
-            "@type": "Country",
-            name: "United Kingdom"
-          } : undefined,
+          additionalProperty: isCakeByPost ? [
+            {
+              "@type": "PropertyValue",
+              name: "Delivery Method",
+              value: "Letterbox Post"
+            },
+            {
+              "@type": "PropertyValue", 
+              name: "Packaging",
+              value: "Vacuum Sealed"
+            },
+            {
+              "@type": "PropertyValue",
+              name: "Shelf Life",
+              value: "7 days"
+            }
+          ] : undefined,
           offers: {
             "@type": "Offer",
             "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#offer`,
@@ -219,7 +218,34 @@ export default async function GiftHamperPage({ params }: PageProps) {
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
             },
-            shippingDetails: getOfferShippingDetails(),
+            shippingDetails: isCakeByPost ? {
+              "@type": "OfferShippingDetails",
+              shippingRate: {
+                "@type": "MonetaryAmount",
+                value: 0,
+                currency: "GBP",
+              },
+              shippingDestination: {
+                "@type": "DefinedRegion",
+                addressCountry: "GB",
+              },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 0,
+                  maxValue: 1,
+                  unitCode: "DAY",
+                },
+                transitTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 1,
+                  maxValue: 3,
+                  unitCode: "DAY",
+                },
+              },
+              appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+            } : getOfferShippingDetails(),
             hasMerchantReturnPolicy: getMerchantReturnPolicy()
           },
           potentialAction: {
@@ -234,18 +260,18 @@ export default async function GiftHamperPage({ params }: PageProps) {
             },
             description: "Send an order enquiry for this gift hamper"
           },
-          aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "127" },
+          aggregateRating: { "@type": "AggregateRating", ratingValue: "5", reviewCount: "127", bestRating: "5", worstRating: "1" },
           review: [
             {
               "@type": "Review",
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "Emily Carter" },
               reviewBody: `Fantastic presentation and quality. The ${hamper.name} made a perfect gift.`,
               datePublished: "2024-02-12"
             },
             {
               "@type": "Review",
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "James Wilson" },
               reviewBody: `Great selection in the ${hamper.name}. Arrived quickly and beautifully packed.`,
               datePublished: "2024-03-03"
