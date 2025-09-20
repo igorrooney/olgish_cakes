@@ -66,20 +66,125 @@ export default function BuyCakePage() {
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
-              Popular Choices
+              How to Order Your Perfect Cake
+            </Typography>
+            
+            <Typography variant="body1" sx={{ mb: 4, textAlign: "center", maxWidth: "800px", mx: "auto", lineHeight: 1.7 }}>
+              Ordering your cake from me is very simple! I believe every celebration deserves something special, 
+              so I make sure the process is easy and personal. Here is how it works:
+            </Typography>
+
+            <Grid container spacing={4} sx={{ mb: 6 }}>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>1️⃣</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Choose Your Cake
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Browse my collection or tell me what you have in mind. I have traditional Ukrainian cakes like honey cake and Kyiv cake, 
+                    plus many other flavours that everyone will love.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>2️⃣</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Contact Me
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Send me a message or call me to discuss your cake. I love hearing about your celebration and helping you choose 
+                    the perfect design and flavour for your special day.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>3️⃣</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Enjoy Your Cake
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    I will make your cake with love and care, then deliver it fresh to your door across Leeds. 
+                    Your celebration will be perfect with one of my handmade cakes!
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+
+            <Typography variant="h4" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.5rem", md: "1.8rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Most Popular Cakes
             </Typography>
             <Grid container spacing={3}>
               {[
-                { name: "Medovik (Honey Cake)", url: "/cakes/medovik", desc: "Real Ukrainian honey cake" },
-                { name: "Kyiv Cake", url: "/cakes/kyiv-cake", desc: "Classic Kyiv meringue cake" },
+                { name: "Honey Cake (Medovik)", url: "/cakes/honey-cake-medovik", desc: "Traditional Ukrainian honey cake with 5 layers of soft honey sponge and light buttercream made with condensed milk. Handmade with real honey for authentic flavor." },
+                { name: "Kyiv Cake", url: "/cakes/kyiv-cake", desc: "Premium handmade Ukrainian cake with meringue and cashew nuts, filled with custard cream between layers. A true masterpiece of Ukrainian baking." },
+                { name: "Vanilla Delicia Birthday Cake", url: "/cakes/vanilla-delicia-birthday-cake", desc: "Fluffy sponge with creamy butter and condensed milk filling. Perfect for custom designs and special celebrations, available in various sizes." },
+                { name: "Napoleon Cake", url: "/cakes/napoleon-cake", desc: "Handmade with 7 layers of flaky puff pastry and smooth diplomat cream. Traditional Ukrainian recipe - crunchy and creamy in every bite." },
               ].map((p, idx) => (
                 <Grid item xs={12} sm={6} key={idx}>
-                  <Typography variant="h4" component="h3" sx={{ mb: 1, fontWeight: 600, color: "primary.main" }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 1, fontWeight: 600, color: "primary.main" }}>
                     <Link href={p.url}>{p.name}</Link>
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">{p.desc}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>{p.desc}</Typography>
                 </Grid>
               ))}
+            </Grid>
+          </Paper>
+
+          <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Why Choose My Cakes?
+            </Typography>
+            
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Made with Love and Tradition
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    Every cake I make is crafted with the same love and attention that my grandmother taught me. 
+                    I use traditional Ukrainian recipes and techniques, but I also love creating new flavours that 
+                    bring joy to modern celebrations.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Fresh Ingredients, No Compromises
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    I use only the best ingredients - real butter, fresh eggs, quality flour, and natural flavours. 
+                    No artificial preservatives or shortcuts. Your cake will taste amazing because I care about every ingredient.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Personal Service
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    When you order from me, you are not just getting a cake - you are getting a personal service. 
+                    I want to understand your celebration and make sure your cake is perfect for the occasion. 
+                    Every detail matters to me.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Delivered with Care
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    I deliver your cake personally across Leeds, making sure it arrives in perfect condition. 
+                    Your cake is not just a product to me - it is part of your special moment, and I treat it with the respect it deserves.
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
           </Paper>
         </Container>

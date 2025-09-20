@@ -179,16 +179,182 @@ export default function CakeSizeGuidePage() {
             </Grid>
           ))}
         </Grid>
-        <Box sx={{ textAlign: "center", mt: 6 }}>
-          <Button
-            component={Link}
-            href="/cakes"
-            variant="contained"
-            size="large"
-            sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
+        {/* Introduction */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 4, md: 6 },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            mb: 6,
+            mt: 6,
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
           >
-            Browse All Cakes
-          </Button>
+            Choosing the right cake size is one of the most important decisions when planning your celebration. 
+            You want to make sure everyone gets a delicious piece, but you also do not want to waste money on 
+            cake that goes uneaten. This comprehensive guide will help you understand portion sizes, serving 
+            recommendations, and special considerations for different types of celebrations.
+          </Typography>
+        </Paper>
+
+        {/* Portion Guidelines */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 4, md: 6 },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            mb: 6,
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              fontFamily: "var(--font-playfair-display)",
+              fontSize: { xs: "1.8rem", md: "2.2rem" },
+              fontWeight: 600,
+              color: "primary.main",
+              mb: 4,
+              textAlign: "center",
+            }}
+          >
+            Understanding Portion Sizes
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ mb: 4, textAlign: "center", maxWidth: "800px", mx: "auto", lineHeight: 1.7 }}
+          >
+            When I talk about serving sizes, I mean generous portions that will satisfy your guests. 
+            Ukrainian cakes are rich and flavorful, so people often eat smaller portions than with regular cakes. 
+            Here is what you need to know about portion planning:
+          </Typography>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Standard Portion Size
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  A standard portion is about 2 inches by 2 inches (5cm x 5cm) - roughly the size of a small slice 
+                  of bread. This is perfect for most celebrations where people want to enjoy the cake without feeling too full. 
+                  It allows everyone to try the cake and leaves room for other food.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Generous Portion Size
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  A generous portion is about 2.5 inches by 2.5 inches (6cm x 6cm) - perfect for cake-focused events 
+                  or when the cake is the main dessert. This size is ideal for birthdays, anniversaries, and special 
+                  occasions where people really want to enjoy the Ukrainian flavors.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Ukrainian Cake Specific Tips */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 4, md: 6 },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            mb: 6,
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              fontFamily: "var(--font-playfair-display)",
+              fontSize: { xs: "1.8rem", md: "2.2rem" },
+              fontWeight: 600,
+              color: "primary.main",
+              mb: 4,
+              textAlign: "center",
+            }}
+          >
+            Special Tips for Ukrainian Cakes
+          </Typography>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Medovik (Honey Cake) Portions
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  Honey cake is rich and sweet, so people often eat smaller portions. The honey flavor is very 
+                  satisfying, and guests usually want just enough to enjoy the authentic taste. Plan for slightly 
+                  smaller portions than you might for other cakes.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Kyiv Cake Portions
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  Kyiv cake has a unique texture with crispy meringue and rich filling. People often want to 
+                  try a good-sized portion to really experience the different textures and flavors. Plan for 
+                  standard to generous portions for this popular cake.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* CTA Section */}
+        <Box sx={{ textAlign: "center", mt: 6 }}>
+          <Typography
+            variant="h3"
+            component="h3"
+            sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}
+          >
+            Need Help Choosing the Right Size?
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
+          >
+            Contact me for personalized advice on cake sizing, portions, and custom orders. I'm here to help you choose the perfect cake for your celebration.
+          </Typography>
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+            <Button
+              component={Link}
+              href="/contact"
+              variant="contained"
+              color="primary"
+              size="large"
+              sx={{ px: 4, py: 1.5 }}
+            >
+              Get Size Advice
+            </Button>
+            <Button
+              component={Link}
+              href="/cakes"
+              variant="outlined"
+              color="primary"
+              size="large"
+              sx={{ px: 4, py: 1.5 }}
+            >
+              Browse All Cakes
+            </Button>
+          </Box>
         </Box>
       </Container>
     </>

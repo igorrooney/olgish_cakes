@@ -171,13 +171,18 @@ export default function CakeDecoratingServicesPage() {
               <Chip label="Edible Prints" color="secondary" />
             </Box>
           </Box>
-          <Grid container spacing={3}>
+          <Typography variant="body1" sx={{ mb: 6, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}>
+            Cake decorating is not just about making cakes look pretty - it is about creating memories and bringing joy to special moments. 
+            Every decoration I create tells a story and makes your celebration even more special. I love working with you to bring your vision to life!
+          </Typography>
+
+          <Grid container spacing={4} sx={{ mb: 6 }}>
             {services.map((item, idx) => (
               <Grid item xs={12} sm={6} md={4} key={idx}>
                 <Paper
                   elevation={2}
                   sx={{
-                    p: 3,
+                    p: 4,
                     textAlign: "center",
                     height: "100%",
                     display: "flex",
@@ -189,19 +194,117 @@ export default function CakeDecoratingServicesPage() {
                     {item.icon}
                   </Typography>
                   <Typography
-                    variant="h3"
+                    variant="h4"
                     component="h3"
-                    sx={{ mb: 1, color: "#005BBB", fontWeight: "bold" }}
+                    sx={{ mb: 2, color: "#005BBB", fontWeight: "bold" }}
                   >
                     {item.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
                     {item.description}
                   </Typography>
                 </Paper>
               </Grid>
             ))}
           </Grid>
+
+          <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              My Decorating Process
+            </Typography>
+            
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>💬</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Consultation
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    First, I listen to your ideas and vision. I want to understand what you have in mind, what colours you love, 
+                    and what makes your celebration special. Every detail helps me create the perfect design for you.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>✏️</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Design & Planning
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    I create a detailed plan for your cake decoration, considering the flavours, size, and style. 
+                    I will show you sketches or describe exactly what I will create so you feel confident about your choice.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ textAlign: "center", p: 3 }}>
+                  <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>🎨</Typography>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Handcrafted Creation
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    I make every decoration by hand with love and attention to detail. From sugar flowers to fondant figures, 
+                    everything is crafted especially for your cake. I take my time to make it perfect.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Popular Decoration Styles
+            </Typography>
+            
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Elegant & Classic
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    Beautiful, timeless designs with smooth fondant finishes and delicate sugar flowers. Perfect for weddings, 
+                    anniversaries, and formal celebrations. Clean lines and sophisticated colours create an elegant look that never goes out of style.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Fun & Colourful
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    Bright, playful designs perfect for children's birthdays and casual celebrations. I love creating fun characters, 
+                    colourful patterns, and creative themes that bring smiles to everyone's faces. Great for parties and special occasions.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Rustic & Natural
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    Natural, organic designs with fresh flowers, rustic textures, and earthy colours. Perfect for outdoor celebrations, 
+                    country weddings, or anyone who loves a natural, relaxed style. Beautiful and authentic.
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                    Modern & Creative
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                    Contemporary designs with bold colours, geometric patterns, and unique styling. Perfect for modern celebrations 
+                    and people who want something different and artistic. I love creating unique, one-of-a-kind designs.
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
           <Box sx={{ textAlign: "center", mt: 6 }}>
             <Button
               component={Link}

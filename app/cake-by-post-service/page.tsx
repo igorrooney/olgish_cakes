@@ -3,12 +3,12 @@ import { CakeByPostContent } from "@/app/gift-hampers/[slug]/CakeByPostContent";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Cake by Post | Letterbox Cake Delivery UK – OlgishCakes",
-  description: "Order delicious cake by post with OlgishCakes. Freshly baked, beautifully packed, and delivered straight to your letterbox anywhere in the UK. Perfect for birthdays, anniversaries & surprises.",
+  title: "Professional Cake by Post Service | Ukrainian Honey Cake Delivery UK – OlgishCakes Leeds",
+  description: "Professional cake by post service from OlgishCakes Leeds. Traditional Ukrainian honey cake delivered fresh to your letterbox. Vacuum-packed, letterbox-friendly slices. UK-wide delivery service for special occasions and surprises.",
   keywords: "cake by post, cakes delivered by post, letterbox cakes, order cake online UK, postal cakes UK, cake delivery by post, cake by post UK, cakes delivered UK, honey cake by post, letterbox friendly cake, surprise cake delivery, birthday cake by post, anniversary cake delivery, cake gift by post",
   openGraph: {
-    title: "Cake by Post | Letterbox Cake Delivery UK – OlgishCakes",
-    description: "Order delicious cake by post with OlgishCakes. Freshly baked, beautifully packed, and delivered straight to your letterbox anywhere in the UK. Perfect for birthdays, anniversaries & surprises.",
+    title: "Professional Cake by Post Service | Ukrainian Honey Cake Delivery UK – OlgishCakes Leeds",
+    description: "Professional cake by post service from OlgishCakes Leeds. Traditional Ukrainian honey cake delivered fresh to your letterbox. Vacuum-packed, letterbox-friendly slices. UK-wide delivery service for special occasions and surprises.",
     url: "https://olgishcakes.co.uk/cake-by-post-service",
     siteName: "Olgish Cakes",
     images: [
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake by Post | Letterbox Cake Delivery UK – OlgishCakes",
-    description: "Order delicious cake by post with OlgishCakes. Freshly baked, beautifully packed, and delivered straight to your letterbox anywhere in the UK.",
+    title: "Professional Cake by Post Service | Ukrainian Honey Cake Delivery UK – OlgishCakes Leeds",
+    description: "Professional cake by post service from OlgishCakes Leeds. Traditional Ukrainian honey cake delivered fresh to your letterbox. Vacuum-packed, letterbox-friendly slices.",
     images: ["https://olgishcakes.co.uk/images/cake-by-post-service.jpg"],
   },
   alternates: {
