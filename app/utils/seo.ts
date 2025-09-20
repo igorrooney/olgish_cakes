@@ -654,6 +654,7 @@ export function generateServiceSchema(service: {
         seller: {
           "@id": `${SEO_CONFIG.siteUrl}/#organization`,
         },
+        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
       },
     }),
   };
