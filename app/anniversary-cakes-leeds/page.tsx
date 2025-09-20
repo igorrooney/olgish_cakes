@@ -4,13 +4,13 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes | Olgish Cakes",
+  title: "Anniversary Cakes Leeds | Ukrainian Cakes",
   description:
     "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs. Order now for anniversary celebrations.",
   keywords:
     "anniversary cakes Leeds, Ukrainian anniversary cakes, anniversary celebration cakes, personalized anniversary cakes, anniversary cake delivery Leeds",
   openGraph: {
-    title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
+    title: "Anniversary Cakes Leeds | Ukrainian Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
     url: "https://olgishcakes.co.uk/anniversary-cakes-leeds",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Anniversary Cakes Leeds | Ukrainian Anniversary Cakes",
+    title: "Anniversary Cakes Leeds | Ukrainian Cakes",
     description:
       "Celebrate your anniversary with traditional Ukrainian anniversary cakes in Leeds. Handcrafted anniversary cakes with personalized designs.",
     images: ["https://olgishcakes.co.uk/images/anniversary-cakes-leeds.jpg"],

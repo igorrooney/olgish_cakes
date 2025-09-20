@@ -5,13 +5,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes | Olgish Cakes",
+    "Allergen Information | Gluten-Friendly Cakes Leeds",
   description:
     "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
   keywords:
     "allergen information, gluten-friendly cakes Leeds, dairy-free Ukrainian cakes, nut-free cakes, vegan cakes Leeds, food allergies, dietary requirements, safe cakes",
   openGraph: {
-    title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
+    title: "Allergen Information | Gluten-Friendly Cakes Leeds",
     description:
       "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available. Safe cake options for all dietary requirements.",
     url: "https://olgishcakes.co.uk/allergen-information",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Allergen Information | Gluten-Friendly Cakes Leeds | Dairy-Free Ukrainian Cakes",
+    title: "Allergen Information | Gluten-Friendly Cakes Leeds",
     description:
       "Complete allergen information for my Ukrainian cakes. Gluten-friendly, dairy-free, nut-free, and vegan cake options available.",
     images: ["https://olgishcakes.co.uk/images/allergen-information.jpg"],

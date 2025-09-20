@@ -20,13 +20,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes | Olgish Cakes",
+    "Corporate Cakes Leeds | Office Cakes",
   description:
     "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service for meetings, conferences, and office celebrations.",
   keywords:
     "corporate cakes Leeds, office cakes, business catering Leeds, corporate catering, Ukrainian corporate cakes, office celebrations, business events, conference catering",
   openGraph: {
-    title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
+    title: "Corporate Cakes Leeds | Office Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service for meetings, conferences, and office celebrations.",
     url: "https://olgishcakes.co.uk/corporate-cakes-leeds",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Corporate Cakes Leeds | Office Cakes | Business Catering | Ukrainian Corporate Cakes",
+    title: "Corporate Cakes Leeds | Office Cakes",
     description:
       "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service.",
     images: ["https://olgishcakes.co.uk/images/corporate-cakes-leeds.jpg"],

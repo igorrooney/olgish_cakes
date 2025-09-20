@@ -5,13 +5,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes | Olgish Cakes",
+    "Custom Cake Design Leeds | Personalized Cakes",
   description:
     "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
   keywords:
     "custom cake design Leeds, personalized cakes Leeds, wedding cake design, birthday cake design, celebration cakes Leeds, custom cake consultation, unique cake designs, Ukrainian cake design",
   openGraph: {
-    title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
+    title: "Custom Cake Design Leeds | Personalized Cakes",
     description:
       "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
     url: "https://olgishcakes.co.uk/custom-cake-design",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Custom Cake Design Leeds | Personalized Cakes | Wedding Cakes | Birthday Cakes",
+    title: "Custom Cake Design Leeds | Personalized Cakes",
     description:
       "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors.",
     images: ["https://olgishcakes.co.uk/images/custom-cake-design.jpg"],

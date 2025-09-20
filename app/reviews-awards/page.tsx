@@ -17,13 +17,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
-    "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews | Trustpilot Reviews",
+    "Customer Reviews & Awards | Olgish Cakes Leeds",
   description:
     "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about my Ukrainian cakes, delivery service, and custom cake designs.",
   keywords:
     "Olgish Cakes reviews, Ukrainian bakery reviews Leeds, customer testimonials, cake delivery reviews, wedding cake reviews, Trustpilot reviews, bakery awards Leeds",
   openGraph: {
-    title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
+    title: "Customer Reviews & Awards | Olgish Cakes Leeds",
     description:
       "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers about my Ukrainian cakes.",
     url: "https://olgishcakes.co.uk/reviews-awards",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Customer Reviews & Awards | Olgish Cakes Leeds | Ukrainian Bakery Reviews",
+    title: "Customer Reviews & Awards | Olgish Cakes Leeds",
     description:
       "Read real customer reviews and see awards for Olgish Cakes in Leeds. Real testimonials from satisfied customers.",
     images: ["https://olgishcakes.co.uk/images/reviews-awards.jpg"],

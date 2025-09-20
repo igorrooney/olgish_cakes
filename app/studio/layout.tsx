@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sanity Studio | Olgish Cakes",
+  title: "Sanity Studio",
   description: "Content management system for Olgish Cakes website.",
   robots: {
     index: false,
     follow: false,
   },
   openGraph: {
-    title: "Sanity Studio | Olgish Cakes",
+    title: "Sanity Studio",
     description: "Content management system for Olgish Cakes website.",
     url: "https://olgishcakes.co.uk/studio",
     siteName: "Olgish Cakes",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sanity Studio | Olgish Cakes",
+    title: "Sanity Studio",
     description: "Content management system for Olgish Cakes website.",
     images: ["https://olgishcakes.co.uk/images/studio.jpg"],
   },

@@ -19,13 +19,13 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Olgish Cakes",
   description:
     "Compare honey cake vs Kyiv cake: two iconic Ukrainian desserts. Learn the differences in ingredients, taste, history, and preparation. Which Ukrainian cake is right for your celebration?",
   keywords:
     "honey cake vs Kyiv cake, Ukrainian cake comparison, traditional Ukrainian desserts, honey cake, Kyiv cake, Ukrainian honey cake, Ukrainian chocolate cake, Ukrainian dessert guide",
   openGraph: {
-    title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Traditional Ukrainian Desserts",
+    title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison",
     description:
       "Compare honey cake vs Kyiv cake: two iconic Ukrainian desserts. Learn the differences in ingredients, taste, history, and preparation.",
     url: "https://olgishcakes.co.uk/honey-cake-vs-kyiv-cake",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison | Traditional Ukrainian Desserts",
+    title: "Honey Cake vs Kyiv Cake | Ukrainian Cake Comparison",
     description:
       "Compare honey cake vs Kyiv cake: two iconic Ukrainian desserts. Learn the differences in ingredients, taste, history, and preparation.",
     images: ["https://olgishcakes.co.uk/images/honey-cake-vs-kyiv-cake.jpg"],

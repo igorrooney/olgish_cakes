@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes Huddersfield | Ukrainian Cakes Huddersfield | Traditional Ukrainian Cakes | Olgish Cakes",
+    "Cakes Huddersfield | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Huddersfield. Order now for special occasions.",
   keywords:
     "cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, Kyiv cake Huddersfield, traditional Ukrainian cakes Huddersfield, cake delivery Huddersfield",
   openGraph: {
-    title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
+    title: "Cakes Huddersfield | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Huddersfield.",
     url: "https://olgishcakes.co.uk/cakes-huddersfield",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Huddersfield | Ukrainian Cakes Huddersfield",
+    title: "Cakes Huddersfield | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Huddersfield.",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],

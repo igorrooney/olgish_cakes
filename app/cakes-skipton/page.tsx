@@ -4,13 +4,13 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Skipton | Ukrainian Cakes Skipton | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Skipton | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton. Order now for special occasions.",
   keywords:
     "cakes Skipton, Ukrainian cakes Skipton, honey cake Skipton, Kyiv cake Skipton, traditional Ukrainian cakes Skipton, cake delivery Skipton",
   openGraph: {
-    title: "Cakes Skipton | Ukrainian Cakes Skipton",
+    title: "Cakes Skipton | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton.",
     url: "https://olgishcakes.co.uk/cakes-skipton",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Skipton | Ukrainian Cakes Skipton",
+    title: "Cakes Skipton | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Skipton. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Skipton.",
     images: ["https://olgishcakes.co.uk/images/cakes-skipton.jpg"],

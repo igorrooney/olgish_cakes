@@ -5,13 +5,13 @@ import { Box } from "@mui/material";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Best Cakes Leeds | Top Rated Ukrainian Cakes | Olgish Cakes",
+  title: "Best Cakes Leeds | Ukrainian Cakes",
   description:
     "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, traditional recipes, and custom designs. Rated #1 by customers. Same-day delivery available.",
   keywords:
     "best cakes leeds, top cakes leeds, ukrainian cakes leeds, award winning cakes, best bakery leeds",
   openGraph: {
-    title: "Best Cakes Leeds | Top Rated Ukrainian Cakes",
+    title: "Best Cakes Leeds | Ukrainian Cakes",
     description:
       "Discover the best cakes in Leeds! Award-winning Ukrainian cakes, traditional recipes, and custom designs.",
     type: "website",

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
 export const metadata: Metadata = {
-  title: "Why Order Letterbox Cakes Online UK 2025 | Best Postal Cake Delivery Leeds",
+  title: "Why Order Letterbox Cakes Online UK 2025",
   description: "Why letterbox cakes are becoming more popular choice for many customers. Discover the benefits of ordering cakes online for postal delivery from my experience. Convenient, fresh, and perfect for any occasion.",
   keywords: [
     "honey cake by post online",

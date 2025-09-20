@@ -3,13 +3,13 @@ import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/mate
 import Link from "next/link";
 import Script from "next/script";
 export const metadata: Metadata = {
-  title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes | Olgish Cakes",
+  title: "Nut-Free Cakes Leeds | Ukrainian Cakes",
   description:
     "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for nut allergies.",
   keywords:
     "nut-free cakes Leeds, Ukrainian nut-free cakes, nut-free honey cake, nut-free desserts, nut allergy cakes, allergy-friendly cakes Leeds",
   openGraph: {
-    title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
+    title: "Nut-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/nut-free-cakes-leeds",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nut-Free Cakes Leeds | Ukrainian Nut-Free Cakes",
+    title: "Nut-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/nut-free-cakes-leeds.jpg"],

@@ -9,13 +9,13 @@ import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
-    "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes | Olgish Cakes",
+    "Celebration Cakes Leeds | Party Cakes",
   description:
     "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
   keywords:
     "celebration cakes Leeds, party cakes, anniversary cakes, graduation cakes, special occasion cakes, Ukrainian celebration cakes, custom celebration cakes Leeds, event cakes",
   openGraph: {
-    title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
+    title: "Celebration Cakes Leeds | Party Cakes",
     description:
       "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
     url: "https://olgishcakes.co.uk/celebration-cakes",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Celebration Cakes Leeds | Party Cakes | Anniversary Cakes | Special Occasion Cakes",
+    title: "Celebration Cakes Leeds | Party Cakes",
     description:
       "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more.",
     images: ["https://olgishcakes.co.uk/images/celebration-cakes.jpg"],

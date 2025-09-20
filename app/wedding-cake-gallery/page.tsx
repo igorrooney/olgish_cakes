@@ -7,7 +7,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Wedding Cake Gallery | Ukrainian Wedding Cakes | Olgish Cakes",
+  title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",
   description:
     "Browse our wedding cake gallery. See beautiful Ukrainian wedding cakes, custom designs, and inspiration for your special day.",
   keywords:

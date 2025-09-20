@@ -5,14 +5,14 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Ukrainian Culture & Baking | Ukrainian Traditions",
   description:
     "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes. Real Ukrainian baking culture.",
   keywords:
     "Ukrainian culture baking, Ukrainian baking traditions, Traditional Ukrainian desserts, Ukrainian dessert culture, Ukrainian cake history, Ukrainian baking heritage, authentic Ukrainian baking",
   openGraph: {
     title:
-      "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
+      "Ukrainian Culture & Baking | Ukrainian Traditions",
     description:
       "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes. Real Ukrainian baking culture.",
     url: "https://olgishcakes.co.uk/ukrainian-culture-baking",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Culture & Baking | Ukrainian Baking Traditions | Traditional Ukrainian Desserts",
+      "Ukrainian Culture & Baking | Ukrainian Traditions",
     description:
       "Discover the rich cultural heritage of Ukrainian baking. Traditional Ukrainian desserts, baking traditions, and the cultural meaning of Ukrainian cakes.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-culture-baking.jpg"],

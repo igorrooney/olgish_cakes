@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 export const metadata: Metadata = {
-  title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting | Olgish Cakes",
+  title: "Cake Tasting Sessions Leeds | Ukrainian Tasting",
   description:
     "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake. Perfect for wedding cake selection and special occasions.",
   keywords:
     "cake tasting sessions Leeds, Ukrainian cake tasting, wedding cake tasting, honey cake tasting, cake sampling Leeds",
   openGraph: {
-    title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
+    title: "Cake Tasting Sessions Leeds | Ukrainian Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
     url: "https://olgishcakes.co.uk/cake-tasting-sessions",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Tasting Sessions Leeds | Ukrainian Cake Tasting",
+    title: "Cake Tasting Sessions Leeds | Ukrainian Tasting",
     description:
       "Book a cake tasting session in Leeds. Sample traditional Ukrainian cakes including honey cake and Kyiv cake.",
     images: ["https://olgishcakes.co.uk/images/cake-tasting-sessions.jpg"],

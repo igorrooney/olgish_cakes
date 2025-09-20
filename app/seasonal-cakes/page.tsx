@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes | Olgish Cakes",
+    "Seasonal Cakes Leeds | Christmas & Easter Cakes",
   description:
     "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
   keywords:
     "seasonal cakes Leeds, Christmas cakes, Easter cakes, holiday Ukrainian cakes, seasonal Ukrainian desserts, Christmas honey cake, Easter cake traditions, holiday cake delivery Leeds",
   openGraph: {
-    title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
+    title: "Seasonal Cakes Leeds | Christmas & Easter Cakes",
     description:
       "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts. Traditional seasonal flavors and celebrations.",
     url: "https://olgishcakes.co.uk/seasonal-cakes",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Seasonal Cakes Leeds | Christmas Cakes | Easter Cakes | Holiday Ukrainian Cakes",
+    title: "Seasonal Cakes Leeds | Christmas & Easter Cakes",
     description:
       "Seasonal Ukrainian cakes for every holiday. Christmas cakes, Easter cakes, and holiday-specific Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/seasonal-cakes.jpg"],

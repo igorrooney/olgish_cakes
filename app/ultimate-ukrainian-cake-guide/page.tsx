@@ -11,7 +11,7 @@ import { StructuredData } from "@/app/components/StructuredData";
 import Link from "next/link";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Ultimate Guide to Ukrainian Cakes in Leeds | Traditional Recipes & Modern Designs",
+  title: "Ultimate Guide to Ukrainian Cakes Leeds",
   description:
     "Discover authentic Ukrainian cakes in Leeds. From traditional medovik honey cake to modern wedding designs. Expert baking techniques, cultural history, and where to order the best Ukrainian cakes in Yorkshire.",
   keywords: [

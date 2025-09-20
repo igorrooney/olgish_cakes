@@ -18,13 +18,13 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips | Olgish Cakes",
+  title: "Cake Care & Storage | How to Store Cake",
   description:
     "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh. Professional cake storage advice.",
   keywords:
     "cake care storage, how to store cake, cake preservation tips, cake freshness, Ukrainian cake storage, cake handling, cake serving tips, cake maintenance",
   openGraph: {
-    title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips",
+    title: "Cake Care & Storage | How to Store Cake",
     description:
       "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh. Professional cake storage advice.",
     url: "https://olgishcakes.co.uk/cake-care-storage",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Care & Storage | How to Store Cake | Cake Preservation Tips",
+    title: "Cake Care & Storage | How to Store Cake",
     description:
       "Complete guide to cake care and storage. Learn how to store Ukrainian cakes properly, cake preservation tips, and how to keep your cake fresh.",
     images: ["https://olgishcakes.co.uk/images/cake-care-storage.jpg"],

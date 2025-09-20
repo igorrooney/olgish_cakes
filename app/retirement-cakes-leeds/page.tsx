@@ -7,13 +7,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes | Olgish Cakes",
+  title: "Retirement Cakes Leeds | Ukrainian Cakes",
   description:
     "Special Ukrainian retirement cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique retirement celebration designs. Perfect for retirement parties.",
   keywords:
     "retirement cakes Leeds, Ukrainian retirement cakes, retirement party cakes, celebration cakes Leeds, retirement delivery Leeds",
   openGraph: {
-    title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes",
+    title: "Retirement Cakes Leeds | Ukrainian Cakes",
     description:
       "Special Ukrainian retirement cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique retirement celebration designs.",
     url: "https://olgishcakes.co.uk/retirement-cakes-leeds",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Retirement Cakes Leeds | Ukrainian Retirement Cakes",
+    title: "Retirement Cakes Leeds | Ukrainian Cakes",
     description:
       "Special Ukrainian retirement cakes in Leeds. Handcrafted honey cake, Kyiv cake, and unique retirement celebration designs.",
     images: ["https://olgishcakes.co.uk/images/retirement-cakes-leeds.jpg"],

@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio | Olgish Cakes",
+  title: "Cake Gallery | Ukrainian Cake Designs",
   description:
     "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
   keywords:
     "cake gallery, Ukrainian cake designs, custom cake portfolio, wedding cake gallery, birthday cake designs, celebration cake photos, cake inspiration, Ukrainian dessert gallery",
   openGraph: {
-    title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
+    title: "Cake Gallery | Ukrainian Cake Designs",
     description:
       "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts. Wedding cakes, birthday cakes, and celebration cakes portfolio.",
     url: "https://olgishcakes.co.uk/cake-gallery",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Gallery | Ukrainian Cake Designs | Custom Cake Portfolio",
+    title: "Cake Gallery | Ukrainian Cake Designs",
     description:
       "Explore my beautiful cake gallery showcasing Ukrainian cake designs, custom cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cake-gallery.jpg"],

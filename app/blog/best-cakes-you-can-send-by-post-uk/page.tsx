@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
 export const metadata: Metadata = {
-  title: "Best Honey Cake You Can Send by Post UK 2025 | Letterbox Friendly Cakes Leeds",
+  title: "Best Honey Cake You Can Send by Post UK 2025",
   description: "Find out which cakes are perfect for sending by post in UK. I learned from experience which ones travel good and how to make sure your postal cakes arrive in perfect condition. Working with customers from Leeds and all over UK.",
   keywords: [
     "best honey cake by post UK",

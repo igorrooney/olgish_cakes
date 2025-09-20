@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TocLink } from "./TocLink";
 
 export const metadata: Metadata = {
-  title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+  title: "Honey Cake by Post UK: Complete Guide 2025",
   description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
   keywords: [
     "honey cake by post UK",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "Ukrainian cake by post"
   ],
   openGraph: {
-    title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    title: "Honey Cake by Post UK: Complete Guide 2025",
     description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     url: "https://olgishcakes.co.uk/blog/cake-by-post-uk-complete-guide",
     siteName: "Olgish Cakes",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    title: "Honey Cake by Post UK: Complete Guide 2025",
     description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     images: ["https://olgishcakes.co.uk/images/cake-by-post-guide.jpg"],
   },
@@ -82,7 +82,7 @@ export default function CakeByPostGuidePage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds",
+    headline: "Honey Cake by Post UK: Complete Guide 2025",
     description: "Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. From my experience running cake business in Leeds, learn why honey cake is perfect for letterbox delivery.",
     author: {
       "@type": "Organization",

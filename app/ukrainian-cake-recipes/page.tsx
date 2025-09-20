@@ -5,14 +5,14 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Recipes | traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe | Olgish Cakes",
+    "Ukrainian Cake Recipes | Ukrainian Baking",
   description:
     "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
   keywords:
     "Ukrainian cake recipes, traditional Ukrainian baking, honey cake recipe, Medovik recipe, Kyiv cake recipe, Ukrainian dessert recipes, real Ukrainian cakes, Ukrainian baking techniques, traditional medovik recipe",
   openGraph: {
     title:
-      "Ukrainian Cake Recipes | traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
+      "Ukrainian Cake Recipes | Ukrainian Baking",
     description:
       "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts. Learn the secrets of Ukrainian baking with professional recipes and techniques.",
     url: "https://olgishcakes.co.uk/ukrainian-cake-recipes",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Recipes | traditional Ukrainian Baking | Honey Cake (Medovik) Recipe | Kyiv Cake Recipe",
+      "Ukrainian Cake Recipes | Ukrainian Baking",
     description:
       "Discover real Ukrainian cake recipes including honey cake (Medovik), Kyiv cake, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-cake-recipes.jpg"],

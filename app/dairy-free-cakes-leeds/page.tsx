@@ -6,13 +6,13 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Dairy-Free Cakes Leeds | Ukrainian Dairy-Free Cakes | Olgish Cakes",
+  title: "Dairy-Free Cakes Leeds | Ukrainian Cakes",
   description:
     "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for dairy allergies and vegan diets.",
   keywords:
     "dairy-free cakes Leeds, Ukrainian dairy-free cakes, dairy-free honey cake, dairy-free desserts, dairy allergy cakes, vegan cakes Leeds",
   openGraph: {
-    title: "Dairy-Free Cakes Leeds | Ukrainian Dairy-Free Cakes",
+    title: "Dairy-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake and traditional Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/dairy-free-cakes-leeds",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dairy-Free Cakes Leeds | Ukrainian Dairy-Free Cakes",
+    title: "Dairy-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/dairy-free-cakes-leeds.jpg"],

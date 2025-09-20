@@ -16,14 +16,14 @@ import { CategoryLinks } from "../components/CategoryLinks";
 
 export const metadata: Metadata = {
   title:
-    "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes | Olgish Cakes Leeds",
+    "Professional Cake Business Blog | Wedding & Corporate Cakes",
   description:
     "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
   keywords:
     "cake business blog, wedding cake trends, corporate cakes, custom cake design, cake business tips, professional cake decorator, Leeds cake specialist, Ukrainian cake business, event planning, cake industry insights",
   openGraph: {
     title:
-      "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes",
+      "Professional Cake Business Blog | Wedding & Corporate Cakes",
     description:
       "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
     url: "https://olgishcakes.co.uk/blog",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Professional Cake Business Blog | Wedding Cakes, Corporate Events & Custom Cakes",
+      "Professional Cake Business Blog | Wedding & Corporate Cakes",
     description:
       "Professional insights into the cake business, wedding cake trends, corporate event planning, and custom cake design. Expert advice from Leeds' premier Ukrainian cake specialist.",
     images: ["https://olgishcakes.co.uk/images/professional-cake-business-blog.jpg"],

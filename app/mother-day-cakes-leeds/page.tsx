@@ -7,13 +7,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes | Olgish Cakes",
+  title: "Mother's Day Cakes Leeds | Ukrainian Cakes",
   description:
     "Beautiful Ukrainian Mother's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and special Mother's Day designs. Order now for the perfect celebration.",
   keywords:
     "Mother's Day cakes Leeds, Ukrainian Mother's Day cakes, honey cake Mother's Day, special occasion cakes Leeds, Mother's Day delivery Leeds",
   openGraph: {
-    title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes",
+    title: "Mother's Day Cakes Leeds | Ukrainian Cakes",
     description:
       "Beautiful Ukrainian Mother's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and special Mother's Day designs.",
     url: "https://olgishcakes.co.uk/mother-day-cakes-leeds",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mother's Day Cakes Leeds | Ukrainian Mother's Day Cakes",
+    title: "Mother's Day Cakes Leeds | Ukrainian Cakes",
     description:
       "Beautiful Ukrainian Mother's Day cakes in Leeds. Handcrafted honey cake, Kyiv cake, and special Mother's Day designs.",
     images: ["https://olgishcakes.co.uk/images/mothers-day-cakes-leeds.jpg"],

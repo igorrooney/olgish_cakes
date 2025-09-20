@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // Use SEO fields if available, otherwise generate from content
   const metaTitle =
     cake.seo?.metaTitle ||
-    `${cake.name} | Olgish Cakes - traditional Ukrainian Honey Cakes in Leeds`;
+    `${cake.name} | Olgish Cakes`;
   const metaDescription =
     cake.seo?.metaDescription ||
     (cake.shortDescription

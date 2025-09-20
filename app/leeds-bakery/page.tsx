@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AreasWeCover } from "../components/AreasWeCover";
 
 export const metadata: Metadata = {
-  title: "Leeds Bakery – Real Ukrainian Cakes, Same‑day Delivery | Olgish Cakes",
+  title: "Leeds Bakery – Real Ukrainian Cakes, Same‑day Delivery",
   description:
     "Looking for the best bakery in Leeds? Try real Ukrainian cakes including honey cake (Medovik) and Kyiv cake. Same‑day options, delivery across Leeds.",
   keywords:

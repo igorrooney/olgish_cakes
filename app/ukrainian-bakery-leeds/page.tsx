@@ -9,14 +9,14 @@ import { AreasWeCover } from "../components/AreasWeCover";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes",
   description:
     "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
   keywords:
     "Ukrainian bakery Leeds, Ukrainian cakes Leeds, authentic Ukrainian desserts, traditional Ukrainian baking, Ukrainian baker Leeds, honey cake Leeds, Medovik Leeds, Kyiv cake Leeds, Ukrainian sweets Leeds, traditional medovik",
   openGraph: {
     title:
-      "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
+      "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes",
     description:
       "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
     url: "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes | Honey Cake (Medovik) | Traditional Ukrainian Desserts",
+      "Ukrainian Bakery Leeds | Authentic Ukrainian Cakes",
     description:
       "Real Ukrainian bakery in Leeds. Traditional Ukrainian cakes, honey cake (Medovik), Kyiv cake, and more. Handcrafted by Ukrainian baker Olga using real recipes and techniques.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-bakery-leeds.jpg"],

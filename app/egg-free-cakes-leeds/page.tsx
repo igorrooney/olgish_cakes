@@ -7,13 +7,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes | Olgish Cakes",
+  title: "Egg-Free Cakes Leeds | Ukrainian Cakes",
   description:
     "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for egg allergies.",
   keywords:
     "egg-free cakes Leeds, Ukrainian egg-free cakes, egg-free honey cake, egg-free desserts, egg allergy cakes, allergy-friendly cakes Leeds",
   openGraph: {
-    title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
+    title: "Egg-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/egg-free-cakes-leeds",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Egg-Free Cakes Leeds | Ukrainian Egg-Free Cakes",
+    title: "Egg-Free Cakes Leeds | Ukrainian Cakes",
     description:
       "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/egg-free-cakes-leeds.jpg"],

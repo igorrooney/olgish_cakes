@@ -16,7 +16,7 @@ export const revalidate = 3600; // Revalidate every hour
 // Enhanced SEO metadata for About page
 export const metadata: Metadata = generatePageMetadata({
   title:
-    "About Olgish Cakes - Professional Ukrainian Baker in Leeds | Traditional Ukrainian Cakes & Desserts",
+    "About Olgish Cakes | Professional Ukrainian Baker Leeds",
   description:
     "Meet Olga Ieromenko, professional Ukrainian baker in Leeds. Specializing in authentic Ukrainian cakes including honey cake (Medovik), Kyiv cake with cashew nuts, Sacher Torte with apricot jam, and Napoleon cake with fresh cream. Level 2 & 3 Patisserie qualified. Custom cakes, wedding cakes, birthday cakes, seasonal specialties. Same-day delivery across Yorkshire.",
   keywords: [

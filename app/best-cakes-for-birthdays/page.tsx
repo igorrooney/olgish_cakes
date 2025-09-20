@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide | Olgish Cakes",
+  title: "Best Cakes for Birthdays | Ukrainian Birthday Guide",
   description:
     "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
   keywords:
     "best cakes for birthdays, Ukrainian birthday cakes, birthday cake guide, honey cake birthday, traditional birthday cakes",
   openGraph: {
-    title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
+    title: "Best Cakes for Birthdays | Ukrainian Birthday Guide",
     description:
       "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
     url: "https://olgishcakes.co.uk/best-cakes-for-birthdays",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Best Cakes for Birthdays | Ukrainian Birthday Cake Guide",
+    title: "Best Cakes for Birthdays | Ukrainian Birthday Guide",
     description:
       "Discover the best Ukrainian cakes for birthdays. My guide helps you choose the perfect birthday cake from traditional honey cake to modern designs.",
     images: ["https://olgishcakes.co.uk/images/best-cakes-for-birthdays.jpg"],

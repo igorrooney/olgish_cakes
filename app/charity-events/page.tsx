@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Charity Events | Ukrainian Cake Fundraisers | Olgish Cakes",
+  title: "Charity Events | Ukrainian Cake Fundraisers",
   description:
     "Learn about charity events and fundraisers supported by Olgish Cakes. Join our Ukrainian cake charity events and help support good causes in Leeds.",
   keywords:

@@ -5,13 +5,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking | Olgish Cakes",
+  title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
   description:
     "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
   keywords:
     "Ukrainian baking traditions, traditional Ukrainian baking, Ukrainian dessert history, Ukrainian cake traditions, Ukrainian baking culture",
   openGraph: {
-    title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
+    title: "Ukrainian Baking Traditions | Olgish Cakes",
     description:
       "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/ukrainian-baking-traditions",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Baking Traditions | Traditional Ukrainian Baking",
+    title: "Ukrainian Baking Traditions | Olgish Cakes",
     description:
       "Discover the rich history and traditions of Ukrainian baking. Learn about traditional techniques, ingredients, and cultural meaning of Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-traditions.jpg"],

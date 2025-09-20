@@ -8,14 +8,14 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield | Olgish Cakes",
+    "Cakes Wakefield | Ukrainian Cakes",
   description:
     "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
   keywords:
     "cakes Wakefield, Ukrainian cakes Wakefield, custom cakes Wakefield, wedding cakes Wakefield, birthday cakes Wakefield, cake delivery Wakefield, bakery Wakefield, traditional Ukrainian cakes Wakefield",
   openGraph: {
     title:
-      "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
+      "Cakes Wakefield | Ukrainian Cakes",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Cakes Wakefield | Ukrainian Cakes Wakefield | Custom Cakes Wakefield | Cake Delivery Wakefield",
+      "Cakes Wakefield | Ukrainian Cakes",
     description:
       "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-wakefield.jpg"],

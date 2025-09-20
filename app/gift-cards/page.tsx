@@ -19,13 +19,13 @@ import { getPriceValidUntil } from "../utils/seo";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds | Olgish Cakes",
+  title: "Gift Cards | Ukrainian Cake Gift Cards",
   description:
     "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions. Redeemable for any Ukrainian cake or custom cake design in Leeds.",
   keywords:
     "gift cards, Ukrainian cake gift cards, cake vouchers Leeds, birthday gift cards, wedding gift cards, cake delivery gift cards, Ukrainian bakery gift cards",
   openGraph: {
-    title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
+    title: "Gift Cards | Ukrainian Cake Gift Cards",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions. Redeemable for any Ukrainian cake or custom cake design in Leeds.",
     url: "https://olgishcakes.co.uk/gift-cards",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gift Cards | Ukrainian Cake Gift Cards | Cake Vouchers Leeds",
+    title: "Gift Cards | Ukrainian Cake Gift Cards",
     description:
       "Give the gift of authentic Ukrainian cakes with our gift cards. Perfect for birthdays, weddings, holidays, and special occasions.",
     images: ["https://olgishcakes.co.uk/images/gift-cards.jpg"],

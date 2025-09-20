@@ -5,13 +5,13 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes | Olgish Cakes",
+    "Gluten-Friendly Ukrainian Cakes Leeds",
   description:
     "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets. Safe for celiac disease.",
   keywords:
     "gluten-friendly Ukrainian cakes Leeds, celiac-friendly cakes, wheat-free cakes Leeds, gluten-friendly birthday cakes, gluten-friendly wedding cakes, celiac disease cakes, Ukrainian gluten-friendly desserts",
   openGraph: {
-    title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
+    title: "Gluten-Friendly Ukrainian Cakes Leeds",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
     url: "https://olgishcakes.co.uk/gluten-friendly-ukrainian-cakes",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gluten-Friendly Ukrainian Cakes Leeds | Celiac-Friendly Cakes | Wheat-Free Cakes",
+    title: "Gluten-Friendly Ukrainian Cakes Leeds",
     description:
       "Delicious gluten-friendly Ukrainian cakes in Leeds. Celiac-friendly cakes made with certified gluten-friendly ingredients. Traditional Ukrainian flavors adapted for gluten-friendly diets.",
     images: ["https://olgishcakes.co.uk/images/gluten-friendly-ukrainian-cakes.jpg"],

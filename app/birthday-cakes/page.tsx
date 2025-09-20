@@ -9,14 +9,14 @@ import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds – Custom Designs, Themed & Ukrainian Flavours | Olgish Cakes",
+    "Birthday Cakes Leeds – Custom Designs",
   description:
     "Custom birthday cakes in Leeds for children and adults. Themed designs, Ukrainian favorites like honey cake (Medovik), delivery available. Prices from £35.",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
-      "Birthday Cakes Leeds – Custom & Themed Designs",
+      "Birthday Cakes Leeds – Custom Designs",
     description:
       "Custom birthday cakes for all ages with Ukrainian flavours like honey cake. Delivery available across Leeds.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Birthday Cakes Leeds – Custom & Themed Designs",
+      "Birthday Cakes Leeds – Custom Designs",
     description:
       "Custom birthday cakes with Ukrainian flavours. Delivery available across Leeds.",
     images: ["https://olgishcakes.co.uk/images/birthday-cakes.jpg"],

@@ -6,13 +6,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
 
 export const metadata: Metadata = {
-  title: "Cake Delivery Leeds – Same‑day Options, Venue Setup | Olgish Cakes",
+  title: "Cake Delivery Leeds – Same‑day Options",
   description:
     "Professional cake delivery across Leeds and around areas with careful handling and optional venue setup for weddings. Same‑day options when available. Prices from £5.",
   keywords:
     "cake delivery Leeds, same day cake delivery Leeds, wedding cake delivery Leeds, birthday cake delivery Leeds, celebration cake delivery, venue setup wedding cakes, local cake delivery Leeds, Wakefield cake delivery, York cake delivery, Bradford cake delivery",
   openGraph: {
-    title: "Cake Delivery Leeds – Same‑day Options, Venue Setup",
+    title: "Cake Delivery Leeds – Same‑day Options",
     description:
       "Professional cake delivery across Leeds and around areas. Optional wedding cake setup at your venue. Same‑day options when available.",
     url: "https://olgishcakes.co.uk/cake-delivery",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Delivery Leeds – Same‑day Options, Venue Setup",
+    title: "Cake Delivery Leeds – Same‑day Options",
     description:
       "Professional cake delivery across Leeds and around areas with careful handling and venue setup for weddings.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],

@@ -7,13 +7,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes | Olgish Cakes",
+  title: "Best Cakes for Weddings | Wedding Guide",
   description:
     "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
   keywords:
     "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavors, wedding cake designs, wedding cake advice",
   openGraph: {
-    title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
+    title: "Best Cakes for Weddings | Wedding Guide",
     description:
       "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
     url: "https://olgishcakes.co.uk/best-cakes-for-weddings",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Best Cakes for Weddings | Wedding Cake Guide | Ukrainian Wedding Cakes",
+    title: "Best Cakes for Weddings | Wedding Guide",
     description:
       "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice.",
     images: ["https://olgishcakes.co.uk/images/best-cakes-for-weddings.jpg"],

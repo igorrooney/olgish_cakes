@@ -3,13 +3,13 @@ import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Ukrainian Community Leeds | Ukrainian Events & Support | Olgish Cakes",
+  title: "Ukrainian Community Leeds | Ukrainian Events & Support",
   description:
     "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
   keywords:
     "Ukrainian community Leeds, Ukrainian events Leeds, Ukrainian support Leeds, Ukrainian culture Leeds",
   openGraph: {
-    title: "Ukrainian Community Leeds | Ukrainian Events & Support",
+    title: "Ukrainian Community Leeds | Olgish Cakes",
     description:
       "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
     url: "https://olgishcakes.co.uk/ukrainian-community-leeds",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Community Leeds | Ukrainian Events & Support",
+    title: "Ukrainian Community Leeds | Olgish Cakes",
     description:
       "Learn about the Ukrainian community in Leeds. Find Ukrainian events, support groups, and cultural activities in West Yorkshire.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-community-leeds.jpg"],

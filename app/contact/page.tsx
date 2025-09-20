@@ -22,11 +22,11 @@ import {
 
 // SEO Metadata
 export const metadata: Metadata = {
-  title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+  title: "Contact Olgish Cakes | Leeds Custom Cakes",
   description:
     "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
   openGraph: {
-    title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+    title: "Contact Olgish Cakes | Leeds Custom Cakes",
     description:
       "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
     url: "https://olgishcakes.co.uk/contact",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Olgish Cakes | Leeds Custom Cake Orders & Inquiries",
+    title: "Contact Olgish Cakes | Leeds Custom Cakes",
     description:
       "Get in touch with Olgish Cakes in Leeds for custom cake orders, questions, or prices. Contact me via phone, email, WhatsApp, or our online form.",
     images: ["https://olgishcakes.co.uk/images/contact.jpg"],

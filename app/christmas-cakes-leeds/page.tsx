@@ -4,13 +4,13 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
+  title: "Christmas Cakes Leeds | Ukrainian Christmas Cakes",
   description:
     "Celebrate Christmas with Traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake, Kyiv cake, and festive Ukrainian Christmas desserts. Order now for Christmas delivery.",
   keywords:
     "Christmas cakes Leeds, Ukrainian Christmas cakes, honey cake, Kyiv cake, Christmas desserts, traditional Christmas cakes, Ukrainian bakery Leeds",
   openGraph: {
-    title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
+    title: "Christmas Cakes Leeds | Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     url: "https://olgishcakes.co.uk/christmas-cakes-leeds",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Christmas Cakes Leeds | Traditional Ukrainian Christmas Cakes",
+    title: "Christmas Cakes Leeds | Ukrainian Christmas Cakes",
     description:
       "Celebrate Christmas with traditional Ukrainian Christmas cakes in Leeds. Handcrafted honey cake and festive Christmas desserts.",
     images: ["https://olgishcakes.co.uk/images/christmas-cakes-leeds.jpg"],

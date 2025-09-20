@@ -3,7 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Ukrainian Cake vs British Cake | Cake Comparison | Olgish Cakes",
+  title: "Ukrainian Cake vs British Cake | Cake Comparison",
   description:
     "Compare Ukrainian cakes and British cakes. Discover the differences in ingredients, flavors, and traditions between these two cake cultures.",
   keywords:

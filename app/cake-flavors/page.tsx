@@ -6,14 +6,14 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | traditional Ukrainian Desserts | Olgish Cakes",
+    "Ukrainian Cake Flavors | Honey Cake & Kyiv Cake",
   description:
     "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural meaning.",
   keywords:
     "Ukrainian cake flavors, honey cake, Medovik, Kyiv cake, traditional Ukrainian desserts, Ukrainian honey cake, Ukrainian cake recipes, authentic Ukrainian sweets, Ukrainian dessert flavors, traditional medovik",
   openGraph: {
     title:
-      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | traditional Ukrainian Desserts",
+      "Ukrainian Cake Flavors | Honey Cake & Kyiv Cake",
     description:
       "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more. Learn about traditional Ukrainian desserts and their cultural meaning.",
     url: "https://olgishcakes.co.uk/cake-flavors",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Cake Flavors | Honey Cake (Medovik) | Kyiv Cake | traditional Ukrainian Desserts",
+      "Ukrainian Cake Flavors | Honey Cake & Kyiv Cake",
     description:
       "Discover real Ukrainian cake flavors including honey cake (Medovik), Kyiv cake, Napoleon, and more.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-cake-flavors.jpg"],

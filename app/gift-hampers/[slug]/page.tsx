@@ -72,9 +72,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const isCakeByPost = hamper.slug?.current === "cake-by-post";
   const metaTitle =
     (isCakeByPost &&
-      "Cake by Post Gift Hamper | Traditional Ukrainian Honey Cake UK Delivery – OlgishCakes") ||
+      "Cake by Post Gift Hamper | Traditional Ukrainian Honey Cake UK Delivery") ||
     hamper.seo?.metaTitle ||
-    `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
+    `${hamper.name} | Luxury Gift Hampers`;
   const metaDescription =
     (isCakeByPost &&
       "Buy traditional Ukrainian honey cake by post from OlgishCakes. Letterbox-friendly gift hamper with vacuum-packed cake slices. Perfect surprise delivery for birthdays, anniversaries & special occasions across the UK.") ||
