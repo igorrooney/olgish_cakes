@@ -1,0 +1,383 @@
+{
+  "timestamp": "2025-09-20T21:11:43.520Z",
+  "targetKeywords": [
+    "cake postal delivery",
+    "wakefield wedding cakes",
+    "honey cake near me",
+    "cakes through the letterbox",
+    "wedding cakes in leeds",
+    "birthday cakes in wakefield",
+    "birthday cakes in bradford",
+    "birthday cakes in huddersfield",
+    "olga's cakes"
+  ],
+  "currentRankings": {
+    "cake postal delivery": "Page 2 (Position 15-20)",
+    "wakefield wedding cakes": "Page 2 (Position 12-18)",
+    "honey cake near me": "Page 1 (Position 8-12)",
+    "cakes through the letterbox": "Page 3 (Position 25-30)",
+    "wedding cakes in leeds": "Page 1 (Position 6-10)"
+  },
+  "optimizationStrategy": {
+    "contentOptimization": {
+      "title": "Honey Cake Near Me | Authentic Ukrainian Medovik | Leeds",
+      "h1": "Find Authentic Honey Cake Near Me - Traditional Ukrainian Medovik",
+      "metaDescription": "Find Authentic Honey Cake Near Me! Traditional Ukrainian Medovik, Kyiv cake & Ukrainian desserts. Same-day delivery Leeds, Bradford, York. Order now!",
+      "content": "Craving authentic honey cake near you? Look no further than Olgish Cakes, your local Ukrainian bakery specializing in traditional Medovik honey cake and authentic Ukrainian desserts. Based in Leeds, we deliver fresh honey cake throughout Yorkshire and beyond.\n\nOur honey cake near me service brings traditional Ukrainian flavors to your doorstep. Made with authentic Medovik recipes passed down through generations, our honey cakes feature delicate layers of honey-flavored cake and sweet cream that create an unforgettable taste experience.\n\nWhy choose our honey cake near me service? We're the only Ukrainian bakery in Leeds specializing in traditional Medovik, offering authentic recipes that capture the true essence of Ukrainian dessert traditions. Every honey cake is baked fresh daily using premium local ingredients.\n\nHoney cake delivery areas:\n- Leeds (same-day delivery)\n- Bradford (same-day delivery)  \n- York (next-day delivery)\n- Wakefield (same-day delivery)\n- Huddersfield (same-day delivery)\n- Halifax (same-day delivery)\n\nOur honey cake near me features:\n- Authentic Ukrainian Medovik recipe\n- Fresh daily baking\n- Gluten-friendly options\n- Premium local honey\n- Traditional layering technique\n- Same-day delivery available\n\nWhether you're celebrating a special occasion or simply craving authentic Ukrainian flavors, our honey cake near me service delivers traditional Medovik straight to your door. Experience the taste of Ukraine with our authentic honey cake delivery.\n\nOrder your honey cake near me today and discover why we're Yorkshire's premier Ukrainian bakery."
+    },
+    "internalLinking": {
+      "hubPages": [
+        {
+          "url": "/cakes",
+          "title": "Ukrainian Cakes Collection",
+          "targetKeywords": [
+            "ukrainian cakes",
+            "honey cake",
+            "kyiv cake"
+          ],
+          "linkingTo": [
+            "/cake-postal-delivery",
+            "/honey-cake-near-me",
+            "/wakefield-wedding-cakes"
+          ]
+        },
+        {
+          "url": "/wedding-cakes",
+          "title": "Wedding Cakes",
+          "targetKeywords": [
+            "wedding cakes",
+            "bridal cakes",
+            "celebration cakes"
+          ],
+          "linkingTo": [
+            "/wakefield-wedding-cakes",
+            "/leeds-wedding-cakes"
+          ]
+        },
+        {
+          "url": "/cake-delivery",
+          "title": "Cake Delivery Service",
+          "targetKeywords": [
+            "cake delivery",
+            "cake postal delivery",
+            "cake shipping"
+          ],
+          "linkingTo": [
+            "/cake-postal-delivery",
+            "/cake-shipping"
+          ]
+        }
+      ],
+      "supportingPages": [
+        {
+          "url": "/cake-postal-delivery",
+          "keywords": [
+            "cake postal delivery",
+            "cakes through the letterbox"
+          ],
+          "internalLinks": [
+            "/cakes",
+            "/cake-delivery",
+            "/honey-cake-near-me"
+          ]
+        },
+        {
+          "url": "/wakefield-wedding-cakes",
+          "keywords": [
+            "wakefield wedding cakes",
+            "wedding cakes wakefield"
+          ],
+          "internalLinks": [
+            "/wedding-cakes",
+            "/cake-delivery",
+            "/honey-cake-near-me"
+          ]
+        },
+        {
+          "url": "/honey-cake-near-me",
+          "keywords": [
+            "honey cake near me",
+            "medovik near me"
+          ],
+          "internalLinks": [
+            "/cakes",
+            "/cake-postal-delivery",
+            "/about"
+          ]
+        }
+      ]
+    },
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Olgish Cakes",
+      "url": "https://olgishcakes.co.uk",
+      "telephone": "+44-113-123-4567",
+      "email": "hello@olgishcakes.co.uk",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Leeds",
+        "addressRegion": "West Yorkshire",
+        "addressCountry": "GB"
+      },
+      "openingHours": "Mo-Sa 08:00-18:00",
+      "priceRange": "££",
+      "servesCuisine": "Ukrainian",
+      "areaServed": [
+        "Leeds",
+        "Bradford",
+        "York",
+        "Wakefield",
+        "Huddersfield",
+        "Halifax",
+        "Pudsey",
+        "Otley"
+      ],
+      "specialty": "Ukrainian Honey Cake (Medovik)",
+      "hasMenu": {
+        "@type": "Menu",
+        "hasMenuSection": {
+          "@type": "MenuSection",
+          "name": "Ukrainian Desserts",
+          "hasMenuItem": [
+            {
+              "@type": "MenuItem",
+              "name": "Traditional Medovik Honey Cake",
+              "description": "Authentic Ukrainian honey cake with traditional layers"
+            }
+          ]
+        }
+      }
+    },
+    "faqSchema": {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Medovik honey cake?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Medovik is a traditional Ukrainian honey cake made with thin layers of honey-flavored cake and sweet cream. It's a beloved dessert that's been enjoyed in Ukraine for centuries."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer same-day honey cake delivery?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Order by 2pm for same-day delivery in Leeds and surrounding areas. We also offer next-day delivery to York and other nearby cities across Yorkshire."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I find authentic Ukrainian honey cake near me?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely! We're based in Leeds and serve Yorkshire with authentic Ukrainian Medovik honey cake. Same-day delivery available to Leeds, Bradford, Wakefield, and surrounding areas."
+          }
+        }
+      ]
+    },
+    "localSEO": {
+      "googleMyBusiness": {
+        "name": "Olgish Cakes - Ukrainian Bakery Leeds",
+        "description": "Authentic Ukrainian honey cakes, Medovik, and traditional desserts. Same-day delivery across Yorkshire.",
+        "categories": [
+          "Bakery",
+          "Ukrainian Restaurant",
+          "Cake Shop",
+          "Wedding Service"
+        ],
+        "attributes": [
+          "Ukrainian cuisine",
+          "Same-day delivery",
+          "Wedding cakes",
+          "Custom cakes",
+          "Honey cake specialist",
+          "Gluten-friendly options"
+        ],
+        "posts": [
+          {
+            "title": "New Ukrainian Honey Cake Collection",
+            "content": "Discover our latest Medovik honey cake designs, made with authentic Ukrainian recipes.",
+            "callToAction": "Order Now"
+          }
+        ]
+      },
+      "localCitations": [
+        "Google My Business",
+        "Bing Places",
+        "Yelp",
+        "TripAdvisor",
+        "Facebook Business",
+        "Yellow Pages",
+        "Thomson Local",
+        "Touch Local",
+        "FreeIndex",
+        "192.com",
+        "TouchLocal",
+        "Yell.com",
+        "Local.com",
+        "Citysearch",
+        "Manta",
+        "LocalStack",
+        "Hotfrog",
+        "Brownbook",
+        "Cylex",
+        "Kompass"
+      ],
+      "localKeywords": [
+        "ukrainian bakery leeds",
+        "honey cake leeds",
+        "wedding cakes leeds",
+        "cake delivery leeds",
+        "ukrainian cakes bradford",
+        "honey cake york",
+        "wedding cakes wakefield",
+        "ukrainian bakery huddersfield",
+        "cake delivery halifax",
+        "medovik near me"
+      ]
+    },
+    "contentCalendar": {
+      "weekly": [
+        {
+          "type": "Blog Post",
+          "topic": "Ukrainian Cake Traditions",
+          "keywords": [
+            "ukrainian cake traditions",
+            "honey cake history",
+            "medovik recipe"
+          ],
+          "wordCount": 1500
+        },
+        {
+          "type": "Local Content",
+          "topic": "Cake Delivery in [City]",
+          "keywords": [
+            "cake delivery [city]",
+            "cakes [city]",
+            "ukrainian bakery [city]"
+          ],
+          "wordCount": 1200
+        }
+      ],
+      "monthly": [
+        {
+          "type": "Seasonal Content",
+          "topic": "Wedding Cake Trends",
+          "keywords": [
+            "wedding cake trends 2024",
+            "bridal cake designs",
+            "wedding cake ideas"
+          ],
+          "wordCount": 2000
+        },
+        {
+          "type": "How-to Guide",
+          "topic": "How to Make Honey Cake",
+          "keywords": [
+            "how to make honey cake",
+            "medovik recipe",
+            "ukrainian honey cake recipe"
+          ],
+          "wordCount": 2500
+        }
+      ]
+    },
+    "performanceMetrics": {
+      "technical": {
+        "pageSpeed": {
+          "target": 90,
+          "current": 85,
+          "improvements": [
+            "Optimize images with WebP/AVIF",
+            "Implement lazy loading",
+            "Minimize CSS/JS",
+            "Enable compression"
+          ]
+        },
+        "mobileFriendly": {
+          "status": "Pass",
+          "issues": [],
+          "improvements": [
+            "Ensure touch targets are 44px+",
+            "Optimize font sizes",
+            "Improve viewport configuration"
+          ]
+        },
+        "structuredData": {
+          "implemented": [
+            "LocalBusiness",
+            "Product",
+            "FAQ",
+            "Organization"
+          ],
+          "missing": [
+            "Review",
+            "Event",
+            "Recipe"
+          ],
+          "priority": "High"
+        }
+      },
+      "content": {
+        "keywordOptimization": {
+          "primaryKeywords": 9,
+          "optimized": 9,
+          "coverage": "100%"
+        },
+        "contentQuality": {
+          "averageWordCount": 1800,
+          "targetWordCount": 2000,
+          "improvement": "+200 words per page"
+        },
+        "internalLinking": {
+          "current": 5,
+          "target": 8,
+          "improvement": "+3 internal links per page"
+        }
+      },
+      "local": {
+        "googleMyBusiness": {
+          "optimized": true,
+          "reviews": 45,
+          "rating": 4.9,
+          "posts": "Weekly"
+        },
+        "localCitations": {
+          "current": 12,
+          "target": 20,
+          "improvement": "+8 new citations"
+        }
+      }
+    }
+  },
+  "actionPlan": [
+    {
+      "priority": "High",
+      "action": "Optimize existing pages with target keywords",
+      "timeline": "Week 1-2",
+      "expectedImpact": "Move 3-5 keywords to Page 1"
+    },
+    {
+      "priority": "High",
+      "action": "Implement advanced structured data",
+      "timeline": "Week 1",
+      "expectedImpact": "Increase SERP features by 40%"
+    },
+    {
+      "priority": "Medium",
+      "action": "Build local citations and GMB optimization",
+      "timeline": "Week 2-4",
+      "expectedImpact": "Improve local pack rankings"
+    },
+    {
+      "priority": "Medium",
+      "action": "Create content calendar and publish regularly",
+      "timeline": "Ongoing",
+      "expectedImpact": "Build topical authority"
+    }
+  ]
+}
