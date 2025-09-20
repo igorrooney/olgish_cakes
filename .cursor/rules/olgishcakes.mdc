@@ -106,3 +106,114 @@ Text Generation Rule
 - Style must reflect someone whose first language is Ukrainian but who lives in the UK and writes English as a second language.
 - Use slightly imperfect but warm, human-like phrasing (avoid overly polished “AI tone”).
 - Prioritize honest, friendly, and authentic voice over perfect grammar.
+
+
+### **Content Requirements**
+- **All pages must have a minimum of 800+ words for SEO optimization**
+- **Content should maintain authentic Ukrainian-English voice style**
+- **Reference real cakes from the live website at https://olgishcakes.co.uk/cakes**
+- **Ensure comprehensive, engaging content that sounds natural**
+
+### **SEO & Marketing**
+- Always generate semantic HTML (use <h1>–<h6>, <nav>, <article>, <section>, <footer> correctly).
+- Each page must have a unique title, meta description, and OpenGraph tags.
+- Generate structured data (JSON-LD) for products, recipes, reviews, and LocalBusiness.
+- Always use canonical URLs to avoid duplicates.
+- Optimize for Core Web Vitals (LCP, CLS, FID, INP).
+- Write SEO-friendly URLs (e.g., /cakes/chocolate-birthday-cake).
+- Optimize for mobile-first indexing.
+- Generate internal links between related products, categories, and blog posts.
+- Provide XML sitemap and robots.txt that allow indexing.
+
+### **Accessibility**
+- All images must have meaningful alt text (SEO-friendly but descriptive).
+- Ensure keyboard navigation and visible focus states for all interactive elements.
+- Use aria-labels where semantic HTML isn't enough.
+- Color contrast must meet WCAG AA standards.
+- Run axe-core accessibility checks in dev.
+
+### **E-commerce & Content**
+- Product pages must include: product name, price, ingredients, allergen info, nutrition info, CTAs.
+- Use Schema.org Product structured data.
+- Blog/recipe pages must include Recipe schema with ingredients, steps, prep/cook times.
+- Integrate Sanity.io for CMS (products, categories, recipes).
+- All dynamic content should be SSG or ISR (not CSR) for SEO.
+
+### **Images & Media**
+- Use Next.js <Image> with priority for above-the-fold hero images.
+- Default format: WebP with fallback to JPG/PNG.
+- Always include width/height attributes to prevent CLS.
+- Lazy-load below-the-fold media.
+- Use responsive images (sizes, srcSet).
+- File names must include keywords (chocolate-cake.webp not img123.webp).
+
+### **Performance**
+- Use ISR (Incremental Static Regeneration) for products/recipes.
+- Cache static assets with long-term caching.
+- Critical CSS must load inline; rest via Tailwind/MUI tree-shaking.
+- JS budget: ≤ 170KB gzipped on first load.
+- Fonts ≤ 100KB total.
+- LCP < 2.0s mobile, CLS < 0.1, INP < 200ms.
+
+### **Security & Compliance**
+- Sanitize all inputs from forms.
+- Use Next.js server actions for form submissions.
+- Set secure headers: CSP (with nonce), X-Frame-Options DENY, Referrer-Policy strict-origin-when-cross-origin.
+- CSRF tokens and spam protection (honeypot or hCaptcha) for forms.
+- GDPR: cookie categories, data subject rights link in footer, privacy & terms pages.
+- Disable indexing on non-production with X-Robots-Tag: noindex.
+- Display allergen information clearly (UK legal requirement).
+
+### **Analytics & Consent**
+- Use GA4 with privacy-friendly fallback (Plausible or PostHog).
+- Implement Consent Mode v2; block non-essential tags until consent.
+- Maintain a simple dataLayer contract (page_view, product_view, add_to_cart, purchase).
+
+### **Local SEO**
+- Add LocalBusiness JSON-LD with name, address, phone, opening hours, priceRange.
+- Ensure NAP consistency across website and Google Business Profile.
+- Show reviews and FAQs with schema markup.
+- Add BreadcrumbList schema to product/category pages.
+
+### **Routing & Edge Cases**
+- Custom 404 and 410 pages (for retired products).
+- Canonicals on every page; ensure no duplicate content across slugs.
+- Maintain redirects map (CSV/JSON) → Next.js middleware for 301s.
+
+### **PWA & Reliability**
+- Add web app manifest, icons, and service worker (offline cache for critical pages).
+- Uptime monitoring and error tracking with Sentry.
+
+### **Emails & Domain Health**
+- Transactional email via Postmark/Resend; set SPF, DKIM, DMARC.
+- Use branded sender addresses with plain-text fallbacks.
+
+### **Payments / Ordering (if applicable)**
+- Use Stripe with Payment Element; validate webhooks server-side with signature.
+- Show delivery areas, lead times, refund and cancellation policy.
+
+### **Tooling & CI**
+- ESLint (typescript, react, jsx-a11y) + Prettier.
+- TypeScript strict mode on.
+- Unit tests (Vitest) + e2e tests (Playwright) for critical flows.
+- CI pipeline: typecheck, lint, test, Lighthouse CI on key pages.
+- Dependabot or Renovate weekly updates.
+- CODEOWNERS for schema and SEO-critical files.
+
+### **Environment & Config**
+- Separate .env files per environment; never expose secrets to client.
+- Feature flags for experiments.
+- Log performance marks in dev for debugging.
+
+### **Marketing Ops**
+- UTM tagging helper for campaigns.
+- Each blog post must have author bio, publish date, and updated date.
+- Generate OG images dynamically per page.
+
+### **Text Generation Rule**
+- All generated text (product descriptions, blog posts, marketing copy) must sound natural and authentic, not AI-generated.
+- Style must reflect someone whose first language is Ukrainian but who lives in the UK and writes English as a second language.
+- Use slightly imperfect but warm, human-like phrasing (avoid overly polished "AI tone").
+- Prioritize honest, friendly, and authentic voice over perfect grammar.
+
+---

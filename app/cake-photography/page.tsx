@@ -153,38 +153,145 @@ export default function CakePhotographyPage() {
             <Chip label="Celebration Cakes" color="secondary" />
           </Box>
         </Box>
-        <Grid container spacing={3}>
+        <Typography variant="body1" sx={{ mb: 6, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}>
+          When I started making cakes, I quickly realised that beautiful cakes deserve beautiful photos. 
+          That is why I offer professional cake photography services - to capture the magic of your special cake 
+          so you can remember it forever and share it with others.
+        </Typography>
+
+        <Grid container spacing={4} sx={{ mb: 6 }}>
           <Grid item xs={12} sm={6} md={4}>
-            <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
+            <Paper elevation={2} sx={{ p: 4, textAlign: "center", height: "100%" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
                 Professional Lighting
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Studio and natural light setups for stunning cake photos.
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                I use professional lighting equipment and natural light to make sure your cake looks absolutely perfect in photos. 
+                Every detail, every texture, every beautiful decoration will be captured beautifully.
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
+            <Paper elevation={2} sx={{ p: 4, textAlign: "center", height: "100%" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
                 Creative Styling
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Artistic styling and backgrounds to highlight your cake's beauty.
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                I create beautiful backgrounds and styling that complement your cake perfectly. 
+                Whether you want elegant and simple or colourful and fun, I will make sure your cake is the star of the photo.
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <Paper elevation={2} sx={{ p: 3, textAlign: "center" }}>
-              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold" }}>
+            <Paper elevation={2} sx={{ p: 4, textAlign: "center", height: "100%" }}>
+              <Typography variant="h3" component="h3" sx={{ color: "#005BBB", fontWeight: "bold", mb: 2 }}>
                 High-Resolution Images
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Perfect for websites, social media, and print.
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                You will receive high-quality photos that look amazing on websites, social media, and even in print. 
+                Perfect for sharing with family and friends or for your business if you are a cake maker too.
               </Typography>
             </Paper>
           </Grid>
         </Grid>
+
+        <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+          <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            What Types of Cakes Do I Photograph?
+          </Typography>
+          
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Wedding Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  Your wedding cake is one of the most important parts of your special day. I will capture every beautiful detail 
+                  so you can remember it forever. Perfect for sharing with guests who could not attend or for your wedding album.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Birthday Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  Whether it is for a child's birthday or an adult celebration, I will make sure your birthday cake photos 
+                  capture all the joy and excitement of the moment. Great for social media and sharing with family.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Celebration Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  Anniversary cakes, graduation cakes, retirement cakes - any special celebration deserves beautiful photos. 
+                  I will capture the significance of your cake and the love that went into making it.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Custom Design Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  If you have a unique, custom-designed cake, professional photos are especially important. 
+                  I will showcase every creative detail and make sure your one-of-a-kind cake is captured perfectly.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+          <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            How It Works
+          </Typography>
+          
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: "center", p: 3 }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>📸</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Book Your Session
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  Contact me to arrange your cake photography session. We can do it at my studio or at your location, 
+                  whatever works best for you and your cake.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: "center", p: 3 }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>🎨</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Professional Shoot
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  I will set up the perfect lighting and styling for your cake. I take multiple angles and shots 
+                  to make sure we capture your cake from every beautiful perspective.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Box sx={{ textAlign: "center", p: 3 }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2 }}>💝</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Receive Your Photos
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  You will receive professionally edited, high-resolution photos within a few days. 
+                  Perfect for sharing, printing, or keeping as beautiful memories of your special cake.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
       </Container>
     </>
   );
