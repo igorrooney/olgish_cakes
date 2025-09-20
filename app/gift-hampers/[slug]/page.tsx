@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const isCakeByPost = hamper.slug?.current === "cake-by-post";
   const metaTitle =
     (isCakeByPost &&
-      "Cake by Post | Letterbox Cake Delivery UK – OlgishCakes") ||
+      "Cake by Post Gift Hamper | Traditional Ukrainian Honey Cake UK Delivery – OlgishCakes") ||
     hamper.seo?.metaTitle ||
     `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
   const metaDescription =
