@@ -14,16 +14,17 @@ import Footer from "./components/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
+import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
 import Script from "next/script";
 
 const alice = Alice({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-playfair-display",
+  variable: "--font-alice",
   display: "swap",
   preload: true,
   fallback: ["Georgia", "serif"],
-  adjustFontFallback: false,
+  adjustFontFallback: true,
 });
 
 const primary = designTokens.colors.primary.main;
@@ -204,6 +205,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
+        <CriticalCSS />
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />
@@ -213,6 +215,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Preconnect for critical domains */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        
+        {/* Font preloading for better performance */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Alice:wght@400&display=swap"
+          as="style"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Alice:wght@400&display=swap"
+        />
 
         {/* Google Analytics 4 - Load with lower priority */}
         <Script
@@ -457,6 +470,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Footer />
                       <ScrollToTop />
                       <WebVitalsMonitor />
+                      <PerformanceOptimizer />
                       <DynamicCookieConsent />
                       <DynamicDevTools />
               </div>
@@ -471,6 +485,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {`
             document.body.classList.remove('critical-loading');
             document.body.classList.add('critical-loaded');
+          `}
+        </Script>
+        
+        {/* Service Worker Registration */}
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                  .then((registration) => {
+                    console.log('SW registered: ', registration);
+                  })
+                  .catch((registrationError) => {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+              });
+            }
           `}
         </Script>
       </body>
