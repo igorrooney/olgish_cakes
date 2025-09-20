@@ -60,6 +60,7 @@ const navigationBase = [
           href: "/traditional-ukrainian-cakes",
           description: "Real Ukrainian flavors",
         },
+        { name: "Honey Cake Near Me", href: "/honey-cake-near-me", description: "Find authentic Medovik near you" },
       ],
       categories: [
         {
@@ -70,6 +71,7 @@ const navigationBase = [
             { name: "Cakes Bradford", href: "/cakes-bradford" },
             { name: "Cakes Huddersfield", href: "/cakes-huddersfield" },
             { name: "Cakes Wakefield", href: "/cakes-wakefield" },
+            { name: "Wakefield Wedding Cakes", href: "/wakefield-wedding-cakes" },
             { name: "Cakes Pudsey", href: "/cakes-pudsey" },
             { name: "View All Locations", href: "/delivery-areas" },
           ],
@@ -124,6 +126,7 @@ const navigationBase = [
       { name: "Custom Cake Design", href: "/custom-cake-design" },
       { name: "Cake Delivery", href: "/cake-delivery" },
       { name: "Cake by Post Service", href: "/cake-by-post-service" },
+      { name: "Cake Postal Delivery", href: "/cake-postal-delivery" },
       { name: "Buy Cake Online", href: "/buy-cake" },
       { name: "Leeds Bakery", href: "/leeds-bakery" },
       { name: "Cake Decorating Services", href: "/cake-decorating-services" },

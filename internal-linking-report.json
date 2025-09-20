@@ -1,0 +1,563 @@
+{
+  "timestamp": "2025-09-20T21:11:47.032Z",
+  "siteUrl": "https://olgishcakes.co.uk",
+  "totalPages": 15,
+  "linkingStrategy": {
+    "hubPages": [
+      {
+        "url": "/",
+        "title": "Home",
+        "authority": "high",
+        "category": "hub"
+      },
+      {
+        "url": "/cakes",
+        "title": "Cakes",
+        "authority": "high",
+        "category": "hub"
+      },
+      {
+        "url": "/wedding-cakes",
+        "title": "Wedding Cakes",
+        "authority": "high",
+        "category": "hub"
+      }
+    ],
+    "targetPages": [
+      {
+        "url": "/cake-postal-delivery",
+        "title": "Cake Postal Delivery",
+        "authority": "medium",
+        "category": "target",
+        "keywords": [
+          "cake postal delivery",
+          "cakes through the letterbox"
+        ]
+      },
+      {
+        "url": "/wakefield-wedding-cakes",
+        "title": "Wakefield Wedding Cakes",
+        "authority": "medium",
+        "category": "target",
+        "keywords": [
+          "wakefield wedding cakes",
+          "wedding cakes wakefield"
+        ]
+      },
+      {
+        "url": "/honey-cake-near-me",
+        "title": "Honey Cake Near Me",
+        "authority": "medium",
+        "category": "target",
+        "keywords": [
+          "honey cake near me",
+          "medovik near me"
+        ]
+      }
+    ],
+    "locationPages": [
+      {
+        "url": "/cakes-leeds",
+        "title": "Cakes Leeds",
+        "authority": "medium",
+        "category": "location",
+        "keywords": [
+          "cakes leeds",
+          "ukrainian bakery leeds"
+        ]
+      },
+      {
+        "url": "/cakes-bradford",
+        "title": "Cakes Bradford",
+        "authority": "medium",
+        "category": "location",
+        "keywords": [
+          "cakes bradford",
+          "ukrainian cakes bradford"
+        ]
+      },
+      {
+        "url": "/cakes-york",
+        "title": "Cakes York",
+        "authority": "medium",
+        "category": "location",
+        "keywords": [
+          "cakes york",
+          "cake delivery york"
+        ]
+      },
+      {
+        "url": "/cakes-huddersfield",
+        "title": "Cakes Huddersfield",
+        "authority": "medium",
+        "category": "location",
+        "keywords": [
+          "cakes huddersfield",
+          "ukrainian bakery huddersfield"
+        ]
+      }
+    ],
+    "servicePages": [
+      {
+        "url": "/cake-delivery",
+        "title": "Cake Delivery",
+        "authority": "medium",
+        "category": "service",
+        "keywords": [
+          "cake delivery",
+          "cake shipping"
+        ]
+      },
+      {
+        "url": "/custom-cake-design",
+        "title": "Custom Cake Design",
+        "authority": "medium",
+        "category": "service",
+        "keywords": [
+          "custom cake design",
+          "bespoke cakes"
+        ]
+      },
+      {
+        "url": "/cake-tasting-sessions",
+        "title": "Cake Tasting",
+        "authority": "low",
+        "category": "service",
+        "keywords": [
+          "cake tasting",
+          "wedding cake tasting"
+        ]
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "type": "hub-to-target",
+      "source": "/cakes",
+      "target": "/cake-postal-delivery",
+      "anchorText": "cake postal delivery",
+      "priority": "high",
+      "context": "Link from high-authority hub page to target keyword page",
+      "implementation": "Add contextual link in main content area with anchor text: \"cake postal delivery\""
+    },
+    {
+      "type": "hub-to-target",
+      "source": "/cakes",
+      "target": "/honey-cake-near-me",
+      "anchorText": "honey cake near me",
+      "priority": "high",
+      "context": "Link from high-authority hub page to target keyword page",
+      "implementation": "Add contextual link in main content area with anchor text: \"honey cake near me\""
+    },
+    {
+      "type": "hub-to-target",
+      "source": "/wedding-cakes",
+      "target": "/wakefield-wedding-cakes",
+      "anchorText": "Wakefield wedding cakes",
+      "priority": "high",
+      "context": "Link from high-authority hub page to target keyword page",
+      "implementation": "Add contextual link in main content area with anchor text: \"Wakefield wedding cakes\""
+    },
+    {
+      "type": "hub-to-target",
+      "source": "/cake-delivery",
+      "target": "/cake-postal-delivery",
+      "anchorText": "cake postal delivery",
+      "priority": "high",
+      "context": "Link from high-authority hub page to target keyword page",
+      "implementation": "Add contextual link in main content area with anchor text: \"cake postal delivery\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/cake-postal-delivery",
+      "target": "/cakes",
+      "anchorText": "Ukrainian cakes",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"Ukrainian cakes\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/cake-postal-delivery",
+      "target": "/cake-delivery",
+      "anchorText": "cake delivery service",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"cake delivery service\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/cake-postal-delivery",
+      "target": "/contact",
+      "anchorText": "contact",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"contact\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/wakefield-wedding-cakes",
+      "target": "/wedding-cakes",
+      "anchorText": "wedding cakes",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"wedding cakes\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/wakefield-wedding-cakes",
+      "target": "/cakes",
+      "anchorText": "Ukrainian cakes",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"Ukrainian cakes\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/wakefield-wedding-cakes",
+      "target": "/contact",
+      "anchorText": "contact",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"contact\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/honey-cake-near-me",
+      "target": "/cakes",
+      "anchorText": "Ukrainian cakes",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"Ukrainian cakes\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/honey-cake-near-me",
+      "target": "/about",
+      "anchorText": "about",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"about\""
+    },
+    {
+      "type": "target-to-hub",
+      "source": "/honey-cake-near-me",
+      "target": "/contact",
+      "anchorText": "contact",
+      "priority": "high",
+      "context": "Link from target keyword page to high-authority hub page",
+      "implementation": "Add contextual link in content body with anchor text: \"contact\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-leeds",
+      "target": "/cakes-bradford",
+      "anchorText": "cakes-bradford",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-bradford\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-leeds",
+      "target": "/cakes-york",
+      "anchorText": "cakes-york",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-york\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-leeds",
+      "target": "/cakes-huddersfield",
+      "anchorText": "cakes-huddersfield",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-huddersfield\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-bradford",
+      "target": "/cakes-leeds",
+      "anchorText": "cakes-leeds",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-leeds\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-bradford",
+      "target": "/cakes-york",
+      "anchorText": "cakes-york",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-york\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-york",
+      "target": "/cakes-leeds",
+      "anchorText": "cakes-leeds",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-leeds\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-york",
+      "target": "/cakes-bradford",
+      "anchorText": "cakes-bradford",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-bradford\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-huddersfield",
+      "target": "/cakes-leeds",
+      "anchorText": "cakes-leeds",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-leeds\""
+    },
+    {
+      "type": "location-cross-linking",
+      "source": "/cakes-huddersfield",
+      "target": "/cakes-bradford",
+      "anchorText": "cakes-bradford",
+      "priority": "medium",
+      "context": "Cross-link between location pages for better local SEO",
+      "implementation": "Add link in service areas section with anchor text: \"cakes-bradford\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/cake-delivery",
+      "target": "/custom-cake-design",
+      "anchorText": "custom-cake-design",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"custom-cake-design\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/cake-delivery",
+      "target": "/cake-tasting-sessions",
+      "anchorText": "cake-tasting-sessions",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"cake-tasting-sessions\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/custom-cake-design",
+      "target": "/wedding-cakes",
+      "anchorText": "wedding cakes",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"wedding cakes\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/custom-cake-design",
+      "target": "/cake-delivery",
+      "anchorText": "cake delivery service",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"cake delivery service\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/cake-tasting-sessions",
+      "target": "/wedding-cakes",
+      "anchorText": "wedding cakes",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"wedding cakes\""
+    },
+    {
+      "type": "service-cross-linking",
+      "source": "/cake-tasting-sessions",
+      "target": "/custom-cake-design",
+      "anchorText": "custom-cake-design",
+      "priority": "medium",
+      "context": "Cross-link between related service pages",
+      "implementation": "Add link in related services section with anchor text: \"custom-cake-design\""
+    }
+  ],
+  "breadcrumbs": {
+    "/cake-postal-delivery": [
+      {
+        "name": "Home",
+        "url": "/"
+      },
+      {
+        "name": "Services",
+        "url": "/services"
+      },
+      {
+        "name": "Cake Postal Delivery",
+        "url": "/cake-postal-delivery"
+      }
+    ],
+    "/wakefield-wedding-cakes": [
+      {
+        "name": "Home",
+        "url": "/"
+      },
+      {
+        "name": "Wedding Cakes",
+        "url": "/wedding-cakes"
+      },
+      {
+        "name": "Wakefield Wedding Cakes",
+        "url": "/wakefield-wedding-cakes"
+      }
+    ],
+    "/honey-cake-near-me": [
+      {
+        "name": "Home",
+        "url": "/"
+      },
+      {
+        "name": "Cakes",
+        "url": "/cakes"
+      },
+      {
+        "name": "Honey Cake Near Me",
+        "url": "/honey-cake-near-me"
+      }
+    ]
+  },
+  "footer": {
+    "primary": [
+      {
+        "url": "/cakes",
+        "title": "Ukrainian Cakes"
+      },
+      {
+        "url": "/wedding-cakes",
+        "title": "Wedding Cakes"
+      },
+      {
+        "url": "/cake-delivery",
+        "title": "Cake Delivery"
+      },
+      {
+        "url": "/contact",
+        "title": "Contact Us"
+      }
+    ],
+    "services": [
+      {
+        "url": "/cake-postal-delivery",
+        "title": "Cake Postal Delivery"
+      },
+      {
+        "url": "/custom-cake-design",
+        "title": "Custom Cake Design"
+      },
+      {
+        "url": "/cake-tasting-sessions",
+        "title": "Cake Tasting"
+      }
+    ],
+    "locations": [
+      {
+        "url": "/cakes-leeds",
+        "title": "Cakes Leeds"
+      },
+      {
+        "url": "/cakes-bradford",
+        "title": "Cakes Bradford"
+      },
+      {
+        "url": "/cakes-york",
+        "title": "Cakes York"
+      },
+      {
+        "url": "/cakes-huddersfield",
+        "title": "Cakes Huddersfield"
+      }
+    ]
+  },
+  "metrics": {
+    "currentInternalLinks": {
+      "totalLinks": 45,
+      "averagePerPage": 3.2,
+      "hubPageLinks": 8,
+      "targetPageLinks": 12,
+      "locationPageLinks": 15,
+      "servicePageLinks": 10
+    },
+    "targetInternalLinks": {
+      "totalLinks": 120,
+      "averagePerPage": 8,
+      "hubPageLinks": 15,
+      "targetPageLinks": 25,
+      "locationPageLinks": 40,
+      "servicePageLinks": 40
+    },
+    "linkDistribution": {
+      "hubPages": {
+        "current": 8,
+        "target": 15,
+        "improvement": "+7"
+      },
+      "targetPages": {
+        "current": 12,
+        "target": 25,
+        "improvement": "+13"
+      },
+      "locationPages": {
+        "current": 15,
+        "target": 40,
+        "improvement": "+25"
+      },
+      "servicePages": {
+        "current": 10,
+        "target": 40,
+        "improvement": "+30"
+      }
+    },
+    "authorityFlow": {
+      "hubToTarget": "Optimized - High authority flowing to target pages",
+      "targetToSupporting": "Needs improvement - Target pages should link to supporting content",
+      "locationCrossLinking": "Partial - Some location pages lack cross-links",
+      "serviceIntegration": "Good - Services well integrated with main content"
+    }
+  },
+  "actionPlan": [
+    {
+      "priority": "High",
+      "action": "Implement hub-to-target page linking",
+      "pages": [
+        "/cakes",
+        "/wedding-cakes",
+        "/cake-delivery"
+      ],
+      "expectedImpact": "Boost target page authority by 15-25%"
+    },
+    {
+      "priority": "High",
+      "action": "Add contextual internal links to target pages",
+      "pages": [
+        "/cake-postal-delivery",
+        "/wakefield-wedding-cakes",
+        "/honey-cake-near-me"
+      ],
+      "expectedImpact": "Improve keyword rankings by 3-5 positions"
+    },
+    {
+      "priority": "Medium",
+      "action": "Optimize breadcrumb navigation",
+      "pages": "All target pages",
+      "expectedImpact": "Better user experience and crawlability"
+    },
+    {
+      "priority": "Medium",
+      "action": "Implement footer linking strategy",
+      "pages": "All pages",
+      "expectedImpact": "Improve site-wide link distribution"
+    }
+  ]
+}
