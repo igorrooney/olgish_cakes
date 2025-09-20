@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     `${hamper.name} | Luxury Gift Hampers by Olgish Cakes`;
   const metaDescription =
     (isCakeByPost &&
-      "Order delicious cake by post with OlgishCakes. Freshly baked, beautifully packed, and delivered straight to your letterbox anywhere in the UK. Perfect for birthdays, anniversaries & surprises.") ||
+      "Buy traditional Ukrainian honey cake by post from OlgishCakes. Letterbox-friendly gift hamper with vacuum-packed cake slices. Perfect surprise delivery for birthdays, anniversaries & special occasions across the UK.") ||
     hamper.seo?.metaDescription ||
     (hamper.shortDescription
       ? blocksToText(hamper.shortDescription).substring(0, 160)
