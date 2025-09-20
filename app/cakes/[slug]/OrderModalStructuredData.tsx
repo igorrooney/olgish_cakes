@@ -144,6 +144,23 @@ export function OrderModalStructuredData({
     review: [
       {
         "@type": "Review",
+        itemReviewed: {
+          "@type": "Product",
+          name: `${cake.name} - ${designType === "standard" ? "Standard Design" : "Individual Design"}`,
+          description: cake.shortDescription
+            ? typeof cake.shortDescription === "string"
+              ? cake.shortDescription
+              : Array.isArray(cake.shortDescription)
+                ? cake.shortDescription
+                    .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
+                    .join(" ")
+                : ""
+            : `Professional ${cake.name} cake with ${designType === "standard" ? "standard" : "custom"} design`,
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes",
+          }
+        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
@@ -158,6 +175,23 @@ export function OrderModalStructuredData({
       },
       {
         "@type": "Review",
+        itemReviewed: {
+          "@type": "Product",
+          name: `${cake.name} - ${designType === "standard" ? "Standard Design" : "Individual Design"}`,
+          description: cake.shortDescription
+            ? typeof cake.shortDescription === "string"
+              ? cake.shortDescription
+              : Array.isArray(cake.shortDescription)
+                ? cake.shortDescription
+                    .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
+                    .join(" ")
+                : ""
+            : `Professional ${cake.name} cake with ${designType === "standard" ? "standard" : "custom"} design`,
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes",
+          }
+        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",

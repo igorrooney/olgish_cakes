@@ -203,6 +203,15 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
     review: [
       {
         "@type": "Review",
+        itemReviewed: {
+          "@type": "Product",
+          name: "Ukrainian Honey Cake",
+          description: "Traditional Ukrainian honey cake (honey cake) made with authentic recipes",
+          brand: {
+            "@type": "Brand",
+            name: "Olgish Cakes"
+          }
+        },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
