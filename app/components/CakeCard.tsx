@@ -153,6 +153,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             "@type": "Rating",
             ratingValue: "5",
             bestRating: "5",
+            worstRating: "1",
           },
           reviewBody: `Amazing ${cake.name}! The taste is incredible and the service was perfect. Highly recommend!`,
           datePublished: "2024-07-01",
