@@ -3,13 +3,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Script from "next/script";
 export const metadata: Metadata = {
-  title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes | Olgish Cakes",
+  title: "Graduation Cakes Leeds | Ukrainian Cakes",
   description:
     "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs. Order now for graduation celebrations.",
   keywords:
     "graduation cakes Leeds, Ukrainian graduation cakes, graduation celebration cakes, personalized graduation cakes, graduation cake delivery Leeds",
   openGraph: {
-    title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes",
+    title: "Graduation Cakes Leeds | Ukrainian Cakes",
     description:
       "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs.",
     url: "https://olgishcakes.co.uk/graduation-cakes-leeds",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Graduation Cakes Leeds | Ukrainian Graduation Cakes",
+    title: "Graduation Cakes Leeds | Ukrainian Cakes",
     description:
       "Celebrate graduation with traditional Ukrainian graduation cakes in Leeds. Handcrafted graduation cakes with personalized designs.",
     images: ["https://olgishcakes.co.uk/images/graduation-cakes-leeds.jpg"],

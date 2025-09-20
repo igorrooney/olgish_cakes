@@ -3,7 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Cake Photography | Professional Cake Photos | Olgish Cakes",
+  title: "Cake Photography | Professional Cake Photos",
   description:
     "Professional cake photography services in Leeds. Capture your custom cakes, wedding cakes, and celebration cakes with stunning photos.",
   keywords:

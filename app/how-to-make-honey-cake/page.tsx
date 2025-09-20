@@ -16,13 +16,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe | Olgish Cakes",
+  title: "How to Make Honey Cake | Ukrainian Recipe",
   description:
     "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake layers and cream filling.",
   keywords:
     "how to make honey cake, Ukrainian honey cake recipe, Medovik recipe, traditional honey cake, honey cake layers, Ukrainian baking",
   openGraph: {
-    title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe",
+    title: "How to Make Honey Cake | Ukrainian Recipe",
     description:
       "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake.",
     url: "https://olgishcakes.co.uk/how-to-make-honey-cake",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "How to Make Honey Cake | traditional Ukrainian Honey Cake Recipe",
+    title: "How to Make Honey Cake | Ukrainian Recipe",
     description:
       "Learn how to make real Ukrainian honey cake (Medovik) with my traditional recipe. Step-by-step instructions for the perfect honey cake.",
     images: ["https://olgishcakes.co.uk/images/honey-cake-recipe.jpg"],

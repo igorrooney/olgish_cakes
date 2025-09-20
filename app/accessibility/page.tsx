@@ -16,11 +16,11 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
+  title: "Accessibility Statement | Olgish Cakes Leeds",
   description:
     "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users, including those with disabilities. WCAG 2.1 compliance information.",
   openGraph: {
-    title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
+    title: "Accessibility Statement | Olgish Cakes Leeds",
     description:
       "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users, including those with disabilities.",
     url: "https://olgishcakes.co.uk/accessibility",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Accessibility Statement | Olgish Cakes - Accessible Ukrainian Bakery",
+    title: "Accessibility Statement | Olgish Cakes Leeds",
     description:
       "Olgish Cakes accessibility statement. I am committed to making my Ukrainian bakery website accessible to all users.",
     images: ["https://olgishcakes.co.uk/images/accessibility-statement.jpg"],

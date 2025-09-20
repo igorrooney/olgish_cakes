@@ -3,7 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Cake Preservation | How to Store Cakes | Olgish Cakes",
+  title: "Cake Preservation | How to Store Cakes",
   description:
     "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
   keywords:

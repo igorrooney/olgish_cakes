@@ -17,13 +17,13 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Decorating Services | Custom Cake Design | Olgish Cakes",
+  title: "Cake Decorating Services | Custom Design",
   description:
     "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
   keywords:
     "cake decorating services, custom cake design, cake decoration Leeds, wedding cake decoration, birthday cake decoration",
   openGraph: {
-    title: "Cake Decorating Services | Custom Cake Design",
+    title: "Cake Decorating Services | Custom Design",
     description:
       "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
     url: "https://olgishcakes.co.uk/cake-decorating-services",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Decorating Services | Custom Cake Design",
+    title: "Cake Decorating Services | Custom Design",
     description:
       "Professional cake decorating services in Leeds. I offer custom cake design, fondant work, sugar flowers, and more for weddings, birthdays, and special occasions.",
     images: ["https://olgishcakes.co.uk/images/cake-decorating-services.jpg"],

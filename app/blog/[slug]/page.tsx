@@ -477,7 +477,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   if (!post) {
     return {
-      title: "Blog Post Not Found | Olgish Cakes",
+      title: "Blog Post Not Found",
       description: "The requested blog post could not be found.",
     };
   }

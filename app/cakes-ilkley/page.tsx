@@ -4,13 +4,13 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Ilkley | Ukrainian Cakes Ilkley | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Ilkley | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Ilkley. Order now for special occasions.",
   keywords:
     "cakes Ilkley, Ukrainian cakes Ilkley, honey cake Ilkley, Kyiv cake Ilkley, traditional Ukrainian cakes Ilkley, cake delivery Ilkley",
   openGraph: {
-    title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
+    title: "Cakes Ilkley | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Ilkley.",
     url: "https://olgishcakes.co.uk/cakes-ilkley",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Ilkley | Ukrainian Cakes Ilkley",
+    title: "Cakes Ilkley | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Ilkley.",
     images: ["https://olgishcakes.co.uk/images/cakes-ilkley.jpg"],

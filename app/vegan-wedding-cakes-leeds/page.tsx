@@ -8,13 +8,13 @@ import Link from "next/link";
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
-    "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik) | Olgish Cakes",
+    "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes",
   description:
     "Beautiful vegan Ukrainian wedding cakes in Leeds. Handcrafted vegan honey cake (Medovik), Kyiv cake, and traditional Ukrainian wedding desserts. Perfect for vegan weddings.",
   keywords:
     "vegan wedding cakes Leeds, Ukrainian vegan wedding cakes, vegan honey cake, vegan Medovik, vegan wedding desserts, vegan wedding cakes Yorkshire",
   openGraph: {
-    title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik)",
+    title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes",
     description:
       "Beautiful vegan Ukrainian wedding cakes in Leeds. Handcrafted vegan honey cake (Medovik) and traditional Ukrainian wedding desserts.",
     url: "https://olgishcakes.co.uk/vegan-wedding-cakes-leeds",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes | Vegan Honey Cake (Medovik)",
+    title: "Vegan Wedding Cakes Leeds | Ukrainian Vegan Wedding Cakes",
     description:
       "Beautiful vegan Ukrainian wedding cakes in Leeds. Handcrafted vegan honey cake (Medovik) and traditional Ukrainian wedding desserts.",
     images: ["https://olgishcakes.co.uk/images/vegan-wedding-cakes-leeds.jpg"],

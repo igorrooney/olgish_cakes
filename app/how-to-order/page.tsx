@@ -19,13 +19,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { InteractiveLink } from "./InteractiveLink";
 
 export const metadata: Metadata = {
-  title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders | Olgish Cakes",
+  title: "How to Order Cake | Cake Ordering Process",
   description:
     "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information. Easy cake ordering in Leeds.",
   keywords:
     "how to order cake, cake ordering process, custom cake orders, cake consultation, cake payment, cake delivery, order Ukrainian cake, cake ordering guide",
   openGraph: {
-    title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders",
+    title: "How to Order Cake | Cake Ordering Process",
     description:
       "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information. Easy cake ordering in Leeds.",
     url: "https://olgishcakes.co.uk/how-to-order",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "How to Order Cake | Cake Ordering Process | Custom Cake Orders",
+    title: "How to Order Cake | Cake Ordering Process",
     description:
       "Complete guide to ordering Ukrainian cakes. Step-by-step cake ordering process, consultation details, payment options, and delivery information.",
     images: ["https://olgishcakes.co.uk/images/how-to-order.jpg"],

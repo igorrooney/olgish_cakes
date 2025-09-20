@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Pudsey | Ukrainian Cakes Pudsey | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Pudsey | Ukrainian Cakes",
   description:
     "traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey. Order now for special occasions.",
   keywords:
     "cakes Pudsey, Ukrainian cakes Pudsey, honey cake Pudsey, Kyiv cake Pudsey, traditional Ukrainian cakes Pudsey, cake delivery Pudsey",
   openGraph: {
-    title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
+    title: "Cakes Pudsey | Ukrainian Cakes",
     description:
       "traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey.",
     url: "https://olgishcakes.co.uk/cakes-pudsey",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Pudsey | Ukrainian Cakes Pudsey",
+    title: "Cakes Pudsey | Ukrainian Cakes",
     description:
       "traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey.",
     images: ["https://olgishcakes.co.uk/images/cakes-pudsey.jpg"],

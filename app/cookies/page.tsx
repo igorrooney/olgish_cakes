@@ -13,11 +13,11 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Olgish Cakes - Website Cookie Usage",
+  title: "Cookie Policy | Olgish Cakes - Website Cookies",
   description:
     "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
   openGraph: {
-    title: "Cookie Policy | Olgish Cakes - Website Cookie Usage",
+    title: "Cookie Policy | Olgish Cakes - Website Cookies",
     description:
       "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
     url: "https://olgishcakes.co.uk/cookies",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cookie Policy | Olgish Cakes - Website Cookie Usage",
+    title: "Cookie Policy | Olgish Cakes - Website Cookies",
     description:
       "Learn about how Olgish Cakes uses cookies on our website. Our cookie policy explains the types of cookies we use and how you can manage your preferences.",
     images: ["https://olgishcakes.co.uk/images/cookies-policy.jpg"],

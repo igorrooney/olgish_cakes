@@ -3,7 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Button } from "@mui/material";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Buy Cake Online – Order Ukrainian Cakes in Leeds | Olgish Cakes",
+  title: "Buy Cake Online – Order Ukrainian Cakes in Leeds",
   description:
     "Buy cake online in Leeds: Ukrainian honey cake (Medovik), Kyiv cake and more. Fast checkout, delivery across Leeds, prices from £35.",
   keywords: "buy cake, buy cake leeds, order cake online leeds, cake shop leeds, medovik",

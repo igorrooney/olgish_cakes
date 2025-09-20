@@ -209,7 +209,7 @@ export function generateEventSEOMetadata(events: MarketSchedule[]) {
   return {
     additionalKeywords: eventKeywords,
     eventDescription: `Find Olgish Cakes at ${nextEvent.location} on ${formattedDate}. Taste authentic Ukrainian honey cakes and traditional desserts at our market stall.`,
-    eventTitle: `${nextEvent.title} - Authentic Ukrainian Cakes | ${formattedDate}`,
+    eventTitle: `${nextEvent.title} - Ukrainian Cakes | ${formattedDate}`,
     nextEventDate: formattedDate,
     nextEventLocation: nextEvent.location,
     totalUpcomingEvents: upcomingEvents.length,

@@ -7,13 +7,13 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Bradford | Ukrainian Cakes Bradford | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Bradford | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford. Order now for special occasions.",
   keywords:
     "cakes Bradford, Ukrainian cakes Bradford, honey cake Bradford, Kyiv cake Bradford, traditional Ukrainian cakes Bradford, cake delivery Bradford",
   openGraph: {
-    title: "Cakes Bradford | Ukrainian Cakes Bradford",
+    title: "Cakes Bradford | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford.",
     url: "https://olgishcakes.co.uk/cakes-bradford",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Bradford | Ukrainian Cakes Bradford",
+    title: "Cakes Bradford | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Bradford. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Bradford.",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],

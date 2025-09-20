@@ -14,13 +14,13 @@ export const revalidate = getRevalidateTime();
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "Gift Hampers | Luxury Ukrainian Gift Baskets | Olgish Cakes",
+  title: "Gift Hampers | Luxury Ukrainian Baskets",
   description:
     "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats. Handcrafted in Leeds with UK delivery.",
   keywords:
     "gift hampers, luxury gift hampers, Ukrainian hampers, gourmet gift baskets, Leeds hampers, Yorkshire gift hampers, food gifts UK, premium hampers Leeds, artisan hampers",
   openGraph: {
-    title: "Gift Hampers | Luxury Ukrainian Gift Baskets",
+    title: "Gift Hampers | Luxury Ukrainian Baskets",
     description:
       "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats.",
     url: "https://olgishcakes.co.uk/gift-hampers",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gift Hampers | Luxury Ukrainian Gift Baskets",
+    title: "Gift Hampers | Luxury Ukrainian Baskets",
     description:
       "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats.",
     images: ["https://olgishcakes.co.uk/images/gift-hampers-collection.jpg"],

@@ -10,11 +10,11 @@ export const dynamic = "force-static";
 export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
-  title: "Customer Testimonials | Olgish Cakes Leeds",
+  title: "Customer Testimonials | Olgish Cakes",
   description:
     "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
   openGraph: {
-    title: "Customer Testimonials | Olgish Cakes Leeds",
+    title: "Customer Testimonials | Olgish Cakes",
     description:
       "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
     url: "https://olgishcakes.co.uk/testimonials",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Customer Testimonials | Olgish Cakes Leeds",
+    title: "Customer Testimonials | Olgish Cakes",
     description:
       "Read what our customers say about their experience with Olgish Cakes. Real reviews and photos from our satisfied customers in Leeds.",
     images: ["https://olgishcakes.co.uk/images/testimonials.jpg"],

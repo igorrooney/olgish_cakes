@@ -4,13 +4,13 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Otley | Ukrainian Cakes Otley | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Otley | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley. Order now for special occasions.",
   keywords:
     "cakes Otley, Ukrainian cakes Otley, honey cake Otley, Kyiv cake Otley, traditional Ukrainian cakes Otley, cake delivery Otley",
   openGraph: {
-    title: "Cakes Otley | Ukrainian Cakes Otley",
+    title: "Cakes Otley | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley.",
     url: "https://olgishcakes.co.uk/cakes-otley",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Otley | Ukrainian Cakes Otley",
+    title: "Cakes Otley | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley.",
     images: ["https://olgishcakes.co.uk/images/cakes-otley.jpg"],

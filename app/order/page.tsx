@@ -4,7 +4,7 @@ import { OrderPageSEO } from "./OrderPageSEO";
 import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 
 export const metadata: Metadata = {
-  title: "Order Professional Cakes Online | Olgish Cakes Leeds",
+  title: "Order Professional Cakes Online",
   description:
     "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery, quality guaranteed. Order now!",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "professional cake design leeds",
   ],
   openGraph: {
-    title: "Order Professional Cakes Online | Olgish Cakes Leeds",
+    title: "Order Professional Cakes Online",
     description:
       "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery, quality guaranteed.",
     type: "website",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Order Professional Cakes Online | Olgish Cakes Leeds",
+    title: "Order Professional Cakes Online",
     description:
       "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery, quality guaranteed.",
     images: ["/images/olgish-cakes-logo-bakery-brand.png"],

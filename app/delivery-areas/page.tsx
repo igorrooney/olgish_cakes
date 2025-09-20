@@ -17,13 +17,13 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery | Olgish Cakes",
+  title: "Cake Delivery Leeds | Cake Delivery Areas",
   description:
     "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
   keywords:
     "cake delivery Leeds, cake delivery areas, local cake delivery, cake delivery West Yorkshire, same day cake delivery Leeds, next day cake delivery, Ukrainian cake delivery",
   openGraph: {
-    title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
+    title: "Cake Delivery Leeds | Cake Delivery Areas",
     description:
       "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
     url: "https://olgishcakes.co.uk/delivery-areas",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Delivery Leeds | Cake Delivery Areas | Local Cake Delivery",
+    title: "Cake Delivery Leeds | Cake Delivery Areas",
     description:
       "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],

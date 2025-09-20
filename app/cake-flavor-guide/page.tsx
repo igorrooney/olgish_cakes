@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Flavor Guide | Ukrainian Cake Flavors | Olgish Cakes",
+  title: "Cake Flavor Guide | Ukrainian Cake Flavors",
   description:
     "Explore my Ukrainian cake flavor guide. Discover the most popular flavors for birthdays, weddings, and celebrations. Find your favorite cake flavor!",
   keywords:

@@ -7,13 +7,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Leeds | Ukrainian Bakery",
   description:
     "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
-    title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
+    title: "Cakes Leeds | Ukrainian Bakery",
     description:
       "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
     url: "https://olgishcakes.co.uk/cakes-leeds",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Leeds | Bakery Leeds | Custom Cakes Leeds | Ukrainian Cakes",
+    title: "Cakes Leeds | Ukrainian Bakery",
     description:
       "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],

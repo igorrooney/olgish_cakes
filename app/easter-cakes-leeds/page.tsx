@@ -4,13 +4,13 @@ import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Easter Cakes Leeds | traditional Ukrainian Easter Cakes | Olgish Cakes",
+  title: "Easter Cakes Leeds | Ukrainian Easter Cakes",
   description:
     "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with real recipes. Same-day delivery available in Leeds and around areas.",
   keywords:
     "easter cakes leeds, ukrainian easter cakes, paska, babka, traditional easter cakes, easter cake delivery leeds",
   openGraph: {
-    title: "Easter Cakes Leeds | Traditional Ukrainian Easter Cakes",
+    title: "Easter Cakes Leeds | Ukrainian Easter Cakes",
     description:
       "Order traditional Ukrainian Easter cakes in Leeds. Paska, babka, and Easter-themed cakes with real recipes.",
     type: "website",

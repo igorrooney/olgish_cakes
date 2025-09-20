@@ -9,14 +9,14 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title:
-    "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup | Olgish Cakes",
+    "Wedding Cakes Leeds – Custom Designs",
   description:
     "Special wedding cakes in Leeds with Ukrainian flavours including honey cake. Private tasting, design consultation and professional venue setup and delivery.",
   keywords:
     "wedding cakes Leeds, custom wedding cakes Leeds, wedding cake tasting Leeds, wedding cake consultation Leeds, venue setup wedding cake Leeds, honey cake wedding cake, Ukrainian wedding cakes, luxury wedding cakes",
   openGraph: {
     title:
-      "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
+      "Wedding Cakes Leeds – Custom Designs",
     description:
       "Special wedding cakes in Leeds with Ukrainian flavours. Design consultation, private tasting and professional delivery with venue setup.",
     url: "https://olgishcakes.co.uk/wedding-cakes",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Wedding Cakes Leeds – Custom Designs, Tasting & Venue Setup",
+      "Wedding Cakes Leeds – Custom Designs",
     description:
       "Special Ukrainian-inspired wedding cakes with tasting, consultation and venue setup.",
     images: ["https://olgishcakes.co.uk/images/wedding-cakes.jpg"],

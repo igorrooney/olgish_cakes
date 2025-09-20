@@ -5,13 +5,13 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts | Olgish Cakes",
+    "Honey Cake History | Ukrainian Honey Cake",
   description:
     "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods. The story behind this iconic Ukrainian dessert.",
   keywords:
     "honey cake history, Ukrainian honey cake history, traditional Ukrainian desserts, honey cake origins, Ukrainian cake history, honey cake traditions, Ukrainian baking heritage",
   openGraph: {
-    title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
+    title: "Honey Cake History | Ukrainian Honey Cake",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
     url: "https://olgishcakes.co.uk/honey-cake-history",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Honey Cake History | Ukrainian Honey Cake History | Traditional Ukrainian Desserts",
+    title: "Honey Cake History | Ukrainian Honey Cake",
     description:
       "Discover the fascinating history of honey cake, Ukraine's beloved honey cake. Learn about its origins, cultural significance, and traditional preparation methods.",
     images: ["https://olgishcakes.co.uk/images/honey-cake-history.jpg"],

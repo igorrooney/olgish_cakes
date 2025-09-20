@@ -7,13 +7,13 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Halifax | Ukrainian Cakes Halifax | Traditional Ukrainian Cakes | Olgish Cakes",
+  title: "Cakes Halifax | Ukrainian Cakes",
   description:
     "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax. Order now for special occasions.",
   keywords:
     "cakes Halifax, Ukrainian cakes Halifax, honey cake Halifax, Kyiv cake Halifax, traditional Ukrainian cakes Halifax, cake delivery Halifax",
   openGraph: {
-    title: "Cakes Halifax | Ukrainian Cakes Halifax",
+    title: "Cakes Halifax | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
     url: "https://olgishcakes.co.uk/cakes-halifax",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Halifax | Ukrainian Cakes Halifax",
+    title: "Cakes Halifax | Ukrainian Cakes",
     description:
       "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax.",
     images: ["https://olgishcakes.co.uk/images/cakes-halifax.jpg"],

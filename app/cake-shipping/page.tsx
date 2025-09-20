@@ -3,7 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Cake Shipping | Cake Delivery & Shipping | Olgish Cakes",
+  title: "Cake Shipping | Cake Delivery & Shipping",
   description:
     "Learn about cake shipping and delivery options from Olgish Cakes. Nationwide cake shipping, local delivery, and safe packaging for your cakes.",
   keywords: "cake shipping, cake delivery, cake shipping UK, cake delivery Leeds, cake packaging",

@@ -16,7 +16,7 @@ import { TestimonialsList } from "../testimonials/TestimonialsList";
 import { getFeaturedTestimonials } from "../utils/fetchTestimonials";
 
 export const metadata: Metadata = {
-  title: "Customer Stories | Cake Testimonials | Olgish Cakes",
+  title: "Customer Stories | Cake Testimonials",
   description:
     "Read real customer stories and testimonials about Olgish Cakes. Discover why my customers love my Ukrainian cakes and service.",
   keywords:

@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York | Olgish Cakes",
+    "Cakes York | Ukrainian Cakes",
   description:
     "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
   keywords:
     "cakes York, Ukrainian cakes York, custom cakes York, wedding cakes York, birthday cakes York, cake delivery York, bakery York, traditional Ukrainian cakes York",
   openGraph: {
-    title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
+    title: "Cakes York | Ukrainian Cakes",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
     url: "https://olgishcakes.co.uk/cakes-york",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes York | Ukrainian Cakes York | Custom Cakes York | Cake Delivery York",
+    title: "Cakes York | Ukrainian Cakes",
     description:
       "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/cakes-york.jpg"],

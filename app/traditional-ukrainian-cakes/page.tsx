@@ -8,13 +8,13 @@ import { getPriceValidUntil } from "../utils/seo";
 import { Button } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Traditional Ukrainian Cakes Leeds | Real Ukrainian Desserts | Olgish Cakes",
+  title: "Traditional Ukrainian Cakes Leeds",
   description:
     "Discover real traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using traditional Ukrainian recipes. Order real Ukrainian desserts.",
   keywords:
     "traditional Ukrainian cakes Leeds, real Ukrainian desserts, honey cake Leeds, Kyiv cake Leeds, Ukrainian honey cake, traditional Ukrainian baking, Ukrainian cake recipes, real Ukrainian sweets",
   openGraph: {
-    title: "Traditional Ukrainian Cakes Leeds | Real Ukrainian Desserts",
+    title: "Traditional Ukrainian Cakes Leeds",
     description:
       "Discover real traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using traditional Ukrainian recipes.",
     url: "https://olgishcakes.co.uk/traditional-ukrainian-cakes",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Traditional Ukrainian Cakes Leeds | Real Ukrainian Desserts",
+    title: "Traditional Ukrainian Cakes Leeds",
     description:
       "Discover real traditional Ukrainian cakes in Leeds. Handcrafted honey cake, Kyiv cake, Napoleon, and more using traditional Ukrainian recipes.",
     images: ["https://olgishcakes.co.uk/images/traditional-ukrainian-cakes.jpg"],

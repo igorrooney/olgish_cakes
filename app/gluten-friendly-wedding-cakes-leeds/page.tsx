@@ -8,13 +8,13 @@ import Link from "next/link";
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
-    "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes | Olgish Cakes",
+    "Gluten-Friendly Wedding Cakes Leeds",
   description:
     "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake, Kyiv cake, and traditional Ukrainian wedding desserts.",
   keywords:
     "gluten-friendly wedding cakes Leeds, Ukrainian gluten-friendly wedding cakes, gluten-friendly honey cake, gluten-friendly wedding desserts",
   openGraph: {
-    title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
+    title: "Gluten-Friendly Wedding Cakes Leeds",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
     url: "https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gluten-Friendly Wedding Cakes Leeds | Ukrainian Gluten-Friendly Wedding Cakes",
+    title: "Gluten-Friendly Wedding Cakes Leeds",
     description:
       "Beautiful gluten-friendly Ukrainian wedding cakes in Leeds. Handcrafted gluten-friendly honey cake and traditional Ukrainian wedding desserts.",
     images: ["https://olgishcakes.co.uk/images/gluten-friendly-wedding-cakes-leeds.jpg"],

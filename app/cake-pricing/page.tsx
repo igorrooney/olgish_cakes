@@ -18,13 +18,13 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost | Olgish Cakes",
+  title: "Cake Pricing Guide | Ukrainian Cake Prices",
   description:
     "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for real Ukrainian cakes in Leeds.",
   keywords:
     "cake pricing guide, Ukrainian cake prices, custom cake cost, cake prices Leeds, wedding cake pricing, birthday cake prices, cake pricing structure, transparent cake pricing",
   openGraph: {
-    title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost",
+    title: "Cake Pricing Guide | Ukrainian Cake Prices",
     description:
       "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information. Fair pricing for real Ukrainian cakes in Leeds.",
     url: "https://olgishcakes.co.uk/cake-pricing",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Pricing Guide | Ukrainian Cake Prices | Custom Cake Cost",
+    title: "Cake Pricing Guide | Ukrainian Cake Prices",
     description:
       "Complete cake pricing guide for Ukrainian cakes. Transparent pricing structure, custom cake costs, and value information.",
     images: ["https://olgishcakes.co.uk/images/cake-pricing.jpg"],

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
 export const metadata: Metadata = {
-  title: "How to Surprise Someone with Cake Delivery by Post UK | Postal Cake Ideas Leeds",
+  title: "How to Surprise Someone with Cake Delivery by Post UK",
   description: "Creative ideas how to surprise your loved ones with cake delivery by post. Some tips from my experience to make special moments more memorable with postal cake surprises. Perfect for birthdays, anniversaries, and special occasions.",
   keywords: [
     "surprise honey cake delivery",

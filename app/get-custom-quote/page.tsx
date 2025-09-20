@@ -12,7 +12,7 @@ import { QuoteForm } from "./QuoteForm";
 
 // SEO Metadata
 export const metadata: Metadata = {
-  title: "Get Custom Cake Quote | Professional Ukrainian Cakes Leeds | Olgish Cakes",
+  title: "Get Custom Cake Quote | Ukrainian Cakes Leeds",
   description:
     "Get a personal custom cake quote from Olga at Leeds' #1 Ukrainian bakery. Wedding cakes, birthday cakes, honey cake (Medovik) & traditional Ukrainian desserts. Free consultation & same-day delivery across Yorkshire.",
   keywords:
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     canonical: "https://olgishcakes.co.uk/get-custom-quote",
   },
   openGraph: {
-    title: "Get Custom Cake Quote | Professional Ukrainian Cakes Leeds | Olgish Cakes",
+    title: "Get Custom Cake Quote | Ukrainian Cakes Leeds",
     description:
       "Get a personal custom cake quote from Olga at Leeds' #1 Ukrainian bakery. Wedding cakes, birthday cakes, honey cake (Medovik) & traditional Ukrainian desserts. Free consultation & same-day delivery.",
     url: "https://olgishcakes.co.uk/get-custom-quote",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Get Custom Cake Quote | Professional Ukrainian Cakes Leeds | Olgish Cakes",
+    title: "Get Custom Cake Quote | Ukrainian Cakes Leeds",
     description:
       "Get a personal custom cake quote from Olga at Leeds' #1 Ukrainian bakery. Wedding cakes, birthday cakes, honey cake (Medovik) & traditional Ukrainian desserts.",
     images: ["https://olgishcakes.co.uk/images/custom-cake-quote.jpg"],

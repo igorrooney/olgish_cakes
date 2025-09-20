@@ -4,7 +4,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Cake Size Guide | Ukrainian Cake Sizing Chart | Olgish Cakes",
+  title: "Cake Size Guide | Ukrainian Cake Sizing Chart",
   description:
     "Find the perfect cake size for your celebration. Our Ukrainian cake size guide helps you choose the right cake for any occasion, from small gatherings to large parties.",
   keywords:

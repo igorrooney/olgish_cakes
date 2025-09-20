@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { OrderPageClient } from "../OrderPageClient";
 
 export const metadata: Metadata = {
-  title: "Order Cakes Online Leeds | Ukrainian Bakery Leeds | Olgish Cakes",
+  title: "Order Cakes Online Leeds | Ukrainian Bakery",
   description:
     "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery across Leeds, West Yorkshire. Order now!",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "west yorkshire cake delivery",
   ],
   openGraph: {
-    title: "Order Cakes Online Leeds | Ukrainian Bakery Leeds | Olgish Cakes",
+    title: "Order Cakes Online Leeds | Ukrainian Bakery",
     description:
       "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery across Leeds, West Yorkshire.",
     type: "website",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Order Cakes Online Leeds | Ukrainian Bakery Leeds | Olgish Cakes",
+    title: "Order Cakes Online Leeds | Ukrainian Bakery",
     description:
       "Order premium Ukrainian cakes online in Leeds. Professional cake design, custom orders, wedding cakes, birthday cakes. Fast delivery across Leeds, West Yorkshire.",
     images: ["/images/olgish-cakes-logo-bakery-brand.png"],

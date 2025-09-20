@@ -83,10 +83,14 @@ export async function generateMetadata(): Promise<Metadata> {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
   }
 
-  // Enhanced title with event information
-  let title = "Ukrainian Cakes Leeds | Real Honey Cake | Olgish Cakes";
+  // Enhanced title with event information (optimized for 60 chars max)
+  let title = "Ukrainian Cakes Leeds | Honey Cake";
   if (eventSEO.nextEventLocation) {
-    title = `Ukrainian Cakes at ${eventSEO.nextEventLocation} | Olgish Cakes Leeds`;
+    // Keep location short to avoid exceeding 60 characters
+    const shortLocation = eventSEO.nextEventLocation.length > 15 
+      ? eventSEO.nextEventLocation.substring(0, 12) + "..."
+      : eventSEO.nextEventLocation;
+    title = `Ukrainian Cakes ${shortLocation}`;
   }
 
   return {

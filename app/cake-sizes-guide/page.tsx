@@ -19,13 +19,13 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title:
-    "Cake Sizes Guide Leeds | How Many People Does a Cake Serve | Cake Portion Guide | Olgish Cakes",
+    "Cake Sizes Guide Leeds | Cake Portion Guide",
   description:
     "Complete cake sizes guide for Leeds. Learn how many people each cake size serves, portion sizes, and party planning tips. Ukrainian cake sizing guide for all occasions.",
   keywords:
     "cake sizes Leeds, how many people does a cake serve, cake portion guide, cake serving sizes, party cake sizes, wedding cake sizes, birthday cake sizes, cake planning guide",
   openGraph: {
-    title: "Cake Sizes Guide Leeds | How Many People Does a Cake Serve | Cake Portion Guide",
+    title: "Cake Sizes Guide Leeds | Cake Portion Guide",
     description:
       "Complete cake sizes guide for Leeds. Learn how many people each cake size serves, portion sizes, and party planning tips. Ukrainian cake sizing guide for all occasions.",
     url: "https://olgishcakes.co.uk/cake-sizes-guide",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Sizes Guide Leeds | How Many People Does a Cake Serve | Cake Portion Guide",
+    title: "Cake Sizes Guide Leeds | Cake Portion Guide",
     description:
       "Complete cake sizes guide for Leeds. Learn how many people each cake size serves, portion sizes, and party planning tips.",
     images: ["https://olgishcakes.co.uk/images/cake-sizes-guide.jpg"],

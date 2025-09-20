@@ -13,13 +13,13 @@ export const revalidate = getRevalidateTime();
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: "All Cakes | Ukrainian Cakes Collection | Honey Cake (Medovik) | Olgish Cakes",
+  title: "All Cakes | Ukrainian Cakes Collection",
   description:
     "Explore our complete collection of authentic Ukrainian cakes. Traditional honey cake (Medovik), Kyiv cake, wedding cakes, birthday cakes, and custom designs. Handcrafted in Leeds with premium ingredients.",
   keywords:
     "Ukrainian cakes collection, honey cake, Medovik, Kyiv cake, traditional Ukrainian cakes, custom cakes Leeds, wedding cakes, birthday cakes, Ukrainian bakery Leeds, authentic Ukrainian desserts",
   openGraph: {
-    title: "All Cakes | Ukrainian Cakes Collection | Honey Cake (Medovik)",
+    title: "All Cakes | Ukrainian Cakes Collection",
     description:
       "Explore our complete collection of authentic Ukrainian cakes. Traditional honey cake (Medovik), Kyiv cake, wedding cakes, birthday cakes, and custom designs.",
     url: "https://olgishcakes.co.uk/cakes",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "All Cakes | Ukrainian Cakes Collection | Honey Cake (Medovik)",
+    title: "All Cakes | Ukrainian Cakes Collection",
     description:
       "Explore our complete collection of authentic Ukrainian cakes. Traditional honey cake (Medovik), Kyiv cake, wedding cakes, birthday cakes, and custom designs.",
     images: ["https://olgishcakes.co.uk/images/cakes-collection.jpg"],

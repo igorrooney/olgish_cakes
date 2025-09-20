@@ -15,11 +15,11 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
+  title: "Return Policy | Olgish Cakes - Refunds & Returns",
   description:
     "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
   openGraph: {
-    title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
+    title: "Return Policy | Olgish Cakes - Refunds & Returns",
     description:
       "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
     url: "https://olgishcakes.co.uk/return-policy",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Return Policy | Olgish Cakes - Refunds & Returns Policy",
+    title: "Return Policy | Olgish Cakes - Refunds & Returns",
     description:
       "Learn about my return and refund policy for Ukrainian cakes and traditional desserts. I am committed to customer satisfaction and quality assurance.",
     images: ["https://olgishcakes.co.uk/images/return-policy.jpg"],

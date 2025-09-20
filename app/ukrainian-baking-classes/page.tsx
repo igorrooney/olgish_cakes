@@ -20,14 +20,14 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
-    "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops | Olgish Cakes",
+    "Ukrainian Baking Classes Leeds | Learn Cake Making",
   description:
     "Learn authentic Ukrainian baking in Leeds. Traditional cake making workshops, Ukrainian baking classes, and hands-on tutorials. Master honey cake, Kyiv cake, and traditional Ukrainian desserts with professional baker Olga.",
   keywords:
     "Ukrainian baking classes Leeds, Ukrainian cake making workshops, traditional Ukrainian baking, honey cake baking class, Kyiv cake tutorial, Ukrainian dessert workshops, baking lessons Leeds",
   openGraph: {
     title:
-      "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops",
+      "Ukrainian Baking Classes Leeds | Learn Cake Making",
     description:
       "Learn authentic Ukrainian baking in Leeds. Traditional cake making workshops, Ukrainian baking classes, and hands-on tutorials. Master honey cake, Kyiv cake, and traditional Ukrainian desserts.",
     url: "https://olgishcakes.co.uk/ukrainian-baking-classes",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Ukrainian Baking Classes Leeds | Learn Ukrainian Cake Making | Traditional Baking Workshops",
+      "Ukrainian Baking Classes Leeds | Learn Cake Making",
     description:
       "Learn authentic Ukrainian baking in Leeds. Traditional cake making workshops, Ukrainian baking classes, and hands-on tutorials.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-baking-classes.jpg"],

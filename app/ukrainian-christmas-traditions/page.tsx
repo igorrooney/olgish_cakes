@@ -5,13 +5,13 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes | Olgish Cakes",
+  title: "Ukrainian Christmas Traditions | Ukrainian Cakes",
   description:
     "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
   keywords:
     "Ukrainian Christmas traditions, Ukrainian Christmas cakes, traditional Ukrainian Christmas, Christmas customs Ukraine, Ukrainian holiday cakes",
   openGraph: {
-    title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
+    title: "Ukrainian Christmas Traditions | Ukrainian Cakes",
     description:
       "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
     url: "https://olgishcakes.co.uk/ukrainian-christmas-traditions",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Christmas Traditions | Traditional Ukrainian Christmas Cakes",
+    title: "Ukrainian Christmas Traditions | Ukrainian Cakes",
     description:
       "Discover traditional Ukrainian Christmas customs and the special cakes served during the holiday season. Learn about Christmas traditions and celebration cakes.",
     images: ["https://olgishcakes.co.uk/images/ukrainian-christmas-traditions.jpg"],
