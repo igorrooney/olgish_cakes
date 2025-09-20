@@ -79,7 +79,23 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
     "@type": "Article",
     headline: "How to Surprise Someone with Cake Delivery by Post | Creative Ideas 2025",
     description: "Learn creative ways to surprise someone with cake delivery by post. Discover timing tips, personal touches, and memorable surprise ideas for birthdays, anniversaries, and special occasions.",
-    image: "https://olgishcakes.co.uk/images/surprise-cake-delivery.jpg",
+    image: {
+      "@type": "ImageObject",
+      url: "https://olgishcakes.co.uk/images/surprise-cake-delivery.jpg",
+      width: 1200,
+      height: 630,
+      alt: "How to Surprise Someone with Honey Cake Delivery by Post - Traditional Ukrainian Letterbox Delivery",
+      creditText: "Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds",
+      copyrightNotice: `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
+      creator: {
+        "@type": "Person",
+        "name": "Olga"
+      },
+      copyrightHolder: {
+        "@type": "Organization",
+        "name": "Olgish Cakes"
+      }
+    },
     author: {
       "@type": "Organization",
       name: "Olgish Cakes",

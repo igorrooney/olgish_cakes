@@ -103,7 +103,17 @@ export default function CakeByPostGuidePage() {
       url: "https://olgishcakes.co.uk/images/cake-by-post-guide.jpg",
       width: 1200,
       height: 630,
-      alt: "Honey Cake by Post UK Complete Guide - Traditional Ukrainian Letterbox Cake Delivery"
+      alt: "Honey Cake by Post UK Complete Guide - Traditional Ukrainian Letterbox Cake Delivery",
+      creditText: "Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds",
+      copyrightNotice: `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
+      creator: {
+        "@type": "Person",
+        "name": "Olga"
+      },
+      copyrightHolder: {
+        "@type": "Organization",
+        "name": "Olgish Cakes"
+      }
     },
     url: "https://olgishcakes.co.uk/blog/cake-by-post-uk-complete-guide",
     mainEntityOfPage: "https://olgishcakes.co.uk/blog/cake-by-post-uk-complete-guide",

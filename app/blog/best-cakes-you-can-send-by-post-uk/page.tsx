@@ -84,7 +84,17 @@ export default function BestCakesByPostUKPage() {
       url: "https://olgishcakes.co.uk/images/best-cakes-by-post-uk.jpg",
       width: 1200,
       height: 630,
-      alt: "Best Honey Cake You Can Send by Post UK - Traditional Ukrainian Letterbox Delivery"
+      alt: "Best Honey Cake You Can Send by Post UK - Traditional Ukrainian Letterbox Delivery",
+      creditText: "Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds",
+      copyrightNotice: `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
+      creator: {
+        "@type": "Person",
+        "name": "Olga"
+      },
+      copyrightHolder: {
+        "@type": "Organization",
+        "name": "Olgish Cakes"
+      }
     },
     author: {
       "@type": "Organization",
