@@ -79,7 +79,23 @@ export default function Top5ReasonsLetterboxCakesPage() {
     "@type": "Article",
     headline: "Top 5 Reasons to Order Letterbox Cakes Online | Cake by Post UK 2025",
     description: "Discover the top 5 reasons why ordering letterbox cakes online is the perfect choice. Convenience, surprise factor, quality, and more benefits of cake by post delivery.",
-    image: "https://olgishcakes.co.uk/images/letterbox-cakes-online.jpg",
+    image: {
+      "@type": "ImageObject",
+      url: "https://olgishcakes.co.uk/images/letterbox-cakes-online.jpg",
+      width: 1200,
+      height: 630,
+      alt: "Top 5 Reasons to Order Honey Cake by Post Online - Traditional Ukrainian Letterbox Delivery",
+      creditText: "Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds",
+      copyrightNotice: `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
+      creator: {
+        "@type": "Person",
+        "name": "Olga"
+      },
+      copyrightHolder: {
+        "@type": "Organization",
+        "name": "Olgish Cakes"
+      }
+    },
     author: {
       "@type": "Organization",
       name: "Olgish Cakes",

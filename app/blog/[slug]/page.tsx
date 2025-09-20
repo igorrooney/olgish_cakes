@@ -643,6 +643,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "Person",
         "name": post.author?.name || "Olga"
       },
+      "creditText": `Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds`,
+      "copyrightNotice": `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
       "copyrightHolder": {
         "@type": "Organization",
         "name": "Olgish Cakes"
