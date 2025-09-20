@@ -16,10 +16,12 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
-    formats: ["image/webp", "image/avif"],
+    formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Enhanced performance settings
+    unoptimized: false,
   },
   compress: true,
   poweredByHeader: false,
@@ -41,10 +43,12 @@ const nextConfig = {
     // Enable new performance optimizations
     optimizeServerReact: true,
     serverComponentsExternalPackages: ["@sanity/client"],
-    // Enable CSS optimization
-    optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],
     // Enable modern JavaScript features
     esmExternals: true,
+    // Performance optimizations
+    webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
+    // Enable faster builds
+    typedRoutes: false,
   },
   // Enhanced performance settings
   swcMinify: true,
@@ -95,6 +99,10 @@ const nextConfig = {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
+          },
         ],
       },
       {
@@ -143,6 +151,26 @@ const nextConfig = {
           {
             key: "Content-Type",
             value: "text/plain",
+          },
+        ],
+      },
+      // API routes caching
+      {
+        source: "/api/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=300, s-maxage=600",
+          },
+        ],
+      },
+      // Static assets caching
+      {
+        source: "/static/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
@@ -204,6 +232,16 @@ const nextConfig = {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
+      
+      // Enhanced performance optimizations
+      config.optimization.mergeDuplicateChunks = true;
+      config.optimization.removeAvailableModules = true;
+      config.optimization.removeEmptyChunks = true;
+      config.optimization.providedExports = true;
+      
+      // Optimize module resolution
+      config.resolve.symlinks = false;
+      config.resolve.cacheWithContext = false;
     }
 
     // Rely on Next.js built-in Image Optimization instead of custom loaders
