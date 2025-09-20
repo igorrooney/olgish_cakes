@@ -240,7 +240,7 @@ const nextConfig = {
       },
       {
         source: "/medovik",
-        destination: "/cakes",
+        destination: "/cakes/honey-cake-medovik",
         permanent: true,
       },
       {

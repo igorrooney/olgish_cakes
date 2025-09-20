@@ -48,10 +48,10 @@ export const metadata: Metadata = {
     canonical: "https://olgishcakes.co.uk/order",
   },
   robots: {
-    index: false,
+    index: true,
     follow: true,
     googleBot: {
-      index: false,
+      index: true,
       follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
