@@ -99,14 +99,14 @@ function BlogAdminPage() {
       title: post.title,
       excerpt: post.excerpt || '',
       description: post.description || '',
-      category: post.category,
+      category: post.category || '',
       readTime: post.readTime || '',
       status: post.status,
       featured: post.featured || false,
       publishDate: post.publishDate ? new Date(post.publishDate).toISOString().slice(0, 16) : '',
       seoTitle: post.seoTitle || '',
       seoDescription: post.seoDescription || '',
-      keywords: post.keywords || [],
+      keywords: Array.isArray(post.keywords) ? post.keywords : [],
       slug: post.slug?.current || '',
       content: post.content || [],
       featuredImage: null,
@@ -627,7 +627,7 @@ function BlogAdminPage() {
             
             <TextField
               label="Keywords"
-              value={formData.keywords.join(', ')}
+              value={Array.isArray(formData.keywords) ? formData.keywords.join(', ') : ''}
               onChange={(e) => setFormData({ ...formData, keywords: e.target.value.split(',').map(k => k.trim()).filter(k => k) })}
               fullWidth
               helperText="Comma-separated keywords for SEO"
