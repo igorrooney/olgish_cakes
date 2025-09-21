@@ -492,7 +492,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: blogPost.seoTitle || `${blogPost.title} | Olgish Cakes Blog`,
     description: blogPost.seoDescription || blogPost.excerpt,
-    keywords: blogPost.keywords ? blogPost.keywords.join(", ") : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes, wedding cakes, professional baker",
+    keywords: blogPost.keywords ? (Array.isArray(blogPost.keywords) ? blogPost.keywords.join(", ") : blogPost.keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes, wedding cakes, professional baker",
     openGraph: {
       title: blogPost.title,
       description: blogPost.excerpt,
@@ -592,7 +592,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       "@id": `https://olgishcakes.co.uk/blog/${params.slug}`,
     },
     articleBody: post.content ? post.content : post.excerpt,
-    keywords: (post as any).keywords ? (post as any).keywords.join(", ") : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
+    keywords: (post as any).keywords ? (Array.isArray((post as any).keywords) ? (post as any).keywords.join(", ") : (post as any).keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
     inLanguage: "en-GB",
     isPartOf: {
       "@type": "Blog",
@@ -656,7 +656,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       "height": "630",
       "encodingFormat": "image/jpeg",
       "isFamilyFriendly": true,
-      "keywords": (post as any).keywords ? (post as any).keywords.join(", ") : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
+      "keywords": (post as any).keywords ? (Array.isArray((post as any).keywords) ? (post as any).keywords.join(", ") : (post as any).keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
       "datePublished": post.publishDate,
       "dateModified": post.publishDate
     }
