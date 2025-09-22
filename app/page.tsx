@@ -33,7 +33,7 @@ import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedGiftHampers } from "./utils/fetchGiftHampers";
 import Image from "next/image";
 import { getFeaturedTestimonials } from "./utils/fetchTestimonials";
-import { getFeaturedMarketEvents } from "./utils/fetchMarketSchedule";
+import { getMarketSchedule } from "./utils/fetchMarketSchedule";
 import { getPriceValidUntil } from "./utils/seo";
 import { getOfferShippingDetails } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
@@ -41,7 +41,7 @@ import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
-  const marketEvents = await getFeaturedMarketEvents(3);
+  const marketEvents = await getMarketSchedule();
   const eventSEO = generateEventSEOMetadata(marketEvents);
 
   const baseKeywords = [
@@ -202,8 +202,9 @@ export default async function Home() {
     getFeaturedCakes(),
     getFeaturedTestimonials(3),
     getFeaturedGiftHampers(),
-    getFeaturedMarketEvents(3),
+    getMarketSchedule(),
   ]);
+
 
   // Events structured data is injected by the MarketSchedule component to avoid duplication
 
