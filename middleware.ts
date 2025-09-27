@@ -2,10 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // Force HTTPS redirect for all HTTP requests
+  // Force HTTPS redirect for all HTTP requests (except localhost in development)
+  const isLocalhost = request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1";
+  const isDevelopment = process.env.NODE_ENV === "development";
+  
   if (
-    request.headers.get("x-forwarded-proto") === "http" ||
-    (!request.headers.get("x-forwarded-proto") && request.url.startsWith("http://"))
+    !isLocalhost && // Skip HTTPS redirect for localhost
+    (request.headers.get("x-forwarded-proto") === "http" ||
+    (!request.headers.get("x-forwarded-proto") && request.url.startsWith("http://")))
   ) {
     const httpsUrl = request.url.replace("http://", "https://");
     return NextResponse.redirect(httpsUrl, 301);
@@ -13,9 +17,11 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  // Add security headers
+  // Add security headers (skip HSTS for localhost)
   response.headers.set("X-DNS-Prefetch-Control", "on");
-  response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  if (!isLocalhost) {
+    response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  }
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-Content-Type-Options", "nosniff");
