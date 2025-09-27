@@ -81,7 +81,26 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        olgish: {
+          primary: "#2E3192",
+          secondary: "#FEF102",
+          accent: "#D4A76A",
+          neutral: "#1f2937",
+          "base-100": "#ffffff",
+          "base-200": "#f9fafb",
+          "base-300": "#f3f4f6",
+          info: "#2563eb",
+          success: "#16a34a",
+          warning: "#d97706",
+          error: "#dc2626",
+        },
+      },
+    ],
+  },
   // Ensure responsive classes are not purged in development
   safelist: [
     "flex-col",
