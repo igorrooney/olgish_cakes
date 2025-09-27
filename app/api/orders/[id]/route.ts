@@ -481,7 +481,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                               <strong>Tracking Number:</strong> ${order.delivery.trackingNumber}
                             </p>
                             <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                              <strong>Delivery Method:</strong> ${order.delivery.deliveryMethod.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              <strong>Delivery Method:</strong> ${order.delivery.deliveryMethod.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                             </p>
                           `}
                         </div>

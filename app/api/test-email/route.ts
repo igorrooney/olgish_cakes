@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
                             <strong>Tracking Number:</strong> ${mockOrder.delivery.trackingNumber}
                           </p>
                           <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                            <strong>Delivery Method:</strong> ${mockOrder.delivery.deliveryMethod.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            <strong>Delivery Method:</strong> ${mockOrder.delivery.deliveryMethod.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                           </p>
                         `}
                       </div>

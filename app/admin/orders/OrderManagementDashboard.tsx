@@ -87,6 +87,8 @@ interface Order {
     dateNeeded: string;
     deliveryMethod: string;
     trackingNumber?: string;
+    deliveryNotes?: string;
+    giftNote?: string;
   };
   pricing: {
     total: number;
@@ -436,9 +438,9 @@ export function OrderManagementDashboard() {
     const totalOrders = filtered.length;
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
     
-    const newOrders = filtered.filter(o => o.status === 'new' && o.status !== 'cancelled').length;
-    const inProgressOrders = filtered.filter(o => ['confirmed', 'in-progress'].includes(o.status) && o.status !== 'cancelled').length;
-    const completedOrders = filtered.filter(o => ['delivered', 'completed'].includes(o.status) && o.status !== 'cancelled').length;
+    const newOrders = filtered.filter(o => o.status === 'new').length;
+    const inProgressOrders = filtered.filter(o => ['confirmed', 'in-progress'].includes(o.status)).length;
+    const completedOrders = filtered.filter(o => ['delivered', 'completed'].includes(o.status)).length;
     
     return {
       totalRevenue,

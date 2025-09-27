@@ -635,7 +635,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         fullWidth
                         label="Unit Price (£)"
                         type="number"
-                        step="0.01"
                         value={item.unitPrice}
                         onChange={(e) => handleItemChange(index, "unitPrice", e.target.value)}
                         inputProps={{ min: 0, step: 0.01 }}
@@ -711,7 +710,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 fullWidth
                 label="Subtotal (£)"
                 type="number"
-                step="0.01"
                 value={formData.subtotal}
                 onChange={(e) => handleInputChange("subtotal", e.target.value)}
                 inputProps={{ min: 0, step: 0.01 }}
@@ -724,7 +722,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 fullWidth
                 label="Delivery Fee (£)"
                 type="number"
-                step="0.01"
                 value={formData.deliveryFee}
                 onChange={(e) => handleInputChange("deliveryFee", e.target.value)}
                 inputProps={{ min: 0, step: 0.01 }}
@@ -736,7 +733,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 fullWidth
                 label="Discount (£)"
                 type="number"
-                step="0.01"
                 value={formData.discount}
                 onChange={(e) => handleInputChange("discount", e.target.value)}
                 inputProps={{ min: 0, step: 0.01 }}
@@ -748,7 +744,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 fullWidth
                 label="Total Amount (£)"
                 type="number"
-                step="0.01"
                 value={formData.total}
                 onChange={(e) => handleInputChange("total", e.target.value)}
                 inputProps={{ min: 0, step: 0.01 }}

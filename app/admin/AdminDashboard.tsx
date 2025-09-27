@@ -36,7 +36,7 @@ import {
   OpenInNew,
   CheckCircle,
   Warning,
-  Error
+  Error as ErrorIcon
 } from '@mui/icons-material';
 import { AdminAuthGuard } from '@/components/AdminAuthGuard';
 import { designTokens } from '@/lib/design-system';

@@ -80,7 +80,7 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       // Add order-specific fields for order creation
       data.append("orderType", "gift-hamper");
       data.append("productType", "gift-hamper");
-      data.append("productId", hamper.slug || "");
+      data.append("productId", hamper.slug?.current || "");
       data.append("productName", hamper.name);
       data.append("designType", "standard"); // Gift hampers are standard
       data.append("quantity", "1");
