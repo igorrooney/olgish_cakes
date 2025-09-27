@@ -556,7 +556,7 @@ export default async function Home() {
           
           <div className="text-center">
             <a
-              href="/gift-hampers/cake-by-post-service"
+              href="/cake-by-post-service"
               className="inline-block bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-full px-8 py-3 mr-4"
               aria-label="Order cake by post"
             >
