@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  // Force HTTPS redirect for all HTTP requests
+  if (
+    request.headers.get("x-forwarded-proto") === "http" ||
+    (!request.headers.get("x-forwarded-proto") && request.url.startsWith("http://"))
+  ) {
+    const httpsUrl = request.url.replace("http://", "https://");
+    return NextResponse.redirect(httpsUrl, 301);
+  }
+
   const response = NextResponse.next();
 
   // Add security headers
