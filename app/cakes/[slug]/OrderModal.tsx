@@ -88,6 +88,24 @@ ${formData.message}
       if (formData.designImage) {
         data.append("designImage", formData.designImage);
       }
+      
+      // Add order-specific fields for order creation
+      data.append("isOrderForm", "true");
+      data.append("orderType", "browse-catalog");
+      data.append("productType", "cake");
+      data.append("productId", cake.slug?.current || "");
+      data.append("productName", cake.name);
+      data.append("designType", designType);
+      data.append("quantity", "1");
+      data.append("unitPrice", (designType === "standard" ? cake.pricing.standard : cake.pricing.individual).toString());
+      data.append("totalPrice", (designType === "standard" ? cake.pricing.standard : cake.pricing.individual).toString());
+      data.append("size", cake.size || "");
+      data.append("flavor", cake.category || "");
+      data.append("specialInstructions", formData.message || "");
+      data.append("deliveryMethod", "collection"); // Default delivery method
+      data.append("deliveryAddress", "");
+      data.append("deliveryNotes", "");
+      data.append("paymentMethod", "cash-collection"); // Default payment method
 
       const response = await fetch("/api/contact", {
         method: "POST",

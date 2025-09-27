@@ -1,6 +1,7 @@
 "use client";
 
 import { colors } from "@/lib/design-system";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import {
   CakeIcon,
   CheckCircleIcon,
@@ -649,7 +650,7 @@ export default function AboutContent() {
                         <PhoneIcon sx={{ color: colors.ukrainian.blue, fontSize: 20 }} />
                         <Typography
                           component="a"
-                          href="tel:+447867218194"
+                          href={CLIENT_BUSINESS_INFO.telLink}
                           sx={{
                             color: "inherit",
                             textDecoration: "none",

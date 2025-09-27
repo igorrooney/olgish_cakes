@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 // SEO Configuration
 export const SEO_CONFIG = {
@@ -306,7 +307,7 @@ export function generatePageMetadata({
       "business:contact_data:locality": "Leeds",
       "business:contact_data:postal_code": "LS17",
       "business:contact_data:country_name": "United Kingdom",
-      "business:contact_data:phone_number": "+44 786 721 8194",
+      "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
       "business:contact_data:email": "hello@olgishcakes.co.uk",
     },
   };
@@ -329,7 +330,7 @@ export function generateOrganizationSchema() {
       height: 630,
     },
     image: `${SEO_CONFIG.siteUrl}/images/olgish-cakes-logo-bakery-brand.png`,
-    telephone: "+44 786 721 8194",
+    telephone: BUSINESS_CONSTANTS.PHONE,
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
@@ -394,7 +395,7 @@ export function generateLocalBusinessSchema() {
     name: SEO_CONFIG.siteName,
     description: SEO_CONFIG.siteDescription,
     url: SEO_CONFIG.siteUrl,
-    telephone: "+44 786 721 8194",
+    telephone: BUSINESS_CONSTANTS.PHONE,
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",

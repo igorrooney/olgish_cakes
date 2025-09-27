@@ -394,6 +394,67 @@ Olgish Cakes
       throw new Error(response.error.message);
     }
 
+    // Also create an order in the system for quote requests
+    try {
+      const orderData = {
+        name,
+        email,
+        phone,
+        address: "",
+        city: "",
+        postcode: "",
+        message: `
+Quote Request Details:
+Occasion: ${occasion}
+Date Needed: ${dateNeeded}
+Guest Count: ${guestCount}
+Cake Type: ${cakeType}
+Design Style: ${designStyle}
+Flavors: ${flavors}
+Dietary Requirements: ${dietaryRequirements}
+Budget: ${budget}
+Special Requests: ${specialRequests}
+        `.trim(),
+        dateNeeded,
+        orderType: "custom-quote",
+        productType: "cake",
+        productId: "",
+        productName: cakeType,
+        designType: "individual",
+        quantity: 1,
+        unitPrice: 0,
+        totalPrice: 0,
+        size: guestCount ? `${guestCount} guests` : "",
+        flavor: flavors || "",
+        specialInstructions: specialRequests || "",
+        deliveryMethod: "collection",
+        deliveryAddress: "",
+        deliveryNotes: "",
+        paymentMethod: "cash-collection",
+        referrer: "",
+        attachments: designImage ? [designImage.name] : [],
+      };
+
+      // Create order via internal API call
+      const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (orderResponse.ok) {
+        const orderResult = await orderResponse.json();
+        console.log("Quote request order created successfully:", orderResult.orderNumber);
+      } else {
+        console.error("Failed to create quote request order:", await orderResponse.text());
+      }
+    } catch (orderError) {
+      console.error("Error creating quote request order:", orderError);
+      // Don't fail the email if order creation fails
+    }
+
     console.log("Quote request email sent successfully:", response);
     return NextResponse.json({ success: true });
   } catch (error) {

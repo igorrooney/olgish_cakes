@@ -1,7 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { isAdminAuthenticated } from "./lib/admin-auth";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Check if this is an admin API route that needs protection
+  if (request.nextUrl.pathname.startsWith("/api/admin") && 
+      !request.nextUrl.pathname.startsWith("/api/admin/auth") &&
+      !request.nextUrl.pathname.startsWith("/api/admin/logout") &&
+      !request.nextUrl.pathname.startsWith("/api/admin/earnings")) {
+    
+    const isAuthenticated = await isAdminAuthenticated(request);
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+  }
+
   const response = NextResponse.next();
 
   // Add security headers
@@ -31,11 +47,10 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

@@ -13,6 +13,7 @@ import {
   Container,
 } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
+import { designTokens } from '@/lib/design-system';
 
 export default function AdminLogin() {
   const [credentials, setCredentials] = useState({
@@ -56,8 +57,8 @@ export default function AdminLogin() {
       <Card sx={{ maxWidth: 400, mx: 'auto' }}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <LockIcon sx={{ fontSize: 48, color: '#2E3192', mb: 2 }} />
-            <Typography variant="h4" component="h1" sx={{ color: '#2E3192', fontWeight: 600 }}>
+            <LockIcon sx={{ fontSize: 48, color: designTokens.colors.primary.main, mb: 2 }} />
+            <Typography variant="h4" component="h1" sx={{ color: designTokens.colors.primary.main, fontWeight: 600 }}>
               Admin Login
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -102,9 +103,9 @@ export default function AdminLogin() {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#2E3192',
+                backgroundColor: designTokens.colors.primary.main,
                 '&:hover': {
-                  backgroundColor: '#1e2470',
+                  backgroundColor: designTokens.colors.primary.dark,
                 },
                 borderRadius: '35px',
                 py: 1.5,

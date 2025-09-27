@@ -27,6 +27,7 @@ import {
 import { Metadata } from "next";
 import Link from "next/link";
 import { colors, spacing, typography } from "../lib/design-system";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { AnimatedDiv, AnimatedSection } from "./components/AnimatedSection";
 import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
@@ -164,7 +165,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "business:contact_data:locality": "Leeds",
       "business:contact_data:postal_code": "LS17",
       "business:contact_data:country_name": "United Kingdom",
-      "business:contact_data:phone_number": "+44 786 721 8194",
+      "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
       "business:contact_data:email": "hello@olgishcakes.co.uk",
       // Add event-specific metadata
       ...(eventSEO.totalUpcomingEvents && {
@@ -284,7 +285,7 @@ export default async function Home() {
       },
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+44 786 721 8194",
+        telephone: BUSINESS_CONSTANTS.PHONE,
         email: "hello@olgishcakes.co.uk",
         contactType: "customer service",
       },

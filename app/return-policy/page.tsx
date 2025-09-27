@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 
 export const metadata: Metadata = {
   title: "Return Policy | Olgish Cakes - Refunds & Returns",
@@ -429,12 +430,12 @@ export default function ReturnPolicyPage() {
                   href="mailto:hello@olgishcakes.co.uk"
                 />
                 <Chip 
-                  label="Phone: +44 786 721 8194" 
+                  label={`Phone: ${CLIENT_BUSINESS_INFO.displayPhone}`} 
                   color="primary" 
                   variant="outlined"
                   clickable
                   component="a"
-                  href="tel:+447867218194"
+                  href={CLIENT_BUSINESS_INFO.telLink}
                 />
               </Box>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>

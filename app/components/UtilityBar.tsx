@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { Box, Typography, Tooltip } from "@/lib/mui-optimization";
 import { Container as DesignContainer, AccessibleIconButton } from "@/lib/ui-components";
 import {
@@ -40,7 +42,7 @@ export function UtilityBar() {
         <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, md: 2 } }}>
           <AccessibleIconButton
             component="a"
-            href="tel:+447867218194"
+            href={CLIENT_BUSINESS_INFO.telLink}
             ariaLabel="Call Olgish Cakes"
             title="Call Olgish Cakes"
             sx={{ color: colors.primary.main, display: { xs: "inline-flex", md: "none" } }}
@@ -58,8 +60,8 @@ export function UtilityBar() {
             }}
           >
             <PhoneIcon sx={{ fontSize: 16, color: colors.primary.main }} />
-            <Link href="tel:+447867218194" aria-label="Call +44 786 721 8194">
-              +44 786 721 8194
+            <Link href={CLIENT_BUSINESS_INFO.telLink} aria-label={`Call ${CLIENT_BUSINESS_INFO.displayPhone}`}>
+              {CLIENT_BUSINESS_INFO.displayPhone}
             </Link>
           </Typography>
 
@@ -139,7 +141,7 @@ export function UtilityBar() {
             <Box component="span" sx={{ display: "inline-flex" }}>
               <AccessibleIconButton
                 component="a"
-                href={`https://wa.me/447867218194`}
+                href={BUSINESS_CONSTANTS.SOCIAL.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 ariaLabel="Chat on WhatsApp"

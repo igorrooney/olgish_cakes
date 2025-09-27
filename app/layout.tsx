@@ -16,6 +16,7 @@ import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
 import Script from "next/script";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -37,7 +38,7 @@ export const viewport: Viewport = {
   themeColor: primary,
   maximumScale: 5,
   userScalable: true,
-  viewportFit: "cover",
+  viewportFit: "cover"
 };
 
 export const metadata: Metadata = {
@@ -157,7 +158,7 @@ export const metadata: Metadata = {
     "business:contact_data:locality": "Leeds",
     "business:contact_data:postal_code": "LS17",
     "business:contact_data:country_name": "United Kingdom",
-    "business:contact_data:phone_number": "+44 786 721 8194",
+    "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
     "business:contact_data:email": "hello@olgishcakes.co.uk",
   },
   alternates: {
@@ -283,7 +284,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 height: 630,
               },
               image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-              telephone: "+44 786 721 8194",
+              telephone: BUSINESS_CONSTANTS.PHONE,
               email: "hello@olgishcakes.co.uk",
               address: {
                 "@type": "PostalAddress",
