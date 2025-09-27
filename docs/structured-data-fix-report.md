@@ -1,6 +1,6 @@
 
 # Structured Data Fix Validation Report
-Generated: 2025-09-27T12:09:42.496Z
+Generated: 2025-09-27T12:35:01.864Z
 
 ## Summary
 - Total URLs tested: 2
