@@ -208,50 +208,88 @@ export default async function Home() {
 
   // Events structured data is injected by the MarketSchedule component to avoid duplication
 
-  // Review schema for testimonials
-  const reviewSchema = testimonials.length > 0 ? {
+  // Enhanced Product schema with offers for Google Merchant Center compliance
+  const productSchema = {
     "@context": "https://schema.org",
-    "@type": "AggregateRating",
-    itemReviewed: {
-      "@type": "Product",
-      name: "Ukrainian Cakes",
-      description: "Traditional Ukrainian honey cake and other authentic desserts",
-      brand: {
-        "@type": "Brand",
-        name: "Olgish Cakes"
+    "@type": "Product",
+    "@id": "https://olgishcakes.co.uk/#product",
+    name: "Ukrainian Honey Cake",
+    description: "Traditional Ukrainian honey cake (Medovik) handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions.",
+    brand: {
+      "@type": "Brand",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk",
+      logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
+    },
+    manufacturer: {
+      "@type": "Organization",
+      name: "Olgish Cakes",
+      url: "https://olgishcakes.co.uk",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Leeds",
+        addressRegion: "West Yorkshire",
+        addressCountry: "GB"
       }
     },
-    ratingValue: "5.0",
-    reviewCount: testimonials.length,
-    bestRating: "5",
-    worstRating: "1"
-  } : null;
-
-  const individualReviews = testimonials.map((testimonial: Testimonial) => ({
-    "@context": "https://schema.org",
-    "@type": "Review",
-    itemReviewed: {
-      "@type": "Product",
-      name: testimonial.cakeType || "Ukrainian Cake",
-      description: `${testimonial.cakeType || "Ukrainian cake"} from Olgish Cakes`,
-      brand: {
-        "@type": "Brand",
-        name: "Olgish Cakes"
+    category: "Food & Drink > Bakery > Cakes",
+    image: ["https://olgishcakes.co.uk/images/honey-cake-hero.jpg"],
+    offers: {
+      "@type": "Offer",
+      "@id": "https://olgishcakes.co.uk/#offer",
+      price: "25",
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      url: "https://olgishcakes.co.uk/cakes",
+      seller: {
+        "@type": "Organization",
+        name: "Olgish Cakes",
+        url: "https://olgishcakes.co.uk"
+      },
+      areaServed: {
+        "@type": "City",
+        name: "Leeds"
+      },
+      deliveryLeadTime: {
+        "@type": "QuantitativeValue",
+        value: "1",
+        unitCode: "DAY"
       }
     },
-    author: {
-      "@type": "Person",
-      name: testimonial.customerName
-    },
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: testimonial.rating || 5,
+    aggregateRating: testimonials.length > 0 ? {
+      "@type": "AggregateRating",
+      ratingValue: "5.0",
+      reviewCount: testimonials.length.toString(),
       bestRating: "5",
       worstRating: "1"
-    },
-    reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
-    datePublished: testimonial.date || "2024-01-01"
-  }));
+    } : undefined,
+    review: testimonials.slice(0, 3).map((testimonial: Testimonial) => ({
+      "@type": "Review",
+      itemReviewed: {
+        "@type": "Product",
+        name: "Ukrainian Honey Cake",
+        description: "Traditional Ukrainian honey cake and other authentic desserts"
+      },
+      author: {
+        "@type": "Person",
+        name: testimonial.customerName
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: testimonial.rating || 5,
+        bestRating: "5",
+        worstRating: "1"
+      },
+      reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
+      datePublished: testimonial.date || "2024-01-01"
+    }))
+  };
+
+  // Clean up productSchema to remove undefined values
+  if (!productSchema.aggregateRating) {
+    delete productSchema.aggregateRating;
+  }
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -309,19 +347,10 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {reviewSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
-        />
-      )}
-      {individualReviews.map((review, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(review) }}
-        />
-      ))}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
 
       
 
