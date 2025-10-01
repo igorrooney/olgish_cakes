@@ -28,16 +28,23 @@ export async function middleware(request: NextRequest) {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "origin-when-cross-origin");
 
-  // Add caching headers
+  // Add caching headers with better cache control
   if (
     request.nextUrl.pathname.startsWith("/_next") ||
     request.nextUrl.pathname.startsWith("/static")
   ) {
     response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
   } else if (request.nextUrl.pathname.startsWith("/api")) {
-    response.headers.set("Cache-Control", "no-store, max-age=0");
+    // API routes should not be cached to ensure fresh data
+    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.headers.set("Pragma", "no-cache");
+    response.headers.set("Expires", "0");
+  } else if (request.nextUrl.pathname.startsWith("/admin")) {
+    // Admin pages should not be cached
+    response.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
   } else {
-    response.headers.set("Cache-Control", "public, max-age=3600, must-revalidate");
+    // Regular pages with shorter cache time for better data freshness
+    response.headers.set("Cache-Control", "public, max-age=60, must-revalidate");
   }
 
   return response;

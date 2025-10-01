@@ -22,6 +22,7 @@
     "migrate:faqs": "ts-node --project scripts/tsconfig.json scripts/migrateFaqs.ts",
     "migrate:descriptions": "node scripts/migrate-descriptions.js",
     "clear-cache": "node scripts/clear-cache.js",
+    "clear-cache-dev": "node scripts/clear-cache-dev.js",
     "setup-webhook": "node scripts/setup-webhook.js",
     "test-webhook": "node scripts/test-webhook.js",
     "analyze": "ANALYZE=true next build",

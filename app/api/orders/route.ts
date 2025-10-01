@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
+import { urlFor } from "@/sanity/lib/image";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -26,7 +27,8 @@ export async function POST(request: NextRequest) {
       message: orderData.message,
       note: orderData.note,
       deliveryNotes: orderData.deliveryNotes,
-      giftNote: orderData.giftNote
+      giftNote: orderData.giftNote,
+      attachments: orderData.attachments
     });
     
     // Generate unique order number
@@ -76,10 +78,12 @@ export async function POST(request: NextRequest) {
       messages: (() => {
         const messages = [];
         if (orderData.message) {
-          messages.push({
+          const messageWithAttachments = {
             message: orderData.message,
             attachments: orderData.attachments || [],
-          });
+          };
+          console.log('Creating message with attachments:', messageWithAttachments);
+          messages.push(messageWithAttachments);
         }
         if (orderData.deliveryNotes || orderData.note) {
           const additionalNote = orderData.deliveryNotes || orderData.note;
@@ -94,6 +98,7 @@ export async function POST(request: NextRequest) {
             attachments: [],
           });
         }
+        console.log('Final messages array:', messages);
         return messages;
       })(),
       metadata: {
@@ -123,6 +128,7 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: orderData.email,
+        bcc: 'igorrooney@gmail.com',
         subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
         html: `
           <!DOCTYPE html>
@@ -222,6 +228,38 @@ export async function POST(request: NextRequest) {
                             }
                           })()}
                         </div>
+                        
+                        <!-- Design Images Section -->
+                        ${(() => {
+                          // Check if any items have individual design and if there are attachments
+                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
+                          
+                          if (hasIndividualDesign && hasAttachments) {
+                            return `
+                              <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+                                <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
+                                <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
+                                  Thank you for providing your design reference! We'll use this to create your perfect cake.
+                                </p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                  ${orderData.attachments.map((attachment: any) => {
+                                    if (attachment.asset) {
+                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                                      return `
+                                        <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
+                                          <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
+                                        </div>
+                                      `;
+                                    }
+                                    return '';
+                                  }).join('')}
+                                </div>
+                              </div>
+                            `;
+                          }
+                          return '';
+                        })()}
                         
                         <!-- Delivery Information -->
                         ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
@@ -418,6 +456,38 @@ export async function POST(request: NextRequest) {
                           })()}
                         </div>
                         
+                        <!-- Design Images Section -->
+                        ${(() => {
+                          // Check if any items have individual design and if there are attachments
+                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
+                          
+                          if (hasIndividualDesign && hasAttachments) {
+                            return `
+                              <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+                                <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
+                                <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
+                                  Thank you for providing your design reference! We'll use this to create your perfect cake.
+                                </p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                  ${orderData.attachments.map((attachment: any) => {
+                                    if (attachment.asset) {
+                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                                      return `
+                                        <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
+                                          <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
+                                        </div>
+                                      `;
+                                    }
+                                    return '';
+                                  }).join('')}
+                                </div>
+                              </div>
+                            `;
+                          }
+                          return '';
+                        })()}
+                        
                         <!-- Delivery Information -->
                         ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
@@ -518,7 +588,18 @@ export async function GET(request: NextRequest) {
       items,
       delivery,
       pricing,
-      messages,
+      messages[]{
+        message,
+        attachments[]{
+          asset->{
+            _id,
+            _ref,
+            url
+          },
+          alt,
+          caption
+        }
+      },
       notes[]{
         note,
         author,

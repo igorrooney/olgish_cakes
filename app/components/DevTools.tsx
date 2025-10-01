@@ -12,28 +12,64 @@ import {
   CloseIcon,
   RefreshIcon,
   ClearIcon,
+  Chip,
+  Divider,
 } from "@/lib/mui-optimization";
 import { AccessibleIconButton, TouchTargetWrapper } from "@/lib/ui-components";
-import { clearCache } from "@/app/utils/fetchCakes";
+import { clearCache, invalidateCache } from "@/app/utils/fetchCakes";
+import { cacheManager } from "@/app/utils/cacheManager";
 
 export function DevTools() {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [isClearing, setIsClearing] = useState(false);
+  const [lastCleared, setLastCleared] = useState<Date | null>(null);
 
-  const handleClearCache = () => {
-    clearCache();
-    setMessage("Cache cleared! Content will refresh on next request.");
-    setTimeout(() => setMessage(null), 3000);
+  const handleClearCache = async () => {
+    setIsClearing(true);
+    setMessage(null);
+    
+    try {
+      await cacheManager.clearAllCache();
+      setLastCleared(new Date());
+      setMessage("✅ Cache cleared successfully!");
+    } catch (error) {
+      setMessage("❌ Failed to clear cache");
+      console.error("Cache clear error:", error);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
+  const handleClearPattern = async (pattern: string) => {
+    setIsClearing(true);
+    setMessage(null);
+    
+    try {
+      await cacheManager.clearCachePattern(pattern);
+      setLastCleared(new Date());
+      setMessage(`✅ Cache cleared for pattern: ${pattern}`);
+    } catch (error) {
+      setMessage("❌ Failed to clear cache pattern");
+      console.error("Cache clear error:", error);
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   const handleForceRefresh = () => {
     clearCache();
-    window.location.reload();
+    // Force a hard refresh by adding cache-busting parameter
+    const url = new URL(window.location.href);
+    url.searchParams.set('_t', Date.now().toString());
+    window.location.href = url.toString();
   };
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
+
+  const cacheStatus = cacheManager.getCacheStatus();
 
   // Only show in development
   if (process.env.NODE_ENV !== "development") {
@@ -84,7 +120,8 @@ export function DevTools() {
             borderRadius: 2,
             p: 2,
             boxShadow: 3,
-            minWidth: 200,
+            minWidth: 280,
+            maxWidth: 320,
             animation: "slideIn 0.3s ease-out",
             "@keyframes slideIn": {
               from: {
@@ -119,31 +156,104 @@ export function DevTools() {
             </Box>
           </Box>
 
+          {/* Cache Status */}
+          {cacheStatus.isAutoClearing && (
+            <Chip
+              label="Auto-clearing every 30s"
+              color="info"
+              size="small"
+              sx={{ mb: 1, width: "100%" }}
+            />
+          )}
+
           {message && (
-            <Alert severity="success" sx={{ mb: 1, fontSize: "0.75rem" }}>
+            <Alert 
+              severity={message.includes("✅") ? "success" : "error"} 
+              sx={{ mb: 1, fontSize: "0.75rem" }}
+              onClose={() => setMessage(null)}
+            >
               {message}
             </Alert>
           )}
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Button
-              variant="outlined"
-              onClick={handleClearCache}
-              startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
-              sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
-            >
-              Clear Cache
-            </Button>
+          {/* Cache Control Section */}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
+              Cache Management
+            </Typography>
+            
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClearCache}
+                disabled={isClearing}
+                startIcon={<ClearIcon sx={{ fontSize: 16 }} />}
+                sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
+                fullWidth
+              >
+                {isClearing ? "Clearing..." : "Clear All Cache"}
+              </Button>
 
-            <Button
-              variant="contained"
-              onClick={handleForceRefresh}
-              startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
-              sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
-            >
-              Force Refresh
-            </Button>
+              <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleClearPattern("cakes")}
+                  disabled={isClearing}
+                  sx={{ flex: 1, fontSize: "0.7rem" }}
+                >
+                  Cakes
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleClearPattern("testimonials")}
+                  disabled={isClearing}
+                  sx={{ flex: 1, fontSize: "0.7rem" }}
+                >
+                  Testimonials
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleClearPattern("faqs")}
+                  disabled={isClearing}
+                  sx={{ flex: 1, fontSize: "0.7rem" }}
+                >
+                  FAQs
+                </Button>
+              </Box>
+            </Box>
           </Box>
+
+          <Divider sx={{ my: 1 }} />
+
+          {/* Other Dev Tools */}
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
+              Development Tools
+            </Typography>
+            
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <Button
+                variant="outlined"
+                onClick={handleForceRefresh}
+                startIcon={<RefreshIcon sx={{ fontSize: 16 }} />}
+                sx={{ fontSize: "0.75rem", justifyContent: "flex-start" }}
+                fullWidth
+              >
+                Force Refresh
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Last Cleared Info */}
+          {lastCleared && (
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+              Last cleared: {lastCleared.toLocaleTimeString()}
+            </Typography>
+          )}
         </Box>
       )}
     </>

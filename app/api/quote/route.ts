@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { serverClient } from "@/sanity/lib/client";
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is not set");
@@ -375,6 +376,7 @@ Olgish Cakes
     const response = await resend.emails.send({
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
+      bcc: "igorrooney@gmail.com",
       replyTo: email,
       subject: `🎂 Quote Request: ${name} - ${occasion} ${cakeType}`,
       html: htmlContent,
@@ -396,6 +398,46 @@ Olgish Cakes
 
     // Also create an order in the system for quote requests
     try {
+      // Upload design image to Sanity and pass image reference in attachments
+      let attachmentImages: any[] = [];
+      if (designImage) {
+        console.log('Quote design image details:', {
+          name: designImage.name,
+          size: designImage.size,
+          type: designImage.type,
+          constructor: designImage.constructor.name
+        });
+        
+        try {
+          // Convert File to Buffer for Sanity upload
+          const arrayBuffer = await designImage.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          
+          const uploaded = await serverClient.assets.upload('image', buffer, {
+            filename: designImage.name,
+            contentType: designImage.type,
+          });
+          
+          console.log('Successfully uploaded quote image to Sanity:', uploaded._id);
+          
+          attachmentImages = [
+            {
+              _type: 'image',
+              asset: { _type: 'reference', _ref: uploaded._id },
+            },
+          ];
+        } catch (e: any) {
+          console.error('Failed to upload quote design image to Sanity:', e);
+          console.error('Quote error details:', {
+            message: e?.message,
+            stack: e?.stack,
+            name: e?.name
+          });
+        }
+      } else {
+        console.log('No quote design image provided');
+      }
+
       const orderData = {
         name,
         email,
@@ -432,10 +474,11 @@ Special Requests: ${specialRequests}
         deliveryNotes: "",
         paymentMethod: "cash-collection",
         referrer: "",
-        attachments: designImage ? [designImage.name] : [],
+        attachments: attachmentImages,
       };
 
       // Create order via internal API call
+      console.log('Creating quote order with attachments:', attachmentImages);
       const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
         method: 'POST',
         headers: {

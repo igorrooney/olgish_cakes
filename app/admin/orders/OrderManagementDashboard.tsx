@@ -40,6 +40,7 @@ import {
   Divider,
   Tooltip,
   CardMedia,
+  CircularProgress,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -97,6 +98,17 @@ interface Order {
   };
   messages?: Array<{
     message: string;
+    attachments?: Array<{
+      _type: string;
+      asset: {
+        _type: string;
+        _id: string;
+        _ref: string;
+        url: string;
+      };
+      alt?: string;
+      caption?: string;
+    }>;
   }>;
   notes?: Array<{
     note: string;
@@ -146,6 +158,8 @@ export function OrderManagementDashboard() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -186,6 +200,13 @@ export function OrderManagementDashboard() {
     deliveryMethod: '',
     note: '',
     images: [] as File[],
+    // Customer information fields
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    customerAddress: '',
+    customerCity: '',
+    customerPostcode: '',
   });
 
   useEffect(() => {
@@ -230,9 +251,13 @@ export function OrderManagementDashboard() {
 
   const monthOptions = generateMonthOptions();
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (isRefresh = false) => {
     try {
-      setLoading(true);
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setLoading(true);
+      }
       // Always fetch all orders, filtering will be done on frontend
       const response = await fetch('/api/orders', {
         credentials: 'include',
@@ -248,7 +273,11 @@ export function OrderManagementDashboard() {
       console.error('Error fetching orders:', error);
       showNotification('Failed to fetch orders', 'error');
     } finally {
-      setLoading(false);
+      if (isRefresh) {
+        setIsRefreshing(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -283,6 +312,13 @@ export function OrderManagementDashboard() {
       deliveryMethod: order.delivery.deliveryMethod,
       note: '',
       images: [],
+      // Populate customer information
+      customerName: order.customer.name,
+      customerEmail: order.customer.email,
+      customerPhone: order.customer.phone,
+      customerAddress: order.customer.address || '',
+      customerCity: order.customer.city || '',
+      customerPostcode: order.customer.postcode || '',
     });
     setEditDialogOpen(true);
   };
@@ -327,6 +363,7 @@ export function OrderManagementDashboard() {
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
 
+    setIsSaving(true);
     try {
       // Create FormData to handle file uploads
       const formData = new FormData();
@@ -336,6 +373,13 @@ export function OrderManagementDashboard() {
       formData.append('paymentStatus', editForm.paymentStatus);
       formData.append('paymentMethod', editForm.paymentMethod);
       formData.append('note', editForm.note);
+      // Add customer information
+      formData.append('customerName', editForm.customerName);
+      formData.append('customerEmail', editForm.customerEmail);
+      formData.append('customerPhone', editForm.customerPhone);
+      formData.append('customerAddress', editForm.customerAddress);
+      formData.append('customerCity', editForm.customerCity);
+      formData.append('customerPostcode', editForm.customerPostcode);
       
       // Add images to FormData
       editForm.images.forEach((image, index) => {
@@ -360,6 +404,8 @@ export function OrderManagementDashboard() {
     } catch (error) {
       console.error('Error updating order:', error);
       showNotification('Failed to update order', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -795,11 +841,11 @@ export function OrderManagementDashboard() {
             <Grid item xs={12} sm={6} md={1}>
               <Button
                 variant="outlined"
-                startIcon={<RefreshIcon />}
-                onClick={fetchOrders}
-                disabled={loading}
+                startIcon={isRefreshing ? <CircularProgress size={20} /> : <RefreshIcon />}
+                onClick={() => fetchOrders(true)}
+                disabled={loading || isRefreshing}
               >
-                Refresh
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
               </Button>
             </Grid>
           </Grid>
@@ -1098,6 +1144,74 @@ export function OrderManagementDashboard() {
               />
             </Grid>
             
+            {/* Customer Information Section */}
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }}>
+                <Typography variant="h6" color="primary">
+                  Customer Information
+                </Typography>
+              </Divider>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Customer Name"
+                value={editForm.customerName}
+                onChange={(e) => setEditForm({ ...editForm, customerName: e.target.value })}
+                required
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={editForm.customerEmail}
+                onChange={(e) => setEditForm({ ...editForm, customerEmail: e.target.value })}
+                required
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Phone"
+                value={editForm.customerPhone}
+                onChange={(e) => setEditForm({ ...editForm, customerPhone: e.target.value })}
+                required
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Address"
+                value={editForm.customerAddress}
+                onChange={(e) => setEditForm({ ...editForm, customerAddress: e.target.value })}
+                placeholder="Street address"
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="City"
+                value={editForm.customerCity}
+                onChange={(e) => setEditForm({ ...editForm, customerCity: e.target.value })}
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Postcode"
+                value={editForm.customerPostcode}
+                onChange={(e) => setEditForm({ ...editForm, customerPostcode: e.target.value })}
+              />
+            </Grid>
+            
             {/* Image Upload Section */}
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
@@ -1179,8 +1293,13 @@ export function OrderManagementDashboard() {
           >
             Delete Order
           </Button>
-          <Button onClick={handleSaveOrder} variant="contained">
-            Save Changes
+          <Button 
+            onClick={handleSaveOrder} 
+            variant="contained"
+            disabled={isSaving}
+            startIcon={isSaving ? <CircularProgress size={20} /> : undefined}
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1250,12 +1369,90 @@ export function OrderManagementDashboard() {
                 
                 <Typography variant="h6" gutterBottom>Order Items</Typography>
                 {selectedOrder.items.map((item, index) => (
-                  <Box key={index} sx={{ mb: 1, p: 1, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                  <Box key={index} sx={{ mb: 2, p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
                     <Typography><strong>{item.productName}</strong></Typography>
                     <Typography>Quantity: {item.quantity}</Typography>
                     <Typography>Price: £{item.totalPrice}</Typography>
                     {item.designType && (
                       <Typography>Design: {item.designType}</Typography>
+                    )}
+                    
+                    {/* Display design images for individual designs */}
+                    {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle2" gutterBottom>
+                          Design Reference Images:
+                        </Typography>
+                        {/* Debug logging */}
+                        {console.log('Debug - selectedOrder.messages:', selectedOrder.messages)}
+                        {console.log('Debug - messages with attachments:', selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0))}
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {(() => {
+                            const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
+                            const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
+                            
+                            if (allAttachments.length === 0) {
+                              return (
+                                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                  No design images found. Messages: {selectedOrder.messages.length}, 
+                                  Messages with attachments: {messagesWithAttachments.length}
+                                </Typography>
+                              );
+                            }
+                            
+                            return allAttachments.map((attachment, index) => {
+                              const imageUrl = getImageUrl(attachment.asset);
+                              console.log('Debug - attachment:', attachment);
+                              console.log('Debug - imageUrl:', imageUrl);
+                              
+                              return (
+                                <Box
+                                  key={index}
+                                  sx={{
+                                    position: 'relative',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                      opacity: 0.8,
+                                    },
+                                  }}
+                                  onClick={() => handleImageClick(attachment.asset)}
+                                >
+                                  <CardMedia
+                                    component="img"
+                                    sx={{
+                                      width: 100,
+                                      height: 100,
+                                      objectFit: 'cover',
+                                      borderRadius: 1,
+                                      border: `2px solid ${designTokens.colors.border.light}`,
+                                    }}
+                                    image={imageUrl}
+                                    alt={attachment.alt || 'Design reference'}
+                                    onError={(e) => {
+                                      console.error('Failed to load design image:', e);
+                                    }}
+                                  />
+                                  <IconButton
+                                    size="small"
+                                    sx={{
+                                      position: 'absolute',
+                                      top: 4,
+                                      right: 4,
+                                      bgcolor: 'rgba(0,0,0,0.5)',
+                                      color: 'white',
+                                      '&:hover': {
+                                        bgcolor: 'rgba(0,0,0,0.7)',
+                                      },
+                                    }}
+                                  >
+                                    <ZoomIcon fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                              );
+                            });
+                          })()}
+                        </Box>
+                      </Box>
                     )}
                   </Box>
                 ))}
@@ -1316,7 +1513,10 @@ export function OrderManagementDashboard() {
                               Attached Images:
                             </Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                              {note.images.map((image, imgIndex) => {
+                              {note.images
+                                .filter(image => image && image.asset)
+                                .map((image, imgIndex) => {
+                                
                                 const imageUrl = getImageUrl(image.asset);
                                 
                                 return (

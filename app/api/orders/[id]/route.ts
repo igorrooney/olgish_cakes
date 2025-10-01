@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
 import { PHONE_UTILS } from "@/lib/constants";
+import { urlFor } from "@/sanity/lib/image";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -83,6 +84,13 @@ export async function PATCH(
       updates.paymentStatus = formData.get('paymentStatus') as string;
       updates.paymentMethod = formData.get('paymentMethod') as string;
       updates.note = formData.get('note') as string;
+      // Extract customer information
+      updates.customerName = formData.get('customerName') as string;
+      updates.customerEmail = formData.get('customerEmail') as string;
+      updates.customerPhone = formData.get('customerPhone') as string;
+      updates.customerAddress = formData.get('customerAddress') as string;
+      updates.customerCity = formData.get('customerCity') as string;
+      updates.customerPostcode = formData.get('customerPostcode') as string;
       
       // Extract images
       const imageFiles = formData.getAll('images') as File[];
@@ -141,6 +149,26 @@ export async function PATCH(
     // Handle payment method updates
     if (updates.paymentMethod) {
       updateDoc['pricing.paymentMethod'] = updates.paymentMethod;
+    }
+
+    // Handle customer information updates
+    if (updates.customerName) {
+      updateDoc['customer.name'] = updates.customerName;
+    }
+    if (updates.customerEmail) {
+      updateDoc['customer.email'] = updates.customerEmail;
+    }
+    if (updates.customerPhone) {
+      updateDoc['customer.phone'] = updates.customerPhone;
+    }
+    if (updates.customerAddress !== undefined) {
+      updateDoc['customer.address'] = updates.customerAddress;
+    }
+    if (updates.customerCity !== undefined) {
+      updateDoc['customer.city'] = updates.customerCity;
+    }
+    if (updates.customerPostcode !== undefined) {
+      updateDoc['customer.postcode'] = updates.customerPostcode;
     }
 
     // Handle price updates
@@ -208,7 +236,15 @@ export async function PATCH(
 
     // Send status update email after order is updated (if status changed)
     if (updates.status && updates.status !== currentOrder.status) {
-      await sendStatusUpdateEmail(updatedOrder, updates.status);
+      // Create a modified order object with the updated delivery method for email
+      const orderForEmail = {
+        ...updatedOrder,
+        delivery: {
+          ...updatedOrder.delivery,
+          deliveryMethod: updates.deliveryMethod || updatedOrder.delivery.deliveryMethod
+        }
+      };
+      await sendStatusUpdateEmail(orderForEmail, updates.status);
     }
 
     return NextResponse.json({
@@ -329,7 +365,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
         } else if (deliveryMethod === 'collection') {
           baseMessage = 'Great news! Your order is ready for collection. Please contact us to arrange pickup.';
         } else if (deliveryMethod === 'market-pickup') {
-          baseMessage = 'Great news! Your order is ready to pick up at our stall. Please contact us to arrange pickup.';
+          baseMessage = 'Great news! Your order is ready for collection at our market stall. Please contact us to arrange pickup.';
         }
         
         // Only add tracking info for postal deliveries with tracking number
@@ -373,6 +409,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
     await resend.emails.send({
       from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
       to: order.customer.email,
+      bcc: 'igorrooney@gmail.com',
       subject: statusInfo.subject,
       html: `
         <!DOCTYPE html>
@@ -457,6 +494,45 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           </div>
                         `).join('')}
                       </div>
+                      
+                      <!-- Design Images Section -->
+                      ${(() => {
+                        // Check if any items have individual design and if there are message attachments
+                        const hasIndividualDesign = order.items?.some((item: any) => item.designType === 'individual');
+                        const hasAttachments = order.messages?.some((message: any) => message.attachments && message.attachments.length > 0);
+                        
+                        if (hasIndividualDesign && hasAttachments) {
+                          const allAttachments = order.messages
+                            .filter((message: any) => message.attachments && message.attachments.length > 0)
+                            .flatMap((message: any) => message.attachments)
+                            .filter((attachment: any) => attachment && attachment.asset);
+                          
+                          if (allAttachments.length > 0) {
+                            return `
+                              <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+                                <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
+                                <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
+                                  We're using your design reference to create your perfect cake.
+                                </p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                  ${allAttachments.map((attachment: any) => {
+                                    if (attachment.asset) {
+                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                                      return `
+                                        <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
+                                          <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
+                                        </div>
+                                      `;
+                                    }
+                                    return '';
+                                  }).join('')}
+                                </div>
+                              </div>
+                            `;
+                          }
+                        }
+                        return '';
+                      })()}
                       
                       ${newStatus === 'out-delivery' && order.delivery.trackingNumber ? `
                         <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 32px;">

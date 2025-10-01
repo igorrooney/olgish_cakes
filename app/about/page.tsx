@@ -9,9 +9,9 @@ import {
 } from "../utils/seo";
 import AboutContent from "./AboutContent";
 
-// Preload critical resources
+// Preload critical resources with shorter revalidation
 export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 60; // Revalidate every minute for better data freshness
 
 // Enhanced SEO metadata for About page
 export const metadata: Metadata = generatePageMetadata({

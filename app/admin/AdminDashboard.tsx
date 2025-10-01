@@ -171,13 +171,6 @@ export function AdminDashboard() {
 
   const quickActions = [
     {
-      title: 'Add New Order',
-      description: 'Create a new customer order',
-      icon: <ShoppingCart />,
-      href: '/admin/orders?action=add',
-      color: designTokens.colors.primary.main
-    },
-    {
       title: 'Clear Cache',
       description: 'Refresh website cache',
       icon: <Refresh />,

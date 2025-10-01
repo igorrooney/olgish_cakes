@@ -12,7 +12,7 @@ import { getMerchantReturnPolicy } from "@/app/utils/seo";
 import { getOfferShippingDetails } from "@/app/utils/seo";
 
 // Enable revalidation for this page with optimization
-export const revalidate = 3600; // 1 hour for better performance
+export const revalidate = 60; // 1 minute for better data freshness
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {

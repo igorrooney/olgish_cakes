@@ -7,11 +7,11 @@ const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = USE_REAL_TIME_DATA
   ? 0
   : process.env.NODE_ENV === "development"
-    ? 30 * 1000
-    : 5 * 60 * 1000;
+    ? 10 * 1000 // Reduced to 10 seconds for development
+    : 60 * 1000; // Reduced to 1 minute for production
 
-// Revalidation settings
-const REVALIDATE_TIME = USE_REAL_TIME_DATA ? 0 : process.env.NODE_ENV === "development" ? 0 : 300;
+// Revalidation settings - more aggressive for better data freshness
+const REVALIDATE_TIME = USE_REAL_TIME_DATA ? 0 : process.env.NODE_ENV === "development" ? 0 : 60;
 
 function getCachedData<T>(key: string): T | null {
   if (USE_REAL_TIME_DATA) {
@@ -201,4 +201,18 @@ export async function invalidateCache(pattern?: string): Promise<void> {
     cache.clear();
     console.log("All cache cleared");
   }
+}
+
+// Development cache busting - add timestamp to force fresh data
+export function getCacheBustingKey(baseKey: string): string {
+  if (process.env.NODE_ENV === "development") {
+    return `${baseKey}-${Date.now()}`;
+  }
+  return baseKey;
+}
+
+// Force refresh data (bypass cache)
+export async function forceRefreshCakes(): Promise<Cake[]> {
+  cache.clear();
+  return getAllCakes();
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { serverClient } from "@/sanity/lib/client";
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is not set");
@@ -237,6 +238,7 @@ Olgish Cakes
       response = await resend.emails.send({
         from: "Olgish Cakes <hello@olgishcakes.co.uk>",
         to: recipientEmail,
+        bcc: "igorrooney@gmail.com",
         replyTo: email,
         subject: `New Contact: ${name}`,
         html: htmlContent,
@@ -263,6 +265,45 @@ Olgish Cakes
     // If this is an order form, also create an order in the system
     if (isOrderInquiry) {
       try {
+        // Upload design image to Sanity and pass image reference in attachments
+        let attachmentImages: any[] = [];
+        if (designImage) {
+          console.log('Design image details:', {
+            name: designImage.name,
+            size: designImage.size,
+            type: designImage.type,
+            constructor: designImage.constructor.name
+          });
+          
+          try {
+            // Convert File to Buffer for Sanity upload
+            const arrayBuffer = await designImage.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            
+            const uploaded = await serverClient.assets.upload('image', buffer, {
+              filename: designImage.name,
+              contentType: designImage.type,
+            });
+            
+            console.log('Successfully uploaded to Sanity:', uploaded._id);
+            
+            attachmentImages = [
+              {
+                _type: 'image',
+                asset: { _type: 'reference', _ref: uploaded._id },
+              },
+            ];
+          } catch (e: any) {
+            console.error('Failed to upload design image to Sanity:', e);
+            console.error('Error details:', {
+              message: e?.message,
+              stack: e?.stack,
+              name: e?.name
+            });
+          }
+        } else {
+          console.log('No design image provided');
+        }
         const orderData = {
           name,
           email,
@@ -290,10 +331,11 @@ Olgish Cakes
           note: formData.get("note") as string || "",
           paymentMethod: formData.get("paymentMethod") as string || "cash-collection",
           referrer: formData.get("referrer") as string || "",
-          attachments: designImage ? [designImage.name] : [],
+          attachments: attachmentImages,
         };
 
         // Create order via internal API call
+        console.log('Creating order with attachments:', attachmentImages);
         const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
           method: 'POST',
           headers: {

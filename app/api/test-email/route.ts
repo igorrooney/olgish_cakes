@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
           } else if (deliveryMethod === 'local-delivery') {
             baseMessage = 'Great news! Your order is out for local delivery and will be with you soon.';
           } else if (deliveryMethod === 'collection' || deliveryMethod === 'market-pickup') {
-            baseMessage = 'Great news! Your order is ready to pick up at our market stall. Please contact us to arrange pickup.';
+            baseMessage = 'Great news! Your order is ready for collection. Please contact us to arrange pickup.';
           }
           
           // Only add tracking info for postal deliveries with tracking number
