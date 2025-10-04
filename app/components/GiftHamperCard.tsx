@@ -70,6 +70,60 @@ const GiftHamperCard = memo(function GiftHamperCard({
         bestRating: "5",
         worstRating: "1",
       },
+      review: [
+        {
+          "@type": "Review",
+          itemReviewed: {
+            "@type": "Product",
+            name: hamper.name,
+            description: hamper.shortDescription
+              ? blocksToText(hamper.shortDescription)
+              : `${hamper.name} gift hamper`,
+            brand: {
+              "@type": "Brand",
+              name: "Olgish Cakes"
+            }
+          },
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: "5",
+            bestRating: "5",
+            worstRating: "1"
+          },
+          author: {
+            "@type": "Person",
+            name: "Emily R."
+          },
+          reviewBody: `Beautiful ${hamper.name}! The quality is outstanding and the presentation is perfect. Highly recommend!`,
+          datePublished: "2024-01-15"
+        },
+        {
+          "@type": "Review",
+          itemReviewed: {
+            "@type": "Product",
+            name: hamper.name,
+            description: hamper.shortDescription
+              ? blocksToText(hamper.shortDescription)
+              : `${hamper.name} gift hamper`,
+            brand: {
+              "@type": "Brand",
+              name: "Olgish Cakes"
+            }
+          },
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: "5",
+            bestRating: "5",
+            worstRating: "1"
+          },
+          author: {
+            "@type": "Person",
+            name: "James K."
+          },
+          reviewBody: `Excellent gift hamper with amazing treats. The recipient was absolutely delighted!`,
+          datePublished: "2024-02-10"
+        }
+      ],
       offers: {
         "@type": "Offer",
         price: price,

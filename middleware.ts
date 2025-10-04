@@ -3,6 +3,19 @@ import type { NextRequest } from "next/server";
 import { isAdminAuthenticated } from "./lib/admin-auth";
 
 export async function middleware(request: NextRequest) {
+  // Force HTTPS redirect for all HTTP requests (except localhost in development)
+  const isLocalhost = request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1";
+  const isDevelopment = process.env.NODE_ENV === "development";
+  
+  if (
+    !isLocalhost && // Skip HTTPS redirect for localhost
+    (request.headers.get("x-forwarded-proto") === "http" ||
+    (!request.headers.get("x-forwarded-proto") && request.url.startsWith("http://")))
+  ) {
+    const httpsUrl = request.url.replace("http://", "https://");
+    return NextResponse.redirect(httpsUrl, 301);
+  }
+
   // Check if this is an admin API route that needs protection
   if (request.nextUrl.pathname.startsWith("/api/admin") && 
       !request.nextUrl.pathname.startsWith("/api/admin/auth") &&
@@ -17,12 +30,13 @@ export async function middleware(request: NextRequest) {
       );
     }
   }
-
   const response = NextResponse.next();
 
-  // Add security headers
+  // Add security headers (skip HSTS for localhost)
   response.headers.set("X-DNS-Prefetch-Control", "on");
-  response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  if (!isLocalhost) {
+    response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  }
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-Content-Type-Options", "nosniff");

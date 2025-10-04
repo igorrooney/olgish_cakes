@@ -10,5 +10,30 @@
       "path": "/api/publish-scheduled-posts", 
       "schedule": "0 18 * * *"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-forwarded-proto",
+          "value": "http"
+        }
+      ],
+      "destination": "https://olgishcakes.co.uk/$1",
+      "permanent": true
+    }
   ]
 }
