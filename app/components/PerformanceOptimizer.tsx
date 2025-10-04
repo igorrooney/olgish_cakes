@@ -25,7 +25,7 @@ export function PerformanceOptimizer() {
     // Optimize scroll performance
     const optimizeScroll = () => {
       let ticking = false;
-      
+
       const updateScrollPosition = () => {
         // Use requestAnimationFrame for smooth scrolling
         if (!ticking) {
@@ -37,7 +37,7 @@ export function PerformanceOptimizer() {
       };
 
       window.addEventListener("scroll", updateScrollPosition, { passive: true });
-      
+
       return () => {
         window.removeEventListener("scroll", updateScrollPosition);
       };
@@ -46,7 +46,7 @@ export function PerformanceOptimizer() {
     // Optimize image loading
     const optimizeImages = () => {
       const images = document.querySelectorAll("img[data-src]");
-      
+
       const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -62,7 +62,7 @@ export function PerformanceOptimizer() {
       });
 
       images.forEach((img) => imageObserver.observe(img));
-      
+
       return () => {
         images.forEach((img) => imageObserver.unobserve(img));
       };
@@ -95,15 +95,15 @@ export function CriticalCSS() {
           .hero { min-height: 60vh; display: flex; align-items: center; }
           .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; }
           .btn-primary { background: #2E3192; color: white; }
-          
+
           /* Prevent layout shift */
           img { max-width: 100%; height: auto; }
           .lazy { opacity: 0; transition: opacity 0.3s; }
           .lazy.loaded { opacity: 1; }
-          
+
           /* Smooth scrolling */
           html { scroll-behavior: smooth; }
-          
+
           /* Performance optimizations */
           * { box-sizing: border-box; }
           .gpu-accelerated { transform: translateZ(0); will-change: transform; }

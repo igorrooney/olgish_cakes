@@ -7,8 +7,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { _type, _id, slug } = body;
 
-    console.log("🔄 Revalidation webhook triggered:", { _type, _id, slug });
-
     // Revalidate specific paths based on content type
     if (_type === "cake") {
       // Revalidate cake-specific pages
@@ -37,8 +35,6 @@ export async function POST(request: NextRequest) {
     revalidateTag("cakes");
     revalidateTag("testimonials");
     revalidateTag("faqs");
-
-    console.log("✅ Revalidation completed successfully");
 
     return NextResponse.json({
       success: true,

@@ -21,11 +21,11 @@ export async function generateStaticParams() {
   const query = `*[_type == "giftHamper" && defined(slug.current)] {
     "slug": slug.current
   }`;
-  
+
   try {
     const sanityClient = getClient(false); // Use production client
     const hampers = await sanityClient.fetch(query);
-    
+
     return hampers.map((hamper: { slug: string }) => ({
       slug: hamper.slug,
     }));
@@ -156,7 +156,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
           "@type": "Product",
           "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
           name: hamper.name,
-          description: isCakeByPost 
+          description: isCakeByPost
             ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
             : hamper.shortDescription?.length
               ? Array.isArray(hamper.shortDescription)
@@ -165,8 +165,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
                     .join(" ")
                 : String(hamper.shortDescription)
               : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-          brand: { 
-            "@type": "Brand", 
+          brand: {
+            "@type": "Brand",
             name: "Olgish Cakes",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
           },
@@ -194,7 +194,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               value: "Letterbox Post"
             },
             {
-              "@type": "PropertyValue", 
+              "@type": "PropertyValue",
               name: "Packaging",
               value: "Vacuum Sealed"
             },
@@ -267,7 +267,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               itemReviewed: {
                 "@type": "Product",
                 name: hamper.name,
-                description: isCakeByPost 
+                description: isCakeByPost
                   ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
                   : hamper.shortDescription?.length
                     ? Array.isArray(hamper.shortDescription)
@@ -276,8 +276,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
                           .join(" ")
                       : String(hamper.shortDescription)
                     : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-                brand: { 
-                  "@type": "Brand", 
+                brand: {
+                  "@type": "Brand",
                   name: "Olgish Cakes"
                 }
               },
@@ -291,7 +291,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               itemReviewed: {
                 "@type": "Product",
                 name: hamper.name,
-                description: isCakeByPost 
+                description: isCakeByPost
                   ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
                   : hamper.shortDescription?.length
                     ? Array.isArray(hamper.shortDescription)
@@ -300,8 +300,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
                           .join(" ")
                       : String(hamper.shortDescription)
                     : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-                brand: { 
-                  "@type": "Brand", 
+                brand: {
+                  "@type": "Brand",
                   name: "Olgish Cakes"
                 }
               },
@@ -344,7 +344,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             : {}),
         } as const;
 
-        const faqJsonLd = isCakeByPost 
+        const faqJsonLd = isCakeByPost
           ? {
               "@context": "https://schema.org",
               "@type": "FAQPage",
@@ -352,41 +352,41 @@ export default async function GiftHamperPage({ params }: PageProps) {
                 {
                   "@type": "Question",
                   name: "What is cake by post?",
-                  acceptedAnswer: { 
-                    "@type": "Answer", 
-                    text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK." 
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK."
                   }
                 },
                 {
                   "@type": "Question",
                   name: "How long does cake by post stay fresh?",
-                  acceptedAnswer: { 
-                    "@type": "Answer", 
-                    text: "Our cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. We recommend consuming within 3-4 days for the best taste experience." 
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Our cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. We recommend consuming within 3-4 days for the best taste experience."
                   }
                 },
                 {
                   "@type": "Question",
                   name: "Do you deliver cake by post to all UK addresses?",
-                  acceptedAnswer: { 
-                    "@type": "Answer", 
-                    text: "Yes, we deliver our cake by post service to all UK mainland addresses. We offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact us directly." 
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Yes, we deliver our cake by post service to all UK mainland addresses. We offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact us directly."
                   }
                 },
                 {
                   "@type": "Question",
                   name: "What types of cake can be sent by post?",
-                  acceptedAnswer: { 
-                    "@type": "Answer", 
-                    text: "We specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. Our cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "We specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. Our cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit."
                   }
                 },
                 {
                   "@type": "Question",
                   name: "How do I order cake by post?",
-                  acceptedAnswer: { 
-                    "@type": "Answer", 
-                    text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. We'll pack and ship your cake within 2-3 working days." 
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. We'll pack and ship your cake within 2-3 working days."
                   }
                 }
               ]

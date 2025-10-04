@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { pattern } = body;
 
-    console.log("🧹 Admin cache clear requested:", { pattern });
-
     // Clear cache with optional pattern
     await invalidateCache(pattern);
 

@@ -90,6 +90,16 @@ export { default as AccessTimeIcon } from "@mui/icons-material/AccessTime";
 export { default as LocalOfferIcon } from "@mui/icons-material/LocalOffer";
 export { default as EventIcon } from "@mui/icons-material/Event";
 
+// Table components
+export { default as Table } from "@mui/material/Table";
+export { default as TableBody } from "@mui/material/TableBody";
+export { default as TableCell } from "@mui/material/TableCell";
+export { default as TableContainer } from "@mui/material/TableContainer";
+export { default as TableHead } from "@mui/material/TableHead";
+export { default as TableRow } from "@mui/material/TableRow";
+export { default as TableSortLabel } from "@mui/material/TableSortLabel";
+export { default as TablePagination } from "@mui/material/TablePagination";
+
 // Date picker components - fixed export syntax
 export { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 export { DatePicker } from "@mui/x-date-pickers/DatePicker";

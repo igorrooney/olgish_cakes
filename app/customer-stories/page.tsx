@@ -121,9 +121,9 @@ export default async function CustomerStoriesPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
             >
-              Every cake I make tells a story, and every customer who orders from me becomes part of my extended Ukrainian family. 
-              These customer stories are not just about cakes - they are about love, celebration, tradition, and the joy that 
-              comes from sharing something special with the people you care about most. Reading these stories always reminds me 
+              Every cake I make tells a story, and every customer who orders from me becomes part of my extended Ukrainian family.
+              These customer stories are not just about cakes - they are about love, celebration, tradition, and the joy that
+              comes from sharing something special with the people you care about most. Reading these stories always reminds me
               why I love what I do.
             </Typography>
           </Paper>
@@ -161,7 +161,7 @@ export default async function CustomerStoriesPage() {
                     Real Experiences
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    These are real stories from real customers who have trusted me with their special celebrations. 
+                    These are real stories from real customers who have trusted me with their special celebrations.
                     Every story represents a moment of joy, love, and tradition that I was honored to be part of.
                   </Typography>
                 </Box>
@@ -173,7 +173,7 @@ export default async function CustomerStoriesPage() {
                     Ukrainian Traditions
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Many of these stories show how Ukrainian cake traditions are being passed down to new generations 
+                    Many of these stories show how Ukrainian cake traditions are being passed down to new generations
                     and shared with friends and family in the UK. It makes me proud to be part of this cultural bridge.
                   </Typography>
                 </Box>
@@ -185,7 +185,7 @@ export default async function CustomerStoriesPage() {
                     Quality & Service
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    These stories reflect not just the quality of my cakes, but the personal service and attention 
+                    These stories reflect not just the quality of my cakes, but the personal service and attention
                     to detail that I bring to every order. Every customer deserves to feel special and cared for.
                   </Typography>
                 </Box>
@@ -225,8 +225,8 @@ export default async function CustomerStoriesPage() {
                     Weddings & Anniversaries
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    From intimate ceremonies to grand celebrations, my Ukrainian cakes have been part of many 
-                    love stories. Couples often choose traditional flavors like Medovik for their wedding cakes, 
+                    From intimate ceremonies to grand celebrations, my Ukrainian cakes have been part of many
+                    love stories. Couples often choose traditional flavors like Medovik for their wedding cakes,
                     bringing a taste of heritage to their special day.
                   </Typography>
                 </Box>
@@ -237,8 +237,8 @@ export default async function CustomerStoriesPage() {
                     Birthdays & Milestones
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Whether it is a child's first birthday or a grandparent's 80th celebration, every milestone 
-                    deserves a special cake. My customers love how traditional Ukrainian flavors make their 
+                    Whether it is a child's first birthday or a grandparent's 80th celebration, every milestone
+                    deserves a special cake. My customers love how traditional Ukrainian flavors make their
                     celebrations even more memorable.
                   </Typography>
                 </Box>
@@ -249,7 +249,7 @@ export default async function CustomerStoriesPage() {
                     Cultural Events
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Many Ukrainian families in Leeds order my cakes for cultural celebrations, Independence Day 
+                    Many Ukrainian families in Leeds order my cakes for cultural celebrations, Independence Day
                     events, and community gatherings. It brings comfort and connection to families far from home.
                   </Typography>
                 </Box>
@@ -260,7 +260,7 @@ export default async function CustomerStoriesPage() {
                     Corporate & Special Events
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Businesses and organizations often choose my cakes for special events, team celebrations, 
+                    Businesses and organizations often choose my cakes for special events, team celebrations,
                     and client appreciation. The unique flavors and beautiful presentation always impress guests.
                   </Typography>
                 </Box>
@@ -301,7 +301,7 @@ export default async function CustomerStoriesPage() {
                     Personal Touch
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Every cake is made by me personally, with attention to detail and care that comes from 
+                    Every cake is made by me personally, with attention to detail and care that comes from
                     years of experience and love for Ukrainian baking traditions.
                   </Typography>
                 </Box>
@@ -313,7 +313,7 @@ export default async function CustomerStoriesPage() {
                     Authentic Recipes
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    I use traditional Ukrainian recipes passed down through generations, ensuring every cake 
+                    I use traditional Ukrainian recipes passed down through generations, ensuring every cake
                     tastes exactly like it would in Ukraine, with authentic flavors and techniques.
                   </Typography>
                 </Box>
@@ -325,7 +325,7 @@ export default async function CustomerStoriesPage() {
                     Open Communication
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    I work closely with every customer to understand their vision and make sure their cake 
+                    I work closely with every customer to understand their vision and make sure their cake
                     is perfect for their celebration. Communication is key to creating something special.
                   </Typography>
                 </Box>

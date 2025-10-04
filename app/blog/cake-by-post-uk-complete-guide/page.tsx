@@ -236,7 +236,7 @@ export default function CakeByPostGuidePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
-      
+
       <Box sx={{ background: "linear-gradient(to bottom, #FFF5E6 0%, #FFFFFF 100%)", minHeight: "100vh" }}>
         <Container maxWidth="lg" sx={{ py: 6 }}>
           {/* Breadcrumbs */}
@@ -266,7 +266,7 @@ export default function CakeByPostGuidePage() {
             >
               Honey Cake by Post UK: Complete Guide to Letterbox Delivery 2025 | Best Postal Cakes Leeds
             </Typography>
-            
+
             <Typography
               variant="h6"
               sx={{
@@ -277,7 +277,7 @@ export default function CakeByPostGuidePage() {
                 lineHeight: 1.6,
               }}
             >
-              Everything what you need to know about sending traditional Ukrainian honey cake by post in UK. 
+              Everything what you need to know about sending traditional Ukrainian honey cake by post in UK.
               From my experience running cake business in Leeds, I will tell you why honey cake is perfect for postal delivery and how to make sure it arrives fresh.
             </Typography>
           </Box>
@@ -289,75 +289,75 @@ export default function CakeByPostGuidePage() {
             </Typography>
             <List>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#what-is-cake-by-post">
                       1. What is Cake by Post?
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#best-cakes-postal-delivery">
                       2. Why Honey Cake is Perfect for Postal Delivery
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#how-cake-by-post-works">
                       3. How Cake by Post Works
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#packaging-freshness">
                       4. Packaging and Freshness
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#delivery-times-costs">
                       5. Delivery Times and Costs
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#perfect-occasions">
                       6. Perfect Occasions for Cake by Post
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#tips-successful-delivery">
                       7. Tips for Successful Cake Delivery
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
               <ListItem sx={{ px: 0 }}>
-                <ListItemText 
+                <ListItemText
                   primary={
                     <TocLink href="#frequently-asked-questions">
                       8. Frequently Asked Questions
                     </TocLink>
-                  } 
+                  }
                 />
               </ListItem>
             </List>
@@ -368,40 +368,40 @@ export default function CakeByPostGuidePage() {
             <Grid item xs={12} md={8}>
               {/* Section 1 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="what-is-cake-by-post"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   1. What is Cake by Post?
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  When I started my cake business in Leeds, I never thought about sending cakes by post. But then customers 
-                  started asking me - "Can you send cake to my daughter in London?" or "My mum lives in Manchester, can she get your honey cake?" 
+                  When I started my cake business in Leeds, I never thought about sending cakes by post. But then customers
+                  started asking me - "Can you send cake to my daughter in London?" or "My mum lives in Manchester, can she get your honey cake?"
                   So I learned how to make cakes that travel good through the post.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  The idea is simple - make cakes that fit through normal UK letterboxes, so even if nobody is home, 
-                  the cake still arrives. I use special packaging that keeps cakes fresh for few days, and honey cake 
+                  The idea is simple - make cakes that fit through normal UK letterboxes, so even if nobody is home,
+                  the cake still arrives. I use special packaging that keeps cakes fresh for few days, and honey cake
                   is perfect for this because it doesn't go bad quickly like other cakes.
                 </Typography>
               </Box>
 
               {/* Section 2 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="best-cakes-postal-delivery"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   2. Why Honey Cake is Perfect for Postal Delivery
                 </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              In Ukraine, we make honey cake (we call it Medovik) for special occasions, and it's perfect for sending by post. 
+              In Ukraine, we make honey cake (we call it Medovik) for special occasions, and it's perfect for sending by post.
               My grandmother taught me this recipe, and I never thought it would work so good for postal delivery until I tried it.
               You can read more about <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>why honey cake is best for postal delivery</Link>.
             </Typography>
-                
+
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
@@ -409,19 +409,19 @@ export default function CakeByPostGuidePage() {
                         🍯 Natural Preservation
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        In Ukraine, we always use honey in cakes because it keeps them fresh for long time. I tested this 
+                        In Ukraine, we always use honey in cakes because it keeps them fresh for long time. I tested this
                         with my honey cake - it stays good for up to 7 days without fridge, which is perfect for sending by post.
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
                         📦 Dense Structure
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        When I first tried to send regular cake by post, it arrived all broken. But honey cake is different - 
+                        When I first tried to send regular cake by post, it arrived all broken. But honey cake is different -
                         it has many thin layers that stick together good, so it doesn't break during transport. Each layer stays in place.
                       </Typography>
                     </Card>
@@ -433,7 +433,7 @@ export default function CakeByPostGuidePage() {
                         📏 Letterbox Perfect
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        I had to learn the hard way about UK letterbox sizes! First cakes I sent were too big and got returned. 
+                        I had to learn the hard way about UK letterbox sizes! First cakes I sent were too big and got returned.
                         Now I make them exactly right size (25cm x 5cm) so they fit through any letterbox in UK.
                       </Typography>
                     </Card>
@@ -445,7 +445,7 @@ export default function CakeByPostGuidePage() {
                         🏺 Traditional Recipe
                       </Typography>
                       <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                        This is my grandmother's recipe from Ukraine, made with real honey, fresh eggs, and natural ingredients. 
+                        This is my grandmother's recipe from Ukraine, made with real honey, fresh eggs, and natural ingredients.
                         No chemicals or artificial stuff - just like we make it at home. That's why it tastes so good and stays fresh.
                       </Typography>
                     </Card>
@@ -455,9 +455,9 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 3 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="how-cake-by-post-works"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   3. How Cake by Post Works
@@ -465,29 +465,29 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
                   When you order cake by post from me, here's what happens:
                 </Typography>
-                
+
                 <List sx={{ mb: 4 }}>
                   <ListItem>
-                    <ListItemText 
-                      primary="Step 1: You Order Online" 
+                    <ListItemText
+                      primary="Step 1: You Order Online"
                       secondary="Tell me what cake you want and where to send it. I need the address and any special instructions"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Step 2: I Bake Fresh" 
+                    <ListItemText
+                      primary="Step 2: I Bake Fresh"
                       secondary="I make your cake fresh in my kitchen in Leeds and cut it into pieces that fit through letterbox"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Step 3: I Pack Carefully" 
+                    <ListItemText
+                      primary="Step 3: I Pack Carefully"
                       secondary="Each piece goes in special packaging that keeps it fresh and safe during transport"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Step 4: I Send It" 
+                    <ListItemText
+                      primary="Step 4: I Send It"
                       secondary="I post it within 2-3 days and give you tracking number so you can see where it is"
                     />
                   </ListItem>
@@ -496,18 +496,18 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 4 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="packaging-freshness"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   4. Packaging and Freshness
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
-                  Packaging is very important for cake by post. I learned this the hard way when first cakes arrived broken! 
+                  Packaging is very important for cake by post. I learned this the hard way when first cakes arrived broken!
                   Now I use special packaging that keeps cakes safe:
                 </Typography>
-                
+
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={4}>
                     <Card sx={{ p: 3, textAlign: "center", borderRadius: 2 }}>
@@ -519,7 +519,7 @@ export default function CakeByPostGuidePage() {
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={4}>
                     <Card sx={{ p: 3, textAlign: "center", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
@@ -530,7 +530,7 @@ export default function CakeByPostGuidePage() {
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={4}>
                     <Card sx={{ p: 3, textAlign: "center", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
@@ -546,9 +546,9 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 5 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="delivery-times-costs"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   5. Delivery Times and Costs
@@ -556,27 +556,27 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
                   Understanding delivery options helps you plan the perfect surprise:
                 </Typography>
-                
+
                 <Card sx={{ p: 4, mb: 4, borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
                     Standard Delivery
                   </Typography>
                   <List>
                     <ListItem>
-                      <ListItemText 
-                        primary="Free UK Delivery" 
+                      <ListItemText
+                        primary="Free UK Delivery"
                         secondary="Included on all cake by post orders"
                       />
                     </ListItem>
                     <ListItem>
-                      <ListItemText 
-                        primary="2-3 Working Days" 
+                      <ListItemText
+                        primary="2-3 Working Days"
                         secondary="Typical delivery time for UK mainland"
                       />
                     </ListItem>
                     <ListItem>
-                      <ListItemText 
-                        primary="Tracking Included" 
+                      <ListItemText
+                        primary="Tracking Included"
                         secondary="Full tracking information provided for peace of mind"
                       />
                     </ListItem>
@@ -586,9 +586,9 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 6 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="perfect-occasions"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   6. Perfect Occasions for Cake by Post
@@ -596,7 +596,7 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
                   Cake by post is perfect for various occasions when you can't be there in person:
                 </Typography>
-                
+
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
@@ -608,7 +608,7 @@ export default function CakeByPostGuidePage() {
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
@@ -619,7 +619,7 @@ export default function CakeByPostGuidePage() {
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
@@ -630,7 +630,7 @@ export default function CakeByPostGuidePage() {
                       </Typography>
                     </Card>
                   </Grid>
-                  
+
                   <Grid item xs={12} md={6}>
                     <Card sx={{ p: 3, height: "100%", borderRadius: 2 }}>
                       <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
@@ -646,9 +646,9 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 7 */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="tips-successful-delivery"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   7. Tips for Successful Cake Delivery
@@ -656,29 +656,29 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
                   Follow these expert tips to ensure your cake by post delivery is successful:
                 </Typography>
-                
+
                 <List sx={{ mb: 4 }}>
                   <ListItem>
-                    <ListItemText 
-                      primary="Provide Accurate Address" 
+                    <ListItemText
+                      primary="Provide Accurate Address"
                       secondary="Double-check the recipient's address and include any special delivery instructions"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Consider Timing" 
+                    <ListItemText
+                      primary="Consider Timing"
                       secondary="Order 3-5 days in advance to ensure delivery on the desired date"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Check Letterbox Size" 
+                    <ListItemText
+                      primary="Check Letterbox Size"
                       secondary="Ensure the recipient has a standard-sized letterbox for delivery"
                     />
                   </ListItem>
                   <ListItem>
-                    <ListItemText 
-                      primary="Include a Personal Note" 
+                    <ListItemText
+                      primary="Include a Personal Note"
                       secondary="Add a personal message to make the surprise even more special"
                     />
                   </ListItem>
@@ -687,50 +687,50 @@ export default function CakeByPostGuidePage() {
 
               {/* Section 8 - FAQ */}
               <Box sx={{ mb: 6 }}>
-                <Typography 
+                <Typography
                   id="frequently-asked-questions"
-                  variant="h2" 
+                  variant="h2"
                   sx={{ mb: 3, fontWeight: 600, color: "primary.main", scrollMarginTop: "100px" }}
                 >
                   8. Frequently Asked Questions
                 </Typography>
-                
+
                 <Card sx={{ p: 4, mb: 3, borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     How long does cake by post stay fresh?
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                    Our vacuum-packed cakes stay fresh for up to 7 days when stored properly. We recommend 
+                    Our vacuum-packed cakes stay fresh for up to 7 days when stored properly. We recommend
                     consuming within 3-4 days for the best taste experience.
                   </Typography>
                 </Card>
-                
+
                 <Card sx={{ p: 4, mb: 3, borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Do you deliver to all UK addresses?
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                    Yes, we deliver our cake by post service to all UK mainland addresses with free standard delivery. 
+                    Yes, we deliver our cake by post service to all UK mainland addresses with free standard delivery.
                     We also offer international shipping for special occasions.
                   </Typography>
                 </Card>
-                
+
                 <Card sx={{ p: 4, mb: 3, borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     What if the recipient isn't home?
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                    That's the beauty of cake by post! Our packaging is designed to fit through standard letterboxes, 
+                    That's the beauty of cake by post! Our packaging is designed to fit through standard letterboxes,
                     so delivery is guaranteed even when no one is home.
                   </Typography>
                 </Card>
-                
+
                 <Card sx={{ p: 4, mb: 3, borderRadius: 2 }}>
                   <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
                     Can I track my cake delivery?
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                    Absolutely! We provide full tracking information for all cake by post deliveries, so you can 
+                    Absolutely! We provide full tracking information for all cake by post deliveries, so you can
                     monitor your order from dispatch to delivery.
                   </Typography>
                 </Card>
@@ -775,7 +775,7 @@ export default function CakeByPostGuidePage() {
                   <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
                     Related Articles
                   </Typography>
-                  
+
                   <Box sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                       <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ textDecoration: "none", color: "inherit" }}>
@@ -786,7 +786,7 @@ export default function CakeByPostGuidePage() {
                       Discover the best cake types for postal delivery
                     </Typography>
                   </Box>
-                  
+
                   <Box sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                       <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ textDecoration: "none", color: "inherit" }}>
@@ -797,7 +797,7 @@ export default function CakeByPostGuidePage() {
                       Why letterbox cakes are becoming so popular
                     </Typography>
                   </Box>
-                  
+
                   <Box sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                       <Link href="/blog/how-surprise-someone-cake-delivery-post" style={{ textDecoration: "none", color: "inherit" }}>

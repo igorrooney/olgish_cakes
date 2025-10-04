@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { serverClient } from "@/sanity/lib/client";
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is not set");
@@ -84,6 +85,16 @@ ${cakeInterest ? `• Cake Interest: ${cakeInterest}` : ""}
 MESSAGE DETAILS
 ─────────────
 ${message}
+${formData.get("note") ? `
+ADDITIONAL NOTES
+────────────────
+${formData.get("note")}
+` : ""}
+${formData.get("giftNote") ? `
+GIFT NOTE
+─────────
+${formData.get("giftNote")}
+` : ""}
 
 ${
   designImage
@@ -165,7 +176,7 @@ Olgish Cakes
       ${isOrderInquiry ? "🎂 New Cake Order Inquiry" : "📨 New Contact Message"}
     </h1>
   </div>
-  
+
   <div class="content">
     <div class="section">
       <div class="section-title">Customer Information</div>
@@ -183,6 +194,20 @@ Olgish Cakes
       <div class="section-title">Message Details</div>
       <div class="message">${message.replace(/\n/g, "<br>")}</div>
     </div>
+
+    ${formData.get("note") ? `
+    <div class="section">
+      <div class="section-title">Additional Notes</div>
+      <div class="message">${(formData.get("note") as string).replace(/\n/g, "<br>")}</div>
+    </div>
+    ` : ""}
+
+    ${formData.get("giftNote") ? `
+    <div class="section">
+      <div class="section-title">Gift Note</div>
+      <div class="message">${(formData.get("giftNote") as string).replace(/\n/g, "<br>")}</div>
+    </div>
+    ` : ""}
 
     ${
       designImage
@@ -204,31 +229,123 @@ Olgish Cakes
 </body>
 </html>`;
 
-    console.log("Sending email to:", recipientEmail);
-
-    const response = await resend.emails.send({
-      from: "Olgish Cakes <hello@olgishcakes.co.uk>",
-      to: recipientEmail,
-      replyTo: email,
-      subject: isOrderInquiry ? `New Order Inquiry` : `New Contact: ${name}`,
-      html: htmlContent,
-      text: emailContent, // Fallback plain text version
-      attachments: designImage
-        ? [
-            {
-              filename: designImage.name,
-              content: Buffer.from(imageBuffer!),
-            },
-          ]
-        : [],
-    });
+    // Only send admin email for non-order inquiries
+    // Order inquiries will be handled by the orders API
+    let response;
+    if (!isOrderInquiry) {
+      response = await resend.emails.send({
+        from: "Olgish Cakes <hello@olgishcakes.co.uk>",
+        to: recipientEmail,
+        bcc: "igorrooney@gmail.com",
+        replyTo: email,
+        subject: `New Contact: ${name}`,
+        html: htmlContent,
+        text: emailContent, // Fallback plain text version
+        attachments: designImage
+          ? [
+              {
+                filename: designImage.name,
+                content: Buffer.from(imageBuffer!),
+              },
+            ]
+          : [],
+      });
+    } else {
+      // For order inquiries, just create a mock response
+      response = { error: null };
+    }
 
     if (response.error) {
       console.error("Resend API Error:", response.error);
       throw new Error(response.error.message);
     }
 
-    console.log("Email sent successfully:", response);
+    // If this is an order form, also create an order in the system
+    if (isOrderInquiry) {
+      try {
+        // Upload design image to Sanity and pass image reference in attachments
+        let attachmentImages: any[] = [];
+        if (designImage) {
+
+          try {
+            // Convert File to Buffer for Sanity upload
+            const arrayBuffer = await designImage.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            const uploaded = await serverClient.assets.upload('image', buffer, {
+              filename: designImage.name,
+              contentType: designImage.type,
+            });
+
+            attachmentImages = [
+              {
+                _type: 'image',
+                asset: { _type: 'reference', _ref: uploaded._id },
+              },
+            ];
+          } catch (e: any) {
+            console.error('Failed to upload design image to Sanity:', e);
+            console.error('Error details:', {
+              message: e?.message,
+              stack: e?.stack,
+              name: e?.name
+            });
+          }
+        } else {
+
+        }
+        const orderData = {
+          name,
+          email,
+          phone,
+          address,
+          city,
+          postcode,
+          message,
+          dateNeeded,
+          orderType: formData.get("orderType") as string || "custom-quote",
+          productType: formData.get("productType") as string || "custom",
+          productId: formData.get("productId") as string || "",
+          productName: formData.get("productName") as string || "Custom Order",
+          designType: formData.get("designType") as string || "individual",
+          quantity: parseInt(formData.get("quantity") as string) || 1,
+          unitPrice: parseFloat(formData.get("unitPrice") as string) || 0,
+          totalPrice: parseFloat(formData.get("totalPrice") as string) || 0,
+          size: formData.get("size") as string || "",
+          flavor: formData.get("flavor") as string || "",
+          specialInstructions: formData.get("specialInstructions") as string || "",
+          deliveryMethod: formData.get("deliveryMethod") as string || "collection",
+          deliveryAddress: formData.get("deliveryAddress") as string || "",
+          deliveryNotes: formData.get("deliveryNotes") as string || "",
+          giftNote: formData.get("giftNote") as string || "",
+          note: formData.get("note") as string || "",
+          paymentMethod: formData.get("paymentMethod") as string || "cash-collection",
+          referrer: formData.get("referrer") as string || "",
+          attachments: attachmentImages,
+        };
+
+        // Create order via internal API call
+
+        const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        if (orderResponse.ok) {
+          const orderResult = await orderResponse.json();
+
+        } else {
+          console.error("Failed to create order:", await orderResponse.text());
+        }
+      } catch (orderError) {
+        console.error("Error creating order:", orderError);
+        // Don't fail the email if order creation fails
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Contact API Error:", error);

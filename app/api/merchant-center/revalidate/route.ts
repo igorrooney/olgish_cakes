@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     // Check for authorization header
     const authHeader = request.headers.get('authorization');
     const expectedToken = process.env.MERCHANT_CENTER_REVALIDATE_TOKEN;
-    
+
     if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const token = url.searchParams.get('token');
     const expectedToken = process.env.MERCHANT_CENTER_REVALIDATE_TOKEN;
-    
+
     if (!expectedToken || token !== expectedToken) {
       return NextResponse.json(
         { error: 'Invalid or missing token' },

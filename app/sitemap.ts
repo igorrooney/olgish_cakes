@@ -79,15 +79,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       seo?: { priority?: number; changefreq?: string };
     }) => {
       // Higher priority for featured posts and recent content
-      const isRecent = post.publishDate && 
+      const isRecent = post.publishDate &&
         new Date(post.publishDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days
       const basePriority = post.featured ? 0.8 : (isRecent ? 0.7 : 0.6);
-      
+
       // More frequent updates for trending categories
       const trendingCategories = ['wedding-cakes', 'birthday-cakes', 'custom-cakes', 'ukrainian-cakes'];
       const isTrending = post.category && trendingCategories.includes(post.category.toLowerCase());
       const changeFreq = isTrending ? 'weekly' : 'monthly';
-      
+
       return {
         url: `${baseUrl}/blog/${post.slug.current}`,
         lastModified: new Date(post.publishDate || post._updatedAt),

@@ -9,23 +9,23 @@ export const dynamicImports = {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-64 rounded" />,
   //   ssr: false,
   // }),
-  
+
   // ContactForm: dynamic(() => import("@/app/components/ContactForm"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-48 rounded" />,
   //   ssr: false,
   // }),
-  
+
   // TrustpilotReviews: dynamic(() => import("@/app/components/TrustpilotReviews"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded" />,
   //   ssr: false,
   // }),
-  
+
   // Blog components
   // BlogClient: dynamic(() => import("@/app/blog/BlogClient"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-64 rounded" />,
   //   ssr: false,
   // }),
-  
+
   // Admin components
   // AdminGuard: dynamic(() => import("@/app/components/AdminGuard"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded" />,

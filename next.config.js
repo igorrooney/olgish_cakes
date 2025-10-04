@@ -154,13 +154,21 @@ const nextConfig = {
           },
         ],
       },
-      // API routes caching
+      // API routes caching - reduced for better data freshness
       {
         source: "/api/(.*)",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=300, s-maxage=600",
+            value: "no-cache, no-store, must-revalidate",
+          },
+          {
+            key: "Pragma",
+            value: "no-cache",
+          },
+          {
+            key: "Expires",
+            value: "0",
           },
         ],
       },

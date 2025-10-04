@@ -16,11 +16,11 @@ function parseMarkdown(content: string) {
   const processInlineFormatting = (text: string) => {
     // Check if the entire text is wrapped in bold markers
     const isBoldWrapped = text.startsWith('**') && text.endsWith('**');
-    
+
     // First split by links to handle them separately
     const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
     const parts = text.split(linkRegex);
-    
+
     const result = parts.map((part, index) => {
       // Check if this part is a link text (odd indices after splitting by linkRegex)
       if (index % 3 === 1) {
@@ -57,7 +57,7 @@ function parseMarkdown(content: string) {
           if (index === parts.length - 1) {
             processedPart = processedPart.replace(/\*\*$/, '');
           }
-          
+
           return (
             <Box key={index} component="strong" sx={{ fontWeight: 600 }}>
               {processedPart}
@@ -81,14 +81,14 @@ function parseMarkdown(content: string) {
       }
       return part;
     }).filter(Boolean);
-    
+
     return result;
   };
 
   const lines = content.split('\n');
   const elements: JSX.Element[] = [];
   let currentList: JSX.Element[] = [];
-  
+
   lines.forEach((line, index) => {
     // Headers
     if (line.startsWith('### ')) {
@@ -232,7 +232,7 @@ function parseMarkdown(content: string) {
       );
     }
   });
-  
+
   // Add any remaining list items
   if (currentList.length > 0) {
     elements.push(
@@ -241,7 +241,7 @@ function parseMarkdown(content: string) {
       </Box>
     );
   }
-  
+
   return elements;
 }
 
@@ -265,10 +265,10 @@ const portableTextComponents = {
       };
 
       const dimensions = getImageDimensions(value.size || 'medium');
-      
+
       return (
-        <Box sx={{ 
-          my: 4, 
+        <Box sx={{
+          my: 4,
           textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
@@ -286,8 +286,8 @@ const portableTextComponents = {
               height: 'auto',
               boxShadow: value.size === 'full' ? 'none' : '0 8px 32px rgba(0,0,0,0.1)',
             }}
-            sizes={value.size === 'full' 
-              ? '100vw' 
+            sizes={value.size === 'full'
+              ? '100vw'
               : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px'
             }
           />
@@ -415,12 +415,12 @@ const portableTextComponents = {
   },
 };
 import Image from "next/image";
-import { 
-  Button, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Chip, 
+import {
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Chip,
   Box,
   Container,
   Avatar,
@@ -436,7 +436,7 @@ export async function generateStaticParams() {
   const query = groq`*[_type == "blogPost" && defined(slug.current)] {
     "slug": slug.current
   }`;
-  
+
   try {
     const posts = await client.fetch(query);
     return posts.map((post: { slug: string }) => ({
@@ -469,8 +469,6 @@ interface BlogPost {
 interface BlogPostPageProps {
   params: { slug: string };
 }
-
-
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
@@ -927,16 +925,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </Paper>
 
             {/* Related Posts Section */}
-            <RelatedPosts 
-              posts={relatedPosts} 
-              currentPostId={post._id} 
-              currentCategory={post.category} 
+            <RelatedPosts
+              posts={relatedPosts}
+              currentPostId={post._id}
+              currentCategory={post.category}
             />
 
             {/* Category Links Section */}
-            <CategoryLinks 
+            <CategoryLinks
               currentCategory={post.category}
-              categories={categories.map(cat => cat.name)} 
+              categories={categories.map(cat => cat.name)}
             />
 
             {/* Professional CTA Section */}
@@ -976,7 +974,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 >
                   Let's Create Something Special
                 </Typography>
-                
+
                 <Typography
                   variant="h6"
                   sx={{
@@ -989,7 +987,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     lineHeight: 1.6,
                   }}
                 >
-                  Transform your vision into an exquisite custom cake. From intimate celebrations to grand events, 
+                  Transform your vision into an exquisite custom cake. From intimate celebrations to grand events,
                   I deliver exceptional Ukrainian craftsmanship tailored to your unique occasion.
                 </Typography>
 
@@ -1041,7 +1039,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     }}
                   />
                 </Box>
-                
+
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={3}

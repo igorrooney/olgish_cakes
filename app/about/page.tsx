@@ -9,9 +9,9 @@ import {
 } from "../utils/seo";
 import AboutContent from "./AboutContent";
 
-// Preload critical resources
+// Preload critical resources with shorter revalidation
 export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 60; // Revalidate every minute for better data freshness
 
 // Enhanced SEO metadata for About page
 export const metadata: Metadata = generatePageMetadata({
@@ -131,24 +131,19 @@ export default function AboutPage() {
               document.documentElement.style.setProperty('--animation-duration', '0.1s');
             }
           }
-          
+
           // Optimize for mobile performance
           if (window.innerWidth <= 768) {
             document.documentElement.style.setProperty('--mobile-optimized', 'true');
           }
-          
+
           // Performance monitoring
           if ('performance' in window) {
             window.addEventListener('load', () => {
               const navigation = performance.getEntriesByType('navigation')[0];
               const paint = performance.getEntriesByType('paint');
-              
-              console.log('Performance Metrics:', {
-                fcp: paint.find(entry => entry.name === 'first-contentful-paint')?.startTime,
-                lcp: paint.find(entry => entry.name === 'largest-contentful-paint')?.startTime,
-                domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-                loadComplete: navigation.loadEventEnd - navigation.loadEventStart
-              });
+
+              // Performance metrics collected
             });
           }
         `}

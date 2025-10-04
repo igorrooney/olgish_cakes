@@ -13,6 +13,7 @@ import {
   StepLabel,
   StepContent,
 } from "@mui/material";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -245,7 +246,7 @@ export default function HowToOrderPage() {
                     "WhatsApp messaging available",
                   ],
                   links: [
-                    { text: "+44 786 721 8194", href: "tel:+447867218194" },
+                    { text: CLIENT_BUSINESS_INFO.displayPhone, href: CLIENT_BUSINESS_INFO.telLink },
                     { text: "hello@olgishcakes.co.uk", href: "mailto:hello@olgishcakes.co.uk" },
                   ],
                   icon: "📞",

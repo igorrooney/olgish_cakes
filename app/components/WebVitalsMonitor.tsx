@@ -28,7 +28,7 @@ export function WebVitalsMonitor() {
       }
 
       // Log to console for debugging
-      console.log('Web Vital:', metric);
+
     };
 
     // Import and initialize web-vitals library
@@ -49,7 +49,7 @@ export function WebVitalsMonitor() {
         const lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
-          console.log('LCP:', lastEntry.startTime);
+
         });
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
@@ -58,7 +58,7 @@ export function WebVitalsMonitor() {
           const entries = list.getEntries();
           entries.forEach((entry) => {
             const fidEntry = entry as any;
-            console.log('FID:', fidEntry.processingStart - fidEntry.startTime);
+
           });
         });
         fidObserver.observe({ entryTypes: ['first-input'] });
@@ -72,7 +72,7 @@ export function WebVitalsMonitor() {
               clsValue += (entry as any).value;
             }
           });
-          console.log('CLS:', clsValue);
+
         });
         clsObserver.observe({ entryTypes: ['layout-shift'] });
       }

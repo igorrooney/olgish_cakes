@@ -75,7 +75,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
           description: event.description || `Meet Olgish Cakes at ${event.location}`,
           startDate: event.date,
           endDate: event.date, // Assuming same day events
-          image: event.image?.asset?.url 
+          image: event.image?.asset?.url
             ? (event.image.asset.url.startsWith("http")
                 ? event.image.asset.url
                 : `https://olgishcakes.co.uk${event.image.asset.url}`)

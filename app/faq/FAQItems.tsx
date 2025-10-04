@@ -13,7 +13,6 @@ import { ExpandMoreIcon } from "@/lib/mui-optimization";
 import { useState } from "react";
 import { FAQ } from "../utils/fetchFaqs";
 
-
 import { colors } from "@/lib/design-system";
 interface FAQItemsProps {
   items: FAQ[];

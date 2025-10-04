@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Ukrainian Christmas Traditions | Ukrainian Cakes",

@@ -23,8 +23,8 @@ const TRUSTPILOT_API_HOST = "https://api.trustpilot.com/v1";
 
 export async function fetchTrustpilotReviews(productName: string) {
   // If Trustpilot is not configured, return null immediately
-  if (!TRUSTPILOT_API_KEY || !TRUSTPILOT_BUSINESS_UNIT_ID || 
-      TRUSTPILOT_API_KEY === 'your_api_key_here' || 
+  if (!TRUSTPILOT_API_KEY || !TRUSTPILOT_BUSINESS_UNIT_ID ||
+      TRUSTPILOT_API_KEY === 'your_api_key_here' ||
       TRUSTPILOT_BUSINESS_UNIT_ID === 'your_business_unit_id_here') {
     return null;
   }

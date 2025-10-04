@@ -5,9 +5,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { client } from "@/sanity/lib/client";
 import { testimonialQuery, testimonialCountQuery } from "@/sanity/lib/queries";
 
-// Force static generation
+// Force static generation with shorter revalidation
 export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 60; // Revalidate every minute for better data freshness
 
 export const metadata: Metadata = {
   title: "Customer Testimonials | Olgish Cakes",

@@ -4,7 +4,6 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Wedding Cake Gallery | Ukrainian Wedding Cakes",

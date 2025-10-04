@@ -28,6 +28,7 @@ import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { useState, useMemo, useCallback, memo } from "react";
 import { useAnalytics } from "@/app/hooks/useAnalytics";
 import { useMobileGestures } from "@/app/hooks/useMobileGestures";
@@ -1226,7 +1227,7 @@ export function Header() {
             <Box sx={{ mt: 1, position: "relative", zIndex: 1 }}>
               <Button
                 component="a"
-                href="tel:+447867218194"
+                href={CLIENT_BUSINESS_INFO.telLink}
                 fullWidth
                 sx={{
                   minHeight: "48px",

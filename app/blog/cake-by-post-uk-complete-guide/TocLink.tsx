@@ -9,7 +9,7 @@ export const TocLink = ({ href, children }: { href: string; children: React.Reac
     const targetId = href.replace('#', '');
     const targetElement = document.getElementById(targetId);
     if (targetElement) {
-      targetElement.scrollIntoView({ 
+      targetElement.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });

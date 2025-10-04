@@ -4,7 +4,6 @@ import { getAllCakes } from "../utils/fetchCakes";
 import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "Mother's Day Cakes Leeds | Ukrainian Cakes",

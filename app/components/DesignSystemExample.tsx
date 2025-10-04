@@ -3,6 +3,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { Grid, Box } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import {
@@ -179,11 +180,11 @@ export function DesignSystemExample() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Link
-                href="tel:+447867218194"
+                href={CLIENT_BUSINESS_INFO.telLink}
                 style={{ textDecoration: "none", color: "inherit" }}
-                aria-label="Call us at +44 786 721 8194"
+                aria-label={`Call us at ${CLIENT_BUSINESS_INFO.displayPhone}`}
               >
-                <ContactInfo icon={<PhoneIcon />} text="+44 786 721 8194" />
+                <ContactInfo icon={<PhoneIcon />} text={CLIENT_BUSINESS_INFO.displayPhone} />
               </Link>
             </Grid>
           </Grid>

@@ -68,9 +68,9 @@ export default function BuyCakePage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               How to Order Your Perfect Cake
             </Typography>
-            
+
             <Typography variant="body1" sx={{ mb: 4, textAlign: "center", maxWidth: "800px", mx: "auto", lineHeight: 1.7 }}>
-              Ordering your cake from me is very simple! I believe every celebration deserves something special, 
+              Ordering your cake from me is very simple! I believe every celebration deserves something special,
               so I make sure the process is easy and personal. Here is how it works:
             </Typography>
 
@@ -82,7 +82,7 @@ export default function BuyCakePage() {
                     Choose Your Cake
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Browse my collection or tell me what you have in mind. I have traditional Ukrainian cakes like honey cake and Kyiv cake, 
+                    Browse my collection or tell me what you have in mind. I have traditional Ukrainian cakes like honey cake and Kyiv cake,
                     plus many other flavours that everyone will love.
                   </Typography>
                 </Box>
@@ -94,7 +94,7 @@ export default function BuyCakePage() {
                     Contact Me
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Send me a message or call me to discuss your cake. I love hearing about your celebration and helping you choose 
+                    Send me a message or call me to discuss your cake. I love hearing about your celebration and helping you choose
                     the perfect design and flavour for your special day.
                   </Typography>
                 </Box>
@@ -106,7 +106,7 @@ export default function BuyCakePage() {
                     Enjoy Your Cake
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    I will make your cake with love and care, then deliver it fresh to your door across Leeds. 
+                    I will make your cake with love and care, then deliver it fresh to your door across Leeds.
                     Your celebration will be perfect with one of my handmade cakes!
                   </Typography>
                 </Box>
@@ -137,7 +137,7 @@ export default function BuyCakePage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose My Cakes?
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 3 }}>
@@ -145,8 +145,8 @@ export default function BuyCakePage() {
                     Made with Love and Tradition
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Every cake I make is crafted with the same love and attention that my grandmother taught me. 
-                    I use traditional Ukrainian recipes and techniques, but I also love creating new flavours that 
+                    Every cake I make is crafted with the same love and attention that my grandmother taught me.
+                    I use traditional Ukrainian recipes and techniques, but I also love creating new flavours that
                     bring joy to modern celebrations.
                   </Typography>
                 </Box>
@@ -157,7 +157,7 @@ export default function BuyCakePage() {
                     Fresh Ingredients, No Compromises
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I use only the best ingredients - real butter, fresh eggs, quality flour, and natural flavours. 
+                    I use only the best ingredients - real butter, fresh eggs, quality flour, and natural flavours.
                     No artificial preservatives or shortcuts. Your cake will taste amazing because I care about every ingredient.
                   </Typography>
                 </Box>
@@ -168,8 +168,8 @@ export default function BuyCakePage() {
                     Personal Service
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    When you order from me, you are not just getting a cake - you are getting a personal service. 
-                    I want to understand your celebration and make sure your cake is perfect for the occasion. 
+                    When you order from me, you are not just getting a cake - you are getting a personal service.
+                    I want to understand your celebration and make sure your cake is perfect for the occasion.
                     Every detail matters to me.
                   </Typography>
                 </Box>
@@ -180,7 +180,7 @@ export default function BuyCakePage() {
                     Delivered with Care
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I deliver your cake personally across Leeds, making sure it arrives in perfect condition. 
+                    I deliver your cake personally across Leeds, making sure it arrives in perfect condition.
                     Your cake is not just a product to me - it is part of your special moment, and I treat it with the respect it deserves.
                   </Typography>
                 </Box>
@@ -192,5 +192,4 @@ export default function BuyCakePage() {
     </>
   );
 }
-
 

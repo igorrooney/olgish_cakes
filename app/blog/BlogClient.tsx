@@ -59,7 +59,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
   useEffect(() => {
     const fetchViewCounts = async () => {
       const counts: Record<string, number> = {};
-      
+
       for (const post of blogPosts) {
         try {
           const response = await fetch(`/api/blog-posts/${post.id}/view`);
@@ -74,7 +74,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
           counts[post.id] = post.viewCount || 0;
         }
       }
-      
+
       setViewCounts(counts);
     };
 
@@ -169,7 +169,6 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
             </Box>
       </Box>
 
-
       {/* Blog Posts Grid */}
       <Box>
         <Grid container spacing={4}>
@@ -255,8 +254,8 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                     <Typography
                       variant="h4"
                       component="h3"
-                      sx={{ 
-                        fontWeight: 600, 
+                      sx={{
+                        fontWeight: 600,
                         lineHeight: 1.3,
                         color: "#2E3192",
                         fontSize: "1.25rem"
@@ -267,9 +266,9 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                   </Box>
                   <Typography
                     variant="body2"
-                    sx={{ 
-                      mb: 2, 
-                      color: "#64748b", 
+                    sx={{
+                      mb: 2,
+                      color: "#64748b",
                       lineHeight: 1.5,
                       fontSize: "0.9rem"
                     }}
@@ -290,9 +289,9 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                   </Box>
 
                   {/* View Count and Social Share */}
-                  <Box sx={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
+                  <Box sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     mb: 2,
                     pt: 1,
@@ -316,7 +315,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                             e.stopPropagation();
                             handleShare(post, 'facebook');
                           }}
-                          sx={{ 
+                          sx={{
                             p: 0.5,
                             color: "#1877F2",
                             "&:hover": { backgroundColor: "#f0f8ff" }
@@ -333,7 +332,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                             e.stopPropagation();
                             handleShare(post, 'instagram');
                           }}
-                          sx={{ 
+                          sx={{
                             p: 0.5,
                             color: "#E4405F",
                             "&:hover": { backgroundColor: "#fdf2f8" }
@@ -350,7 +349,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                             e.stopPropagation();
                             handleShare(post, 'x');
                           }}
-                          sx={{ 
+                          sx={{
                             p: 0.5,
                             color: "#000000",
                             "&:hover": { backgroundColor: "#f5f5f5" }
@@ -375,7 +374,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
                             e.stopPropagation();
                             handleShare(post, 'copy');
                           }}
-                          sx={{ 
+                          sx={{
                             p: 0.5,
                             color: "#666",
                             "&:hover": { backgroundColor: "#f0f8ff" }
