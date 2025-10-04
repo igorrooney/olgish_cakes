@@ -604,8 +604,8 @@ export default function AboutContent() {
                       mb: { xs: 2, sm: 3 },
                     }}
                   >
-                    I am <strong>Olga Ieromenko</strong>, Ukrainian baker who came to Leeds in 2022. 
-                    I love real Ukrainian baking so much that I went to Leeds City College to learn 
+                    I am <strong>Olga Ieromenko</strong>, Ukrainian baker who came to Leeds in 2022.
+                    I love real Ukrainian baking so much that I went to Leeds City College to learn
                     Level 2 and Level 3 Patisserie courses, where I got better at traditional and new baking ways.
                   </Typography>
 
@@ -620,7 +620,7 @@ export default function AboutContent() {
                     }}
                   >
                     I want to share Ukrainian baking with people in UK, mixing traditional recipes with new ways to make them look nice.
-                    From real Ukrainian honey cake (Medovik) and Kyiv cake to special cakes for different times of year and 
+                    From real Ukrainian honey cake (Medovik) and Kyiv cake to special cakes for different times of year and
                     custom celebration cakes, every cake I make celebrates Ukrainian culture and good taste. My family's Medovik
                     recipe comes from many generations, so you get real Ukrainian honey cake taste when I deliver across Yorkshire.
                   </Typography>
@@ -906,8 +906,8 @@ export default function AboutContent() {
                       mb: { xs: 2, sm: 3 },
                     }}
                   >
-                    My baking comes from Ukrainian food traditions, mixing traditional recipes with new ways. 
-                    I started because I wanted to bring real Ukrainian taste to Leeds, where baking is not just 
+                    My baking comes from Ukrainian food traditions, mixing traditional recipes with new ways.
+                    I started because I wanted to bring real Ukrainian taste to Leeds, where baking is not just
                     work but something special from my culture.
                   </Typography>
 
@@ -919,8 +919,8 @@ export default function AboutContent() {
                       color: "text.secondary",
                     }}
                   >
-                    The name "Olgish" comes from my name Olga and the word "delicious". This shows 
-                    how I want to make cakes that not only look beautiful but taste really good, 
+                    The name "Olgish" comes from my name Olga and the word "delicious". This shows
+                    how I want to make cakes that not only look beautiful but taste really good,
                     honoring both Ukrainian traditions and what people like today.
                   </Typography>
                 </Grid>

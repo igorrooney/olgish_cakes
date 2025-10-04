@@ -32,19 +32,19 @@ import { AdminAuthGuard } from '@/components/AdminAuthGuard';
 export default function BlogAdminPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     fetchPosts();
   }, []);
-  
+
   const fetchPosts = async () => {
     try {
       const response = await fetch('/api/blog-posts');
-      
+
       if (!response.ok) {
         return;
       }
-      
+
       const data = await response.json();
       setPosts(data.posts || []);
     } catch (error) {
@@ -65,7 +65,7 @@ export default function BlogAdminPage() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              sx={{ 
+              sx={{
                 backgroundColor: designTokens.colors.success.main,
                 '&:hover': { backgroundColor: designTokens.colors.success.dark }
               }}
@@ -87,13 +87,13 @@ export default function BlogAdminPage() {
                     {post.excerpt}
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                    <Chip 
-                      label={post.status} 
+                    <Chip
+                      label={post.status}
                       color={post.status === 'published' ? 'success' : 'default'}
                       size="small"
                     />
-                    <Chip 
-                      label={post.category} 
+                    <Chip
+                      label={post.category}
                       variant="outlined"
                       size="small"
                     />

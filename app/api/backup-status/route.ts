@@ -4,8 +4,7 @@ import path from 'path';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('📊 Getting backup status...');
-    
+
     const backupDirs = ['daily', 'weekly', 'monthly', 'manual'];
     const status = {
       timestamp: new Date().toISOString(),
@@ -14,12 +13,12 @@ export async function GET(request: NextRequest) {
 
     for (const dir of backupDirs) {
       const dirPath = path.join('./backups', dir);
-      
+
       try {
         const files = await fs.readdir(dirPath);
         const backupFiles = files.filter(f => f.includes('sanity-backup-'));
         const reportFiles = files.filter(f => f.includes('backup-report-'));
-        
+
         // Get latest backup info
         let latestBackup = null;
         if (backupFiles.length > 0) {
@@ -34,7 +33,7 @@ export async function GET(request: NextRequest) {
                 return 0;
               }
             })[0];
-          
+
           if (latestFile) {
             try {
               const stats = require('fs').statSync(latestFile.path);
@@ -54,7 +53,7 @@ export async function GET(request: NextRequest) {
           totalReports: reportFiles.length,
           latestBackup
         };
-        
+
       } catch (error) {
         status.backups[dir] = {
           totalBackups: 0,
@@ -68,7 +67,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Failed to get backup status:', error);
-    
+
     return NextResponse.json({
       success: false,
       message: 'Failed to get backup status',

@@ -181,10 +181,10 @@ export default async function CakePage({ params }: PageProps) {
         width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
       });
     }
-    
+
     // Get the best available image
-    const mainImage = cake.mainImage?.asset?._ref 
-      ? cake.mainImage 
+    const mainImage = cake.mainImage?.asset?._ref
+      ? cake.mainImage
       : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
         cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
         cake.designs?.standard?.[0] ||
@@ -194,8 +194,8 @@ export default async function CakePage({ params }: PageProps) {
         // Fallback to images array (for legacy data like Honey Cake)
         cake.images?.find((img: any) => img.asset?._ref) ||
         cake.images?.[0];
-    
-    return mainImage?.asset?._ref 
+
+    return mainImage?.asset?._ref
       ? urlFor(mainImage).width(800).height(800).url()
       : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
   })();
@@ -215,8 +215,8 @@ export default async function CakePage({ params }: PageProps) {
               cake.seo?.metaDescription ||
               (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
             image: [productImageUrl],
-            brand: { 
-              "@type": "Brand", 
+            brand: {
+              "@type": "Brand",
               name: "Olgish Cakes",
               logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
             },
@@ -245,10 +245,10 @@ export default async function CakePage({ params }: PageProps) {
               condition: "https://schema.org/NewCondition",
               priceValidUntil: getPriceValidUntil(30),
               url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-              seller: { 
-                "@type": "Organization", 
-                name: "Olgish Cakes", 
-                url: "https://olgishcakes.co.uk" 
+              seller: {
+                "@type": "Organization",
+                name: "Olgish Cakes",
+                url: "https://olgishcakes.co.uk"
               },
               shippingDetails: getOfferShippingDetails(),
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),

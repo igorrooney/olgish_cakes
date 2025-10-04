@@ -190,7 +190,6 @@ export function OrderManagementDashboard() {
     averageOrderValue: 0,
   });
 
-
   // Edit form state
   const [editForm, setEditForm] = useState({
     status: '',
@@ -225,7 +224,7 @@ export function OrderManagementDashboard() {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    
+
     // Add current year months
     for (let i = currentMonth; i >= 0; i--) {
       const date = new Date(currentYear, i);
@@ -234,7 +233,7 @@ export function OrderManagementDashboard() {
         label: date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
       });
     }
-    
+
     // Add previous year months if we're not in January
     if (currentMonth < 11) {
       for (let i = 11; i >= currentMonth + 1; i--) {
@@ -245,7 +244,7 @@ export function OrderManagementDashboard() {
         });
       }
     }
-    
+
     return months;
   };
 
@@ -263,7 +262,7 @@ export function OrderManagementDashboard() {
         credentials: 'include',
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         setOrders(data.orders || []);
       } else {
@@ -287,7 +286,7 @@ export function OrderManagementDashboard() {
         credentials: 'include',
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         setMonthlyEarnings(data);
       } else {
@@ -359,7 +358,6 @@ export function OrderManagementDashboard() {
     }
   };
 
-
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
 
@@ -380,7 +378,7 @@ export function OrderManagementDashboard() {
       formData.append('customerAddress', editForm.customerAddress);
       formData.append('customerCity', editForm.customerCity);
       formData.append('customerPostcode', editForm.customerPostcode);
-      
+
       // Add images to FormData
       editForm.images.forEach((image, index) => {
         formData.append(`images`, image);
@@ -454,14 +452,14 @@ export function OrderManagementDashboard() {
 
   const filteredOrders = orders.filter(order => {
     // Apply search filter with null checks
-    const matchesSearch = searchTerm === "" || 
+    const matchesSearch = searchTerm === "" ||
       order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Apply status filter (if not "all")
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-    
+
     // Apply month filter
     const matchesMonth = monthFilter === "all" || (() => {
       const orderDate = new Date(order._createdAt);
@@ -470,7 +468,7 @@ export function OrderManagementDashboard() {
       const filterValue = `${orderYear}-${orderMonth}`;
       return filterValue === monthFilter;
     })();
-    
+
     return matchesSearch && matchesStatus && matchesMonth;
   });
 
@@ -480,14 +478,14 @@ export function OrderManagementDashboard() {
     const totalRevenue = filtered
       .filter(order => order.status !== 'cancelled')
       .reduce((sum, order) => sum + order.pricing.total, 0);
-    
+
     const totalOrders = filtered.length;
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-    
+
     const newOrders = filtered.filter(o => o.status === 'new').length;
     const inProgressOrders = filtered.filter(o => ['confirmed', 'in-progress'].includes(o.status)).length;
     const completedOrders = filtered.filter(o => ['delivered', 'completed'].includes(o.status)).length;
-    
+
     return {
       totalRevenue,
       totalOrders,
@@ -541,7 +539,7 @@ export function OrderManagementDashboard() {
     }
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc' 
+      return sortDirection === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
     }
@@ -609,7 +607,6 @@ export function OrderManagementDashboard() {
       return '';
     }
   };
-
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -759,7 +756,7 @@ export function OrderManagementDashboard() {
                 {monthFilter === 'all' ? 'All Time Revenue' : 'Monthly Revenue'}
               </Typography>
               <Typography variant="h4" color="primary">
-                £{monthFilter === 'all' 
+                £{monthFilter === 'all'
                   ? orders.filter(order => order.status !== 'cancelled').reduce((sum, order) => sum + order.pricing.total, 0).toFixed(2)
                   : filteredStats.totalRevenue.toFixed(2)
                 }
@@ -963,9 +960,9 @@ export function OrderManagementDashboard() {
                         {new Date(order._createdAt).toLocaleDateString('en-GB')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {new Date(order._createdAt).toLocaleTimeString('en-GB', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
+                        {new Date(order._createdAt).toLocaleTimeString('en-GB', {
+                          hour: '2-digit',
+                          minute: '2-digit'
                         })}
                       </Typography>
                     </TableCell>
@@ -1047,7 +1044,7 @@ export function OrderManagementDashboard() {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage="Rows per page:"
-            labelDisplayedRows={({ from, to, count }) => 
+            labelDisplayedRows={({ from, to, count }) =>
               `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
             }
           />
@@ -1143,7 +1140,7 @@ export function OrderManagementDashboard() {
                 placeholder="Add internal note about this order..."
               />
             </Grid>
-            
+
             {/* Customer Information Section */}
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }}>
@@ -1152,7 +1149,7 @@ export function OrderManagementDashboard() {
                 </Typography>
               </Divider>
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1162,7 +1159,7 @@ export function OrderManagementDashboard() {
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1173,7 +1170,7 @@ export function OrderManagementDashboard() {
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1183,7 +1180,7 @@ export function OrderManagementDashboard() {
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1193,7 +1190,7 @@ export function OrderManagementDashboard() {
                 placeholder="Street address"
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1202,7 +1199,7 @@ export function OrderManagementDashboard() {
                 onChange={(e) => setEditForm({ ...editForm, customerCity: e.target.value })}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -1211,14 +1208,14 @@ export function OrderManagementDashboard() {
                 onChange={(e) => setEditForm({ ...editForm, customerPostcode: e.target.value })}
               />
             </Grid>
-            
+
             {/* Image Upload Section */}
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" gutterBottom>
                 Attach Images
               </Typography>
-              
+
               <Box sx={{ mb: 2 }}>
                 <input
                   accept="image/*"
@@ -1276,12 +1273,12 @@ export function OrderManagementDashboard() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button 
+          <Button
             onClick={() => setDeleteConfirmOpen(true)}
             variant="outlined"
             color="error"
             size="small"
-            sx={{ 
+            sx={{
               mr: 'auto',
               color: 'error.main',
               borderColor: 'error.main',
@@ -1293,8 +1290,8 @@ export function OrderManagementDashboard() {
           >
             Delete Order
           </Button>
-          <Button 
-            onClick={handleSaveOrder} 
+          <Button
+            onClick={handleSaveOrder}
             variant="contained"
             disabled={isSaving}
             startIcon={isSaving ? <CircularProgress size={20} /> : undefined}
@@ -1309,7 +1306,7 @@ export function OrderManagementDashboard() {
         <DialogTitle>⚠️ Delete Order Permanently</DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Sanity. 
+            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Sanity.
             This cannot be undone.
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -1333,7 +1330,7 @@ export function OrderManagementDashboard() {
           }}>
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleDeleteOrderPermanently}
             variant="contained"
             color="error"
@@ -1366,7 +1363,7 @@ export function OrderManagementDashboard() {
                     <Typography><strong>Postcode:</strong> {selectedOrder.customer.postcode}</Typography>
                   )}
                 </Box>
-                
+
                 <Typography variant="h6" gutterBottom>Order Items</Typography>
                 {selectedOrder.items.map((item, index) => (
                   <Box key={index} sx={{ mb: 2, p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
@@ -1376,35 +1373,32 @@ export function OrderManagementDashboard() {
                     {item.designType && (
                       <Typography>Design: {item.designType}</Typography>
                     )}
-                    
+
                     {/* Display design images for individual designs */}
-                    {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Design Reference Images:
-                        </Typography>
-                        {/* Debug logging */}
-                        {console.log('Debug - selectedOrder.messages:', selectedOrder.messages)}
-                        {console.log('Debug - messages with attachments:', selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0))}
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (() => {
+                      return (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            Design Reference Images:
+                          </Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                           {(() => {
                             const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
                             const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
-                            
+
                             if (allAttachments.length === 0) {
                               return (
                                 <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                                  No design images found. Messages: {selectedOrder.messages.length}, 
+                                  No design images found. Messages: {selectedOrder.messages.length},
                                   Messages with attachments: {messagesWithAttachments.length}
                                 </Typography>
                               );
                             }
-                            
+
                             return allAttachments.map((attachment, index) => {
+                              if (!attachment) return null;
                               const imageUrl = getImageUrl(attachment.asset);
-                              console.log('Debug - attachment:', attachment);
-                              console.log('Debug - imageUrl:', imageUrl);
-                              
+
                               return (
                                 <Box
                                   key={index}
@@ -1453,11 +1447,12 @@ export function OrderManagementDashboard() {
                           })()}
                         </Box>
                       </Box>
-                    )}
+                      );
+                    })()}
                   </Box>
                 ))}
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Delivery Information</Typography>
                 <Box sx={{ mb: 2 }}>
@@ -1469,7 +1464,7 @@ export function OrderManagementDashboard() {
                     <Typography><strong>Tracking:</strong> {selectedOrder.delivery.trackingNumber}</Typography>
                   )}
                 </Box>
-                
+
                 <Typography variant="h6" gutterBottom>Pricing</Typography>
                 <Box sx={{ mb: 2 }}>
                   <Typography><strong>Total:</strong> £{selectedOrder.pricing.total}</Typography>
@@ -1478,7 +1473,7 @@ export function OrderManagementDashboard() {
                     <Typography><strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod.replace('-', ' ')}</Typography>
                   )}
                 </Box>
-                
+
                 {selectedOrder.delivery.deliveryNotes && (
                   <>
                     <Typography variant="h6" gutterBottom>Additional Notes</Typography>
@@ -1487,7 +1482,7 @@ export function OrderManagementDashboard() {
                     </Box>
                   </>
                 )}
-                
+
                 {selectedOrder.delivery.giftNote && (
                   <>
                     <Typography variant="h6" gutterBottom>Gift Note</Typography>
@@ -1496,7 +1491,7 @@ export function OrderManagementDashboard() {
                     </Box>
                   </>
                 )}
-                
+
                 {selectedOrder.notes && selectedOrder.notes.length > 0 && (
                   <>
                     <Typography variant="h6" gutterBottom>Internal Notes</Typography>
@@ -1505,7 +1500,7 @@ export function OrderManagementDashboard() {
                         {note.note && (
                           <Typography sx={{ mb: 1 }}>{note.note}</Typography>
                         )}
-                        
+
                         {/* Display images if they exist */}
                         {note.images && note.images.length > 0 && (
                           <Box sx={{ mt: 1 }}>
@@ -1516,9 +1511,9 @@ export function OrderManagementDashboard() {
                               {note.images
                                 .filter(image => image && image.asset)
                                 .map((image, imgIndex) => {
-                                
+
                                 const imageUrl = getImageUrl(image.asset);
-                                
+
                                 return (
                                   <Box
                                     key={imgIndex}
@@ -1567,7 +1562,7 @@ export function OrderManagementDashboard() {
                             </Box>
                           </Box>
                         )}
-                        
+
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                           {note.author} - {new Date(note.createdAt).toLocaleDateString('en-GB')}
                         </Typography>
@@ -1598,10 +1593,10 @@ export function OrderManagementDashboard() {
       />
 
       {/* Image Viewer Dialog */}
-      <Dialog 
-        open={imageViewerOpen} 
-        onClose={() => setImageViewerOpen(false)} 
-        maxWidth="md" 
+      <Dialog
+        open={imageViewerOpen}
+        onClose={() => setImageViewerOpen(false)}
+        maxWidth="md"
         fullWidth
       >
         <DialogTitle>

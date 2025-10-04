@@ -88,7 +88,7 @@ export async function generateMetadata(): Promise<Metadata> {
   let title = "Ukrainian Cakes Leeds | Honey Cake";
   if (eventSEO.nextEventLocation) {
     // Keep location short to avoid exceeding 60 characters
-    const shortLocation = eventSEO.nextEventLocation.length > 15 
+    const shortLocation = eventSEO.nextEventLocation.length > 15
       ? eventSEO.nextEventLocation.substring(0, 12) + "..."
       : eventSEO.nextEventLocation;
     title = `Ukrainian Cakes ${shortLocation}`;
@@ -206,7 +206,6 @@ export default async function Home() {
     getMarketSchedule(),
   ]);
 
-
   // Events structured data is injected by the MarketSchedule component to avoid duplication
 
   // Review schema for testimonials
@@ -323,8 +322,6 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(review) }}
         />
       ))}
-
-      
 
       {/* Mobile Performance Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -491,10 +488,10 @@ export default async function Home() {
             Cake by Post UK
           </h2>
           <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
-            Send delicious traditional Ukrainian honey cake by post anywhere in the UK. 
+            Send delicious traditional Ukrainian honey cake by post anywhere in the UK.
             Perfect for birthdays, anniversaries, and surprises.
           </p>
-          
+
           <div className="grid md:grid-cols-2 gap-8 items-center mb-10">
             <div>
               <h3 className="text-2xl font-semibold mb-4">Why Choose Our Cake by Post Service?</h3>
@@ -525,7 +522,7 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          
+
           <div className="text-center">
             <a
               href="/gift-hampers/cake-by-post-service"
@@ -701,16 +698,16 @@ export default async function Home() {
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    At Olgish Cakes, I keep the traditional Ukrainian ways of baking but also try new things. 
-                    I use recipes from my family and mix them with new ideas to make cakes that look 
+                    At Olgish Cakes, I keep the traditional Ukrainian ways of baking but also try new things.
+                    I use recipes from my family and mix them with new ideas to make cakes that look
                     beautiful and taste really good.
                   </Typography>
                   <Typography
                     variant="body1"
                     className="text-base sm:text-lg text-gray-700 mb-6 leading-relaxed"
                   >
-                    From our special honey cake layers to beautiful flower decorations, everything 
-                    shows how much I care about real Ukrainian taste. I think every celebration 
+                    From our special honey cake layers to beautiful flower decorations, everything
+                    shows how much I care about real Ukrainian taste. I think every celebration
                     needs a cake that has meaning.
                   </Typography>
                 </AnimatedDiv>

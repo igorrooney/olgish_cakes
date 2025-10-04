@@ -8,7 +8,6 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@/lib/mui-optimization";
 import { urlFor } from "@/sanity/lib/image";
 import { GiftHamperImage } from "@/types/giftHamper";
 
-
 import { colors } from "@/lib/design-system";
 interface HamperImageGalleryProps {
   name: string;

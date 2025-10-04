@@ -15,14 +15,14 @@ export async function POST(
 ) {
   try {
     const { id } = params;
-    
+
     if (!id) {
       return NextResponse.json({ error: 'Blog post ID is required' }, { status: 400 });
     }
 
     // Get the current blog post to check if it exists
     const blogPost = await client.getDocument(id);
-    
+
     if (!blogPost) {
       return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
     }
@@ -37,9 +37,9 @@ export async function POST(
       .set({ viewCount: newViewCount })
       .commit();
 
-    return NextResponse.json({ 
-      success: true, 
-      viewCount: newViewCount 
+    return NextResponse.json({
+      success: true,
+      viewCount: newViewCount
     });
 
   } catch (error) {
@@ -57,20 +57,20 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-    
+
     if (!id) {
       return NextResponse.json({ error: 'Blog post ID is required' }, { status: 400 });
     }
 
     // Get the current view count
     const blogPost = await client.fetch(`*[_id == $id][0]{viewCount}`, { id });
-    
+
     if (!blogPost) {
       return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ 
-      viewCount: blogPost.viewCount || 0 
+    return NextResponse.json({
+      viewCount: blogPost.viewCount || 0
     });
 
   } catch (error) {

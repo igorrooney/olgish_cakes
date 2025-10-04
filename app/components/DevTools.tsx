@@ -28,7 +28,7 @@ export function DevTools() {
   const handleClearCache = async () => {
     setIsClearing(true);
     setMessage(null);
-    
+
     try {
       await cacheManager.clearAllCache();
       setLastCleared(new Date());
@@ -44,7 +44,7 @@ export function DevTools() {
   const handleClearPattern = async (pattern: string) => {
     setIsClearing(true);
     setMessage(null);
-    
+
     try {
       await cacheManager.clearCachePattern(pattern);
       setLastCleared(new Date());
@@ -167,8 +167,8 @@ export function DevTools() {
           )}
 
           {message && (
-            <Alert 
-              severity={message.includes("✅") ? "success" : "error"} 
+            <Alert
+              severity={message.includes("✅") ? "success" : "error"}
               sx={{ mb: 1, fontSize: "0.75rem" }}
               onClose={() => setMessage(null)}
             >
@@ -181,7 +181,7 @@ export function DevTools() {
             <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
               Cache Management
             </Typography>
-            
+
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <Button
                 variant="contained"
@@ -234,7 +234,7 @@ export function DevTools() {
             <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
               Development Tools
             </Typography>
-            
+
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <Button
                 variant="outlined"

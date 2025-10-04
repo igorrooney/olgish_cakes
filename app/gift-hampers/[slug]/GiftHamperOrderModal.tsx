@@ -76,7 +76,7 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       }
       // Explicitly mark as order form so API uses order subject
       data.append("isOrderForm", "true");
-      
+
       // Add order-specific fields for order creation
       data.append("orderType", "gift-hamper");
       data.append("productType", "gift-hamper");
@@ -93,18 +93,13 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       data.append("deliveryAddress", formData.address || "");
       data.append("deliveryNotes", formData.note || "");
       data.append("paymentMethod", "card"); // Default payment method for gift hampers - card payment
-      
+
       // Add gift hamper specific fields
       if (formData.giftNote) {
         data.append("giftNote", formData.giftNote);
       }
-      
+
       // Debug logging
-      console.log("Gift hamper form data:", {
-        note: formData.note,
-        giftNote: formData.giftNote,
-        message: formData.message
-      });
 
       const response = await fetch("/api/contact", { method: "POST", body: data });
       if (!response.ok) throw new Error("Failed to send message");

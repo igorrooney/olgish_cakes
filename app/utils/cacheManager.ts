@@ -14,12 +14,11 @@ export class CacheManager {
 
   // Auto-clear cache in development every 30 seconds
   startAutoCacheClear(): void {
-    const shouldAutoClear = process.env.NODE_ENV === "development" && 
+    const shouldAutoClear = process.env.NODE_ENV === "development" &&
       process.env.NEXT_PUBLIC_AGGRESSIVE_CACHE_CLEAR === "true";
-    
+
     if (shouldAutoClear) {
       this.cacheClearInterval = setInterval(() => {
-        console.log("🔄 Auto-clearing cache for development");
         clearCache();
       }, 30 * 1000); // Every 30 seconds
     }
@@ -36,7 +35,7 @@ export class CacheManager {
   // Manual cache clear
   async clearAllCache(): Promise<void> {
     await invalidateCache();
-    
+
     // Force clear browser cache by adding timestamp to URLs
     if (typeof window !== 'undefined') {
       // Clear localStorage cache
@@ -46,7 +45,7 @@ export class CacheManager {
           localStorage.removeItem(key);
         }
       });
-      
+
       // Clear sessionStorage cache
       const sessionKeys = Object.keys(sessionStorage);
       sessionKeys.forEach(key => {
@@ -54,17 +53,13 @@ export class CacheManager {
           sessionStorage.removeItem(key);
         }
       });
-      
-      console.log("✅ Browser cache cleared");
+
     }
-    
-    console.log("✅ All cache cleared manually");
   }
 
   // Clear specific pattern
   async clearCachePattern(pattern: string): Promise<void> {
     await invalidateCache(pattern);
-    console.log(`✅ Cache cleared for pattern: ${pattern}`);
   }
 
   // Get cache status

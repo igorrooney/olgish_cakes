@@ -17,7 +17,7 @@ const client = createClient({
 
 export async function getFaqs(): Promise<FAQ[]> {
   try {
-    console.log("Fetching FAQs from Sanity...");
+
     const query = groq`*[_type == "faq"] | order(order asc) {
       _id,
       question,
@@ -25,9 +25,7 @@ export async function getFaqs(): Promise<FAQ[]> {
       order
     }`;
 
-    console.log("Executing query:", query);
     const result = await client.fetch(query);
-    console.log("Query result:", result);
 
     if (!Array.isArray(result)) {
       console.error("Unexpected result format:", result);

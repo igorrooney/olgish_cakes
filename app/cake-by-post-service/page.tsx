@@ -128,41 +128,41 @@ export default function CakeByPostServicePage() {
               {
                 "@type": "Question",
                 name: "What is cake by post?",
-                acceptedAnswer: { 
-                  "@type": "Answer", 
-                  text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK." 
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK."
                 }
               },
               {
                 "@type": "Question",
                 name: "How long does cake by post stay fresh?",
-                acceptedAnswer: { 
-                  "@type": "Answer", 
-                  text: "My cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. I recommend consuming within 3-4 days for the best taste experience." 
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "My cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. I recommend consuming within 3-4 days for the best taste experience."
                 }
               },
               {
                 "@type": "Question",
                 name: "Do you deliver cake by post to all UK addresses?",
-                acceptedAnswer: { 
-                  "@type": "Answer", 
-                  text: "Yes, I deliver my cake by post service to all UK mainland addresses. I offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact me directly." 
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver my cake by post service to all UK mainland addresses. I offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact me directly."
                 }
               },
               {
                 "@type": "Question",
                 name: "What types of cake can be sent by post?",
-                acceptedAnswer: { 
-                  "@type": "Answer", 
-                  text: "I specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. My cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit." 
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. My cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit."
                 }
               },
               {
                 "@type": "Question",
                 name: "How do I order cake by post?",
-                acceptedAnswer: { 
-                  "@type": "Answer", 
-                  text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. I'll pack and ship your cake within 2-3 working days." 
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. I'll pack and ship your cake within 2-3 working days."
                 }
               }
             ]

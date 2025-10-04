@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
-    
+
     const title = formData.get('title') as string
     const content = formData.get('content') as string
     const category = formData.get('category') as string
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
           contentType: featuredImage.type,
         })
         console.log('Image uploaded successfully:', imageAsset._id)
-        
+
         featuredImageAsset = {
           _type: 'image',
           asset: {
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
           contentType: cardImage.type,
         })
         console.log('Card image uploaded successfully:', imageAsset._id)
-        
+
         cardImageAsset = {
           _type: 'image',
           asset: {

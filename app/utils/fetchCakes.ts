@@ -183,7 +183,6 @@ export function getRevalidateTime(): number {
 // Clear cache function
 export function clearCache(): void {
   cache.clear();
-  console.log("Cache cleared");
 }
 
 // Cache invalidation
@@ -195,11 +194,9 @@ export async function invalidateCache(pattern?: string): Promise<void> {
         cache.delete(key);
       }
     }
-    console.log(`Cache cleared for pattern: ${pattern}`);
   } else {
     // Clear all cache
     cache.clear();
-    console.log("All cache cleared");
   }
 }
 

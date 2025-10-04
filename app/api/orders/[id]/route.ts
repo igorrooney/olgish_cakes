@@ -72,11 +72,11 @@ export async function PATCH(
     let images: File[] = [];
 
     const contentType = request.headers.get('content-type');
-    
+
     if (contentType && contentType.includes('multipart/form-data')) {
       // Handle FormData (with potential image uploads)
       const formData = await request.formData();
-      
+
       // Extract text fields
       updates.status = formData.get('status') as string;
       updates.trackingNumber = formData.get('trackingNumber') as string;
@@ -91,7 +91,7 @@ export async function PATCH(
       updates.customerAddress = formData.get('customerAddress') as string;
       updates.customerCity = formData.get('customerCity') as string;
       updates.customerPostcode = formData.get('customerPostcode') as string;
-      
+
       // Extract images
       const imageFiles = formData.getAll('images') as File[];
       images = imageFiles.filter(file => file.size > 0);
@@ -99,7 +99,7 @@ export async function PATCH(
       // Handle JSON requests (backward compatibility)
       updates = await request.json();
     }
-    
+
     // Get current order to compare changes
     const currentOrder = await serverClient.fetch(
       `*[_type == "order" && _id == "${params.id}"][0]{
@@ -122,7 +122,7 @@ export async function PATCH(
 
     // Prepare update document
     const updateDoc: any = {};
-    
+
     // Handle status updates
     if (updates.status && updates.status !== currentOrder.status) {
       updateDoc.status = updates.status;
@@ -130,10 +130,7 @@ export async function PATCH(
 
     // Handle tracking number updates
     if (updates.trackingNumber) {
-      console.log('Updating tracking number:', updates.trackingNumber);
       updateDoc['delivery.trackingNumber'] = updates.trackingNumber;
-    } else {
-      console.log('No tracking number provided in update:', updates);
     }
 
     // Handle delivery method updates
@@ -202,13 +199,13 @@ export async function PATCH(
             // Convert File to Buffer for Sanity upload
             const arrayBuffer = await imageFile.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            
+
             // Upload image to Sanity
             const imageAsset = await serverClient.assets.upload('image', buffer, {
               filename: imageFile.name,
               contentType: imageFile.type,
             });
-            
+
             newNote.images.push({
               _type: 'image',
               asset: {
@@ -224,7 +221,7 @@ export async function PATCH(
           }
         }
       }
-      
+
       updateDoc.notes = [...(currentOrder.notes || []), newNote];
     }
 
@@ -312,7 +309,7 @@ export async function DELETE(
     // Default behavior: Soft delete by changing status to cancelled
     const cancelledOrder = await serverClient
       .patch(params.id)
-      .set({ 
+      .set({
         status: 'cancelled',
         'pricing.paymentStatus': 'cancelled',
         'pricing.paymentMethod': 'cancelled'
@@ -357,7 +354,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
       message: (() => {
         const deliveryMethod = order.delivery.deliveryMethod;
         let baseMessage = 'Great news! Your order is on its way to you.';
-        
+
         if (deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') {
           baseMessage = 'Great news! Your order has been dispatched via Royal Mail and is on its way to you. You should receive it within the next few days.';
         } else if (deliveryMethod === 'local-delivery') {
@@ -367,13 +364,13 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
         } else if (deliveryMethod === 'market-pickup') {
           baseMessage = 'Great news! Your order is ready for collection at our market stall. Please contact us to arrange pickup.';
         }
-        
+
         // Only add tracking info for postal deliveries with tracking number
         if ((deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') && order.delivery.trackingNumber) {
           const trackingInfo = ` You can track your package using the tracking number provided below.`;
           return baseMessage + trackingInfo;
         }
-        
+
         return baseMessage;
       })()
     },
@@ -395,16 +392,6 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
   if (!statusInfo) return;
 
   try {
-    // Debug logging to check delivery method
-    console.log('=== EMAIL DEBUG ===');
-    console.log('Order delivery method:', order.delivery.deliveryMethod);
-    console.log('Delivery method type:', typeof order.delivery.deliveryMethod);
-    console.log('Delivery method length:', order.delivery.deliveryMethod?.length);
-    console.log('New status:', newStatus);
-    console.log('Status message:', statusInfo.message);
-    console.log('Full order delivery object:', JSON.stringify(order.delivery, null, 2));
-    console.log('==================');
-    
     // Send the actual email
     await resend.emails.send({
       from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -425,7 +412,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
               <td align="center" style="padding: 40px 20px;">
                 <!-- Main Container -->
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                  
+
                   <!-- Header -->
                   <tr>
                     <td style="background: linear-gradient(135deg, #2E3192 0%, #1a237e 100%); padding: 40px 30px; text-align: center;">
@@ -437,24 +424,24 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                       </p>
                     </td>
                   </tr>
-                  
+
                   <!-- Content -->
                   <tr>
                     <td style="padding: 40px 30px;">
                       <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
                         Dear <strong>${order.customer.name}</strong>,
                       </p>
-                      
+
                       <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
                         ${statusInfo.message}
                       </p>
-                      
+
                       <!-- Order Summary Card -->
                       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
                         <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">
                           Order Summary
                         </h2>
-                        
+
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           <tr>
                             <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
@@ -476,13 +463,13 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           </tr>
                         </table>
                       </div>
-                      
+
                       <!-- Product Details -->
                       <div style="margin-bottom: 32px;">
                         <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
                           Your Order
                         </h3>
-                        
+
                         ${order.items.map((item: any) => `
                           <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                             <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
@@ -494,19 +481,19 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           </div>
                         `).join('')}
                       </div>
-                      
+
                       <!-- Design Images Section -->
                       ${(() => {
                         // Check if any items have individual design and if there are message attachments
                         const hasIndividualDesign = order.items?.some((item: any) => item.designType === 'individual');
                         const hasAttachments = order.messages?.some((message: any) => message.attachments && message.attachments.length > 0);
-                        
+
                         if (hasIndividualDesign && hasAttachments) {
                           const allAttachments = order.messages
                             .filter((message: any) => message.attachments && message.attachments.length > 0)
                             .flatMap((message: any) => message.attachments)
                             .filter((attachment: any) => attachment && attachment.asset);
-                          
+
                           if (allAttachments.length > 0) {
                             return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
@@ -533,21 +520,21 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                         }
                         return '';
                       })()}
-                      
+
                       ${newStatus === 'out-delivery' && order.delivery.trackingNumber ? `
                         <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                           <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 16px; font-weight: 600;">📦 Tracking Information</h3>
                           ${order.delivery.deliveryMethod === 'postal-delivery' || order.delivery.deliveryMethod === 'postal' ? `
                             <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;"><strong>Courier:</strong> Royal Mail</p>
                             <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;">
-                              <strong>Tracking Number:</strong> 
-                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}" 
+                              <strong>Tracking Number:</strong>
+                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}"
                                  style="color: #1976d2; text-decoration: underline; font-weight: 600;">
                                 ${order.delivery.trackingNumber}
                               </a>
                             </p>
                             <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}" 
+                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}"
                                  style="color: #1976d2; text-decoration: none; font-weight: 500;">
                                 Track your package on Royal Mail website →
                               </a>
@@ -562,23 +549,23 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           `}
                         </div>
                       ` : ''}
-                      
+
                       ${newStatus === 'completed' ? `
                         <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                           <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">⭐ We'd Love Your Feedback!</h3>
                           <p style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
-                            Thank you for choosing Olgish Cakes! We hope you enjoyed your order. 
+                            Thank you for choosing Olgish Cakes! We hope you enjoyed your order.
                             Your feedback helps us continue to provide the best service and helps other customers discover our delicious Ukrainian cakes.
                           </p>
                           <p style="margin: 0; color: #0c4a6e; font-size: 14px;">
-                            <a href="https://uk.trustpilot.com/review/olgishcakes.co.uk" 
+                            <a href="https://uk.trustpilot.com/review/olgishcakes.co.uk"
                                style="display: inline-block; background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
                               Leave a Review on Trustpilot →
                             </a>
                           </p>
                         </div>
                       ` : ''}
-                      
+
                       <!-- Contact Information -->
                       <div style="text-align: center; padding: 24px 0; border-top: 1px solid #e5e7eb;">
                         <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px;">
@@ -594,7 +581,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                       </div>
                     </td>
                   </tr>
-                  
+
                   <!-- Footer -->
                   <tr>
                     <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">

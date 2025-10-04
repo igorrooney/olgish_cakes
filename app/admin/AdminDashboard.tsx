@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Grid, 
-  Card, 
-  CardContent, 
-  Typography, 
-  Button, 
-  Chip, 
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Chip,
   Paper,
   List,
   ListItem,
@@ -63,34 +63,34 @@ export function AdminDashboard() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch orders data
       const ordersResponse = await fetch('/api/orders');
       if (!ordersResponse.ok) {
         throw new Error('Failed to fetch orders');
       }
       const ordersData = await ordersResponse.json();
-      
+
       // Fetch earnings data
       const earningsResponse = await fetch('/api/admin/earnings');
       if (!earningsResponse.ok) {
         throw new Error('Failed to fetch earnings');
       }
       const earningsData = await earningsResponse.json();
-      
+
       // Calculate stats
       const orders = ordersData.orders || [];
       const totalOrders = orders.length;
-      const pendingOrders = orders.filter((order: any) => 
+      const pendingOrders = orders.filter((order: any) =>
         ['confirmed', 'in-progress', 'ready-pickup', 'out-delivery'].includes(order.status)
       ).length;
-      const completedOrders = orders.filter((order: any) => 
+      const completedOrders = orders.filter((order: any) =>
         order.status === 'completed'
       ).length;
-      
+
       const totalRevenue = earningsData.totalRevenue || 0;
       const recentOrders = orders.slice(0, 5);
-      
+
       setStats({
         totalOrders,
         pendingOrders,
@@ -198,7 +198,7 @@ export function AdminDashboard() {
           },
           body: JSON.stringify({ pattern: '*' })
         });
-        
+
         if (response.ok) {
           alert('Cache cleared successfully!');
         } else {
@@ -259,7 +259,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ background: `linear-gradient(135deg, ${designTokens.colors.warning.main} 0%, ${designTokens.colors.warning.dark} 100%)`, color: 'white' }}>
                 <CardContent>
@@ -277,7 +277,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ background: `linear-gradient(135deg, ${designTokens.colors.success.main} 0%, ${designTokens.colors.success.dark} 100%)`, color: 'white' }}>
                 <CardContent>
@@ -295,7 +295,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ background: `linear-gradient(135deg, ${designTokens.colors.info.main} 0%, ${designTokens.colors.info.dark} 100%)`, color: 'white' }}>
                 <CardContent>
@@ -324,9 +324,9 @@ export function AdminDashboard() {
           <Grid container spacing={3}>
             {adminResources.map((resource, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card 
-                  sx={{ 
-                    height: '100%', 
+                <Card
+                  sx={{
+                    height: '100%',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       transform: 'translateY(-4px)',
@@ -354,27 +354,27 @@ export function AdminDashboard() {
                         <OpenInNew sx={{ fontSize: 16, color: 'text.secondary' }} />
                       )}
                       {resource.comingSoon && (
-                        <Chip 
-                          label="Coming Soon" 
-                          size="small" 
-                          color="warning" 
+                        <Chip
+                          label="Coming Soon"
+                          size="small"
+                          color="warning"
                           variant="outlined"
                         />
                       )}
                     </Box>
-                    
+
                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                       {resource.title}
                     </Typography>
-                    
+
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       {resource.description}
                     </Typography>
-                    
-                    <Chip 
-                      label={resource.stats} 
-                      size="small" 
-                      sx={{ 
+
+                    <Chip
+                      label={resource.stats}
+                      size="small"
+                      sx={{
                         backgroundColor: resource.color + '20',
                         color: resource.color,
                         fontWeight: 500
@@ -395,8 +395,8 @@ export function AdminDashboard() {
           <Grid container spacing={2}>
             {quickActions.map((action, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card 
-                  sx={{ 
+                <Card
+                  sx={{
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
                     '&:hover': {
@@ -455,8 +455,8 @@ export function AdminDashboard() {
                         primary={`Order #${order.orderNumber || order._id?.slice(-6)}`}
                         secondary={`${order.customer?.name || 'Unknown Customer'} • £${order.pricing?.total || 0} • ${order.status || 'Unknown'}`}
                       />
-                      <Chip 
-                        label={order.status || 'Unknown'} 
+                      <Chip
+                        label={order.status || 'Unknown'}
                         size="small"
                         color={
                           order.status === 'completed' ? 'success' :
@@ -484,9 +484,9 @@ export function AdminDashboard() {
               <Typography variant="body1">
                 All systems operational
               </Typography>
-              <Chip 
-                label="Healthy" 
-                color="success" 
+              <Chip
+                label="Healthy"
+                color="success"
                 size="small"
                 sx={{ ml: 'auto' }}
               />

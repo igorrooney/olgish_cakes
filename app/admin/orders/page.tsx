@@ -21,7 +21,7 @@ export default function AdminOrdersPage() {
             Track and manage all customer orders from one place
           </p>
         </div>
-        
+
         <OrderManagementDashboard />
       </div>
     </AdminAuthGuard>

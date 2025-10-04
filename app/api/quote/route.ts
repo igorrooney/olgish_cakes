@@ -247,7 +247,7 @@ Olgish Cakes
       <h1>🎂 New Custom Cake Quote Request</h1>
       <p style="margin: 10px 0 0 0; opacity: 0.9;">Professional quote inquiry from website</p>
     </div>
-    
+
     <div class="content">
       <div class="section">
         <div class="section-title">
@@ -303,7 +303,7 @@ Olgish Cakes
             <span class="info-value">${designStyle || "Not specified"}</span>
           </div>
         </div>
-        
+
         <div class="budget-highlight">
           <strong>💰 Budget Range:</strong> ${budget}
         </div>
@@ -371,8 +371,6 @@ Olgish Cakes
 </body>
 </html>`;
 
-    console.log("Sending quote request email to:", recipientEmail);
-
     const response = await resend.emails.send({
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
@@ -401,25 +399,17 @@ Olgish Cakes
       // Upload design image to Sanity and pass image reference in attachments
       let attachmentImages: any[] = [];
       if (designImage) {
-        console.log('Quote design image details:', {
-          name: designImage.name,
-          size: designImage.size,
-          type: designImage.type,
-          constructor: designImage.constructor.name
-        });
-        
+
         try {
           // Convert File to Buffer for Sanity upload
           const arrayBuffer = await designImage.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
-          
+
           const uploaded = await serverClient.assets.upload('image', buffer, {
             filename: designImage.name,
             contentType: designImage.type,
           });
-          
-          console.log('Successfully uploaded quote image to Sanity:', uploaded._id);
-          
+
           attachmentImages = [
             {
               _type: 'image',
@@ -435,7 +425,7 @@ Olgish Cakes
           });
         }
       } else {
-        console.log('No quote design image provided');
+
       }
 
       const orderData = {
@@ -478,7 +468,7 @@ Special Requests: ${specialRequests}
       };
 
       // Create order via internal API call
-      console.log('Creating quote order with attachments:', attachmentImages);
+
       const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
         method: 'POST',
         headers: {
@@ -489,7 +479,7 @@ Special Requests: ${specialRequests}
 
       if (orderResponse.ok) {
         const orderResult = await orderResponse.json();
-        console.log("Quote request order created successfully:", orderResult.orderNumber);
+
       } else {
         console.error("Failed to create quote request order:", await orderResponse.text());
       }
@@ -498,7 +488,6 @@ Special Requests: ${specialRequests}
       // Don't fail the email if order creation fails
     }
 
-    console.log("Quote request email sent successfully:", response);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Quote API Error:", error);

@@ -73,7 +73,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     address: "",
     city: "",
     postcode: "",
-    
+
     // Order info
     orderType: "cake-standard-design",
     dateNeeded: "",
@@ -82,7 +82,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     deliveryNotes: "",
     paymentMethod: "cash-collection",
     message: "",
-    
+
     // Pricing
     subtotal: 0,
     deliveryFee: 0,
@@ -150,7 +150,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
       const newDeliveryFee = field === 'deliveryFee' ? parseFloat(value) || 0 : formData.deliveryFee;
       const newDiscount = field === 'discount' ? parseFloat(value) || 0 : formData.discount;
       const newTotal = newSubtotal + newDeliveryFee - newDiscount;
-      
+
       setFormData(prev => ({
         ...prev,
         total: newTotal
@@ -228,7 +228,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     if (items.length > 1) {
       const newItems = items.filter((_, i) => i !== index);
       setItems(newItems);
-      
+
       // Recalculate subtotal
       const subtotal = newItems.reduce((sum, item) => sum + item.totalPrice, 0);
       handleInputChange('subtotal', subtotal);
@@ -285,7 +285,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
       if (response.ok) {
         const result = await response.json();
         setSuccess(`Order created successfully! Order #${result.orderNumber}`);
-        
+
         // Reset form
         setFormData({
           name: "",
@@ -306,7 +306,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
           discount: 0,
           total: 0,
         });
-        
+
         setItems([{
           productId: "",
           productName: "",
@@ -319,9 +319,9 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
           specialInstructions: "",
           isFromCatalog: false,
         }]);
-        
+
         onOrderCreated();
-        
+
         // Auto-close after 2 seconds
         setTimeout(() => {
           onClose();
@@ -348,7 +348,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
               {error}
             </Alert>
           )}
-          
+
           {success && (
             <Alert severity="success" sx={{ mb: 2 }}>
               {success}
@@ -360,7 +360,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
             <Grid item xs={12}>
               <Typography variant="h6" gutterBottom>Customer Information</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -370,7 +370,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -381,7 +381,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -391,7 +391,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -400,7 +400,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 onChange={(e) => handleInputChange("address", e.target.value)}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -409,7 +409,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 onChange={(e) => handleInputChange("city", e.target.value)}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -423,7 +423,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" gutterBottom>Order Information</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Order Type</InputLabel>
@@ -440,7 +440,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 </Select>
               </FormControl>
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -452,7 +452,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Delivery Method</InputLabel>
@@ -468,7 +468,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 </Select>
               </FormControl>
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Payment Method</InputLabel>
@@ -484,7 +484,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 </Select>
               </FormControl>
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -495,7 +495,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 onChange={(e) => handleInputChange("deliveryAddress", e.target.value)}
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -506,7 +506,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 onChange={(e) => handleInputChange("deliveryNotes", e.target.value)}
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -544,7 +544,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                       </IconButton>
                     )}
                   </Box>
-                  
+
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -606,7 +606,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         )}
                       </Box>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -618,7 +618,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         required
                       />
                     </Grid>
-                    
+
                     <Grid item xs={6} sm={3}>
                       <TextField
                         fullWidth
@@ -629,7 +629,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         inputProps={{ min: 1 }}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={6} sm={3}>
                       <TextField
                         fullWidth
@@ -640,7 +640,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         inputProps={{ min: 0, step: 0.01 }}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel>Design Type</InputLabel>
@@ -654,7 +654,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         </Select>
                       </FormControl>
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
@@ -666,7 +666,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         }}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
@@ -675,7 +675,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         onChange={(e) => handleItemChange(index, "size", e.target.value)}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
@@ -684,7 +684,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                         onChange={(e) => handleItemChange(index, "flavor", e.target.value)}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -704,7 +704,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
               <Divider sx={{ my: 2 }} />
               <Typography variant="h6" gutterBottom>Pricing</Typography>
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
@@ -716,7 +716,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 disabled
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
@@ -727,7 +727,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 inputProps={{ min: 0, step: 0.01 }}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
@@ -738,7 +738,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                 inputProps={{ min: 0, step: 0.01 }}
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth

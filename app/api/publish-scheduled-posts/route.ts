@@ -18,9 +18,9 @@ export async function GET(request: NextRequest) {
 
     // Find posts scheduled for today that haven't been published yet
     const scheduledPosts = await client.fetch(`
-      *[_type == "blogPost" && 
-        status == "scheduled" && 
-        publishDate >= "${today}T00:00:00.000Z" && 
+      *[_type == "blogPost" &&
+        status == "scheduled" &&
+        publishDate >= "${today}T00:00:00.000Z" &&
         publishDate <= "${today}T23:59:59.999Z"]
     `)
 
@@ -30,14 +30,14 @@ export async function GET(request: NextRequest) {
 
     for (const post of scheduledPosts) {
       const publishTime = new Date(post.publishDate).toTimeString().split(' ')[0]
-      
+
       // Check if it's time to publish this post
       if (publishTime <= currentTime) {
         try {
           // Update the post status to published
           await client
             .patch(post._id)
-            .set({ 
+            .set({
               status: 'published',
               publishDate: new Date().toISOString() // Update to actual publish time
             })
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error publishing scheduled posts:', error)
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Failed to publish scheduled posts',
         details: error instanceof Error ? error.message : 'Unknown error'

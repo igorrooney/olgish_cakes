@@ -16,7 +16,6 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:

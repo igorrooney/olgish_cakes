@@ -176,7 +176,7 @@ Olgish Cakes
       ${isOrderInquiry ? "🎂 New Cake Order Inquiry" : "📨 New Contact Message"}
     </h1>
   </div>
-  
+
   <div class="content">
     <div class="section">
       <div class="section-title">Customer Information</div>
@@ -229,8 +229,6 @@ Olgish Cakes
 </body>
 </html>`;
 
-    console.log("Sending email to:", recipientEmail);
-
     // Only send admin email for non-order inquiries
     // Order inquiries will be handled by the orders API
     let response;
@@ -268,25 +266,17 @@ Olgish Cakes
         // Upload design image to Sanity and pass image reference in attachments
         let attachmentImages: any[] = [];
         if (designImage) {
-          console.log('Design image details:', {
-            name: designImage.name,
-            size: designImage.size,
-            type: designImage.type,
-            constructor: designImage.constructor.name
-          });
-          
+
           try {
             // Convert File to Buffer for Sanity upload
             const arrayBuffer = await designImage.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            
+
             const uploaded = await serverClient.assets.upload('image', buffer, {
               filename: designImage.name,
               contentType: designImage.type,
             });
-            
-            console.log('Successfully uploaded to Sanity:', uploaded._id);
-            
+
             attachmentImages = [
               {
                 _type: 'image',
@@ -302,7 +292,7 @@ Olgish Cakes
             });
           }
         } else {
-          console.log('No design image provided');
+
         }
         const orderData = {
           name,
@@ -335,7 +325,7 @@ Olgish Cakes
         };
 
         // Create order via internal API call
-        console.log('Creating order with attachments:', attachmentImages);
+
         const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
           method: 'POST',
           headers: {
@@ -346,7 +336,7 @@ Olgish Cakes
 
         if (orderResponse.ok) {
           const orderResult = await orderResponse.json();
-          console.log("Order created successfully:", orderResult.orderNumber);
+
         } else {
           console.error("Failed to create order:", await orderResponse.text());
         }
@@ -356,7 +346,6 @@ Olgish Cakes
       }
     }
 
-    console.log("Email sent successfully:", response);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Contact API Error:", error);

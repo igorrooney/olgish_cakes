@@ -201,8 +201,8 @@ export default function CakeTastingSessionsPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
             >
-              When you book a cake tasting session with me, you are not just trying cakes - you are experiencing 
-              the real taste of Ukrainian tradition and culture. Each session is personal and relaxed, giving you 
+              When you book a cake tasting session with me, you are not just trying cakes - you are experiencing
+              the real taste of Ukrainian tradition and culture. Each session is personal and relaxed, giving you
               time to discover which flavors speak to your heart and make your celebration special.
             </Typography>
             <Grid container spacing={4}>
@@ -213,8 +213,8 @@ export default function CakeTastingSessionsPage() {
                     Traditional Ukrainian Cakes
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Start with my signature Honey Cake (Medovik) and Kyiv Cake. These traditional Ukrainian 
-                    cakes have been made in my family for generations, and I want you to taste the authentic 
+                    Start with my signature Honey Cake (Medovik) and Kyiv Cake. These traditional Ukrainian
+                    cakes have been made in my family for generations, and I want you to taste the authentic
                     flavors that make these cakes so special.
                   </Typography>
                 </Box>
@@ -226,8 +226,8 @@ export default function CakeTastingSessionsPage() {
                     Popular Celebration Flavors
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Try my Vanilla Delicia, Chocolate Delicia, Napoleon Cake, and Sacher Torte. Each cake 
-                    has its own personality and perfect occasion. I will help you understand which flavors 
+                    Try my Vanilla Delicia, Chocolate Delicia, Napoleon Cake, and Sacher Torte. Each cake
+                    has its own personality and perfect occasion. I will help you understand which flavors
                     work best for your celebration and guests.
                   </Typography>
                 </Box>
@@ -239,8 +239,8 @@ export default function CakeTastingSessionsPage() {
                     Personal Consultation
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    During your tasting, we will discuss your celebration, guest preferences, dietary needs, 
-                    and design ideas. This helps me create the perfect cake that reflects your vision and 
+                    During your tasting, we will discuss your celebration, guest preferences, dietary needs,
+                    and design ideas. This helps me create the perfect cake that reflects your vision and
                     makes your special day unforgettable.
                   </Typography>
                 </Box>
@@ -280,8 +280,8 @@ export default function CakeTastingSessionsPage() {
                     Step 1: Book Your Session
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Contact me to arrange your tasting session. I prefer to do tastings in person at my kitchen 
-                    in Leeds, but I can also arrange tastings at your location for larger events. Sessions usually 
+                    Contact me to arrange your tasting session. I prefer to do tastings in person at my kitchen
+                    in Leeds, but I can also arrange tastings at your location for larger events. Sessions usually
                     last about 45-60 minutes, giving us plenty of time to taste and discuss your perfect cake.
                   </Typography>
                 </Box>
@@ -292,8 +292,8 @@ export default function CakeTastingSessionsPage() {
                     Step 2: Taste and Discover
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I will prepare small portions of different cakes for you to taste. Take your time with each one, 
-                    notice the textures, flavors, and how they make you feel. Some people love the traditional honey 
+                    I will prepare small portions of different cakes for you to taste. Take your time with each one,
+                    notice the textures, flavors, and how they make you feel. Some people love the traditional honey
                     taste of Medovik, while others prefer the rich chocolate of Sacher Torte.
                   </Typography>
                 </Box>
@@ -304,8 +304,8 @@ export default function CakeTastingSessionsPage() {
                     Step 3: Discuss Your Vision
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    While we taste, I will ask about your celebration - the occasion, number of guests, any special 
-                    dietary requirements, and your design preferences. This helps me understand what will make your 
+                    While we taste, I will ask about your celebration - the occasion, number of guests, any special
+                    dietary requirements, and your design preferences. This helps me understand what will make your
                     cake perfect for your special moment.
                   </Typography>
                 </Box>
@@ -316,8 +316,8 @@ export default function CakeTastingSessionsPage() {
                     Step 4: Plan Your Perfect Cake
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Based on your preferences and the tasting, I will suggest the perfect cake combination for your 
-                    celebration. We will discuss size, design, delivery, and any special requirements. By the end 
+                    Based on your preferences and the tasting, I will suggest the perfect cake combination for your
+                    celebration. We will discuss size, design, delivery, and any special requirements. By the end
                     of the session, you will have a clear plan for your perfect cake.
                   </Typography>
                 </Box>
@@ -358,7 +358,7 @@ export default function CakeTastingSessionsPage() {
                     Wedding Planning
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Your wedding cake is one of the most important decisions you will make. A tasting session 
+                    Your wedding cake is one of the most important decisions you will make. A tasting session
                     helps you choose the perfect flavors and design that reflect your love story and delight your guests.
                   </Typography>
                 </Box>
@@ -370,7 +370,7 @@ export default function CakeTastingSessionsPage() {
                     Special Birthdays
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Milestone birthdays deserve something extra special. Whether it is a 50th birthday or 
+                    Milestone birthdays deserve something extra special. Whether it is a 50th birthday or
                     sweet 16, a tasting session helps you find the perfect cake for this important celebration.
                   </Typography>
                 </Box>
@@ -382,7 +382,7 @@ export default function CakeTastingSessionsPage() {
                     Corporate Events
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Impress your clients and colleagues with authentic Ukrainian cakes. A tasting session 
+                    Impress your clients and colleagues with authentic Ukrainian cakes. A tasting session
                     helps you choose flavors that everyone will love and remember long after the event.
                   </Typography>
                 </Box>
@@ -394,7 +394,7 @@ export default function CakeTastingSessionsPage() {
                     Any Celebration
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    From anniversaries to graduations, any celebration is better with the perfect cake. 
+                    From anniversaries to graduations, any celebration is better with the perfect cake.
                     A tasting session ensures you choose something that makes your special moment even more memorable.
                   </Typography>
                 </Box>
@@ -437,7 +437,7 @@ export default function CakeTastingSessionsPage() {
                     <strong>Price:</strong> £25 per person (deducted from your final cake order)
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Includes tasting of 4-5 different cake flavors, personal consultation, design discussion, 
+                    Includes tasting of 4-5 different cake flavors, personal consultation, design discussion,
                     and recommendations for your perfect cake. Session lasts 45-60 minutes.
                   </Typography>
                 </Box>
@@ -451,7 +451,7 @@ export default function CakeTastingSessionsPage() {
                     <strong>Price:</strong> £40 per couple (deducted from your wedding cake order)
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Extended session with 6-8 cake flavors, detailed design consultation, size recommendations, 
+                    Extended session with 6-8 cake flavors, detailed design consultation, size recommendations,
                     and delivery planning. Session lasts 75-90 minutes.
                   </Typography>
                 </Box>
@@ -459,8 +459,8 @@ export default function CakeTastingSessionsPage() {
             </Grid>
             <Box sx={{ mt: 4, p: 3, backgroundColor: "rgba(0, 91, 187, 0.1)", borderRadius: 2 }}>
               <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                <strong>Important:</strong> The tasting fee is deducted from your final cake order when you book with me. 
-                This means if you order a £100 cake and paid £25 for tasting, you only pay £75 for the cake. 
+                <strong>Important:</strong> The tasting fee is deducted from your final cake order when you book with me.
+                This means if you order a £100 cake and paid £25 for tasting, you only pay £75 for the cake.
                 I believe in making cake selection accessible and affordable for everyone.
               </Typography>
             </Box>

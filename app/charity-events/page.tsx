@@ -107,9 +107,9 @@ export default function CharityEventsPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
             >
-              Giving back to the community is very important to me. Through my Ukrainian cakes and baking skills, 
-              I have the opportunity to support local charities, help families in need, and bring joy to people 
-              who are going through difficult times. Every charity event I participate in is a chance to share 
+              Giving back to the community is very important to me. Through my Ukrainian cakes and baking skills,
+              I have the opportunity to support local charities, help families in need, and bring joy to people
+              who are going through difficult times. Every charity event I participate in is a chance to share
               the warmth and comfort that Ukrainian cakes can bring to any celebration.
             </Typography>
           </Paper>
@@ -143,8 +143,8 @@ export default function CharityEventsPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
             >
-              I believe that food, especially traditional Ukrainian cakes, has the power to bring people together, 
-              comfort those in need, and create moments of joy even during difficult times. My charity work focuses 
+              I believe that food, especially traditional Ukrainian cakes, has the power to bring people together,
+              comfort those in need, and create moments of joy even during difficult times. My charity work focuses
               on supporting local communities, helping families, and sharing the cultural heritage of Ukrainian baking.
             </Typography>
             <Grid container spacing={4}>
@@ -155,8 +155,8 @@ export default function CharityEventsPage() {
                     Local Community Support
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    I work with local charities in Leeds and Yorkshire to provide cakes for community events, 
-                    family celebrations, and special occasions. My goal is to make sure everyone can enjoy 
+                    I work with local charities in Leeds and Yorkshire to provide cakes for community events,
+                    family celebrations, and special occasions. My goal is to make sure everyone can enjoy
                     beautiful, delicious cakes regardless of their circumstances.
                   </Typography>
                 </Box>
@@ -168,8 +168,8 @@ export default function CharityEventsPage() {
                     Ukrainian Community
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    I support Ukrainian families and refugees in the UK by providing cakes for cultural events, 
-                    community gatherings, and special celebrations. This helps keep Ukrainian traditions alive 
+                    I support Ukrainian families and refugees in the UK by providing cakes for cultural events,
+                    community gatherings, and special celebrations. This helps keep Ukrainian traditions alive
                     and brings comfort to families far from home.
                   </Typography>
                 </Box>
@@ -181,8 +181,8 @@ export default function CharityEventsPage() {
                     Family Support
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Through partnerships with local organizations, I provide birthday cakes and celebration 
-                    cakes for families who might not otherwise be able to afford them. Every child deserves 
+                    Through partnerships with local organizations, I provide birthday cakes and celebration
+                    cakes for families who might not otherwise be able to afford them. Every child deserves
                     a beautiful cake on their special day.
                   </Typography>
                 </Box>
@@ -303,8 +303,8 @@ export default function CharityEventsPage() {
                     Volunteer at Our Events
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I always need volunteers to help with cake sales, event setup, and customer service. 
-                    Whether you have a few hours or a whole day to give, your help makes a real difference. 
+                    I always need volunteers to help with cake sales, event setup, and customer service.
+                    Whether you have a few hours or a whole day to give, your help makes a real difference.
                     Volunteers get to meet amazing people and learn about Ukrainian baking traditions.
                   </Typography>
                 </Box>
@@ -315,8 +315,8 @@ export default function CharityEventsPage() {
                     Donate Cakes or Ingredients
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    If you are a baker or have access to quality ingredients, consider donating cakes or 
-                    supplies for our charity events. Every contribution helps us reach more families and 
+                    If you are a baker or have access to quality ingredients, consider donating cakes or
+                    supplies for our charity events. Every contribution helps us reach more families and
                     raise more money for good causes.
                   </Typography>
                 </Box>
@@ -327,8 +327,8 @@ export default function CharityEventsPage() {
                     Spread the Word
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Follow me on social media and share information about upcoming charity events. 
-                    The more people who know about our work, the more families we can help. 
+                    Follow me on social media and share information about upcoming charity events.
+                    The more people who know about our work, the more families we can help.
                     Word of mouth is still the best way to reach people who need support.
                   </Typography>
                 </Box>
@@ -339,8 +339,8 @@ export default function CharityEventsPage() {
                     Attend Our Fundraisers
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Come to our charity events, buy cakes, and support good causes while enjoying 
-                    authentic Ukrainian flavors. Every purchase helps fund our charitable work and 
+                    Come to our charity events, buy cakes, and support good causes while enjoying
+                    authentic Ukrainian flavors. Every purchase helps fund our charitable work and
                     supports families in need in our community.
                   </Typography>
                 </Box>
@@ -380,9 +380,9 @@ export default function CharityEventsPage() {
                     Christmas 2023: 50 Families Helped
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Last Christmas, we raised over £2,000 through cake sales and donations, providing 
-                    special holiday cakes and treats to 50 families who were struggling financially. 
-                    The joy on children's faces when they received their surprise Christmas cakes 
+                    Last Christmas, we raised over £2,000 through cake sales and donations, providing
+                    special holiday cakes and treats to 50 families who were struggling financially.
+                    The joy on children's faces when they received their surprise Christmas cakes
                     made all the hard work worthwhile.
                   </Typography>
                 </Box>
@@ -393,9 +393,9 @@ export default function CharityEventsPage() {
                     Ukrainian Community Events
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    We regularly support Ukrainian cultural events in Leeds, providing traditional cakes 
-                    for Independence Day celebrations, cultural festivals, and community gatherings. 
-                    These events help keep Ukrainian traditions alive and bring comfort to families 
+                    We regularly support Ukrainian cultural events in Leeds, providing traditional cakes
+                    for Independence Day celebrations, cultural festivals, and community gatherings.
+                    These events help keep Ukrainian traditions alive and bring comfort to families
                     who are far from their homeland.
                   </Typography>
                 </Box>
@@ -406,8 +406,8 @@ export default function CharityEventsPage() {
                     Local School Partnership
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    We partner with local schools to provide birthday cakes for children whose families 
-                    cannot afford them. This ensures every child can celebrate their special day with 
+                    We partner with local schools to provide birthday cakes for children whose families
+                    cannot afford them. This ensures every child can celebrate their special day with
                     a beautiful cake, regardless of their family's financial situation.
                   </Typography>
                 </Box>
@@ -418,8 +418,8 @@ export default function CharityEventsPage() {
                     Emergency Response
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    When local families face emergencies or difficult times, we often provide free cakes 
-                    for special occasions. Whether it is a child's birthday during a family crisis or 
+                    When local families face emergencies or difficult times, we often provide free cakes
+                    for special occasions. Whether it is a child's birthday during a family crisis or
                     a celebration after overcoming challenges, we believe everyone deserves moments of joy.
                   </Typography>
                 </Box>
@@ -456,8 +456,8 @@ export default function CharityEventsPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "800px", mx: "auto", lineHeight: 1.7 }}
             >
-              If you are a charity, community organization, or know of a family in need, please contact me. 
-              I am always looking for new ways to help and support my community through my Ukrainian baking skills. 
+              If you are a charity, community organization, or know of a family in need, please contact me.
+              I am always looking for new ways to help and support my community through my Ukrainian baking skills.
               Together, we can make a real difference in people's lives.
             </Typography>
             <Grid container spacing={4}>

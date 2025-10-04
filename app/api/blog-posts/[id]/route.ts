@@ -15,7 +15,7 @@ export async function PUT(
   try {
     const formData = await request.formData()
     const { id } = params
-    
+
     const title = formData.get('title') as string
     const content = formData.get('content') as string
     const category = formData.get('category') as string
@@ -59,7 +59,7 @@ export async function PUT(
           filename: cardImage.name,
           contentType: cardImage.type,
         })
-        
+
         cardImageAsset = {
           _type: 'image',
           asset: {

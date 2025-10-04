@@ -17,7 +17,7 @@ export default function TestEmailsPage() {
   const testEmail = async () => {
     setLoading(true);
     setError('');
-    
+
     try {
       const response = await fetch('/api/test-email', {
         method: 'POST',
@@ -28,7 +28,7 @@ export default function TestEmailsPage() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setEmailHtml(data.email.html);
       } else {
@@ -47,12 +47,12 @@ export default function TestEmailsPage() {
         <Typography variant="h4" gutterBottom>
           Email Testing Tool
         </Typography>
-      
+
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Test Email Parameters
         </Typography>
-        
+
         <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>Delivery Method</InputLabel>
@@ -68,7 +68,7 @@ export default function TestEmailsPage() {
               <MenuItem value="market-pickup">Market Pickup</MenuItem>
             </Select>
           </FormControl>
-          
+
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>Status</InputLabel>
             <Select
@@ -86,7 +86,7 @@ export default function TestEmailsPage() {
             </Select>
           </FormControl>
         </Box>
-        
+
         <TextField
           label="Tracking Number (optional)"
           value={emailData.trackingNumber}
@@ -95,9 +95,9 @@ export default function TestEmailsPage() {
           sx={{ mb: 2 }}
           placeholder="e.g., AB123456789GB"
         />
-        
-        <Button 
-          variant="contained" 
+
+        <Button
+          variant="contained"
           onClick={testEmail}
           disabled={loading}
           sx={{ backgroundColor: '#2E3192' }}
@@ -117,10 +117,10 @@ export default function TestEmailsPage() {
           <Typography variant="h6" gutterBottom>
             Email Preview
           </Typography>
-          <Box 
-            sx={{ 
-              border: '1px solid #e0e0e0', 
-              borderRadius: 1, 
+          <Box
+            sx={{
+              border: '1px solid #e0e0e0',
+              borderRadius: 1,
               overflow: 'auto',
               maxHeight: '80vh'
             }}

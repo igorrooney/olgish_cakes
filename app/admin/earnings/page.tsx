@@ -21,7 +21,7 @@ export default function AdminEarningsPage() {
             Track your monthly earnings, order statistics, and financial performance
           </p>
         </div>
-        
+
         <EarningsDashboard />
       </div>
     </AdminAuthGuard>

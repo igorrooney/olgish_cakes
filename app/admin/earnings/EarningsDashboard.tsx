@@ -61,7 +61,7 @@ export function EarningsDashboard() {
     lastMonthOrdersCount: 0,
     historicalMonthlyData: [],
   });
-  
+
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [loading, setLoading] = useState(true);
@@ -76,7 +76,7 @@ export function EarningsDashboard() {
       setLoading(true);
       const response = await fetch('/api/admin/earnings');
       const data = await response.json();
-      
+
       if (response.ok) {
         setEarnings(data);
         setMonthlyData(data.historicalMonthlyData || []);
@@ -91,7 +91,6 @@ export function EarningsDashboard() {
     }
   };
 
-
   const getSelectedMonthData = () => {
     if (selectedMonth === "all") {
       return {
@@ -104,8 +103,8 @@ export function EarningsDashboard() {
       return {
         earnings: earnings.currentMonth,
         ordersCount: earnings.currentMonthOrdersCount,
-        averageOrderValue: earnings.currentMonthOrdersCount > 0 
-          ? earnings.currentMonth / earnings.currentMonthOrdersCount 
+        averageOrderValue: earnings.currentMonthOrdersCount > 0
+          ? earnings.currentMonth / earnings.currentMonthOrdersCount
           : 0,
         monthName: "Current Month"
       };
@@ -113,8 +112,8 @@ export function EarningsDashboard() {
       return {
         earnings: earnings.lastMonth,
         ordersCount: earnings.lastMonthOrdersCount,
-        averageOrderValue: earnings.lastMonthOrdersCount > 0 
-          ? earnings.lastMonth / earnings.lastMonthOrdersCount 
+        averageOrderValue: earnings.lastMonthOrdersCount > 0
+          ? earnings.lastMonth / earnings.lastMonthOrdersCount
           : 0,
         monthName: "Last Month"
       };
@@ -122,19 +121,19 @@ export function EarningsDashboard() {
       // Handle specific month selection (format: YYYY-MM)
       const [year, month] = selectedMonth.split('-');
       const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-      
+
       // Check if it's current month
       if (selectedMonth === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`) {
         return {
           earnings: earnings.currentMonth,
           ordersCount: earnings.currentMonthOrdersCount,
-          averageOrderValue: earnings.currentMonthOrdersCount > 0 
-            ? earnings.currentMonth / earnings.currentMonthOrdersCount 
+          averageOrderValue: earnings.currentMonthOrdersCount > 0
+            ? earnings.currentMonth / earnings.currentMonthOrdersCount
             : 0,
           monthName
         };
       }
-      
+
       // Check if it's last month
       const lastMonth = new Date();
       lastMonth.setMonth(lastMonth.getMonth() - 1);
@@ -143,13 +142,13 @@ export function EarningsDashboard() {
         return {
           earnings: earnings.lastMonth,
           ordersCount: earnings.lastMonthOrdersCount,
-          averageOrderValue: earnings.lastMonthOrdersCount > 0 
-            ? earnings.lastMonth / earnings.lastMonthOrdersCount 
+          averageOrderValue: earnings.lastMonthOrdersCount > 0
+            ? earnings.lastMonth / earnings.lastMonthOrdersCount
             : 0,
           monthName
         };
       }
-      
+
       // Check historical data
       const monthData = monthlyData.find(m => `${m.year}-${m.month}` === selectedMonth);
       return monthData ? {
@@ -184,7 +183,7 @@ export function EarningsDashboard() {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    
+
     // Add current year months
     for (let i = currentMonth; i >= 0; i--) {
       const date = new Date(currentYear, i);
@@ -192,7 +191,7 @@ export function EarningsDashboard() {
       const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
       options.push({ value, label });
     }
-    
+
     // Add previous year months if we're not in January
     if (currentMonth < 11) {
       for (let i = 11; i >= currentMonth + 1; i--) {
@@ -268,7 +267,7 @@ export function EarningsDashboard() {
             {selectedData.monthName} Performance
           </Typography>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -281,7 +280,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -294,7 +293,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -307,7 +306,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -320,8 +319,8 @@ export function EarningsDashboard() {
                 ) : (
                   <TrendingDownIcon color="error" sx={{ mr: 1 }} />
                 )}
-                <Typography 
-                  variant="h4" 
+                <Typography
+                  variant="h4"
                   color={growthPercentage >= 0 ? "success.main" : "error.main"}
                 >
                   {Math.abs(growthPercentage).toFixed(1)}%
@@ -339,7 +338,7 @@ export function EarningsDashboard() {
             Overall Statistics
           </Typography>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -352,7 +351,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -365,7 +364,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -378,7 +377,7 @@ export function EarningsDashboard() {
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
@@ -417,10 +416,10 @@ export function EarningsDashboard() {
                       <Typography variant="body2">
                         Current Month
                       </Typography>
-                      <Chip 
-                        label="Current" 
-                        size="small" 
-                        color="success" 
+                      <Chip
+                        label="Current"
+                        size="small"
+                        color="success"
                         sx={{ ml: 1 }}
                       />
                     </Box>
@@ -428,8 +427,8 @@ export function EarningsDashboard() {
                   <TableCell align="right">{earnings.currentMonthOrdersCount}</TableCell>
                   <TableCell align="right">{formatCurrency(earnings.currentMonth)}</TableCell>
                   <TableCell align="right">
-                    {formatCurrency(earnings.currentMonthOrdersCount > 0 
-                      ? earnings.currentMonth / earnings.currentMonthOrdersCount 
+                    {formatCurrency(earnings.currentMonthOrdersCount > 0
+                      ? earnings.currentMonth / earnings.currentMonthOrdersCount
                       : 0)}
                   </TableCell>
                 </TableRow>
@@ -441,10 +440,10 @@ export function EarningsDashboard() {
                       <Typography variant="body2">
                         Last Month
                       </Typography>
-                      <Chip 
-                        label="Previous" 
-                        size="small" 
-                        color="info" 
+                      <Chip
+                        label="Previous"
+                        size="small"
+                        color="info"
                         sx={{ ml: 1 }}
                       />
                     </Box>
@@ -452,15 +451,15 @@ export function EarningsDashboard() {
                   <TableCell align="right">{earnings.lastMonthOrdersCount}</TableCell>
                   <TableCell align="right">{formatCurrency(earnings.lastMonth)}</TableCell>
                   <TableCell align="right">
-                    {formatCurrency(earnings.lastMonthOrdersCount > 0 
-                      ? earnings.lastMonth / earnings.lastMonthOrdersCount 
+                    {formatCurrency(earnings.lastMonthOrdersCount > 0
+                      ? earnings.lastMonth / earnings.lastMonthOrdersCount
                       : 0)}
                   </TableCell>
                 </TableRow>
 
                 {/* Historical Months */}
                 {monthlyData.map((month) => (
-                  <TableRow 
+                  <TableRow
                     key={`${month.year}-${month.month}`}
                     selected={selectedMonth === `${month.year}-${month.month}`}
                   >
@@ -498,7 +497,7 @@ export function EarningsDashboard() {
                   ['Last Month', earnings.lastMonthOrdersCount, earnings.lastMonth, earnings.lastMonthOrdersCount > 0 ? earnings.lastMonth / earnings.lastMonthOrdersCount : 0],
                   ...monthlyData.map(month => [month.month + ' ' + month.year, month.ordersCount, month.earnings, month.averageOrderValue])
                 ];
-                
+
                 const csvContent = csvData.map(row => row.join(',')).join('\n');
                 const blob = new Blob([csvContent], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);

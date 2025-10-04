@@ -19,21 +19,10 @@ export async function POST(request: NextRequest) {
   // TODO: Re-enable authentication once login flow is working
   try {
     const orderData = await request.json();
-    console.log("Orders API received data:", orderData);
-    
-    // Debug logging
-    console.log("Orders API received data:", {
-      name: orderData.name,
-      message: orderData.message,
-      note: orderData.note,
-      deliveryNotes: orderData.deliveryNotes,
-      giftNote: orderData.giftNote,
-      attachments: orderData.attachments
-    });
-    
+
     // Generate unique order number
     const orderNumber = generateOrderNumber();
-    
+
     // Prepare order document for Sanity
     const orderDoc = {
       _type: 'order',
@@ -82,7 +71,7 @@ export async function POST(request: NextRequest) {
             message: orderData.message,
             attachments: orderData.attachments || [],
           };
-          console.log('Creating message with attachments:', messageWithAttachments);
+
           messages.push(messageWithAttachments);
         }
         if (orderData.deliveryNotes || orderData.note) {
@@ -98,15 +87,15 @@ export async function POST(request: NextRequest) {
             attachments: [],
           });
         }
-        console.log('Final messages array:', messages);
+
         return messages;
       })(),
       metadata: {
         source: 'website',
         referrer: orderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
-        ipAddress: request.headers.get('x-forwarded-for') || 
-                   request.headers.get('x-real-ip') || 
+        ipAddress: request.headers.get('x-forwarded-for') ||
+                   request.headers.get('x-real-ip') ||
                    'unknown',
       },
     };
@@ -117,14 +106,7 @@ export async function POST(request: NextRequest) {
     // Send confirmation email to customer
     try {
       // Debug logging
-      console.log("Order data for email:", {
-        name: orderData.name,
-        message: orderData.message,
-        note: orderData.note,
-        deliveryNotes: orderData.deliveryNotes,
-        giftNote: orderData.giftNote
-      });
-      
+
       await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: orderData.email,
@@ -144,7 +126,7 @@ export async function POST(request: NextRequest) {
                 <td align="center" style="padding: 40px 20px;">
                   <!-- Main Container -->
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                    
+
                     <!-- Header -->
                     <tr>
                       <td style="background: linear-gradient(135deg, #2E3192 0%, #1a237e 100%); padding: 40px 30px; text-align: center;">
@@ -156,24 +138,24 @@ export async function POST(request: NextRequest) {
                         </p>
                       </td>
                     </tr>
-                    
+
                     <!-- Content -->
                     <tr>
                       <td style="padding: 40px 30px;">
                         <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
                           Dear <strong>${orderData.name}</strong>,
                         </p>
-                        
+
                         <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
                           Thank you for your order! We've received your request and will get back to you within 24 hours with confirmation and next steps. Our team is already preparing your delicious treats with love and care.
                         </p>
-                        
+
                         <!-- Order Summary Card -->
                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
                           <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">
                             Order Summary
                           </h2>
-                          
+
                           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                             <tr>
                               <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
@@ -195,13 +177,13 @@ export async function POST(request: NextRequest) {
                             </tr>
                           </table>
                         </div>
-                        
+
                         <!-- Product Details -->
                         <div style="margin-bottom: 32px;">
                           <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
                             Your Order
                           </h3>
-                          
+
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
                               return orderData.items.map((item: any) => `
@@ -228,13 +210,13 @@ export async function POST(request: NextRequest) {
                             }
                           })()}
                         </div>
-                        
+
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
                           const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
-                          
+
                           if (hasIndividualDesign && hasAttachments) {
                             return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
@@ -260,7 +242,7 @@ export async function POST(request: NextRequest) {
                           }
                           return '';
                         })()}
-                        
+
                         <!-- Delivery Information -->
                         ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
@@ -270,7 +252,7 @@ export async function POST(request: NextRequest) {
                             </p>
                           </div>
                         ` : ''}
-                        
+
                         <!-- Additional Notes -->
                         ${orderData.note || orderData.giftNote ? `
                           <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
@@ -279,7 +261,7 @@ export async function POST(request: NextRequest) {
                             ${orderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${orderData.giftNote}</p>` : ''}
                           </div>
                         ` : ''}
-                        
+
                         <!-- Next Steps -->
                         <div style="background: #eff6ff; border: 1px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
                           <h3 style="margin: 0 0 12px 0; color: #1e40af; font-size: 16px; font-weight: 600;">What happens next?</h3>
@@ -290,7 +272,7 @@ export async function POST(request: NextRequest) {
                             <li>Your order will be prepared fresh and delivered on time</li>
                           </ul>
                         </div>
-                        
+
                         <!-- Contact Information -->
                         <div style="text-align: center; padding: 24px 0; border-top: 1px solid #e5e7eb;">
                           <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px;">
@@ -306,7 +288,7 @@ export async function POST(request: NextRequest) {
                         </div>
                       </td>
                     </tr>
-                    
+
                     <!-- Footer -->
                     <tr>
                       <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
@@ -352,7 +334,7 @@ export async function POST(request: NextRequest) {
                 <td align="center" style="padding: 20px;">
                   <!-- Main Container -->
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                    
+
                     <!-- Header -->
                     <tr>
                       <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 30px; text-align: center;">
@@ -364,7 +346,7 @@ export async function POST(request: NextRequest) {
                         </p>
                       </td>
                     </tr>
-                    
+
                     <!-- Content -->
                     <tr>
                       <td style="padding: 30px;">
@@ -418,13 +400,13 @@ export async function POST(request: NextRequest) {
                             </tr>
                           </table>
                         </div>
-                        
+
                         <!-- Product Details -->
                         <div style="margin-bottom: 24px;">
                           <h3 style="margin: 0 0 16px 0; color: #1f2937; font-size: 16px; font-weight: 600;">
                             Order Details
                           </h3>
-                          
+
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
                               return orderData.items.map((item: any) => `
@@ -455,13 +437,13 @@ export async function POST(request: NextRequest) {
                             }
                           })()}
                         </div>
-                        
+
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
                           const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
-                          
+
                           if (hasIndividualDesign && hasAttachments) {
                             return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
@@ -487,7 +469,7 @@ export async function POST(request: NextRequest) {
                           }
                           return '';
                         })()}
-                        
+
                         <!-- Delivery Information -->
                         ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
@@ -497,7 +479,7 @@ export async function POST(request: NextRequest) {
                             </p>
                           </div>
                         ` : ''}
-                        
+
                         <!-- Additional Notes -->
                         ${orderData.note ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
@@ -505,7 +487,7 @@ export async function POST(request: NextRequest) {
                             <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.note}</p>
                           </div>
                         ` : ''}
-                        
+
                         <!-- Gift Note -->
                         ${orderData.giftNote ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
@@ -513,21 +495,21 @@ export async function POST(request: NextRequest) {
                             <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.giftNote}</p>
                           </div>
                         ` : ''}
-                        
+
                         <!-- Action Buttons -->
                         <div style="text-align: center; padding: 20px 0; border-top: 1px solid #e5e7eb;">
-                          <a href="https://olgishcakes.co.uk/studio" 
+                          <a href="https://olgishcakes.co.uk/studio"
                              style="display: inline-block; background: #2E3192; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-right: 12px;">
                             View in Sanity Studio
                           </a>
-                          <a href="mailto:${orderData.email}?subject=Re: Order #${orderNumber}" 
+                          <a href="mailto:${orderData.email}?subject=Re: Order #${orderNumber}"
                              style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
                             Reply to Customer
                           </a>
                         </div>
                       </td>
                     </tr>
-                    
+
                     <!-- Footer -->
                     <tr>
                       <td style="background: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
@@ -573,7 +555,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let query = `*[_type == "order"] | order(_createdAt desc)`;
-    
+
     if (status) {
       query = `*[_type == "order" && status == "${status}"] | order(_createdAt desc)`;
     }
@@ -617,7 +599,7 @@ export async function GET(request: NextRequest) {
     }`);
 
     const totalCount = await serverClient.fetch(
-      status 
+      status
         ? `count(*[_type == "order" && status == "${status}"])`
         : `count(*[_type == "order"])`
     );

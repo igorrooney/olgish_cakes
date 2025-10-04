@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       // Create JWT token
       const secret = new TextEncoder().encode(JWT_SECRET);
-      const token = await new SignJWT({ 
-        username, 
+      const token = await new SignJWT({
+        username,
         role: 'admin',
         iat: Math.floor(Date.now() / 1000)
       })

@@ -196,9 +196,9 @@ export default function CakeSizeGuidePage() {
             variant="body1"
             sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
           >
-            Choosing the right cake size is one of the most important decisions when planning your celebration. 
-            You want to make sure everyone gets a delicious piece, but you also do not want to waste money on 
-            cake that goes uneaten. This comprehensive guide will help you understand portion sizes, serving 
+            Choosing the right cake size is one of the most important decisions when planning your celebration.
+            You want to make sure everyone gets a delicious piece, but you also do not want to waste money on
+            cake that goes uneaten. This comprehensive guide will help you understand portion sizes, serving
             recommendations, and special considerations for different types of celebrations.
           </Typography>
         </Paper>
@@ -232,8 +232,8 @@ export default function CakeSizeGuidePage() {
             variant="body1"
             sx={{ mb: 4, textAlign: "center", maxWidth: "800px", mx: "auto", lineHeight: 1.7 }}
           >
-            When I talk about serving sizes, I mean generous portions that will satisfy your guests. 
-            Ukrainian cakes are rich and flavorful, so people often eat smaller portions than with regular cakes. 
+            When I talk about serving sizes, I mean generous portions that will satisfy your guests.
+            Ukrainian cakes are rich and flavorful, so people often eat smaller portions than with regular cakes.
             Here is what you need to know about portion planning:
           </Typography>
           <Grid container spacing={4}>
@@ -243,8 +243,8 @@ export default function CakeSizeGuidePage() {
                   Standard Portion Size
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                  A standard portion is about 2 inches by 2 inches (5cm x 5cm) - roughly the size of a small slice 
-                  of bread. This is perfect for most celebrations where people want to enjoy the cake without feeling too full. 
+                  A standard portion is about 2 inches by 2 inches (5cm x 5cm) - roughly the size of a small slice
+                  of bread. This is perfect for most celebrations where people want to enjoy the cake without feeling too full.
                   It allows everyone to try the cake and leaves room for other food.
                 </Typography>
               </Box>
@@ -255,8 +255,8 @@ export default function CakeSizeGuidePage() {
                   Generous Portion Size
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                  A generous portion is about 2.5 inches by 2.5 inches (6cm x 6cm) - perfect for cake-focused events 
-                  or when the cake is the main dessert. This size is ideal for birthdays, anniversaries, and special 
+                  A generous portion is about 2.5 inches by 2.5 inches (6cm x 6cm) - perfect for cake-focused events
+                  or when the cake is the main dessert. This size is ideal for birthdays, anniversaries, and special
                   occasions where people really want to enjoy the Ukrainian flavors.
                 </Typography>
               </Box>
@@ -296,8 +296,8 @@ export default function CakeSizeGuidePage() {
                   Medovik (Honey Cake) Portions
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                  Honey cake is rich and sweet, so people often eat smaller portions. The honey flavor is very 
-                  satisfying, and guests usually want just enough to enjoy the authentic taste. Plan for slightly 
+                  Honey cake is rich and sweet, so people often eat smaller portions. The honey flavor is very
+                  satisfying, and guests usually want just enough to enjoy the authentic taste. Plan for slightly
                   smaller portions than you might for other cakes.
                 </Typography>
               </Box>
@@ -308,8 +308,8 @@ export default function CakeSizeGuidePage() {
                   Kyiv Cake Portions
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                  Kyiv cake has a unique texture with crispy meringue and rich filling. People often want to 
-                  try a good-sized portion to really experience the different textures and flavors. Plan for 
+                  Kyiv cake has a unique texture with crispy meringue and rich filling. People often want to
+                  try a good-sized portion to really experience the different textures and flavors. Plan for
                   standard to generous portions for this popular cake.
                 </Typography>
               </Box>

@@ -82,7 +82,7 @@ export default function AdminLogin() {
               required
               autoComplete="username"
             />
-            
+
             <TextField
               fullWidth
               label="Password"
@@ -93,7 +93,7 @@ export default function AdminLogin() {
               required
               autoComplete="current-password"
             />
-            
+
             <Button
               type="submit"
               fullWidth

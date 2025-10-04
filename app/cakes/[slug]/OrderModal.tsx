@@ -88,7 +88,7 @@ ${formData.message}
       if (formData.designImage) {
         data.append("designImage", formData.designImage);
       }
-      
+
       // Add order-specific fields for order creation
       data.append("isOrderForm", "true");
       data.append("orderType", "browse-catalog");

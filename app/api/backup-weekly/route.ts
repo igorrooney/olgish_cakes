@@ -4,16 +4,13 @@ import { execSync } from 'child_process';
 export async function GET(request: NextRequest) {
   try {
     console.log('🔄 Starting weekly backup (full with images)...');
-    
+
     // Run the weekly backup
     const result = execSync('npm run backup:weekly', {
       cwd: process.cwd(),
       encoding: 'utf8',
       stdio: 'pipe'
     });
-
-    console.log('✅ Weekly backup completed successfully');
-    console.log(result);
 
     return NextResponse.json({
       success: true,
@@ -25,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Weekly backup failed:', error);
-    
+
     return NextResponse.json({
       success: false,
       type: 'weekly',
