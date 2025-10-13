@@ -158,6 +158,9 @@ export function OrderManagementDashboard() {
   const [addOrderModalOpen, setAddOrderModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -407,6 +410,49 @@ export function OrderManagementDashboard() {
     setViewDialogOpen(true);
   };
 
+
+  const handleDeleteOrderPermanently = async () => {
+    if (!selectedOrder || !deletePassword) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/orders/${selectedOrder._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          password: deletePassword,
+          permanent: true
+        }),
+      });
+
+      if (response.ok) {
+        showNotification('Order permanently deleted from Sanity', 'success');
+        setDeleteConfirmOpen(false);
+        setEditDialogOpen(false);
+        setDeletePassword("");
+        // Refresh both orders and earnings data
+        await Promise.all([
+          fetchOrders(),
+          fetchMonthlyEarnings()
+        ]);
+      } else {
+        const errorData = await response.json();
+        if (errorData.error === 'Invalid password') {
+          showNotification('Incorrect password. Order not deleted.', 'error');
+        } else {
+          showNotification(errorData.error || 'Failed to delete order', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      showNotification('Failed to delete order', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
@@ -1377,6 +1423,23 @@ export function OrderManagementDashboard() {
         <DialogActions>
           <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
           <Button
+            onClick={() => setDeleteConfirmOpen(true)}
+            variant="outlined"
+            color="error"
+            size="small"
+            sx={{
+              mr: 'auto',
+              color: 'error.main',
+              borderColor: 'error.main',
+              '&:hover': {
+                backgroundColor: 'error.main',
+                color: 'white'
+              }
+            }}
+          >
+            Delete Order
+          </Button>
+          <Button
             onClick={handleSaveOrder}
             variant="contained"
             disabled={isSaving}
@@ -1387,6 +1450,45 @@ export function OrderManagementDashboard() {
         </DialogActions>
       </Dialog>
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>⚠️ Delete Order Permanently</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Sanity.
+            This cannot be undone.
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Customer: {selectedOrder?.customer.name} ({selectedOrder?.customer.email})
+          </Typography>
+          <TextField
+            fullWidth
+            label="Admin Password"
+            type="password"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+            placeholder="Enter admin password to confirm deletion"
+            variant="outlined"
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setDeleteConfirmOpen(false);
+            setDeletePassword("");
+          }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteOrderPermanently}
+            variant="contained"
+            color="error"
+            disabled={!deletePassword || isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Permanently'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* View Order Dialog */}
       <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="lg" fullWidth>
