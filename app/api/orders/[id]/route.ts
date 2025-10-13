@@ -91,6 +91,14 @@ export async function PATCH(
       updates.customerAddress = formData.get('customerAddress') as string;
       updates.customerCity = formData.get('customerCity') as string;
       updates.customerPostcode = formData.get('customerPostcode') as string;
+      // Extract pricing information
+      updates.itemPrice = formData.get('itemPrice') as string;
+      updates.totalPrice = formData.get('totalPrice') as string;
+      // Extract item selection information
+      updates.selectedCakeId = formData.get('selectedCakeId') as string;
+      updates.selectedCakeName = formData.get('selectedCakeName') as string;
+      updates.selectedCakeSize = formData.get('selectedCakeSize') as string;
+      updates.selectedDesignType = formData.get('selectedDesignType') as string;
 
       // Extract images
       const imageFiles = formData.getAll('images') as File[];
@@ -180,6 +188,45 @@ export async function PATCH(
     }
     if (updates.total !== undefined) {
       updateDoc['pricing.total'] = updates.total;
+    }
+
+    // Handle item price updates
+    if (updates.itemPrice !== undefined) {
+      const newItemPrice = parseFloat(updates.itemPrice);
+      if (!isNaN(newItemPrice) && currentOrder.items && currentOrder.items.length > 0) {
+        const updatedItems = currentOrder.items.map((item: any, index: number) => 
+          index === 0 ? { ...item, totalPrice: newItemPrice, unitPrice: newItemPrice } : item
+        );
+        updateDoc.items = updatedItems;
+      }
+    }
+
+    // Handle total price update (manual override)
+    if (updates.totalPrice !== undefined) {
+      const newTotal = parseFloat(updates.totalPrice);
+      if (!isNaN(newTotal)) {
+        updateDoc['pricing.total'] = newTotal;
+      }
+    }
+
+    // Handle item selection updates
+    if (updates.selectedCakeId !== undefined || updates.selectedCakeName !== undefined || 
+        updates.selectedCakeSize !== undefined || updates.selectedDesignType !== undefined) {
+      
+      const newItem = {
+        productType: 'cake',
+        productId: updates.selectedCakeId || currentOrder.items[0]?.productId || '',
+        productName: updates.selectedCakeName || currentOrder.items[0]?.productName || 'Custom Order',
+        designType: updates.selectedDesignType || currentOrder.items[0]?.designType || 'standard',
+        quantity: currentOrder.items[0]?.quantity || 1,
+        unitPrice: parseFloat(updates.itemPrice) || currentOrder.items[0]?.unitPrice || 0,
+        totalPrice: parseFloat(updates.itemPrice) || currentOrder.items[0]?.totalPrice || 0,
+        size: updates.selectedCakeSize || currentOrder.items[0]?.size || '',
+        flavor: currentOrder.items[0]?.flavor || '',
+        specialInstructions: currentOrder.items[0]?.specialInstructions || '',
+      };
+
+      updateDoc.items = [newItem];
     }
 
     // Handle internal notes

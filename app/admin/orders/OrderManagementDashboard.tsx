@@ -189,6 +189,14 @@ export function OrderManagementDashboard() {
     totalOrders: 0,
     averageOrderValue: 0,
   });
+  const [availableCakes, setAvailableCakes] = useState<Array<{
+    _id: string;
+    name: string;
+    slug: { current: string };
+    size: string;
+    pricing: { standard: number; individual: number };
+    category: string;
+  }>>([]);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -206,11 +214,20 @@ export function OrderManagementDashboard() {
     customerAddress: '',
     customerCity: '',
     customerPostcode: '',
+    // Pricing fields
+    itemPrice: 0,
+    totalPrice: 0,
+    // Item selection fields
+    selectedCakeId: '',
+    selectedCakeName: '',
+    selectedCakeSize: '',
+    selectedDesignType: 'standard',
   });
 
   useEffect(() => {
     fetchOrders();
     fetchMonthlyEarnings();
+    fetchCakes();
   }, []); // Only fetch on component mount
 
   // Reset to first page when filters change
@@ -297,12 +314,69 @@ export function OrderManagementDashboard() {
     }
   };
 
+  const fetchCakes = async () => {
+    try {
+      const response = await fetch('/api/admin/cakes', {
+        credentials: 'include',
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setAvailableCakes(data.cakes || []);
+      } else {
+        console.error('Failed to fetch cakes:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching cakes:', error);
+    }
+  };
+
   const showNotification = (message: string, severity: 'success' | 'error' | 'info') => {
     setNotification({ open: true, message, severity });
   };
 
+  const handleCakeSelection = (cakeId: string) => {
+    const selectedCake = availableCakes.find(cake => cake._id === cakeId);
+    if (selectedCake) {
+      const newPrice = editForm.selectedDesignType === 'individual' 
+        ? selectedCake.pricing.individual 
+        : selectedCake.pricing.standard;
+      
+      setEditForm({
+        ...editForm,
+        selectedCakeId: cakeId,
+        selectedCakeName: selectedCake.name,
+        selectedCakeSize: selectedCake.size,
+        itemPrice: newPrice,
+        totalPrice: newPrice, // Auto-update total when cake changes
+      });
+    }
+  };
+
+  const handleDesignTypeChange = (designType: string) => {
+    const selectedCake = availableCakes.find(cake => cake._id === editForm.selectedCakeId);
+    if (selectedCake) {
+      const newPrice = designType === 'individual' 
+        ? selectedCake.pricing.individual 
+        : selectedCake.pricing.standard;
+      
+      setEditForm({
+        ...editForm,
+        selectedDesignType: designType,
+        itemPrice: newPrice,
+        totalPrice: newPrice, // Auto-update total when design type changes
+      });
+    } else {
+      setEditForm({
+        ...editForm,
+        selectedDesignType: designType,
+      });
+    }
+  };
+
   const handleEditOrder = (order: Order) => {
     setSelectedOrder(order);
+    const firstItem = order.items[0];
     setEditForm({
       status: order.status,
       trackingNumber: order.delivery.trackingNumber || '',
@@ -318,6 +392,14 @@ export function OrderManagementDashboard() {
       customerAddress: order.customer.address || '',
       customerCity: order.customer.city || '',
       customerPostcode: order.customer.postcode || '',
+      // Populate pricing information
+      itemPrice: firstItem?.totalPrice || 0,
+      totalPrice: order.pricing.total,
+      // Populate item selection information
+      selectedCakeId: firstItem?.productId || '',
+      selectedCakeName: firstItem?.productName || 'Custom Order',
+      selectedCakeSize: firstItem?.size || '',
+      selectedDesignType: firstItem?.designType || 'standard',
     });
     setEditDialogOpen(true);
   };
@@ -378,6 +460,14 @@ export function OrderManagementDashboard() {
       formData.append('customerAddress', editForm.customerAddress);
       formData.append('customerCity', editForm.customerCity);
       formData.append('customerPostcode', editForm.customerPostcode);
+      // Add pricing information
+      formData.append('itemPrice', editForm.itemPrice.toString());
+      formData.append('totalPrice', editForm.totalPrice.toString());
+      // Add item selection information
+      formData.append('selectedCakeId', editForm.selectedCakeId);
+      formData.append('selectedCakeName', editForm.selectedCakeName);
+      formData.append('selectedCakeSize', editForm.selectedCakeSize);
+      formData.append('selectedDesignType', editForm.selectedDesignType);
 
       // Add images to FormData
       editForm.images.forEach((image, index) => {
@@ -1141,6 +1231,102 @@ export function OrderManagementDashboard() {
               />
             </Grid>
 
+            {/* Item Selection Section */}
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }}>
+                <Typography variant="h6" color="primary">
+                  Item Selection
+                </Typography>
+              </Divider>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Select Cake</InputLabel>
+                <Select
+                  value={editForm.selectedCakeId}
+                  onChange={(e) => handleCakeSelection(e.target.value)}
+                  label="Select Cake"
+                >
+                  <MenuItem value="">
+                    <em>Custom Order</em>
+                  </MenuItem>
+                  {availableCakes.map((cake) => (
+                    <MenuItem key={cake._id} value={cake._id}>
+                      {cake.name} ({cake.size} inch) - £{cake.pricing.standard}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Design Type</InputLabel>
+                <Select
+                  value={editForm.selectedDesignType}
+                  onChange={(e) => handleDesignTypeChange(e.target.value)}
+                  label="Design Type"
+                >
+                  <MenuItem value="standard">Standard Design</MenuItem>
+                  <MenuItem value="individual">Individual Design</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {editForm.selectedCakeId && (
+              <Grid item xs={12}>
+                <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'grey.200' }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Selected Cake Details:
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Name:</strong> {editForm.selectedCakeName}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Size:</strong> {editForm.selectedCakeSize} inch
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Design Type:</strong> {editForm.selectedDesignType === 'individual' ? 'Individual Design' : 'Standard Design'}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Price:</strong> £{editForm.itemPrice}
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+
+            {/* Pricing Section */}
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }}>
+                <Typography variant="h6" color="primary">
+                  Pricing
+                </Typography>
+              </Divider>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Item Price (£)"
+                type="number"
+                value={editForm.itemPrice}
+                onChange={(e) => setEditForm({ ...editForm, itemPrice: parseFloat(e.target.value) || 0 })}
+                inputProps={{ min: 0, step: 0.01 }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Total Order Price (£)"
+                type="number"
+                value={editForm.totalPrice}
+                onChange={(e) => setEditForm({ ...editForm, totalPrice: parseFloat(e.target.value) || 0 })}
+                inputProps={{ min: 0, step: 0.01 }}
+              />
+            </Grid>
+
             {/* Customer Information Section */}
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }}>
@@ -1489,6 +1675,81 @@ export function OrderManagementDashboard() {
                     <Box sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
                       <Typography>{selectedOrder.delivery.giftNote}</Typography>
                     </Box>
+                  </>
+                )}
+
+                {/* Customer Messages Section */}
+                {selectedOrder.messages && selectedOrder.messages.length > 0 && (
+                  <>
+                    <Typography variant="h6" gutterBottom>Customer Messages</Typography>
+                    {selectedOrder.messages.map((message, index) => (
+                      <Box key={index} sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'grey.200' }}>
+                        <Typography variant="body2" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
+                          {message.message}
+                        </Typography>
+                        
+                        {/* Display message attachments if they exist */}
+                        {message.attachments && message.attachments.length > 0 && (
+                          <Box sx={{ mt: 1 }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              Attached Images:
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                              {message.attachments
+                                .filter(attachment => attachment && attachment.asset)
+                                .map((attachment, imgIndex) => {
+                                  const imageUrl = getImageUrl(attachment.asset);
+                                  
+                                  return (
+                                    <Box
+                                      key={imgIndex}
+                                      sx={{
+                                        position: 'relative',
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                          opacity: 0.8,
+                                        },
+                                      }}
+                                      onClick={() => handleImageClick(attachment.asset)}
+                                    >
+                                      <CardMedia
+                                        component="img"
+                                        sx={{
+                                          width: 100,
+                                          height: 100,
+                                          objectFit: 'cover',
+                                          borderRadius: 1,
+                                          border: `2px solid ${designTokens.colors.border.light}`,
+                                        }}
+                                        image={imageUrl}
+                                        alt={attachment.alt || 'Message attachment'}
+                                        onError={(e) => {
+                                          console.error('Failed to load message image:', e);
+                                        }}
+                                      />
+                                      <IconButton
+                                        size="small"
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 4,
+                                          right: 4,
+                                          bgcolor: 'rgba(0,0,0,0.5)',
+                                          color: 'white',
+                                          '&:hover': {
+                                            bgcolor: 'rgba(0,0,0,0.7)',
+                                          },
+                                        }}
+                                      >
+                                        <ZoomIcon fontSize="small" />
+                                      </IconButton>
+                                    </Box>
+                                  );
+                                })}
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                    ))}
                   </>
                 )}
 

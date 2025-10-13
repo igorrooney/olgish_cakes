@@ -767,9 +767,9 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                                     color: "inherit",
                                     fontWeight: 500,
                                   }}
-                                  aria-label="Call us at +44 113 123 4567"
+                                  aria-label={`Call us at ${CLIENT_BUSINESS_INFO.displayPhone}`}
                                 >
-                                  +44 113 123 4567
+                                  {CLIENT_BUSINESS_INFO.displayPhone}
                                 </Link>
                               }
                               primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}
