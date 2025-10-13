@@ -16,6 +16,7 @@ import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
 import Script from "next/script";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -37,7 +38,7 @@ export const viewport: Viewport = {
   themeColor: primary,
   maximumScale: 5,
   userScalable: true,
-  viewportFit: "cover",
+  viewportFit: "cover"
 };
 
 export const metadata: Metadata = {
@@ -157,7 +158,7 @@ export const metadata: Metadata = {
     "business:contact_data:locality": "Leeds",
     "business:contact_data:postal_code": "LS17",
     "business:contact_data:country_name": "United Kingdom",
-    "business:contact_data:phone_number": "+44 786 721 8194",
+    "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
     "business:contact_data:email": "hello@olgishcakes.co.uk",
   },
   alternates: {
@@ -180,25 +181,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               body { margin: 0; font-family: var(--font-playfair-display), Georgia, serif; }
               .critical-loading { opacity: 0; transition: opacity 0.3s; }
               .critical-loaded { opacity: 1; }
-              
+
               /* Critical layout styles */
               .flex { display: flex; }
               .flex-col { flex-direction: column; }
               .min-h-screen { min-height: 100vh; }
               .flex-grow { flex-grow: 1; }
-              
+
               /* Critical typography */
               h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-bottom: 0.5em; font-weight: 600; }
               h1 { font-size: clamp(2rem, 5vw, 4rem); }
               h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
-              
+
               /* Critical button styles */
               .btn-primary { background: ${primary}; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
               .btn-primary:hover { background: ${primaryDark}; transform: translateY(-1px); }
-              
+
               /* Critical container styles */
               .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-              
+
               /* Critical focus states */
               a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid ${primary}; outline-offset: 2px; }
             `,
@@ -215,7 +216,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Preconnect for critical domains */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-        
+
         {/* Font preloading for better performance */}
         <link
           rel="preload"
@@ -283,7 +284,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 height: 630,
               },
               image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-              telephone: "+44 786 721 8194",
+              telephone: BUSINESS_CONSTANTS.PHONE,
               email: "hello@olgishcakes.co.uk",
               address: {
                 "@type": "PostalAddress",
@@ -487,7 +488,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             document.body.classList.add('critical-loaded');
           `}
         </Script>
-        
+
         {/* Service Worker Registration */}
         <Script id="sw-register" strategy="afterInteractive">
           {`
@@ -495,10 +496,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                   .then((registration) => {
-                    console.log('SW registered: ', registration);
+                    // Service worker registered successfully
                   })
                   .catch((registrationError) => {
-                    console.log('SW registration failed: ', registrationError);
+                    // Service worker registration failed
                   });
               });
             }

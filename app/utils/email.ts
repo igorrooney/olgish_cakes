@@ -12,9 +12,10 @@ interface SendEmailProps {
   subject: string;
   text: string;
   attachments?: EmailAttachment[];
+  bcc?: string;
 }
 
-export async function sendEmail({ to, subject, text, attachments }: SendEmailProps) {
+export async function sendEmail({ to, subject, text, attachments, bcc }: SendEmailProps) {
   try {
     const attachmentPromises =
       attachments?.map(async attachment => {
@@ -28,8 +29,9 @@ export async function sendEmail({ to, subject, text, attachments }: SendEmailPro
     const resolvedAttachments = await Promise.all(attachmentPromises);
 
     const response = await resend.emails.send({
-      from: process.env.NEXT_PUBLIC_EMAIL_FROM || "hello@olgishcakes.co.uk",
+      from: process.env.NEXT_PUBLIC_EMAIL_FROM || "Olgish Cakes <hello@olgishcakes.co.uk>",
       to,
+      bcc: bcc || "igorrooney@gmail.com",
       subject,
       text,
       attachments: resolvedAttachments,

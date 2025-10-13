@@ -69,16 +69,17 @@ export function CategoryLinks({ currentCategory, categories }: CategoryLinksProp
       >
         Explore More Categories
       </Typography>
-      
+
       <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
         {relatedCategories.map((category) => {
           const mapping = categoryMappings[category.toLowerCase()];
           if (!mapping) return null;
-          
+
           return (
             <Link
               key={category}
               href={mapping.url}
+              aria-label={`Browse ${mapping.label} cakes`}
               style={{ textDecoration: 'none' }}
             >
               <Chip
@@ -105,7 +106,7 @@ export function CategoryLinks({ currentCategory, categories }: CategoryLinksProp
           );
         })}
       </Stack>
-      
+
       <Typography
         variant="body2"
         sx={{

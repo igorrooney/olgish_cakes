@@ -407,7 +407,7 @@ export default function UkrainianCakeGuidePage() {
               occasions.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/cakes" passHref>
+              <Link href="/cakes" passHref aria-label="Browse our complete cake collection">
                 <Typography
                   component="a"
                   sx={{
@@ -424,7 +424,7 @@ export default function UkrainianCakeGuidePage() {
                   See My Cakes
                 </Typography>
               </Link>
-              <Link href="/contact" passHref>
+              <Link href="/contact" passHref aria-label="Contact us for custom cake orders">
                 <Typography
                   component="a"
                   sx={{

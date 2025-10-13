@@ -15,17 +15,17 @@ export async function GET(request: NextRequest) {
     ]);
 
     let testProducts = [];
-    
+
     if (type === 'cakes' || type === 'all') {
       testProducts.push(...cakes.slice(0, type === 'cakes' ? limit : Math.ceil(limit / 2)));
     }
-    
+
     if (type === 'hampers' || type === 'all') {
       testProducts.push(...giftHampers.slice(0, type === 'hampers' ? limit : Math.ceil(limit / 2)));
     }
 
     const baseUrl = "https://olgishcakes.co.uk";
-    
+
     // Generate test XML feed with limited products
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     <description>Test feed for Google Merchant Center validation</description>
     <language>en-GB</language>
     <lastBuildDate>${new Date().toISOString()}</lastBuildDate>
-    
+
     ${testProducts.map(product => {
       if ('pricing' in product) {
         return generateCakeItem(product, baseUrl);
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         return generateHamperItem(product, baseUrl);
       }
     }).join('\n')}
-    
+
   </channel>
 </rss>`;
 
@@ -66,10 +66,10 @@ export async function GET(request: NextRequest) {
 // Helper functions (copied from main feed for test endpoint)
 function generateCakeItem(cake: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-  
+
   // Get the best available image
-  const mainImage = cake.mainImage?.asset?._ref 
-    ? cake.mainImage 
+  const mainImage = cake.mainImage?.asset?._ref
+    ? cake.mainImage
     : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
       cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
       cake.designs?.standard?.[0] ||
@@ -79,14 +79,14 @@ function generateCakeItem(cake: any, baseUrl: string): string {
       // Fallback to images array (for legacy data like Honey Cake)
       cake.images?.find((img: any) => img.asset?._ref) ||
       cake.images?.[0];
-  
-  const imageUrl = mainImage?.asset?._ref 
+
+  const imageUrl = mainImage?.asset?._ref
     ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || 25;
   const availability = cake.structuredData?.availability || 'in stock';
-  
+
   return `
     <item>
       <g:id>cake_${cake._id}</g:id>
@@ -105,19 +105,19 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-  
+
   // Get the best available image
-  const mainImage = hamper.mainImage?.asset?._ref 
-    ? hamper.mainImage 
+  const mainImage = hamper.mainImage?.asset?._ref
+    ? hamper.mainImage
     : hamper.images?.find((img: any) => img.asset?._ref) ||
       hamper.images?.[0];
-  
-  const imageUrl = mainImage?.asset?._ref 
+
+  const imageUrl = mainImage?.asset?._ref
     ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;
-  
+
   return `
     <item>
       <g:id>hamper_${hamper._id}</g:id>

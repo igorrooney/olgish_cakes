@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { serverClient } from "@/sanity/lib/client";
 
 if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND_API_KEY environment variable is not set");
@@ -246,7 +247,7 @@ Olgish Cakes
       <h1>🎂 New Custom Cake Quote Request</h1>
       <p style="margin: 10px 0 0 0; opacity: 0.9;">Professional quote inquiry from website</p>
     </div>
-    
+
     <div class="content">
       <div class="section">
         <div class="section-title">
@@ -302,7 +303,7 @@ Olgish Cakes
             <span class="info-value">${designStyle || "Not specified"}</span>
           </div>
         </div>
-        
+
         <div class="budget-highlight">
           <strong>💰 Budget Range:</strong> ${budget}
         </div>
@@ -370,11 +371,10 @@ Olgish Cakes
 </body>
 </html>`;
 
-    console.log("Sending quote request email to:", recipientEmail);
-
     const response = await resend.emails.send({
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
+      bcc: "igorrooney@gmail.com",
       replyTo: email,
       subject: `🎂 Quote Request: ${name} - ${occasion} ${cakeType}`,
       html: htmlContent,
@@ -394,7 +394,100 @@ Olgish Cakes
       throw new Error(response.error.message);
     }
 
-    console.log("Quote request email sent successfully:", response);
+    // Also create an order in the system for quote requests
+    try {
+      // Upload design image to Sanity and pass image reference in attachments
+      let attachmentImages: any[] = [];
+      if (designImage) {
+
+        try {
+          // Convert File to Buffer for Sanity upload
+          const arrayBuffer = await designImage.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const uploaded = await serverClient.assets.upload('image', buffer, {
+            filename: designImage.name,
+            contentType: designImage.type,
+          });
+
+          attachmentImages = [
+            {
+              _type: 'image',
+              asset: { _type: 'reference', _ref: uploaded._id },
+            },
+          ];
+        } catch (e: any) {
+          console.error('Failed to upload quote design image to Sanity:', e);
+          console.error('Quote error details:', {
+            message: e?.message,
+            stack: e?.stack,
+            name: e?.name
+          });
+        }
+      } else {
+
+      }
+
+      const orderData = {
+        name,
+        email,
+        phone,
+        address: "",
+        city: "",
+        postcode: "",
+        message: `
+Quote Request Details:
+Occasion: ${occasion}
+Date Needed: ${dateNeeded}
+Guest Count: ${guestCount}
+Cake Type: ${cakeType}
+Design Style: ${designStyle}
+Flavors: ${flavors}
+Dietary Requirements: ${dietaryRequirements}
+Budget: ${budget}
+Special Requests: ${specialRequests}
+        `.trim(),
+        dateNeeded,
+        orderType: "custom-quote",
+        productType: "cake",
+        productId: "",
+        productName: cakeType,
+        designType: "individual",
+        quantity: 1,
+        unitPrice: 0,
+        totalPrice: 0,
+        size: guestCount ? `${guestCount} guests` : "",
+        flavor: flavors || "",
+        specialInstructions: specialRequests || "",
+        deliveryMethod: "collection",
+        deliveryAddress: "",
+        deliveryNotes: "",
+        paymentMethod: "cash-collection",
+        referrer: "",
+        attachments: attachmentImages,
+      };
+
+      // Create order via internal API call
+
+      const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (orderResponse.ok) {
+        const orderResult = await orderResponse.json();
+
+      } else {
+        console.error("Failed to create quote request order:", await orderResponse.text());
+      }
+    } catch (orderError) {
+      console.error("Error creating quote request order:", orderError);
+      // Don't fail the email if order creation fails
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Quote API Error:", error);

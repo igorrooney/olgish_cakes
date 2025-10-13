@@ -75,7 +75,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
           description: event.description || `Meet Olgish Cakes at ${event.location}`,
           startDate: event.date,
           endDate: event.date, // Assuming same day events
-          image: event.image?.asset?.url 
+          image: event.image?.asset?.url
             ? (event.image.asset.url.startsWith("http")
                 ? event.image.asset.url
                 : `https://olgishcakes.co.uk${event.image.asset.url}`)
@@ -464,6 +464,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                                 {event.contactInfo.phone && (
                                   <Link
                                     href={`tel:${event.contactInfo.phone}`}
+                                    aria-label={`Call ${event.contactInfo.phone} for ${event.title}`}
                                     className="text-primary hover:text-primary-dark transition-colors text-sm font-medium"
                                   >
                                     📞 {event.contactInfo.phone}
@@ -474,6 +475,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                                     href={`https://wa.me/${event.contactInfo.whatsapp.replace(/\D/g, "")}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    aria-label={`Message ${event.title} on WhatsApp (opens in new tab)`}
                                     className="text-green-600 hover:text-green-700 transition-colors text-sm font-medium"
                                   >
                                     💬 WhatsApp

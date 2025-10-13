@@ -81,7 +81,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   // Blog post images
   blogImages.forEach((post: any) => {
     const postUrl = `${baseUrl}/blog/${post.slug.current}`;
-    
+
     // Featured image
     if (post.featuredImage?.asset?.url) {
       imageEntries.push({
@@ -126,7 +126,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   // Cake images
   cakeImages.forEach((cake: any) => {
     const cakeUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-    
+
     if (cake.images && cake.images.length > 0) {
       const images = cake.images.map((img: any) => ({
         url: img.asset.url,
@@ -150,7 +150,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   // Gift hamper images
   giftHamperImages.forEach((hamper: any) => {
     const hamperUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-    
+
     if (hamper.images && hamper.images.length > 0) {
       const images = hamper.images.map((img: any) => ({
         url: img.asset.url,

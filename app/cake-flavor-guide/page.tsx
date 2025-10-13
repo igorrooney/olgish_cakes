@@ -161,8 +161,8 @@ export default function CakeFlavorGuidePage() {
             </Box>
           </Box>
           <Typography variant="body1" sx={{ mb: 6, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}>
-            Choosing the right cake flavour is one of the most important decisions when ordering your cake. I believe every celebration 
-            deserves a flavour that brings joy and creates memories. Here are my most popular flavours, each one carefully crafted 
+            Choosing the right cake flavour is one of the most important decisions when ordering your cake. I believe every celebration
+            deserves a flavour that brings joy and creates memories. Here are my most popular flavours, each one carefully crafted
             to bring happiness to your special day.
           </Typography>
 
@@ -202,7 +202,7 @@ export default function CakeFlavorGuidePage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Traditional Ukrainian Flavours
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
@@ -210,8 +210,8 @@ export default function CakeFlavorGuidePage() {
                     Honey Cake (Medovik) - My Signature Flavour
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    This is my most requested cake and for good reason! Made with real honey and layers of delicate sponge, 
-                    this traditional Ukrainian cake brings warmth and comfort to any celebration. The honey flavour is not too sweet, 
+                    This is my most requested cake and for good reason! Made with real honey and layers of delicate sponge,
+                    this traditional Ukrainian cake brings warmth and comfort to any celebration. The honey flavour is not too sweet,
                     just perfect, and it reminds people of home and family. Perfect for weddings, anniversaries, and any special occasion.
                   </Typography>
                 </Box>
@@ -222,8 +222,8 @@ export default function CakeFlavorGuidePage() {
                     Kyiv Cake - Elegant and Sophisticated
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    This beautiful cake combines crunchy meringue layers with rich chocolate and nutty flavours. It is elegant and sophisticated, 
-                    perfect for formal celebrations. The texture is amazing - crispy on the outside, soft inside, and the chocolate ganache 
+                    This beautiful cake combines crunchy meringue layers with rich chocolate and nutty flavours. It is elegant and sophisticated,
+                    perfect for formal celebrations. The texture is amazing - crispy on the outside, soft inside, and the chocolate ganache
                     brings everything together beautifully. Always impresses guests!
                   </Typography>
                 </Box>
@@ -235,7 +235,7 @@ export default function CakeFlavorGuidePage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Popular Celebration Flavours
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
@@ -243,8 +243,8 @@ export default function CakeFlavorGuidePage() {
                     Vanilla Delicia Birthday Cake
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    A perfect choice for any celebration! Our Vanilla Delicia features fluffy sponge with creamy butter and condensed milk filling. 
-                    This cake is perfect for custom designs and can be made in sizes from 6 to 12 inches. It is elegant, delicious, 
+                    A perfect choice for any celebration! Our Vanilla Delicia features fluffy sponge with creamy butter and condensed milk filling.
+                    This cake is perfect for custom designs and can be made in sizes from 6 to 12 inches. It is elegant, delicious,
                     and perfect for birthdays, anniversaries, and family gatherings.
                   </Typography>
                 </Box>
@@ -255,8 +255,8 @@ export default function CakeFlavorGuidePage() {
                     Chocolate Delicia Sponge Cake
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    For chocolate lovers who want something special! Handmade chocolate sponge with creamy butter and condensed milk filling 
-                    creates an indulgent experience that satisfies every chocolate craving. Perfect for parties and celebrations 
+                    For chocolate lovers who want something special! Handmade chocolate sponge with creamy butter and condensed milk filling
+                    creates an indulgent experience that satisfies every chocolate craving. Perfect for parties and celebrations
                     where you want to impress your guests with something truly delicious.
                   </Typography>
                 </Box>
@@ -267,8 +267,8 @@ export default function CakeFlavorGuidePage() {
                     Sacher Torte
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    A sophisticated European classic! Rich chocolate and apricot cake expertly made in small batches. Deep chocolate sponge 
-                    with apricot jam and ganache creates a perfect balance of rich chocolate and fruity sweetness. 
+                    A sophisticated European classic! Rich chocolate and apricot cake expertly made in small batches. Deep chocolate sponge
+                    with apricot jam and ganache creates a perfect balance of rich chocolate and fruity sweetness.
                     Perfect for those who appreciate refined European desserts with a Ukrainian touch.
                   </Typography>
                 </Box>
@@ -279,8 +279,8 @@ export default function CakeFlavorGuidePage() {
                     Napoleon Cake
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Our traditional Ukrainian Napoleon! Handmade with 7 layers of flaky puff pastry and smooth diplomat cream 
-                    (custard mixed with fresh cream). This cake is crunchy and creamy in every bite, creating a beautiful contrast of textures. 
+                    Our traditional Ukrainian Napoleon! Handmade with 7 layers of flaky puff pastry and smooth diplomat cream
+                    (custard mixed with fresh cream). This cake is crunchy and creamy in every bite, creating a beautiful contrast of textures.
                     Perfect for those who love traditional European desserts with authentic Ukrainian craftsmanship.
                   </Typography>
                 </Box>
@@ -292,7 +292,7 @@ export default function CakeFlavorGuidePage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Allergen Information
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
@@ -300,7 +300,7 @@ export default function CakeFlavorGuidePage() {
                     Nut Information
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Most of my cakes are nut-free! Vanilla Delicia, Chocolate Delicia, Honey Cake (Medovik), Napoleon Cake, and Sacher Torte 
+                    Most of my cakes are nut-free! Vanilla Delicia, Chocolate Delicia, Honey Cake (Medovik), Napoleon Cake, and Sacher Torte
                     are all made without nuts. Only Kyiv Cake contains cashew nuts, so please let me know about any nut allergies when ordering.
                   </Typography>
                 </Box>
@@ -311,8 +311,8 @@ export default function CakeFlavorGuidePage() {
                     Gluten-Friendly Options
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I offer gluten-friendly options for several cakes! Vanilla Delicia, Chocolate Delicia, and Sacher Torte can be made 
-                    with gluten-friendly sponge (sponge without flour). Sacher Torte uses ground almonds in the gluten-friendly version. 
+                    I offer gluten-friendly options for several cakes! Vanilla Delicia, Chocolate Delicia, and Sacher Torte can be made
+                    with gluten-friendly sponge (sponge without flour). Sacher Torte uses ground almonds in the gluten-friendly version.
                     Contact me to discuss your specific needs.
                   </Typography>
                 </Box>
@@ -323,7 +323,7 @@ export default function CakeFlavorGuidePage() {
                     Dairy Information
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Most of my cakes contain dairy products including butter, condensed milk, and cream. However, Sacher Torte is also available 
+                    Most of my cakes contain dairy products including butter, condensed milk, and cream. However, Sacher Torte is also available
                     as a dairy-friendly recipe. If you have dairy sensitivities, please contact me to discuss the best options for you.
                   </Typography>
                 </Box>
@@ -334,8 +334,8 @@ export default function CakeFlavorGuidePage() {
                     Custom Dietary Needs
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I understand that everyone has different dietary needs and preferences. While my traditional recipes contain common allergens, 
-                    I offer various options including gluten-friendly and dairy-friendly alternatives. Contact me to discuss 
+                    I understand that everyone has different dietary needs and preferences. While my traditional recipes contain common allergens,
+                    I offer various options including gluten-friendly and dairy-friendly alternatives. Contact me to discuss
                     how I can create something special that meets your specific requirements.
                   </Typography>
                 </Box>

@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
 
     const cakeValidations = cakes.map(cake => validateCakeProduct(cake));
     const hamperValidations = giftHampers.map(hamper => validateHamperProduct(hamper));
-    
+
     // Collect all errors and warnings
     const allErrors: string[] = [];
     const allWarnings: string[] = [];
-    
+
     [...cakeValidations, ...hamperValidations].forEach(product => {
       if (product.errors) allErrors.push(...product.errors);
       if (product.warnings) allWarnings.push(...product.warnings);

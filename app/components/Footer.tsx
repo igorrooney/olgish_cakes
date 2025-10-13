@@ -18,6 +18,7 @@ import {
   SecurityIcon,
 } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
   BodyText,
   Container as DesignContainer,
@@ -107,12 +108,12 @@ const footerLinks = {
 
 const contactInfo = {
   email: "hello@olgishcakes.co.uk",
-  phone: "+44 786 721 8194",
+  phone: BUSINESS_CONSTANTS.PHONE,
   address: "Allerton Grange, Leeds, LS17",
   socialMedia: {
     facebook: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
     instagram: "https://www.instagram.com/olgish_cakes/",
-    whatsapp: "https://wa.me/447867218194",
+    whatsapp: BUSINESS_CONSTANTS.SOCIAL.whatsapp,
   },
 };
 

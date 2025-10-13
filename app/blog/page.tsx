@@ -79,7 +79,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default async function BlogPage() {
   // Fetch blog posts and categories from Sanity
   const [blogPosts, categories] = await Promise.all([
@@ -190,8 +189,8 @@ export default async function BlogPage() {
           </Box>
 
               {/* Category Links for Internal SEO */}
-              <CategoryLinks 
-                categories={categories.map(cat => cat.name)} 
+              <CategoryLinks
+                categories={categories.map(cat => cat.name)}
               />
 
               {/* Client Component for Interactive Features */}

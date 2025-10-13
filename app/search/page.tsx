@@ -122,7 +122,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
                 <Grid item xs={12} md={6} lg={4} key={r._id}>
                   <Box className="border rounded-xl p-4 bg-white">
                     <Typography variant="h6" className="mb-1">
-                      <Link href={r.href}>{r.title}</Link>
+                      <Link href={r.href} aria-label={`View ${r.title}`}>{r.title}</Link>
                     </Typography>
                     <Typography variant="body2" className="text-gray-600">
                       {r.subtitle}
@@ -148,5 +148,4 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
     </main>
   );
 }
-
 

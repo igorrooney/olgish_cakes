@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 
 export const metadata: Metadata = {
   title: "Return Policy | Olgish Cakes - Refunds & Returns",
@@ -172,7 +173,7 @@ export default function ReturnPolicyPage() {
 
             <Alert severity="info" sx={{ mb: 4, borderRadius: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                I want you to be completely satisfied with your Ukrainian cake and traditional dessert order. 
+                I want you to be completely satisfied with your Ukrainian cake and traditional dessert order.
                 Please read my return policy carefully to understand your rights and my procedures.
               </Typography>
             </Alert>
@@ -181,8 +182,8 @@ export default function ReturnPolicyPage() {
               1. General Return Policy
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              Due to the perishable nature of my products, I have specific return policies designed to make sure 
-              food safety while keeping customer satisfaction. All returns must be initiated within 24 hours 
+              Due to the perishable nature of my products, I have specific return policies designed to make sure
+              food safety while keeping customer satisfaction. All returns must be initiated within 24 hours
               of delivery or collection.
             </Typography>
 
@@ -321,7 +322,7 @@ export default function ReturnPolicyPage() {
             <Typography variant="h2" component="h2" sx={{ mb: 2, mt: 4, fontWeight: 600 }}>
               6. Special Circumstances
             </Typography>
-            
+
             <Box sx={{ mb: 3 }}>
               <Typography variant="h3" component="h3" sx={{ mb: 1, fontWeight: 600, fontSize: "1.2rem" }}>
                 Wedding Cakes
@@ -378,7 +379,7 @@ export default function ReturnPolicyPage() {
               7. Quality Assurance
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              I take pride in the quality of my Ukrainian cakes and traditional desserts. 
+              I take pride in the quality of my Ukrainian cakes and traditional desserts.
               My quality assurance process includes:
             </Typography>
             <List>
@@ -403,15 +404,15 @@ export default function ReturnPolicyPage() {
               8. Customer Satisfaction Guarantee
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              I am committed to your satisfaction. If you're not completely happy with your order, 
-              I will work with you to resolve the issue. My goal is to make sure every customer 
+              I am committed to your satisfaction. If you're not completely happy with your order,
+              I will work with you to resolve the issue. My goal is to make sure every customer
               enjoys the real taste of Ukrainian cakes and traditional desserts.
             </Typography>
 
-            <Box sx={{ 
-              backgroundColor: "primary.50", 
-              p: 3, 
-              borderRadius: 2, 
+            <Box sx={{
+              backgroundColor: "primary.50",
+              p: 3,
+              borderRadius: 2,
               mb: 4,
               border: "1px solid",
               borderColor: "primary.200"
@@ -420,21 +421,21 @@ export default function ReturnPolicyPage() {
                 Quick Contact for Returns
               </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 2 }}>
-                <Chip 
-                  label="Email: hello@olgishcakes.co.uk" 
-                  color="primary" 
+                <Chip
+                  label="Email: hello@olgishcakes.co.uk"
+                  color="primary"
                   variant="outlined"
                   clickable
                   component="a"
                   href="mailto:hello@olgishcakes.co.uk"
                 />
-                <Chip 
-                  label="Phone: +44 786 721 8194" 
-                  color="primary" 
+                <Chip
+                  label={`Phone: ${CLIENT_BUSINESS_INFO.displayPhone}`}
+                  color="primary"
                   variant="outlined"
                   clickable
                   component="a"
-                  href="tel:+447867218194"
+                  href={CLIENT_BUSINESS_INFO.telLink}
                 />
               </Box>
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
@@ -446,8 +447,8 @@ export default function ReturnPolicyPage() {
               9. Legal Rights
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              This return policy does not affect your statutory rights as a consumer under UK law. 
-              You may have additional rights under the Consumer Rights Act 2015, including the right 
+              This return policy does not affect your statutory rights as a consumer under UK law.
+              You may have additional rights under the Consumer Rights Act 2015, including the right
               to reject goods that are not of satisfactory quality, fit for purpose, or as described.
             </Typography>
 
@@ -455,8 +456,8 @@ export default function ReturnPolicyPage() {
               10. Policy Updates
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              We reserve the right to update this return policy at any time. Any changes will be 
-              posted on this page with an updated revision date. Continued use of our services 
+              We reserve the right to update this return policy at any time. Any changes will be
+              posted on this page with an updated revision date. Continued use of our services
               after changes constitutes acceptance of the updated policy.
             </Typography>
 
