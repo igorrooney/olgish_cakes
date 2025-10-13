@@ -1,7 +1,246 @@
 {
-  "timestamp": "2025-08-05T12:40:42.084Z",
-  "totalIssues": 0,
-  "issues": [],
+  "timestamp": "2025-10-04T18:23:24.404Z",
+  "totalIssues": 34,
+  "issues": [
+    {
+      "file": "app/ultimate-ukrainian-cake-guide/page.tsx",
+      "line": 410,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/cakes\" passHref>\n                <Typography\n                  component=\"a\"\n          ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/ultimate-ukrainian-cake-guide/page.tsx",
+      "line": 427,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/contact\" passHref>\n                <Typography\n                  component=\"a\"\n        ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/search/page.tsx",
+      "line": 125,
+      "type": "Link without aria-label",
+      "code": "<Link href={r.href}>{r.title}</Link>...",
+      "severity": "high"
+    },
+    {
+      "file": "app/gift-hampers/[slug]/CakeByPostContent.tsx",
+      "line": 70,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ color: colors.primary.main, textDecoratio...",
+      "severity": "high"
+    },
+    {
+      "file": "app/gift-hampers/[slug]/CakeByPostContent.tsx",
+      "line": 70,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ color: colors.primary.main, textDecor...",
+      "severity": "high"
+    },
+    {
+      "file": "app/gift-hampers/[slug]/CakeByPostContent.tsx",
+      "line": 149,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/honey-cake-history\" style={{ color: colors.primary.main, textDecoration: \"none\" }}>hone...",
+      "severity": "high"
+    },
+    {
+      "file": "app/gift-hampers/[slug]/CakeByPostContent.tsx",
+      "line": 150,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/traditional-ukrainian-cakes\" style={{ color: colors.primary.main, textDecoration: \"none...",
+      "severity": "high"
+    },
+    {
+      "file": "app/gift-hampers/[slug]/CakeByPostContent.tsx",
+      "line": 257,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/top-5-reasons-order-letterbox-cakes-online\" style={{ color: colors.primary.main, t...",
+      "severity": "high"
+    },
+    {
+      "file": "app/components/RelatedPosts.tsx",
+      "line": 188,
+      "type": "Link without aria-label",
+      "code": "<Link\n          href=\"/blog\"\n          style={{\n            color: '#2E3192',\n            textDecora...",
+      "severity": "high"
+    },
+    {
+      "file": "app/components/MarketSchedule.tsx",
+      "line": 465,
+      "type": "Link without aria-label",
+      "code": "<Link\n                                    href={`tel:${event.contactInfo.phone}`}\n                  ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/components/MarketSchedule.tsx",
+      "line": 473,
+      "type": "Link without aria-label",
+      "code": "<Link\n                                    href={`https://wa.me/${event.contactInfo.whatsapp.replace(...",
+      "severity": "high"
+    },
+    {
+      "file": "app/components/CategoryLinks.tsx",
+      "line": 79,
+      "type": "Link without aria-label",
+      "code": "<Link\n              key={category}\n              href={mapping.url}\n              style={{ textDecor...",
+      "severity": "high"
+    },
+    {
+      "file": "app/buy-cake/page.tsx",
+      "line": 128,
+      "type": "Link without aria-label",
+      "code": "<Link href={p.url}>{p.name}</Link>...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/BlogClient.tsx",
+      "line": 177,
+      "type": "Link without aria-label",
+      "code": "<Link href={`/blog/${post.slug}`} style={{ textDecoration: \"none\" }}>\n                <Card\n        ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/top-5-reasons-order-letterbox-cakes-online/page.tsx",
+      "line": 169,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ color: \"#1976d2\", textDecoration: \"none\",...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/top-5-reasons-order-letterbox-cakes-online/page.tsx",
+      "line": 169,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ color: \"#1976d2\", textDecoration: \"no...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/top-5-reasons-order-letterbox-cakes-online/page.tsx",
+      "line": 547,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ textDecoration: \"none\", color: \"inherit\" ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/top-5-reasons-order-letterbox-cakes-online/page.tsx",
+      "line": 558,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ textDecoration: \"none\", color: \"inher...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/top-5-reasons-order-letterbox-cakes-online/page.tsx",
+      "line": 569,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/how-surprise-someone-cake-delivery-post\" style={{ textDecoration: \"none\", color: \"...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/how-surprise-someone-cake-delivery-post/page.tsx",
+      "line": 169,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ color: \"#1976d2\", textDecoration: \"none\",...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/how-surprise-someone-cake-delivery-post/page.tsx",
+      "line": 169,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/top-5-reasons-order-letterbox-cakes-online\" style={{ color: \"#1976d2\", textDecorat...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/how-surprise-someone-cake-delivery-post/page.tsx",
+      "line": 686,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ textDecoration: \"none\", color: \"inherit\" ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/how-surprise-someone-cake-delivery-post/page.tsx",
+      "line": 697,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ textDecoration: \"none\", color: \"inher...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/how-surprise-someone-cake-delivery-post/page.tsx",
+      "line": 708,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/top-5-reasons-order-letterbox-cakes-online\" style={{ textDecoration: \"none\", color...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/cake-by-post-uk-complete-guide/page.tsx",
+      "line": 402,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ color: \"#1976d2\", textDecoration: \"no...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/cake-by-post-uk-complete-guide/page.tsx",
+      "line": 781,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/best-cakes-you-can-send-by-post-uk\" style={{ textDecoration: \"none\", color: \"inher...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/cake-by-post-uk-complete-guide/page.tsx",
+      "line": 792,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/top-5-reasons-order-letterbox-cakes-online\" style={{ textDecoration: \"none\", color...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/cake-by-post-uk-complete-guide/page.tsx",
+      "line": 803,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/how-surprise-someone-cake-delivery-post\" style={{ textDecoration: \"none\", color: \"...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/best-cakes-you-can-send-by-post-uk/page.tsx",
+      "line": 216,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ color: \"#1976d2\", textDecoration: \"none\",...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/best-cakes-you-can-send-by-post-uk/page.tsx",
+      "line": 647,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/cake-by-post-uk-complete-guide\" style={{ textDecoration: \"none\", color: \"inherit\" ...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/best-cakes-you-can-send-by-post-uk/page.tsx",
+      "line": 658,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/top-5-reasons-order-letterbox-cakes-online\" style={{ textDecoration: \"none\", color...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/best-cakes-you-can-send-by-post-uk/page.tsx",
+      "line": 669,
+      "type": "Link without aria-label",
+      "code": "<Link href=\"/blog/how-surprise-someone-cake-delivery-post\" style={{ textDecoration: \"none\", color: \"...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/[slug]/page.tsx",
+      "line": 29,
+      "type": "Link without aria-label",
+      "code": "<Link\n            key={index}\n            href={url}\n            target=\"_blank\"\n            rel=\"no...",
+      "severity": "high"
+    },
+    {
+      "file": "app/blog/[slug]/page.tsx",
+      "line": 405,
+      "type": "Link without aria-label",
+      "code": "<Link\n        href={value.href}\n        style={{\n          color: \"#2E3192\",\n          textDecoratio...",
+      "severity": "high"
+    }
+  ],
   "recommendations": [
     "Add descriptive aria-label attributes to all links",
     "Use descriptive link text instead of generic terms like \"click here\"",

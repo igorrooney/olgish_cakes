@@ -159,7 +159,7 @@ export default function AnniversaryCakesLeedsPage() {
               variant="body1"
               sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}
             >
-              Every anniversary is special, and your cake should be too. Whether you are celebrating your first year together 
+              Every anniversary is special, and your cake should be too. Whether you are celebrating your first year together
               or your golden anniversary, I will create a beautiful cake that reflects your love story and makes your day even more memorable.
             </Typography>
           </Box>
@@ -168,7 +168,7 @@ export default function AnniversaryCakesLeedsPage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Popular Anniversary Cake Flavours
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
@@ -176,7 +176,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Honey Cake (Medovik)
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    My most popular anniversary cake! The sweet honey layers symbolise the sweetness of your relationship, 
+                    My most popular anniversary cake! The sweet honey layers symbolise the sweetness of your relationship,
                     and the traditional Ukrainian recipe brings warmth and comfort to your celebration. Perfect for couples who love classic flavours.
                   </Typography>
                 </Box>
@@ -187,7 +187,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Kyiv Cake
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Elegant and sophisticated, just like your love story. The nutty meringue layers with chocolate 
+                    Elegant and sophisticated, just like your love story. The nutty meringue layers with chocolate
                     create a rich, luxurious taste that is perfect for milestone anniversaries. Always impresses guests!
                   </Typography>
                 </Box>
@@ -198,7 +198,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Chocolate Raspberry
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    A romantic combination that never goes out of style. Rich chocolate sponge with fresh raspberry filling 
+                    A romantic combination that never goes out of style. Rich chocolate sponge with fresh raspberry filling
                     creates a perfect balance of sweet and tart. Great for couples who love indulgent flavours.
                   </Typography>
                 </Box>
@@ -209,7 +209,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Vanilla Berry
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Light and fresh, perfect for spring or summer anniversaries. Delicate vanilla sponge with mixed berry filling 
+                    Light and fresh, perfect for spring or summer anniversaries. Delicate vanilla sponge with mixed berry filling
                     creates a beautiful, refreshing taste that everyone will enjoy. Great for outdoor celebrations.
                   </Typography>
                 </Box>
@@ -221,7 +221,7 @@ export default function AnniversaryCakesLeedsPage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Anniversary Cake Decoration Ideas
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: "center", p: 3 }}>
@@ -230,7 +230,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Heart Decorations
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Beautiful heart-shaped decorations made from fondant or chocolate. Perfect for expressing your love 
+                    Beautiful heart-shaped decorations made from fondant or chocolate. Perfect for expressing your love
                     and creating romantic anniversary cake designs.
                   </Typography>
                 </Box>
@@ -242,7 +242,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Sugar Flowers
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Handcrafted sugar flowers in your favourite colours. Roses, peonies, or any flower that has special meaning 
+                    Handcrafted sugar flowers in your favourite colours. Roses, peonies, or any flower that has special meaning
                     for your relationship. Beautiful and romantic.
                   </Typography>
                 </Box>
@@ -254,7 +254,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Personal Messages
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    Personalised messages, names, or anniversary dates beautifully written on your cake. 
+                    Personalised messages, names, or anniversary dates beautifully written on your cake.
                     Make your anniversary cake truly special with your own words of love.
                   </Typography>
                 </Box>
@@ -266,7 +266,7 @@ export default function AnniversaryCakesLeedsPage() {
             <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose My Anniversary Cakes?
             </Typography>
-            
+
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 3 }}>
@@ -274,7 +274,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Made with Love
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Every anniversary cake I make is crafted with love and attention to detail. I understand how important 
+                    Every anniversary cake I make is crafted with love and attention to detail. I understand how important
                     your anniversary is, and I want your cake to be as special as your relationship. Every decoration, every flavour choice matters to me.
                   </Typography>
                 </Box>
@@ -285,7 +285,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Personal Service
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    I love hearing your love story and helping you choose the perfect cake for your celebration. 
+                    I love hearing your love story and helping you choose the perfect cake for your celebration.
                     Whether you want something traditional or completely unique, I will work with you to create exactly what you have in mind.
                   </Typography>
                 </Box>
@@ -296,7 +296,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Traditional Ukrainian Touch
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Bring a taste of Ukrainian tradition to your anniversary celebration. My honey cake and Kyiv cake recipes 
+                    Bring a taste of Ukrainian tradition to your anniversary celebration. My honey cake and Kyiv cake recipes
                     have been passed down through generations, and they bring warmth and tradition to your special day.
                   </Typography>
                 </Box>
@@ -307,7 +307,7 @@ export default function AnniversaryCakesLeedsPage() {
                     Fresh and Delicious
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    Your anniversary cake will be made fresh just for you, using the best ingredients. 
+                    Your anniversary cake will be made fresh just for you, using the best ingredients.
                     No preservatives, no shortcuts - just pure, delicious cake that will make your celebration even more memorable.
                   </Typography>
                 </Box>
@@ -334,8 +334,8 @@ export default function AnniversaryCakesLeedsPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "700px", mx: "auto", lineHeight: 1.7 }}
             >
-              Your anniversary is a special day that deserves a special cake. Contact me today to discuss your dream anniversary cake. 
-              I will help you choose the perfect flavour and design to make your celebration unforgettable. 
+              Your anniversary is a special day that deserves a special cake. Contact me today to discuss your dream anniversary cake.
+              I will help you choose the perfect flavour and design to make your celebration unforgettable.
               Let me create something beautiful for your love story.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -215,6 +216,15 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
         formDataToSend.append("name", formData.name);
         formDataToSend.append("email", formData.email);
         formDataToSend.append("phone", formData.phone);
+        if (formData.address) {
+          formDataToSend.append("address", formData.address);
+        }
+        if (formData.city) {
+          formDataToSend.append("city", formData.city);
+        }
+        if (formData.postcode) {
+          formDataToSend.append("postcode", formData.postcode);
+        }
         if (formData.dateNeeded) {
           formDataToSend.append("dateNeeded", formData.dateNeeded.format("YYYY-MM-DD"));
         }
@@ -223,7 +233,23 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
           formDataToSend.append("designImage", formData.designImage);
         }
         formDataToSend.append("isOrderForm", "true");
-        formDataToSend.append("orderType", selectedOrderOption?.title || "");
+        formDataToSend.append("orderType", selectedOrderOption?.title || "custom-quote");
+
+        // Add order-specific fields for order creation
+        formDataToSend.append("productType", "custom");
+        formDataToSend.append("productId", "");
+        formDataToSend.append("productName", "Custom Order");
+        formDataToSend.append("designType", "individual");
+        formDataToSend.append("quantity", "1");
+        formDataToSend.append("unitPrice", "0");
+        formDataToSend.append("totalPrice", "0");
+        formDataToSend.append("size", "");
+        formDataToSend.append("flavor", "");
+        formDataToSend.append("specialInstructions", formData.message || "");
+        formDataToSend.append("deliveryMethod", "collection");
+        formDataToSend.append("deliveryAddress", "");
+        formDataToSend.append("deliveryNotes", "");
+        formDataToSend.append("paymentMethod", "cash-collection");
 
         const response = await fetch("/api/contact", {
           method: "POST",
@@ -675,6 +701,9 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                         showImageUpload={selectedOption === "custom-design"}
                         hideCakeInterest
                         showButton={true}
+                        showAddress={true}
+                        showCity={true}
+                        showPostcode={true}
                         isSubmitting={isSubmitting}
                       />
                     </Paper>
@@ -732,15 +761,15 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                               primary="Call Us"
                               secondary={
                                 <Link
-                                  href="tel:+441131234567"
+                                  href={CLIENT_BUSINESS_INFO.telLink}
                                   style={{
                                     textDecoration: "none",
                                     color: "inherit",
                                     fontWeight: 500,
                                   }}
-                                  aria-label="Call us at +44 113 123 4567"
+                                  aria-label={`Call us at ${CLIENT_BUSINESS_INFO.displayPhone}`}
                                 >
-                                  +44 113 123 4567
+                                  {CLIENT_BUSINESS_INFO.displayPhone}
                                 </Link>
                               }
                               primaryTypographyProps={{ variant: "body2", fontWeight: 500 }}

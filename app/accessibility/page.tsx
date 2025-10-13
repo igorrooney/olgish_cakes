@@ -13,6 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import Link from "next/link";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
@@ -327,10 +328,10 @@ export default function AccessibilityStatementPage() {
               <ListItem>
                 <ListItemText
                   primary="Phone"
-                  secondary="+44 786 721 8194"
+                  secondary={CLIENT_BUSINESS_INFO.displayPhone}
                   secondaryTypographyProps={{
                     component: "a",
-                    href: "tel:+447867218194",
+                    href: CLIENT_BUSINESS_INFO.telLink,
                     sx: { color: "primary.main", textDecoration: "underline" },
                   }}
                 />
@@ -464,12 +465,12 @@ export default function AccessibilityStatementPage() {
                   href="mailto:hello@olgishcakes.co.uk"
                 />
                 <Chip
-                  label="Phone: +44 786 721 8194"
+                  label={`Phone: ${CLIENT_BUSINESS_INFO.displayPhone}`}
                   color="primary"
                   variant="outlined"
                   clickable
                   component="a"
-                  href="tel:+447867218194"
+                  href={CLIENT_BUSINESS_INFO.telLink}
                 />
               </Box>
             </Box>

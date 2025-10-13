@@ -9,7 +9,7 @@ const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   useCdn: false,
   token: process.env.SANITY_API_TOKEN,
-  apiVersion: "2024-03-13",
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2025-03-31",
 });
 
 const testimonials = [

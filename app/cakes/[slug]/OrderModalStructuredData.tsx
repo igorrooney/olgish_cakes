@@ -115,10 +115,10 @@ export function OrderModalStructuredData({
           width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
         });
       }
-      
+
       // Get the best available image
-      const mainImage = cake.mainImage?.asset?._ref 
-        ? cake.mainImage 
+      const mainImage = cake.mainImage?.asset?._ref
+        ? cake.mainImage
         : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
           cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
           cake.designs?.standard?.[0] ||
@@ -128,8 +128,8 @@ export function OrderModalStructuredData({
           // Fallback to images array (for legacy data like Honey Cake)
           cake.images?.find((img: any) => img.asset?._ref) ||
           cake.images?.[0];
-      
-      return mainImage?.asset?._ref 
+
+      return mainImage?.asset?._ref
         ? urlFor(mainImage).width(800).height(800).url()
         : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
     })(),

@@ -120,7 +120,7 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      
+
       <Box sx={{ background: "linear-gradient(to bottom, #FFF5E6 0%, #FFFFFF 100%)", minHeight: "100vh" }}>
         <Container maxWidth="lg" sx={{ py: 6 }}>
           {/* Breadcrumbs */}
@@ -163,8 +163,8 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 4, fontSize: "1.1rem", lineHeight: 1.7 }}>
-              There's something special about surprising someone with traditional Ukrainian honey cake delivered to their door. 
-              Whether it's birthday, anniversary, or just because you care, honey cake delivery by post is perfect way to 
+              There's something special about surprising someone with traditional Ukrainian honey cake delivered to their door.
+              Whether it's birthday, anniversary, or just because you care, honey cake delivery by post is perfect way to
               show someone you think about them. Here's my guide to creating nice honey cake surprises, from my experience.
               Learn more about <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>my complete cake by post guide</Link> and discover <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}>why order honey cake by post online</Link>.
             </Typography>
@@ -176,66 +176,66 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               </Typography>
               <List>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#perfect-timing">
                         1. Perfect Timing for Cake Surprises
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#creative-ideas">
                         2. Creative Surprise Ideas by Occasion
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#personal-touches">
                         3. Personal Touches That Make It Special
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#choosing-right-cake">
                         4. Choosing the Right Cake for the Surprise
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#coordinating-family-friends">
                         5. Coordinating with Family and Friends
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#follow-up-ideas">
                         6. Follow-Up Ideas to Extend the Joy
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
                 <ListItem sx={{ px: 0 }}>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <TocLink href="#common-mistakes">
                         7. Common Mistakes to Avoid
                       </TocLink>
-                    } 
+                    }
                   />
                 </ListItem>
               </List>
@@ -251,7 +251,7 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              Timing is very important for cake surprises. Right timing makes surprise more special, 
+              Timing is very important for cake surprises. Right timing makes surprise more special,
               but wrong timing can spoil the moment. From my experience, here's how to get it right:
             </Typography>
 
@@ -332,19 +332,19 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               </Typography>
               <List sx={{ mb: 3 }}>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Morning surprise with coffee"
                     secondary="Deliver the cake early morning with a note suggesting they enjoy it with their morning coffee"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Countdown surprise"
                     secondary="Send a small cake each day leading up to their birthday, with the main cake on the actual day"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Virtual party coordination"
                     secondary="Coordinate with friends to have everyone send cakes for a virtual birthday celebration"
                   />
@@ -358,19 +358,19 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               </Typography>
               <List sx={{ mb: 3 }}>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Memory lane cake"
                     secondary="Choose a cake flavor that reminds them of your first date or special memory"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Year-by-year tradition"
                     secondary="Start a tradition of sending a special cake each anniversary with a note about that year"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Surprise dinner setup"
                     secondary="Coordinate with their partner to have the cake arrive just before a romantic dinner"
                   />
@@ -384,19 +384,19 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               </Typography>
               <List sx={{ mb: 3 }}>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Mid-week pick-me-up"
                     secondary="Surprise them on a Wednesday to break up the work week"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Weather-based surprise"
                     secondary="Send a warm, comforting cake on a cold, rainy day"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Achievement celebration"
                     secondary="Celebrate small wins like completing a project or reaching a goal"
                   />
@@ -414,7 +414,7 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              The personal touches you add can transform a simple cake delivery into an unforgettable surprise. 
+              The personal touches you add can transform a simple cake delivery into an unforgettable surprise.
               Here are ways to make your cake surprise truly special:
             </Typography>
 
@@ -486,31 +486,31 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              The cake you choose can make or break the surprise. Consider their preferences, dietary restrictions, 
+              The cake you choose can make or break the surprise. Consider their preferences, dietary restrictions,
               and the occasion when selecting the perfect cake:
             </Typography>
 
             <List sx={{ mb: 4 }}>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Consider their favorite flavors"
                   secondary="Think about what they usually order or mention enjoying"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Check for dietary restrictions"
                   secondary="Ensure the cake is suitable for any allergies or dietary preferences"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Match the occasion"
                   secondary="Choose a cake that fits the celebration (elegant for anniversaries, fun for birthdays)"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Consider portion size"
                   secondary="Make sure the cake size is appropriate for them and any guests"
                 />
@@ -527,31 +527,31 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              Sometimes the best surprises involve coordinating with others. Here's how to work with family and friends 
+              Sometimes the best surprises involve coordinating with others. Here's how to work with family and friends
               to create an even more memorable honey cake surprise:
             </Typography>
 
             <List sx={{ mb: 4 }}>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Coordinate delivery timing with family members"
                   secondary="Make sure everyone knows when the cake will arrive"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Plan a group video call or celebration"
                   secondary="Have everyone join in when the cake arrives"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Share the surprise moment"
                   secondary="Capture photos or videos of their reaction"
                 />
               </ListItem>
               <ListItem>
-                <ListItemText 
+                <ListItemText
                   primary="Create a group celebration"
                   secondary="Turn the surprise into a shared experience"
                 />
@@ -568,7 +568,7 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
             </Typography>
 
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
-              The surprise doesn't have to end when the cake arrives. Here are some follow-up ideas to extend the joy 
+              The surprise doesn't have to end when the cake arrives. Here are some follow-up ideas to extend the joy
               and make the experience even more memorable:
             </Typography>
 
@@ -614,31 +614,31 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               </Typography>
               <List>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Not checking their schedule"
                     secondary="Make sure they'll be home to receive and enjoy the cake"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Forgetting dietary restrictions"
                     secondary="Always check for allergies or dietary preferences before ordering"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Poor timing"
                     secondary="Avoid sending cakes during busy periods or when they're away"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Generic messages"
                     secondary="Personalize your message to make it meaningful and special"
                   />
                 </ListItem>
                 <ListItem>
-                  <ListItemText 
+                  <ListItemText
                     primary="Not following up"
                     secondary="Check in after the delivery to see how they enjoyed their surprise"
                   />
@@ -680,7 +680,7 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
                 Related Articles
               </Typography>
-              
+
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                   <Link href="/blog/cake-by-post-uk-complete-guide" style={{ textDecoration: "none", color: "inherit" }}>

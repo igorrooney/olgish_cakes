@@ -25,6 +25,16 @@ export const previewClient = createClient({
   token: process.env.SANITY_API_TOKEN, // Required for preview access
 });
 
+// Server-side client with write permissions for API routes
+export const serverClient = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false,
+  perspective: "published",
+  token: process.env.SANITY_API_TOKEN, // Required for write operations
+});
+
 // Helper function to get the appropriate client
 export function getClient(preview = false) {
   return preview ? previewClient : client;

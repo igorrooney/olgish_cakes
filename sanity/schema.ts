@@ -5,7 +5,8 @@ import testimonial from "./schemas/testimonial";
 import faq from "./schemas/faq";
 import marketSchedule from "./schemas/marketSchedule";
 import blogPost from "./schemas/blogPost";
+import order from "./schemas/order";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [cake, giftHamper, testimonial, faq, marketSchedule, blogPost],
+  types: [cake, giftHamper, testimonial, faq, marketSchedule, blogPost, order],
 };

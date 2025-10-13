@@ -86,7 +86,6 @@ export const metadata: Metadata = {
 export default async function FAQPage() {
   try {
     const faqItems = await getFaqs();
-    console.log("Fetched FAQs:", faqItems);
 
     // Generate FAQ structured data
     const faqStructuredData = {

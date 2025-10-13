@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'No token provided' },
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      user: { username: user.username, role: user.role } 
+    return NextResponse.json({
+      success: true,
+      user: { username: user.username, role: user.role }
     });
   } catch (error) {
     return NextResponse.json(

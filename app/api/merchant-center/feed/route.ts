@@ -14,7 +14,7 @@ const generateProductFeed = unstable_cache(
     ]);
 
     const baseUrl = "https://olgishcakes.co.uk";
-    
+
     // Generate XML feed
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
@@ -24,10 +24,10 @@ const generateProductFeed = unstable_cache(
     <description>Traditional Ukrainian cakes and gift hampers from Olgish Cakes in Leeds</description>
     <language>en-GB</language>
     <lastBuildDate>${new Date().toISOString()}</lastBuildDate>
-    
+
     ${cakes.map(cake => generateCakeItem(cake, baseUrl)).join('\n')}
     ${giftHampers.map(hamper => generateHamperItem(hamper, baseUrl)).join('\n')}
-    
+
   </channel>
 </rss>`;
 
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to generate product feed',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -70,37 +70,37 @@ export async function GET(request: NextRequest) {
 
 function generateCakeItem(cake: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-  
+
   // Enhanced image detection - try multiple sources
-  const mainImage = cake.mainImage?.asset?._ref 
-    ? cake.mainImage 
+  const mainImage = cake.mainImage?.asset?._ref
+    ? cake.mainImage
     : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
       cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
       cake.designs?.standard?.[0] ||
       cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
       cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
       cake.designs?.individual?.[0];
-  
-  const imageUrl = mainImage?.asset?._ref 
+
+  const imageUrl = mainImage?.asset?._ref
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || cake.pricing?.from || 25;
   const availability = cake.structuredData?.availability || 'in stock';
-  
+
   // Handle description properly (could be array or string)
-  let description = Array.isArray(cake.shortDescription) 
+  let description = Array.isArray(cake.shortDescription)
     ? cake.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : Array.isArray(cake.description)
     ? cake.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : cake.shortDescription || cake.description || '';
-  
+
   // Enhance description for SEO if too short
   if (!description || description.length < 100) {
     const enhancedDescription = `${cake.name} - Traditional Ukrainian honey cake handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Available in various sizes with custom designs. Free delivery across Leeds and surrounding areas.`;
     description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
   }
-  
+
   return `
     <item>
       <g:id>cake_${cake._id}</g:id>
@@ -160,29 +160,29 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
-  const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) || 
-                   hamper.images?.find((img: any) => img.asset?._ref) || 
+  const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) ||
+                   hamper.images?.find((img: any) => img.asset?._ref) ||
                    hamper.images?.[0];
-  
-  const imageUrl = mainImage?.asset?._ref 
+
+  const imageUrl = mainImage?.asset?._ref
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || hamper.pricing?.standard || 35;
-  
+
   // Handle description properly (could be array or string)
-  let description = Array.isArray(hamper.shortDescription) 
+  let description = Array.isArray(hamper.shortDescription)
     ? hamper.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : Array.isArray(hamper.description)
     ? hamper.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
     : hamper.shortDescription || hamper.description || '';
-  
+
   // Enhance description for SEO if too short
   if (!description || description.length < 100) {
     const enhancedDescription = `${hamper.name} - Beautiful Ukrainian gift hamper handmade with authentic recipes in Leeds, Yorkshire. Perfect for special occasions, birthdays, anniversaries, and celebrations. Thoughtfully curated selection of traditional treats. Free delivery across Leeds and surrounding areas.`;
     description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
   }
-  
+
   return `
     <item>
       <g:id>hamper_${hamper._id}</g:id>

@@ -47,11 +47,11 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
       // Prioritize same category posts
       if (a.category === currentCategory && b.category !== currentCategory) return -1;
       if (b.category === currentCategory && a.category !== currentCategory) return 1;
-      
+
       // Then prioritize featured posts
       if (a.featured && !b.featured) return -1;
       if (b.featured && !a.featured) return 1;
-      
+
       // Finally sort by publish date
       return new Date(b.publishDate || '').getTime() - new Date(a.publishDate || '').getTime();
     })
@@ -73,12 +73,12 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
       >
         You Might Also Like
       </Typography>
-      
+
       <Grid container spacing={4}>
         {filteredPosts.map((post) => {
           const imageUrl = post.cardImage?.asset?.url || post.featuredImage?.asset?.url;
           const imageAlt = post.cardImage?.alt || post.featuredImage?.alt || post.title;
-          
+
           return (
             <Grid item xs={12} md={4} key={post._id}>
               <Card
@@ -119,7 +119,7 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
                       objectFit: 'cover',
                     }}
                   />
-                  
+
                   {post.featured && (
                     <Chip
                       label="Featured"
@@ -135,7 +135,7 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
                     />
                   )}
                 </Box>
-                
+
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ mb: 2 }}>
                     <Stack direction="row" spacing={1} flexWrap="wrap">
@@ -183,10 +183,11 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
           );
         })}
       </Grid>
-      
+
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Link
           href="/blog"
+          aria-label="Browse all blog posts about Ukrainian cakes"
           style={{
             color: '#2E3192',
             textDecoration: 'none',

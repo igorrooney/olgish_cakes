@@ -3,7 +3,6 @@ import { Container, Typography, Box, Grid, Paper, Chip, Button, Alert } from "@m
 import Link from "next/link";
 import Script from "next/script";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:

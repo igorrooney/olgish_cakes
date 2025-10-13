@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 
-
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title: "How to Make Honey Cake | Ukrainian Recipe",

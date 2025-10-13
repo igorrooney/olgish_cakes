@@ -1,6 +1,7 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
   BodyText,
   PrimaryButton,
@@ -145,7 +146,7 @@ export function ContactForm({
           },
           contactPoint: {
             "@type": "ContactPoint",
-            telephone: "+44 786 721 8194",
+            telephone: BUSINESS_CONSTANTS.PHONE,
             email: "hello@olgishcakes.co.uk",
             contactType: "customer service",
             areaServed: {
