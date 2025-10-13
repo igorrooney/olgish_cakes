@@ -19,8 +19,7 @@ export async function middleware(request: NextRequest) {
   // Check if this is an admin API route that needs protection
   if (request.nextUrl.pathname.startsWith("/api/admin") && 
       !request.nextUrl.pathname.startsWith("/api/admin/auth") &&
-      !request.nextUrl.pathname.startsWith("/api/admin/logout") &&
-      !request.nextUrl.pathname.startsWith("/api/admin/earnings")) {
+      !request.nextUrl.pathname.startsWith("/api/admin/logout")) {
     
     const isAuthenticated = await isAdminAuthenticated(request);
     if (!isAuthenticated) {

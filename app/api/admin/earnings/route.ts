@@ -4,8 +4,15 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 // GET - Fetch monthly earnings data
 export async function GET(request: NextRequest) {
-  // Temporarily bypass authentication for testing
-  // TODO: Re-enable authentication once login flow is working
+  // Check authentication
+  const isAuthenticated = await isAdminAuthenticated(request);
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   try {
     const now = new Date();
     const currentMonth = now.getMonth(); // 0-11
