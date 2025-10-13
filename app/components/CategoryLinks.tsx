@@ -79,6 +79,7 @@ export function CategoryLinks({ currentCategory, categories }: CategoryLinksProp
             <Link
               key={category}
               href={mapping.url}
+              aria-label={`Browse ${mapping.label} cakes`}
               style={{ textDecoration: 'none' }}
             >
               <Chip

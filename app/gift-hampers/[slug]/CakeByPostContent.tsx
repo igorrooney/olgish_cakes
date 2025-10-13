@@ -67,7 +67,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Learn more about our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>complete guide to cake by post delivery</Link> or discover the <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>best honey cake for postal delivery</Link>.
+            Learn more about our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Read our complete guide to cake by post delivery">complete guide to cake by post delivery</Link> or discover the <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Learn about the best honey cake for postal delivery">best honey cake for postal delivery</Link>.
           </Typography>
         </Container>
       </Box>
@@ -146,8 +146,8 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
                     Experience the authentic taste of traditional Ukrainian honey cake (honey cake),
                     handcrafted in Leeds using time-honored recipes and premium ingredients.
-                    Learn more about our <Link href="/honey-cake-history" style={{ color: colors.primary.main, textDecoration: "none" }}>honey cake history</Link> and
-                    <Link href="/traditional-ukrainian-cakes" style={{ color: colors.primary.main, textDecoration: "none" }}>traditional Ukrainian baking traditions</Link>.
+                    Learn more about our <Link href="/honey-cake-history" style={{ color: colors.primary.main, textDecoration: "none" }} aria-label="Learn about the history of honey cake">honey cake history</Link> and
+                    <Link href="/traditional-ukrainian-cakes" style={{ color: colors.primary.main, textDecoration: "none" }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</Link>.
                   </Typography>
                 </CardContent>
               </Card>
@@ -254,7 +254,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }}>top 5 reasons to order honey cake by post online</Link>.
+            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Read our top 5 reasons to order honey cake by post online">top 5 reasons to order honey cake by post online</Link>.
           </Typography>
 
           <Grid container spacing={4}>

@@ -464,6 +464,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                                 {event.contactInfo.phone && (
                                   <Link
                                     href={`tel:${event.contactInfo.phone}`}
+                                    aria-label={`Call ${event.contactInfo.phone} for ${event.name}`}
                                     className="text-primary hover:text-primary-dark transition-colors text-sm font-medium"
                                   >
                                     📞 {event.contactInfo.phone}
@@ -474,6 +475,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                                     href={`https://wa.me/${event.contactInfo.whatsapp.replace(/\D/g, "")}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    aria-label={`Message ${event.name} on WhatsApp (opens in new tab)`}
                                     className="text-green-600 hover:text-green-700 transition-colors text-sm font-medium"
                                   >
                                     💬 WhatsApp

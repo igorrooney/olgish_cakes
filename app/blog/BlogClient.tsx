@@ -174,7 +174,7 @@ export default function BlogClient({ blogPosts, categories }: BlogClientProps) {
         <Grid container spacing={4}>
           {currentPosts.map(post => (
             <Grid item xs={12} sm={6} md={4} key={post.id}>
-              <Link href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+              <Link href={`/blog/${post.slug}`} aria-label={`Read blog post: ${post.title}`} style={{ textDecoration: "none" }}>
                 <Card
                   sx={{
                     height: "100%",

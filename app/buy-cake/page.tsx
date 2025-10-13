@@ -125,7 +125,7 @@ export default function BuyCakePage() {
               ].map((p, idx) => (
                 <Grid item xs={12} sm={6} key={idx}>
                   <Typography variant="h5" component="h3" sx={{ mb: 1, fontWeight: 600, color: "primary.main" }}>
-                    <Link href={p.url}>{p.name}</Link>
+                    <Link href={p.url} aria-label={`Learn more about ${p.name}`}>{p.name}</Link>
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>{p.desc}</Typography>
                 </Grid>

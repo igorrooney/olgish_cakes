@@ -187,6 +187,7 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Link
           href="/blog"
+          aria-label="Browse all blog posts about Ukrainian cakes"
           style={{
             color: '#2E3192',
             textDecoration: 'none',

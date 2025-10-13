@@ -31,6 +31,7 @@ function parseMarkdown(content: string) {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`External link: ${text} (opens in new tab)`}
             style={{
               color: "#2E3192",
               textDecoration: "underline",
