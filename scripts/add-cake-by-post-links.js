@@ -10,7 +10,7 @@ const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   token: process.env.SANITY_API_TOKEN, // You'll need to add this to your .env.local
   useCdn: false,
-  apiVersion: '2023-05-03',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
 });
 
 const cakeByPostLink = `**🎂 Ready to try our famous honey cake? [Order our letterbox-friendly cake by post](/gift-hampers/cake-by-post) and taste authentic Ukrainian baking delivered straight to your door!**`;

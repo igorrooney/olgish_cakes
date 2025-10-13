@@ -79,9 +79,11 @@ interface Order {
     postcode?: string;
   };
   items: Array<{
+    productId?: string;
     productName: string;
     quantity: number;
     totalPrice: number;
+    size?: string;
     designType?: string;
   }>;
   delivery: {

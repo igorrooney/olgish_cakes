@@ -10,7 +10,7 @@ const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   token: process.env.SANITY_API_TOKEN,
   useCdn: false,
-  apiVersion: '2023-05-03',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
 });
 
 async function updateBlogCardImages() {
