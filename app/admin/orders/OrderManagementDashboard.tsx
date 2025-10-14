@@ -276,7 +276,7 @@ export function OrderManagementDashboard() {
         setLoading(true);
       }
       // Always fetch all orders, filtering will be done on frontend
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`/api/orders?t=${Date.now()}`, {
         credentials: 'include',
       });
       const data = await response.json();
