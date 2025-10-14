@@ -12,6 +12,7 @@ import {
   StarIcon,
   InstagramIcon,
   FacebookIcon,
+  YouTubeIcon,
   WhatsAppIcon,
 } from "@/lib/mui-optimization";
 
@@ -134,6 +135,20 @@ export function UtilityBar() {
                 sx={{ color: colors.text.secondary, "&:hover": { color: "#1877F2" } }}
               >
                 <FacebookIcon fontSize="small" />
+              </AccessibleIconButton>
+            </Box>
+          </Tooltip>
+          <Tooltip title="YouTube">
+            <Box component="span" sx={{ display: "inline-flex" }}>
+              <AccessibleIconButton
+                component="a"
+                href={BUSINESS_CONSTANTS.SOCIAL.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                ariaLabel="Visit YouTube Channel"
+                sx={{ color: colors.text.secondary, "&:hover": { color: "#FF0000" } }}
+              >
+                <YouTubeIcon fontSize="small" />
               </AccessibleIconButton>
             </Box>
           </Tooltip>
