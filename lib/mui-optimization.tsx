@@ -59,6 +59,7 @@ export { default as ArrowBackIcon } from "@mui/icons-material/ArrowBack";
 export { default as ArrowForwardIcon } from "@mui/icons-material/ArrowForward";
 export { default as InstagramIcon } from "@mui/icons-material/Instagram";
 export { default as FacebookIcon } from "@mui/icons-material/Facebook";
+export { default as YouTubeIcon } from "@mui/icons-material/YouTube";
 export { default as GoogleIcon } from "@mui/icons-material/Google";
 export { default as CakeOutlinedIcon } from "@mui/icons-material/CakeOutlined";
 export { default as ZoomInIcon } from "@mui/icons-material/ZoomIn";

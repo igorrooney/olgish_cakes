@@ -25,7 +25,8 @@ export const BUSINESS_CONSTANTS = {
   SOCIAL: {
     instagram: 'https://instagram.com/olgishcakes',
     facebook: 'https://facebook.com/olgishcakes',
-    whatsapp: 'https://wa.me/447867218194'
+    whatsapp: 'https://wa.me/447867218194',
+    youtube: 'https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q'
   },
   
   // Business Hours (if needed in the future)

@@ -11,6 +11,7 @@ import {
   FacebookIcon,
   FavoriteIcon,
   InstagramIcon,
+  YouTubeIcon,
   LocalShippingIcon,
   LocationOnIcon,
   PhoneIcon,
@@ -566,6 +567,16 @@ export default function AboutContent() {
                         sx={{ color: colors.ukrainian.blue }}
                       >
                         <FacebookIcon />
+                      </AccessibleIconButton>
+                      <AccessibleIconButton
+                        href="https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        ariaLabel="Visit our YouTube channel"
+                        title="Visit our YouTube channel"
+                        sx={{ color: colors.ukrainian.blue }}
+                      >
+                        <YouTubeIcon />
                       </AccessibleIconButton>
                     </Stack>
                   </Box>

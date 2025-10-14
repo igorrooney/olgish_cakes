@@ -7,6 +7,7 @@ import Image from "next/image";
 import {
   InstagramIcon,
   FacebookIcon,
+  YouTubeIcon,
   WhatsAppIcon,
   EmailIcon,
   PhoneIcon,
@@ -114,6 +115,7 @@ const contactInfo = {
     facebook: "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
     instagram: "https://www.instagram.com/olgish_cakes/",
     whatsapp: BUSINESS_CONSTANTS.SOCIAL.whatsapp,
+    youtube: BUSINESS_CONSTANTS.SOCIAL.youtube,
   },
 };
 
@@ -483,6 +485,28 @@ export default function Footer() {
               </Typography>
               <Stack direction="row" spacing={spacing.md}>
                 <Link
+                  href={contactInfo.socialMedia.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit my Instagram profile"
+                  title="Olgish Cakes Instagram Profile"
+                >
+                  <AccessibleIconButton
+                    ariaLabel="Instagram"
+                    title="Instagram"
+                    sx={{
+                      color: colors.text.secondary,
+                      "&:hover": {
+                        color: colors.primary.main,
+                        backgroundColor: colors.background.warm,
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                  >
+                    <InstagramIcon />
+                  </AccessibleIconButton>
+                </Link>
+                <Link
                   href={contactInfo.socialMedia.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -505,15 +529,15 @@ export default function Footer() {
                   </AccessibleIconButton>
                 </Link>
                 <Link
-                  href={contactInfo.socialMedia.instagram}
+                  href={contactInfo.socialMedia.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Visit my Instagram profile"
-                  title="Olgish Cakes Instagram Profile"
+                  aria-label="Visit my YouTube channel"
+                  title="Olgish Cakes YouTube Channel"
                 >
                   <AccessibleIconButton
-                    ariaLabel="Instagram"
-                    title="Instagram"
+                    ariaLabel="YouTube"
+                    title="YouTube"
                     sx={{
                       color: colors.text.secondary,
                       "&:hover": {
@@ -523,7 +547,7 @@ export default function Footer() {
                       transition: "all 0.2s ease-in-out",
                     }}
                   >
-                    <InstagramIcon />
+                    <YouTubeIcon />
                   </AccessibleIconButton>
                 </Link>
                 <Link
