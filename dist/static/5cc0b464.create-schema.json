@@ -1,0 +1,2987 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Cake Name"
+      },
+      {
+        "options": {
+          "source": "name",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "max",
+                    "constraint": 60
+                  }
+                ],
+                "level": "warning",
+                "message": "Meta title should be under 60 characters"
+              }
+            ],
+            "description": "Title for search engines (50-60 characters recommended)",
+            "name": "metaTitle",
+            "type": "string"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "max",
+                    "constraint": 160
+                  }
+                ],
+                "level": "warning",
+                "message": "Meta description should be under 160 characters"
+              }
+            ],
+            "description": "Description for search engines (150-160 characters recommended)",
+            "name": "metaDescription",
+            "type": "text"
+          },
+          {
+            "description": "Relevant keywords for this cake",
+            "of": [
+              {
+                "type": "string"
+              }
+            ],
+            "name": "keywords",
+            "type": "array"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "uri",
+                    "constraint": {
+                      "options": {
+                        "scheme": [
+                          "/^http$/",
+                          "/^https$/"
+                        ],
+                        "allowRelative": false,
+                        "relativeOnly": false,
+                        "allowCredentials": false
+                      }
+                    }
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Canonical URL if different from the page URL",
+            "name": "canonicalUrl",
+            "type": "url",
+            "title": "Canonical URL"
+          }
+        ],
+        "name": "seo",
+        "type": "object",
+        "title": "SEO Settings"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/"
+                                  ],
+                                  "allowRelative": false,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "name": "href",
+                      "type": "url",
+                      "title": "URL"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object",
+                  "title": "URL"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Emphasis"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bullet"
+              },
+              {
+                "value": "number",
+                "title": "Numbered"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "H1"
+              },
+              {
+                "value": "h2",
+                "title": "H2"
+              },
+              {
+                "value": "h3",
+                "title": "H3"
+              },
+              {
+                "value": "h4",
+                "title": "H4"
+              },
+              {
+                "value": "h5",
+                "title": "H5"
+              },
+              {
+                "value": "h6",
+                "title": "H6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "description": "Important for accessibility and SEO",
+                "name": "alt",
+                "type": "string",
+                "title": "Alternative Text"
+              },
+              {
+                "description": "Optional caption for the image",
+                "name": "caption",
+                "type": "string"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "description",
+        "type": "array"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "A brief summary of the cake with basic formatting",
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/"
+                                  ],
+                                  "allowRelative": false,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "name": "href",
+                      "type": "url",
+                      "title": "URL"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object",
+                  "title": "URL"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Emphasis"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bullet"
+              },
+              {
+                "value": "number",
+                "title": "Numbered"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "H1"
+              },
+              {
+                "value": "h2",
+                "title": "H2"
+              },
+              {
+                "value": "h3",
+                "title": "H3"
+              },
+              {
+                "value": "h4",
+                "title": "H4"
+              },
+              {
+                "value": "h5",
+                "title": "H5"
+              },
+              {
+                "value": "h6",
+                "title": "H6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "shortDescription",
+        "type": "array"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "6 inch",
+              "value": "6"
+            },
+            {
+              "title": "8 inch",
+              "value": "8"
+            },
+            {
+              "title": "10 inch",
+              "value": "10"
+            },
+            {
+              "title": "12 inch",
+              "value": "12"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "6",
+                  "8",
+                  "10",
+                  "12"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "size",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  },
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "standard",
+            "type": "number",
+            "title": "Standard Design Price"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  },
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "individual",
+            "type": "number",
+            "title": "Individual Design Price"
+          }
+        ],
+        "name": "pricing",
+        "type": "object"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Important for accessibility and SEO",
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative Text"
+          },
+          {
+            "description": "Optional caption for the image",
+            "name": "caption",
+            "type": "string"
+          }
+        ],
+        "name": "mainImage",
+        "type": "image"
+      },
+      {
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "description": "Important for accessibility and SEO",
+                "name": "alt",
+                "type": "string",
+                "title": "Alternative Text"
+              },
+              {
+                "description": "Optional caption for the image",
+                "name": "caption",
+                "type": "string"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "images",
+        "type": "array",
+        "title": "Additional Images"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Traditional",
+              "value": "traditional"
+            },
+            {
+              "title": "Seasonal",
+              "value": "seasonal"
+            },
+            {
+              "title": "Custom",
+              "value": "custom"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "traditional",
+                  "seasonal",
+                  "custom"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "ingredients",
+        "type": "array"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "allergens",
+        "type": "array"
+      },
+      {
+        "fields": [
+          {
+            "of": [
+              {
+                "options": {
+                  "hotspot": true
+                },
+                "fields": [
+                  {
+                    "initialValue": false,
+                    "name": "isMain",
+                    "type": "boolean",
+                    "title": "Is Main Image"
+                  },
+                  {
+                    "validation": [
+                      {
+                        "rules": [
+                          {
+                            "flag": "presence",
+                            "constraint": "required"
+                          }
+                        ],
+                        "level": "error"
+                      }
+                    ],
+                    "description": "Important for accessibility and SEO",
+                    "name": "alt",
+                    "type": "string",
+                    "title": "Alternative Text"
+                  },
+                  {
+                    "description": "Optional caption for the image",
+                    "name": "caption",
+                    "type": "string"
+                  }
+                ],
+                "type": "image"
+              }
+            ],
+            "name": "standard",
+            "type": "array",
+            "title": "Standard Designs"
+          },
+          {
+            "of": [
+              {
+                "options": {
+                  "hotspot": true
+                },
+                "fields": [
+                  {
+                    "initialValue": false,
+                    "name": "isMain",
+                    "type": "boolean",
+                    "title": "Is Main Image"
+                  },
+                  {
+                    "validation": [
+                      {
+                        "rules": [
+                          {
+                            "flag": "presence",
+                            "constraint": "required"
+                          }
+                        ],
+                        "level": "error"
+                      }
+                    ],
+                    "description": "Important for accessibility and SEO",
+                    "name": "alt",
+                    "type": "string",
+                    "title": "Alternative Text"
+                  },
+                  {
+                    "description": "Optional caption for the image",
+                    "name": "caption",
+                    "type": "string"
+                  }
+                ],
+                "type": "image"
+              }
+            ],
+            "name": "individual",
+            "type": "array",
+            "title": "Individual Designs"
+          }
+        ],
+        "name": "designs",
+        "type": "object"
+      },
+      {
+        "fields": [
+          {
+            "initialValue": true,
+            "description": "Add structured data for product information",
+            "name": "enableProductSchema",
+            "type": "boolean"
+          },
+          {
+            "initialValue": "Olgish Cakes",
+            "description": "Brand name for structured data",
+            "name": "brand",
+            "type": "string"
+          },
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "In Stock",
+                  "value": "InStock"
+                },
+                {
+                  "title": "Out of Stock",
+                  "value": "OutOfStock"
+                },
+                {
+                  "title": "Preorder",
+                  "value": "PreOrder"
+                },
+                {
+                  "title": "Discontinued",
+                  "value": "Discontinued"
+                }
+              ]
+            },
+            "initialValue": "InStock",
+            "name": "availability",
+            "type": "string"
+          }
+        ],
+        "name": "structuredData",
+        "type": "object"
+      }
+    ],
+    "name": "cake",
+    "type": "document",
+    "title": "Cakes"
+  },
+  {
+    "fields": [
+      {
+        "initialValue": false,
+        "description": "Show this hamper in the Featured Gift Hampers section on the homepage",
+        "name": "isFeatured",
+        "type": "boolean",
+        "title": "Featured"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Hamper Name"
+      },
+      {
+        "options": {
+          "source": "name",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "max",
+                    "constraint": 60
+                  }
+                ],
+                "level": "warning",
+                "message": "Meta title should be under 60 characters"
+              }
+            ],
+            "description": "Title for search engines (50-60 characters recommended)",
+            "name": "metaTitle",
+            "type": "string"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "max",
+                    "constraint": 160
+                  }
+                ],
+                "level": "warning",
+                "message": "Meta description should be under 160 characters"
+              }
+            ],
+            "description": "Description for search engines (150-160 characters recommended)",
+            "name": "metaDescription",
+            "type": "text"
+          },
+          {
+            "description": "Relevant keywords for this hamper",
+            "of": [
+              {
+                "type": "string"
+              }
+            ],
+            "name": "keywords",
+            "type": "array"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "uri",
+                    "constraint": {
+                      "options": {
+                        "scheme": [
+                          "/^http$/",
+                          "/^https$/"
+                        ],
+                        "allowRelative": false,
+                        "relativeOnly": false,
+                        "allowCredentials": false
+                      }
+                    }
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Canonical URL if different from the page URL",
+            "name": "canonicalUrl",
+            "type": "url",
+            "title": "Canonical URL"
+          },
+          {
+            "options": {
+              "list": [
+                1,
+                0.9,
+                0.8,
+                0.7,
+                0.6
+              ]
+            },
+            "name": "priority",
+            "type": "number",
+            "title": "Sitemap Priority"
+          },
+          {
+            "options": {
+              "list": [
+                "always",
+                "hourly",
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly",
+                "never"
+              ]
+            },
+            "name": "changefreq",
+            "type": "string",
+            "title": "Sitemap Change Frequency"
+          },
+          {
+            "description": "Optional FAQs to display as rich results",
+            "of": [
+              {
+                "fields": [
+                  {
+                    "validation": [
+                      {
+                        "rules": [
+                          {
+                            "flag": "presence",
+                            "constraint": "required"
+                          }
+                        ],
+                        "level": "error"
+                      }
+                    ],
+                    "name": "question",
+                    "type": "string"
+                  },
+                  {
+                    "validation": [
+                      {
+                        "rules": [
+                          {
+                            "flag": "presence",
+                            "constraint": "required"
+                          }
+                        ],
+                        "level": "error"
+                      }
+                    ],
+                    "name": "answer",
+                    "type": "text"
+                  }
+                ],
+                "type": "object"
+              }
+            ],
+            "name": "faq",
+            "type": "array",
+            "title": "FAQ"
+          }
+        ],
+        "name": "seo",
+        "type": "object",
+        "title": "SEO Settings"
+      },
+      {
+        "description": "Brief description used in listings and SEO",
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "shortDescription",
+        "type": "array"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "description",
+        "type": "array"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              },
+              {
+                "flag": "precision",
+                "constraint": 2
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "price",
+        "type": "number"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Chocolate",
+              "value": "chocolate"
+            },
+            {
+              "title": "Assorted",
+              "value": "assorted"
+            },
+            {
+              "title": "Seasonal",
+              "value": "seasonal"
+            },
+            {
+              "title": "Premium",
+              "value": "premium"
+            }
+          ]
+        },
+        "name": "category",
+        "type": "string"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "ingredients",
+        "type": "array"
+      },
+      {
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "allergens",
+        "type": "array"
+      },
+      {
+        "description": "Optional gallery images shown on the hamper page",
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "name": "alt",
+                "type": "string",
+                "title": "Alt text"
+              },
+              {
+                "name": "caption",
+                "type": "string"
+              },
+              {
+                "name": "isMain",
+                "type": "boolean",
+                "title": "Use as main image"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "images",
+        "type": "array",
+        "title": "Additional Images"
+      }
+    ],
+    "name": "giftHamper",
+    "type": "document",
+    "title": "Gift Hampers"
+  },
+  {
+    "fields": [
+      {
+        "description": "Name or initials of the customer",
+        "name": "customerName",
+        "type": "string"
+      },
+      {
+        "description": "Type of cake ordered",
+        "name": "cakeType",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 1
+              },
+              {
+                "flag": "max",
+                "constraint": 5
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Rating from 1 to 5",
+        "name": "rating",
+        "type": "number"
+      },
+      {
+        "description": "Date when the review was given",
+        "name": "date",
+        "type": "date",
+        "title": "Review Date"
+      },
+      {
+        "description": "The testimonial content",
+        "name": "text",
+        "type": "text",
+        "title": "Review Text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Image of the cake being reviewed",
+        "name": "cakeImage",
+        "type": "image"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Instagram",
+              "value": "instagram"
+            },
+            {
+              "title": "Facebook",
+              "value": "facebook"
+            },
+            {
+              "title": "Google",
+              "value": "google"
+            },
+            {
+              "title": "Direct",
+              "value": "direct"
+            }
+          ]
+        },
+        "name": "source",
+        "type": "string",
+        "title": "Review Source"
+      }
+    ],
+    "name": "testimonial",
+    "type": "document",
+    "title": "Testimonials"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "question",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "answer",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Order in which the FAQ should appear (lower numbers appear first)",
+        "name": "order",
+        "type": "number",
+        "title": "Display Order"
+      }
+    ],
+    "name": "faq",
+    "type": "document",
+    "title": "FAQ"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 3
+              },
+              {
+                "flag": "max",
+                "constraint": 100
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Name of the market or event (e.g., 'Meanwood Farmers Market')",
+        "name": "title",
+        "type": "string",
+        "title": "Event Title"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 3
+              },
+              {
+                "flag": "max",
+                "constraint": 100
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Market location or venue name",
+        "name": "location",
+        "type": "string"
+      },
+      {
+        "placeholder": "https://maps.app.goo.gl/xyz or https://www.google.com/maps/place/...",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Paste the Google Maps share link here for exact location",
+        "name": "googleMapsUrl",
+        "type": "url",
+        "title": "Google Maps Link"
+      },
+      {
+        "options": {
+          "dateFormat": "DD/MM/YYYY"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "date",
+        "type": "date",
+        "title": "Event Date"
+      },
+      {
+        "placeholder": "09:00",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "regex",
+                "constraint": {
+                  "pattern": "/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/",
+                  "name": "time",
+                  "invert": false
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Format: HH:MM (24-hour format)",
+        "name": "startTime",
+        "type": "string"
+      },
+      {
+        "placeholder": "16:00",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "regex",
+                "constraint": {
+                  "pattern": "/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/",
+                  "name": "time",
+                  "invert": false
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Format: HH:MM (24-hour format)",
+        "name": "endTime",
+        "type": "string"
+      },
+      {
+        "rows": 4,
+        "description": "Brief description of what visitors can expect",
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "description": "Special cakes or offers available at this event",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "specialOffers",
+        "type": "array"
+      },
+      {
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "regex",
+                    "constraint": {
+                      "pattern": "/^\\+?[\\d\\s\\-\\(\\)]+$/",
+                      "name": "phone",
+                      "invert": false
+                    }
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "phone",
+            "type": "string",
+            "title": "Phone Number"
+          },
+          {
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "regex",
+                    "constraint": {
+                      "pattern": "/^\\+?[\\d\\s\\-\\(\\)]+$/",
+                      "name": "phone",
+                      "invert": false
+                    }
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "whatsapp",
+            "type": "string",
+            "title": "WhatsApp Number"
+          }
+        ],
+        "name": "contactInfo",
+        "type": "object",
+        "title": "Contact Information"
+      },
+      {
+        "initialValue": false,
+        "description": "Feature this event prominently on the home page",
+        "name": "featured",
+        "type": "boolean",
+        "title": "Featured Event"
+      },
+      {
+        "initialValue": true,
+        "description": "Show this event on the website",
+        "name": "active",
+        "type": "boolean"
+      },
+      {
+        "initialValue": false,
+        "description": "This event may be cancelled due to weather",
+        "name": "weatherDependent",
+        "type": "boolean"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "description": "Important for SEO and accessibility",
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative Text"
+          }
+        ],
+        "name": "image",
+        "type": "image",
+        "title": "Event Image"
+      }
+    ],
+    "name": "marketSchedule",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 100
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 200
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "excerpt",
+        "type": "text"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/"
+                                  ],
+                                  "allowRelative": false,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "name": "href",
+                      "type": "url",
+                      "title": "URL"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object",
+                  "title": "URL"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Emphasis"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bullet"
+              },
+              {
+                "value": "number",
+                "title": "Number"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h2",
+                "title": "H2"
+              },
+              {
+                "value": "h3",
+                "title": "H3"
+              },
+              {
+                "value": "h4",
+                "title": "H4"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "alt",
+                "type": "string",
+                "title": "Alternative Text"
+              },
+              {
+                "description": "Optional caption for the image",
+                "name": "caption",
+                "type": "string"
+              },
+              {
+                "options": {
+                  "list": [
+                    {
+                      "title": "Small",
+                      "value": "small"
+                    },
+                    {
+                      "title": "Medium",
+                      "value": "medium"
+                    },
+                    {
+                      "title": "Large",
+                      "value": "large"
+                    },
+                    {
+                      "title": "Full Width",
+                      "value": "full"
+                    }
+                  ],
+                  "layout": "radio"
+                },
+                "initialValue": "medium",
+                "name": "size",
+                "type": "string",
+                "title": "Image Size"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "content",
+        "type": "array"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative Text"
+          }
+        ],
+        "name": "featuredImage",
+        "type": "image"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Image displayed on blog listing cards (recommended size: 400x300px)",
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alternative Text"
+          }
+        ],
+        "name": "cardImage",
+        "type": "image"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Business Guide",
+              "value": "Business Guide"
+            },
+            {
+              "title": "Cake by Post",
+              "value": "Cake by Post"
+            },
+            {
+              "title": "Traditional Ukrainian",
+              "value": "Traditional Ukrainian"
+            },
+            {
+              "title": "Wedding Cakes",
+              "value": "Wedding Cakes"
+            },
+            {
+              "title": "Customer Stories",
+              "value": "Customer Stories"
+            },
+            {
+              "title": "Behind the Scenes",
+              "value": "Behind the Scenes"
+            },
+            {
+              "title": "Seasonal",
+              "value": "Seasonal"
+            }
+          ],
+          "layout": "tags"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "Business Guide",
+                  "Cake by Post",
+                  "Traditional Ukrainian",
+                  "Wedding Cakes",
+                  "Customer Stories",
+                  "Behind the Scenes",
+                  "Seasonal"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "categories",
+        "type": "array"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 300
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Short description of the blog post",
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Enter number of minutes (e.g., \"8\" for \"8 min read\")",
+        "name": "readTime",
+        "type": "string",
+        "title": "Read Time (minutes)"
+      },
+      {
+        "initialValue": 0,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Number of times this post has been viewed (automatically updated)",
+        "name": "viewCount",
+        "type": "number"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Draft",
+              "value": "draft"
+            },
+            {
+              "title": "Scheduled",
+              "value": "scheduled"
+            },
+            {
+              "title": "Published",
+              "value": "published"
+            }
+          ],
+          "layout": "radio"
+        },
+        "initialValue": "draft",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "draft",
+                  "scheduled",
+                  "published"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "status",
+        "type": "string"
+      },
+      {
+        "options": {
+          "dateFormat": "YYYY-MM-DD",
+          "timeFormat": "HH:mm",
+          "timeStep": 15
+        },
+        "description": "When this post should be published (for scheduled posts)",
+        "hidden": "conditional",
+        "name": "publishDate",
+        "type": "datetime"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 60
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Title for search engines (max 60 characters)",
+        "name": "seoTitle",
+        "type": "string",
+        "title": "SEO Title"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 160
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Description for search engines (max 160 characters)",
+        "name": "seoDescription",
+        "type": "text",
+        "title": "SEO Description"
+      },
+      {
+        "options": {
+          "layout": "tags"
+        },
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "name": "keywords",
+        "type": "array"
+      },
+      {
+        "initialValue": false,
+        "description": "Show this post as featured on the blog homepage",
+        "name": "featured",
+        "type": "boolean",
+        "title": "Featured Post"
+      },
+      {
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "name": "alt",
+                "type": "string",
+                "title": "Alternative Text"
+              }
+            ],
+            "name": "image",
+            "type": "image"
+          }
+        ],
+        "name": "author",
+        "type": "object"
+      }
+    ],
+    "name": "blogPost",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Unique order identifier (auto-generated)",
+        "readOnly": true,
+        "name": "orderNumber",
+        "type": "string"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "New Order",
+              "value": "new"
+            },
+            {
+              "title": "Confirmed",
+              "value": "confirmed"
+            },
+            {
+              "title": "In Progress",
+              "value": "in-progress"
+            },
+            {
+              "title": "Ready for Pickup",
+              "value": "ready-pickup"
+            },
+            {
+              "title": "Out for Delivery",
+              "value": "out-delivery"
+            },
+            {
+              "title": "Delivered",
+              "value": "delivered"
+            },
+            {
+              "title": "Completed",
+              "value": "completed"
+            },
+            {
+              "title": "Cancelled",
+              "value": "cancelled"
+            }
+          ],
+          "layout": "dropdown"
+        },
+        "initialValue": "new",
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "new",
+                  "confirmed",
+                  "in-progress",
+                  "ready-pickup",
+                  "out-delivery",
+                  "delivered",
+                  "completed",
+                  "cancelled"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "status",
+        "type": "string",
+        "title": "Order Status"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Browse Catalog",
+              "value": "browse-catalog"
+            },
+            {
+              "title": "Custom Design",
+              "value": "custom-design"
+            },
+            {
+              "title": "Wedding Cake",
+              "value": "wedding-cake"
+            },
+            {
+              "title": "Gift Hamper",
+              "value": "gift-hamper"
+            },
+            {
+              "title": "Custom Quote",
+              "value": "custom-quote"
+            }
+          ],
+          "layout": "dropdown"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "browse-catalog",
+                  "custom-design",
+                  "wedding-cake",
+                  "gift-hamper",
+                  "custom-quote"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "orderType",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "name",
+            "type": "string",
+            "title": "Full Name"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "email",
+            "type": "email",
+            "title": "Email Address"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "phone",
+            "type": "string",
+            "title": "Phone Number"
+          },
+          {
+            "rows": 3,
+            "name": "address",
+            "type": "text",
+            "title": "Delivery Address"
+          },
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "postcode",
+            "type": "string"
+          }
+        ],
+        "name": "customer",
+        "type": "object",
+        "title": "Customer Information"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "of": [
+          {
+            "fields": [
+              {
+                "options": {
+                  "list": [
+                    {
+                      "title": "Cake",
+                      "value": "cake"
+                    },
+                    {
+                      "title": "Gift Hamper",
+                      "value": "gift-hamper"
+                    },
+                    {
+                      "title": "Custom Product",
+                      "value": "custom"
+                    }
+                  ],
+                  "layout": "dropdown"
+                },
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "valid",
+                        "constraint": [
+                          "cake",
+                          "gift-hamper",
+                          "custom"
+                        ]
+                      },
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "productType",
+                "type": "string"
+              },
+              {
+                "description": "Reference to the product (cake slug, hamper slug, etc.)",
+                "name": "productId",
+                "type": "string",
+                "title": "Product ID/Slug"
+              },
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "productName",
+                "type": "string"
+              },
+              {
+                "options": {
+                  "list": [
+                    {
+                      "title": "Standard Design",
+                      "value": "standard"
+                    },
+                    {
+                      "title": "Individual Design",
+                      "value": "individual"
+                    }
+                  ],
+                  "layout": "dropdown"
+                },
+                "name": "designType",
+                "type": "string"
+              },
+              {
+                "initialValue": 1,
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      },
+                      {
+                        "flag": "min",
+                        "constraint": 1
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "quantity",
+                "type": "number"
+              },
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      },
+                      {
+                        "flag": "min",
+                        "constraint": 0
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "unitPrice",
+                "type": "number",
+                "title": "Unit Price (£)"
+              },
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      },
+                      {
+                        "flag": "min",
+                        "constraint": 0
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "totalPrice",
+                "type": "number",
+                "title": "Total Price (£)"
+              },
+              {
+                "name": "size",
+                "type": "string"
+              },
+              {
+                "name": "flavor",
+                "type": "string"
+              },
+              {
+                "rows": 3,
+                "name": "specialInstructions",
+                "type": "text"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "items",
+        "type": "array",
+        "title": "Order Items"
+      },
+      {
+        "fields": [
+          {
+            "description": "When the customer needs the order (optional)",
+            "name": "dateNeeded",
+            "type": "date"
+          },
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Collection",
+                  "value": "collection"
+                },
+                {
+                  "title": "Local Delivery",
+                  "value": "local-delivery"
+                },
+                {
+                  "title": "Postal Delivery",
+                  "value": "postal"
+                },
+                {
+                  "title": "Market Stall Pickup",
+                  "value": "market-pickup"
+                }
+              ],
+              "layout": "dropdown"
+            },
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "valid",
+                    "constraint": [
+                      "collection",
+                      "local-delivery",
+                      "postal",
+                      "market-pickup"
+                    ]
+                  },
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "deliveryMethod",
+            "type": "string"
+          },
+          {
+            "rows": 3,
+            "name": "deliveryAddress",
+            "type": "text"
+          },
+          {
+            "description": "For postal deliveries",
+            "name": "trackingNumber",
+            "type": "string"
+          },
+          {
+            "rows": 2,
+            "name": "deliveryNotes",
+            "type": "text"
+          },
+          {
+            "rows": 3,
+            "description": "Personal message to be included with gift hamper",
+            "name": "giftNote",
+            "type": "text"
+          }
+        ],
+        "name": "delivery",
+        "type": "object",
+        "title": "Delivery Information"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "fields": [
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  },
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "subtotal",
+            "type": "number",
+            "title": "Subtotal (£)"
+          },
+          {
+            "initialValue": 0,
+            "name": "deliveryFee",
+            "type": "number",
+            "title": "Delivery Fee (£)"
+          },
+          {
+            "initialValue": 0,
+            "name": "discount",
+            "type": "number",
+            "title": "Discount (£)"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "presence",
+                    "constraint": "required"
+                  },
+                  {
+                    "flag": "min",
+                    "constraint": 0
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "total",
+            "type": "number",
+            "title": "Total Amount (£)"
+          },
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Pending",
+                  "value": "pending"
+                },
+                {
+                  "title": "Paid",
+                  "value": "paid"
+                },
+                {
+                  "title": "Partially Paid",
+                  "value": "partial"
+                },
+                {
+                  "title": "Refunded",
+                  "value": "refunded"
+                }
+              ],
+              "layout": "dropdown"
+            },
+            "initialValue": "pending",
+            "name": "paymentStatus",
+            "type": "string"
+          },
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Cash on Collection",
+                  "value": "cash-collection"
+                },
+                {
+                  "title": "Bank Transfer",
+                  "value": "bank-transfer"
+                },
+                {
+                  "title": "Card Payment",
+                  "value": "card"
+                },
+                {
+                  "title": "PayPal",
+                  "value": "paypal"
+                }
+              ],
+              "layout": "dropdown"
+            },
+            "name": "paymentMethod",
+            "type": "string"
+          }
+        ],
+        "name": "pricing",
+        "type": "object",
+        "title": "Pricing Information"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "rows": 3,
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "message",
+                "type": "text"
+              },
+              {
+                "of": [
+                  {
+                    "options": {
+                      "hotspot": true
+                    },
+                    "type": "image"
+                  }
+                ],
+                "name": "attachments",
+                "type": "array"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "messages",
+        "type": "array",
+        "title": "Customer Messages"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "rows": 2,
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "note",
+                "type": "text"
+              },
+              {
+                "initialValue": "Admin",
+                "name": "author",
+                "type": "string"
+              },
+              {
+                "name": "createdAt",
+                "type": "datetime"
+              },
+              {
+                "description": "Attach images to this note",
+                "of": [
+                  {
+                    "options": {
+                      "hotspot": true
+                    },
+                    "fields": [
+                      {
+                        "description": "Important for accessibility",
+                        "name": "alt",
+                        "type": "string",
+                        "title": "Alt Text"
+                      },
+                      {
+                        "name": "caption",
+                        "type": "string"
+                      }
+                    ],
+                    "type": "image"
+                  }
+                ],
+                "name": "images",
+                "type": "array"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "notes",
+        "type": "array",
+        "title": "Internal Notes"
+      },
+      {
+        "fields": [
+          {
+            "options": {
+              "list": [
+                {
+                  "title": "Website Order Form",
+                  "value": "website"
+                },
+                {
+                  "title": "Email",
+                  "value": "email"
+                },
+                {
+                  "title": "Phone",
+                  "value": "phone"
+                },
+                {
+                  "title": "Market Stall",
+                  "value": "market"
+                },
+                {
+                  "title": "Social Media",
+                  "value": "social"
+                }
+              ],
+              "layout": "dropdown"
+            },
+            "initialValue": "website",
+            "name": "source",
+            "type": "string",
+            "title": "Order Source"
+          },
+          {
+            "validation": [
+              {
+                "rules": [
+                  {
+                    "flag": "uri",
+                    "constraint": {
+                      "options": {
+                        "scheme": [
+                          "/^http$/",
+                          "/^https$/"
+                        ],
+                        "allowRelative": false,
+                        "relativeOnly": false,
+                        "allowCredentials": false
+                      }
+                    }
+                  }
+                ],
+                "level": "error"
+              }
+            ],
+            "name": "referrer",
+            "type": "url",
+            "title": "Referrer URL"
+          },
+          {
+            "name": "userAgent",
+            "type": "string"
+          },
+          {
+            "name": "ipAddress",
+            "type": "string",
+            "title": "IP Address"
+          }
+        ],
+        "name": "metadata",
+        "type": "object",
+        "title": "Order Metadata"
+      }
+    ],
+    "name": "order",
+    "type": "document"
+  }
+]

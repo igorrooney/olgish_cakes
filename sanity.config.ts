@@ -6,8 +6,12 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
-// Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
-import { apiVersion, dataset, projectId } from "./sanity/env";
+// NOTE: For hosted Studio builds, avoid reading process.env at runtime in the browser.
+// Hardcode the Sanity project configuration here to ensure the hosted Studio works
+// without environment variables.
+const projectId = "as9bci7b";
+const dataset = "production";
+const apiVersion = "2025-03-31";
 import { schema } from "./sanity/schema";
 import { structure } from "./sanity/structure";
 
