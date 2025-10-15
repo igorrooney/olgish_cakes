@@ -1,20 +1,18 @@
 /**
- * Default reviews for structured data when no real testimonials are available
- * These provide fallback data to ensure valid schema.org markup
+ * Default reviews for structured data when no real testimonials are available.
+ * These provide fallback data to ensure valid schema.org markup.
+ * 
+ * Note: Dates are fixed (not dynamic) to prevent search engine confusion from
+ * constantly changing review dates on each build. Updated quarterly to maintain freshness.
  */
 
 import { Review, AggregateRating, WithContext } from "schema-dts";
 
-/**
- * Generate dynamic review date
- * @param daysAgo Number of days in the past
- * @returns ISO date string (YYYY-MM-DD)
- */
-const generateReviewDate = (daysAgo: number): string => {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  return date.toISOString().split('T')[0];
-};
+// Fixed review dates - update these quarterly to keep them reasonably current
+const REVIEW_DATES = {
+  RECENT: "2025-09-15",    // ~1 month ago from current deployment
+  OLDER: "2025-08-01"       // ~2.5 months ago from current deployment
+} as const;
 
 export const DEFAULT_REVIEWS: WithContext<Review>[] = [
   {
@@ -36,7 +34,7 @@ export const DEFAULT_REVIEWS: WithContext<Review>[] = [
       worstRating: "1"
     },
     reviewBody: "Absolutely delicious Ukrainian honey cake! The authentic taste and quality exceeded our expectations. Highly recommend Olgish Cakes!",
-    datePublished: generateReviewDate(30)
+    datePublished: REVIEW_DATES.RECENT
   },
   {
     "@context": "https://schema.org",
@@ -57,7 +55,7 @@ export const DEFAULT_REVIEWS: WithContext<Review>[] = [
       worstRating: "1"
     },
     reviewBody: "Outstanding service and incredible quality. The honey cake was perfect for our celebration. Will definitely order again!",
-    datePublished: generateReviewDate(45)
+    datePublished: REVIEW_DATES.OLDER
   }
 ];
 
@@ -81,7 +79,7 @@ export const DEFAULT_KYIV_CAKE_REVIEW: WithContext<Review> = {
     worstRating: "1"
   },
   reviewBody: "The Kyiv cake was absolutely amazing! Rich chocolate layers with perfect nutty texture. Highly recommend!",
-  datePublished: generateReviewDate(20)
+  datePublished: REVIEW_DATES.RECENT
 };
 
 // Default aggregate rating when no testimonials exist (without context for embedding in other schemas)

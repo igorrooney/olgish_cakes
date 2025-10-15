@@ -1,6 +1,13 @@
 import { client } from "@/sanity/lib/client";
 import { Testimonial } from "../types/testimonial";
 
+/**
+ * Fetch featured testimonials from Sanity CMS
+ * @param limit - Maximum number of testimonials to return (default: 3)
+ * @returns Array of testimonial objects sorted by date
+ * @example
+ * const testimonials = await getFeaturedTestimonials(5);
+ */
 export async function getFeaturedTestimonials(limit: number = 3): Promise<Testimonial[]> {
   try {
     const query = `
@@ -29,11 +36,18 @@ export async function getFeaturedTestimonials(limit: number = 3): Promise<Testim
 
 // Cache for testimonial statistics
 let cachedStats: { count: number; averageRating: number; timestamp: number } | null = null;
-const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+// Environment-specific cache duration: 24 hours in production, 1 hour in development
+const CACHE_DURATION = process.env.NODE_ENV === 'production' 
+  ? 24 * 60 * 60 * 1000  // 24 hours for production (testimonials don't change frequently)
+  : 60 * 60 * 1000;       // 1 hour for development (faster iteration)
 
 /**
- * Fetch testimonial statistics with caching
- * @returns Object with count and averageRating
+ * Fetch testimonial statistics with caching to reduce Sanity queries
+ * @returns Object containing total count and average rating of all testimonials
+ * @example
+ * const stats = await getAllTestimonialsStats();
+ * // Returns: { count: 16, averageRating: 4.8 }
  */
 export async function getAllTestimonialsStats(): Promise<{ count: number; averageRating: number }> {
   // Return cached stats if still valid

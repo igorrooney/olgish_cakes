@@ -2,6 +2,7 @@ import Script from "next/script";
 import { getFeaturedTestimonials, getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
 import { client } from "@/sanity/lib/client";
 import { generateAllProductSchemas } from "@/lib/product-schemas";
+import { MAX_PRODUCTS_FOR_SCHEMA } from "@/lib/schema-constants";
 
 export async function OrderPageStructuredData() {
   // Fetch recent testimonials and stats in parallel
@@ -14,7 +15,7 @@ export async function OrderPageStructuredData() {
   
   // Fetch essential cake data for product schemas (optimized query)
   const allCakes = await client.fetch(`
-    *[_type == "cake"] | order(name asc) [0...50] {
+    *[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
       _id,
       name,
       slug,

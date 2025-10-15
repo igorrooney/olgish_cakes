@@ -36,27 +36,36 @@ export interface Cake {
 }
 
 /**
- * Generate a unique SKU for a product
- * @throws {Error} If name is empty or invalid
+ * Generate a unique SKU for a product with fallback handling
+ * @param name - Product name to generate SKU from
+ * @param index - Product index for uniqueness
+ * @returns Formatted SKU string (e.g., "OC-HONEY-CAKE-001")
+ * @example
+ * generateSKU("Honey Cake", 0) // Returns "OC-HONEY-CAKE-001"
  */
 export function generateSKU(name: string, index: number): string {
-  if (!name || typeof name !== 'string') {
-    throw new Error('Product name is required for SKU generation');
-  }
-  
-  if (index < 0) {
-    throw new Error('Index must be a positive number');
-  }
+  // Validate inputs with fallbacks instead of throwing errors
+  const safeName = (name && typeof name === 'string') ? name : 'PRODUCT';
+  const safeIndex = (index >= 0) ? index : 0;
 
-  const cleanName = name
+  const cleanName = safeName
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "-")
     .replace(/-+/g, "-")
     .substring(0, MAX_SKU_NAME_LENGTH);
   
-  return `${SKU_PREFIX}-${cleanName}-${String(index + 1).padStart(SKU_PADDING_LENGTH, '0')}`;
+  return `${SKU_PREFIX}-${cleanName}-${String(safeIndex + 1).padStart(SKU_PADDING_LENGTH, '0')}`;
 }
 
+/**
+ * Generate Schema.org Product structured data for a single cake
+ * @param cake - Cake object from Sanity CMS
+ * @param index - Index for SKU generation
+ * @param testimonialStats - Aggregated testimonial statistics
+ * @returns Schema.org Product structured data with full context
+ * @example
+ * const schema = generateProductSchema(cake, 0, { count: 16, averageRating: 4.8 });
+ */
 export function generateProductSchema(cake: Cake, index: number, testimonialStats: TestimonialStats): WithContext<Product> {
   const cakeSlug = cake.slug?.current || '';
   const cakeName = cake.name || 'Cake';
@@ -189,22 +198,43 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
 }
 
 /**
- * Generate product schemas for all cakes
- * @param cakes Array of cake objects from Sanity
- * @param testimonialStats Testimonial statistics for aggregate rating
- * @returns Array of product schemas with context
+ * Generate Schema.org Product structured data for all cakes with error handling
+ * @param cakes - Array of cake objects from Sanity CMS
+ * @param testimonialStats - Aggregated testimonial statistics (count and averageRating)
+ * @returns Array of Schema.org Product structured data with fallbacks for failed schemas
+ * @example
+ * const schemas = generateAllProductSchemas(cakes, { count: 16, averageRating: 4.8 });
  */
 export function generateAllProductSchemas(cakes: Cake[], testimonialStats: TestimonialStats): WithContext<Product>[] {
-  return cakes
-    .filter(cake => cake && cake.name) // Filter out invalid entries
+  const validCakes = cakes.filter(cake => cake && cake.name);
+  const invalidCount = cakes.length - validCakes.length;
+  
+  if (invalidCount > 0) {
+    console.warn(`[Product Schemas] Filtered out ${invalidCount} invalid cake(s) without names`);
+  }
+
+  const schemas = validCakes
     .map((cake: Cake, index: number) => {
       try {
         return generateProductSchema(cake, index, testimonialStats);
       } catch (error) {
-        console.error(`Error generating schema for cake ${cake.name}:`, error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error(
+          `[Product Schemas] Failed to generate schema for cake "${cake.name}" (ID: ${cake._id}):`,
+          errorMessage,
+          { cake, error }
+        );
         // Return null for failed schemas and filter them out later
         return null;
       }
     })
     .filter((schema): schema is WithContext<Product> => schema !== null);
+
+  const failedCount = validCakes.length - schemas.length;
+  if (failedCount > 0) {
+    console.warn(`[Product Schemas] ${failedCount} schema(s) failed to generate`);
+  }
+
+  console.log(`[Product Schemas] Successfully generated ${schemas.length} product schemas`);
+  return schemas;
 }

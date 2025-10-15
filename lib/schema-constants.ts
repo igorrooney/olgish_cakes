@@ -2,6 +2,9 @@
  * Constants for structured data schemas
  */
 
+// Product schema generation
+export const MAX_PRODUCTS_FOR_SCHEMA = 50; // Maximum number of products to generate schemas for
+
 // Price validity
 export const DEFAULT_PRICE_VALID_DAYS = 30;
 
