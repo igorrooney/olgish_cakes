@@ -39,3 +39,9 @@ export const getOptimizedAnimation = (preset: typeof fadeInPreset, reduceMotion 
   }
   return preset;
 };
+
+// React hook for getting optimized animations with automatic reduced motion detection
+export const useOptimizedAnimation = (preset: typeof fadeInPreset) => {
+  const reduceMotion = useReducedMotion();
+  return getOptimizedAnimation(preset, reduceMotion);
+};
