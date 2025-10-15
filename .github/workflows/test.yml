@@ -55,37 +55,37 @@ jobs:
               
               const formatPercent = (num) => num.toFixed(2) + '%';
               
-              let summary = '| Metric | Coverage | Status |\\n';
-              summary += '|--------|----------|--------|\\n';
-              summary += \`| Statements | \${formatPercent(total.statements.pct)} | \${total.statements.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
-              summary += \`| Branches | \${formatPercent(total.branches.pct)} | \${total.branches.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
-              summary += \`| Functions | \${formatPercent(total.functions.pct)} | \${total.functions.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
-              summary += \`| Lines | \${formatPercent(total.lines.pct)} | \${total.lines.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
+              let summary = '| Metric | Coverage | Status |\n';
+              summary += '|--------|----------|--------|\n';
+              summary += '| Statements | ' + formatPercent(total.statements.pct) + ' | ' + (total.statements.pct >= 80 ? '✅' : '⚠️') + ' |\n';
+              summary += '| Branches | ' + formatPercent(total.branches.pct) + ' | ' + (total.branches.pct >= 80 ? '✅' : '⚠️') + ' |\n';
+              summary += '| Functions | ' + formatPercent(total.functions.pct) + ' | ' + (total.functions.pct >= 80 ? '✅' : '⚠️') + ' |\n';
+              summary += '| Lines | ' + formatPercent(total.lines.pct) + ' | ' + (total.lines.pct >= 80 ? '✅' : '⚠️') + ' |\n';
               
               fs.writeFileSync('coverage-summary.md', summary, { flag: 'a' });
             "
             cat coverage-summary.md >> $GITHUB_STEP_SUMMARY
           fi
 
-          - name: Comment PR with coverage
-            if: github.event_name == 'pull_request'
-            uses: actions/github-script@v7
-            with:
-              script: |
-                const fs = require('fs');
-                let coverageSummary = '';
-                try {
-                  coverageSummary = fs.readFileSync('coverage-summary.md', 'utf8');
-                } catch (error) {
-                  coverageSummary = '## Test Coverage Report\n\nCoverage report not available.';
-                }
-                
-                github.rest.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: coverageSummary
-                });
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let coverageSummary = '';
+            try {
+              coverageSummary = fs.readFileSync('coverage-summary.md', 'utf8');
+            } catch (error) {
+              coverageSummary = '## Test Coverage Report\n\nCoverage report not available.';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverageSummary
+            });
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
