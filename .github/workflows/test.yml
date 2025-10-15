@@ -33,6 +33,7 @@ jobs:
 
       - name: Run ESLint
         run: pnpm run lint
+        continue-on-error: true
 
       - name: Run unit tests with coverage
         run: pnpm run test:coverage

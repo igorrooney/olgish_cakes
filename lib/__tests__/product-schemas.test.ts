@@ -74,19 +74,23 @@ describe('generateProductSchema', () => {
     const schema = generateProductSchema(mockCake, 0, mockStats);
     
     expect(schema.offers).toBeDefined();
-    if (typeof schema.offers === 'object' && schema.offers !== null && '@type' in schema.offers) {
-      expect(schema.offers['@type']).toBe('Offer');
-      expect(schema.offers.price).toBe('35');
-      expect(schema.offers.priceCurrency).toBe('GBP');
+    // Use type assertion for complex schema-dts union types
+    const offers = schema.offers as any;
+    if (typeof offers === 'object' && offers !== null && '@type' in offers) {
+      expect(offers['@type']).toBe('Offer');
+      expect(offers.price).toBe('35');
+      expect(offers.priceCurrency).toBe('GBP');
     }
   });
 
   it('should include allergen information', () => {
     const schema = generateProductSchema(mockCake, 0, mockStats);
     
-    expect(schema.containsAllergens).toEqual(['Eggs', 'Dairy']);
-    if (Array.isArray(schema.additionalProperty)) {
-      const allergenProp = schema.additionalProperty.find(
+    // Use type assertion for schema-dts extended properties
+    const schemaAny = schema as any;
+    expect(schemaAny.containsAllergens).toEqual(['Eggs', 'Dairy']);
+    if (Array.isArray(schemaAny.additionalProperty)) {
+      const allergenProp = schemaAny.additionalProperty.find(
         (prop: any) => prop.name === 'Allergens'
       );
       expect(allergenProp).toBeDefined();
@@ -118,9 +122,11 @@ describe('generateProductSchema', () => {
     const schema = generateProductSchema(mockCake, 0, mockStats);
     
     expect(schema.aggregateRating).toBeDefined();
-    if (typeof schema.aggregateRating === 'object' && schema.aggregateRating !== null) {
-      expect(schema.aggregateRating.ratingValue).toBe('4.5');
-      expect(schema.aggregateRating.reviewCount).toBe('10');
+    // Use type assertion for schema-dts union types
+    const rating = schema.aggregateRating as any;
+    if (typeof rating === 'object' && rating !== null) {
+      expect(rating.ratingValue).toBe('4.5');
+      expect(rating.reviewCount).toBe('10');
     }
   });
 });

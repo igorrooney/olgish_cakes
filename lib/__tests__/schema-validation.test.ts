@@ -2,7 +2,8 @@ import { validateProductSchema, validateMPNUniqueness, validateReviewSchema } fr
 import { WithContext, Product, Review } from 'schema-dts';
 
 describe('validateProductSchema', () => {
-  const validSchema: WithContext<Product> = {
+  // Use 'as any' for test schemas due to strict schema-dts types
+  const validSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Test Cake',
@@ -21,7 +22,7 @@ describe('validateProductSchema', () => {
       availability: 'https://schema.org/InStock',
       priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     },
-  };
+  } as WithContext<Product>;
 
   it('should validate a correct schema', () => {
     const result = validateProductSchema(validSchema);
@@ -61,13 +62,13 @@ describe('validateProductSchema', () => {
     const invalid = {
       ...validSchema,
       offers: {
-        '@type': 'Offer' as const,
+        '@type': 'Offer',
         price: '-10',
         priceCurrency: 'GBP',
         availability: 'https://schema.org/InStock',
         priceValidUntil: '2026-01-01',
       },
-    };
+    } as WithContext<Product>;
     const result = validateProductSchema(invalid);
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('Price must be greater than zero');
@@ -77,13 +78,13 @@ describe('validateProductSchema', () => {
     const invalid = {
       ...validSchema,
       offers: {
-        '@type': 'Offer' as const,
+        '@type': 'Offer',
         price: '15000',
         priceCurrency: 'GBP',
         availability: 'https://schema.org/InStock',
         priceValidUntil: '2026-01-01',
       },
-    };
+    } as WithContext<Product>;
     const result = validateProductSchema(invalid);
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('Price seems unusually high (>£10,000)');
@@ -123,13 +124,13 @@ describe('validateProductSchema', () => {
     const invalid = {
       ...validSchema,
       offers: {
-        '@type': 'Offer' as const,
+        '@type': 'Offer',
         price: '35',
         priceCurrency: 'GBP',
         availability: 'https://schema.org/InStock',
         priceValidUntil: yesterday.toISOString().split('T')[0],
       },
-    };
+    } as WithContext<Product>;
     const result = validateProductSchema(invalid);
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('priceValidUntil date is in the past');
@@ -139,11 +140,11 @@ describe('validateProductSchema', () => {
     const invalid = {
       ...validSchema,
       aggregateRating: {
-        '@type': 'AggregateRating' as const,
+        '@type': 'AggregateRating',
         ratingValue: '6',
         reviewCount: '10',
       },
-    };
+    } as WithContext<Product>;
     const result = validateProductSchema(invalid);
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('ratingValue must be between 1 and 5');
