@@ -3,6 +3,9 @@ import { OrderPageClient } from "./OrderPageClient";
 import { OrderPageSEO } from "./OrderPageSEO";
 import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
 
+// Revalidate every hour to cache schema generation
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Order Professional Cakes Online",
   description:

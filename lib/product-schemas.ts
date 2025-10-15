@@ -215,9 +215,18 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
   const validCakes = cakes.filter(cake => cake && cake.name);
   const invalidCount = cakes.length - validCakes.length;
   
-  if (invalidCount > 0 && process.env.NODE_ENV !== 'production') {
-    console.warn(`[Product Schemas] Filtered out ${invalidCount} invalid cake(s) without names`);
+  // Log invalid cakes in all environments for monitoring
+  if (invalidCount > 0) {
+    const logMessage = `[Product Schemas] Filtered out ${invalidCount} invalid cake(s) without names`;
+    if (process.env.NODE_ENV === 'production') {
+      // In production, log to console for server-side monitoring (e.g., Vercel logs, Sentry)
+      console.warn(logMessage, { invalidCount, totalCakes: cakes.length });
+    } else {
+      console.warn(logMessage);
+    }
   }
+
+  const failedSchemas: Array<{ cakeId: string; cakeName: string; error: string }> = [];
 
   const schemas = validCakes
     .map((cake: Cake, index: number) => {
@@ -225,13 +234,31 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
         return generateProductSchema(cake, index, testimonialStats);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        if (process.env.NODE_ENV !== 'production') {
+        const errorDetails = {
+          cakeId: cake._id,
+          cakeName: cake.name || 'Unknown',
+          error: errorMessage,
+        };
+        
+        failedSchemas.push(errorDetails);
+        
+        // Always log errors in production for monitoring
+        if (process.env.NODE_ENV === 'production') {
+          // Production: Log structured error for monitoring tools
+          console.error('[Product Schemas] Schema generation failed', {
+            ...errorDetails,
+            timestamp: new Date().toISOString(),
+            environment: 'production',
+          });
+        } else {
+          // Development: Log detailed error with full context
           console.error(
             `[Product Schemas] Failed to generate schema for cake "${cake.name}" (ID: ${cake._id}):`,
             errorMessage,
             { cake, error }
           );
         }
+        
         // Return null for failed schemas and filter them out later
         return null;
       }
@@ -242,13 +269,26 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
   const endTime = performance.now();
   const duration = endTime - startTime;
   
-  if (process.env.NODE_ENV !== 'production') {
-    if (failedCount > 0) {
-      console.warn(`[Product Schemas] ${failedCount} schema(s) failed to generate`);
+  // Log summary in all environments
+  if (failedCount > 0) {
+    const summaryMessage = `[Product Schemas] ${failedCount} schema(s) failed to generate`;
+    if (process.env.NODE_ENV === 'production') {
+      console.error(summaryMessage, {
+        failedCount,
+        totalValid: validCakes.length,
+        successCount: schemas.length,
+        duration: `${duration.toFixed(2)}ms`,
+        failedSchemas: failedSchemas.slice(0, 5), // Limit to first 5 to avoid log bloat
+      });
+    } else {
+      console.warn(summaryMessage);
     }
+  }
+  
+  if (process.env.NODE_ENV !== 'production') {
     console.log(`[Product Schemas] Successfully generated ${schemas.length} product schemas in ${duration.toFixed(2)}ms`);
     
-    // Validate all generated schemas
+    // Validate all generated schemas in development
     batchValidateProductSchemas(schemas);
   }
 

@@ -11,8 +11,15 @@ import { ProductCard, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 import { GiftHamper } from "@/types/giftHamper";
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
+import { DEFAULT_RATING } from "@/lib/schema-constants";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+
+// Centralized default testimonial stats - matches DEFAULT_REVIEWS length and rating
+const DEFAULT_TESTIMONIAL_STATS = {
+  count: 2,  // Matches DEFAULT_REVIEWS length in structured-data-defaults
+  averageRating: parseFloat(DEFAULT_RATING.defaultValue),
+};
 
 interface GiftHamperCardProps {
   hamper: GiftHamper;
@@ -26,7 +33,7 @@ interface GiftHamperCardProps {
 const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
-  testimonialStats = { count: 127, averageRating: 5.0 }, // Default fallback stats
+  testimonialStats = DEFAULT_TESTIMONIAL_STATS,
 }: GiftHamperCardProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;
