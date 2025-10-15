@@ -6,6 +6,24 @@ import { apiVersion, dataset, projectId } from "../env";
 const USE_REAL_TIME_DATA =
   process.env.NEXT_PUBLIC_USE_REAL_TIME_DATA === "true" || process.env.NODE_ENV === "development";
 
+// Helper function to validate Sanity environment variables at runtime
+function validateSanityConfig() {
+  const actualDataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+  const actualProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  
+  if (!actualDataset || !actualProjectId) {
+    throw new Error(
+      `Missing required Sanity environment variables: ${
+        !actualDataset ? 'NEXT_PUBLIC_SANITY_DATASET' : ''
+      }${!actualDataset && !actualProjectId ? ', ' : ''}${
+        !actualProjectId ? 'NEXT_PUBLIC_SANITY_PROJECT_ID' : ''
+      }`
+    );
+  }
+  
+  return { dataset: actualDataset, projectId: actualProjectId };
+}
+
 // Main client - configurable between cached and real-time
 export const client = createClient({
   projectId,
