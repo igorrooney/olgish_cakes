@@ -1,14 +1,17 @@
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET environment variable is required");
+// Helper function to get JWT secret with runtime validation
+function getJWTSecret(): string {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is required");
+  }
+  return JWT_SECRET;
 }
 
 export async function verifyAdminToken(token: string): Promise<{ username: string; role: string } | null> {
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET);
+    const secret = new TextEncoder().encode(getJWTSecret());
     const { payload } = await jwtVerify(token, secret);
     
     return {
