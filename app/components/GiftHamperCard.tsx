@@ -162,7 +162,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         hasMerchantReturnPolicy: getMerchantReturnPolicy(),
       },
     }),
-    [hamper, price]
+    [hamper, price, imageUrl, testimonialStats.averageRating, testimonialStats.count]
   );
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);

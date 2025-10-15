@@ -183,7 +183,7 @@ const navigation = isGiftHampersEnabled
 
 // Memoized components for better performance
 const MobileMenuItem = memo(
-  ({
+  function MobileMenuItem({
     item,
     isActive,
     pathname,
@@ -199,7 +199,7 @@ const MobileMenuItem = memo(
     isOpen: boolean;
     onNavigate: () => void;
     hasSubmenu: boolean;
-  }) => {
+  }) {
     const menuStyles = useMemo(
       () => ({
         minHeight: "48px", // WCAG touch target requirement with extra padding
@@ -267,7 +267,7 @@ const MobileMenuItem = memo(
 );
 
 const MobileSubmenuItem = memo(
-  ({
+  function MobileSubmenuItem({
     item,
     pathname,
     onNavigate,
@@ -277,7 +277,7 @@ const MobileSubmenuItem = memo(
     pathname: string;
     onNavigate: () => void;
     isFeatured?: boolean;
-  }) => {
+  }) {
     const buttonStyles = useMemo(
       () => ({
         minHeight: "44px", // WCAG touch target requirement

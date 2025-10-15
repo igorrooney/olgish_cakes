@@ -93,7 +93,7 @@ export const OptimizedImage = memo(function OptimizedImage({
 
   return (
     <>
-      <Image {...imageProps} />
+      <Image {...imageProps} alt={alt} />
       {!imageLoaded && (
         <Box
           sx={{

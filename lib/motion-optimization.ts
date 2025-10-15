@@ -29,8 +29,7 @@ export const useReducedMotion = () => {
 };
 
 // Performance-optimized animation variants
-export const getOptimizedAnimation = (preset: typeof fadeInPreset) => {
-  const reduceMotion = useReducedMotion();
+export const getOptimizedAnimation = (preset: typeof fadeInPreset, reduceMotion = false) => {
   if (reduceMotion) {
     return {
       initial: { opacity: 1 },

@@ -16,7 +16,7 @@ interface MobileBreadcrumbsProps {
   onNavigate?: (href: string) => void;
 }
 
-export const MobileBreadcrumbs = memo(({ items, onNavigate }: MobileBreadcrumbsProps) => {
+export const MobileBreadcrumbs = memo(function MobileBreadcrumbs({ items, onNavigate }: MobileBreadcrumbsProps) {
   if (items.length <= 1) return null;
 
   return (

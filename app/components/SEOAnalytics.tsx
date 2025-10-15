@@ -38,6 +38,7 @@ export function SEOAnalytics({
 
     // Track time on page
     trackTimeOnPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageType, pageTitle, pageUrl]);
 
   const trackPageView = () => {
