@@ -1,0 +1,156 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [master, main, development]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [master, main, development]
+
+jobs:
+  test:
+    name: Test & Validate
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript type check
+        run: pnpm tsc --noEmit
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+      - name: Run unit tests with coverage
+        run: pnpm run test:coverage
+
+      - name: Run schema validation (mock data)
+        run: pnpm run validate:schemas
+
+      - name: Generate coverage report
+        if: matrix.node-version == '20.x'
+        run: |
+          echo "## Test Coverage Report" > coverage-summary.md
+          echo "" >> coverage-summary.md
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const fs = require('fs');
+              const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+              
+              const formatPercent = (num) => num.toFixed(2) + '%';
+              
+              let summary = '| Metric | Coverage | Status |\\n';
+              summary += '|--------|----------|--------|\\n';
+              summary += \`| Statements | \${formatPercent(total.statements.pct)} | \${total.statements.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
+              summary += \`| Branches | \${formatPercent(total.branches.pct)} | \${total.branches.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
+              summary += \`| Functions | \${formatPercent(total.functions.pct)} | \${total.functions.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
+              summary += \`| Lines | \${formatPercent(total.lines.pct)} | \${total.lines.pct >= 80 ? '✅' : '⚠️'} |\\n\`;
+              
+              fs.writeFileSync('coverage-summary.md', summary, { flag: 'a' });
+            "
+            cat coverage-summary.md >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request' && matrix.node-version == '20.x'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage
+          path: coverage-summary.md
+
+      - name: Upload coverage artifact
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm run build
+        env:
+          SKIP_ENV_VALIDATION: true
+          NODE_ENV: production
+
+      - name: Check build output
+        run: |
+          if [ ! -d ".next" ]; then
+            echo "Build failed - .next directory not found"
+            exit 1
+          fi
+          echo "✅ Build successful"
+
+  validation:
+    name: Schema Validation (Real Data)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate schemas with real Sanity data
+        run: pnpm run validate:schemas:real
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
+        continue-on-error: true
+

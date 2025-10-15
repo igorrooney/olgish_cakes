@@ -20,7 +20,26 @@ const customJestConfig = {
     '!**/.next/**',
     '!**/coverage/**',
     '!**/dist/**',
+    '!**/__tests__/**',
+    '!**/*.test.{ts,tsx}',
+    '!**/*.spec.{ts,tsx}',
   ],
+  coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
+  coverageThreshold: {
+    // Apply strict thresholds only to files with tests
+    './lib/product-schemas.ts': {
+      branches: 60,
+      functions: 30,
+      lines: 35,
+      statements: 35,
+    },
+    './lib/schema-validation.ts': {
+      branches: 65,
+      functions: 70,
+      lines: 65,
+      statements: 65,
+    },
+  },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',

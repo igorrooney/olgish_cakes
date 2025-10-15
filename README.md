@@ -43,6 +43,21 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
 
 ## Quality Assurance
 
+![Tests](https://github.com/igorrooney/olgish_cakes/actions/workflows/test.yml/badge.svg)
+
+### Unit Testing
+Run automated tests with coverage:
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage report
+pnpm run test:coverage
+```
+
 ### Schema Validation
 Validate all structured data before deployment:
 ```bash
