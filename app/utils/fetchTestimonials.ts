@@ -27,7 +27,20 @@ export async function getFeaturedTestimonials(limit: number = 3): Promise<Testim
   }
 }
 
+// Cache for testimonial statistics
+let cachedStats: { count: number; averageRating: number; timestamp: number } | null = null;
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+/**
+ * Fetch testimonial statistics with caching
+ * @returns Object with count and averageRating
+ */
 export async function getAllTestimonialsStats(): Promise<{ count: number; averageRating: number }> {
+  // Return cached stats if still valid
+  if (cachedStats && Date.now() - cachedStats.timestamp < CACHE_DURATION) {
+    return { count: cachedStats.count, averageRating: cachedStats.averageRating };
+  }
+
   try {
     const query = `
       *[_type == "testimonial"] {
@@ -41,9 +54,15 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
       ? testimonials.reduce((sum: number, t: { rating: number }) => sum + (t.rating || 0), 0) / count
       : 5.0;
 
+    // Update cache
+    cachedStats = { count, averageRating, timestamp: Date.now() };
+
     return { count, averageRating };
   } catch (error) {
     console.error("Error fetching testimonial stats:", error);
-    return { count: 0, averageRating: 5.0 };
+    // Return cached data if available, otherwise return defaults
+    return cachedStats 
+      ? { count: cachedStats.count, averageRating: cachedStats.averageRating }
+      : { count: 0, averageRating: 5.0 };
   }
 }

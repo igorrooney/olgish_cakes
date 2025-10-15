@@ -1,21 +1,20 @@
 import Script from "next/script";
 import { getFeaturedTestimonials, getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
-import { DEFAULT_REVIEWS } from "@/lib/structured-data-defaults";
-import { getPriceValidUntil } from "@/app/utils/seo";
 import { client } from "@/sanity/lib/client";
 import { generateAllProductSchemas } from "@/lib/product-schemas";
 
 export async function OrderPageStructuredData() {
-  // Fetch recent testimonials for display (3 most recent)
-  const testimonials = await getFeaturedTestimonials(3);
+  // Fetch recent testimonials and stats in parallel
+  const [testimonials, { count: totalTestimonialCount, averageRating: calculatedAverage }] = await Promise.all([
+    getFeaturedTestimonials(3),
+    getAllTestimonialsStats()
+  ]);
   
-  // Get all testimonials stats for accurate aggregate rating
-  const { count: totalTestimonialCount, averageRating: calculatedAverage } = await getAllTestimonialsStats();
   const averageRating = calculatedAverage.toFixed(1);
   
-  // Fetch all cakes from Sanity for dynamic product schemas
+  // Fetch essential cake data for product schemas (optimized query)
   const allCakes = await client.fetch(`
-    *[_type == "cake"] | order(name asc) {
+    *[_type == "cake"] | order(name asc) [0...50] {
       _id,
       name,
       slug,
@@ -31,8 +30,11 @@ export async function OrderPageStructuredData() {
     }
   `);
 
-  // Generate all product schemas using the extracted function
-  const productSchemas = generateAllProductSchemas(allCakes, { count: totalTestimonialCount, averageRating: parseFloat(averageRating) });
+  // Generate all product schemas
+  const productSchemas = generateAllProductSchemas(allCakes, { 
+    count: totalTestimonialCount, 
+    averageRating: parseFloat(averageRating) 
+  });
 
   // Convert testimonials to schema format
   const reviewSchema = testimonials.map(testimonial => ({
@@ -54,9 +56,6 @@ export async function OrderPageStructuredData() {
       description: `${testimonial.cakeType} from Olgish Cakes`,
     },
   }));
-
-  // Old productSchemas generation removed - now using generateAllProductSchemas from lib/product-schemas.ts
-
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -149,9 +148,9 @@ export async function OrderPageStructuredData() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {productSchemas.map((productSchema: any, index: number) => (
+      {productSchemas.map((productSchema, index: number) => (
         <Script
-          key={productSchema['@id']}
+          key={productSchema['@id'] || `product-${index}`}
           id={`order-page-product-${index}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}

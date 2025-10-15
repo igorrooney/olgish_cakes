@@ -1,16 +1,22 @@
-// Default reviews for structured data when no real testimonials are available
-// These provide fallback data to ensure valid schema.org markup
+/**
+ * Default reviews for structured data when no real testimonials are available
+ * These provide fallback data to ensure valid schema.org markup
+ */
 
-import { Review, WithContext, AggregateRating } from "schema-dts";
+import { Review, AggregateRating, WithContext } from "schema-dts";
 
-// Generate dynamic dates (30 and 45 days ago)
+/**
+ * Generate dynamic review date
+ * @param daysAgo Number of days in the past
+ * @returns ISO date string (YYYY-MM-DD)
+ */
 const generateReviewDate = (daysAgo: number): string => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
   return date.toISOString().split('T')[0];
 };
 
-export const DEFAULT_REVIEWS: any[] = [
+export const DEFAULT_REVIEWS: WithContext<Review>[] = [
   {
     "@context": "https://schema.org",
     "@type": "Review" as const,
@@ -56,7 +62,7 @@ export const DEFAULT_REVIEWS: any[] = [
 ];
 
 // Default review for Kyiv Cake product
-export const DEFAULT_KYIV_CAKE_REVIEW: any = {
+export const DEFAULT_KYIV_CAKE_REVIEW: WithContext<Review> = {
   "@context": "https://schema.org",
   "@type": "Review" as const,
   itemReviewed: {
@@ -78,13 +84,12 @@ export const DEFAULT_KYIV_CAKE_REVIEW: any = {
   datePublished: generateReviewDate(20)
 };
 
-// Default aggregate rating when no testimonials exist
-export const DEFAULT_AGGREGATE_RATING: any = {
-  "@context": "https://schema.org",
+// Default aggregate rating when no testimonials exist (without context for embedding in other schemas)
+export const DEFAULT_AGGREGATE_RATING = {
   "@type": "AggregateRating" as const,
   ratingValue: "5.0",
   reviewCount: "2", // Matches DEFAULT_REVIEWS length
   bestRating: "5",
   worstRating: "1"
-};
+} as const;
 
