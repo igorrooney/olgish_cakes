@@ -6,16 +6,24 @@ This guide explains how to validate structured data schemas in the OlgishCakes p
 ## Automated Validation
 
 ### Running the Validator
+
+**Quick validation with mock data (recommended for CI/CD):**
 ```bash
 pnpm run validate:schemas
 ```
 
+**Full validation with real Sanity data:**
+```bash
+pnpm run validate:schemas:real
+```
+
 This script will:
-1. Fetch all cakes from Sanity CMS
-2. Generate product schemas
-3. Validate each schema for compliance
-4. Check MPN uniqueness
-5. Report any errors or warnings
+1. Generate product schemas (from mock or real Sanity data)
+2. Validate each schema for compliance
+3. Check MPN uniqueness
+4. Report any errors or warnings
+
+**Note:** The `--real` flag requires Sanity environment variables to be set.
 
 ### Expected Output
 ```

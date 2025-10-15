@@ -169,14 +169,17 @@ export async function OrderPageStructuredData() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {productSchemas.map((productSchema, index: number) => (
-        <Script
-          key={productSchema['@id'] || `product-${index}`}
-          id={`order-page-product-${index}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-      ))}
+      {productSchemas.map((productSchema, index: number) => {
+        const schemaId = typeof productSchema['@id'] === 'string' ? productSchema['@id'] : `product-${index}`;
+        return (
+          <Script
+            key={schemaId}
+            id={`order-page-product-${index}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+          />
+        );
+      })}
     </>
   );
 }

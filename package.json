@@ -58,6 +58,7 @@
     "seo:linking": "node scripts/internal-linking-optimizer.js",
     "seo:full-analysis": "npm run seo:ranking && npm run seo:linking",
     "validate:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
+    "validate:schemas:real": "node --import tsx/esm scripts/validate-schemas.ts --real",
     "test:schemas": "node --import tsx/esm scripts/validate-schemas.ts"
   },
   "engines": {

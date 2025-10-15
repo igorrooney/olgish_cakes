@@ -46,7 +46,11 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
 ### Schema Validation
 Validate all structured data before deployment:
 ```bash
+# Quick validation with mock data (fast, no Sanity required)
 pnpm run validate:schemas
+
+# Full validation with real Sanity data
+pnpm run validate:schemas:real
 ```
 
 This checks:

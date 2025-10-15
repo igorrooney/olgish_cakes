@@ -37,10 +37,15 @@ export async function getFeaturedTestimonials(limit: number = 3): Promise<Testim
 // Cache for testimonial statistics
 let cachedStats: { count: number; averageRating: number; timestamp: number } | null = null;
 
-// Environment-specific cache duration: 24 hours in production, 1 hour in development
+// Cache duration constants (in milliseconds)
+const HOURS_IN_MS = 60 * 60 * 1000;
+const CACHE_DURATION_PRODUCTION = 24 * HOURS_IN_MS;  // 24 hours for production
+const CACHE_DURATION_DEVELOPMENT = 1 * HOURS_IN_MS;   // 1 hour for development
+
+// Environment-specific cache duration: testimonials don't change frequently
 const CACHE_DURATION = process.env.NODE_ENV === 'production' 
-  ? 24 * 60 * 60 * 1000  // 24 hours for production (testimonials don't change frequently)
-  : 60 * 60 * 1000;       // 1 hour for development (faster iteration)
+  ? CACHE_DURATION_PRODUCTION
+  : CACHE_DURATION_DEVELOPMENT;
 
 /**
  * Fetch testimonial statistics with caching to reduce Sanity queries
