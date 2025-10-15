@@ -52,10 +52,14 @@ const CACHE_DURATION = process.env.NODE_ENV === 'production'
 export async function getAllTestimonialsStats(): Promise<{ count: number; averageRating: number }> {
   // Return cached stats if still valid
   if (cachedStats && Date.now() - cachedStats.timestamp < CACHE_DURATION) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[Testimonials] Using cached stats:', cachedStats);
+    }
     return { count: cachedStats.count, averageRating: cachedStats.averageRating };
   }
 
   try {
+    const queryStartTime = performance.now();
     const query = `
       *[_type == "testimonial"] {
         rating
@@ -71,9 +75,16 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
     // Update cache
     cachedStats = { count, averageRating, timestamp: Date.now() };
 
+    const queryEndTime = performance.now();
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[Testimonials] Stats fetched in ${(queryEndTime - queryStartTime).toFixed(2)}ms: ${count} testimonials, avg rating: ${averageRating.toFixed(1)}`);
+    }
+
     return { count, averageRating };
   } catch (error) {
-    console.error("Error fetching testimonial stats:", error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error fetching testimonial stats:", error);
+    }
     // Return cached data if available, otherwise return defaults
     return cachedStats 
       ? { count: cachedStats.count, averageRating: cachedStats.averageRating }

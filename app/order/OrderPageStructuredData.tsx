@@ -3,17 +3,23 @@ import { getFeaturedTestimonials, getAllTestimonialsStats } from "@/app/utils/fe
 import { client } from "@/sanity/lib/client";
 import { generateAllProductSchemas } from "@/lib/product-schemas";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "@/lib/schema-constants";
+import { perfLogger } from "@/lib/performance-logger";
 
 export async function OrderPageStructuredData() {
+  perfLogger.start('OrderPage:Total');
+  
   // Fetch recent testimonials and stats in parallel
+  perfLogger.start('OrderPage:FetchTestimonials');
   const [testimonials, { count: totalTestimonialCount, averageRating: calculatedAverage }] = await Promise.all([
     getFeaturedTestimonials(3),
     getAllTestimonialsStats()
   ]);
+  perfLogger.end('OrderPage:FetchTestimonials', { count: totalTestimonialCount });
   
   const averageRating = calculatedAverage.toFixed(1);
   
   // Fetch essential cake data for product schemas (optimized query)
+  perfLogger.start('OrderPage:FetchCakes');
   const allCakes = await client.fetch(`
     *[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
       _id,
@@ -30,12 +36,26 @@ export async function OrderPageStructuredData() {
       description
     }
   `);
+  perfLogger.end('OrderPage:FetchCakes', { cakesCount: allCakes.length });
 
   // Generate all product schemas
+  perfLogger.start('OrderPage:GenerateSchemas');
   const productSchemas = generateAllProductSchemas(allCakes, { 
     count: totalTestimonialCount, 
     averageRating: parseFloat(averageRating) 
   });
+  perfLogger.end('OrderPage:GenerateSchemas', { schemasCount: productSchemas.length });
+
+  perfLogger.end('OrderPage:Total');
+  
+  // Check performance thresholds
+  if (process.env.NODE_ENV !== 'production') {
+    perfLogger.checkThresholds({
+      'OrderPage:FetchCakes': 100,      // Warn if Sanity query > 100ms
+      'OrderPage:GenerateSchemas': 50,  // Warn if schema generation > 50ms
+      'OrderPage:Total': 200            // Warn if total time > 200ms
+    });
+  }
 
   // Convert testimonials to schema format
   const reviewSchema = testimonials.map(testimonial => ({

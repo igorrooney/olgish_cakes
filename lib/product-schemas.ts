@@ -16,6 +16,7 @@ import {
   MIN_REVIEW_COUNT_FOR_DISPLAY,
   DEFAULT_PRICE_VALID_DAYS
 } from "./schema-constants";
+import { batchValidateProductSchemas } from "./schema-validation";
 
 export interface TestimonialStats {
   count: number;
@@ -77,14 +78,18 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
     ? (typeof cake.description === 'string' ? cake.description : blocksToText(cake.description))
     : `Delicious ${cakeName} handmade with authentic recipes in ${BUSINESS_INFO.addressLocality}.`;
 
+  const sku = generateSKU(cakeName, index);
+  // Generate truly unique MPN by combining slug, price, and SKU suffix
+  const mpn = `${cakeSlug.toUpperCase().replace(/[^A-Z0-9]/g, '-')}-${cakePrice}-${sku.split('-').pop()}`;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     "@id": `${BUSINESS_INFO.url}/order#${cakeSlug}`,
     name: cakeName,
     description: cakeDescription,
-    sku: generateSKU(cakeName, index),
-    mpn: `${cakeName.toUpperCase().replace(/[^A-Z0-9]/g, '-')}-${cakePrice}`,
+    sku,
+    mpn,
     brand: {
       "@type": "Brand",
       name: BUSINESS_INFO.name,
@@ -206,10 +211,11 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
  * const schemas = generateAllProductSchemas(cakes, { count: 16, averageRating: 4.8 });
  */
 export function generateAllProductSchemas(cakes: Cake[], testimonialStats: TestimonialStats): WithContext<Product>[] {
+  const startTime = performance.now();
   const validCakes = cakes.filter(cake => cake && cake.name);
   const invalidCount = cakes.length - validCakes.length;
   
-  if (invalidCount > 0) {
+  if (invalidCount > 0 && process.env.NODE_ENV !== 'production') {
     console.warn(`[Product Schemas] Filtered out ${invalidCount} invalid cake(s) without names`);
   }
 
@@ -219,11 +225,13 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
         return generateProductSchema(cake, index, testimonialStats);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error(
-          `[Product Schemas] Failed to generate schema for cake "${cake.name}" (ID: ${cake._id}):`,
-          errorMessage,
-          { cake, error }
-        );
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(
+            `[Product Schemas] Failed to generate schema for cake "${cake.name}" (ID: ${cake._id}):`,
+            errorMessage,
+            { cake, error }
+          );
+        }
         // Return null for failed schemas and filter them out later
         return null;
       }
@@ -231,10 +239,18 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
     .filter((schema): schema is WithContext<Product> => schema !== null);
 
   const failedCount = validCakes.length - schemas.length;
-  if (failedCount > 0) {
-    console.warn(`[Product Schemas] ${failedCount} schema(s) failed to generate`);
+  const endTime = performance.now();
+  const duration = endTime - startTime;
+  
+  if (process.env.NODE_ENV !== 'production') {
+    if (failedCount > 0) {
+      console.warn(`[Product Schemas] ${failedCount} schema(s) failed to generate`);
+    }
+    console.log(`[Product Schemas] Successfully generated ${schemas.length} product schemas in ${duration.toFixed(2)}ms`);
+    
+    // Validate all generated schemas
+    batchValidateProductSchemas(schemas);
   }
 
-  console.log(`[Product Schemas] Successfully generated ${schemas.length} product schemas`);
   return schemas;
 }

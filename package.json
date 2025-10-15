@@ -56,7 +56,9 @@
     "backup:manager": "node scripts/backup-manager.js",
     "seo:ranking": "node scripts/advanced-seo-ranking.js",
     "seo:linking": "node scripts/internal-linking-optimizer.js",
-    "seo:full-analysis": "npm run seo:ranking && npm run seo:linking"
+    "seo:full-analysis": "npm run seo:ranking && npm run seo:linking",
+    "validate:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
+    "test:schemas": "node --import tsx/esm scripts/validate-schemas.ts"
   },
   "engines": {
     "node": ">=18.0.0",

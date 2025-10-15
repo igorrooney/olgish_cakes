@@ -17,7 +17,7 @@ const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 interface GiftHamperCardProps {
   hamper: GiftHamper;
   variant?: "featured" | "catalog";
-  testimonialStats?: {
+  testimonialStats: {
     count: number;
     averageRating: number;
   };
@@ -26,7 +26,7 @@ interface GiftHamperCardProps {
 const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
-  testimonialStats = { count: 16, averageRating: 5.0 }, // Default to real testimonial stats
+  testimonialStats, // No default - parent components must provide testimonial stats
 }: GiftHamperCardProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;

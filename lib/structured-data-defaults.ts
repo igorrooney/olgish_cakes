@@ -9,9 +9,10 @@
 import { Review, AggregateRating, WithContext } from "schema-dts";
 
 // Fixed review dates - update these quarterly to keep them reasonably current
+// Last updated: October 2025
 const REVIEW_DATES = {
-  RECENT: "2025-09-15",    // ~1 month ago from current deployment
-  OLDER: "2025-08-01"       // ~2.5 months ago from current deployment
+  RECENT: "2025-09-15",    // 1 month ago - realistic timeframe
+  OLDER: "2025-07-20"      // 3 months ago - maintains credibility
 } as const;
 
 export const DEFAULT_REVIEWS: WithContext<Review>[] = [

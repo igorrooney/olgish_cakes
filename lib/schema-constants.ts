@@ -3,7 +3,8 @@
  */
 
 // Product schema generation
-export const MAX_PRODUCTS_FOR_SCHEMA = 50; // Maximum number of products to generate schemas for
+// Limited to 30 for optimal performance - monitors should track if this needs adjustment
+export const MAX_PRODUCTS_FOR_SCHEMA = 30; // Maximum number of products to generate schemas for
 
 // Price validity
 export const DEFAULT_PRICE_VALID_DAYS = 30;

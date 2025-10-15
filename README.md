@@ -10,6 +10,9 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
 - TypeScript for type safety
 - Beautiful typography with Playfair Display font
 - Optimized images and animations
+- **Advanced SEO with structured data (Schema.org)**
+- **Automated schema validation**
+- **Performance monitoring and optimization**
 
 ## Tech Stack
 
@@ -18,13 +21,14 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
 - Material UI
 - Sanity.io
 - Framer Motion
+- Schema.org structured data
 
 ## Development
 
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 3. Create a `.env.local` file with your Sanity credentials:
    ```
@@ -34,9 +38,42 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
    ```
 4. Run the development server:
    ```bash
-   npm run dev
+   pnpm run dev
    ```
+
+## Quality Assurance
+
+### Schema Validation
+Validate all structured data before deployment:
+```bash
+pnpm run validate:schemas
+```
+
+This checks:
+- Product schema compliance
+- MPN uniqueness
+- Required field presence
+- Google Merchant Center requirements
+
+### Performance Monitoring
+In development mode, the console displays:
+- Query timing information
+- Schema generation performance
+- Cache hit/miss rates
+- Performance threshold warnings
 
 ## Deployment
 
 The site is deployed on Vercel. Each push to the main branch triggers an automatic deployment.
+
+### Pre-Deployment Checklist:
+1. Run `pnpm run build` - Ensure no build errors
+2. Run `pnpm run validate:schemas` - Validate structured data
+3. Check performance logs in dev mode
+4. Review linter output
+
+## Documentation
+
+- **[Structured Data Guide](docs/STRUCTURED_DATA_IMPROVEMENTS.md)** - Schema implementation
+- **[Validation Guide](docs/SCHEMA_VALIDATION_GUIDE.md)** - How to validate schemas
+- **[Improvements Summary](IMPROVEMENTS_SUMMARY.md)** - Recent enhancements
