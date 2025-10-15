@@ -95,6 +95,7 @@
     "react-dom": "^18.2.0",
     "resend": "^4.2.0",
     "sanity": "^3.88.1",
+    "schema-dts": "^1.1.5",
     "styled-components": "^6.1.8",
     "web-vitals": "^5.1.0"
   },

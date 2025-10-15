@@ -6,6 +6,7 @@ import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
+import { getPriceValidUntil } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
@@ -154,7 +155,7 @@ export default async function WeddingCakesPage() {
         price: service.price,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
-        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        priceValidUntil: getPriceValidUntil(30),
         hasMerchantReturnPolicy: {
           "@type": "MerchantReturnPolicy",
           applicableCountry: "GB",

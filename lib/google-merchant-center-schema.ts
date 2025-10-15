@@ -5,6 +5,8 @@
  * for Google Merchant Center product detection and indexing.
  */
 
+import { getPriceValidUntil } from "@/app/utils/seo";
+
 export interface MerchantCenterProductData {
   id: string;
   name: string;
@@ -88,7 +90,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
       priceCurrency: data.currency,
       availability: `https://schema.org/${data.availability}`,
       condition: `https://schema.org/${data.condition}`,
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      priceValidUntil: getPriceValidUntil(30),
       
       // Seller information
       seller: {

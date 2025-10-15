@@ -17,11 +17,16 @@ const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 interface GiftHamperCardProps {
   hamper: GiftHamper;
   variant?: "featured" | "catalog";
+  testimonialStats?: {
+    count: number;
+    averageRating: number;
+  };
 }
 
 const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
+  testimonialStats = { count: 16, averageRating: 5.0 }, // Default to real testimonial stats
 }: GiftHamperCardProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;
@@ -61,12 +66,22 @@ const GiftHamperCard = memo(function GiftHamperCard({
         ? blocksToText(hamper.shortDescription)
         : `${hamper.name} gift hamper`,
       category: hamper.category || "Gift Hamper",
+      sku: `OC-HAMPER-${hamper.slug.current.toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+      mpn: `${hamper.slug.current.toUpperCase()}-${hamper.price || 'QUOTE'}`,
       brand: { "@type": "Brand", name: "Olgish Cakes" },
       image: [imageUrl],
+      ...(hamper.allergens && hamper.allergens.length > 0 && {
+        containsAllergens: hamper.allergens,
+        additionalProperty: [{
+          "@type": "PropertyValue",
+          name: "Allergens",
+          value: hamper.allergens.join(", ")
+        }]
+      }),
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "5",
-        reviewCount: "127",
+        ratingValue: testimonialStats.averageRating.toFixed(1),
+        reviewCount: testimonialStats.count.toString(),
         bestRating: "5",
         worstRating: "1",
       },

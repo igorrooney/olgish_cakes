@@ -1,4 +1,5 @@
 import { Cake } from "@/types/cake";
+import { getPriceValidUntil } from "@/app/utils/seo";
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -43,7 +44,7 @@ export function OrderModalStructuredData({
           addressCountry: "GB",
         },
       },
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 30 days from now
+      priceValidUntil: getPriceValidUntil(30), // 30 days from now
       deliveryLeadTime: {
         "@type": "QuantitativeValue",
         value: 7,

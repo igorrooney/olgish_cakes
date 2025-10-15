@@ -7,6 +7,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { urlFor } from "@/sanity/lib/image";
 import { StyledAccordion } from "@/lib/ui-components";
 import type { Metadata } from "next";
+import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
 
 export const revalidate = getRevalidateTime();
 
@@ -75,7 +76,10 @@ export const metadata: Metadata = {
 
 export default async function GiftHampersPage() {
   // Force static data for build-time generation
-  const hampers = await getAllGiftHampers(false);
+  const [hampers, testimonialStats] = await Promise.all([
+    getAllGiftHampers(false),
+    getAllTestimonialsStats()
+  ]);
 
   const localBusinessData = {
     "@context": "https://schema.org",
@@ -208,7 +212,7 @@ export default async function GiftHampersPage() {
             <Grid container spacing={6} className="mt-8">
               {hampers.map(hamper => (
                 <Grid item xs={12} sm={6} md={4} key={hamper._id}>
-                  <GiftHamperCard hamper={hamper} />
+                  <GiftHamperCard hamper={hamper} testimonialStats={testimonialStats} />
                 </Grid>
               ))}
             </Grid>

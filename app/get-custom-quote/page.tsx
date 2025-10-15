@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { borderRadius, colors, shadows, typography } from "../../lib/design-system";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { QuoteForm } from "./QuoteForm";
+import { getPriceValidUntil } from "../utils/seo";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -121,7 +122,7 @@ const structuredData = {
     priceCurrency: "GBP",
     description: "Free consultation and quote for custom cakes",
     availability: "https://schema.org/InStock",
-    priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    priceValidUntil: getPriceValidUntil(30),
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",

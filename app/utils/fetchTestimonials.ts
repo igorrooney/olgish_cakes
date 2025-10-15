@@ -26,3 +26,24 @@ export async function getFeaturedTestimonials(limit: number = 3): Promise<Testim
     return [];
   }
 }
+
+export async function getAllTestimonialsStats(): Promise<{ count: number; averageRating: number }> {
+  try {
+    const query = `
+      *[_type == "testimonial"] {
+        rating
+      }
+    `;
+
+    const testimonials = await client.fetch(query);
+    const count = testimonials.length;
+    const averageRating = count > 0 
+      ? testimonials.reduce((sum: number, t: { rating: number }) => sum + (t.rating || 0), 0) / count
+      : 5.0;
+
+    return { count, averageRating };
+  } catch (error) {
+    console.error("Error fetching testimonial stats:", error);
+    return { count: 0, averageRating: 5.0 };
+  }
+}

@@ -48,3 +48,4 @@ next-env.d.ts
 *.tar.gz
 *.zip
 backup-*.json
+.cursor/mcp.json
