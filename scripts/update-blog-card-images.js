@@ -2,7 +2,7 @@ import { createClient } from '@sanity/client';
 import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config({ path: './env.local' });
+dotenv.config({ path: './.env.local' });
 
 // Initialize Sanity client
 const client = createClient({

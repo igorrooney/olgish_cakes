@@ -110,14 +110,12 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
                     overflow: 'hidden',
                   }}
                 >
-                  <img
+                  <Image
                     src={imageUrl ? urlFor(imageUrl).url() : "/images/olgish-cakes-logo-bakery-brand.png"}
                     alt={imageAlt}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 768px) 100vw, 33vw"
                   />
 
                   {post.featured && (

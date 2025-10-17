@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
-
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("RESEND_API_KEY environment variable is not set");
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
+  // Check for required environment variables at runtime
+  if (!process.env.RESEND_API_KEY) {
+    console.error("RESEND_API_KEY environment variable is not set");
+    return NextResponse.json(
+      { error: "Internal server error: Email service not configured." },
+      { status: 500 }
+    );
+  }
+
   if (!recipientEmail) {
     console.error("Recipient email address (CONTACT_EMAIL_TO) is not configured.");
     return NextResponse.json(
@@ -17,6 +20,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+
+  // Initialize Resend at runtime
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
     const formData = await request.formData();

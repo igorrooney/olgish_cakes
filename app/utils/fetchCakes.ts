@@ -2,6 +2,22 @@ import { client, getClient, USE_REAL_TIME_DATA } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
 
+// Helper function to validate Sanity environment variables at runtime
+function validateSanityConfig() {
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET;
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  
+  if (!dataset || !projectId) {
+    throw new Error(
+      `Missing required Sanity environment variables: ${
+        !dataset ? 'NEXT_PUBLIC_SANITY_DATASET' : ''
+      }${!dataset && !projectId ? ', ' : ''}${
+        !projectId ? 'NEXT_PUBLIC_SANITY_PROJECT_ID' : ''
+      }`
+    );
+  }
+}
+
 // Cache configuration based on real-time setting
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = USE_REAL_TIME_DATA
@@ -32,6 +48,9 @@ function setCachedData<T>(key: string, data: T): void {
 }
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
+  // Validate Sanity environment variables at runtime
+  validateSanityConfig();
+  
   const cacheKey = `all-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
   if (cached && !preview) return cached;
@@ -80,6 +99,9 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
 }
 
 export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
+  // Validate Sanity environment variables at runtime
+  validateSanityConfig();
+  
   const cacheKey = `featured-cakes-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake[]>(cacheKey);
   if (cached && !preview) return cached;
@@ -121,6 +143,9 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
 }
 
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
+  // Validate Sanity environment variables at runtime
+  validateSanityConfig();
+  
   const cacheKey = `cake-${slug}-${preview ? "preview" : "published"}`;
   const cached = getCachedData<Cake>(cacheKey);
   if (cached && !preview) return cached;

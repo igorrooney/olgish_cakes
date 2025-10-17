@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
-
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("RESEND_API_KEY environment variable is not set");
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
@@ -370,6 +364,18 @@ Olgish Cakes
   </div>
 </body>
 </html>`;
+
+    // Check for Resend API key at runtime
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY not configured');
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Initialize Resend at runtime
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const response = await resend.emails.send({
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",

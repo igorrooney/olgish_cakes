@@ -104,7 +104,7 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 }
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
+  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
 
   // Get the best available image
   const mainImage = hamper.mainImage?.asset?._ref

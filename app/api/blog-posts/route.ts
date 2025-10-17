@@ -1,15 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 
+// Validate Sanity configuration before client initialization
+if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
+  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID')
+}
+if (!process.env.NEXT_PUBLIC_SANITY_DATASET) {
+  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_DATASET')
+}
+if (!process.env.SANITY_API_TOKEN) {
+  throw new Error('Missing environment variable: SANITY_API_TOKEN')
+}
+
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
   useCdn: false,
   token: process.env.SANITY_API_TOKEN,
 })
 
-// Validate Sanity configuration
+// Additional validation logging for debugging
 if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.NEXT_PUBLIC_SANITY_DATASET || !process.env.SANITY_API_TOKEN) {
   console.error('Missing Sanity configuration:', {
     projectId: !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,

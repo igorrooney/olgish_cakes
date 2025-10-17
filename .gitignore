@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/.jest-cache
 
 # next.js
 /.next/
@@ -48,3 +49,4 @@ next-env.d.ts
 *.tar.gz
 *.zip
 backup-*.json
+.cursor/mcp.json

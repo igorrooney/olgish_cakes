@@ -217,16 +217,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
 
-        {/* Font preloading for better performance */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Alice:wght@400&display=swap"
-          as="style"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Alice:wght@400&display=swap"
-        />
+        {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
         {/* Google Analytics 4 - Load with lower priority */}
         <Script

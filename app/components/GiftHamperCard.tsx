@@ -11,17 +11,29 @@ import { ProductCard, PriceDisplay, OutlineButton } from "@/lib/ui-components";
 import { GiftHamper } from "@/types/giftHamper";
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
+import { DEFAULT_RATING } from "@/lib/schema-constants";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+
+// Centralized default testimonial stats - matches DEFAULT_REVIEWS length and rating
+const DEFAULT_TESTIMONIAL_STATS = {
+  count: 2,  // Matches DEFAULT_REVIEWS length in structured-data-defaults
+  averageRating: parseFloat(DEFAULT_RATING.defaultValue),
+};
 
 interface GiftHamperCardProps {
   hamper: GiftHamper;
   variant?: "featured" | "catalog";
+  testimonialStats?: {
+    count: number;
+    averageRating: number;
+  };
 }
 
 const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
+  testimonialStats = DEFAULT_TESTIMONIAL_STATS,
 }: GiftHamperCardProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;
@@ -55,18 +67,28 @@ const GiftHamperCard = memo(function GiftHamperCard({
     () => ({
       "@context": "https://schema.org",
       "@type": "Product",
-      "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
+      "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`,
       name: hamper.name,
       description: hamper.shortDescription
         ? blocksToText(hamper.shortDescription)
         : `${hamper.name} gift hamper`,
       category: hamper.category || "Gift Hamper",
+      sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+      mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
       brand: { "@type": "Brand", name: "Olgish Cakes" },
       image: [imageUrl],
+      ...(hamper.allergens && hamper.allergens.length > 0 && {
+        containsAllergens: hamper.allergens,
+        additionalProperty: [{
+          "@type": "PropertyValue",
+          name: "Allergens",
+          value: hamper.allergens.join(", ")
+        }]
+      }),
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "5",
-        reviewCount: "127",
+        ratingValue: testimonialStats.averageRating.toFixed(1),
+        reviewCount: testimonialStats.count.toString(),
         bestRating: "5",
         worstRating: "1",
       },
@@ -130,7 +152,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         priceValidUntil: getPriceValidUntil(30),
-        url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
+        url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}`,
         seller: {
           "@type": "Organization",
           name: "Olgish Cakes",
@@ -140,7 +162,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         hasMerchantReturnPolicy: getMerchantReturnPolicy(),
       },
     }),
-    [hamper, price]
+    [hamper, price, imageUrl, testimonialStats.averageRating, testimonialStats.count]
   );
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
@@ -170,7 +192,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
       </Box>
 
       <Link
-        href={`/gift-hampers/${hamper.slug.current}`}
+        href={`/gift-hampers/${hamper.slug?.current || hamper._id}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${hamper.name}`}
         itemProp="url"
@@ -272,7 +294,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
 
         <OutlineButton
           component={Link}
-          href={`/gift-hampers/${hamper.slug.current}`}
+          href={`/gift-hampers/${hamper.slug?.current || hamper._id}`}
           sx={{
             mt: "auto",
             py: spacing.md,

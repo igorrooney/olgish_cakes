@@ -582,7 +582,7 @@ export const AccessibleIconButton = forwardRef<HTMLElement, {
   component?: any;
   href?: string;
   [key: string]: any;
-}>(({ children, ariaLabel, title, component, href, ...props }, ref) => {
+}>((function AccessibleIconButton({ children, ariaLabel, title, component, href, ...props }, ref) {
   const iconButtonStyles = {
     minWidth: "48px", // WCAG touch target requirement with extra padding
     minHeight: "48px", // WCAG touch target requirement with extra padding
@@ -638,7 +638,9 @@ export const AccessibleIconButton = forwardRef<HTMLElement, {
       {children}
     </IconButton>
   );
-});
+}));
+
+AccessibleIconButton.displayName = 'AccessibleIconButton';
 
 export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
   <AccessibleIconButton

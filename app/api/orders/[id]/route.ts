@@ -4,8 +4,6 @@ import { Resend } from "resend";
 import { PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // GET - Fetch single order by ID
 export async function GET(
   request: NextRequest,
@@ -383,6 +381,15 @@ export async function DELETE(
 
 // Helper function to send status update emails
 async function sendStatusUpdateEmail(order: any, newStatus: string) {
+  // Check for Resend API key at runtime
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY not configured - skipping status update email');
+    return;
+  }
+
+  // Initialize Resend at runtime
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   const statusMessages = {
     'confirmed': {
       subject: `Order Confirmed #${order.orderNumber} - Olgish Cakes`,

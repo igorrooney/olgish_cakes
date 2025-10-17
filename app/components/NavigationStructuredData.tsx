@@ -11,7 +11,7 @@ interface NavigationStructuredDataProps {
   }>;
 }
 
-export const NavigationStructuredData = memo(({ navigation }: NavigationStructuredDataProps) => {
+export const NavigationStructuredData = memo(function NavigationStructuredData({ navigation }: NavigationStructuredDataProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SiteNavigationElement",

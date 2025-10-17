@@ -9,7 +9,7 @@ import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config({ path: './env.local' });
+dotenv.config({ path: './.env.local' });
 
 async function quickSetup() {
   console.log('🚀 Quick Setup - Sanity Backup System for Olgish Cakes');

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 
 interface UseSanityLiveOptions {
@@ -19,6 +19,9 @@ export function useSanityLive<T>({
   const [data, setData] = useState<T | null>(initialData || null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Memoize params to avoid complex expressions in dependency array
+  const serializedParams = useMemo(() => JSON.stringify(params), [params]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -67,7 +70,7 @@ export function useSanityLive<T>({
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [query, JSON.stringify(params), enabled]);
+  }, [query, serializedParams, enabled]);
 
   return { data, isLoading, error };
 }

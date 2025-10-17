@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SignJWT } from "jose";
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const JWT_SECRET = process.env.JWT_SECRET;
+// Helper function to get environment variables with runtime validation
+function getAdminCredentials() {
+  const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  const JWT_SECRET = process.env.JWT_SECRET;
 
-if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
-  throw new Error("ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required");
-}
+  if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+    throw new Error("ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required");
+  }
 
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET environment variable is required");
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is required");
+  }
+
+  return { ADMIN_USERNAME, ADMIN_PASSWORD, JWT_SECRET };
 }
 
 // POST - Admin login
@@ -24,6 +29,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Get admin credentials (validates environment variables at runtime)
+    const { ADMIN_USERNAME, ADMIN_PASSWORD, JWT_SECRET } = getAdminCredentials();
 
     // Verify credentials
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {

@@ -24,7 +24,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables
-dotenv.config({ path: './env.local' });
+dotenv.config({ path: './.env.local' });
 
 class BackupScheduler {
   constructor() {

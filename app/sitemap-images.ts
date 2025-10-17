@@ -149,7 +149,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
 
   // Gift hamper images
   giftHamperImages.forEach((hamper: any) => {
-    const hamperUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
+    const hamperUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
 
     if (hamper.images && hamper.images.length > 0) {
       const images = hamper.images.map((img: any) => ({

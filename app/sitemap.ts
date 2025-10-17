@@ -106,11 +106,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const giftHamperRoutes = giftHampers.map(
     (hamper: {
+      _id: string;
       slug: { current: string };
       _updatedAt: string;
       seo?: { priority?: number; changefreq?: string };
     }) => ({
-      url: `${baseUrl}/gift-hampers/${hamper.slug.current}`,
+      url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
       lastModified: new Date(hamper._updatedAt),
       changeFrequency:
         (hamper.seo?.changefreq as

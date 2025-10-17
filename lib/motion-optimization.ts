@@ -29,8 +29,7 @@ export const useReducedMotion = () => {
 };
 
 // Performance-optimized animation variants
-export const getOptimizedAnimation = (preset: typeof fadeInPreset) => {
-  const reduceMotion = useReducedMotion();
+export const getOptimizedAnimation = (preset: typeof fadeInPreset, reduceMotion = false) => {
   if (reduceMotion) {
     return {
       initial: { opacity: 1 },
@@ -39,4 +38,10 @@ export const getOptimizedAnimation = (preset: typeof fadeInPreset) => {
     };
   }
   return preset;
+};
+
+// React hook for getting optimized animations with automatic reduced motion detection
+export const useOptimizedAnimation = (preset: typeof fadeInPreset) => {
+  const reduceMotion = useReducedMotion();
+  return getOptimizedAnimation(preset, reduceMotion);
 };

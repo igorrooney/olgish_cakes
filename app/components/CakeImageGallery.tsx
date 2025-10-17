@@ -37,8 +37,8 @@ const CakeImageGallery = memo(function CakeImageGallery({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const hasIndividualDesigns = Boolean(designs?.individual?.length);
-  const standardImages = designs?.standard || [];
-  const individualImages = designs?.individual || [];
+  const standardImages = useMemo(() => designs?.standard || [], [designs?.standard]);
+  const individualImages = useMemo(() => designs?.individual || [], [designs?.individual]);
 
   // Memoize images
   const allImages = useMemo(

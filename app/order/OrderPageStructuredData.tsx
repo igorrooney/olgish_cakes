@@ -1,14 +1,61 @@
 import Script from "next/script";
-import { getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
+import { getFeaturedTestimonials, getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
+import { client } from "@/sanity/lib/client";
+import { generateAllProductSchemas } from "@/lib/product-schemas";
+import { MAX_PRODUCTS_FOR_SCHEMA } from "@/lib/schema-constants";
+import { perfLogger } from "@/lib/performance-logger";
 
 export async function OrderPageStructuredData() {
-  // Fetch real testimonials from Sanity
-  const testimonials = await getFeaturedTestimonials(3);
+  perfLogger.start('OrderPage:Total');
+  
+  // Fetch recent testimonials and stats in parallel
+  perfLogger.start('OrderPage:FetchTestimonials');
+  const [testimonials, { count: totalTestimonialCount, averageRating: calculatedAverage }] = await Promise.all([
+    getFeaturedTestimonials(3),
+    getAllTestimonialsStats()
+  ]);
+  perfLogger.end('OrderPage:FetchTestimonials', { count: totalTestimonialCount });
+  
+  const averageRating = calculatedAverage.toFixed(1);
+  
+  // Fetch essential cake data for product schemas (optimized query)
+  perfLogger.start('OrderPage:FetchCakes');
+  const allCakes = await client.fetch(`
+    *[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
+      _id,
+      name,
+      slug,
+      pricing,
+      allergens,
+      ingredients,
+      mainImage {
+        asset-> {
+          url
+        }
+      },
+      description
+    }
+  `);
+  perfLogger.end('OrderPage:FetchCakes', { cakesCount: allCakes.length });
 
-  // Calculate aggregate rating from real testimonials
-  const totalRating = testimonials.reduce((sum, testimonial) => sum + testimonial.rating, 0);
-  const averageRating =
-    testimonials.length > 0 ? (totalRating / testimonials.length).toFixed(1) : "5.0";
+  // Generate all product schemas
+  perfLogger.start('OrderPage:GenerateSchemas');
+  const productSchemas = generateAllProductSchemas(allCakes, { 
+    count: totalTestimonialCount, 
+    averageRating: parseFloat(averageRating) 
+  });
+  perfLogger.end('OrderPage:GenerateSchemas', { schemasCount: productSchemas.length });
+
+  perfLogger.end('OrderPage:Total');
+  
+  // Check performance thresholds
+  if (process.env.NODE_ENV !== 'production') {
+    perfLogger.checkThresholds({
+      'OrderPage:FetchCakes': 100,      // Warn if Sanity query > 100ms
+      'OrderPage:GenerateSchemas': 50,  // Warn if schema generation > 50ms
+      'OrderPage:Total': 200            // Warn if total time > 200ms
+    });
+  }
 
   // Convert testimonials to schema format
   const reviewSchema = testimonials.map(testimonial => ({
@@ -65,153 +112,6 @@ export async function OrderPageStructuredData() {
         openingHours: "Mo-Su 00:00-23:59",
         priceRange: "££",
         servesCuisine: ["Ukrainian", "European"],
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Cake Collection",
-          itemListElement: [
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Product",
-                name: "Honey Cake",
-                description: "Traditional Ukrainian honey cake with premium ingredients",
-              },
-              price: "35",
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              hasMerchantReturnPolicy: {
-                "@type": "MerchantReturnPolicy",
-                applicableCountry: "GB",
-                returnFees: "https://schema.org/FreeReturn",
-                returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                merchantReturnDays: 14,
-                returnMethod: "https://schema.org/ReturnByMail",
-              },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: 0,
-                  currency: "GBP",
-                },
-                shippingDestination: {
-                  "@type": "DefinedRegion",
-                  addressCountry: "GB",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 0,
-                    maxValue: 1,
-                    unitCode: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 1,
-                    maxValue: 3,
-                    unitCode: "DAY",
-                  },
-                },
-                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Product",
-                name: "Wedding Cakes",
-                description: "Custom wedding cakes with professional design",
-              },
-              price: "150",
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              hasMerchantReturnPolicy: {
-                "@type": "MerchantReturnPolicy",
-                applicableCountry: "GB",
-                returnFees: "https://schema.org/FreeReturn",
-                returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                merchantReturnDays: 14,
-                returnMethod: "https://schema.org/ReturnByMail",
-              },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: 0,
-                  currency: "GBP",
-                },
-                shippingDestination: {
-                  "@type": "DefinedRegion",
-                  addressCountry: "GB",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 0,
-                    maxValue: 1,
-                    unitCode: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 1,
-                    maxValue: 3,
-                    unitCode: "DAY",
-                  },
-                },
-                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-              },
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Product",
-                name: "Birthday Cakes",
-                description: "Personalized birthday cakes for all ages",
-              },
-              price: "45",
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              hasMerchantReturnPolicy: {
-                "@type": "MerchantReturnPolicy",
-                applicableCountry: "GB",
-                returnFees: "https://schema.org/FreeReturn",
-                returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                merchantReturnDays: 14,
-                returnMethod: "https://schema.org/ReturnByMail",
-              },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: 0,
-                  currency: "GBP",
-                },
-                shippingDestination: {
-                  "@type": "DefinedRegion",
-                  addressCountry: "GB",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 0,
-                    maxValue: 1,
-                    unitCode: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 1,
-                    maxValue: 3,
-                    unitCode: "DAY",
-                  },
-                },
-                appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-              },
-            },
-          ],
-        },
       },
       areaServed: {
         "@type": "City",
@@ -252,23 +152,10 @@ export async function OrderPageStructuredData() {
         },
       ],
     },
-    potentialAction: {
-      "@type": "OrderAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: "https://olgishcakes.co.uk/order",
-        inLanguage: "en-GB",
-        actionPlatform: [
-          "http://schema.org/DesktopWebPlatform",
-          "http://schema.org/MobileWebPlatform",
-        ],
-      },
-      deliveryMethod: ["http://schema.org/OnSitePickup", "http://schema.org/LockerDelivery"],
-    },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: averageRating,
-      reviewCount: testimonials.length.toString(),
+      reviewCount: totalTestimonialCount.toString(), // Use total count from all testimonials, not just the 3 displayed
       bestRating: "5",
       worstRating: "1",
     },
@@ -276,10 +163,23 @@ export async function OrderPageStructuredData() {
   };
 
   return (
-    <Script
-      id="order-page-structured-data"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-    />
+    <>
+      <Script
+        id="order-page-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      {productSchemas.map((productSchema, index: number) => {
+        const schemaId = typeof productSchema['@id'] === 'string' ? productSchema['@id'] : `product-${index}`;
+        return (
+          <Script
+            key={schemaId}
+            id={`order-page-product-${index}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+          />
+        );
+      })}
+    </>
   );
 }

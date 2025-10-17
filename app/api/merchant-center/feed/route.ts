@@ -159,7 +159,7 @@ function generateCakeItem(cake: any, baseUrl: string): string {
 }
 
 function generateHamperItem(hamper: any, baseUrl: string): string {
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
+  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
   const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) ||
                    hamper.images?.find((img: any) => img.asset?._ref) ||
                    hamper.images?.[0];
