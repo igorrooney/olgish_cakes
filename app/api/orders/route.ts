@@ -4,8 +4,6 @@ import { Resend } from "resend";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Generate unique order number
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString().slice(-6);
@@ -105,7 +103,14 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email to customer
     try {
-      // Debug logging
+      // Check for Resend API key at runtime
+      if (!process.env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY not configured - skipping confirmation email');
+        throw new Error('Email service not configured');
+      }
+
+      // Initialize Resend at runtime
+      const resend = new Resend(process.env.RESEND_API_KEY);
 
       await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -316,6 +321,15 @@ export async function POST(request: NextRequest) {
 
     // Send notification to admin
     try {
+      // Check for Resend API key at runtime
+      if (!process.env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY not configured - skipping admin notification');
+        throw new Error('Email service not configured');
+      }
+
+      // Initialize Resend at runtime (reuse from above if available, or create new instance)
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
       await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
