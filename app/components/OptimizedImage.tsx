@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Skeleton } from "@mui/material";
 
 interface OptimizedImageProps {
@@ -43,12 +43,7 @@ export function OptimizedImage({
   const [hasError, setHasError] = useState(false);
   const [imageSrc, setImageSrc] = useState(src);
 
-  useEffect(() => {
-    // Optimize image source based on device and connection
-    optimizeImageSource();
-  }, [src]);
-
-  const optimizeImageSource = () => {
+  const optimizeImageSource = useCallback(() => {
     if (typeof window !== "undefined") {
       const isRetina = window.devicePixelRatio > 1;
       const isMobile = window.innerWidth <= 768;
@@ -64,7 +59,12 @@ export function OptimizedImage({
         setImageSrc(src);
       }
     }
-  };
+  }, [src]);
+
+  useEffect(() => {
+    // Optimize image source based on device and connection
+    optimizeImageSource();
+  }, [optimizeImageSource]);
 
   const handleLoad = () => {
     setIsLoading(false);
