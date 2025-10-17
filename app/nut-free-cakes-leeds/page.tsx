@@ -3,9 +3,9 @@ import { Box, Container, Typography, Grid, Paper, Chip, Button } from "@mui/mate
 import Link from "next/link";
 import Script from "next/script";
 export const metadata: Metadata = {
-  title: "Nut-Free Cakes Leeds | Ukrainian Cakes",
+  title: "Nut Free Cakes Leeds | Allergen-Safe Birthday & Wedding Cakes",
   description:
-    "Delicious nut-free Ukrainian cakes in Leeds. Handcrafted nut-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for nut allergies.",
+    "★★★★★ Safe nut-free cakes in Leeds from £35. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
   keywords:
     "nut-free cakes Leeds, Ukrainian nut-free cakes, nut-free honey cake, nut-free desserts, nut allergy cakes, allergy-friendly cakes Leeds",
   openGraph: {

@@ -17,9 +17,9 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cake Delivery Leeds | Cake Delivery Areas",
+  title: "Bakery Delivery Leeds | Same-Day Cake Delivery Yorkshire Wide",
   description:
-    "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+    "★★★★★ Same-day cake delivery across Leeds & Yorkshire from £5. Fresh Ukrainian cakes delivered to your door. 127+ 5-star reviews. Order before 10am today!",
   keywords:
     "cake delivery Leeds, cake delivery areas, local cake delivery, cake delivery West Yorkshire, same day cake delivery Leeds, next day cake delivery, Ukrainian cake delivery",
   openGraph: {

@@ -79,14 +79,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Enhanced description with event information
   let description =
-    "🏆 #1 Ukrainian Bakery in Leeds! Real honey cake (Medovik), Kyiv cake & traditional desserts. 5★ rating, same-day delivery Yorkshire.";
+    "★★★★★ #1 Ukrainian bakery in Leeds. Real honey cake (Medovik), Kyiv cake & custom designs. Same-day delivery across Yorkshire. Order now!";
 
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
   }
 
   // Enhanced title with event information (optimized for 60 chars max)
-  let title = "Ukrainian Cakes Leeds | Honey Cake";
+  let title = "Best Ukrainian Cakes Leeds | Honey Cake Delivery";
   if (eventSEO.nextEventLocation) {
     // Keep location short to avoid exceeding 60 characters
     const shortLocation = eventSEO.nextEventLocation.length > 15
@@ -216,7 +216,7 @@ export default async function Home() {
     "@type": "Product",
     "@id": "https://olgishcakes.co.uk/#product",
     name: "Ukrainian Honey Cake",
-    description: "Traditional Ukrainian honey cake (Medovik) handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions.",
+    description: "Traditional Ukrainian honey cake (Medovik) handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Made with premium natural honey, fresh cream, and traditional Ukrainian techniques passed down through generations. Each cake features delicate honey-soaked layers with rich cream filling.",
     brand: {
       "@type": "Brand",
       name: "Olgish Cakes",
@@ -257,6 +257,42 @@ export default async function Home() {
         "@type": "QuantitativeValue",
         value: "1",
         unitCode: "DAY"
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: "15",
+          currency: "GBP"
+        },
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "GB",
+          addressRegion: ["West Yorkshire", "North Yorkshire", "South Yorkshire"]
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 1,
+            maxValue: 2,
+            unitCode: "DAY"
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: 0,
+            maxValue: 1,
+            unitCode: "DAY"
+          }
+        }
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "GB",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn"
       }
     },
     aggregateRating: testimonialStats.count > 0 ? {

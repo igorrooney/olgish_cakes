@@ -8,9 +8,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes Huddersfield | Ukrainian Cakes",
+    "Cakes Huddersfield from £35 | Fresh Ukrainian Cake Delivery",
   description:
-    "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Huddersfield. Order now for special occasions.",
+    "★★★★★ Fresh Ukrainian cakes delivered to Huddersfield same-day. Honey cake, birthday cakes, wedding cakes from £35. 127+ 5-star reviews. Order today!",
   keywords:
     "cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, Kyiv cake Huddersfield, traditional Ukrainian cakes Huddersfield, cake delivery Huddersfield",
   openGraph: {

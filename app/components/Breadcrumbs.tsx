@@ -54,18 +54,29 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
   const breadcrumbItems = items || generateBreadcrumbs();
 
   const jsonLd = useMemo(() => {
-    const itemListElement = breadcrumbItems.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.label,
-      item: item.href ? `https://olgishcakes.co.uk${item.href}` : undefined,
-    }));
+    // Build full current URL for the last item
+    const currentUrl = `https://olgishcakes.co.uk${pathname}`;
+    
+    const itemListElement = breadcrumbItems.map((item, index) => {
+      // For items without href (usually the last one), use the current page URL
+      const itemUrl = item.href 
+        ? `https://olgishcakes.co.uk${item.href}`
+        : currentUrl;
+      
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.label,
+        item: itemUrl,
+      };
+    });
+    
     return {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement,
     };
-  }, [breadcrumbItems]);
+  }, [breadcrumbItems, pathname]);
 
   // Hide breadcrumbs on home page
   if (pathname === "/") return null;

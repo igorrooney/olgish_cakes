@@ -8,9 +8,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes Wakefield | Ukrainian Cakes",
+    "Cakes Wakefield from £35 | Fresh Ukrainian Cake Delivery",
   description:
-    "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
+    "★★★★★ Fresh Ukrainian cakes delivered to Wakefield same-day. Honey cake, birthday cakes, wedding cakes from £35. 127+ 5-star reviews. Order today!",
   keywords:
     "cakes Wakefield, Ukrainian cakes Wakefield, custom cakes Wakefield, wedding cakes Wakefield, birthday cakes Wakefield, cake delivery Wakefield, bakery Wakefield, traditional Ukrainian cakes Wakefield",
   openGraph: {
@@ -142,31 +142,42 @@ export default async function CakesWakefieldPage() {
             />
           </Box>
 
+          {/* Why Choose Olgish Cakes for Wakefield */}
           <Box sx={{ mb: 6 }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Why Choose Our Ukrainian Cakes in Wakefield?
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              When you're looking for cakes in Wakefield, especially real Ukrainian cakes, Olgish Cakes is your best choice. I bake every cake by hand using traditional Ukrainian recipes that my family taught me. What makes my cakes different from other bakeries in Wakefield is that I use only the best ingredients and traditional methods. Every honey cake I make has layers that are soaked in real honey and filled with fresh cream, just like my grandmother used to make in Ukraine. The taste is something you won't find in regular British cakes.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              Many customers in Wakefield tell me that my cakes remind them of their childhood or special occasions. That's because I don't take shortcuts. Each cake takes time to prepare properly. I let the honey layers soak overnight so they become soft and full of flavor. The cream is made fresh, and I decorate every cake with care. Whether you need a birthday cake for your family in Wakefield or a wedding cake for your special day, I make sure it looks beautiful and tastes even better.
+            </Typography>
+
             <Grid container spacing={4}>
               {[
                 {
                   title: "Fresh Delivery to Wakefield",
                   description:
-                    "All cakes are delivered fresh to Wakefield on the day of your celebration",
+                    "All cakes are delivered fresh to Wakefield on the day of your celebration. I personally make sure your cake arrives in perfect condition.",
                   icon: "🚚",
                 },
                 {
                   title: "Real Ukrainian Flavors",
                   description:
-                    "Traditional Ukrainian recipes including honey cake, Kyiv cake, and other real Ukrainian desserts",
+                    "Traditional Ukrainian recipes including honey cake, Kyiv cake, and other real Ukrainian desserts made with authentic techniques",
                   icon: "🇺🇦",
                 },
                 {
                   title: "Custom Cake Design",
                   description:
-                    "Personalized cake design service for weddings, birthdays, and special celebrations in Wakefield",
+                    "Personalized cake design service for weddings, birthdays, and special celebrations in Wakefield tailored to your preferences",
                   icon: "🎨",
                 },
                 {
                   title: "Professional Service",
                   description:
-                    "Professional cake delivery service with careful handling to make sure your cake arrives in perfect condition",
+                    "Professional cake delivery service with careful handling to make sure your cake arrives in perfect condition, on time",
                   icon: "⭐",
                 },
               ].map((service, index) => (
@@ -200,6 +211,19 @@ export default async function CakesWakefieldPage() {
                 </Grid>
               ))}
             </Grid>
+          </Box>
+
+          {/* Popular Cakes in Wakefield */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Popular Cakes for Wakefield Customers
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              In Wakefield, people love my honey cake the most. It's the traditional Ukrainian Medovik that everyone asks for. The honey cake is perfect for birthdays, anniversaries, and family gatherings. I also make Kyiv cake, which is another Ukrainian favorite with hazelnut meringue and chocolate. Both cakes are made fresh to order, so you always get the best quality. Many Wakefield families order these cakes for special occasions because they know the taste is real and authentic.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              For weddings in Wakefield, I create custom wedding cakes that combine Ukrainian traditions with modern designs. You can choose from different flavors and decorations. I work with you to make sure your wedding cake is exactly what you want. And for children's birthdays, I can make fun themed cakes with Ukrainian flavors that kids love. Every cake is made with the same care and attention, no matter the size or occasion.
+            </Typography>
           </Box>
 
           <Box sx={{ mb: 6 }}>
