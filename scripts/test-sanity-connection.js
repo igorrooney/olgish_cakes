@@ -8,7 +8,7 @@ import { createClient } from '@sanity/client';
 import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config({ path: './env.local' });
+dotenv.config({ path: './.env.local' });
 
 async function testConnection() {
   console.log('🔍 Testing Sanity connection...');

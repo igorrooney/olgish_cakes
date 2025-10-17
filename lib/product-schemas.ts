@@ -80,7 +80,9 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
 
   const sku = generateSKU(cakeName, index);
   // Generate truly unique MPN by combining slug, price, and SKU suffix
-  const mpn = `${cakeSlug.toUpperCase().replace(/[^A-Z0-9]/g, '-')}-${cakePrice}-${sku.split('-').pop()}`;
+  // Use fallback to avoid malformed MPNs when slug is empty
+  const cleanSlug = cakeSlug || 'PRODUCT';
+  const mpn = `${cleanSlug.toUpperCase().replace(/[^A-Z0-9]/g, '-')}-${cakePrice}-${sku.split('-').pop()}`;
 
   return {
     "@context": "https://schema.org",

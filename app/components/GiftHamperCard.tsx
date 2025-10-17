@@ -73,8 +73,8 @@ const GiftHamperCard = memo(function GiftHamperCard({
         ? blocksToText(hamper.shortDescription)
         : `${hamper.name} gift hamper`,
       category: hamper.category || "Gift Hamper",
-      sku: `OC-HAMPER-${hamper.slug.current.toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-      mpn: `${hamper.slug.current.toUpperCase()}-${hamper.price || 'QUOTE'}`,
+      sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+      mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
       brand: { "@type": "Brand", name: "Olgish Cakes" },
       image: [imageUrl],
       ...(hamper.allergens && hamper.allergens.length > 0 && {

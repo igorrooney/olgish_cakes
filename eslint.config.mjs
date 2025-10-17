@@ -24,6 +24,13 @@ const eslintConfig = [
       ...nextPlugin.configs.recommended.rules,
       ...prettierConfig.rules,
       "prettier/prettier": ["error"],
+      // Custom rules from .eslintrc.json
+      "react/no-unescaped-entities": "off",
+      "react/display-name": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      "@next/next/no-img-element": "warn",
+      "@next/next/no-page-custom-font": "warn",
+      "jsx-a11y/alt-text": "warn",
     },
   },
 ];

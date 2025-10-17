@@ -187,8 +187,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
           },
           category: isCakeByPost ? "Food & Beverage > Baked Goods > Cakes" : (hamper.category || "Gift Hamper"),
           image: imagesForJsonLd,
-          sku: `OC-HAMPER-${hamper.slug.current.toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-          mpn: `${hamper.slug.current.toUpperCase()}-${hamper.price || 'QUOTE'}`,
+          sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+          mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
           keywords: isCakeByPost ? "honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake" : undefined,
           ...(hamper.allergens && hamper.allergens.length > 0 && {
             containsAllergens: hamper.allergens,

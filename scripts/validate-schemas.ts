@@ -26,9 +26,9 @@ import * as path from 'path';
 // Check for --real flag
 const useRealData = process.argv.includes('--real');
 
-// Load environment variables from env.local if it exists (for --real mode)
+// Load environment variables from .env.local if it exists (for --real mode)
 if (useRealData) {
-  const envPath = path.join(process.cwd(), 'env.local');
+  const envPath = path.join(process.cwd(), '.env.local');
   if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, 'utf-8');
     envContent.split('\n').forEach(line => {
