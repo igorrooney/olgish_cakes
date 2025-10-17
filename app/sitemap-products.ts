@@ -53,7 +53,7 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
 
   // Gift hamper product pages with high priority
   const giftHamperRoutes = giftHampers.map((hamper: any) => ({
-    url: `${baseUrl}/gift-hampers/${hamper.slug.current}`,
+    url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
     lastModified: new Date(hamper._updatedAt),
     changeFrequency: "daily" as const, // High frequency for product pages
     priority: 0.95, // Very high priority for products

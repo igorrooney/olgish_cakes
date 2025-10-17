@@ -89,12 +89,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     hamper.seo?.keywords?.join(", ") ||
     `${hamper.name}, gift hamper, luxury hamper, gourmet hamper, Leeds gift hamper, Yorkshire hamper, food gift UK`;
   const canonicalUrl =
-    hamper.seo?.canonicalUrl || `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`;
+    hamper.seo?.canonicalUrl || `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`;
 
   const primaryImage = hamper.images?.find(img => img.isMain) || hamper.images?.[0];
   const ogImageUrl = primaryImage?.asset?._ref
     ? urlFor(primaryImage).width(1200).height(630).url()
-    : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug.current}.jpg`;
+    : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug?.current || params.slug}.jpg`;
 
   return {
     title: metaTitle,
@@ -112,13 +112,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       siteName: "Olgish Cakes",
       locale: "en_GB",
-      images: [{ url: `/api/og/hampers/${hamper.slug.current}` }],
+      images: [{ url: `/api/og/hampers/${hamper.slug?.current || params.slug}` }],
     },
     twitter: {
       card: "summary_large_image",
       title: metaTitle,
       description: metaDescription,
-      images: [`/api/og/hampers/${hamper.slug.current}`],
+      images: [`/api/og/hampers/${hamper.slug?.current || params.slug}`],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
     },
@@ -158,7 +158,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
         const productJsonLd = {
           "@context": "https://schema.org",
           "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#product`,
+          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`,
           name: hamper.name,
           description: isCakeByPost
             ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
@@ -231,13 +231,13 @@ export default async function GiftHamperPage({ params }: PageProps) {
           }),
           offers: {
             "@type": "Offer",
-            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#offer`,
+            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#offer`,
             price: hamper.price,
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
             condition: "https://schema.org/NewCondition",
             priceValidUntil: getPriceValidUntil(30),
-            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
+            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`,
             seller: {
               "@type": "Organization",
               name: "Olgish Cakes",
@@ -277,7 +277,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             "@type": "OrderAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}#order`,
+              urlTemplate: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#order`,
               actionPlatform: [
                 "https://schema.org/DesktopWebPlatform",
                 "https://schema.org/MobileWebPlatform"
@@ -452,7 +452,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               "@type": "ListItem",
               position: 3,
               name: hamper.name,
-              item: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug.current}`,
+              item: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`,
             },
           ],
         } as const;

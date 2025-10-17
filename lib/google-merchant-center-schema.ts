@@ -307,7 +307,7 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
  */
 export function generateHamperMerchantCenterSchema(hamper: any): any {
   const baseUrl = "https://olgishcakes.co.uk";
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug.current}`;
+  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
   
   const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) || 
                    hamper.images?.find((img: any) => img.asset?._ref) || 
