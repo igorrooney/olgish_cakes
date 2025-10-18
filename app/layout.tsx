@@ -229,18 +229,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-QGQC58H2LD', {
-              page_title: document.title,
-              page_location: window.location.href,
-              custom_map: {
-                'custom_parameter_1': 'business_type',
-                'custom_parameter_2': 'location'
-              }
-            });
-            gtag('config', 'G-QGQC58H2LD', {
-              business_type: 'bakery',
-              location: 'leeds'
-            });
+            
+            // Exclude admin, API, and studio pages from tracking
+            const currentPath = window.location.pathname;
+            const isAdminPage = currentPath.startsWith('/admin') || 
+                               currentPath.startsWith('/api') || 
+                               currentPath.startsWith('/studio');
+            
+            if (!isAdminPage) {
+              gtag('config', 'G-QGQC58H2LD', {
+                page_title: document.title,
+                page_location: window.location.href,
+                custom_map: {
+                  'custom_parameter_1': 'business_type',
+                  'custom_parameter_2': 'location'
+                },
+                send_page_view: true
+              });
+              gtag('config', 'G-QGQC58H2LD', {
+                business_type: 'bakery',
+                location: 'leeds'
+              });
+            } else {
+              // Don't track admin pages
+              gtag('config', 'G-QGQC58H2LD', {
+                send_page_view: false
+              });
+            }
           `}
         </Script>
 
