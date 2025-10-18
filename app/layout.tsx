@@ -15,7 +15,9 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import Script from "next/script";
+import { Suspense } from "react";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 const alice = Alice({
@@ -219,30 +221,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
-        {/* Google Analytics 4 - Load with lower priority */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-QGQC58H2LD"
-          strategy="lazyOnload"
-        />
-        <Script id="google-analytics" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-QGQC58H2LD', {
-              page_title: document.title,
-              page_location: window.location.href,
-              custom_map: {
-                'custom_parameter_1': 'business_type',
-                'custom_parameter_2': 'location'
-              }
-            });
-            gtag('config', 'G-QGQC58H2LD', {
-              business_type: 'bakery',
-              location: 'leeds'
-            });
-          `}
-        </Script>
+        {/* Google Analytics 4 - Tracks route changes and excludes admin pages */}
+        <Suspense fallback={null}>
+          <GoogleAnalytics gaId="G-QGQC58H2LD" />
+        </Suspense>
 
         {/* Google Tag Manager - Load with lower priority */}
         <Script id="google-tag-manager" strategy="lazyOnload">

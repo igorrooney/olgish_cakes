@@ -39,6 +39,12 @@ const customJestConfig = {
       lines: 65,
       statements: 65,
     },
+    './app/components/GoogleAnalytics.tsx': {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
