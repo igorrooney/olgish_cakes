@@ -8,16 +8,16 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes Wakefield from £35 | Fresh Ukrainian Cake Delivery",
+    "Birthday Cakes Wakefield from £25 | Same-Day Delivery",
   description:
-    "★★★★★ Fresh Ukrainian cakes delivered to Wakefield same-day. Honey cake, birthday cakes, wedding cakes from £35. 127+ 5-star reviews. Order today!",
+    "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
   keywords:
-    "cakes Wakefield, Ukrainian cakes Wakefield, custom cakes Wakefield, wedding cakes Wakefield, birthday cakes Wakefield, cake delivery Wakefield, bakery Wakefield, traditional Ukrainian cakes Wakefield",
+    "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
-      "Cakes Wakefield | Ukrainian Cakes",
+      "Birthday Cakes Wakefield from £25 | Same-Day Delivery",
     description:
-      "Fresh Ukrainian cakes delivered to Wakefield. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering Wakefield and around areas.",
+      "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -112,7 +112,7 @@ export default async function CakesWakefieldPage() {
                 lineHeight: 1.2,
               }}
             >
-              Fresh Ukrainian Cakes Wakefield
+              Birthday Cakes Wakefield from £25
             </Typography>
             <Typography
               variant="h2"
@@ -125,9 +125,9 @@ export default async function CakesWakefieldPage() {
                 lineHeight: 1.6,
               }}
             >
-              Real Ukrainian cakes delivered fresh to Wakefield. From traditional honey cake
-              and Kyiv cake to custom celebration cakes, I bring the real taste of Ukraine to
-              your special occasions in Wakefield.
+              Custom birthday cakes delivered fresh to Wakefield same-day. From traditional Ukrainian honey cake
+              to themed children's birthday cakes, I create special cakes that make your birthday celebrations
+              unforgettable. Prices from £25.
             </Typography>
             <Chip
               label="Ukrainian Cakes Delivered to Wakefield"
@@ -142,16 +142,19 @@ export default async function CakesWakefieldPage() {
             />
           </Box>
 
-          {/* Why Choose Olgish Cakes for Wakefield */}
+          {/* Why Choose Olgish Cakes for Birthday Cakes in Wakefield */}
           <Box sx={{ mb: 6 }}>
             <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
-              Why Choose Our Ukrainian Cakes in Wakefield?
+              Why Choose Our Birthday Cakes in Wakefield?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              When you're looking for cakes in Wakefield, especially real Ukrainian cakes, Olgish Cakes is your best choice. I bake every cake by hand using traditional Ukrainian recipes that my family taught me. What makes my cakes different from other bakeries in Wakefield is that I use only the best ingredients and traditional methods. Every honey cake I make has layers that are soaked in real honey and filled with fresh cream, just like my grandmother used to make in Ukraine. The taste is something you won't find in regular British cakes.
+              When you're looking for birthday cakes in Wakefield, Olgish Cakes offers something special that you won't find anywhere else. I create custom birthday cakes using traditional Ukrainian recipes that have been in my family for generations. Whether it's a children's birthday party or an adult milestone celebration, every cake is handmade with care and decorated to match your vision. My birthday cakes start from just £25, making authentic, high-quality cakes accessible for everyone in Wakefield.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              Many customers in Wakefield tell me that my cakes remind them of their childhood or special occasions. That's because I don't take shortcuts. Each cake takes time to prepare properly. I let the honey layers soak overnight so they become soft and full of flavor. The cream is made fresh, and I decorate every cake with care. Whether you need a birthday cake for your family in Wakefield or a wedding cake for your special day, I make sure it looks beautiful and tastes even better.
+              What makes my birthday cakes different? I use only the finest ingredients - real honey, fresh cream, and natural flavors. For children's birthday cakes, I can create fun themes with characters, colors, and designs that kids love. For adult birthdays, I offer elegant designs with traditional Ukrainian flavors like honey cake (Medovik) or Kyiv cake with hazelnuts and chocolate. Many Wakefield families come back year after year because they know the taste is authentic and the quality is always excellent. Each birthday cake is delivered fresh on the day of your celebration, ensuring it arrives in perfect condition.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              I understand that birthday cakes need to be special. That's why I work with you to create exactly what you want - from flavor choices to decoration style. Whether you need a small cake for an intimate family gathering or a large celebration cake for a big party in Wakefield, I make sure every birthday cake looks beautiful and tastes even better. Same-day delivery is available in Wakefield when you order before 10am, perfect for last-minute celebrations.
             </Typography>
 
             <Grid container spacing={4}>
@@ -213,16 +216,19 @@ export default async function CakesWakefieldPage() {
             </Grid>
           </Box>
 
-          {/* Popular Cakes in Wakefield */}
+          {/* Popular Birthday Cakes in Wakefield */}
           <Box sx={{ mb: 6 }}>
             <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
-              Popular Cakes for Wakefield Customers
+              Popular Birthday Cakes in Wakefield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              In Wakefield, people love my honey cake the most. It's the traditional Ukrainian Medovik that everyone asks for. The honey cake is perfect for birthdays, anniversaries, and family gatherings. I also make Kyiv cake, which is another Ukrainian favorite with hazelnut meringue and chocolate. Both cakes are made fresh to order, so you always get the best quality. Many Wakefield families order these cakes for special occasions because they know the taste is real and authentic.
+              The most requested birthday cake in Wakefield is my traditional Ukrainian honey cake (Medovik). This isn't your ordinary birthday cake - it features delicate honey-soaked layers with rich cream filling that melts in your mouth. Adults love it for milestone birthdays like 30th, 40th, and 50th celebrations because it's sophisticated yet comforting. Starting from £25, it's an affordable luxury that makes birthdays truly special. I also make Kyiv cake for birthdays, which combines hazelnut meringue with chocolate - perfect for chocolate lovers celebrating their special day in Wakefield.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              For weddings in Wakefield, I create custom wedding cakes that combine Ukrainian traditions with modern designs. You can choose from different flavors and decorations. I work with you to make sure your wedding cake is exactly what you want. And for children's birthdays, I can make fun themed cakes with Ukrainian flavors that kids love. Every cake is made with the same care and attention, no matter the size or occasion.
+              For children's birthday parties in Wakefield, I create custom themed birthday cakes that combine fun designs with authentic Ukrainian flavors. Popular themes include princess cakes, superhero cakes, dinosaur cakes, and unicorn cakes. What makes these different from supermarket birthday cakes is that I use real ingredients and traditional baking methods - no artificial flavors or preservatives. Parents in Wakefield appreciate that their children get both a beautiful cake and healthy, natural ingredients. Every children's birthday cake is customized to match your party theme and can serve anywhere from 10 to 50 guests.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              For teenage and adult birthday celebrations, I offer elegant designs that don't compromise on flavor. Recent popular requests in Wakefield include minimalist birthday cakes with fresh fruit, floral birthday cakes with edible flowers, and classic tiered birthday cakes for milestone celebrations. All birthday cakes can be customized with your choice of flavors, colors, and personalized messages. Order your birthday cake for Wakefield delivery today and experience why customers say my cakes make their celebrations unforgettable.
             </Typography>
           </Box>
 
