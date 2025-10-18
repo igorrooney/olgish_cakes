@@ -13,9 +13,9 @@ export const revalidate = getRevalidateTime();
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: "All Cakes | Ukrainian Cakes Collection",
+  title: "Ukrainian Cakes Leeds | Authentic Honey Cake & Desserts",
   description:
-    "Explore our complete collection of authentic Ukrainian cakes. Traditional honey cake (Medovik), Kyiv cake, wedding cakes, birthday cakes, and custom designs. Handcrafted in Leeds with premium ingredients.",
+    "★★★★★ Authentic Ukrainian cakes in Leeds from £25. Traditional honey cake (Medovik), Kyiv cake, custom designs. 127+ 5-star reviews. Same-day delivery. Order now!",
   keywords:
     "Ukrainian cakes collection, honey cake, Medovik, Kyiv cake, traditional Ukrainian cakes, custom cakes Leeds, wedding cakes, birthday cakes, Ukrainian bakery Leeds, authentic Ukrainian desserts",
   openGraph: {

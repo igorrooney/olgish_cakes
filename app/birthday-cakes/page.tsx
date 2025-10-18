@@ -10,9 +10,9 @@ import { getPriceValidUntil } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds – Custom Designs",
+    "Birthday Cakes Leeds from £35 | Same-Day Delivery Yorkshire",
   description:
-    "Custom birthday cakes in Leeds for children and adults. Themed designs, Ukrainian favorites like honey cake (Medovik), delivery available. Prices from £35.",
+    "★★★★★ Custom birthday cakes Leeds. Children & adult themes, Ukrainian honey cake, same-day delivery. 127+ 5-star reviews. From £35. Order today!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
