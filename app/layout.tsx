@@ -17,6 +17,7 @@ import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImpor
 import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import Script from "next/script";
+import { Suspense } from "react";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 const alice = Alice({
@@ -221,7 +222,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
         {/* Google Analytics 4 - Tracks route changes and excludes admin pages */}
-        <GoogleAnalytics gaId="G-QGQC58H2LD" />
+        <Suspense fallback={null}>
+          <GoogleAnalytics gaId="G-QGQC58H2LD" />
+        </Suspense>
 
         {/* Google Tag Manager - Load with lower priority */}
         <Script id="google-tag-manager" strategy="lazyOnload">

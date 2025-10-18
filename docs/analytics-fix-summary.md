@@ -10,9 +10,9 @@
 
 **Files Modified:**
 - **New:** `/app/components/GoogleAnalytics.tsx` - Client component for tracking
-- **Updated:** `/app/layout.tsx` - Now uses the GoogleAnalytics component
+- **Updated:** `/app/layout.tsx` - Now uses the GoogleAnalytics component wrapped in Suspense
 
-**Change:** Created a dedicated client component that tracks route changes using Next.js `usePathname()` and `useSearchParams()` hooks to properly exclude admin pages from GA4 tracking on all page navigations (both direct and client-side).
+**Change:** Created a dedicated client component that tracks route changes using Next.js `usePathname()` and `useSearchParams()` hooks to properly exclude admin pages from GA4 tracking on all page navigations (both direct and client-side). Wrapped in Suspense boundary for proper static generation support.
 
 **Before:**
 ```javascript
@@ -49,6 +49,7 @@ useEffect(() => {
 ✅ Tracks route changes automatically with `usePathname()` hook  
 ✅ Excludes admin pages on both direct access AND navigation  
 ✅ TypeScript type-safe with proper declarations  
+✅ Wrapped in Suspense boundary for static generation compatibility  
 ✅ Follows Next.js best practices for analytics integration
 
 ---
