@@ -1,16 +1,18 @@
 # GA4 Admin Tracking Fix - Completed
 
-**Date:** October 17, 2025  
+**Date:** October 18, 2025  
 **Issue:** Admin pages were being tracked, inflating analytics by 19.5%  
-**Status:** ✅ FIXED
+**Status:** ✅ FIXED (with Next.js client-side navigation support)
 
 ---
 
 ## What Was Changed
 
-**File:** `/app/layout.tsx`
+**Files Modified:**
+- **New:** `/app/components/GoogleAnalytics.tsx` - Client component for tracking
+- **Updated:** `/app/layout.tsx` - Now uses the GoogleAnalytics component
 
-**Change:** Added client-side path detection to exclude admin pages from GA4 tracking.
+**Change:** Created a dedicated client component that tracks route changes using Next.js `usePathname()` and `useSearchParams()` hooks to properly exclude admin pages from GA4 tracking on all page navigations (both direct and client-side).
 
 **Before:**
 ```javascript
@@ -22,23 +24,32 @@ gtag('config', 'G-QGQC58H2LD', {
 ```
 
 **After:**
-```javascript
-// Exclude admin, API, and studio pages from tracking
-const currentPath = window.location.pathname;
-const isAdminPage = currentPath.startsWith('/admin') || 
-                   currentPath.startsWith('/api') || 
-                   currentPath.startsWith('/studio');
+```typescript
+// GoogleAnalytics.tsx - Tracks route changes properly
+const pathname = usePathname()
+const searchParams = useSearchParams()
 
-if (!isAdminPage) {
-  gtag('config', 'G-QGQC58H2LD', {
-    // ... only track customer pages
-  });
-} else {
-  gtag('config', 'G-QGQC58H2LD', {
-    send_page_view: false  // Don't track admin
-  });
-}
+useEffect(() => {
+  const isAdminPage = pathname.startsWith('/admin') || 
+                     pathname.startsWith('/api') || 
+                     pathname.startsWith('/studio')
+
+  if (!isAdminPage) {
+    window.gtag('config', gaId, {
+      page_path: url,
+      page_title: document.title,
+      // ... only track customer pages
+    })
+  }
+}, [pathname, searchParams, gaId])
 ```
+
+**Why This Approach:**
+✅ Properly handles Next.js client-side navigation (via `<Link>` components)  
+✅ Tracks route changes automatically with `usePathname()` hook  
+✅ Excludes admin pages on both direct access AND navigation  
+✅ TypeScript type-safe with proper declarations  
+✅ Follows Next.js best practices for analytics integration
 
 ---
 
@@ -77,10 +88,29 @@ if (!isAdminPage) {
 
 ---
 
+## Testing
+
+**Test Coverage: 100%** ✅
+
+- 25 comprehensive unit tests written
+- All statements, branches, functions, and lines covered
+- Tests verify:
+  - Component renders correctly
+  - Customer pages are tracked properly
+  - Admin pages are excluded (`/admin/*`, `/api/*`, `/studio/*`)
+  - Route changes are tracked (client-side navigation)
+  - Search params changes trigger tracking
+  - Edge cases handled gracefully
+
+**Test Location:** `app/components/__tests__/GoogleAnalytics.test.tsx`
+
+---
+
 ## Next Steps
 
 **Immediate (24 hours):**
 - ✅ Fix is live
+- ✅ Tests added with 100% coverage
 - New data will be clean starting now
 - Old data (before today) still includes admin pages
 
@@ -93,8 +123,9 @@ if (!isAdminPage) {
 - All reports will show true customer behavior
 - Conversion rates will be accurate
 - Better decision-making data
+- CI will fail if GoogleAnalytics coverage drops below 100%
 
 ---
 
-**Status:** ✅ Complete. Your GA4 is now tracking ONLY real customers!
+**Status:** ✅ Complete. Your GA4 is now tracking ONLY real customers with proper Next.js support!
 

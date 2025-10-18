@@ -15,6 +15,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import Script from "next/script";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
@@ -219,45 +220,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
-        {/* Google Analytics 4 - Load with lower priority */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-QGQC58H2LD"
-          strategy="lazyOnload"
-        />
-        <Script id="google-analytics" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            
-            // Exclude admin, API, and studio pages from tracking
-            const currentPath = window.location.pathname;
-            const isAdminPage = currentPath.startsWith('/admin') || 
-                               currentPath.startsWith('/api') || 
-                               currentPath.startsWith('/studio');
-            
-            if (!isAdminPage) {
-              gtag('config', 'G-QGQC58H2LD', {
-                page_title: document.title,
-                page_location: window.location.href,
-                custom_map: {
-                  'custom_parameter_1': 'business_type',
-                  'custom_parameter_2': 'location'
-                },
-                send_page_view: true
-              });
-              gtag('config', 'G-QGQC58H2LD', {
-                business_type: 'bakery',
-                location: 'leeds'
-              });
-            } else {
-              // Don't track admin pages
-              gtag('config', 'G-QGQC58H2LD', {
-                send_page_view: false
-              });
-            }
-          `}
-        </Script>
+        {/* Google Analytics 4 - Tracks route changes and excludes admin pages */}
+        <GoogleAnalytics gaId="G-QGQC58H2LD" />
 
         {/* Google Tag Manager - Load with lower priority */}
         <Script id="google-tag-manager" strategy="lazyOnload">

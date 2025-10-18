@@ -20,6 +20,7 @@ declare global {
         [key: string]: any;
       }
     ) => void;
+    dataLayer: unknown[];
   }
 }
 
