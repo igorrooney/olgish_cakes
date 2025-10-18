@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Huddersfield | Ukrainian Cakes",
+    title: "Birthday Cakes Huddersfield from £25 | Same-Day Delivery",
     description:
-      "Traditional Ukrainian cakes in Huddersfield. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Huddersfield.",
+      "★★★★★ Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
   },
   alternates: {
@@ -84,7 +84,7 @@ export default async function CakesHuddersfieldPage() {
         <Container maxWidth="lg">
           {/* Breadcrumbs */}
           <Box sx={{ mb: 3 }}>
-            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Cakes Huddersfield" }]} />
+            <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Birthday Cakes Huddersfield" }]} />
           </Box>
 
           {/* Hero Section */}
@@ -160,7 +160,7 @@ export default async function CakesHuddersfieldPage() {
                 },
                 {
                   title: "Adult Birthday Cakes",
-                  description: "Elegant birthday cakes for milestone celebrations. Traditional Ukrainian honey cake perfect for 30th, 40th, 50th birthdays in Huddersfield. From £40.",
+                  description: "Elegant birthday cakes for milestone celebrations. Traditional Ukrainian honey cake perfect for 30th, 40th, 50th birthdays in Huddersfield. From £25.",
                   icon: "🎉",
                 },
                 {

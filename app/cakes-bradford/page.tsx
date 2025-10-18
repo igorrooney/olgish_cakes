@@ -159,7 +159,7 @@ export default async function CakesBradfordPage() {
                 },
                 {
                   title: "Adult Milestone Birthdays",
-                  description: "Elegant birthday cakes for special milestones. Traditional Ukrainian honey cake perfect for 30th, 40th, 50th birthdays in Bradford. From £40.",
+                  description: "Elegant birthday cakes for special milestones. Traditional Ukrainian honey cake perfect for 30th, 40th, 50th birthdays in Bradford. From £25.",
                   icon: "🎉",
                 },
                 {

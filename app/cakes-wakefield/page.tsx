@@ -8,16 +8,16 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Wakefield from £25 | Same-Day Delivery",
+    "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
   description:
-    "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+    "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
   keywords:
     "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
-      "Birthday Cakes Wakefield from £25 | Same-Day Delivery",
+      "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+      "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [

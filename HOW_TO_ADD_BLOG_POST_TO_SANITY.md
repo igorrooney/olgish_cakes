@@ -96,3 +96,4 @@ If you see it there, it's working! The website just needs to refresh its cache.
 
 **Note:** The blog content in `BLOG_POST_1_NO_RECIPES.md` contains NO recipes - only history, descriptions, and comparisons. Your family secrets are completely safe!
 
+
