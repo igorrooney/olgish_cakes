@@ -103,7 +103,34 @@ export default async function CakesPage() {
           />
         </Container>
 
-        {/* Ukrainian Cakes Information Section */}
+        {/* Cakes Collection - Moved to top */}
+        <Container maxWidth="lg" className="py-8">
+          <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 6, textAlign: "center" }}>
+            Our Ukrainian Cake Collection
+          </Typography>
+          
+          {/* Cakes Grid */}
+          {!cakes || cakes.length === 0 ? (
+            <Box className="text-center py-16">
+              <Typography variant="h3" component="h3" className="mb-4 text-gray-700 font-light">
+                Our Cake Collection
+              </Typography>
+              <Typography variant="body1" color="text.secondary" className="max-w-md mx-auto">
+                We are currently preparing our cake collection. Please check back soon!
+              </Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={6} className="mt-4">
+              {cakes.map(cake => (
+                <Grid item xs={12} sm={6} md={4} key={cake._id}>
+                  <CakeCard cake={cake} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+
+        {/* Ukrainian Cakes Information Section - Moved below cakes */}
         <Container maxWidth="lg" sx={{ py: 6 }}>
           <Box sx={{ mb: 8 }}>
             <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
@@ -179,33 +206,6 @@ export default async function CakesPage() {
               I use only premium ingredients - real honey from Yorkshire beekeepers, organic eggs, fresh cream, and the highest quality flour and butter. No artificial flavors, no preservatives, no shortcuts. Each Ukrainian cake is made to order and delivered fresh. Prices start from just £25, making authentic Ukrainian cakes accessible for Leeds families who want something truly special for their celebrations.
             </Typography>
           </Box>
-        </Container>
-
-        {/* Main Content */}
-        <Container maxWidth="lg" className="py-8">
-          <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 6, textAlign: "center" }}>
-            Our Ukrainian Cake Collection
-          </Typography>
-          
-          {/* Cakes Grid */}
-          {!cakes || cakes.length === 0 ? (
-            <Box className="text-center py-16">
-              <Typography variant="h3" component="h3" className="mb-4 text-gray-700 font-light">
-                Our Cake Collection
-              </Typography>
-              <Typography variant="body1" color="text.secondary" className="max-w-md mx-auto">
-                We are currently preparing our cake collection. Please check back soon!
-              </Typography>
-            </Box>
-          ) : (
-            <Grid container spacing={6} className="mt-4">
-              {cakes.map(cake => (
-                <Grid item xs={12} sm={6} md={4} key={cake._id}>
-                  <CakeCard cake={cake} />
-                </Grid>
-              ))}
-            </Grid>
-          )}
         </Container>
       </main>
     </>
