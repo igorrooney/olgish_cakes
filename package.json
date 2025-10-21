@@ -12,7 +12,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "ci": "pnpm run type-check && pnpm run lint && pnpm run test && pnpm run validate:schemas",
+    "ci": "pnpm run type-check && pnpm run lint && pnpm run test:ci && pnpm run validate:schemas",
     "seed": "node scripts/seed-cakes.ts",
     "cleanup": "node scripts/cleanup-cakes.ts",
     "reset-db": "pnpm run cleanup && pnpm run seed",
@@ -64,7 +64,8 @@
     "test:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --coverage --ci --maxWorkers=2 --bail"
   },
   "engines": {
     "node": ">=18.0.0",
