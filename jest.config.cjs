@@ -26,20 +26,8 @@ const customJestConfig = {
   ],
   coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
   coverageThreshold: {
-    // Apply strict thresholds only to files with tests
-    './lib/product-schemas.ts': {
-      branches: 60,
-      functions: 30,
-      lines: 35,
-      statements: 35,
-    },
-    './lib/schema-validation.ts': {
-      branches: 65,
-      functions: 70,
-      lines: 65,
-      statements: 65,
-    },
-    './app/components/GoogleAnalytics.tsx': {
+    // Global 100% coverage requirement - all files now have comprehensive tests
+    global: {
       branches: 100,
       functions: 100,
       lines: 100,
@@ -53,7 +41,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: [
-    '/node_modules/',
+    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
 };
