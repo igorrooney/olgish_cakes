@@ -842,7 +842,7 @@ describe('schema-validation', () => {
     }
 
     beforeEach(() => {
-      process.env.NODE_ENV = 'test'
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', writable: true })
     })
 
     it('should return count of valid schemas', () => {
@@ -866,7 +866,8 @@ describe('schema-validation', () => {
     })
 
     it('should log errors in development by default', () => {
-      process.env.NODE_ENV = 'development'
+      const originalEnv = process.env.NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true })
       
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])
@@ -875,7 +876,8 @@ describe('schema-validation', () => {
     })
 
     it('should not log errors in production by default', () => {
-      process.env.NODE_ENV = 'production'
+      const originalEnv = process.env.NODE_ENV
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true })
       
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])

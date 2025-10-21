@@ -9,21 +9,24 @@ describe('robots.txt', () => {
 
   it('should allow all user agents', () => {
     const result = robots()
+    const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules
 
-    expect(result.rules.userAgent).toBe('*')
+    expect(rules.userAgent).toBe('*')
   })
 
   it('should allow all paths', () => {
     const result = robots()
+    const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules
 
-    expect(result.rules.allow).toBe('/')
+    expect(rules.allow).toBe('/')
   })
 
   it('should disallow studio and API paths', () => {
     const result = robots()
+    const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules
 
-    expect(result.rules.disallow).toContain('/studio/')
-    expect(result.rules.disallow).toContain('/api/')
+    expect(rules.disallow).toContain('/studio/')
+    expect(rules.disallow).toContain('/api/')
   })
 
   it('should include sitemap URL', () => {

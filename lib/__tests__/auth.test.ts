@@ -33,7 +33,7 @@ describe('auth', () => {
   describe('verifyToken', () => {
     describe('with valid token', () => {
       it('should return decoded user for valid admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser)
+        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
         const result = verifyToken(validToken)
 
@@ -42,7 +42,7 @@ describe('auth', () => {
       })
 
       it('should return decoded user for valid non-admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockNonAdminUser)
+        mockedJwt.verify.mockReturnValue(mockNonAdminUser as any)
 
         const result = verifyToken(validToken)
 
@@ -51,7 +51,7 @@ describe('auth', () => {
 
       it('should use JWT_SECRET from environment', () => {
         process.env.JWT_SECRET = 'custom-secret'
-        mockedJwt.verify.mockReturnValue(mockAdminUser)
+        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
         const result = verifyToken(validToken)
 
@@ -61,7 +61,7 @@ describe('auth', () => {
 
       it('should use default secret if JWT_SECRET not set', () => {
         delete process.env.JWT_SECRET
-        mockedJwt.verify.mockReturnValue(mockAdminUser)
+        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
         const result = verifyToken(validToken)
 
@@ -146,7 +146,7 @@ describe('auth', () => {
   describe('isAdmin', () => {
     describe('with admin user', () => {
       it('should return true for valid admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser)
+        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
         const result = isAdmin(validToken)
 
@@ -154,7 +154,7 @@ describe('auth', () => {
       })
 
       it('should verify token before checking role', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser)
+        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
         isAdmin(validToken)
 
@@ -165,7 +165,7 @@ describe('auth', () => {
 
     describe('with non-admin user', () => {
       it('should return false for valid non-admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockNonAdminUser)
+        mockedJwt.verify.mockReturnValue(mockNonAdminUser as any)
 
         const result = isAdmin(validToken)
 
@@ -173,25 +173,25 @@ describe('auth', () => {
       })
 
       it('should return false for user role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: 'user' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'user' })
 
         expect(isAdmin(validToken)).toBe(false)
       })
 
       it('should return false for moderator role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: 'moderator' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'moderator' })
 
         expect(isAdmin(validToken)).toBe(false)
       })
 
       it('should return false for guest role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: 'guest' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'guest' })
 
         expect(isAdmin(validToken)).toBe(false)
       })
 
       it('should return false for empty role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: '' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: '' })
 
         expect(isAdmin(validToken)).toBe(false)
       })
@@ -227,13 +227,13 @@ describe('auth', () => {
 
     describe('edge cases', () => {
       it('should return false for undefined role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: undefined as any })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: undefined as any })
 
         expect(isAdmin(validToken)).toBe(false)
       })
 
       it('should return false for null role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: null as any })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: null as any })
 
         expect(isAdmin(validToken)).toBe(false)
       })
@@ -247,13 +247,13 @@ describe('auth', () => {
       })
 
       it('should be case-sensitive for admin role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: 'Admin' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'Admin' })
 
         expect(isAdmin(validToken)).toBe(false)
       })
 
       it('should be case-sensitive for ADMIN role', () => {
-        mockedJwt.verify.mockReturnValue({ ...mockAdminUser, role: 'ADMIN' })
+        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'ADMIN' })
 
         expect(isAdmin(validToken)).toBe(false)
       })

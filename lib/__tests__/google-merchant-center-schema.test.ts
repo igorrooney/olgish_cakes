@@ -142,14 +142,14 @@ describe('google-merchant-center-schema', () => {
       }
       const schema = generateMerchantCenterProductSchema(dataWithShipping)
 
-      expect(schema.offers.shippingDetails).toBeDefined()
-      expect(schema.offers.shippingDetails['@type']).toBe('OfferShippingDetails')
+      expect(schema.offers?.shippingDetails).toBeDefined()
+      expect(schema.offers?.shippingDetails['@type']).toBe('OfferShippingDetails')
     })
 
     it('should not include shipping details when not provided', () => {
       const schema = generateMerchantCenterProductSchema(productData)
 
-      expect(schema.offers.shippingDetails).toBeUndefined()
+      expect(schema.offers?.shippingDetails).toBeUndefined()
     })
 
     it('should include tax information when provided', () => {
@@ -349,8 +349,8 @@ describe('google-merchant-center-schema', () => {
     it('should include shipping information', () => {
       const schema = generateCakeMerchantCenterSchema(mockCake)
 
-      expect(schema.offers.shippingDetails).toBeDefined()
-      expect(schema.offers.shippingDetails.shippingRate.value).toBe(0)
+      expect(schema.offers?.shippingDetails).toBeDefined()
+      expect(schema.offers?.shippingDetails.shippingRate.value).toBe(0)
     })
 
     it('should include tax information', () => {

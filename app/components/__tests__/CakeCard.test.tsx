@@ -4,6 +4,22 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import CakeCard from '../CakeCard'
+import type { Cake } from '@/types/cake'
+
+// Helper to create partial cake mocks with type safety
+const mockCake = (partial: Partial<Cake> & { _id: string; name: string }): Cake => ({
+  ...partial,
+  _createdAt: '',
+  _rev: '',
+  _type: 'cake',
+  _updatedAt: '',
+  slug: partial.slug || { _type: 'slug', current: '' },
+  category: partial.category || '',
+  description: partial.description || [],
+  size: partial.size || { diameter: 0, height: 0, servings: 0 },
+  pricing: partial.pricing || { standard: 0 },
+  designs: partial.designs || [],
+} as Cake)
 
 // Mock Next.js
 jest.mock('next/link', () => {
@@ -98,7 +114,7 @@ jest.mock('@/lib/mui-optimization', () => ({
 }))
 
 describe('CakeCard', () => {
-  const mockCake = {
+  const testCake: any = {
     _id: 'cake-1',
     name: 'Honey Cake',
     slug: { current: 'honey-cake' },
@@ -112,31 +128,31 @@ describe('CakeCard', () => {
 
   describe('Rendering', () => {
     it('should render ProductCard', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByTestId('product-card')).toBeInTheDocument()
     })
 
     it('should render cake name', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByText('Honey Cake')).toBeInTheDocument()
     })
 
     it('should render PriceDisplay', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByTestId('price-display')).toBeInTheDocument()
     })
 
     it('should render Order Now button', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByText('Order Now')).toBeInTheDocument()
     })
 
     it('should render Next.js Image', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
@@ -144,26 +160,26 @@ describe('CakeCard', () => {
 
   describe('Image Handling', () => {
     it('should use mainImage when available', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
 
     it('should fallback to designs.standard', () => {
-      const cakeWithDesigns = {
-        ...mockCake,
+      const cakeWithDesigns: any = {
+        ...testCake,
         mainImage: undefined,
         designs: { standard: [{ asset: { _ref: 'ref-1' }, isMain: true }] }
       }
 
-      render(<CakeCard cake={cakeWithDesigns as any} />)
+      render(<CakeCard cake={cakeWithDesigns} />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
 
     it('should use placeholder when no images', () => {
-      const cakeWithoutImages = {
-        ...mockCake,
+      const cakeWithoutImages: any = {
+        ...testCake,
         mainImage: undefined,
         designs: undefined
       }
@@ -175,7 +191,7 @@ describe('CakeCard', () => {
     })
 
     it('should generate SEO-optimized alt text', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const img = screen.getByTestId('next-image')
       expect(img).toHaveAttribute('alt', expect.stringContaining('Honey Cake'))
@@ -183,13 +199,13 @@ describe('CakeCard', () => {
     })
 
     it('should use priority loading for featured variant', () => {
-      render(<CakeCard cake={mockCake} variant="featured" />)
+      render(<CakeCard cake={testCake} variant="featured" />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
 
     it('should use lazy loading for catalog variant', () => {
-      render(<CakeCard cake={mockCake} variant="catalog" />)
+      render(<CakeCard cake={testCake} variant="catalog" />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
@@ -197,19 +213,19 @@ describe('CakeCard', () => {
 
   describe('Variants', () => {
     it('should use catalog variant by default', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByTestId('product-card')).toBeInTheDocument()
     })
 
     it('should accept featured variant', () => {
-      render(<CakeCard cake={mockCake} variant="featured" />)
+      render(<CakeCard cake={testCake} variant="featured" />)
 
       expect(screen.getByText('Featured')).toBeInTheDocument()
     })
 
     it('should not show Featured badge for catalog variant', () => {
-      render(<CakeCard cake={mockCake} variant="catalog" />)
+      render(<CakeCard cake={testCake} variant="catalog" />)
 
       expect(screen.queryByText('Featured')).not.toBeInTheDocument()
     })
@@ -217,7 +233,7 @@ describe('CakeCard', () => {
 
   describe('Hover State', () => {
     it('should handle mouse enter', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       fireEvent.mouseEnter(card)
@@ -227,7 +243,7 @@ describe('CakeCard', () => {
     })
 
     it('should handle mouse leave', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       fireEvent.mouseEnter(card)
@@ -242,7 +258,7 @@ describe('CakeCard', () => {
       delete (window as any).location
       window.location = { href: '' } as any
 
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       fireEvent.keyDown(card, { key: 'Enter' })
@@ -254,7 +270,7 @@ describe('CakeCard', () => {
       delete (window as any).location
       window.location = { href: '' } as any
 
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       fireEvent.keyDown(card, { key: ' ' })
@@ -265,7 +281,7 @@ describe('CakeCard', () => {
     it('should not navigate on other keys', () => {
       const originalHref = window.location.href
 
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       fireEvent.keyDown(card, { key: 'a' })
@@ -276,7 +292,7 @@ describe('CakeCard', () => {
 
   describe('Links', () => {
     it('should link to cake detail page', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const links = screen.getAllByRole('link')
       // Check that at least one link goes to the cake detail page
@@ -284,7 +300,7 @@ describe('CakeCard', () => {
     })
 
     it('should link Order button to cake page', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const orderButton = screen.getByText('Order Now').closest('a')
       expect(orderButton).toHaveAttribute('href', '/cakes/honey-cake')
@@ -293,14 +309,14 @@ describe('CakeCard', () => {
 
   describe('Structured Data', () => {
     it('should include JSON-LD script', () => {
-      const { container } = render(<CakeCard cake={mockCake} />)
+      const { container } = render(<CakeCard cake={testCake} />)
 
       const script = container.querySelector('script[type="application/ld+json"]')
       expect(script).toBeTruthy()
     })
 
     it('should generate valid Product schema', () => {
-      const { container } = render(<CakeCard cake={mockCake} />)
+      const { container } = render(<CakeCard cake={testCake} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -311,14 +327,14 @@ describe('CakeCard', () => {
 
   describe('Price', () => {
     it('should display price from pricing.standard', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const priceDisplay = screen.getByTestId('price-display')
       expect(priceDisplay.getAttribute('data-price')).toBe('30')
     })
 
     it('should use 0 when no pricing', () => {
-      const cakeWithoutPricing = { ...mockCake, pricing: undefined }
+      const cakeWithoutPricing: any = { ...testCake, pricing: undefined }
 
       render(<CakeCard cake={cakeWithoutPricing} />)
 
@@ -327,13 +343,13 @@ describe('CakeCard', () => {
     })
 
     it('should show From label', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       expect(screen.getByText(/From/)).toBeInTheDocument()
     })
 
     it('should use large size', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const priceDisplay = screen.getByTestId('price-display')
       expect(priceDisplay.getAttribute('data-size')).toBe('large')
@@ -347,21 +363,21 @@ describe('CakeCard', () => {
 
   describe('Accessibility', () => {
     it('should have article role', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       expect(card).toHaveAttribute('role', 'article')
     })
 
     it('should have aria-label', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       expect(card).toHaveAttribute('aria-label', expect.stringContaining('Honey Cake'))
     })
 
     it('should have tabIndex for keyboard navigation', () => {
-      render(<CakeCard cake={mockCake} />)
+      render(<CakeCard cake={testCake} />)
 
       const card = screen.getByTestId('product-card')
       expect(card).toHaveAttribute('tabIndex', '0')

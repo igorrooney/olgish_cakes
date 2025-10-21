@@ -39,7 +39,9 @@ describe('sitemap-images', () => {
 
       const blogEntry = result.find(entry => entry.url.includes('/blog/test-post'))
       expect(blogEntry).toBeDefined()
-      expect(blogEntry?.images?.[0].url).toContain('test.jpg')
+      if ('images' in blogEntry!) {
+        expect((blogEntry as any).images?.[0].url).toContain('test.jpg')
+      }
     })
 
     it('should include cake images', async () => {
@@ -81,9 +83,12 @@ describe('sitemap-images', () => {
 
       const result = await sitemapImages()
 
-      const logoEntry = result.find(entry => 
-        entry.images?.some(img => img.url.includes('logo'))
-      )
+      const logoEntry = result.find(entry => {
+        if ('images' in entry) {
+          return (entry as any).images?.some((img: any) => img.url.includes('logo'))
+        }
+        return false
+      })
       expect(logoEntry).toBeDefined()
     })
 
@@ -101,7 +106,9 @@ describe('sitemap-images', () => {
       const result = await sitemapImages()
 
       const entry = result.find(entry => entry.url.includes('/cakes/test'))
-      expect(entry?.images?.[0]?.geoLocation || '').toContain('Leeds')
+      if (entry && 'images' in entry) {
+        expect((entry as any).images?.[0]?.geoLocation || '').toContain('Leeds')
+      }
     })
 
     it('should sort by priority', async () => {

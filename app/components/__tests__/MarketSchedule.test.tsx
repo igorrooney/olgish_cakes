@@ -312,7 +312,7 @@ describe('MarketSchedule', () => {
 
   describe('Special Badges', () => {
     it('should show "Today!" badge for today\'s events', () => {
-      const todayEvent = [{
+      const todayEvent: any = [{
         _id: '1',
         title: 'Today Event',
         date: today.toISOString().split('T')[0],
@@ -320,7 +320,9 @@ describe('MarketSchedule', () => {
         endTime: '16:00',
         location: 'Today Location',
         googleMapsUrl: 'https://maps.google.com/today',
-        active: true
+        active: true,
+        featured: false,
+        weatherDependent: false
       }]
 
       render(<MarketSchedule events={todayEvent} />)
@@ -332,7 +334,7 @@ describe('MarketSchedule', () => {
       const twoDaysAway = new Date(today)
       twoDaysAway.setDate(twoDaysAway.getDate() + 2)
 
-      const soonEvent = [{
+      const soonEvent: any = [{
         _id: '1',
         title: 'Soon Event',
         date: twoDaysAway.toISOString().split('T')[0],
@@ -340,7 +342,9 @@ describe('MarketSchedule', () => {
         endTime: '16:00',
         location: 'Soon Location',
         googleMapsUrl: 'https://maps.google.com/soon',
-        active: true
+        active: true,
+        featured: false,
+        weatherDependent: false
       }]
 
       render(<MarketSchedule events={soonEvent} />)
@@ -349,7 +353,7 @@ describe('MarketSchedule', () => {
     })
 
     it('should show "In 1 day" (singular) for tomorrow', () => {
-      const tomorrowEvent = [{
+      const tomorrowEvent: any = [{
         _id: '1',
         title: 'Tomorrow Event',
         date: tomorrow.toISOString().split('T')[0],

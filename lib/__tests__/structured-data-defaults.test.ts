@@ -29,25 +29,25 @@ describe('structured-data-defaults', () => {
     it('should have itemReviewed', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.itemReviewed).toBeDefined()
-        expect(review.itemReviewed['@type']).toBe('Product')
+        expect((review.itemReviewed as any)['@type']).toBe('Product')
       })
     })
 
     it('should have author information', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.author).toBeDefined()
-        expect(review.author['@type']).toBe('Person')
-        expect(review.author.name).toBeDefined()
+        expect((review.author as any)['@type']).toBe('Person')
+        expect((review.author as any).name).toBeDefined()
       })
     })
 
     it('should have rating values', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.reviewRating).toBeDefined()
-        expect(review.reviewRating['@type']).toBe('Rating')
-        expect(review.reviewRating.ratingValue).toBe('5')
-        expect(review.reviewRating.bestRating).toBe('5')
-        expect(review.reviewRating.worstRating).toBe('1')
+        expect((review.reviewRating as any)['@type']).toBe('Rating')
+        expect((review.reviewRating as any).ratingValue).toBe('5')
+        expect((review.reviewRating as any).bestRating).toBe('5')
+        expect((review.reviewRating as any).worstRating).toBe('1')
       })
     })
 
@@ -55,7 +55,7 @@ describe('structured-data-defaults', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.reviewBody).toBeDefined()
         expect(typeof review.reviewBody).toBe('string')
-        expect(review.reviewBody.length).toBeGreaterThan(0)
+        expect((review.reviewBody as any).length).toBeGreaterThan(0)
       })
     })
 
@@ -90,7 +90,7 @@ describe('structured-data-defaults', () => {
 
     it('should have valid date format', () => {
       DEFAULT_REVIEWS.forEach(review => {
-        const date = new Date(review.datePublished)
+        const date = new Date(review.datePublished as any)
         expect(date).toBeInstanceOf(Date)
         expect(isNaN(date.getTime())).toBe(false)
       })
