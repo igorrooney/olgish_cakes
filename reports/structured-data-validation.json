@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-10-23T19:38:14.327Z",
+  "totalPages": 4,
+  "passed": 4,
+  "warnings": 0,
+  "failed": 0,
+  "results": [
+    {
+      "url": "https://olgishcakes.co.uk/",
+      "page": "Homepage",
+      "schemaTypes": [
+        "WebPage",
+        "BreadcrumbList",
+        "Product",
+        "Organization"
+      ],
+      "errors": [],
+      "warnings": [],
+      "status": "pass"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/market-schedule",
+      "page": "Market Schedule",
+      "schemaTypes": [
+        "WebPage",
+        "BreadcrumbList",
+        "ItemList",
+        "Event"
+      ],
+      "errors": [],
+      "warnings": [],
+      "status": "pass"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/cakes/honey-cake-medovik",
+      "page": "Honey Cake Product",
+      "schemaTypes": [
+        "WebPage",
+        "BreadcrumbList",
+        "Product"
+      ],
+      "errors": [],
+      "warnings": [],
+      "status": "pass"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/birthday-cakes",
+      "page": "Birthday Cakes",
+      "schemaTypes": [
+        "WebPage",
+        "BreadcrumbList"
+      ],
+      "errors": [],
+      "warnings": [],
+      "status": "pass"
+    }
+  ]
+}

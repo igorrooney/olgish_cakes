@@ -162,7 +162,7 @@ async function requestIndexingForAllUrls(): Promise<void> {
 }
 
 // Run the script
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   requestIndexingForAllUrls()
     .then(() => {
       console.log('\n✅ GSC Indexing Request Process Complete');

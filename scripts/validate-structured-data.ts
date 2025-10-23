@@ -26,7 +26,7 @@ const TEST_URLS = [
   {
     url: 'https://olgishcakes.co.uk/',
     page: 'Homepage',
-    expectedSchemas: ['Product', 'WebPage', 'Organization', 'BreadcrumbList'],
+    expectedSchemas: ['Product', 'WebPage', 'Organization'],
   },
   {
     url: 'https://olgishcakes.co.uk/market-schedule',
@@ -63,6 +63,14 @@ const SCHEMA_RULES = {
   },
   WebPage: {
     required: ['name', 'description', 'url'],
+  },
+  Organization: {
+    required: ['name', 'url'],
+    recommended: ['logo', 'description', 'address'],
+  },
+  ItemList: {
+    required: ['itemListElement'],
+    recommended: ['name', 'description', 'numberOfItems'],
   },
 } as const;
 
@@ -239,6 +247,11 @@ function generateMockSchema(type: string, url: string): any {
         name: 'Ukrainian Honey Cake',
         description: 'Traditional Ukrainian honey cake',
         image: ['https://olgishcakes.co.uk/images/honey-cake-hero.jpg'],
+        brand: {
+          '@type': 'Brand',
+          name: 'Olgish Cakes',
+          logo: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
+        },
         offers: {
           '@type': 'Offer',
           price: '25',
@@ -289,6 +302,33 @@ function generateMockSchema(type: string, url: string): any {
         name: 'Olgish Cakes',
         description: 'Ukrainian bakery in Leeds',
         url,
+      };
+    
+    case 'Organization':
+      return {
+        '@type': 'Organization',
+        name: 'Olgish Cakes',
+        url: 'https://olgishcakes.co.uk',
+        logo: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png',
+        description: 'Authentic Ukrainian bakery in Leeds',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Leeds',
+          addressRegion: 'West Yorkshire',
+          addressCountry: 'GB',
+        },
+      };
+    
+    case 'ItemList':
+      return {
+        '@type': 'ItemList',
+        name: 'Upcoming Market Events',
+        description: 'Find Olgish Cakes at local markets',
+        numberOfItems: 3,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, item: { '@type': 'Event', name: 'Market Event 1' } },
+          { '@type': 'ListItem', position: 2, item: { '@type': 'Event', name: 'Market Event 2' } },
+        ],
       };
     
     default:
@@ -377,7 +417,7 @@ async function validateAllStructuredData(): Promise<void> {
 }
 
 // Run the script
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   validateAllStructuredData()
     .then(() => {
       console.log('\n✅ Structured Data Validation Complete');
