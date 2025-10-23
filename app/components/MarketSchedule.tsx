@@ -90,6 +90,15 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
               addressCountry: "GB",
             },
           },
+          // Add required performer field
+          performer: {
+            "@type": "Organization",
+            name: "Olgish Cakes",
+            url: "https://olgishcakes.co.uk",
+            description: "Authentic Ukrainian honey cakes made with love in Leeds",
+          },
+          // Add required eventStatus field
+          eventStatus: "https://schema.org/EventScheduled",
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "5",
@@ -112,7 +121,9 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
             priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
             url: `https://olgishcakes.co.uk/market-schedule#${encodeURIComponent(event.title.toLowerCase().replace(/\s+/g, "-"))}`,
             validFrom: `${event.date}T${event.startTime}:00Z`,
-            // No price fields to avoid Rich Results warning when entry is free
+            // Add price and priceCurrency for free events
+            price: "0",
+            priceCurrency: "GBP",
           },
           // Local business context
           isRelatedTo: {

@@ -57,19 +57,24 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
     // Build full current URL for the last item
     const currentUrl = `https://olgishcakes.co.uk${pathname}`;
     
-    const itemListElement = breadcrumbItems.map((item, index) => {
-      // For items without href (usually the last one), use the current page URL
-      const itemUrl = item.href 
-        ? `https://olgishcakes.co.uk${item.href}`
-        : currentUrl;
-      
-      return {
-        "@type": "ListItem",
-        position: index + 1,
-        name: item.label,
-        item: itemUrl,
-      };
-    });
+    const itemListElement = breadcrumbItems
+      .filter(item => item && item.label && item.label.trim() !== '') // Filter out empty items
+      .map((item, index) => {
+        // For items without href (usually the last one), use the current page URL
+        const itemUrl = item.href 
+          ? `https://olgishcakes.co.uk${item.href}`
+          : currentUrl;
+        
+        // Ensure we have a valid name - fallback to URL segment if needed
+        const itemName = item.label || item.href?.split('/').pop()?.replace(/-/g, ' ') || 'Page';
+        
+        return {
+          "@type": "ListItem",
+          position: index + 1,
+          name: itemName,
+          item: itemUrl,
+        };
+      });
     
     return {
       "@context": "https://schema.org",
