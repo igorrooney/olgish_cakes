@@ -64,7 +64,7 @@ const SCHEMA_RULES = {
   WebPage: {
     required: ['name', 'description', 'url'],
   },
-};
+} as const;
 
 function validateSchema(schema: any, type: string): { errors: string[]; warnings: string[] } {
   const errors: string[] = [];
@@ -84,7 +84,7 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
   }
 
   // Check offers if present
-  if (schema.offers && rules.offersRequired) {
+  if (schema.offers && 'offersRequired' in rules) {
     for (const field of rules.offersRequired) {
       if (!schema.offers[field]) {
         errors.push(`Missing required offers field: ${field}`);
@@ -93,9 +93,11 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
   }
 
   // Check recommended fields
-  for (const field of rules.recommended) {
-    if (!schema[field]) {
-      warnings.push(`Missing recommended field: ${field}`);
+  if ('recommended' in rules) {
+    for (const field of rules.recommended) {
+      if (!schema[field]) {
+        warnings.push(`Missing recommended field: ${field}`);
+      }
     }
   }
 

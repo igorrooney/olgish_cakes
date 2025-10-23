@@ -9,7 +9,8 @@
  * Usage: pnpm tsx scripts/request-gsc-indexing.ts
  */
 
-import { mcp_gsc_index_inspect } from './mcp-gsc-index-inspect';
+// Note: This script requires GSC API access via MCP tools
+// For now, it provides manual instructions for indexing requests
 
 // Top 20 priority URLs for indexing
 const PRIORITY_URLS = [
@@ -47,37 +48,19 @@ interface IndexingResult {
 
 async function requestIndexingForUrl(url: string): Promise<IndexingResult> {
   try {
-    console.log(`🔍 Inspecting URL: ${url}`);
+    console.log(`🔍 Checking URL: ${url}`);
     
-    const result = await mcp_gsc_index_inspect({
-      siteUrl: SITE_URL,
-      inspectionUrl: url,
-    });
-
-    const inspectionResult = result.inspectionResult;
-    const indexStatus = inspectionResult.indexStatusResult;
-    
-    if (indexStatus.coverageState === 'Submitted and indexed') {
-      return {
-        url,
-        status: 'already_indexed',
-        message: 'Already indexed',
-        lastCrawlTime: indexStatus.lastCrawlTime,
-        coverageState: indexStatus.coverageState,
-      };
-    }
-
-    // For URLs that need indexing, we can't directly request indexing via the API
-    // but we can provide instructions for manual submission
+    // Simulate URL inspection (in real implementation, this would use GSC API)
+    // For now, we'll provide manual instructions
     return {
       url,
       status: 'success',
       message: 'Ready for manual indexing request via GSC UI',
-      coverageState: indexStatus.coverageState,
+      coverageState: 'Unknown - requires manual GSC inspection',
     };
 
   } catch (error) {
-    console.error(`❌ Error inspecting ${url}:`, error);
+    console.error(`❌ Error checking ${url}:`, error);
     return {
       url,
       status: 'error',
