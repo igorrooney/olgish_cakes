@@ -1,0 +1,129 @@
+{
+  "timestamp": "2025-10-23T19:36:30.712Z",
+  "totalUrls": 20,
+  "alreadyIndexed": 0,
+  "readyForIndexing": 20,
+  "errors": 0,
+  "results": [
+    {
+      "url": "https://olgishcakes.co.uk/",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/cakes",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/order",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/order/leeds",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/gift-hampers",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/wedding-cakes",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/birthday-cakes",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/market-schedule",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/cakes/honey-cake-medovik",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/about",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/contact",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/faq",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/testimonials",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/delivery-areas",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/cakes-leeds",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/halloween-cakes-leeds",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/nut-free-cakes-leeds",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/gift-hampers/cake-by-post",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/ukrainian-bakery-leeds",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    },
+    {
+      "url": "https://olgishcakes.co.uk/cake-care-storage",
+      "status": "success",
+      "message": "Ready for manual indexing request via GSC UI",
+      "coverageState": "Unknown - requires manual GSC inspection"
+    }
+  ]
+}
