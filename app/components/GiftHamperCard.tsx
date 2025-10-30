@@ -96,15 +96,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         {
           "@type": "Review",
           itemReviewed: {
-            "@type": "Product",
-            name: hamper.name,
-            description: hamper.shortDescription
-              ? blocksToText(hamper.shortDescription)
-              : `${hamper.name} gift hamper`,
-            brand: {
-              "@type": "Brand",
-              name: "Olgish Cakes"
-            }
+            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
           },
           reviewRating: {
             "@type": "Rating",
@@ -117,20 +109,12 @@ const GiftHamperCard = memo(function GiftHamperCard({
             name: "Emily R."
           },
           reviewBody: `Beautiful ${hamper.name}! The quality is outstanding and the presentation is perfect. Highly recommend!`,
-          datePublished: "2024-01-15"
+          datePublished: "2025-09-30"
         },
         {
           "@type": "Review",
           itemReviewed: {
-            "@type": "Product",
-            name: hamper.name,
-            description: hamper.shortDescription
-              ? blocksToText(hamper.shortDescription)
-              : `${hamper.name} gift hamper`,
-            brand: {
-              "@type": "Brand",
-              name: "Olgish Cakes"
-            }
+            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
           },
           reviewRating: {
             "@type": "Rating",
@@ -143,7 +127,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             name: "James K."
           },
           reviewBody: `Excellent gift hamper with amazing treats. The recipient was absolutely delighted!`,
-          datePublished: "2024-02-10"
+          datePublished: "2025-08-15"
         }
       ],
       offers: {

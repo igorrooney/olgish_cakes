@@ -12,28 +12,23 @@
 // Note: This script requires GSC API access via MCP tools
 // For now, it provides manual instructions for indexing requests
 
-// Top 20 priority URLs for indexing
+// Priority URLs that need re-indexing after recent changes
+// Focus: Pages with pricing/metadata updates (December 2025)
 const PRIORITY_URLS = [
-  'https://olgishcakes.co.uk/',
+  // 🔴 HIGH PRIORITY - Pricing changes
+  'https://olgishcakes.co.uk/birthday-cakes', // Updated pricing £35 → £25
+  'https://olgishcakes.co.uk/cakes-wakefield', // Fixed pricing consistency
+  
+  // 🟡 MEDIUM PRIORITY - Verify consistency
+  'https://olgishcakes.co.uk/cakes-bradford',
+  'https://olgishcakes.co.uk/cakes-huddersfield',
+  'https://olgishcakes.co.uk/', // Added "Areas We Serve" section
+  
+  // 🟢 LOW PRIORITY - Other important pages
+  'https://olgishcakes.co.uk/cake-delivery-leeds', // Visual changes only
   'https://olgishcakes.co.uk/cakes',
-  'https://olgishcakes.co.uk/order',
-  'https://olgishcakes.co.uk/order/leeds',
-  'https://olgishcakes.co.uk/gift-hampers',
   'https://olgishcakes.co.uk/wedding-cakes',
-  'https://olgishcakes.co.uk/birthday-cakes',
-  'https://olgishcakes.co.uk/market-schedule',
-  'https://olgishcakes.co.uk/cakes/honey-cake-medovik',
-  'https://olgishcakes.co.uk/about',
-  'https://olgishcakes.co.uk/contact',
-  'https://olgishcakes.co.uk/faq',
-  'https://olgishcakes.co.uk/testimonials',
   'https://olgishcakes.co.uk/delivery-areas',
-  'https://olgishcakes.co.uk/cakes-leeds',
-  'https://olgishcakes.co.uk/halloween-cakes-leeds',
-  'https://olgishcakes.co.uk/nut-free-cakes-leeds',
-  'https://olgishcakes.co.uk/gift-hampers/cake-by-post',
-  'https://olgishcakes.co.uk/ukrainian-bakery-leeds',
-  'https://olgishcakes.co.uk/cake-care-storage',
 ];
 
 const SITE_URL = 'sc-domain:olgishcakes.co.uk';
@@ -44,19 +39,30 @@ interface IndexingResult {
   message: string;
   lastCrawlTime?: string;
   coverageState?: string;
+  inspectionLink?: string;
 }
 
+/**
+ * Note: GSC API doesn't support programmatic "Request Indexing" 
+ * This function inspects URLs and provides direct GSC links for manual indexing
+ */
 async function requestIndexingForUrl(url: string): Promise<IndexingResult> {
   try {
-    console.log(`🔍 Checking URL: ${url}`);
+    console.log(`🔍 Inspecting URL: ${url}`);
     
-    // Simulate URL inspection (in real implementation, this would use GSC API)
-    // For now, we'll provide manual instructions
+    // Note: Actual GSC API inspection would happen here if we had direct API access
+    // For now, we'll generate GSC inspection links
+    
+    // Extract path from URL for GSC inspection link
+    const urlPath = url.replace('https://olgishcakes.co.uk', '');
+    const inspectionLink = `https://search.google.com/search-console/inspect?resource_id=${SITE_URL}&url=${encodeURIComponent(url)}`;
+    
     return {
       url,
       status: 'success',
-      message: 'Ready for manual indexing request via GSC UI',
-      coverageState: 'Unknown - requires manual GSC inspection',
+      message: `Ready for indexing - use GSC inspection link`,
+      coverageState: 'Needs re-crawl after recent changes',
+      inspectionLink,
     };
 
   } catch (error) {
@@ -107,12 +113,18 @@ async function requestIndexingForAllUrls(): Promise<void> {
 
   if (readyForIndexing.length > 0) {
     console.log('\n🔄 URLs READY FOR MANUAL INDEXING:');
-    console.log('   (Submit these via GSC UI: Search Console > URL Inspection)');
-    readyForIndexing.forEach(result => {
-      console.log(`  🔄 ${result.url}`);
+    console.log('   (Click each link to open GSC URL Inspection, then click "Request Indexing")');
+    console.log('');
+    readyForIndexing.forEach((result, index) => {
+      const priority = index < 2 ? '🔴 HIGH' : index < 5 ? '🟡 MEDIUM' : '🟢 LOW';
+      console.log(`  ${priority} Priority: ${result.url}`);
+      if (result.inspectionLink) {
+        console.log(`     🔗 ${result.inspectionLink}`);
+      }
       if (result.coverageState) {
         console.log(`     Status: ${result.coverageState}`);
       }
+      console.log('');
     });
   }
 
@@ -124,16 +136,20 @@ async function requestIndexingForAllUrls(): Promise<void> {
   }
 
   // Generate manual indexing instructions
-  console.log('\n📝 MANUAL INDEXING INSTRUCTIONS:');
+  console.log('\n📝 QUICK INDEXING GUIDE:');
   console.log('=' .repeat(50));
-  console.log('1. Go to Google Search Console: https://search.google.com/search-console');
-  console.log('2. Select property: olgishcakes.co.uk');
-  console.log('3. Use URL Inspection tool for each URL below:');
-  console.log('4. Click "Request Indexing" for each URL');
-  console.log('\nURLs to submit manually:');
-  readyForIndexing.forEach((result, index) => {
-    console.log(`${index + 1}. ${result.url}`);
-  });
+  console.log('Google Search Console API does not support programmatic "Request Indexing"');
+  console.log('You need to manually request indexing via GSC UI:');
+  console.log('');
+  console.log('STEPS:');
+  console.log('1. Click each inspection link above');
+  console.log('2. Wait for page to load in GSC');
+  console.log('3. Click "Request Indexing" button');
+  console.log('4. Wait 5-10 minutes between requests');
+  console.log('');
+  console.log('⚠️  Important: Start with HIGH priority URLs first!');
+  console.log('   - birthday-cakes (pricing change)');
+  console.log('   - cakes-wakefield (pricing fix)');
 
   console.log('\n🎯 NEXT STEPS:');
   console.log('1. Submit URLs manually via GSC UI (see instructions above)');

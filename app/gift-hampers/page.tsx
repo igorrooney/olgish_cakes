@@ -8,6 +8,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { StyledAccordion } from "@/lib/ui-components";
 import type { Metadata } from "next";
 import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
+import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const revalidate = getRevalidateTime();
 
@@ -125,11 +126,56 @@ export default async function GiftHampersPage() {
           "@context": "https://schema.org",
           "@type": "ItemList",
           name: "Luxury Ukrainian Gift Hampers",
-          itemListElement: (hampers || []).map((h, index) => ({
-            "@type": "ListItem",
-            position: index + 1,
-            url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-          })),
+          itemListElement: (hampers || []).map((h, index) => {
+            // Get the best available image
+            const mainImage = h.images?.find((img: any) => img.isMain && img.asset?._ref) || h.images?.[0];
+            const imageUrl = mainImage?.asset?._ref
+              ? urlFor(mainImage).width(800).height(800).url()
+              : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
+
+            return {
+              "@type": "ListItem",
+              position: index + 1,
+              item: {
+                "@type": "Product",
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}#product`,
+                name: h.name,
+                description: h.shortDescription 
+                  ? (Array.isArray(h.shortDescription) 
+                    ? h.shortDescription.map((p: any) => p.children?.map((c: any) => c.text).join("") || "").join(" ")
+                    : String(h.shortDescription))
+                  : `${h.name} luxury Ukrainian gift hamper`,
+                image: imageUrl,
+                url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
+                brand: {
+                  "@type": "Brand",
+                  name: "Olgish Cakes"
+                },
+                offers: {
+                  "@type": "Offer",
+                  price: h.price || 0,
+                  priceCurrency: "GBP",
+                  availability: "https://schema.org/InStock",
+                  priceValidUntil: getPriceValidUntil(30),
+                  url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
+                  seller: {
+                    "@type": "Organization",
+                    name: "Olgish Cakes",
+                    url: "https://olgishcakes.co.uk"
+                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+                },
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: testimonialStats.averageRating.toFixed(1),
+                  reviewCount: testimonialStats.count.toString(),
+                  bestRating: "5",
+                  worstRating: "1"
+                }
+              }
+            };
+          }),
         } as const;
 
         const faqJsonLd = {

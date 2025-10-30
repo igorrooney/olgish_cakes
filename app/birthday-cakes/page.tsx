@@ -6,20 +6,20 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
 import { blocksToText } from "@/types/cake";
-import { getPriceValidUntil } from "../utils/seo";
+import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds from £35 | Same-Day Delivery Yorkshire",
+    "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
   description:
-    "★★★★★ Custom birthday cakes Leeds. Children & adult themes, Ukrainian honey cake, same-day delivery. 127+ 5-star reviews. From £35. Order today!",
+    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
-      "Birthday Cakes Leeds – Custom Designs",
+      "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "Custom birthday cakes for all ages with Ukrainian flavours like honey cake. Delivery available across Leeds.",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -86,7 +86,7 @@ export default async function BirthdayCakesPage() {
     {
       name: "Children's Birthday Cakes",
       description: "Colorful, fun, and themed birthday cakes perfect for children's parties",
-      price: "From £35",
+      price: "From £25",
     },
     {
       name: "Adult Birthday Cakes",
@@ -164,7 +164,7 @@ export default async function BirthdayCakesPage() {
       {
         "@type": "Question",
         name: "What are the starting prices?",
-        acceptedAnswer: { "@type": "Answer", text: "Prices start from £35 for a 6‑inch cake. Final price depends on size and design." }
+        acceptedAnswer: { "@type": "Answer", text: "Prices start from £25 for a 6‑inch cake. Final price depends on size and design." }
       }
     ]
   } as const;
@@ -225,34 +225,8 @@ export default async function BirthdayCakesPage() {
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),
-          shippingDetails: {
-            "@type": "OfferShippingDetails",
-            shippingRate: {
-              "@type": "MonetaryAmount",
-              value: 0,
-              currency: "GBP",
-            },
-            shippingDestination: {
-              "@type": "DefinedRegion",
-              addressCountry: "GB",
-            },
-            deliveryTime: {
-              "@type": "ShippingDeliveryTime",
-              handlingTime: {
-                "@type": "QuantitativeValue",
-                minValue: 0,
-                maxValue: 1,
-                unitCode: "DAY",
-              },
-              transitTime: {
-                "@type": "QuantitativeValue",
-                minValue: 1,
-                maxValue: 3,
-                unitCode: "DAY",
-              },
-            },
-            appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-          },
+          shippingDetails: getOfferShippingDetails(),
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
       },
     })),
@@ -471,7 +445,7 @@ export default async function BirthdayCakesPage() {
                 {
                   size: "6 inch",
                   serves: "8-12 people",
-                  price: "From £35",
+                  price: "From £25",
                   description: "Perfect for small family celebrations or intimate birthday parties",
                 },
                 {
@@ -518,65 +492,6 @@ export default async function BirthdayCakesPage() {
             title="Birthday Cake Delivery Areas"
             subtitle="I deliver birthday cakes across Leeds and around towns."
           />
-
-          {/* Birthday Cake Flavors */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 4, md: 6 },
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: 3,
-              border: "1px solid",
-              borderColor: "divider",
-              mb: 6,
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={{
-                fontFamily: "var(--font-playfair-display)",
-                fontSize: { xs: "1.8rem", md: "2.2rem" },
-                fontWeight: 600,
-                color: "primary.main",
-                mb: 4,
-                textAlign: "center",
-              }}
-            >
-              Birthday Cake Flavors
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our birthday cakes feature a delightful selection of flavors perfect for celebrations.
-              From traditional Ukrainian favorites to classic birthday cake flavors, we have
-              something for everyone's taste.
-            </Typography>
-            <Grid container spacing={3}>
-              {[
-                "Medovik (Honey Cake) - Traditional Ukrainian honey layers",
-                "Kyiv Cake - Rich chocolate and hazelnut meringue",
-                "Vanilla Bean - Classic birthday cake with Ukrainian twist",
-                "Chocolate Fudge - Decadent chocolate layers",
-                "Lemon Poppy Seed - Light and refreshing option",
-                "Red Velvet - Classic with Ukrainian cream cheese frosting",
-                "Strawberry Cream - Fresh strawberry filling",
-                "Carrot Cake - Traditional with Ukrainian spices",
-              ].map((flavor, index) => (
-                <Grid item xs={12} sm={6} key={index}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        backgroundColor: "primary.main",
-                        mr: 2,
-                      }}
-                    />
-                    <Typography variant="body1">{flavor}</Typography>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
 
           {/* Birthday Cake Process */}
           <Paper

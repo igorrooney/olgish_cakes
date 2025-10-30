@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react'
 import { render } from '@testing-library/react'
 import BirthdayCakesPage, { metadata } from '../page'
 
@@ -22,18 +23,179 @@ jest.mock('@mui/material', () => ({
 }))
 
 describe('BirthdayCakesPage', () => {
-  it('should have occasion-specific metadata', () => {
-    expect(metadata.title).toContain('Birthday')
-    expect(metadata.description).toContain('birthday')
+  describe('Metadata', () => {
+    it('should have occasion-specific metadata', () => {
+      expect(metadata.title).toContain('Birthday')
+      expect(metadata.description?.toLowerCase()).toContain('birthday')
+    })
+
+    it('should have pricing in title', () => {
+      expect(metadata.title).toContain('£25')
+    })
+
+    it('should have social proof in title', () => {
+      expect(metadata.title).toContain('5★ Rated')
+    })
+
+    it('should have optimized description with pricing and reviews', () => {
+      expect(metadata.description).toContain('£25')
+      expect(metadata.description).toContain('127+ 5-star reviews')
+      expect(metadata.description).toContain('Same-day delivery')
+    })
+
+    it('should have OpenGraph data', () => {
+      expect(metadata.openGraph).toBeDefined()
+      expect(metadata.openGraph?.title).toContain('£25')
+      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/birthday-cakes')
+    })
+
+    it('should have Twitter card', () => {
+      expect(metadata.twitter).toBeDefined()
+      expect(metadata.twitter?.card).toBe('summary_large_image')
+    })
+
+    it('should have canonical URL', () => {
+      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/birthday-cakes')
+    })
+
+    it('should have geo-targeting metadata', () => {
+      expect(metadata.other?.['geo.region']).toBe('GB-ENG')
+      expect(metadata.other?.['geo.placename']).toBe('Leeds')
+    })
   })
 
-  it('should have pricing in title', () => {
-    expect(metadata.title).toContain('£35')
+  describe('Rendering', () => {
+    it('should render without crashing', async () => {
+      const page = await BirthdayCakesPage()
+      expect(() => render(page)).not.toThrow()
+    })
+
+    it('should render breadcrumbs', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      expect(container.querySelector('[data-testid="breadcrumbs"]')).toBeInTheDocument()
+    })
+
+    it('should render AreasWeCover component', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      expect(container.querySelector('[data-testid="areas"]')).toBeInTheDocument()
+    })
+
+    it('should filter cakes correctly', async () => {
+      const { getAllCakes } = require('../../utils/fetchCakes')
+      const mockFn = getAllCakes as jest.Mock
+      mockFn.mockResolvedValueOnce([
+        { category: 'custom', name: 'Test Cake', description: [], slug: { current: 'test-cake' } },
+        { category: 'wedding', name: 'Birthday Cake', description: [], slug: { current: 'birthday-cake' } },
+        { category: 'wedding', name: 'Wedding Cake', description: [], slug: { current: 'wedding-cake' } },
+      ])
+      
+      const page = await BirthdayCakesPage()
+      render(page)
+      
+      expect(getAllCakes).toHaveBeenCalled()
+    })
   })
 
-  it('should render without crashing', async () => {
-    const page = await BirthdayCakesPage()
-    expect(() => render(page)).not.toThrow()
+  describe('Structured Data', () => {
+    it('should include structured data scripts', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      expect(scripts.length).toBeGreaterThan(0)
+    })
+
+    it('should include Service schema', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const serviceScript = Array.from(scripts).find(script => {
+        const content = script.getAttribute('dangerouslySetInnerHTML') || 
+          (script as any).innerHTML || 
+          (script.textContent || '')
+        try {
+          const schema = JSON.parse(content)
+          return schema['@type'] === 'Service'
+        } catch {
+          return false
+        }
+      })
+      
+      expect(serviceScript).toBeDefined()
+      
+      if (serviceScript) {
+        const content = serviceScript.getAttribute('dangerouslySetInnerHTML') || 
+          (serviceScript as any).innerHTML || 
+          (serviceScript.textContent || '')
+        const schema = JSON.parse(content)
+        
+        expect(schema['@type']).toBe('Service')
+        expect(schema.name).toBe('Birthday Cakes Leeds')
+        expect(schema.provider).toBeDefined()
+      }
+    })
+
+    it('should include FAQ schema', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find(script => {
+        const content = script.getAttribute('dangerouslySetInnerHTML') || 
+          (script as any).innerHTML || 
+          (script.textContent || '')
+        try {
+          const schema = JSON.parse(content)
+          return schema['@type'] === 'FAQPage'
+        } catch {
+          return false
+        }
+      })
+      
+      expect(faqScript).toBeDefined()
+      
+      if (faqScript) {
+        const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
+          (faqScript as any).innerHTML || 
+          (faqScript.textContent || '')
+        const schema = JSON.parse(content)
+        
+        expect(schema['@type']).toBe('FAQPage')
+        expect(schema.mainEntity).toBeDefined()
+        expect(schema.mainEntity.length).toBeGreaterThan(0)
+      }
+    })
+
+    it('should have FAQ questions about pricing', async () => {
+      const page = await BirthdayCakesPage()
+      const { container } = render(page)
+      
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find(script => {
+        const content = script.getAttribute('dangerouslySetInnerHTML') || 
+          (script as any).innerHTML || 
+          (script.textContent || '')
+        try {
+          const schema = JSON.parse(content)
+          return schema['@type'] === 'FAQPage'
+        } catch {
+          return false
+        }
+      })
+      
+      if (faqScript) {
+        const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
+          (faqScript as any).innerHTML || 
+          (faqScript.textContent || '')
+        const schema = JSON.parse(content)
+        
+        const questions = schema.mainEntity.map((q: any) => q.name)
+        expect(questions.some((q: string) => q.toLowerCase().includes('price') || q.toLowerCase().includes('cost'))).toBe(true)
+      }
+    })
   })
 })
 

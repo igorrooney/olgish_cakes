@@ -8,15 +8,15 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Huddersfield from £25 | Same-Day Delivery",
+    "Birthday Cakes Huddersfield from £25 | 5★ Rated | Same-Day Delivery",
   description:
-    "★★★★★ Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
+    "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Huddersfield, birthday cakes in Huddersfield, custom birthday cakes Huddersfield, children's birthday cakes Huddersfield, cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, cake delivery Huddersfield, bakery Huddersfield",
   openGraph: {
-    title: "Birthday Cakes Huddersfield from £25 | Same-Day Delivery",
+    title: "Birthday Cakes Huddersfield from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
+      "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-huddersfield",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
     type: "website",
@@ -71,6 +71,57 @@ export default async function CakesHuddersfieldPage() {
               "@type": "City",
               name: "Huddersfield",
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }),
+        }}
+      />
+      <Script
+        id="cakes-huddersfield-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Do you deliver birthday cakes to Huddersfield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver fresh birthday cakes to Huddersfield and surrounding areas including Lindley, Almondbury, Lockwood, and Holmfirth. Same-day delivery is available when ordered before 10am.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much do birthday cakes cost in Huddersfield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Birthday cakes in Huddersfield start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee is £15-20 depending on location.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I get same-day birthday cake delivery in Huddersfield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, same-day delivery is available in Huddersfield when you order before 10am. This is perfect for last-minute birthday celebrations. Standard delivery requires 3-5 days notice.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What types of birthday cakes do you make for Huddersfield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I create all types of birthday cakes for Huddersfield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake (Medovik), Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                },
+              },
+            ],
           }),
         }}
       />

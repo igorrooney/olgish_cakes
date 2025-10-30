@@ -8,16 +8,16 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
+    "Birthday Cakes Wakefield from £25 | 5★ Rated | Same-Day Delivery",
   description:
-    "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+    "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
-      "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
+      "Birthday Cakes Wakefield from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+      "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -82,6 +82,57 @@ export default async function CakesWakefieldPage() {
               "@type": "City",
               name: "Wakefield",
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }),
+        }}
+      />
+      <Script
+        id="cakes-wakefield-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Do you deliver birthday cakes to Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver fresh birthday cakes to Wakefield and surrounding areas including Castleford, Pontefract, Normanton, and Featherstone. Same-day delivery is available when ordered before 10am.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much do birthday cakes cost in Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Birthday cakes in Wakefield start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee is £15-20 depending on location.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I get same-day birthday cake delivery in Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, same-day delivery is available in Wakefield when you order before 10am. This is perfect for last-minute birthday celebrations. Standard delivery requires 3-5 days notice.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What types of birthday cakes do you make for Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I create all types of birthday cakes for Wakefield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake (Medovik), Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                },
+              },
+            ],
           }),
         }}
       />

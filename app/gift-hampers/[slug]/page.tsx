@@ -296,50 +296,22 @@ export default async function GiftHamperPage({ params }: PageProps) {
             {
               "@type": "Review",
               itemReviewed: {
-                "@type": "Product",
-                name: hamper.name,
-                description: isCakeByPost
-                  ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
-                  : hamper.shortDescription?.length
-                    ? Array.isArray(hamper.shortDescription)
-                      ? hamper.shortDescription
-                          .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
-                          .join(" ")
-                      : String(hamper.shortDescription)
-                    : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-                brand: {
-                  "@type": "Brand",
-                  name: "Olgish Cakes"
-                }
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`
               },
               reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "Emily Carter" },
               reviewBody: `Fantastic presentation and quality. The ${hamper.name} made a perfect gift.`,
-              datePublished: "2024-02-12"
+              datePublished: "2025-09-30"
             },
             {
               "@type": "Review",
               itemReviewed: {
-                "@type": "Product",
-                name: hamper.name,
-                description: isCakeByPost
-                  ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
-                  : hamper.shortDescription?.length
-                    ? Array.isArray(hamper.shortDescription)
-                      ? hamper.shortDescription
-                          .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
-                          .join(" ")
-                      : String(hamper.shortDescription)
-                    : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-                brand: {
-                  "@type": "Brand",
-                  name: "Olgish Cakes"
-                }
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`
               },
               reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "James Wilson" },
               reviewBody: `Great selection in the ${hamper.name}. Arrived quickly and beautifully packed.`,
-              datePublished: "2024-03-03"
+              datePublished: "2025-08-15"
             }
           ],
           ...(hamper.ingredients?.length

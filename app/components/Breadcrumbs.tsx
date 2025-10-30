@@ -21,6 +21,27 @@ interface BreadcrumbsProps {
 export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
   const pathname = usePathname();
 
+  // Map of route segments to human-readable names
+  const routeNameMap: Record<string, string> = {
+    "cakes": "Cakes",
+    "birthday-cakes": "Birthday Cakes",
+    "wedding-cakes": "Wedding Cakes",
+    "gift-hampers": "Gift Hampers",
+    "delivery-areas": "Delivery Areas",
+    "cake-delivery-leeds": "Cake Delivery Leeds",
+    "cakes-leeds": "Cakes Leeds",
+    "cakes-wakefield": "Cakes Wakefield",
+    "cakes-bradford": "Cakes Bradford",
+    "cakes-huddersfield": "Cakes Huddersfield",
+    "order": "Order",
+    "about": "About",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "testimonials": "Testimonials",
+    "blog": "Blog",
+    "market-schedule": "Market Schedule",
+  };
+
   // Generate breadcrumbs from pathname if no items provided
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const pathSegments = pathname.split("/").filter(Boolean);
@@ -34,8 +55,8 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
 
-      // Convert segment to readable label
-      const label = segment
+      // Use route name map if available, otherwise convert segment to readable label
+      const label = routeNameMap[segment] || segment
         .split("-")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
@@ -65,8 +86,12 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
           ? `https://olgishcakes.co.uk${item.href}`
           : currentUrl;
         
-        // Ensure we have a valid name - fallback to URL segment if needed
-        const itemName = item.label || item.href?.split('/').pop()?.replace(/-/g, ' ') || 'Page';
+        // Ensure we have a valid name - use route name map, label, or fallback to URL segment
+        const hrefSegment = item.href?.split('/').filter(Boolean).pop() || '';
+        const itemName = item.label || routeNameMap[hrefSegment] || hrefSegment
+          .split("-")
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ") || 'Page';
         
         return {
           "@type": "ListItem",

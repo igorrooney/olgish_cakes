@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react'
 import { render, screen } from '@testing-library/react'
 import HomePage, { generateMetadata } from '../page'
 
@@ -70,8 +71,10 @@ jest.mock('@/lib/mui-optimization', () => ({
   Rating: ({ value, ...props }: any) => <div data-testid="rating" data-value={value} {...props}></div>,
   Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Typography: ({ children, component, ...props }: any) => {
-    const Component = component || 'div'
-    return <Component {...props}>{children}</Component>
+    const Tag = component || 'div'
+    // Remove itemProp if it's not a valid HTML attribute
+    const { itemProp, ...validProps } = props
+    return <Tag {...validProps}>{children}</Tag>
   },
   ArrowForwardIcon: () => <span>→</span>,
   CakeOutlinedIcon: () => <span>🎂</span>,
@@ -194,6 +197,33 @@ describe('HomePage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
+    })
+
+    it('should render Areas We Serve section with location links', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const areasSection = container.textContent || ''
+      expect(areasSection).toMatch(/Areas We Serve|areas we serve/i)
+
+      // Check for location page links
+      const links = container.querySelectorAll('a[href]')
+      const locationLinks = Array.from(links).filter(link => {
+        const href = link.getAttribute('href') || ''
+        return href.includes('/cakes-leeds') || 
+               href.includes('/cakes-wakefield') || 
+               href.includes('/cakes-bradford') || 
+               href.includes('/cakes-huddersfield')
+      })
+
+      expect(locationLinks.length).toBeGreaterThan(0)
+    })
+
+    it('should have link to delivery areas page', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+      const links = container.querySelectorAll('a[href="/delivery-areas"]')
+      expect(links.length).toBeGreaterThan(0)
     })
   })
 

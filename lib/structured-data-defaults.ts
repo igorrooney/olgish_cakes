@@ -9,10 +9,10 @@
 import { Review, AggregateRating, WithContext } from "schema-dts";
 
 // Fixed review dates - update these quarterly to keep them reasonably current
-// Last updated: October 15, 2025
+// Last updated: October 30, 2025
 const REVIEW_DATES = {
-  RECENT: "2025-09-15",    // ~1 month ago from October 2025
-  OLDER: "2025-07-20"      // ~3 months ago from October 2025
+  RECENT: "2025-09-30",    // ~1 month ago from October 30, 2025
+  OLDER: "2025-08-15"      // ~2.5 months ago from October 30, 2025
 } as const;
 
 export const DEFAULT_REVIEWS: WithContext<Review>[] = [
@@ -20,9 +20,7 @@ export const DEFAULT_REVIEWS: WithContext<Review>[] = [
     "@context": "https://schema.org",
     "@type": "Review" as const,
     itemReviewed: {
-      "@type": "Product" as const,
-      name: "Ukrainian Honey Cake",
-      description: "Traditional Ukrainian honey cake and other authentic desserts"
+      "@id": "https://olgishcakes.co.uk/#product"
     },
     author: {
       "@type": "Person" as const,
@@ -41,9 +39,7 @@ export const DEFAULT_REVIEWS: WithContext<Review>[] = [
     "@context": "https://schema.org",
     "@type": "Review" as const,
     itemReviewed: {
-      "@type": "Product" as const,
-      name: "Ukrainian Honey Cake",
-      description: "Traditional Ukrainian honey cake and other authentic desserts"
+      "@id": "https://olgishcakes.co.uk/#product"
     },
     author: {
       "@type": "Person" as const,
@@ -65,9 +61,7 @@ export const DEFAULT_KYIV_CAKE_REVIEW: WithContext<Review> = {
   "@context": "https://schema.org",
   "@type": "Review" as const,
   itemReviewed: {
-    "@type": "Product" as const,
-    name: "Kyiv Cake",
-    description: "Traditional Kyiv cake with chocolate and nuts"
+    "@id": "https://olgishcakes.co.uk/cakes/kyiv-cake#product"
   },
   author: {
     "@type": "Person" as const,

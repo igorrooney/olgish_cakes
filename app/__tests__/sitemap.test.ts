@@ -83,16 +83,28 @@ describe('sitemap', () => {
       expect(blogUrl).toBeDefined()
     })
 
-    it('should include gift hamper routes', async () => {
-      mockFetch
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([{ slug: { current: 'deluxe-hamper' }, _updatedAt: '2025-01-01' }])
+    it('should include location pages', async () => {
+      mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
 
-      const hamperUrl = result.find(entry => entry.url.includes('/gift-hampers/deluxe-hamper'))
-      expect(hamperUrl).toBeDefined()
+      const leedsUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-leeds')
+      const wakefieldUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-wakefield')
+      const bradfordUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-bradford')
+      
+      expect(leedsUrl).toBeDefined()
+      expect(wakefieldUrl).toBeDefined()
+      expect(bradfordUrl).toBeDefined()
+    })
+
+    it('should include cake delivery Leeds page', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+
+      const deliveryUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')
+      expect(deliveryUrl).toBeDefined()
+      expect(deliveryUrl?.priority).toBe(0.9)
     })
 
     it('should use _id as fallback for hampers without slug', async () => {
