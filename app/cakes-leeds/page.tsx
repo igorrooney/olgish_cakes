@@ -5,6 +5,7 @@ import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
+import { getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
   title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
@@ -130,34 +131,8 @@ export default async function CakesLeedsPage() {
                   price: "25",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
                 {
                   "@type": "Offer",
@@ -176,34 +151,8 @@ export default async function CakesLeedsPage() {
                   price: "40",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
                 {
                   "@type": "Offer",
@@ -222,34 +171,8 @@ export default async function CakesLeedsPage() {
                   price: "150",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
               ],
             },

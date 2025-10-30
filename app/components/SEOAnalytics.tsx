@@ -206,7 +206,12 @@ export function SEOAnalytics({
 
   const trackScrollDepth = () => {
     let maxScrollDepth = 0;
-    let scrollEvents = 0;
+    const trackedMilestones = {
+      25: false,
+      50: false,
+      75: false,
+      90: false,
+    };
 
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
@@ -215,16 +220,19 @@ export function SEOAnalytics({
 
       if (scrollPercent > maxScrollDepth) {
         maxScrollDepth = scrollPercent;
-        scrollEvents++;
 
-        // Track significant scroll milestones
-        if (scrollPercent >= 25 && scrollEvents === 1) {
+        // Track significant scroll milestones - only once per milestone
+        if (scrollPercent >= 25 && !trackedMilestones[25]) {
+          trackedMilestones[25] = true;
           trackScrollMilestone(25);
-        } else if (scrollPercent >= 50 && scrollEvents === 1) {
+        } else if (scrollPercent >= 50 && !trackedMilestones[50]) {
+          trackedMilestones[50] = true;
           trackScrollMilestone(50);
-        } else if (scrollPercent >= 75 && scrollEvents === 1) {
+        } else if (scrollPercent >= 75 && !trackedMilestones[75]) {
+          trackedMilestones[75] = true;
           trackScrollMilestone(75);
-        } else if (scrollPercent >= 90 && scrollEvents === 1) {
+        } else if (scrollPercent >= 90 && !trackedMilestones[90]) {
+          trackedMilestones[90] = true;
           trackScrollMilestone(90);
         }
       }
