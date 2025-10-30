@@ -7,15 +7,15 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Birthday Cakes Leeds from £35 | 5★ Rated | Ukrainian Bakery",
+  title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
   description:
-    "★★★★★ Birthday cakes Leeds from £35 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
+    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
-    title: "Birthday Cakes Leeds from £35 | 5★ Rated | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
     description:
-      "★★★★★ Birthday cakes Leeds from £35 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Leeds | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {
@@ -127,7 +127,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: "35",
+                  price: "25",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: {
@@ -281,7 +281,7 @@ export default async function CakesLeedsPage() {
                 name: "How much do birthday cakes cost in Leeds?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Birthday cakes in Leeds start from £35 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee ranges from £5-12 depending on location within Leeds.",
+                  text: "Birthday cakes in Leeds start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee ranges from £5-12 depending on location within Leeds.",
                 },
               },
               {
