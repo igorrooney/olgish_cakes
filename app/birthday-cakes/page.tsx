@@ -424,8 +424,8 @@ export default async function BirthdayCakesPage() {
               </Box>
             ) : (
               <Grid container spacing={4}>
-                {birthdayCakes.map(cake => (
-                  <Grid item xs={12} sm={6} md={4} key={cake._id}>
+                {birthdayCakes.map((cake, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={cake._id || `cake-${index}`}>
                     <CakeCard cake={cake} />
                   </Grid>
                 ))}
