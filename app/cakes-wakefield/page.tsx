@@ -8,16 +8,16 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
+    "Birthday Cakes Wakefield from £25 | 5★ Rated",
   description:
-    "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+    "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
-      "Birthday Cakes Wakefield from £35 | Same-Day Delivery",
+      "Birthday Cakes Wakefield from £25 | 5★ Rated",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Wakefield from £35. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+      "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -82,6 +82,57 @@ export default async function CakesWakefieldPage() {
               "@type": "City",
               name: "Wakefield",
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }),
+        }}
+      />
+      <Script
+        id="cakes-wakefield-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Do you deliver birthday cakes to Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver fresh birthday cakes to Wakefield and surrounding areas including Castleford, Pontefract, Normanton, and Featherstone. Same-day delivery is available when ordered before 10am.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much do birthday cakes cost in Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Birthday cakes in Wakefield start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee is £15-20 depending on location.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I get same-day birthday cake delivery in Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, same-day delivery is available in Wakefield when you order before 10am. This is perfect for last-minute birthday celebrations. Standard delivery requires 3-5 days notice.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What types of birthday cakes do you make for Wakefield?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I create all types of birthday cakes for Wakefield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                },
+              },
+            ],
           }),
         }}
       />
@@ -222,7 +273,7 @@ export default async function CakesWakefieldPage() {
               Popular Birthday Cakes in Wakefield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              The most requested birthday cake in Wakefield is my traditional Ukrainian honey cake (Medovik). This isn't your ordinary birthday cake - it features delicate honey-soaked layers with rich cream filling that melts in your mouth. Adults love it for milestone birthdays like 30th, 40th, and 50th celebrations because it's sophisticated yet comforting. Starting from £25, it's an affordable luxury that makes birthdays truly special. I also make Kyiv cake for birthdays, which combines hazelnut meringue with chocolate - perfect for chocolate lovers celebrating their special day in Wakefield.
+              The most requested birthday cake in Wakefield is my traditional Ukrainian honey cake. This isn't your ordinary birthday cake - it features delicate honey-soaked layers with rich cream filling that melts in your mouth. Adults love it for milestone birthdays like 30th, 40th, and 50th celebrations because it's sophisticated yet comforting. Starting from £25, it's an affordable luxury that makes birthdays truly special. I also make Kyiv cake for birthdays, which combines hazelnut meringue with chocolate - perfect for chocolate lovers celebrating their special day in Wakefield.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
               For children's birthday parties in Wakefield, I create custom themed birthday cakes that combine fun designs with authentic Ukrainian flavors. Popular themes include princess cakes, superhero cakes, dinosaur cakes, and unicorn cakes. What makes these different from supermarket birthday cakes is that I use real ingredients and traditional baking methods - no artificial flavors or preservatives. Parents in Wakefield appreciate that their children get both a beautiful cake and healthy, natural ingredients. Every children's birthday cake is customized to match your party theme and can serve anywhere from 10 to 50 guests.

@@ -1,8 +1,38 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react'
 import { render, screen } from '@testing-library/react'
 import HomePage, { generateMetadata } from '../page'
+import type { ReactNode } from 'react'
+
+// Type definitions for test mocks
+interface AnimatedComponentProps {
+  children?: ReactNode
+  [key: string]: unknown
+}
+
+interface LinkProps {
+  children: ReactNode
+  href: string
+  [key: string]: unknown
+}
+
+interface ImageProps {
+  alt?: string
+  src?: string
+  [key: string]: unknown
+}
+
+interface MUIComponentProps {
+  children?: ReactNode
+  component?: string | React.ComponentType<unknown>
+  href?: string
+  label?: string
+  value?: number
+  itemProp?: string
+  [key: string]: unknown
+}
 
 // Mock all dependencies
 jest.mock('../utils/fetchCakes', () => ({
@@ -34,8 +64,8 @@ jest.mock('../utils/generateEventStructuredData', () => ({
 
 // Mock components
 jest.mock('../components/AnimatedSection', () => ({
-  AnimatedSection: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-  AnimatedDiv: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  AnimatedSection: ({ children, ...props }: AnimatedComponentProps) => <section {...props}>{children}</section>,
+  AnimatedDiv: ({ children, ...props }: AnimatedComponentProps) => <div {...props}>{children}</div>
 }))
 
 jest.mock('../components/MarketSchedule', () => ({
@@ -46,32 +76,34 @@ jest.mock('../components/MarketSchedule', () => ({
 // Mock Next.js components
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  default: ({ children, href, ...props }: LinkProps) => <a href={href} {...props}>{children}</a>
 }))
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: ImageProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Avatar: ({ children, ...props }: any) => <div data-testid="avatar" {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Button: ({ children, component, href, ...props }: any) => {
+  Avatar: ({ children, ...props }: MUIComponentProps) => <div data-testid="avatar" {...props}>{children}</div>,
+  Box: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
+  Button: ({ children, component, href, ...props }: MUIComponentProps) => {
     const Component = component || 'button'
     return <Component href={href} {...props}>{children}</Component>
   },
-  Card: ({ children, ...props }: any) => <div data-testid="card" {...props}>{children}</div>,
-  CardContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Chip: ({ label, ...props }: any) => <span {...props}>{label}</span>,
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Rating: ({ value, ...props }: any) => <div data-testid="rating" data-value={value} {...props}></div>,
-  Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, component, ...props }: any) => {
-    const Component = component || 'div'
-    return <Component {...props}>{children}</Component>
+  Card: ({ children, ...props }: MUIComponentProps) => <div data-testid="card" {...props}>{children}</div>,
+  CardContent: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
+  Chip: ({ label, ...props }: MUIComponentProps) => <span {...props}>{label}</span>,
+  Container: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
+  Grid: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
+  Rating: ({ value, ...props }: MUIComponentProps) => <div data-testid="rating" data-value={value} {...props}></div>,
+  Stack: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, component, ...props }: MUIComponentProps) => {
+    const Tag = component || 'div'
+    // Remove itemProp if it's not a valid HTML attribute
+    const { itemProp, ...validProps } = props
+    return <Tag {...validProps}>{children}</Tag>
   },
   ArrowForwardIcon: () => <span>→</span>,
   CakeOutlinedIcon: () => <span>🎂</span>,
@@ -194,6 +226,33 @@ describe('HomePage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
+    })
+
+    it('should render Areas We Serve section with location links', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const areasSection = container.textContent || ''
+      expect(areasSection).toMatch(/Areas We Serve|areas we serve/i)
+
+      // Check for location page links
+      const links = container.querySelectorAll('a[href]')
+      const locationLinks = Array.from(links).filter(link => {
+        const href = link.getAttribute('href') || ''
+        return href.includes('/cakes-leeds') || 
+               href.includes('/cakes-wakefield') || 
+               href.includes('/cakes-bradford') || 
+               href.includes('/cakes-huddersfield')
+      })
+
+      expect(locationLinks.length).toBeGreaterThan(0)
+    })
+
+    it('should have link to delivery areas page', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+      const links = container.querySelectorAll('a[href="/delivery-areas"]')
+      expect(links.length).toBeGreaterThan(0)
     })
   })
 

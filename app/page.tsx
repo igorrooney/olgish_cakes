@@ -40,6 +40,7 @@ import { getOfferShippingDetails } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
 import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 import { DEFAULT_REVIEWS, DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
+import type { GiftHamperImage } from "@/types/giftHamper";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -306,9 +307,7 @@ export default async function Home() {
       ? testimonials.slice(0, 3).map((testimonial: Testimonial) => ({
           "@type": "Review",
           itemReviewed: {
-            "@type": "Product",
-            name: "Ukrainian Honey Cake",
-            description: "Traditional Ukrainian honey cake and other authentic desserts"
+            "@id": "https://olgishcakes.co.uk/#product"
           },
           author: {
             "@type": "Person",
@@ -320,8 +319,8 @@ export default async function Home() {
             bestRating: "5",
             worstRating: "1"
           },
-          reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
-          datePublished: testimonial.date || "2024-01-01"
+          reviewBody: testimonial.text || (testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!"),
+          datePublished: testimonial.date || "2025-09-30"
         }))
       : DEFAULT_REVIEWS
   };
@@ -515,7 +514,7 @@ export default async function Home() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
               {featuredHampers.slice(0, 6).map(h => {
-                const main = h.images?.find((img: any) => img.isMain) || h.images?.[0];
+                const main = h.images?.find((img: GiftHamperImage) => img.isMain) || h.images?.[0];
                 const url = main?.asset?._ref
                   ? require("@/sanity/lib/image").urlFor(main).width(800).height(800).url()
                   : "/images/placeholder.jpg";
@@ -1156,6 +1155,80 @@ export default async function Home() {
               </Grid>
             ))}
           </Grid>
+        </Container>
+      </AnimatedSection>
+
+      {/* Areas We Serve Section - Internal Linking for SEO */}
+      <AnimatedSection
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="py-16 bg-white"
+      >
+        <Container className="px-6 md:px-8">
+          <AnimatedDiv className="text-center mb-8">
+            <Typography component="h2" variant="h2" className="text-3xl md:text-4xl font-bold mb-3" mb={3}>
+              Areas We Serve
+            </Typography>
+            <Box sx={{ maxWidth: "672px", mx: "auto", textAlign: "center" }}>
+              <Typography 
+                variant="subtitle1" 
+                className="text-gray-600"
+                textAlign="center"
+              >
+                Fresh Ukrainian cakes delivered across Leeds and Yorkshire. Click your area to see our local delivery options and pricing.
+              </Typography>
+            </Box>
+          </AnimatedDiv>
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            {[
+              { name: "Birthday Cakes Leeds", href: "/cakes-leeds", description: "Fresh cakes delivered across Leeds" },
+              { name: "Birthday Cakes Wakefield", href: "/cakes-wakefield", description: "Same-day delivery to Wakefield" },
+              { name: "Birthday Cakes Bradford", href: "/cakes-bradford", description: "Custom cakes delivered to Bradford" },
+              { name: "Birthday Cakes Huddersfield", href: "/cakes-huddersfield", description: "Ukrainian cakes delivered to Huddersfield" },
+            ].map((location, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Link href={location.href} style={{ textDecoration: "none" }}>
+                  <Card
+                    elevation={0}
+                    className="h-full border border-gray-200 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                    sx={{ borderRadius: 3, height: "100%" }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        sx={{
+                          fontWeight: 600,
+                          color: "primary.main",
+                          mb: 1,
+                          "&:hover": { color: "primary.dark" },
+                        }}
+                      >
+                        {location.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {location.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </Grid>
+            ))}
+          </Grid>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
+            <Button
+              component={Link}
+              href="/delivery-areas"
+              variant="outlined"
+              color="primary"
+              size="large"
+              sx={{ px: 4, py: 2 }}
+            >
+              View All Delivery Areas
+            </Button>
+          </Box>
         </Container>
       </AnimatedSection>
 

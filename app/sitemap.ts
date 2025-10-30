@@ -208,6 +208,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // High-priority delivery pages
+  const deliveryPages = [
+    {
+      url: `${baseUrl}/cake-delivery-leeds`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/delivery-areas`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    },
+  ];
+
   // Location-based pages with high local SEO priority
   const locationPages = [
     {
@@ -681,6 +697,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // All static pages combined
   const allStaticPages = [
     ...corePages,
+    ...deliveryPages,
     ...locationPages,
     ...eventPages,
     ...dietaryPages,

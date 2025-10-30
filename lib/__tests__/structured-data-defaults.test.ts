@@ -26,10 +26,10 @@ describe('structured-data-defaults', () => {
       })
     })
 
-    it('should have itemReviewed', () => {
+    it('should have itemReviewed with @id reference', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.itemReviewed).toBeDefined()
-        expect((review.itemReviewed as any)['@type']).toBe('Product')
+        expect((review.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/#product')
       })
     })
 
@@ -75,16 +75,9 @@ describe('structured-data-defaults', () => {
       expect(DEFAULT_REVIEWS[0].datePublished).not.toBe(DEFAULT_REVIEWS[1].datePublished)
     })
 
-    it('should have Ukrainian Honey Cake as product', () => {
+    it('should reference main product by @id', () => {
       DEFAULT_REVIEWS.forEach(review => {
-        expect(review.itemReviewed.name).toBe('Ukrainian Honey Cake')
-      })
-    })
-
-    it('should have product description', () => {
-      DEFAULT_REVIEWS.forEach(review => {
-        expect(review.itemReviewed.description).toBeDefined()
-        expect(review.itemReviewed.description).toContain('Ukrainian')
+        expect((review.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/#product')
       })
     })
 
@@ -112,15 +105,8 @@ describe('structured-data-defaults', () => {
       expect(DEFAULT_KYIV_CAKE_REVIEW['@type']).toBe('Review')
     })
 
-    it('should have Kyiv Cake as product', () => {
-      expect(DEFAULT_KYIV_CAKE_REVIEW.itemReviewed.name).toBe('Kyiv Cake')
-      expect(DEFAULT_KYIV_CAKE_REVIEW.itemReviewed['@type']).toBe('Product')
-    })
-
-    it('should have product description', () => {
-      expect(DEFAULT_KYIV_CAKE_REVIEW.itemReviewed.description).toBeDefined()
-      expect(DEFAULT_KYIV_CAKE_REVIEW.itemReviewed.description).toContain('Kyiv')
-      expect(DEFAULT_KYIV_CAKE_REVIEW.itemReviewed.description).toContain('chocolate')
+    it('should reference Kyiv Cake product by @id', () => {
+      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/cakes/kyiv-cake#product')
     })
 
     it('should have author', () => {
@@ -253,10 +239,11 @@ describe('structured-data-defaults', () => {
   describe('Schema.org Compliance', () => {
     it('should use correct schema.org types', () => {
       expect(DEFAULT_REVIEWS[0]['@type']).toBe('Review')
-      expect(DEFAULT_REVIEWS[0].itemReviewed['@type']).toBe('Product')
+      expect((DEFAULT_REVIEWS[0].itemReviewed as any)['@id']).toBeDefined()
       expect(DEFAULT_REVIEWS[0].author['@type']).toBe('Person')
       expect(DEFAULT_REVIEWS[0].reviewRating['@type']).toBe('Rating')
       expect(DEFAULT_KYIV_CAKE_REVIEW['@type']).toBe('Review')
+      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as any)['@id']).toBeDefined()
       expect(DEFAULT_AGGREGATE_RATING['@type']).toBe('AggregateRating')
     })
 

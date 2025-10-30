@@ -72,9 +72,7 @@ export async function OrderPageStructuredData() {
     reviewBody: testimonial.text,
     datePublished: testimonial.date,
     itemReviewed: {
-      "@type": "Product",
-      name: testimonial.cakeType,
-      description: `${testimonial.cakeType} from Olgish Cakes`,
+      "@id": "https://olgishcakes.co.uk/#product"
     },
   }));
 

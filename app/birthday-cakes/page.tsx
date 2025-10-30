@@ -5,21 +5,21 @@ import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
-import { blocksToText } from "@/types/cake";
-import { getPriceValidUntil } from "../utils/seo";
+import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
+import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds from £35 | Same-Day Delivery Yorkshire",
+    "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
   description:
-    "★★★★★ Custom birthday cakes Leeds. Children & adult themes, Ukrainian honey cake, same-day delivery. 127+ 5-star reviews. From £35. Order today!",
+    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
-      "Birthday Cakes Leeds – Custom Designs",
+      "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "Custom birthday cakes for all ages with Ukrainian flavours like honey cake. Delivery available across Leeds.",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -82,11 +82,21 @@ export default async function BirthdayCakesPage() {
       blocksToText(cake.description).toLowerCase().includes("birthday")
   );
 
+  // Get popular cakes for the flavors section - filter out Christmas and seasonal
+  const popularCakes = allCakes
+    .filter(
+      cake =>
+        !cake.name.toLowerCase().includes("christmas") &&
+        !cake.name.toLowerCase().includes("halloween") &&
+        cake.category !== "seasonal"
+    )
+    .slice(0, 6);
+
   const birthdayServices = [
     {
       name: "Children's Birthday Cakes",
       description: "Colorful, fun, and themed birthday cakes perfect for children's parties",
-      price: "From £35",
+      price: "From £25",
     },
     {
       name: "Adult Birthday Cakes",
@@ -164,7 +174,7 @@ export default async function BirthdayCakesPage() {
       {
         "@type": "Question",
         name: "What are the starting prices?",
-        acceptedAnswer: { "@type": "Answer", text: "Prices start from £35 for a 6‑inch cake. Final price depends on size and design." }
+        acceptedAnswer: { "@type": "Answer", text: "Prices start from £25 for a 6‑inch cake. Final price depends on size and design." }
       }
     ]
   } as const;
@@ -177,7 +187,7 @@ export default async function BirthdayCakesPage() {
     description:
       "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavors and modern designs.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
-    itemListElement: birthdayCakes.map((cake: any, index: number) => ({
+    itemListElement: birthdayCakes.map((cake: Cake, index: number) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
@@ -185,24 +195,32 @@ export default async function BirthdayCakesPage() {
         name: cake.name,
         image: (() => {
           // Import urlFor dynamically to avoid build issues
-          let urlFor: any;
+          type UrlForReturn = {
+            width: (w: number) => {
+              height: (h: number) => {
+                url: () => string
+              }
+            }
+          }
+          type UrlForFunction = (source: CakeImage | { asset?: { _ref?: string } }) => UrlForReturn
+          let urlFor: UrlForFunction
           try {
-            urlFor = require('@/sanity/lib/image').urlFor;
+            urlFor = require('@/sanity/lib/image').urlFor as UrlForFunction
           } catch (error) {
             // Fallback for build environments where dynamic import might fail
-            urlFor = (image: any) => ({
+            urlFor = (_image: CakeImage | { asset?: { _ref?: string } }): UrlForReturn => ({
               width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
-            });
+            })
           }
 
           // Get the best available image
-          const mainImage = cake.mainImage?.asset?._ref
-            ? cake.mainImage
-            : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-              cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+          const mainImage: CakeImage | undefined = cake.mainImage?.asset?._ref
+            ? cake.mainImage as CakeImage
+            : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+              cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
               cake.designs?.standard?.[0] ||
-              cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-              cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+              cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+              cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
               cake.designs?.individual?.[0];
 
           return mainImage?.asset?._ref
@@ -225,34 +243,8 @@ export default async function BirthdayCakesPage() {
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),
-          shippingDetails: {
-            "@type": "OfferShippingDetails",
-            shippingRate: {
-              "@type": "MonetaryAmount",
-              value: 0,
-              currency: "GBP",
-            },
-            shippingDestination: {
-              "@type": "DefinedRegion",
-              addressCountry: "GB",
-            },
-            deliveryTime: {
-              "@type": "ShippingDeliveryTime",
-              handlingTime: {
-                "@type": "QuantitativeValue",
-                minValue: 0,
-                maxValue: 1,
-                unitCode: "DAY",
-              },
-              transitTime: {
-                "@type": "QuantitativeValue",
-                minValue: 1,
-                maxValue: 3,
-                unitCode: "DAY",
-              },
-            },
-            appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-          },
+          shippingDetails: getOfferShippingDetails(),
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
       },
     })),
@@ -432,8 +424,8 @@ export default async function BirthdayCakesPage() {
               </Box>
             ) : (
               <Grid container spacing={4}>
-                {birthdayCakes.map(cake => (
-                  <Grid item xs={12} sm={6} md={4} key={cake._id}>
+                {birthdayCakes.map((cake, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={cake._id || `cake-${index}`}>
                     <CakeCard cake={cake} />
                   </Grid>
                 ))}
@@ -471,7 +463,7 @@ export default async function BirthdayCakesPage() {
                 {
                   size: "6 inch",
                   serves: "8-12 people",
-                  price: "From £35",
+                  price: "From £25",
                   description: "Perfect for small family celebrations or intimate birthday parties",
                 },
                 {
@@ -545,36 +537,53 @@ export default async function BirthdayCakesPage() {
               Birthday Cake Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Our birthday cakes feature a delightful selection of flavors perfect for celebrations.
-              From traditional Ukrainian favorites to classic birthday cake flavors, we have
-              something for everyone's taste.
+              I make several cake flavours, but honey cake is my most popular. It's traditional Ukrainian honey
+              cake (Medovik) with 5 layers of soft honey sponge and buttercream made with condensed milk. Kyiv
+              cake is premium cake with meringue and cashew nuts, filled with custard cream. I also make Vanilla
+              Delicia birthday cake and Chocolate Delicia sponge cake. For all flavours, see my{" "}
+              <Link href="/cake-flavors" style={{ color: "inherit", textDecoration: "underline" }}>
+                complete flavour guide
+              </Link>
+              .
             </Typography>
             <Grid container spacing={3}>
-              {[
-                "Medovik (Honey Cake) - Traditional Ukrainian honey layers",
-                "Kyiv Cake - Rich chocolate and hazelnut meringue",
-                "Vanilla Bean - Classic birthday cake with Ukrainian twist",
-                "Chocolate Fudge - Decadent chocolate layers",
-                "Lemon Poppy Seed - Light and refreshing option",
-                "Red Velvet - Classic with Ukrainian cream cheese frosting",
-                "Strawberry Cream - Fresh strawberry filling",
-                "Carrot Cake - Traditional with Ukrainian spices",
-              ].map((flavor, index) => (
-                <Grid item xs={12} sm={6} key={index}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <Box
-                      sx={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        backgroundColor: "primary.main",
-                        mr: 2,
-                      }}
-                    />
-                    <Typography variant="body1">{flavor}</Typography>
-                  </Box>
-                </Grid>
-              ))}
+              {popularCakes.map((cake, index) => {
+                const description = cake.shortDescription
+                  ? blocksToText(cake.shortDescription)
+                  : blocksToText(cake.description);
+                return (
+                  <Grid item xs={12} sm={6} key={cake._id || index}>
+                    <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "primary.main",
+                          mr: 2,
+                          mt: 1,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <Box sx={{ flex: 1 }}>
+                        <Link
+                          href={`/cakes/${cake.slug?.current || cake._id}`}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5, "&:hover": { color: "primary.main" } }}>
+                            {cake.name}
+                          </Typography>
+                        </Link>
+                        {description && (
+                          <Typography variant="body2" color="text.secondary">
+                            {description}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })}
             </Grid>
           </Paper>
 

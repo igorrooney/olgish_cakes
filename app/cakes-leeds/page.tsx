@@ -5,17 +5,18 @@ import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
+import { getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
-  title: "Cakes Leeds | Ukrainian Bakery",
+  title: "Birthday Cakes Leeds from £25 | 5★ Rated",
   description:
-    "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
+    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
-    title: "Cakes Leeds | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Leeds and around areas.",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -31,9 +32,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cakes Leeds | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
-      "Fresh, handmade cakes in Leeds. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts.",
+      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {
@@ -102,6 +103,13 @@ export default async function CakesLeedsPage() {
             openingHours: "Mo-Su 00:00-23:59",
             priceRange: "££",
             servesCuisine: "Ukrainian",
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
             hasOfferCatalog: {
               "@type": "OfferCatalog",
               name: "Ukrainian Cakes",
@@ -120,37 +128,11 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: "35",
+                  price: "25",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
                 {
                   "@type": "Offer",
@@ -169,34 +151,8 @@ export default async function CakesLeedsPage() {
                   price: "40",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
                 {
                   "@type": "Offer",
@@ -215,34 +171,8 @@ export default async function CakesLeedsPage() {
                   price: "150",
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
-                  shippingDetails: {
-                    "@type": "OfferShippingDetails",
-                    shippingRate: {
-                      "@type": "MonetaryAmount",
-                      value: 0,
-                      currency: "GBP",
-                    },
-                    shippingDestination: {
-                      "@type": "DefinedRegion",
-                      addressCountry: "GB",
-                    },
-                    deliveryTime: {
-                      "@type": "ShippingDeliveryTime",
-                      handlingTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 0,
-                        maxValue: 1,
-                        unitCode: "DAY",
-                      },
-                      transitTime: {
-                        "@type": "QuantitativeValue",
-                        minValue: 1,
-                        maxValue: 3,
-                        unitCode: "DAY",
-                      },
-                    },
-                    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-                  },
+                  shippingDetails: getOfferShippingDetails(),
+                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                 },
               ],
             },
@@ -250,6 +180,50 @@ export default async function CakesLeedsPage() {
               "@type": "City",
               name: "Leeds",
             },
+          }),
+        }}
+      />
+      <Script
+        id="cakes-leeds-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Do you deliver birthday cakes in Leeds?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver fresh birthday cakes across Leeds including City Centre, Headingley, Chapel Allerton, Roundhay, Moortown, and all surrounding areas. Same-day delivery is available when ordered before 10am.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much do birthday cakes cost in Leeds?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Birthday cakes in Leeds start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee ranges from £5-12 depending on location within Leeds.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I get same-day birthday cake delivery in Leeds?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, same-day delivery is available in Leeds when you order before 10am. This is perfect for last-minute birthday celebrations. Standard delivery requires 3-5 days notice.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What types of birthday cakes do you make in Leeds?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I create all types of birthday cakes in Leeds including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                },
+              },
+            ],
           }),
         }}
       />

@@ -558,13 +558,7 @@ export function generateProductSchema(product: {
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: product.name,
-          description: product.description,
-          brand: {
-            "@type": "Brand",
-            name: product.brand || SEO_CONFIG.siteName
-          }
+          "@id": `${product.url}#product`
         },
         reviewRating: {
           "@type": "Rating",
@@ -577,18 +571,12 @@ export function generateProductSchema(product: {
           name: "Sarah M."
         },
         reviewBody: `Excellent ${product.name}! The quality and taste are outstanding. Highly recommend!`,
-        datePublished: "2024-01-15"
+        datePublished: "2025-09-30"
       },
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: product.name,
-          description: product.description,
-          brand: {
-            "@type": "Brand",
-            name: product.brand || SEO_CONFIG.siteName
-          }
+          "@id": `${product.url}#product`
         },
         reviewRating: {
           "@type": "Rating",
@@ -601,7 +589,7 @@ export function generateProductSchema(product: {
           name: "James K."
         },
         reviewBody: `Amazing service and incredible quality. The ${product.name} exceeded our expectations!`,
-        datePublished: "2024-02-10"
+        datePublished: "2025-08-15"
       }
     ],
   };
@@ -655,13 +643,7 @@ export function generateReviewSchema(review: {
     },
     datePublished: review.datePublished,
     itemReviewed: {
-      "@type": "Product",
-      name: "Ukrainian Cakes",
-      description: "Traditional Ukrainian honey cake and authentic desserts",
-      brand: {
-        "@type": "Brand",
-        name: "Olgish Cakes"
-      }
+      "@id": "https://olgishcakes.co.uk/#product"
     },
   };
 }

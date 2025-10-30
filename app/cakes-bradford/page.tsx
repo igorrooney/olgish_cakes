@@ -7,15 +7,15 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Birthday Cakes Bradford from £25 | Same-Day Delivery",
+  title: "Birthday Cakes Bradford from £25 | 5★ Rated",
   description:
-    "★★★★★ Custom birthday cakes delivered same-day in Bradford from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+    "★★★★★ Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Bradford, birthday cakes in Bradford, custom birthday cakes Bradford, children's birthday cakes Bradford, cakes Bradford, Ukrainian cakes Bradford, cake delivery Bradford, bakery Bradford, same-day cake delivery Bradford",
   openGraph: {
-    title: "Birthday Cakes Bradford from £25 | Same-Day Delivery",
+    title: "Birthday Cakes Bradford from £25 | 5★ Rated",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Bradford from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+      "★★★★★ Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-bradford",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
     type: "website",
@@ -70,6 +70,57 @@ export default async function CakesBradfordPage() {
               "@type": "City",
               name: "Bradford",
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "5",
+              reviewCount: "127",
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }),
+        }}
+      />
+      <Script
+        id="cakes-bradford-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Do you deliver birthday cakes to Bradford?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, I deliver fresh birthday cakes to Bradford and surrounding areas including Shipley, Bingley, Keighley, and Ilkley. Same-day delivery is available when ordered before 10am.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much do birthday cakes cost in Bradford?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Birthday cakes in Bradford start from £25 for a 6-inch cake serving 8-12 people. Prices vary based on size, design complexity, and customization. Delivery fee is £15-20 depending on location.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I get same-day birthday cake delivery in Bradford?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, same-day delivery is available in Bradford when you order before 10am. This is perfect for last-minute birthday celebrations. Standard delivery requires 3-5 days notice.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What types of birthday cakes do you make for Bradford?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I create all types of birthday cakes for Bradford including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                },
+              },
+            ],
           }),
         }}
       />
@@ -211,7 +262,7 @@ export default async function CakesBradfordPage() {
               Most Requested Birthday Cakes in Bradford
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              The most popular birthday cake in Bradford is my traditional Ukrainian honey cake (Medovik). This is no ordinary birthday cake - it features delicate layers of honey-soaked cake with silky cream filling that's been perfected over generations. Adults celebrating milestone birthdays absolutely love it because it's elegant, sophisticated, and utterly delicious. At £25 for a cake serving 8-10 people, it's an affordable luxury for birthday parties in Bradford. The honey cake can be beautifully decorated with fresh berries, edible flowers, or personalized birthday messages.
+              The most popular birthday cake in Bradford is my traditional Ukrainian honey cake. This is no ordinary birthday cake - it features delicate layers of honey-soaked cake with silky cream filling that's been perfected over generations. Adults celebrating milestone birthdays absolutely love it because it's elegant, sophisticated, and utterly delicious. At £25 for a cake serving 8-10 people, it's an affordable luxury for birthday parties in Bradford. The honey cake can be beautifully decorated with fresh berries, edible flowers, or personalized birthday messages.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
               For children's birthday parties in Bradford, themed character cakes are incredibly popular. Recent favorites include unicorn birthday cakes with colorful rainbow layers, dinosaur birthday cakes with chocolate frosting, superhero birthday cakes featuring favorite Marvel and DC characters, and princess cakes adorned with edible crowns and sparkles. What sets these apart from regular birthday cakes is that beneath the fun decorations, you get authentic Ukrainian cake flavors made with real, healthy ingredients. No artificial colors or preservatives - just natural ingredients that parents feel confident serving at their child's special birthday celebration.

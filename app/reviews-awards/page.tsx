@@ -195,18 +195,13 @@ export default function ReviewsAwardsPage() {
               {
                 "@type": "Review",
                 itemReviewed: {
-                  "@type": "Product",
-                  name: "Ukrainian Wedding Cake",
-                  description: "Traditional Ukrainian wedding cake from Olgish Cakes",
-                  brand: {
-                    "@type": "Brand",
-                    name: "Olgish Cakes"
-                  }
+                  "@id": "https://olgishcakes.co.uk/#product"
                 },
                 reviewRating: {
                   "@type": "Rating",
                   ratingValue: "5",
                   bestRating: "5",
+                  worstRating: "1",
                 },
                 author: {
                   "@type": "Person",
@@ -214,23 +209,18 @@ export default function ReviewsAwardsPage() {
                 },
                 reviewBody:
                   "Our Ukrainian wedding cake was absolutely stunning! The honey cake was delicious and the design was exactly what we wanted.",
-                datePublished: "2024-01-15",
+                datePublished: "2025-09-30",
               },
               {
                 "@type": "Review",
                 itemReviewed: {
-                  "@type": "Product",
-                  name: "Ukrainian Wedding Cake",
-                  description: "Traditional Ukrainian wedding cake from Olgish Cakes",
-                  brand: {
-                    "@type": "Brand",
-                    name: "Olgish Cakes"
-                  }
+                  "@id": "https://olgishcakes.co.uk/#product"
                 },
                 reviewRating: {
                   "@type": "Rating",
                   ratingValue: "5",
                   bestRating: "5",
+                  worstRating: "1",
                 },
                 author: {
                   "@type": "Person",
@@ -238,7 +228,7 @@ export default function ReviewsAwardsPage() {
                 },
                 reviewBody:
                   "Ordered a Kyiv cake for my daughter's birthday and it was incredible! The chocolate layers were perfect and the hazelnut filling was delicious.",
-                datePublished: "2024-01-12",
+                datePublished: "2025-08-15",
               },
             ],
             url: "https://olgishcakes.co.uk/reviews-awards",

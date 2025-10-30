@@ -69,7 +69,9 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       name: cake.name,
       description: cake.shortDescription
         ? blocksToText(cake.shortDescription)
-        : `${cake.name} - Traditional Ukrainian honey cake made with love in Leeds`,
+        : cake.description && blocksToText(cake.description)
+        ? blocksToText(cake.description).substring(0, 200)
+        : `${cake.name} - Traditional Ukrainian honey cake made with love in Leeds. Handcrafted using authentic Ukrainian recipes with premium ingredients. Perfect for birthdays, celebrations, and special occasions.`,
       category: cake.category || "Ukrainian Honey Cake",
       brand: {
         "@type": "Brand",
@@ -145,6 +147,9 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       review: [
         {
           "@type": "Review",
+          itemReviewed: {
+            "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`
+          },
           author: {
             "@type": "Person",
             name: "Sarah M.",
@@ -156,7 +161,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             worstRating: "1",
           },
           reviewBody: `Amazing ${cake.name}! The taste is incredible and the service was perfect. Highly recommend!`,
-          datePublished: "2024-07-01",
+          datePublished: "2025-09-30",
         },
       ],
       // Local business context

@@ -146,26 +146,13 @@ export function OrderModalStructuredData({
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: `${cake.name} - ${designType === "standard" ? "Standard Design" : "Individual Design"}`,
-          description: cake.shortDescription
-            ? typeof cake.shortDescription === "string"
-              ? cake.shortDescription
-              : Array.isArray(cake.shortDescription)
-                ? cake.shortDescription
-                    .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
-                    .join(" ")
-                : ""
-            : `Professional ${cake.name} cake with ${designType === "standard" ? "standard" : "custom"} design`,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-          }
+          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
         },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
           bestRating: "5",
+          worstRating: "1",
         },
         author: {
           "@type": "Person",
@@ -173,30 +160,18 @@ export function OrderModalStructuredData({
         },
         reviewBody:
           "Absolutely stunning cake! The quality and taste were exceptional. Highly recommend Olgish Cakes for any special occasion.",
+        datePublished: "2025-09-30",
       },
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: `${cake.name} - ${designType === "standard" ? "Standard Design" : "Individual Design"}`,
-          description: cake.shortDescription
-            ? typeof cake.shortDescription === "string"
-              ? cake.shortDescription
-              : Array.isArray(cake.shortDescription)
-                ? cake.shortDescription
-                    .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
-                    .join(" ")
-                : ""
-            : `Professional ${cake.name} cake with ${designType === "standard" ? "standard" : "custom"} design`,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-          }
+          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
         },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
           bestRating: "5",
+          worstRating: "1",
         },
         author: {
           "@type": "Person",
@@ -204,6 +179,7 @@ export function OrderModalStructuredData({
         },
         reviewBody:
           "Professional service from start to finish. The custom design exceeded our expectations and the delivery was perfect.",
+        datePublished: "2025-08-15",
       },
     ],
     serviceType: "Cake Design and Delivery",

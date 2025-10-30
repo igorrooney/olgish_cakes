@@ -167,13 +167,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: cakeName,
-          description: cake.description,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes"
-          }
+          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
         },
         reviewRating: {
           "@type": "Rating",
@@ -187,18 +181,12 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
         },
         reviewBody:
           "Absolutely stunning cake! The quality and taste were exceptional. Highly recommend Olgish Cakes for any special occasion.",
-        datePublished: "2024-01-15",
+        datePublished: "2025-09-30",
       },
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: cakeName,
-          description: cake.description,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes"
-          }
+          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
         },
         reviewRating: {
           "@type": "Rating",
@@ -212,7 +200,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
         },
         reviewBody:
           "Professional service from start to finish. The custom design exceeded our expectations and the delivery was perfect.",
-        datePublished: "2024-01-10",
+        datePublished: "2025-08-15",
       },
     ],
     breadcrumb: {

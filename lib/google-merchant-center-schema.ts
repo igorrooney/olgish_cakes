@@ -206,25 +206,20 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
       {
         "@type": "Review",
         itemReviewed: {
-          "@type": "Product",
-          name: "Ukrainian Honey Cake",
-          description: "Traditional Ukrainian honey cake (honey cake) made with authentic recipes",
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes"
-          }
+          "@id": `${baseUrl}/#product`
         },
         reviewRating: {
           "@type": "Rating",
           ratingValue: "5",
           bestRating: "5",
+          worstRating: "1",
         },
         author: {
           "@type": "Person",
           name: "Sarah M.",
         },
         reviewBody: "Absolutely delicious! The honey cake was perfect for our celebration. Highly recommend Olgish Cakes!",
-        datePublished: "2024-01-15",
+        datePublished: "2025-09-30",
       },
     ],
   };

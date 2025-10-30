@@ -21,10 +21,13 @@ jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 
 jest.mock('../../utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
-  getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
+  getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' })),
+  getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' }))
 }))
 
-jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: any) => <a href={href}>{children}</a> }))
+// Typed mock for Next.js Link
+interface LinkProps { children: React.ReactNode; href: string }
+jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> }))
 jest.mock('next/script', () => ({ 
   __esModule: true, 
   default: ({ children, id, type, ...props }: any) => (
