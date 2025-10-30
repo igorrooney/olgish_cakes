@@ -3,11 +3,61 @@
  */
 import { render, screen } from '@testing-library/react'
 import CakeDeliveryLeedsPage, { metadata } from '../page'
+import type { ReactNode } from 'react'
+
+// Type definitions for test mocks
+interface BreadcrumbItem {
+  label: string
+  href?: string
+}
+
+interface BreadcrumbsProps {
+  items: BreadcrumbItem[]
+}
+
+interface LinkProps {
+  children: ReactNode
+  href: string
+  [key: string]: unknown
+}
+
+interface ScriptProps {
+  id?: string
+  type?: string
+  dangerouslySetInnerHTML?: {
+    __html: string
+  }
+}
+
+interface MUIComponentProps {
+  children?: ReactNode
+  component?: string | React.ComponentType<unknown>
+  href?: string
+  label?: string
+  itemProp?: string
+  [key: string]: unknown
+}
+
+interface SchemaQuestion {
+  name: string
+  [key: string]: unknown
+}
+
+interface SchemaWithMainEntity {
+  '@type': string
+  mainEntity: SchemaQuestion[]
+  [key: string]: unknown
+}
+
+// Helper type for DOM elements with innerHTML
+interface ElementWithInnerHTML extends Element {
+  innerHTML?: string
+}
 
 jest.mock('../../components/Breadcrumbs', () => ({
-  Breadcrumbs: ({ items }: any) => (
+  Breadcrumbs: ({ items }: BreadcrumbsProps) => (
     <nav data-testid="breadcrumbs">
-      {items.map((item: any, idx: number) => (
+      {items.map((item: BreadcrumbItem, idx: number) => (
         <span key={idx} data-testid={`breadcrumb-${idx}`}>
           {item.label}
         </span>
@@ -18,14 +68,14 @@ jest.mock('../../components/Breadcrumbs', () => ({
 
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href, ...props }: any) => (
+  default: ({ children, href, ...props }: LinkProps) => (
     <a href={href} {...props}>{children}</a>
   )
 }))
 
 jest.mock('next/script', () => ({
   __esModule: true,
-  default: ({ id, type, dangerouslySetInnerHTML }: any) => {
+  default: ({ id, type, dangerouslySetInnerHTML }: ScriptProps) => {
     const content = dangerouslySetInnerHTML?.__html
     return (
       <script
@@ -38,17 +88,17 @@ jest.mock('next/script', () => ({
 }))
 
 jest.mock('@mui/material', () => ({
-  Container: ({ children, ...props }: any) => <div data-testid="container" {...props}>{children}</div>,
-  Typography: ({ children, component, ...props }: any) => {
+  Container: ({ children, ...props }: MUIComponentProps) => <div data-testid="container" {...props}>{children}</div>,
+  Typography: ({ children, component, ...props }: MUIComponentProps) => {
     const Tag = component || 'div'
     const { itemProp, ...validProps } = props
     return <Tag data-testid="typography" {...validProps}>{children}</Tag>
   },
-  Box: ({ children, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Grid: ({ children, ...props }: any) => <div data-testid="grid" {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div data-testid="paper" {...props}>{children}</div>,
-  Chip: ({ label, ...props }: any) => <span data-testid="chip" {...props}>{label}</span>,
-  Button: ({ children, component, href, ...props }: any) => {
+  Box: ({ children, ...props }: MUIComponentProps) => <div data-testid="box" {...props}>{children}</div>,
+  Grid: ({ children, ...props }: MUIComponentProps) => <div data-testid="grid" {...props}>{children}</div>,
+  Paper: ({ children, ...props }: MUIComponentProps) => <div data-testid="paper" {...props}>{children}</div>,
+  Chip: ({ label, ...props }: MUIComponentProps) => <span data-testid="chip" {...props}>{label}</span>,
+  Button: ({ children, component, href, ...props }: MUIComponentProps) => {
     const Component = component || 'button'
     return <Component href={href} {...props}>{children}</Component>
   }
@@ -156,8 +206,9 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(serviceScript).toBeInTheDocument()
       
       if (serviceScript) {
+        const elementWithHTML = serviceScript as ElementWithInnerHTML
         const content = serviceScript.getAttribute('dangerouslySetInnerHTML') || 
-          (serviceScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (serviceScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -180,8 +231,9 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(faqScript).toBeInTheDocument()
       
       if (faqScript) {
+        const elementWithHTML = faqScript as ElementWithInnerHTML
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -201,12 +253,14 @@ describe('CakeDeliveryLeedsPage', () => {
       )
       
       if (faqScript) {
+        const elementWithHTML = faqScript as ElementWithInnerHTML
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
-        const questions = schema.mainEntity.map((q: any) => q.name)
+        const typedSchema = schema as SchemaWithMainEntity
+        const questions = typedSchema.mainEntity.map((q: SchemaQuestion) => q.name)
         expect(questions.some((q: string) => q.includes('Leeds'))).toBe(true)
         expect(questions.some((q: string) => q.includes('delivery'))).toBe(true)
         expect(questions.some((q: string) => q.includes('cost'))).toBe(true)
@@ -223,8 +277,9 @@ describe('CakeDeliveryLeedsPage', () => {
       )
       
       if (serviceScript) {
+        const elementWithHTML = serviceScript as ElementWithInnerHTML
         const content = serviceScript.getAttribute('dangerouslySetInnerHTML') || 
-          (serviceScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (serviceScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -244,8 +299,9 @@ describe('CakeDeliveryLeedsPage', () => {
       )
       
       if (serviceScript) {
+        const elementWithHTML = serviceScript as ElementWithInnerHTML
         const content = serviceScript.getAttribute('dangerouslySetInnerHTML') || 
-          (serviceScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (serviceScript.textContent || '')
         const schema = JSON.parse(content)
         

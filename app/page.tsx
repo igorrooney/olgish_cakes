@@ -40,6 +40,7 @@ import { getOfferShippingDetails } from "./utils/seo";
 import MarketSchedule from "./components/MarketSchedule";
 import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 import { DEFAULT_REVIEWS, DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
+import type { GiftHamperImage } from "@/types/giftHamper";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -513,7 +514,7 @@ export default async function Home() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
               {featuredHampers.slice(0, 6).map(h => {
-                const main = h.images?.find((img: any) => img.isMain) || h.images?.[0];
+                const main = h.images?.find((img: GiftHamperImage) => img.isMain) || h.images?.[0];
                 const url = main?.asset?._ref
                   ? require("@/sanity/lib/image").urlFor(main).width(800).height(800).url()
                   : "/images/placeholder.jpg";

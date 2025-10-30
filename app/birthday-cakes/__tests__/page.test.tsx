@@ -4,6 +4,41 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import BirthdayCakesPage, { metadata } from '../page'
+import type { ReactNode } from 'react'
+
+// Type definitions for test mocks
+interface LinkProps {
+  children: ReactNode
+  href: string
+}
+
+interface MUIComponentProps {
+  children?: ReactNode
+  label?: string
+}
+
+interface ScriptProps {
+  id?: string
+  type?: string
+  dangerouslySetInnerHTML?: {
+    __html: string
+  }
+}
+
+interface SchemaQuestion {
+  name: string
+  [key: string]: unknown
+}
+
+interface SchemaWithMainEntity {
+  '@type': string
+  mainEntity: SchemaQuestion[]
+  [key: string]: unknown
+}
+
+interface ElementWithInnerHTML extends Element {
+  innerHTML?: string
+}
 
 jest.mock('../../utils/fetchCakes', () => ({ getAllCakes: jest.fn(() => Promise.resolve([])) }))
 jest.mock('../../components/CakeCard', () => ({ __esModule: true, default: () => <div data-testid="cake-card">Card</div> }))
@@ -49,15 +84,15 @@ jest.mock('../../utils/seo', () => ({
     returnFees: "https://schema.org/FreeReturn"
   }))
 }))
-jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: any) => <a href={href}>{children}</a> }))
+jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> }))
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>,
-  Typography: ({ children }: any) => <div>{children}</div>,
-  Box: ({ children }: any) => <div>{children}</div>,
-  Grid: ({ children }: any) => <div>{children}</div>,
-  Paper: ({ children }: any) => <div>{children}</div>,
-  Chip: ({ label }: any) => <span>{label}</span>,
-  Button: ({ children }: any) => <button>{children}</button>
+  Container: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Typography: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Box: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Grid: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Paper: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Chip: ({ label }: MUIComponentProps) => <span>{label}</span>,
+  Button: ({ children }: MUIComponentProps) => <button>{children}</button>
 }))
 
 describe('BirthdayCakesPage', () => {
@@ -152,7 +187,7 @@ describe('BirthdayCakesPage', () => {
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       const serviceScript = Array.from(scripts).find(script => {
         const content = script.getAttribute('dangerouslySetInnerHTML') || 
-          (script as any).innerHTML || 
+          (script as ElementWithInnerHTML).innerHTML || 
           (script.textContent || '')
         try {
           const schema = JSON.parse(content)
@@ -166,7 +201,7 @@ describe('BirthdayCakesPage', () => {
       
       if (serviceScript) {
         const content = serviceScript.getAttribute('dangerouslySetInnerHTML') || 
-          (serviceScript as any).innerHTML || 
+          (serviceScript as ElementWithInnerHTML).innerHTML || 
           (serviceScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -183,7 +218,7 @@ describe('BirthdayCakesPage', () => {
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       const faqScript = Array.from(scripts).find(script => {
         const content = script.getAttribute('dangerouslySetInnerHTML') || 
-          (script as any).innerHTML || 
+          (script as ElementWithInnerHTML).innerHTML || 
           (script.textContent || '')
         try {
           const schema = JSON.parse(content)
@@ -197,7 +232,7 @@ describe('BirthdayCakesPage', () => {
       
       if (faqScript) {
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          (faqScript as ElementWithInnerHTML).innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -214,7 +249,7 @@ describe('BirthdayCakesPage', () => {
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       const faqScript = Array.from(scripts).find(script => {
         const content = script.getAttribute('dangerouslySetInnerHTML') || 
-          (script as any).innerHTML || 
+          (script as ElementWithInnerHTML).innerHTML || 
           (script.textContent || '')
         try {
           const schema = JSON.parse(content)
@@ -225,12 +260,14 @@ describe('BirthdayCakesPage', () => {
       })
       
       if (faqScript) {
+        const elementWithHTML = faqScript as ElementWithInnerHTML
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
-        const questions = schema.mainEntity.map((q: any) => q.name)
+        const typedSchema = schema as SchemaWithMainEntity
+        const questions = typedSchema.mainEntity.map((q: SchemaQuestion) => q.name)
         expect(questions.some((q: string) => q.toLowerCase().includes('price') || q.toLowerCase().includes('cost'))).toBe(true)
       }
     })

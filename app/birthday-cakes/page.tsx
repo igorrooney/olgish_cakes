@@ -5,7 +5,7 @@ import CakeCard from "../components/CakeCard";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
-import { blocksToText } from "@/types/cake";
+import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
 import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
@@ -177,7 +177,7 @@ export default async function BirthdayCakesPage() {
     description:
       "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavors and modern designs.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
-    itemListElement: birthdayCakes.map((cake: any, index: number) => ({
+    itemListElement: birthdayCakes.map((cake: Cake, index: number) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
@@ -185,24 +185,32 @@ export default async function BirthdayCakesPage() {
         name: cake.name,
         image: (() => {
           // Import urlFor dynamically to avoid build issues
-          let urlFor: any;
+          type UrlForReturn = {
+            width: (w: number) => {
+              height: (h: number) => {
+                url: () => string
+              }
+            }
+          }
+          type UrlForFunction = (source: CakeImage | { asset?: { _ref?: string } }) => UrlForReturn
+          let urlFor: UrlForFunction
           try {
-            urlFor = require('@/sanity/lib/image').urlFor;
+            urlFor = require('@/sanity/lib/image').urlFor as UrlForFunction
           } catch (error) {
             // Fallback for build environments where dynamic import might fail
-            urlFor = (image: any) => ({
+            urlFor = (_image: CakeImage | { asset?: { _ref?: string } }): UrlForReturn => ({
               width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
-            });
+            })
           }
 
           // Get the best available image
-          const mainImage = cake.mainImage?.asset?._ref
-            ? cake.mainImage
-            : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-              cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+          const mainImage: CakeImage | undefined = cake.mainImage?.asset?._ref
+            ? cake.mainImage as CakeImage
+            : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+              cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
               cake.designs?.standard?.[0] ||
-              cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-              cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+              cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+              cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
               cake.designs?.individual?.[0];
 
           return mainImage?.asset?._ref

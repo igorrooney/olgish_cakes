@@ -27,17 +27,25 @@ export function SEOAnalytics({
     // Track page view for SEO analytics
     trackPageView();
 
-    // Track user engagement metrics
-    trackUserEngagement();
+    // Track user engagement metrics and capture cleanup function
+    const cleanupUserEngagement = trackUserEngagement();
 
-    // Track Core Web Vitals
-    trackCoreWebVitals();
+    // Track Core Web Vitals and capture cleanup function
+    const cleanupCoreWebVitals = trackCoreWebVitals();
 
-    // Track scroll depth
-    trackScrollDepth();
+    // Track scroll depth and capture cleanup function
+    const cleanupScrollDepth = trackScrollDepth();
 
-    // Track time on page
-    trackTimeOnPage();
+    // Track time on page and capture cleanup function
+    const cleanupTimeOnPage = trackTimeOnPage();
+
+    // Return cleanup function that calls all individual cleanup functions
+    return () => {
+      cleanupUserEngagement?.();
+      cleanupCoreWebVitals?.();
+      cleanupScrollDepth?.();
+      cleanupTimeOnPage?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageType, pageTitle, pageUrl]);
 
@@ -184,7 +192,16 @@ export function SEOAnalytics({
       });
 
       clsObserver.observe({ entryTypes: ["layout-shift"] });
+
+      // Return cleanup function to disconnect all observers
+      return () => {
+        lcpObserver.disconnect();
+        fidObserver.disconnect();
+        clsObserver.disconnect();
+      };
     }
+    // Return no-op cleanup function if performance API is not available
+    return () => {};
   };
 
   const trackScrollDepth = () => {
@@ -253,18 +270,20 @@ export function SEOAnalytics({
       }
     };
 
-    // Track when user leaves the page
-    window.addEventListener("beforeunload", sendTimeOnPage);
-
     // Track when page becomes hidden
-    document.addEventListener("visibilitychange", () => {
+    const handleVisibilityChange = () => {
       if (document.hidden) {
         sendTimeOnPage();
       }
-    });
+    };
+
+    // Track when user leaves the page
+    window.addEventListener("beforeunload", sendTimeOnPage);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("beforeunload", sendTimeOnPage);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   };
 

@@ -3,6 +3,46 @@
  */
 import { render } from '@testing-library/react'
 import CakesWakefieldPage, { metadata } from '../page'
+import type { ReactNode } from 'react'
+
+// Type definitions for test mocks
+interface LinkProps {
+  children: ReactNode
+  href: string
+}
+
+interface ScriptProps {
+  id?: string
+  type?: string
+  dangerouslySetInnerHTML?: {
+    __html: string
+  }
+}
+
+interface MUIComponentProps {
+  children?: ReactNode
+  label?: string
+}
+
+interface SchemaQuestion {
+  name: string
+  [key: string]: unknown
+}
+
+interface SchemaWithMainEntity {
+  '@type': string
+  mainEntity: SchemaQuestion[]
+  aggregateRating?: {
+    '@type': string
+    ratingValue: string
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
+
+interface ElementWithInnerHTML extends Element {
+  innerHTML?: string
+}
 
 jest.mock('../../utils/fetchCakes', () => ({
   getAllCakes: jest.fn(() => Promise.resolve([]))
@@ -19,12 +59,12 @@ jest.mock('../../components/Breadcrumbs', () => ({
 
 jest.mock('next/link', () => ({ 
   __esModule: true, 
-  default: ({ children, href }: any) => <a href={href}>{children}</a> 
+  default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> 
 }))
 
 jest.mock('next/script', () => ({ 
   __esModule: true, 
-  default: ({ id, type, dangerouslySetInnerHTML }: any) => {
+  default: ({ id, type, dangerouslySetInnerHTML }: ScriptProps) => {
     const content = dangerouslySetInnerHTML?.__html
     return (
       <script
@@ -37,13 +77,13 @@ jest.mock('next/script', () => ({
 }))
 
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>,
-  Typography: ({ children }: any) => <div>{children}</div>,
-  Box: ({ children }: any) => <div>{children}</div>,
-  Grid: ({ children }: any) => <div>{children}</div>,
-  Paper: ({ children }: any) => <div>{children}</div>,
-  Chip: ({ label }: any) => <span>{label}</span>,
-  Button: ({ children }: any) => <button>{children}</button>
+  Container: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Typography: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Box: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Grid: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Paper: ({ children }: MUIComponentProps) => <div>{children}</div>,
+  Chip: ({ label }: MUIComponentProps) => <span>{label}</span>,
+  Button: ({ children }: MUIComponentProps) => <button>{children}</button>
 }))
 
 describe('CakesWakefieldPage', () => {
@@ -84,8 +124,9 @@ describe('CakesWakefieldPage', () => {
       expect(faqScript).toBeInTheDocument()
       
       if (faqScript) {
+        const elementWithHTML = faqScript as ElementWithInnerHTML
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
@@ -105,12 +146,14 @@ describe('CakesWakefieldPage', () => {
       )
       
       if (faqScript) {
+        const elementWithHTML = faqScript as ElementWithInnerHTML
         const content = faqScript.getAttribute('dangerouslySetInnerHTML') || 
-          (faqScript as any).innerHTML || 
+          elementWithHTML.innerHTML || 
           (faqScript.textContent || '')
         const schema = JSON.parse(content)
         
-        const questions = schema.mainEntity.map((q: any) => q.name)
+        const typedSchema = schema as SchemaWithMainEntity
+        const questions = typedSchema.mainEntity.map((q: SchemaQuestion) => q.name)
         expect(questions.some((q: string) => q.includes('Wakefield'))).toBe(true)
         expect(questions.some((q: string) => q.includes('delivery'))).toBe(true)
       }
@@ -127,7 +170,7 @@ describe('CakesWakefieldPage', () => {
       
       if (businessScript) {
         const content = businessScript.getAttribute('dangerouslySetInnerHTML') || 
-          (businessScript as any).innerHTML || 
+          (businessScript as ElementWithInnerHTML).innerHTML || 
           (businessScript.textContent || '')
         const schema = JSON.parse(content)
         
