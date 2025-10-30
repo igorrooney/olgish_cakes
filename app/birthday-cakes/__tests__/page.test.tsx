@@ -10,7 +10,45 @@ jest.mock('../../components/CakeCard', () => ({ __esModule: true, default: () =>
 jest.mock('../../components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav> }))
 jest.mock('../../components/AreasWeCover', () => ({ AreasWeCover: () => <div data-testid="areas">Areas</div> }))
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
-jest.mock('../../utils/seo', () => ({ getPriceValidUntil: jest.fn(() => '2026-01-01') }))
+jest.mock('../../utils/seo', () => ({
+  getPriceValidUntil: jest.fn(() => '2026-01-01'),
+  getOfferShippingDetails: jest.fn(() => ({
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: "15",
+      currency: "GBP"
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "GB",
+      addressRegion: ["West Yorkshire"]
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: {
+        "@type": "QuantitativeValue",
+        minValue: 1,
+        maxValue: 2,
+        unitCode: "DAY"
+      },
+      transitTime: {
+        "@type": "QuantitativeValue",
+        minValue: 0,
+        maxValue: 1,
+        unitCode: "DAY"
+      }
+    }
+  })),
+  getMerchantReturnPolicy: jest.fn(() => ({
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "GB",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 14,
+    returnMethod: "https://schema.org/ReturnByMail",
+    returnFees: "https://schema.org/FreeReturn"
+  }))
+}))
 jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: any) => <a href={href}>{children}</a> }))
 jest.mock('@mui/material', () => ({
   Container: ({ children }: any) => <div>{children}</div>,

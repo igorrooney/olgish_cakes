@@ -206,7 +206,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
       {
         "@type": "Review",
         itemReviewed: {
-          "@id": `${data.baseUrl || "https://olgishcakes.co.uk"}/#product`
+          "@id": `${baseUrl}/#product`
         },
         reviewRating: {
           "@type": "Rating",

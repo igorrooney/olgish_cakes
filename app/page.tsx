@@ -318,7 +318,7 @@ export default async function Home() {
             bestRating: "5",
             worstRating: "1"
           },
-          reviewBody: testimonial.text || testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!",
+          reviewBody: testimonial.text || (testimonial.cakeType ? `Amazing ${testimonial.cakeType} from Olgish Cakes!` : "Excellent service and delicious cakes!"),
           datePublished: testimonial.date || "2025-09-30"
         }))
       : DEFAULT_REVIEWS
