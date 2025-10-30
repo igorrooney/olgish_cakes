@@ -82,6 +82,16 @@ export default async function BirthdayCakesPage() {
       blocksToText(cake.description).toLowerCase().includes("birthday")
   );
 
+  // Get popular cakes for the flavors section - filter out Christmas and seasonal
+  const popularCakes = allCakes
+    .filter(
+      cake =>
+        !cake.name.toLowerCase().includes("christmas") &&
+        !cake.name.toLowerCase().includes("halloween") &&
+        cake.category !== "seasonal"
+    )
+    .slice(0, 6);
+
   const birthdayServices = [
     {
       name: "Children's Birthday Cakes",
@@ -500,6 +510,82 @@ export default async function BirthdayCakesPage() {
             title="Birthday Cake Delivery Areas"
             subtitle="I deliver birthday cakes across Leeds and around towns."
           />
+
+          {/* Birthday Cake Flavors */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Birthday Cake Flavors
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
+              I make several cake flavours, but honey cake is my most popular. It's traditional Ukrainian honey
+              cake (Medovik) with 5 layers of soft honey sponge and buttercream made with condensed milk. Kyiv
+              cake is premium cake with meringue and cashew nuts, filled with custard cream. I also make Vanilla
+              Delicia birthday cake and Chocolate Delicia sponge cake. For all flavours, see my{" "}
+              <Link href="/cake-flavors" style={{ color: "inherit", textDecoration: "underline" }}>
+                complete flavour guide
+              </Link>
+              .
+            </Typography>
+            <Grid container spacing={3}>
+              {popularCakes.map((cake, index) => {
+                const description = cake.shortDescription
+                  ? blocksToText(cake.shortDescription)
+                  : blocksToText(cake.description);
+                return (
+                  <Grid item xs={12} sm={6} key={cake._id || index}>
+                    <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "primary.main",
+                          mr: 2,
+                          mt: 1,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <Box sx={{ flex: 1 }}>
+                        <Link
+                          href={`/cakes/${cake.slug?.current || cake._id}`}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5, "&:hover": { color: "primary.main" } }}>
+                            {cake.name}
+                          </Typography>
+                        </Link>
+                        {description && (
+                          <Typography variant="body2" color="text.secondary">
+                            {description}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Paper>
 
           {/* Birthday Cake Process */}
           <Paper

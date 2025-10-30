@@ -91,7 +91,7 @@ describe('CakesWakefieldPage', () => {
     it('should have optimized title with social proof', () => {
       expect(metadata.title).toContain('Wakefield')
       expect(metadata.title).toContain('5★ Rated')
-      expect(metadata.title).toContain('Same-Day Delivery')
+      expect(metadata.title).toContain('£25')
     })
 
     it('should have description with pricing and social proof', () => {
