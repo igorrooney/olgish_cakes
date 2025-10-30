@@ -8,13 +8,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Huddersfield from £25 | 5★ Rated | Same-Day Delivery",
+    "Birthday Cakes Huddersfield from £25 | 5★ Rated",
   description:
     "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Huddersfield, birthday cakes in Huddersfield, custom birthday cakes Huddersfield, children's birthday cakes Huddersfield, cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, cake delivery Huddersfield, bakery Huddersfield",
   openGraph: {
-    title: "Birthday Cakes Huddersfield from £25 | 5★ Rated | Same-Day Delivery",
+    title: "Birthday Cakes Huddersfield from £25 | 5★ Rated",
     description:
       "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-huddersfield",
@@ -118,7 +118,7 @@ export default async function CakesHuddersfieldPage() {
                 name: "What types of birthday cakes do you make for Huddersfield?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I create all types of birthday cakes for Huddersfield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake (Medovik), Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                  text: "I create all types of birthday cakes for Huddersfield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
                 },
               },
             ],
@@ -263,7 +263,7 @@ export default async function CakesHuddersfieldPage() {
               Most Popular Birthday Cakes in Huddersfield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              The number one birthday cake request in Huddersfield is my traditional Ukrainian honey cake (Medovik). This isn't just any birthday cake - it's layers of delicate honey-soaked cake with rich cream that's been perfected over generations. Adults celebrating milestone birthdays love it because it's sophisticated, not too sweet, and absolutely delicious. At £25 for a cake serving 8-10 people, it's the perfect centerpiece for birthday parties in Huddersfield. The honey cake can be decorated with fresh berries, flowers, or personalized birthday messages.
+              The number one birthday cake request in Huddersfield is my traditional Ukrainian honey cake. This isn't just any birthday cake - it's layers of delicate honey-soaked cake with rich cream that's been perfected over generations. Adults celebrating milestone birthdays love it because it's sophisticated, not too sweet, and absolutely delicious. At £25 for a cake serving 8-10 people, it's the perfect centerpiece for birthday parties in Huddersfield. The honey cake can be decorated with fresh berries, flowers, or personalized birthday messages.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
               For children's birthday parties, themed character cakes are extremely popular. Recent favorites in Huddersfield include unicorn birthday cakes with rainbow layers, dinosaur birthday cakes with chocolate frosting, and superhero birthday cakes featuring Marvel and DC characters. What makes these special is that underneath the fun decorations, you get authentic Ukrainian cake flavors made with real ingredients. No artificial colors or flavors - just natural, healthy ingredients that parents feel good about serving at their child's birthday celebration.

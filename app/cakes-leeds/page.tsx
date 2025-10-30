@@ -8,13 +8,13 @@ import Script from "next/script";
 import { getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
 export const metadata: Metadata = {
-  title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
+  title: "Birthday Cakes Leeds from £25 | 5★ Rated",
   description:
     "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
-    title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
       "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-leeds",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Birthday Cakes Leeds from £25 | 5★ Rated | Ukrainian Bakery",
+    title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
       "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
@@ -220,7 +220,7 @@ export default async function CakesLeedsPage() {
                 name: "What types of birthday cakes do you make in Leeds?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I create all types of birthday cakes in Leeds including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake (Medovik), Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                  text: "I create all types of birthday cakes in Leeds including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
                 },
               },
             ],

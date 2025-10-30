@@ -8,14 +8,14 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Wakefield from £25 | 5★ Rated | Same-Day Delivery",
+    "Birthday Cakes Wakefield from £25 | 5★ Rated",
   description:
     "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
-      "Birthday Cakes Wakefield from £25 | 5★ Rated | Same-Day Delivery",
+      "Birthday Cakes Wakefield from £25 | 5★ Rated",
     description:
       "★★★★★ Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
@@ -129,7 +129,7 @@ export default async function CakesWakefieldPage() {
                 name: "What types of birthday cakes do you make for Wakefield?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I create all types of birthday cakes for Wakefield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake (Medovik), Kyiv cake, and custom-designed cakes to match any theme or preference.",
+                  text: "I create all types of birthday cakes for Wakefield including children's themed cakes (unicorns, dinosaurs, superheroes), adult milestone cakes, Ukrainian honey cake, Kyiv cake, and custom-designed cakes to match any theme or preference.",
                 },
               },
             ],
@@ -273,7 +273,7 @@ export default async function CakesWakefieldPage() {
               Popular Birthday Cakes in Wakefield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
-              The most requested birthday cake in Wakefield is my traditional Ukrainian honey cake (Medovik). This isn't your ordinary birthday cake - it features delicate honey-soaked layers with rich cream filling that melts in your mouth. Adults love it for milestone birthdays like 30th, 40th, and 50th celebrations because it's sophisticated yet comforting. Starting from £25, it's an affordable luxury that makes birthdays truly special. I also make Kyiv cake for birthdays, which combines hazelnut meringue with chocolate - perfect for chocolate lovers celebrating their special day in Wakefield.
+              The most requested birthday cake in Wakefield is my traditional Ukrainian honey cake. This isn't your ordinary birthday cake - it features delicate honey-soaked layers with rich cream filling that melts in your mouth. Adults love it for milestone birthdays like 30th, 40th, and 50th celebrations because it's sophisticated yet comforting. Starting from £25, it's an affordable luxury that makes birthdays truly special. I also make Kyiv cake for birthdays, which combines hazelnut meringue with chocolate - perfect for chocolate lovers celebrating their special day in Wakefield.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
               For children's birthday parties in Wakefield, I create custom themed birthday cakes that combine fun designs with authentic Ukrainian flavors. Popular themes include princess cakes, superhero cakes, dinosaur cakes, and unicorn cakes. What makes these different from supermarket birthday cakes is that I use real ingredients and traditional baking methods - no artificial flavors or preservatives. Parents in Wakefield appreciate that their children get both a beautiful cake and healthy, natural ingredients. Every children's birthday cake is customized to match your party theme and can serve anywhere from 10 to 50 guests.
