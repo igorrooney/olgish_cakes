@@ -37,6 +37,8 @@ const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLE
 const footerLinksBase = {
   cakes: [
     { name: "All Cakes", href: "/cakes" },
+    { name: "Ukrainian Cake", href: "/ukrainian-cake" },
+    { name: "Honey Cake", href: "/honey-cake" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },
     { name: "Birthday Cakes", href: "/birthday-cakes" },
     { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
@@ -68,6 +70,7 @@ const footerLinksBase = {
     { name: "Gift Hampers", href: "/gift-hampers" },
   ],
   locations: [
+    { name: "Cake in Leeds", href: "/cake-in-leeds" },
     { name: "Cakes Leeds", href: "/cakes-leeds" },
     { name: "Cakes York", href: "/cakes-york" },
     { name: "Cakes Bradford", href: "/cakes-bradford" },

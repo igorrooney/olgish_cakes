@@ -38,12 +38,19 @@ jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
 }))
 
+// Mock Next.js Link
+jest.mock('next/link', () => {
+  return ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+})
+
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
   Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>
 }))
 
 describe('CakesPage', () => {
@@ -60,9 +67,9 @@ describe('CakesPage', () => {
   })
 
   describe('Metadata', () => {
-    it('should have title with pricing', () => {
-      expect(metadata.title).toContain('Ukrainian Cakes')
-      expect(metadata.title).toContain('£25')
+    it('should have title with traditional and birthday keywords', () => {
+      expect(metadata.title).toContain('Traditional Ukrainian Cakes')
+      expect(metadata.title).toContain('Leeds')
     })
 
     it('should have description with stars', () => {

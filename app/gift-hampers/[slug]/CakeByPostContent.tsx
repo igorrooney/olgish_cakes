@@ -36,7 +36,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.2,
             }}
           >
-            Cake by Post UK | Letterbox Cake Delivery | Order Online
+            Cake by Post UK | Letterbox Delivery Across Britain
           </Typography>
 
           <Typography
@@ -51,9 +51,26 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Send delicious cake by post anywhere in the UK! Our traditional Ukrainian honey cake is specially designed for letterbox delivery.
-            Freshly baked, vacuum-packed, and delivered straight to their door - perfect for birthdays, anniversaries, and surprises.
+            Send delicious cake by post anywhere in the UK! Our traditional Ukrainian honey cake delivers across England, Scotland, Wales & Northern Ireland.
+            Freshly baked, vacuum-packed letterbox delivery - perfect for birthdays, anniversaries, and surprises nationwide.
           </Typography>
+
+          <Box sx={{ textAlign: "center", mb: spacing.lg }}>
+            <Typography
+              component="p"
+              variant="body1"
+              sx={{
+                color: colors.text.secondary,
+                maxWidth: "700px",
+                mx: "auto",
+                fontSize: { xs: "1rem", md: "1.1rem" },
+                lineHeight: 1.6,
+              }}
+            >
+              <strong>UK-wide cake by post service:</strong> We deliver our authentic Ukrainian honey cake to all regions of the United Kingdom via Royal Mail. 
+              Your cake by post arrives fresh, vacuum-sealed, and fits through standard UK letterboxes. No delivery charge for UK mainland addresses.
+            </Typography>
+          </Box>
 
           <Typography
             component="p"

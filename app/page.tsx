@@ -63,6 +63,10 @@ export async function generateMetadata(): Promise<Metadata> {
     "best Ukrainian cakes Leeds",
     "honey cake delivery Yorkshire",
     "Ukrainian bakery near me",
+    "ukrainian honey cake near me",
+    "honey cake near me",
+    "medovik near me",
+    "ukrainian cakes near me",
     "Leeds cake shop",
     "Yorkshire Ukrainian bakery",
     "custom wedding cakes Leeds",
@@ -336,6 +340,64 @@ export default async function Home() {
     productSchema.review = DEFAULT_REVIEWS;
   }
 
+  const localBusinessData = {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "@id": "https://olgishcakes.co.uk/#bakery",
+    name: "Olgish Cakes",
+    description: "Authentic Ukrainian bakery in Leeds specializing in traditional honey cake (Medovik), Kyiv cake, and custom designs. Same-day delivery across Yorkshire.",
+    url: "https://olgishcakes.co.uk",
+    telephone: BUSINESS_CONSTANTS.PHONE,
+    email: "hello@olgishcakes.co.uk",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Allerton Grange",
+      addressLocality: "Leeds",
+      addressRegion: "West Yorkshire",
+      postalCode: "LS17",
+      addressCountry: "GB"
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 53.8008,
+      longitude: -1.5491
+    },
+    areaServed: [
+      {
+        "@type": "City",
+        name: "Leeds"
+      },
+      {
+        "@type": "City",
+        name: "Bradford"
+      },
+      {
+        "@type": "City",
+        name: "York"
+      },
+      {
+        "@type": "City",
+        name: "Wakefield"
+      },
+      {
+        "@type": "City",
+        name: "Huddersfield"
+      }
+    ],
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: 53.8008,
+        longitude: -1.5491
+      },
+      geoRadius: "25000"
+    },
+    priceRange: "££",
+    servesCuisine: "Ukrainian",
+    openingHours: "Mo-Su 08:00-20:00"
+  };
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -391,6 +453,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessData) }}
       />
       <script
         type="application/ld+json"
@@ -458,7 +524,7 @@ export default async function Home() {
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-100 mx-auto font-light"
                 sx={{ mb: 8, lineHeight: 1.5 }}
               >
-                Taste the real Ukrainian tradition – every cake has story of family,
+                Taste the real Ukrainian tradition in Leeds – every cake has story of family,
                 traditional recipes, and special moments that I share with you
               </Typography>
             </AnimatedDiv>
@@ -612,6 +678,80 @@ export default async function Home() {
             >
               Learn More
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Ukrainian Honey Cake Near Me Section */}
+      <section aria-label="Find Ukrainian Honey Cake Near Me in Leeds" className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <h2 className="text-3xl md:text-4xl font-semibold text-center mb-6">
+            Find Ukrainian Honey Cake Near Me in Leeds
+          </h2>
+          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+            Looking for authentic Ukrainian honey cake near you? I'm based in Leeds LS17 and deliver across all of Yorkshire. Same-day delivery available for orders before noon.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-10">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <LocationOnIcon className="text-primary-600 text-3xl" />
+                <h3 className="text-2xl font-semibold">My Location</h3>
+              </div>
+              <p className="text-gray-700 mb-3">
+                Based in Allerton Grange, Leeds LS17. I make all my Ukrainian cakes fresh in my kitchen using traditional recipes from my family in Ukraine.
+              </p>
+              <p className="text-gray-700">
+                <strong>Delivery radius:</strong> I deliver within 25 miles of Leeds, covering Bradford, York, Wakefield, Huddersfield, and surrounding areas.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <CheckCircleIcon className="text-green-500 text-3xl" />
+                <h3 className="text-2xl font-semibold">Why Choose Local?</h3>
+              </div>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start">
+                  <CheckCircleIcon className="text-green-500 mr-2 mt-1" fontSize="small" />
+                  <span>Same-day delivery available across Leeds</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="text-green-500 mr-2 mt-1" fontSize="small" />
+                  <span>Made fresh to order, never frozen</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="text-green-500 mr-2 mt-1" fontSize="small" />
+                  <span>Personal service from Ukrainian baker</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="text-green-500 mr-2 mt-1" fontSize="small" />
+                  <span>Free delivery on orders over £50</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="text-center bg-primary-50 p-6 rounded-lg">
+            <p className="text-lg text-gray-800 mb-4">
+              <strong>Searching for "honey cake near me" or "Ukrainian honey cake near me"?</strong> You found the right place! I'm the only authentic Ukrainian baker in Leeds making traditional honey cake (Medovik) the proper way with overnight soaking and real Yorkshire honey.
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <a
+                href="/honey-cake"
+                className="inline-block bg-primary-600 text-white hover:bg-primary-700 transition-colors rounded-full px-6 py-3"
+                aria-label="Learn about honey cake"
+              >
+                Learn About Honey Cake
+              </a>
+              <a
+                href="/cakes/honey-cake-medovik"
+                className="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors rounded-full px-6 py-3"
+                aria-label="Order honey cake now"
+              >
+                Order Honey Cake Now
+              </a>
+            </div>
           </div>
         </div>
       </section>
