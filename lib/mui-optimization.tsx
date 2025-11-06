@@ -90,6 +90,9 @@ export { default as CalendarTodayIcon } from "@mui/icons-material/CalendarToday"
 export { default as AccessTimeIcon } from "@mui/icons-material/AccessTime";
 export { default as LocalOfferIcon } from "@mui/icons-material/LocalOffer";
 export { default as EventIcon } from "@mui/icons-material/Event";
+export { default as KitchenIcon } from "@mui/icons-material/Kitchen";
+export { default as LocalDiningIcon } from "@mui/icons-material/LocalDining";
+export { default as OpacityIcon } from "@mui/icons-material/Opacity";
 
 // Table components
 export { default as Table } from "@mui/material/Table";

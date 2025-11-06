@@ -125,7 +125,7 @@ export default function UkrainianCakePage() {
     },
     servesCuisine: 'Ukrainian',
     priceRange: '££'
-  };
+  }
 
   return (
     <>

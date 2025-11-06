@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon } from '@/lib/mui-optimization'
+import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon, LocalDiningIcon, DesignServicesIcon, KitchenIcon, OpacityIcon, CakeIcon, AccessTimeIcon } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
@@ -305,7 +305,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>🍯</span>
+                    <LocalDiningIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     The Honey Dough
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
@@ -316,7 +316,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>🥖</span>
+                    <DesignServicesIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     Rolling the Layers
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
@@ -327,7 +327,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>🔥</span>
+                    <KitchenIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     Baking Each Layer
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
@@ -338,7 +338,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>🥛</span>
+                    <OpacityIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     The Cream Filling
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
@@ -349,7 +349,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>🎂</span>
+                    <CakeIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     Assembly
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
@@ -360,7 +360,7 @@ export default function HoneyCakePage() {
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '2rem' }}>⏰</span>
+                    <AccessTimeIcon sx={{ fontSize: '2rem', color: 'secondary.main' }} />
                     Overnight Soaking
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>

@@ -65,6 +65,12 @@ export const metadata: Metadata = {
 }
 
 export default function CakeInLeedsPage() {
+  const orderDescription = (
+    <>
+      Order online, by phone <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink>, or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>. Tell me your delivery date and any special requirements.
+    </>
+  )
+
   const localBusinessStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Bakery',
@@ -452,11 +458,7 @@ export default function CakeInLeedsPage() {
                 {
                   step: '2',
                   title: 'Place Your Order',
-                  description: (
-                    <>
-                      Order online, by phone <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink>, or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>. Tell me your delivery date and any special requirements.
-                    </>
-                  )
+                  description: orderDescription
                 },
                 {
                   step: '3',

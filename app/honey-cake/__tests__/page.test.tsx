@@ -29,7 +29,13 @@ jest.mock('../../components/Breadcrumbs', () => ({
 jest.mock('@/lib/mui-optimization', () => ({
   ArrowForwardIcon: jest.fn(() => null),
   CheckCircleIcon: jest.fn(() => null),
-  ExpandMoreIcon: jest.fn(() => null)
+  ExpandMoreIcon: jest.fn(() => null),
+  LocalDiningIcon: jest.fn(() => null),
+  DesignServicesIcon: jest.fn(() => null),
+  KitchenIcon: jest.fn(() => null),
+  OpacityIcon: jest.fn(() => null),
+  CakeIcon: jest.fn(() => null),
+  AccessTimeIcon: jest.fn(() => null)
 }))
 
 describe('HoneyCakePage', () => {
