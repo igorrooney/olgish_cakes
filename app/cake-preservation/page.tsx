@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
+import { colors } from '@/lib/design-system';
 
 export const metadata: Metadata = {
   title: "How to Preserve Cakes | Complete Cake Storage Guide",
@@ -164,7 +165,7 @@ export default function CakePreservationPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
             How to Preserve Cakes

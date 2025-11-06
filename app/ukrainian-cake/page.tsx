@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Container, Typography, Box, Grid, Paper, Button, Chip } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon } from '@/lib/mui-optimization'
+import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon, VerifiedIcon, LocalOfferIcon, SchoolIcon, FavoriteIcon } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
@@ -207,31 +207,31 @@ export default function UkrainianCakePage() {
           <Grid container spacing={4} sx={{ mb: 6 }}>
             {[
               {
-                icon: '🇺🇦',
+                icon: <VerifiedIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
                 title: 'Authentic Ukrainian Tradition',
                 description: 'Every recipe comes from my family in Ukraine. These are real Ukrainian cakes, not British versions or imitations. I use the same methods my grandmother taught me, keeping Ukrainian baking traditions alive in Leeds.'
               },
               {
-                icon: '🍯',
+                icon: <LocalOfferIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
                 title: 'Premium Natural Ingredients',
                 description: 'I use only the best ingredients - real Yorkshire honey, organic eggs, fresh cream, and high-quality flour. No artificial flavors, no preservatives, no shortcuts. Just natural ingredients that make Ukrainian cake taste the way it should.'
               },
               {
-                icon: '👩‍🍳',
+                icon: <SchoolIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
                 title: 'Traditional Baking Methods',
                 description: 'Ukrainian cake requires special techniques that take years to master. From the overnight soaking of honey layers to the delicate meringue preparation, every step follows traditional Ukrainian methods that create unique textures you can\'t get any other way.'
               },
               {
-                icon: '❤️',
+                icon: <FavoriteIcon sx={{ fontSize: 48, color: 'error.main' }} />,
                 title: 'Made with Ukrainian Heart',
                 description: 'In Ukraine, we say cakes made with love taste better. I put my heart into every Ukrainian cake I make. When you order from me, you get a cake made with the same care and love I would make for my own family.'
               }
             ].map((item, idx) => (
               <Grid item xs={12} md={6} key={idx}>
                 <Paper elevation={0} sx={{ p: 4, height: '100%', backgroundColor: 'white', borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                  <Typography variant="h3" sx={{ fontSize: '3rem', mb: 2, textAlign: 'center' }}>
+                  <Box sx={{ mb: 3, textAlign: 'center' }}>
                     {item.icon}
-                  </Typography>
+                  </Box>
                   <Typography variant="h3" component="h3" sx={{ fontSize: '1.5rem', fontWeight: 600, color: 'primary.main', mb: 2, textAlign: 'center' }}>
                     {item.title}
                   </Typography>
