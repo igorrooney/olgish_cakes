@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'Olgish Cakes',
     images: [
       {
-        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/cakes-leeds-delivery.jpg`,
         width: 1200,
         height: 630,
         alt: 'Cake in Leeds - Ukrainian Bakery Leeds Yorkshire',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
     description: '★★★★★ Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs.',
-    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`]
+    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/cakes-leeds-delivery.jpg`]
   },
   alternates: {
     canonical: `${BUSINESS_CONSTANTS.BASE_URL}/cake-in-leeds`

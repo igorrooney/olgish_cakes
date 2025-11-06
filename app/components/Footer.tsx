@@ -71,7 +71,6 @@ const footerLinksBase = {
     { name: "Gift Hampers", href: "/gift-hampers" },
   ],
   locations: [
-    { name: "Cake in Leeds", href: "/cake-in-leeds" },
     { name: "Cakes Leeds", href: "/cakes-leeds" },
     { name: "Cakes York", href: "/cakes-york" },
     { name: "Cakes Bradford", href: "/cakes-bradford" },

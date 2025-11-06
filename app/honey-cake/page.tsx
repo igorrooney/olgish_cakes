@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: 'Olgish Cakes',
     images: [
       {
-        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-medovik.jpg`,
         width: 1200,
         height: 630,
         alt: 'Authentic Ukrainian Honey Cake (Medovik) - Traditional Recipe',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
     description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight.',
-    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`]
+    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-medovik.jpg`]
   },
   alternates: {
     canonical: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`

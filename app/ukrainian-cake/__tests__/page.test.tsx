@@ -186,7 +186,7 @@ describe('UkrainianCakePage', () => {
 
     it('should have Twitter images', () => {
       expect(metadata.twitter.images).toBeDefined()
-      expect(metadata.twitter.images[0]).toContain('placeholder-cake.jpg')
+      expect(metadata.twitter.images[0]).toContain('ukrainian-cakes-collection.jpg')
     })
   })
 
