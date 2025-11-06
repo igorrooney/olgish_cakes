@@ -1,5 +1,5 @@
 import { getClient } from "@/sanity/lib/client";
-import { Cake, blocksToText } from "@/types/cake";
+import { Cake, CakeImage, blocksToText } from "@/types/cake";
 import { notFound } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
@@ -178,12 +178,16 @@ export default async function CakePage({ params }: PageProps) {
   // Ensure image is always present and absolute for Product JSON-LD
   const productImageUrl = (() => {
     // Import urlFor dynamically to avoid build issues
-    let urlFor: any;
+    interface ImageUrlBuilder {
+      width: (w: number) => { height: (h: number) => { url: () => string } };
+    }
+    
+    let urlFor: (image: CakeImage | { asset?: { _ref: string } }) => ImageUrlBuilder;
     try {
       urlFor = require('@/sanity/lib/image').urlFor;
     } catch (error) {
       // Fallback for build environments where dynamic import might fail
-      urlFor = (image: any) => ({
+      urlFor = () => ({
         width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
       });
     }
@@ -191,14 +195,14 @@ export default async function CakePage({ params }: PageProps) {
     // Get the best available image
     const mainImage = cake.mainImage?.asset?._ref
       ? cake.mainImage
-      : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-        cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+      : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+        cake.designs?.standard?.find((img) => img.asset?._ref) ||
         cake.designs?.standard?.[0] ||
-        cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-        cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+        cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+        cake.designs?.individual?.find((img) => img.asset?._ref) ||
         cake.designs?.individual?.[0] ||
         // Fallback to images array (for legacy data like Honey Cake)
-        cake.images?.find((img: any) => img.asset?._ref) ||
+        cake.images?.find((img) => img.asset?._ref) ||
         cake.images?.[0];
 
     return mainImage?.asset?._ref

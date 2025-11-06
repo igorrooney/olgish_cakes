@@ -73,28 +73,11 @@ export default function CakeByPostServicePage() {
               },
             },
             serviceType: "Cake Delivery by Post UK",
-            areaServed: [
-              {
-                "@type": "Country",
-                name: "United Kingdom"
-              },
-              {
-                "@type": "Country",
-                name: "England"
-              },
-              {
-                "@type": "Country",
-                name: "Scotland"
-              },
-              {
-                "@type": "Country",
-                name: "Wales"
-              },
-              {
-                "@type": "Country",
-                name: "Northern Ireland"
-              }
-            ],
+            areaServed: {
+              "@type": "Country",
+              name: "United Kingdom",
+              identifier: "GB"
+            },
             availableChannel: {
               "@type": "ServiceChannel",
               serviceUrl: "https://olgishcakes.co.uk/gift-hampers/cake-by-post",

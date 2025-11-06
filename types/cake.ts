@@ -37,15 +37,26 @@ export interface CakeStructuredData {
   availability?: "InStock" | "OutOfStock" | "PreOrder" | "Discontinued";
 }
 
+interface RichTextChild {
+  text: string;
+  [key: string]: unknown;
+}
+
+interface RichTextBlock {
+  _type: string;
+  children?: RichTextChild[];
+  [key: string]: unknown;
+}
+
 // Utility function to convert rich text blocks to plain text
 // This is kept for backward compatibility, but consider using richTextToText from lib/rich-text-utils
-export function blocksToText(blocks: any[]): string {
+export function blocksToText(blocks: RichTextBlock[]): string {
   if (!blocks || !Array.isArray(blocks)) return "";
 
   return blocks
     .map(block => {
       if (block._type === "block") {
-        return block.children?.map((child: any) => child.text).join("") || "";
+        return block.children?.map((child) => child.text).join("") || "";
       }
       return "";
     })
@@ -61,8 +72,8 @@ export interface Cake {
     current: string;
   };
   seo?: CakeSEO;
-  description: any[]; // Changed from string to any[] for rich text blocks
-  shortDescription?: any[]; // Rich text blocks for short description
+  description: RichTextBlock[]; // Rich text blocks
+  shortDescription?: RichTextBlock[]; // Rich text blocks for short description
   size: string;
   pricing: CakePricing;
   mainImage?: {

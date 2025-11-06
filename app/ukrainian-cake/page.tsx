@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip } from '@mui/material'
+import { Container, Typography, Box, Grid, Paper, Button, Chip, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon, VerifiedIcon, LocalOfferIcon, SchoolIcon, FavoriteIcon } from '@/lib/mui-optimization'
@@ -258,7 +258,7 @@ export default function UkrainianCakePage() {
                   The most famous Ukrainian cake. Medovik has thin honey-soaked layers with rich cream filling. The honey flavor is subtle and sophisticated, not too sweet. After soaking overnight, the layers become incredibly soft and melt in your mouth. This is the Ukrainian cake that makes people fall in love with Ukrainian desserts.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I use real Yorkshire honey and traditional Ukrainian methods to make my <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline' }}>honey cake (Medovik)</Link>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
+                  I use real Yorkshire honey and traditional Ukrainian methods to make my <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -269,7 +269,7 @@ export default function UkrainianCakePage() {
                   The legendary Ukrainian cake from Kyiv. This cake has two crispy hazelnut meringue layers filled with rich chocolate buttercream and covered with roasted cashews. The combination of crunchy meringue and smooth chocolate is incredible. Kyiv cake is a symbol of Ukrainian confectionery excellence.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Making proper <Link href="/cakes/kyiv-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Kyiv cake</Link> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
+                  Making proper <MuiLink component={Link} href="/cakes/kyiv-cake" underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -280,7 +280,7 @@ export default function UkrainianCakePage() {
                   Classic Ukrainian cake with thin puff pastry layers and vanilla custard cream. The pastry is crispy and light, the cream is smooth and rich. Napoleon cake is perfect for tea parties and family celebrations. In Ukraine, every grandmother has her own Napoleon recipe.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I make my <Link href="/cakes/napoleon-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Napoleon cake</Link> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
+                  I make my <MuiLink component={Link} href="/cakes/napoleon-cake" underline="always" sx={{ color: colors.primary.main }}>Napoleon cake</MuiLink> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -372,7 +372,7 @@ export default function UkrainianCakePage() {
               Ready to Try Authentic Ukrainian Cake?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.secondary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a> or email <a href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} style={{ color: colors.secondary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.EMAIL}</a>.
+              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink> or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button

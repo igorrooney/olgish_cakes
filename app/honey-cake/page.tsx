@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon } from '@/lib/mui-optimization'
@@ -458,7 +458,7 @@ export default function HoneyCakePage() {
                 <strong>I'm the only baker in Leeds making authentic Ukrainian honey cake the traditional way.</strong> Other bakeries might offer "honey cake," but it's not the same. They use shortcuts - thick layers, buttercream instead of proper cream, no overnight soaking. That's not real Medovik.
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
-                When you order my <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline', fontWeight: 'bold' }}>honey cake</Link>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
+                When you order my <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main, fontWeight: 'bold' }}>honey cake</MuiLink>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
               </Typography>
             </Box>
           </Paper>
@@ -498,7 +498,7 @@ export default function HoneyCakePage() {
                 question: 'Where can I buy authentic honey cake in Leeds?',
                 answer: (
                   <>
-                    Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.primary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a> for same-day delivery across Leeds.
+                    Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink> for same-day delivery across Leeds.
                   </>
                 )
               }

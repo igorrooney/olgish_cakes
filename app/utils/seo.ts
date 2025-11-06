@@ -469,7 +469,7 @@ export function generateWebPageSchema(page: {
   description: string;
   url: string;
   breadcrumb?: Array<{ name: string; url: string }>;
-  mainEntity?: any;
+  mainEntity?: Record<string, unknown>;
 }) {
   return {
     "@context": "https://schema.org",

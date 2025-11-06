@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip, Card, CardContent } from '@mui/material'
+import { Container, Typography, Box, Grid, Paper, Button, Chip, Card, CardContent, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, LocalShippingIcon, CheckCircleIcon, StarIcon, CakeOutlinedIcon } from '@/lib/mui-optimization'
@@ -306,7 +306,7 @@ export default function CakeInLeedsPage() {
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/birthday-cakes" style={{ color: colors.primary.main, textDecoration: 'none' }}>Birthday Cake Leeds</Link>
+                  <MuiLink component={Link} href="/birthday-cakes" underline="none" sx={{ color: colors.primary.main }}>Birthday Cake Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Need birthday cake in Leeds? I make beautiful custom birthday cakes with any design you want. From simple elegant cakes to elaborate themed creations, every birthday cake is made fresh and designed just for you. Popular flavors include honey cake, vanilla, and chocolate. Order 2 days ahead for custom designs.
@@ -314,7 +314,7 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/wedding-cakes" style={{ color: colors.primary.main, textDecoration: 'none' }}>Wedding Cake Leeds</Link>
+                  <MuiLink component={Link} href="/wedding-cakes" underline="none" sx={{ color: colors.primary.main }}>Wedding Cake Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Your wedding cake should be as special as your day. I create stunning wedding cakes in Leeds with beautiful designs and delicious flavors. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting for wedding cakes.
@@ -322,15 +322,15 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'none' }}>Traditional Ukrainian Cakes</Link>
+                  <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="none" sx={{ color: colors.primary.main }}>Traditional Ukrainian Cakes</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Try authentic Ukrainian cakes in Leeds. My <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline' }}>honey cake (Medovik)</Link>, <Link href="/cakes/kyiv-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Kyiv cake</Link>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
+                  Try authentic Ukrainian cakes in Leeds. My <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>, <MuiLink component={Link} href="/cakes/kyiv-cake" underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/custom-cake-design" style={{ color: colors.primary.main, textDecoration: 'none' }}>Custom Cake Design Leeds</Link>
+                  <MuiLink component={Link} href="/custom-cake-design" underline="none" sx={{ color: colors.primary.main }}>Custom Cake Design Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Have a special vision for your cake? I offer custom cake design in Leeds. Tell me what you want - colors, theme, style - and I'll create it. Every custom cake is unique and made just for your celebration. Perfect for corporate events, anniversaries, and special occasions.
@@ -454,7 +454,7 @@ export default function CakeInLeedsPage() {
                   title: 'Place Your Order',
                   description: (
                     <>
-                      Order online, by phone <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.primary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a>, or email <a href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} style={{ color: colors.primary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.EMAIL}</a>. Tell me your delivery date and any special requirements.
+                      Order online, by phone <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink>, or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>. Tell me your delivery date and any special requirements.
                     </>
                   )
                 },
@@ -508,7 +508,7 @@ export default function CakeInLeedsPage() {
               Ready to Order the Best Cake in Leeds?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order your authentic Ukrainian cake today. Same-day delivery available across Leeds. Call <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.secondary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a> or order online now.
+              Order your authentic Ukrainian cake today. Same-day delivery available across Leeds. Call <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink> or order online now.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button
