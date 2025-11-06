@@ -118,6 +118,7 @@ export default function UkrainianCakePage() {
       '@type': 'PostalAddress',
       streetAddress: 'Allerton Grange',
       addressLocality: 'Leeds',
+      addressRegion: 'West Yorkshire',
       postalCode: 'LS17',
       addressCountry: 'GB'
     },
