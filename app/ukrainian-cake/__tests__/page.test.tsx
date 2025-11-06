@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 
+import { Metadata } from 'next'
+
 // Mock all dependencies before importing
 jest.mock('@mui/material', () => ({
   Container: jest.fn(({ children }) => children),
@@ -29,7 +31,7 @@ jest.mock('@/lib/mui-optimization', () => ({
 
 describe('UkrainianCakePage - Metadata', () => {
   // Import after mocking
-  let metadata: any
+  let metadata: Metadata
 
   beforeAll(async () => {
     const module = await import('../page')
