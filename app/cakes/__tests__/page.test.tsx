@@ -45,12 +45,12 @@ jest.mock('next/link', () => {
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Container: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
+  Grid: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
+  Button: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <button {...props}>{children}</button>,
+  Paper: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>
 }))
 
 describe('CakesPage', () => {
