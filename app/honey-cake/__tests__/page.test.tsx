@@ -32,12 +32,14 @@ jest.mock('@/lib/mui-optimization', () => ({
   ExpandMoreIcon: jest.fn(() => null)
 }))
 
-describe('HoneyCakePage - Metadata', () => {
+describe('HoneyCakePage', () => {
   let metadata: Metadata
+  let HoneyCakePage: () => JSX.Element
 
   beforeAll(async () => {
     const module = await import('../page')
     metadata = module.metadata
+    HoneyCakePage = module.default
   })
 
   describe('Metadata Structure', () => {
@@ -243,6 +245,18 @@ describe('HoneyCakePage - Metadata', () => {
       const description = metadata.description as string
       const hasLeeds = title.includes('Leeds') || description.includes('Leeds')
       expect(hasLeeds).toBe(true)
+    })
+  })
+
+  describe('Component Rendering', () => {
+    it('should render without errors', () => {
+      expect(() => HoneyCakePage()).not.toThrow()
+    })
+
+    it('should return JSX element', () => {
+      const result = HoneyCakePage()
+      expect(result).toBeDefined()
+      expect(typeof result).toBe('object')
     })
   })
 })

@@ -45,12 +45,16 @@ const customJestConfig = {
     '!app/delivery-areas/page.tsx',
     '!app/accessibility/page.tsx',
     // Exclude SEO landing pages with repetitive structure
+    // BUT include specific high-value SEO pages with comprehensive tests
     '!app/*-cakes-leeds/page.tsx',
     '!app/cakes-*/page.tsx',
     '!app/ukrainian-*/page.tsx',
+    'app/ukrainian-cake/page.tsx', // Re-include: has comprehensive tests
     '!app/*-wedding-cakes*/page.tsx',
     '!app/best-cakes-for-*/page.tsx',
     '!app/cake-*/page.tsx',
+    'app/cake-in-leeds/page.tsx', // Re-include: has comprehensive tests
+    'app/honey-cake/page.tsx', // Re-include: has comprehensive tests
     '!app/*-cake-*/page.tsx',
     // Exclude admin pages (tested via integration)
     '!app/admin/**/page.tsx',

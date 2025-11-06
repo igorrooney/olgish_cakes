@@ -33,12 +33,14 @@ jest.mock('@/lib/mui-optimization', () => ({
   StarIcon: jest.fn(() => null)
 }))
 
-describe('CakeInLeedsPage - Metadata', () => {
+describe('CakeInLeedsPage', () => {
   let metadata: Metadata
+  let CakeInLeedsPage: () => JSX.Element
 
   beforeAll(async () => {
     const module = await import('../page')
     metadata = module.metadata
+    CakeInLeedsPage = module.default
   })
 
   describe('Metadata Structure', () => {
@@ -205,6 +207,18 @@ describe('CakeInLeedsPage - Metadata', () => {
 
     it('should have correct image type', () => {
       expect(metadata.openGraph.images[0].type).toBe('image/jpeg')
+    })
+  })
+
+  describe('Component Rendering', () => {
+    it('should render without errors', () => {
+      expect(() => CakeInLeedsPage()).not.toThrow()
+    })
+
+    it('should return JSX element', () => {
+      const result = CakeInLeedsPage()
+      expect(result).toBeDefined()
+      expect(typeof result).toBe('object')
     })
   })
 })

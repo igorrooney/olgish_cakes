@@ -29,13 +29,15 @@ jest.mock('@/lib/mui-optimization', () => ({
   CheckCircleIcon: jest.fn(() => null)
 }))
 
-describe('UkrainianCakePage - Metadata', () => {
+describe('UkrainianCakePage', () => {
   // Import after mocking
   let metadata: Metadata
+  let UkrainianCakePage: () => JSX.Element
 
   beforeAll(async () => {
     const module = await import('../page')
     metadata = module.metadata
+    UkrainianCakePage = module.default
   })
 
   describe('Metadata Structure', () => {
@@ -181,6 +183,18 @@ describe('UkrainianCakePage - Metadata', () => {
     it('should have Twitter images', () => {
       expect(metadata.twitter.images).toBeDefined()
       expect(metadata.twitter.images[0]).toContain('ukrainian-cakes-collection.jpg')
+    })
+  })
+
+  describe('Component Rendering', () => {
+    it('should render without errors', () => {
+      expect(() => UkrainianCakePage()).not.toThrow()
+    })
+
+    it('should return JSX element', () => {
+      const result = UkrainianCakePage()
+      expect(result).toBeDefined()
+      expect(typeof result).toBe('object')
     })
   })
 })
