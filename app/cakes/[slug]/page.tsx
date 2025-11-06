@@ -157,12 +157,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       google: "your-google-verification-code",
     },
     other: {
-      price: cake.pricing.standard.toString(),
+      price: (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
-      "og:price:amount": cake.pricing.standard.toString(),
+      "og:price:amount": (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
       "og:price:currency": "GBP",
     },
   };
