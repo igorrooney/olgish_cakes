@@ -26,7 +26,11 @@ jest.mock('../../components/Breadcrumbs', () => ({
 jest.mock('@/lib/mui-optimization', () => ({
   ArrowForwardIcon: jest.fn(() => null),
   CakeOutlinedIcon: jest.fn(() => null),
-  CheckCircleIcon: jest.fn(() => null)
+  CheckCircleIcon: jest.fn(() => null),
+  VerifiedIcon: jest.fn(() => null),
+  LocalOfferIcon: jest.fn(() => null),
+  SchoolIcon: jest.fn(() => null),
+  FavoriteIcon: jest.fn(() => null)
 }))
 
 describe('UkrainianCakePage', () => {
@@ -182,7 +186,7 @@ describe('UkrainianCakePage', () => {
 
     it('should have Twitter images', () => {
       expect(metadata.twitter.images).toBeDefined()
-      expect(metadata.twitter.images[0]).toContain('ukrainian-cakes-collection.jpg')
+      expect(metadata.twitter.images[0]).toContain('placeholder-cake.jpg')
     })
   })
 

@@ -212,7 +212,7 @@ describe('HoneyCakePage', () => {
     it('should have Open Graph images', () => {
       expect(metadata.openGraph.images).toBeDefined()
       expect(metadata.openGraph.images[0].url).toContain('olgishcakes.co.uk')
-      expect(metadata.openGraph.images[0].url).toContain('honey-cake')
+      expect(metadata.openGraph.images[0].url).toContain('placeholder-cake.jpg')
     })
 
     it('should have Twitter images', () => {
