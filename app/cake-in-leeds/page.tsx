@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Button, Chip, Card, CardConten
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, LocalShippingIcon, CheckCircleIcon, StarIcon, CakeOutlinedIcon } from '@/lib/mui-optimization'
+import { colors } from '@/lib/design-system'
 
 export const metadata: Metadata = {
   title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
@@ -450,7 +451,11 @@ export default function CakeInLeedsPage() {
                 {
                   step: '2',
                   title: 'Place Your Order',
-                  description: 'Order online, by phone (+44 786 721 8194), or email (hello@olgishcakes.co.uk). Tell me your delivery date and any special requirements.'
+                  description: (
+                    <>
+                      Order online, by phone <a href="tel:+447867218194" style={{ color: colors.primary.main, textDecoration: 'underline' }}>+44 786 721 8194</a>, or email <a href="mailto:hello@olgishcakes.co.uk" style={{ color: colors.primary.main, textDecoration: 'underline' }}>hello@olgishcakes.co.uk</a>. Tell me your delivery date and any special requirements.
+                    </>
+                  )
                 },
                 {
                   step: '3',
@@ -502,7 +507,7 @@ export default function CakeInLeedsPage() {
               Ready to Order the Best Cake in Leeds?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order your authentic Ukrainian cake today. Same-day delivery available across Leeds. Call <a href="tel:+447867218194" style={{ color: '#FEF102', textDecoration: 'underline' }}>+44 786 721 8194</a> or order online now.
+              Order your authentic Ukrainian cake today. Same-day delivery available across Leeds. Call <a href="tel:+447867218194" style={{ color: colors.secondary.main, textDecoration: 'underline' }}>+44 786 721 8194</a> or order online now.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button

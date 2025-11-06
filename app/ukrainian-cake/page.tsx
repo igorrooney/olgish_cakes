@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Button, Chip } from '@mui/mate
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon } from '@/lib/mui-optimization'
+import { colors } from '@/lib/design-system'
 
 export const metadata: Metadata = {
   title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
@@ -369,7 +370,7 @@ export default function UkrainianCakePage() {
               Ready to Try Authentic Ukrainian Cake?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire.
+              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <a href="tel:+447867218194" style={{ color: colors.secondary.main, textDecoration: 'underline' }}>+44 786 721 8194</a> or email <a href="mailto:hello@olgishcakes.co.uk" style={{ color: colors.secondary.main, textDecoration: 'underline' }}>hello@olgishcakes.co.uk</a>.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button

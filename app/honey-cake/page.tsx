@@ -3,6 +3,7 @@ import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, Accor
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon } from '@/lib/mui-optimization'
+import { colors } from '@/lib/design-system'
 
 export const metadata: Metadata = {
   title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
@@ -491,6 +492,14 @@ export default function HoneyCakePage() {
               {
                 question: 'Can I order honey cake for special occasions?',
                 answer: 'Absolutely! Honey cake is perfect for birthdays, anniversaries, weddings, and any celebration. I can make it in different sizes and add custom decorations. Many Ukrainian families order honey cake for important celebrations because it\'s traditional and meaningful. Order at least 2 days ahead for special occasions.'
+              },
+              {
+                question: 'Where can I buy authentic honey cake in Leeds?',
+                answer: (
+                  <>
+                    Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call <a href="tel:+447867218194" style={{ color: colors.primary.main, textDecoration: 'underline' }}>+44 786 721 8194</a> for same-day delivery across Leeds.
+                  </>
+                )
               }
             ].map((faq, idx) => (
               <Accordion key={idx} elevation={0} sx={{ mb: 2, '&:before': { display: 'none' }, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
