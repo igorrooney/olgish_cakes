@@ -256,7 +256,7 @@ export default function UkrainianCakePage() {
                   The most famous Ukrainian cake. Medovik has thin honey-soaked layers with rich cream filling. The honey flavor is subtle and sophisticated, not too sweet. After soaking overnight, the layers become incredibly soft and melt in your mouth. This is the Ukrainian cake that makes people fall in love with Ukrainian desserts.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I use real Yorkshire honey and traditional Ukrainian methods to make my <Link href="/cakes/honey-cake-medovik" style={{ color: '#2E3192', textDecoration: 'underline' }}>honey cake (Medovik)</Link>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
+                  I use real Yorkshire honey and traditional Ukrainian methods to make my <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline' }}>honey cake (Medovik)</Link>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -267,7 +267,7 @@ export default function UkrainianCakePage() {
                   The legendary Ukrainian cake from Kyiv. This cake has two crispy hazelnut meringue layers filled with rich chocolate buttercream and covered with roasted cashews. The combination of crunchy meringue and smooth chocolate is incredible. Kyiv cake is a symbol of Ukrainian confectionery excellence.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Making proper <Link href="/cakes/kyiv-cake" style={{ color: '#2E3192', textDecoration: 'underline' }}>Kyiv cake</Link> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
+                  Making proper <Link href="/cakes/kyiv-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Kyiv cake</Link> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -278,7 +278,7 @@ export default function UkrainianCakePage() {
                   Classic Ukrainian cake with thin puff pastry layers and vanilla custard cream. The pastry is crispy and light, the cream is smooth and rich. Napoleon cake is perfect for tea parties and family celebrations. In Ukraine, every grandmother has her own Napoleon recipe.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I make my <Link href="/cakes/napoleon-cake" style={{ color: '#2E3192', textDecoration: 'underline' }}>Napoleon cake</Link> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
+                  I make my <Link href="/cakes/napoleon-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Napoleon cake</Link> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>

@@ -305,7 +305,7 @@ export default function CakeInLeedsPage() {
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/birthday-cakes" style={{ color: '#2E3192', textDecoration: 'none' }}>Birthday Cake Leeds</Link>
+                  <Link href="/birthday-cakes" style={{ color: colors.primary.main, textDecoration: 'none' }}>Birthday Cake Leeds</Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Need birthday cake in Leeds? I make beautiful custom birthday cakes with any design you want. From simple elegant cakes to elaborate themed creations, every birthday cake is made fresh and designed just for you. Popular flavors include honey cake, vanilla, and chocolate. Order 2 days ahead for custom designs.
@@ -313,7 +313,7 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/wedding-cakes" style={{ color: '#2E3192', textDecoration: 'none' }}>Wedding Cake Leeds</Link>
+                  <Link href="/wedding-cakes" style={{ color: colors.primary.main, textDecoration: 'none' }}>Wedding Cake Leeds</Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Your wedding cake should be as special as your day. I create stunning wedding cakes in Leeds with beautiful designs and delicious flavors. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting for wedding cakes.
@@ -321,15 +321,15 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/cakes/honey-cake-medovik" style={{ color: '#2E3192', textDecoration: 'none' }}>Traditional Ukrainian Cakes</Link>
+                  <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'none' }}>Traditional Ukrainian Cakes</Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Try authentic Ukrainian cakes in Leeds. My <Link href="/cakes/honey-cake-medovik" style={{ color: '#2E3192', textDecoration: 'underline' }}>honey cake (Medovik)</Link>, <Link href="/cakes/kyiv-cake" style={{ color: '#2E3192', textDecoration: 'underline' }}>Kyiv cake</Link>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
+                  Try authentic Ukrainian cakes in Leeds. My <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline' }}>honey cake (Medovik)</Link>, <Link href="/cakes/kyiv-cake" style={{ color: colors.primary.main, textDecoration: 'underline' }}>Kyiv cake</Link>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <Link href="/custom-cake-design" style={{ color: '#2E3192', textDecoration: 'none' }}>Custom Cake Design Leeds</Link>
+                  <Link href="/custom-cake-design" style={{ color: colors.primary.main, textDecoration: 'none' }}>Custom Cake Design Leeds</Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Have a special vision for your cake? I offer custom cake design in Leeds. Tell me what you want - colors, theme, style - and I'll create it. Every custom cake is unique and made just for your celebration. Perfect for corporate events, anniversaries, and special occasions.

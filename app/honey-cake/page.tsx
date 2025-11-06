@@ -457,7 +457,7 @@ export default function HoneyCakePage() {
                 <strong>I'm the only baker in Leeds making authentic Ukrainian honey cake the traditional way.</strong> Other bakeries might offer "honey cake," but it's not the same. They use shortcuts - thick layers, buttercream instead of proper cream, no overnight soaking. That's not real Medovik.
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
-                When you order my <Link href="/cakes/honey-cake-medovik" style={{ color: '#2E3192', textDecoration: 'underline', fontWeight: 'bold' }}>honey cake</Link>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
+                When you order my <Link href="/cakes/honey-cake-medovik" style={{ color: colors.primary.main, textDecoration: 'underline', fontWeight: 'bold' }}>honey cake</Link>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
               </Typography>
             </Box>
           </Paper>
