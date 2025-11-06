@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
@@ -12,11 +13,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
     description: '★★★★★ Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love. Order now!',
-    url: 'https://olgishcakes.co.uk/ukrainian-cake',
+    url: `${BUSINESS_CONSTANTS.BASE_URL}/ukrainian-cake`,
     siteName: 'Olgish Cakes',
     images: [
       {
-        url: 'https://olgishcakes.co.uk/images/ukrainian-cakes-collection.jpg',
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
         width: 1200,
         height: 630,
         alt: 'Authentic Ukrainian Cakes - Traditional Medovik and Kyiv Cake',
@@ -30,12 +31,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
     description: '★★★★★ Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love.',
-    images: ['https://olgishcakes.co.uk/images/ukrainian-cakes-collection.jpg']
+    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`]
   },
   alternates: {
-    canonical: 'https://olgishcakes.co.uk/ukrainian-cake'
+    canonical: `${BUSINESS_CONSTANTS.BASE_URL}/ukrainian-cake`
   },
-  authors: [{ name: 'Olgish Cakes', url: 'https://olgishcakes.co.uk' }],
+  authors: [{ name: 'Olgish Cakes', url: BUSINESS_CONSTANTS.BASE_URL }],
   creator: 'Olgish Cakes',
   publisher: 'Olgish Cakes',
   formatDetection: {
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false
   },
-  metadataBase: new URL('https://olgishcakes.co.uk'),
+  metadataBase: new URL(BUSINESS_CONSTANTS.BASE_URL),
   robots: {
     index: true,
     follow: true,
@@ -70,20 +71,20 @@ export default function UkrainianCakePage() {
     author: {
       '@type': 'Person',
       name: 'Olga',
-      url: 'https://olgishcakes.co.uk/about'
+      url: `${BUSINESS_CONSTANTS.BASE_URL}/about`
     },
     publisher: {
       '@type': 'Organization',
       name: 'Olgish Cakes',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/olgish-cakes-logo-bakery-brand.png`
       }
     },
     datePublished: '2025-11-05',
     dateModified: '2025-11-05',
-    image: 'https://olgishcakes.co.uk/images/ukrainian-cakes-collection.jpg',
-    url: 'https://olgishcakes.co.uk/ukrainian-cake'
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+    url: `${BUSINESS_CONSTANTS.BASE_URL}/ukrainian-cake`
   }
 
   const breadcrumbStructuredData = {
@@ -94,13 +95,13 @@ export default function UkrainianCakePage() {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://olgishcakes.co.uk'
+        item: BUSINESS_CONSTANTS.BASE_URL
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Ukrainian Cake',
-        item: 'https://olgishcakes.co.uk/ukrainian-cake'
+        item: `${BUSINESS_CONSTANTS.BASE_URL}/ukrainian-cake`
       }
     ]
   }
@@ -110,10 +111,10 @@ export default function UkrainianCakePage() {
     '@type': 'Bakery',
     name: 'Olgish Cakes',
     description: 'Authentic Ukrainian cake bakery in Leeds specializing in traditional Ukrainian cakes like Medovik, Kyiv cake, and Napoleon',
-    image: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png',
-    url: 'https://olgishcakes.co.uk',
-    telephone: '+44 786 721 8194',
-    email: 'hello@olgishcakes.co.uk',
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/olgish-cakes-logo-bakery-brand.png`,
+    url: BUSINESS_CONSTANTS.BASE_URL,
+    telephone: BUSINESS_CONSTANTS.PHONE,
+    email: BUSINESS_CONSTANTS.EMAIL,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Allerton Grange',
@@ -371,7 +372,7 @@ export default function UkrainianCakePage() {
               Ready to Try Authentic Ukrainian Cake?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <a href="tel:+447867218194" style={{ color: colors.secondary.main, textDecoration: 'underline' }}>+44 786 721 8194</a> or email <a href="mailto:hello@olgishcakes.co.uk" style={{ color: colors.secondary.main, textDecoration: 'underline' }}>hello@olgishcakes.co.uk</a>.
+              Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.secondary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a> or email <a href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} style={{ color: colors.secondary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.EMAIL}</a>.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button

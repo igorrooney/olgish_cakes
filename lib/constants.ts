@@ -8,6 +8,7 @@ export const BUSINESS_CONSTANTS = {
   PHONE: '+44 786 721 8194',
   EMAIL: 'hello@olgishcakes.co.uk',
   WEBSITE: 'https://olgishcakes.co.uk',
+  BASE_URL: 'https://olgishcakes.co.uk',
   
   // Business Details
   NAME: 'Olgish Cakes',

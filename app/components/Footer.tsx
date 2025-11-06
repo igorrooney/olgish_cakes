@@ -37,6 +37,7 @@ const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLE
 const footerLinksBase = {
   cakes: [
     { name: "All Cakes", href: "/cakes" },
+    { name: "Cake in Leeds", href: "/cake-in-leeds" },
     { name: "Ukrainian Cake", href: "/ukrainian-cake" },
     { name: "Honey Cake", href: "/honey-cake" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
@@ -12,11 +13,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
     description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight. Order from £25!',
-    url: 'https://olgishcakes.co.uk/honey-cake',
+    url: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`,
     siteName: 'Olgish Cakes',
     images: [
       {
-        url: 'https://olgishcakes.co.uk/images/honey-cake-hero.jpg',
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
         width: 1200,
         height: 630,
         alt: 'Authentic Ukrainian Honey Cake (Medovik) - Traditional Recipe',
@@ -30,12 +31,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
     description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight.',
-    images: ['https://olgishcakes.co.uk/images/honey-cake-hero.jpg']
+    images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`]
   },
   alternates: {
-    canonical: 'https://olgishcakes.co.uk/honey-cake'
+    canonical: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`
   },
-  authors: [{ name: 'Olgish Cakes', url: 'https://olgishcakes.co.uk' }],
+  authors: [{ name: 'Olgish Cakes', url: BUSINESS_CONSTANTS.BASE_URL }],
   creator: 'Olgish Cakes',
   publisher: 'Olgish Cakes',
   formatDetection: {
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false
   },
-  metadataBase: new URL('https://olgishcakes.co.uk'),
+  metadataBase: new URL(BUSINESS_CONSTANTS.BASE_URL),
   robots: {
     index: true,
     follow: true,
@@ -70,20 +71,20 @@ export default function HoneyCakePage() {
     author: {
       '@type': 'Person',
       name: 'Olga',
-      url: 'https://olgishcakes.co.uk/about'
+      url: `${BUSINESS_CONSTANTS.BASE_URL}/about`
     },
     publisher: {
       '@type': 'Organization',
       name: 'Olgish Cakes',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/olgish-cakes-logo-bakery-brand.png`
       }
     },
     datePublished: '2025-11-05',
     dateModified: '2025-11-05',
-    image: 'https://olgishcakes.co.uk/images/honey-cake-hero.jpg',
-    url: 'https://olgishcakes.co.uk/honey-cake'
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+    url: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`
   }
 
   const productStructuredData = {
@@ -91,7 +92,7 @@ export default function HoneyCakePage() {
     '@type': 'Product',
     name: 'Ukrainian Honey Cake (Medovik)',
     description: 'Traditional Ukrainian honey cake with 8 delicate honey-soaked layers and rich cream filling. Handmade with real Yorkshire honey using authentic Ukrainian recipe.',
-    image: 'https://olgishcakes.co.uk/images/honey-cake-hero.jpg',
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
     brand: {
       '@type': 'Brand',
       name: 'Olgish Cakes'
@@ -101,7 +102,7 @@ export default function HoneyCakePage() {
       price: '40',
       priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
-      url: 'https://olgishcakes.co.uk/cakes/honey-cake-medovik'
+      url: `${BUSINESS_CONSTANTS.BASE_URL}/cakes/honey-cake-medovik`
     }
   }
 
@@ -146,7 +147,7 @@ export default function HoneyCakePage() {
         name: 'Where can I buy authentic honey cake in Leeds?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call +44 786 721 8194 for same-day delivery across Leeds.'
+          text: `Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call ${BUSINESS_CONSTANTS.PHONE} for same-day delivery across Leeds.`
         }
       }
     ]
@@ -160,13 +161,13 @@ export default function HoneyCakePage() {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://olgishcakes.co.uk'
+        item: BUSINESS_CONSTANTS.BASE_URL
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Honey Cake',
-        item: 'https://olgishcakes.co.uk/honey-cake'
+        item: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`
       }
     ]
   }
@@ -497,7 +498,7 @@ export default function HoneyCakePage() {
                 question: 'Where can I buy authentic honey cake in Leeds?',
                 answer: (
                   <>
-                    Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call <a href="tel:+447867218194" style={{ color: colors.primary.main, textDecoration: 'underline' }}>+44 786 721 8194</a> for same-day delivery across Leeds.
+                    Olgish Cakes makes authentic Ukrainian honey cake in Leeds using traditional family recipes. Every honey cake is handmade with real Yorkshire honey and soaked overnight for perfect texture. Order online or call <a href={`tel:${BUSINESS_CONSTANTS.PHONE}`} style={{ color: colors.primary.main, textDecoration: 'underline' }}>{BUSINESS_CONSTANTS.PHONE}</a> for same-day delivery across Leeds.
                   </>
                 )
               }
