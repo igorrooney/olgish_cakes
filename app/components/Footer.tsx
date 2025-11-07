@@ -78,7 +78,6 @@ const footerLinksBase = {
     { name: "Cakes Wakefield", href: "/cakes-wakefield" },
     { name: "Wakefield Wedding Cakes", href: "/wakefield-wedding-cakes" },
     { name: "Cakes Pudsey", href: "/cakes-pudsey" },
-    // { name: "Best Cakes Leeds", href: "/best-cakes-leeds" },
     { name: "View All Areas", href: "/delivery-areas" },
   ],
   company: [

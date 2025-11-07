@@ -27,7 +27,7 @@ export function CakePageClient({ cake }: PageProps) {
 
   const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
   const currentPrice =
-    designType === "individual" ? cake.pricing.individual : cake.pricing.standard;
+    designType === "individual" ? (cake.pricing?.individual ?? 0) : (cake.pricing?.standard ?? 0);
 
   const handleDesignTypeChange = useCallback(
     (newDesignType: DesignType) => {
@@ -39,12 +39,12 @@ export function CakePageClient({ cake }: PageProps) {
           window.gtag("event", "design_type_change", {
             cake_name: cake.name,
             design_type: newDesignType,
-            price: newDesignType === "individual" ? cake.pricing.individual : cake.pricing.standard,
+            price: newDesignType === "individual" ? (cake.pricing?.individual ?? 0) : (cake.pricing?.standard ?? 0),
           });
         });
       }
     },
-    [cake.name, cake.pricing.individual, cake.pricing.standard]
+    [cake.name, cake.pricing?.individual, cake.pricing?.standard]
   );
 
   const handleOrderClick = useCallback(() => {
