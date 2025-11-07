@@ -329,6 +329,19 @@ export default async function CakesHuddersfieldPage() {
             </Paper>
           </Box>
 
+          {/* Cake Services in Huddersfield */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
+              Cake Services in Huddersfield
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, textAlign: "center", lineHeight: 1.8 }}>
+              Looking for specific cake types in Huddersfield? View our <Link href="/wedding-cakes" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>wedding cakes</Link>, <Link href="/birthday-cakes" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>birthday cakes</Link>, <Link href="/celebration-cakes" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>celebration cakes</Link>, <Link href="/vegan-cakes-leeds" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>vegan cakes</Link>, or <Link href="/nut-free-cakes-leeds" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>nut-free cakes</Link>.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, textAlign: "center", color: "text.secondary" }}>
+              Also delivering to nearby areas: <Link href="/cakes-leeds" style={{ color: "inherit", textDecoration: "underline" }}>Leeds</Link>, <Link href="/cakes-bradford" style={{ color: "inherit", textDecoration: "underline" }}>Bradford</Link>, <Link href="/cakes-wakefield" style={{ color: "inherit", textDecoration: "underline" }}>Wakefield</Link>, <Link href="/cakes-halifax" style={{ color: "inherit", textDecoration: "underline" }}>Halifax</Link>
+            </Typography>
+          </Box>
+
           {/* CTA Section */}
           <Box sx={{ textAlign: "center", py: 6 }}>
             <Typography
@@ -366,7 +379,7 @@ export default async function CakesHuddersfieldPage() {
                 size="large"
                 sx={{ px: 4, py: 2 }}
               >
-                View All Cakes
+                Browse All Cakes
               </Button>
             </Box>
           </Box>

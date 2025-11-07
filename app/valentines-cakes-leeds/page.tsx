@@ -4,9 +4,9 @@ import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Valentine's Day Cakes Leeds | Romantic Cakes",
+  title: "Valentine's Cakes Leeds £35+ | 5★ | Romantic Hearts",
   description:
-    "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs. Same-day delivery available in Leeds and around areas.",
+    "★★★★★ Valentine's cakes Leeds from £35 | Heart-shaped designs | Red velvet & chocolate | Same-day delivery | 127+ reviews | Surprise your loved one!",
   keywords:
     "valentine's day cakes leeds, romantic cakes, heart shaped cakes, chocolate cakes, valentine cakes delivery leeds",
   openGraph: {

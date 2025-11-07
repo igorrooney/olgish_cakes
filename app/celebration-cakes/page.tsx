@@ -9,9 +9,9 @@ import { blocksToText } from "@/types/cake";
 
 export const metadata: Metadata = {
   title:
-    "Celebration Cakes Leeds | Party Cakes",
+    "Celebration Cakes Leeds £35+ | 5★ | Anniversary & Party",
   description:
-    "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+    "★★★★★ Celebration cakes Leeds from £35 | Anniversary, graduation & party cakes | Ukrainian honey cake | Same-day delivery | 127+ reviews | Order today!",
   keywords:
     "celebration cakes Leeds, party cakes, anniversary cakes, graduation cakes, special occasion cakes, Ukrainian celebration cakes, custom celebration cakes Leeds, event cakes",
   openGraph: {

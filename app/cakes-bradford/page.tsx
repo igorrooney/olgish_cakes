@@ -368,6 +368,36 @@ export default async function CakesBradfordPage() {
             )}
           </Box>
 
+          {/* Cake Services in Bradford */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Cake Services Available in Bradford
+            </Typography>
+            <Grid container spacing={2}>
+              {[
+                { name: "Wedding Cakes", href: "/wedding-cakes" },
+                { name: "Birthday Cakes", href: "/birthday-cakes" },
+                { name: "Anniversary Cakes", href: "/anniversary-cakes-leeds" },
+                { name: "Vegan Cakes", href: "/vegan-cakes-leeds" },
+                { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
+                { name: "Custom Design", href: "/custom-cake-design" },
+              ].map((service, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Button component={Link} href={service.href} variant="outlined" color="primary" fullWidth sx={{ py: 1.5 }}>
+                    {service.name}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+
+          {/* Nearby Areas */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="body1" sx={{ mb: 2, textAlign: "center", color: "text.secondary" }}>
+              Also delivering to: <Link href="/cakes-leeds" style={{ color: "inherit", textDecoration: "underline" }}>Leeds</Link>, <Link href="/cakes-huddersfield" style={{ color: "inherit", textDecoration: "underline" }}>Huddersfield</Link>, <Link href="/cakes-wakefield" style={{ color: "inherit", textDecoration: "underline" }}>Wakefield</Link>, <Link href="/cakes-halifax" style={{ color: "inherit", textDecoration: "underline" }}>Halifax</Link>, <Link href="/cakes-york" style={{ color: "inherit", textDecoration: "underline" }}>York</Link>
+            </Typography>
+          </Box>
+
           {/* CTA Section */}
           <Box sx={{ textAlign: "center", py: 6 }}>
             <Typography

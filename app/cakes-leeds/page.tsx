@@ -572,25 +572,148 @@ export default async function CakesLeedsPage() {
             </Grid>
           </Paper>
 
+          {/* Cake Services in Leeds */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Popular Cake Services in Leeds
+            </Typography>
+            <Grid container spacing={3}>
+              {[
+                { name: "Wedding Cakes Leeds", href: "/wedding-cakes", description: "Custom wedding cakes with free consultation and venue delivery" },
+                { name: "Birthday Cakes Leeds", href: "/birthday-cakes", description: "Themed birthday cakes for all ages with same-day delivery" },
+                { name: "Celebration Cakes", href: "/celebration-cakes", description: "Anniversary, graduation, and special occasion cakes" },
+                { name: "Custom Cake Design", href: "/custom-cake-design", description: "Personalized cake design service with free consultation" },
+                { name: "Vegan Cakes Leeds", href: "/vegan-cakes-leeds", description: "100% plant-based Ukrainian cakes" },
+                { name: "Nut-Free Cakes Leeds", href: "/nut-free-cakes-leeds", description: "Safe allergen-free cakes for nut allergies" },
+              ].map((service, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Button
+                    component={Link}
+                    href={service.href}
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    sx={{
+                      py: 2,
+                      px: 3,
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      height: "100%",
+                      textAlign: "left",
+                      "&:hover": {
+                        backgroundColor: "primary.main",
+                        color: "white",
+                        "& .MuiTypography-root": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                  >
+                    <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      {service.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {service.description}
+                    </Typography>
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Nearby Areas */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Cake Delivery to Nearby Areas
+            </Typography>
+            <Grid container spacing={2}>
+              {[
+                { name: "Cakes Bradford", href: "/cakes-bradford" },
+                { name: "Cakes Huddersfield", href: "/cakes-huddersfield" },
+                { name: "Cakes Wakefield", href: "/cakes-wakefield" },
+                { name: "Cakes York", href: "/cakes-york" },
+                { name: "Cakes Halifax", href: "/cakes-halifax" },
+                { name: "Cakes Pudsey", href: "/cakes-pudsey" },
+                { name: "Cakes Ilkley", href: "/cakes-ilkley" },
+                { name: "Cakes Skipton", href: "/cakes-skipton" },
+                { name: "Cakes Otley", href: "/cakes-otley" },
+              ].map((area, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Button
+                    component={Link}
+                    href={area.href}
+                    variant="text"
+                    color="primary"
+                    fullWidth
+                    sx={{ py: 1, justifyContent: "flex-start" }}
+                  >
+                    {area.name}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
           {/* Call to Action */}
           <Box sx={{ textAlign: "center" }}>
             <Typography
-              variant="h4"
+              variant="h3"
               sx={{
                 fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
                 mb: 3,
               }}
             >
-              Order Your Fresh Cake Today
+              Order Your Fresh Leeds Cake Today
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Experience the taste of authentic Ukrainian baking right here in Leeds. Contact us to
+              Experience the taste of authentic Ukrainian baking right here in Leeds. Contact me to
               order your fresh, handmade cake or schedule a consultation.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

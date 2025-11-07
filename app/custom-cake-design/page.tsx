@@ -5,9 +5,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Custom Cake Design Leeds | Personalized Cakes",
+    "Custom Cake Design Leeds | 5★ | Free Consultation",
   description:
-    "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+    "★★★★★ Custom cake design Leeds | Personalized wedding & birthday cakes | Ukrainian-inspired | Free consultation | 127+ reviews | From £35 | Order today!",
   keywords:
     "custom cake design Leeds, personalized cakes Leeds, wedding cake design, birthday cake design, celebration cakes Leeds, custom cake consultation, unique cake designs, Ukrainian cake design",
   openGraph: {

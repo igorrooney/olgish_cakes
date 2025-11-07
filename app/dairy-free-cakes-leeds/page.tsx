@@ -6,9 +6,9 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Dairy-Free Cakes Leeds | Ukrainian Cakes",
+  title: "Dairy-Free Cakes Leeds £30+ | 5★ | Safe & Tasty",
   description:
-    "Delicious dairy-free Ukrainian cakes in Leeds. Handcrafted dairy-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for dairy allergies and vegan diets.",
+    "★★★★★ Dairy-free cakes Leeds from £30 | Safe for lactose intolerance | Ukrainian honey cake | Vegan options | 127+ reviews | Same-day delivery | Order!",
   keywords:
     "dairy-free cakes Leeds, Ukrainian dairy-free cakes, dairy-free honey cake, dairy-free desserts, dairy allergy cakes, vegan cakes Leeds",
   openGraph: {

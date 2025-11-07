@@ -6,9 +6,9 @@ import Script from "next/script";
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
   title:
-    "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes",
+    "Vegan Cakes Leeds £35+ | 5★ | Plant-Based Ukrainian",
   description:
-    "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets. Custom vegan cake design available.",
+    "★★★★★ Vegan cakes Leeds from £35 | 100% plant-based | Dairy-free Ukrainian honey cake | Wedding & birthday | 127+ reviews | Same-day delivery | Book!",
   keywords:
     "vegan cakes Leeds, dairy-free Ukrainian cakes, vegan honey cake, vegan Medovik, plant-based cakes Leeds, vegan birthday cakes, vegan wedding cakes, dairy-free cakes Leeds, vegan cake delivery Leeds, Ukrainian vegan desserts",
   openGraph: {

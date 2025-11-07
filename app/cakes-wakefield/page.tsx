@@ -377,6 +377,19 @@ export default async function CakesWakefieldPage() {
             </Paper>
           </Box>
 
+          {/* Cake Services in Wakefield */}
+          <Box sx={{ mb: 6 }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
+              Cake Services in Wakefield
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, textAlign: "center", lineHeight: 1.8 }}>
+              Browse our full range of cakes: <Link href="/wedding-cakes" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>wedding cakes</Link>, <Link href="/birthday-cakes" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>birthday cakes</Link>, <Link href="/anniversary-cakes-leeds" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>anniversary cakes</Link>, <Link href="/vegan-cakes-leeds" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>vegan cakes</Link>, <Link href="/nut-free-cakes-leeds" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>nut-free cakes</Link>, and <Link href="/custom-cake-design" style={{ color: "inherit", textDecoration: "underline", fontWeight: 600 }}>custom cake design</Link>.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, textAlign: "center", color: "text.secondary" }}>
+              Also serving: <Link href="/cakes-leeds" style={{ color: "inherit", textDecoration: "underline" }}>Leeds</Link>, <Link href="/cakes-bradford" style={{ color: "inherit", textDecoration: "underline" }}>Bradford</Link>, <Link href="/cakes-huddersfield" style={{ color: "inherit", textDecoration: "underline" }}>Huddersfield</Link>, <Link href="/cakes-york" style={{ color: "inherit", textDecoration: "underline" }}>York</Link>, <Link href="/cakes-halifax" style={{ color: "inherit", textDecoration: "underline" }}>Halifax</Link>
+            </Typography>
+          </Box>
+
           <Box sx={{ textAlign: "center", py: 6 }}>
             <Typography
               variant="h3"

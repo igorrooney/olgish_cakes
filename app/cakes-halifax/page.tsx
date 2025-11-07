@@ -7,9 +7,9 @@ import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Halifax | Ukrainian Cakes",
+  title: "Cakes Halifax £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "Traditional Ukrainian cakes in Halifax. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Halifax. Order now for special occasions.",
+    "★★★★★ Cakes Halifax from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | Same-day delivery | 127+ reviews | Order fresh Halifax cakes!",
   keywords:
     "cakes Halifax, Ukrainian cakes Halifax, honey cake Halifax, Kyiv cake Halifax, traditional Ukrainian cakes Halifax, cake delivery Halifax",
   openGraph: {

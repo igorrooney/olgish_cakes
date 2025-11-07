@@ -7,9 +7,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Best Cakes for Weddings | Wedding Guide",
+  title: "Best Wedding Cakes Guide | 5★ Expert Tips | Leeds",
   description:
-    "Discover the best cakes for weddings with my comprehensive wedding cake guide. Traditional Ukrainian wedding cakes, modern designs, and my advice for choosing your perfect wedding cake.",
+    "★★★★★ Expert guide to best wedding cakes | Ukrainian honey cake | Traditional & modern designs | Flavor tips | From £150 | Leeds specialist | Read now!",
   keywords:
     "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavors, wedding cake designs, wedding cake advice",
   openGraph: {
