@@ -280,11 +280,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/honey-cake",
-        destination: "/cakes",
-        permanent: true,
-      },
-      {
         source: "/medovik",
         destination: "/cakes/honey-cake-medovik",
         permanent: true,

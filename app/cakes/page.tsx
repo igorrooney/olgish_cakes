@@ -1,10 +1,11 @@
-import { Container, Grid, Typography, Box } from "@/lib/mui-optimization";
+import { Container, Grid, Typography, Box, Button, Paper } from "@/lib/mui-optimization";
 import CakeCard from "../components/CakeCard";
 import { getAllCakes, getRevalidateTime } from "../utils/fetchCakes";
 import Loading from "@/app/components/Loading";
 import HeroSection from "./HeroSection";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Metadata } from "next";
+import Link from "next/link";
 
 // Enable revalidation for this page
 export const revalidate = getRevalidateTime();
@@ -13,15 +14,15 @@ export const revalidate = getRevalidateTime();
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
-  title: "Ukrainian Cakes Leeds | Authentic Medovik & Kyiv Cake from £25",
+  title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
   description:
-    "★★★★★ Authentic Ukrainian cakes in Leeds from £25. Traditional honey cake (Medovik), Kyiv cake, Napoleon. 127+ 5-star reviews. Same-day delivery. Order now!",
+    "★★★★★ Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews. Order now!",
   keywords:
-    "Ukrainian cakes, ukrainian cakes Leeds, authentic ukrainian cakes, ukrainian bakery near me, honey cake, Medovik, Kyiv cake, traditional Ukrainian cakes, Ukrainian desserts Leeds, real Ukrainian cakes, Ukrainian baker Leeds, authentic Medovik",
+    "traditional Ukrainian cakes, ukrainian cakes Leeds, authentic ukrainian cakes, ukraine birthday cake, ukrainian birthday cakes, ukrainian bakery near me, honey cake, Medovik, Kyiv cake, Ukrainian wedding cakes, Ukrainian desserts Leeds, real Ukrainian cakes, Ukrainian baker Leeds, authentic Medovik, traditional medovik",
   openGraph: {
-    title: "Ukrainian Cakes Leeds | Authentic Medovik & Kyiv Cake from £25",
+    title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
     description:
-      "★★★★★ Authentic Ukrainian cakes in Leeds from £25. Traditional honey cake (Medovik), Kyiv cake, Napoleon. 127+ 5-star reviews. Same-day delivery. Order now!",
+      "★★★★★ Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews. Order now!",
     url: "https://olgishcakes.co.uk/cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -37,9 +38,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ukrainian Cakes Leeds | Authentic Medovik & Kyiv Cake from £25",
+    title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
     description:
-      "★★★★★ Authentic Ukrainian cakes in Leeds from £25. Traditional honey cake (Medovik), Kyiv cake, Napoleon. 127+ 5-star reviews. Same-day delivery. Order now!",
+      "★★★★★ Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews.",
     images: ["https://olgishcakes.co.uk/images/cakes-collection.jpg"],
   },
   alternates: {
@@ -57,7 +58,7 @@ export default async function CakesPage() {
     "@type": "Bakery",
     name: "Olgish Cakes",
     description:
-      "Authentic Ukrainian cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+      "Authentic traditional Ukrainian cakes made with love in Leeds. Traditional family recipes, premium ingredients, and exceptional taste. Specializing in Ukrainian birthday cakes, wedding cakes, and traditional honey cake (Medovik).",
     image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
     url: "https://olgishcakes.co.uk",
     telephone: "+44 786 721 8194",
@@ -106,7 +107,7 @@ export default async function CakesPage() {
         {/* Cakes Collection - Moved to top */}
         <Container maxWidth="lg" className="py-8">
           <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 6, textAlign: "center" }}>
-            Our Ukrainian Cake Collection
+            Traditional Ukrainian Cake Collection
           </Typography>
           
           {/* Cakes Grid */}
@@ -134,14 +135,79 @@ export default async function CakesPage() {
         <Container maxWidth="lg" sx={{ py: 6 }}>
           <Box sx={{ mb: 8 }}>
             <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
-              Authentic Ukrainian Cakes in Leeds
+              Traditional Ukrainian Cakes in Leeds
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", textAlign: "left" }}>
-              Welcome to the only authentic Ukrainian bakery in Leeds specializing in traditional Ukrainian cakes. Every cake I make follows recipes passed down through generations of my family in Ukraine. My Ukrainian cakes aren't just desserts - they're a taste of Ukrainian heritage, made with love and traditional techniques you won't find anywhere else in Leeds.
+              Welcome to the only authentic Ukrainian bakery in Leeds specializing in traditional Ukrainian cakes. Every cake I make follows recipes passed down through generations of my family in Ukraine. My traditional Ukrainian cakes aren't just desserts - they're a piece of Ukrainian heritage, made with love and traditional baking techniques that have been perfected over centuries. You won't find these authentic methods anywhere else in Leeds.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", textAlign: "left" }}>
-              What makes Ukrainian cakes different from British cakes? Ukrainian cakes like Medovik (honey cake) and Kyiv cake have unique flavors and textures perfected over centuries. The honey cake features delicate layers soaked in real honey overnight, creating a melt-in-your-mouth experience. Kyiv cake combines meringue, hazelnuts, and chocolate in a way that's sophisticated yet comforting. These aren't mass-produced supermarket cakes - every Ukrainian cake is handmade using premium ingredients and traditional methods.
+              What makes traditional Ukrainian cakes different from British cakes? Ukrainian cakes like Medovik (honey cake) and Kyiv cake have unique flavors and textures perfected over generations. The traditional honey cake features 8-10 delicate layers soaked in real honey overnight, creating a melt-in-your-mouth experience. Traditional Kyiv cake combines meringue, hazelnuts, and chocolate in a way that's sophisticated yet comforting. These aren't mass-produced supermarket cakes - every traditional Ukrainian cake is handmade using premium ingredients and time-honored methods my grandmother taught me.
             </Typography>
+            <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", textAlign: "left" }}>
+              Traditional Ukrainian baking is about patience and respect for ingredients. I roll each honey layer paper-thin by hand, exactly as it's done in Ukraine. The cakes soak overnight because that's how traditional Ukrainian cakes develop their special texture. I use real Yorkshire honey, organic eggs, and fresh cream - no artificial flavors or preservatives. This is how my family has made traditional Ukrainian cakes for generations, and this is how I make them in Leeds today.
+            </Typography>
+          </Box>
+
+          {/* Ukrainian Birthday Cakes Section */}
+          <Box sx={{ mb: 8, p: { xs: 4, md: 6 }, backgroundColor: "rgba(46, 49, 146, 0.05)", borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+              Ukrainian Birthday Cakes in Leeds
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              Looking for Ukrainian birthday cake in Leeds? I create beautiful Ukrainian birthday cakes that combine traditional flavors with custom designs. Every Ukrainian birthday cake is special - whether you want traditional honey cake decorated for a birthday, or a custom-designed Ukrainian-style cake with your choice of flavors and decorations.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
+              Ukrainian birthday cakes are different from British birthday cakes. Instead of heavy buttercream and thick sponge, Ukrainian birthday cakes have delicate layers with refined cream fillings. The flavors are sophisticated but not too sweet. Many people in Leeds tell me that Ukrainian birthday cakes remind them of celebrations from their childhood, while others discover these beautiful traditional cakes for the first time.
+            </Typography>
+            
+            <Grid container spacing={4} sx={{ mb: 4 }}>
+              <Grid item xs={12} md={4}>
+                <Paper elevation={0} sx={{ p: 3, height: "100%", backgroundColor: "white", borderRadius: 2 }}>
+                  <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                    Traditional Flavors
+                  </Typography>
+                  <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                    Choose from authentic Ukrainian flavors: honey cake (Medovik), Kyiv cake with hazelnuts and chocolate, Napoleon with vanilla custard, or chocolate Sacher. Every flavor is made using traditional Ukrainian methods.
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Paper elevation={0} sx={{ p: 3, height: "100%", backgroundColor: "white", borderRadius: 2 }}>
+                  <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                    Custom Designs
+                  </Typography>
+                  <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                    Your Ukrainian birthday cake can be decorated exactly how you want. I create custom designs with fresh flowers, fruits, Ukrainian motifs, or modern minimalist styles. Tell me your vision and I'll make it real.
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Paper elevation={0} sx={{ p: 3, height: "100%", backgroundColor: "white", borderRadius: 2 }}>
+                  <Typography variant="h5" component="h3" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                    Made Fresh
+                  </Typography>
+                  <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                    Every Ukrainian birthday cake is made fresh to order, never frozen. I start baking 2 days before your celebration to ensure the layers have time to soak properly and the flavors develop perfectly.
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>
+
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", fontStyle: "italic" }}>
+                <strong>Perfect for:</strong> Adult birthdays, milestone celebrations, Ukrainian family gatherings, or anyone who appreciates sophisticated desserts. Prices for Ukrainian birthday cakes start from £45 for custom designs.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                component={Link}
+                href="/get-custom-quote"
+                sx={{ px: 4, py: 2 }}
+              >
+                Order Ukrainian Birthday Cake
+              </Button>
+            </Box>
           </Box>
 
           <Box sx={{ mb: 8 }}>

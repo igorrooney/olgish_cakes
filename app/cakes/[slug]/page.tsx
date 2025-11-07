@@ -1,5 +1,5 @@
 import { getClient } from "@/sanity/lib/client";
-import { Cake, blocksToText } from "@/types/cake";
+import { Cake, CakeImage, blocksToText } from "@/types/cake";
 import { notFound } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
@@ -73,19 +73,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  // Special optimization for honey cake "buy honey cake online" keyword
+  const isHoneyCake = params.slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
+  
   // Use SEO fields if available, otherwise generate from content
-  const metaTitle =
-    cake.seo?.metaTitle ||
-    `${cake.name} | Olgish Cakes`;
-  const metaDescription =
-    cake.seo?.metaDescription ||
-    (cake.shortDescription
-      ? blocksToText(cake.shortDescription).substring(0, 160)
-      : `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
+  const metaTitle = isHoneyCake
+    ? (cake.seo?.metaTitle || `Buy Honey Cake Online | Authentic Ukrainian Medovik`)
+    : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
+    
+  const metaDescription = isHoneyCake
+    ? (cake.seo?.metaDescription || `★★★★★ Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
+    : (cake.seo?.metaDescription ||
+      (cake.shortDescription
+        ? blocksToText(cake.shortDescription).substring(0, 160)
+        : `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`));
 
-  const keywords =
-    cake.seo?.keywords?.join(", ") ||
-    `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`;
+  const keywords = isHoneyCake
+    ? `buy honey cake online, order honey cake, honey cake delivery, buy medovik online, ukrainian honey cake online, order medovik, honey cake uk, buy honey cake uk, medovik delivery, online honey cake, ${cake.name}, Ukrainian honey cake, Medovik, Leeds cake, traditional Ukrainian cake, fresh cake delivery, UK cake delivery`
+    : (cake.seo?.keywords?.join(", ") ||
+      `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`);
 
   const canonicalUrl =
     cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
@@ -151,12 +157,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       google: "your-google-verification-code",
     },
     other: {
-      price: cake.pricing.standard.toString(),
+      price: (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
-      "og:price:amount": cake.pricing.standard.toString(),
+      "og:price:amount": (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
       "og:price:currency": "GBP",
     },
   };
@@ -172,12 +178,16 @@ export default async function CakePage({ params }: PageProps) {
   // Ensure image is always present and absolute for Product JSON-LD
   const productImageUrl = (() => {
     // Import urlFor dynamically to avoid build issues
-    let urlFor: any;
+    interface ImageUrlBuilder {
+      width: (w: number) => { height: (h: number) => { url: () => string } };
+    }
+    
+    let urlFor: (image: CakeImage | { asset?: { _ref: string } }) => ImageUrlBuilder;
     try {
       urlFor = require('@/sanity/lib/image').urlFor;
     } catch (error) {
       // Fallback for build environments where dynamic import might fail
-      urlFor = (image: any) => ({
+      urlFor = () => ({
         width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
       });
     }
@@ -185,14 +195,14 @@ export default async function CakePage({ params }: PageProps) {
     // Get the best available image
     const mainImage = cake.mainImage?.asset?._ref
       ? cake.mainImage
-      : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-        cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+      : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+        cake.designs?.standard?.find((img) => img.asset?._ref) ||
         cake.designs?.standard?.[0] ||
-        cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-        cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+        cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+        cake.designs?.individual?.find((img) => img.asset?._ref) ||
         cake.designs?.individual?.[0] ||
         // Fallback to images array (for legacy data like Honey Cake)
-        cake.images?.find((img: any) => img.asset?._ref) ||
+        cake.images?.find((img) => img.asset?._ref) ||
         cake.images?.[0];
 
     return mainImage?.asset?._ref

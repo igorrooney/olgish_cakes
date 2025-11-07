@@ -35,14 +35,25 @@ export interface GiftHamperMainImage {
   caption?: string;
 }
 
+interface RichTextChild {
+  text: string;
+  [key: string]: unknown;
+}
+
+interface RichTextBlock {
+  _type: string;
+  children?: RichTextChild[];
+  [key: string]: unknown;
+}
+
 export interface GiftHamper {
   _id: string;
   _createdAt: string;
   name: string;
   slug: GiftHamperSlug;
   seo?: GiftHamperSEO;
-  description?: any[];
-  shortDescription?: any[];
+  description?: RichTextBlock[];
+  shortDescription?: RichTextBlock[];
   price: number;
   images?: GiftHamperImage[]; // includes one with isMain = true
   designs?: GiftHamperDesigns; // deprecated; not used for hampers

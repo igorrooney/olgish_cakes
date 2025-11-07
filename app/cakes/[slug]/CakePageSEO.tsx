@@ -50,8 +50,8 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "GBP",
-      lowPrice: cake.pricing.standard,
-      highPrice: cake.pricing.individual,
+      lowPrice: cake.pricing?.standard ?? 0,
+      highPrice: cake.pricing?.individual ?? 0,
       offerCount: 2,
       availability: "https://schema.org/InStock",
       seller: {

@@ -78,7 +78,7 @@ export function OrderModal({
         `
 Cake: ${cake.name}
 Design Type: ${designType === "standard" ? "Standard Design" : "Individual Design"}
-Price: £${designType === "standard" ? cake.pricing.standard : cake.pricing.individual}
+Price: £${designType === "standard" ? (cake.pricing?.standard ?? 0) : (cake.pricing?.individual ?? 0)}
 Size: ${cake.size}
 Category: ${cake.category}
 
@@ -97,8 +97,8 @@ ${formData.message}
       data.append("productName", cake.name);
       data.append("designType", designType);
       data.append("quantity", "1");
-      data.append("unitPrice", (designType === "standard" ? cake.pricing.standard : cake.pricing.individual).toString());
-      data.append("totalPrice", (designType === "standard" ? cake.pricing.standard : cake.pricing.individual).toString());
+      data.append("unitPrice", (designType === "standard" ? (cake.pricing?.standard ?? 0) : (cake.pricing?.individual ?? 0)).toString());
+      data.append("totalPrice", (designType === "standard" ? (cake.pricing?.standard ?? 0) : (cake.pricing?.individual ?? 0)).toString());
       data.append("size", cake.size || "");
       data.append("flavor", cake.category || "");
       data.append("specialInstructions", formData.message || "");
@@ -129,8 +129,8 @@ ${formData.message}
     }
   }
 
-  const currentPrice = designType === "standard" ? cake.pricing.standard : cake.pricing.individual;
-  const priceDifference = cake.pricing.individual - cake.pricing.standard;
+  const currentPrice = designType === "standard" ? (cake.pricing?.standard ?? 0) : (cake.pricing?.individual ?? 0);
+  const priceDifference = (cake.pricing?.individual ?? 0) - (cake.pricing?.standard ?? 0);
 
   return (
     <>
@@ -216,7 +216,7 @@ ${formData.message}
                   <MenuItem value="standard">
                     <Box>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        Standard Design • £{cake.pricing.standard}
+                        Standard Design • £{cake.pricing?.standard ?? 0}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         Our signature design with premium ingredients
@@ -226,7 +226,7 @@ ${formData.message}
                   <MenuItem value="individual">
                     <Box>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        Individual Design • £{cake.pricing.individual}
+                        Individual Design • £{cake.pricing?.individual ?? 0}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         Custom design +£{priceDifference} • Personal consultation included

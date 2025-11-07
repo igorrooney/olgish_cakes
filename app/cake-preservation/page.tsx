@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
 import Script from "next/script";
+import { colors } from '@/lib/design-system';
 
 export const metadata: Metadata = {
-  title: "Cake Preservation | How to Store Cakes",
+  title: "How to Preserve Cakes | Complete Cake Storage Guide",
   description:
-    "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+    "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
   keywords:
-    "cake preservation, how to store cakes, cake storage tips, wedding cake storage, birthday cake storage",
+    "how to preserve cakes, how to preserve cake, cake preservation, how to store cakes, cake storage tips, preserve wedding cake, preserve birthday cake, honey cake storage, medovik storage",
   openGraph: {
-    title: "Cake Preservation | How to Store Cakes",
+    title: "How to Preserve Cakes | Complete Cake Storage Guide",
     description:
-      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+      "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
     url: "https://olgishcakes.co.uk/cake-preservation",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
     type: "article",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cake Preservation | How to Store Cakes",
+    title: "How to Preserve Cakes | Complete Cake Storage Guide",
     description:
-      "Learn how to preserve and store your cakes for maximum freshness. Tips for storing wedding cakes, birthday cakes, and traditional Ukrainian cakes.",
+      "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes.",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
   },
   alternates: {
@@ -164,10 +165,10 @@ export default function CakePreservationPage() {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
               fontWeight: "bold",
               mb: 2,
-              color: "#005BBB",
+              color: colors.primary.main,
             }}
           >
-            Cake Preservation
+            How to Preserve Cakes
           </Typography>
           <Typography
             variant="h2"
@@ -179,8 +180,7 @@ export default function CakePreservationPage() {
               mx: "auto",
             }}
           >
-            Learn how to preserve and store your cakes for maximum freshness. Tips for weddings,
-            birthdays, and traditional Ukrainian cakes.
+            Complete guide on how to preserve cake and keep it fresh. Expert tips from a Ukrainian baker for all cake types.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Chip label="Storage Tips" color="primary" />
@@ -189,10 +189,14 @@ export default function CakePreservationPage() {
             <Chip label="Traditional Cakes" color="secondary" />
           </Box>
         </Box>
+        <Typography variant="body1" sx={{ mb: 4, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}>
+          Knowing how to preserve cake properly is essential to maintain freshness, flavour, and beautiful appearance.
+          Whether you're learning how to preserve cakes for a wedding, birthday celebration, or storing traditional Ukrainian honey cake,
+          these expert tips will help you keep your cake perfect until it's time to enjoy it.
+        </Typography>
         <Typography variant="body1" sx={{ mb: 6, textAlign: "center", maxWidth: "900px", mx: "auto", lineHeight: 1.7 }}>
-          Proper cake preservation is essential to maintain the freshness, flavour, and beautiful appearance of your cake.
-          Whether you are storing a wedding cake, birthday cake, or traditional Ukrainian cake, these tips will help you
-          keep your cake perfect until it is time to enjoy it.
+          As a Ukrainian baker in Leeds, I've learned traditional methods for how to preserve cake that keep flavors fresh and textures perfect.
+          These techniques work for all types of cakes - from simple sponges to complex layered Ukrainian cakes like Medovik.
         </Typography>
 
         <Grid container spacing={4} sx={{ mb: 6 }}>
@@ -323,6 +327,179 @@ export default function CakePreservationPage() {
                 <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
                   Remove from storage 1-2 hours before serving to bring to room temperature. This allows the flavours to develop
                   fully and the texture to be perfect. Cut with a sharp knife for clean slices and enjoy!
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+          <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            How to Preserve Different Types of Cakes
+          </Typography>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Sponge Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  How to preserve cake with sponge: Wrap tightly in cling film to prevent drying. Store at room temperature for 2 days or refrigerate for up to 5 days. Sponge cakes freeze well - wrap in cling film then foil, freeze up to 3 months. Thaw at room temperature for best texture.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Buttercream Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  How to preserve cakes with buttercream: Refrigerate immediately. Buttercream cakes must stay cold. Store in airtight container or cake box in fridge for up to 5 days. Before serving, bring to room temperature for 1 hour so buttercream softens and flavors develop.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Fondant-Covered Cakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  How to preserve cake with fondant: Store at room temperature in cool, dry place. Do not refrigerate - condensation will ruin fondant. Cover loosely with cake dome. Fondant cakes stay fresh 3-5 days. Keep away from sunlight and humidity for best preservation.
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                  Cheesecakes
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+                  How to preserve cheesecake: Always refrigerate. Cover with cling film or store in airtight container. Cheesecakes stay fresh 5-7 days in fridge. Can freeze for up to 2 months, but texture may change slightly. Thaw overnight in refrigerator.
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+          <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            How to Preserve Cake: The Complete Process
+          </Typography>
+
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
+                Learning how to preserve cakes properly starts with understanding the complete process. Here's my step-by-step method for how to preserve cake perfectly:
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Paper elevation={1} sx={{ p: 3, height: "100%", backgroundColor: "white" }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2, textAlign: "center" }}>1️⃣</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main", textAlign: "center" }}>
+                  Cool Completely
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  The first step in how to preserve cake: wait until it's completely cool. Warm cake creates condensation that makes it soggy. For layered cakes, ensure each layer is cool before assembling. This can take 2-3 hours at room temperature.
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Paper elevation={1} sx={{ p: 3, height: "100%", backgroundColor: "white" }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2, textAlign: "center" }}>2️⃣</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main", textAlign: "center" }}>
+                  Wrap Properly
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  Critical for how to preserve cakes: wrap tightly in cling film, ensuring no air pockets. For extra protection, add layer of foil over cling film. This double wrapping is best method for how to preserve cake when freezing.
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Paper elevation={1} sx={{ p: 3, height: "100%", backgroundColor: "white" }}>
+                <Typography variant="h4" sx={{ fontSize: "3rem", mb: 2, textAlign: "center" }}>3️⃣</Typography>
+                <Typography variant="h5" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main", textAlign: "center" }}>
+                  Choose Storage Method
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                  For how to preserve cake short-term: refrigerate for 3-7 days. For long-term: freeze up to 3 months. Label with date. The key to how to preserve cakes successfully is choosing the right method for your cake type and timeline.
+                </Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
+          <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            Frequently Asked Questions About How to Preserve Cakes
+          </Typography>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  How long can I preserve cake in the fridge?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  Most cakes stay fresh 5-7 days when properly refrigerated. Cream-filled cakes: 3-5 days. Buttercream cakes: 5-7 days. Fondant cakes should not be refrigerated - store at room temperature for 3-5 days.
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  Can I freeze cake to preserve it?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  Yes! Freezing is excellent for how to preserve cakes long-term. Most cakes freeze well for up to 3 months. Wrap tightly in cling film then foil. Thaw in fridge overnight, then bring to room temperature before serving.
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  Should I preserve cake at room temperature?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  Simple sponge cakes and fondant cakes can be preserved at room temperature for 2-3 days in airtight container. Any cake with cream, custard, or fresh fruit must be refrigerated immediately for food safety.
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  How to preserve wedding cake top tier?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  Wrap top tier tightly in multiple layers of cling film, then foil. Place in airtight container or freezer bag. Freeze immediately. When preserved properly, wedding cake can last up to 1 year in freezer.
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  What's the best way to preserve cake overnight?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  To preserve cake overnight: wrap in cling film or place in airtight container. If cake has cream filling, refrigerate. Simple cakes can stay at room temperature. This short-term preservation keeps cake fresh and moist.
+                </Typography>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Box sx={{ p: 3, backgroundColor: "white", borderRadius: 2, height: "100%", border: "1px solid", borderColor: "divider" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main", mb: 2 }}>
+                  Does freezing preserve cake quality?
+                </Typography>
+                <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+                  When done correctly, freezing preserves cake quality excellently. The key is proper wrapping to prevent freezer burn. Most people can't tell difference between fresh and properly frozen cake after thawing.
                 </Typography>
               </Box>
             </Grid>

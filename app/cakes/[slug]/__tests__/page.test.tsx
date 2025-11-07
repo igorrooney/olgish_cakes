@@ -142,14 +142,30 @@ describe('CakeDetailPage', () => {
     it('should generate description from shortDescription', async () => {
       const cakeWithoutSEO = {
         ...mockCake,
+        name: 'Vanilla Cake',
         seo: undefined,
         shortDescription: [{ children: [{ text: 'Test description' }] }]
       }
       mockFetch.mockResolvedValue(cakeWithoutSEO)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake' } })
+      const metadata = await generateMetadata({ params: { slug: 'vanilla-cake' } })
 
       expect(metadata.description).toContain('Converted text')
+    })
+
+    it('should optimize honey cake for "buy honey cake online" keyword', async () => {
+      const honeyCake = {
+        ...mockCake,
+        name: 'Honey Cake (Medovik)',
+        seo: undefined
+      }
+      mockFetch.mockResolvedValue(honeyCake)
+
+      const metadata = await generateMetadata({ params: { slug: 'honey-cake-medovik' } })
+
+      expect(metadata.title).toContain('Buy Honey Cake Online')
+      expect(metadata.description).toContain('Buy authentic honey cake')
+      expect(metadata.keywords).toContain('buy honey cake online')
     })
 
     it('should return 404 metadata for missing cake', async () => {

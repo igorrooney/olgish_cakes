@@ -37,6 +37,9 @@ const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLE
 const footerLinksBase = {
   cakes: [
     { name: "All Cakes", href: "/cakes" },
+    { name: "Cake in Leeds", href: "/cake-in-leeds" },
+    { name: "Ukrainian Cake", href: "/ukrainian-cake" },
+    { name: "Honey Cake", href: "/honey-cake" },
     { name: "Wedding Cakes", href: "/wedding-cakes" },
     { name: "Birthday Cakes", href: "/birthday-cakes" },
     { name: "Traditional Ukrainian", href: "/traditional-ukrainian-cakes" },
@@ -75,7 +78,6 @@ const footerLinksBase = {
     { name: "Cakes Wakefield", href: "/cakes-wakefield" },
     { name: "Wakefield Wedding Cakes", href: "/wakefield-wedding-cakes" },
     { name: "Cakes Pudsey", href: "/cakes-pudsey" },
-    // { name: "Best Cakes Leeds", href: "/best-cakes-leeds" },
     { name: "View All Areas", href: "/delivery-areas" },
   ],
   company: [

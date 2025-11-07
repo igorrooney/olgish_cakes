@@ -1,5 +1,6 @@
 import { client } from "@/sanity/lib/client";
 import { MetadataRoute } from "next";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 async function getCakes() {
   const query = `*[_type == "cake"] {
@@ -41,7 +42,7 @@ async function getGiftHampers() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://olgishcakes.co.uk";
+  const baseUrl = BUSINESS_CONSTANTS.BASE_URL;
   const [cakes, blogPosts, giftHampers] = await Promise.all([
     getCakes(),
     getBlogPosts(),
@@ -151,6 +152,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/ukrainian-cake`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/cake-in-leeds`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    },
+    {
+      url: `${baseUrl}/honey-cake`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/market-schedule`,

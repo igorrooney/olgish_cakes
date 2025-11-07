@@ -1,14 +1,15 @@
 "use client";
 
-import { Box, Typography, Container, Grid, Card, CardContent, List, ListItem, ListItemText } from "@/lib/mui-optimization";
+import { Box, Typography, Container, Grid, Card, CardContent, List, ListItem, ListItemText, Link as MuiLink } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import Link from "next/link";
 import { Button } from "@/lib/mui-optimization";
+import { GiftHamper } from "@/types/giftHamper";
 
 const { colors, typography, spacing } = designTokens;
 
 interface CakeByPostContentProps {
-  hamper: any;
+  hamper: GiftHamper;
 }
 
 export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
@@ -36,7 +37,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.2,
             }}
           >
-            Cake by Post UK | Letterbox Cake Delivery | Order Online
+            Cake by Post UK | Letterbox Delivery Across Britain
           </Typography>
 
           <Typography
@@ -51,9 +52,26 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Send delicious cake by post anywhere in the UK! Our traditional Ukrainian honey cake is specially designed for letterbox delivery.
-            Freshly baked, vacuum-packed, and delivered straight to their door - perfect for birthdays, anniversaries, and surprises.
+            Send delicious cake by post anywhere in the UK! Our traditional Ukrainian honey cake delivers across England, Scotland, Wales & Northern Ireland.
+            Freshly baked, vacuum-packed letterbox delivery - perfect for birthdays, anniversaries, and surprises nationwide.
           </Typography>
+
+          <Box sx={{ textAlign: "center", mb: spacing.lg }}>
+            <Typography
+              component="p"
+              variant="body1"
+              sx={{
+                color: colors.text.secondary,
+                maxWidth: "700px",
+                mx: "auto",
+                fontSize: { xs: "1rem", md: "1.1rem" },
+                lineHeight: 1.6,
+              }}
+            >
+              <strong>UK-wide cake by post service:</strong> We deliver our authentic Ukrainian honey cake to all regions of the United Kingdom via Royal Mail. 
+              Your cake by post arrives fresh, vacuum-sealed, and fits through standard UK letterboxes. No delivery charge for UK mainland addresses.
+            </Typography>
+          </Box>
 
           <Typography
             component="p"
@@ -67,7 +85,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Learn more about our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Read our complete guide to cake by post delivery">complete guide to cake by post delivery</Link> or discover the <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Learn about the best honey cake for postal delivery">best honey cake for postal delivery</Link>.
+            Learn more about our <MuiLink component={Link} href="/blog/cake-by-post-uk-complete-guide" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our complete guide to cake by post delivery">complete guide to cake by post delivery</MuiLink> or discover the <MuiLink component={Link} href="/blog/best-cakes-you-can-send-by-post-uk" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Learn about the best honey cake for postal delivery">best honey cake for postal delivery</MuiLink>.
           </Typography>
         </Container>
       </Box>
@@ -146,8 +164,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
                     Experience the authentic taste of traditional Ukrainian honey cake (honey cake),
                     handcrafted in Leeds using time-honored recipes and premium ingredients.
-                    Learn more about our <Link href="/honey-cake-history" style={{ color: colors.primary.main, textDecoration: "none" }} aria-label="Learn about the history of honey cake">honey cake history</Link> and
-                    <Link href="/traditional-ukrainian-cakes" style={{ color: colors.primary.main, textDecoration: "none" }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</Link>.
+                    Learn more about our <MuiLink component={Link} href="/honey-cake-history" underline="none" sx={{ color: colors.primary.main }} aria-label="Learn about the history of honey cake">honey cake history</MuiLink> and <MuiLink component={Link} href="/traditional-ukrainian-cakes" underline="none" sx={{ color: colors.primary.main }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</MuiLink>.
                   </Typography>
                 </CardContent>
               </Card>
@@ -254,7 +271,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ color: colors.primary.main, textDecoration: 'none', fontWeight: 600 }} aria-label="Read our top 5 reasons to order honey cake by post online">top 5 reasons to order honey cake by post online</Link>.
+            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <MuiLink component={Link} href="/blog/top-5-reasons-order-letterbox-cakes-online" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our top 5 reasons to order honey cake by post online">top 5 reasons to order honey cake by post online</MuiLink>.
           </Typography>
 
           <Grid container spacing={4}>
