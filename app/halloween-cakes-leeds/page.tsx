@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 export const metadata: Metadata = {
   title: "Halloween Cakes Leeds £35+ | 5★ | Spooky Designs",
   description:
-    "★★★★★ Halloween cakes Leeds from £35 | Spooky pumpkin & ghost designs | Custom themes | Same-day delivery | 127+ reviews | Perfect for parties | Order!",
+    "Halloween cakes Leeds from £35 | Spooky pumpkin & ghost designs | Custom themes | 5★ rated (127+ reviews) | Same-day delivery | Perfect for parties!",
   keywords:
     "halloween cakes leeds, spooky cakes, pumpkin cakes, ghost cakes, halloween cake delivery leeds",
   openGraph: {

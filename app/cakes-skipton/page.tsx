@@ -6,7 +6,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Skipton £25+ | 5★ | Ukrainian Honey Cake Delivery",
   description:
-    "★★★★★ Cakes Skipton from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday | Same-day delivery | 127+ reviews | Order fresh Skipton cakes today!",
+    "Cakes Skipton from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh cakes!",
   keywords:
     "cakes Skipton, Ukrainian cakes Skipton, honey cake Skipton, Kyiv cake Skipton, traditional Ukrainian cakes Skipton, cake delivery Skipton",
   openGraph: {

@@ -6,7 +6,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Anniversary Cakes Leeds £40+ | 5★ | Custom Designs",
   description:
-    "★★★★★ Anniversary cakes Leeds from £40 | Ukrainian honey cake | Personalized designs | Same-day delivery | 127+ reviews | Celebrate in style | Order!",
+    "Anniversary cakes Leeds from £40 | Ukrainian honey cake | Personalized designs | Same-day delivery | 5★ rated (127+ reviews) | Celebrate in style!",
   keywords:
     "anniversary cakes Leeds, Ukrainian anniversary cakes, anniversary celebration cakes, personalized anniversary cakes, anniversary cake delivery Leeds",
   openGraph: {

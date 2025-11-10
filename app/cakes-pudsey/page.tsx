@@ -8,7 +8,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Pudsey £25+ | 5★ | Ukrainian Honey Cake Delivery",
   description:
-    "★★★★★ Cakes Pudsey from £25 | Traditional Ukrainian honey cake | Wedding & birthday | Same-day delivery | 127+ reviews | Order fresh Pudsey cakes today!",
+    "Cakes Pudsey from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Pudsey cakes!",
   keywords:
     "cakes Pudsey, Ukrainian cakes Pudsey, honey cake Pudsey, Kyiv cake Pudsey, traditional Ukrainian cakes Pudsey, cake delivery Pudsey",
   openGraph: {

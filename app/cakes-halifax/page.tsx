@@ -9,7 +9,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Halifax £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "★★★★★ Cakes Halifax from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | Same-day delivery | 127+ reviews | Order fresh Halifax cakes!",
+    "Cakes Halifax from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Halifax cakes!",
   keywords:
     "cakes Halifax, Ukrainian cakes Halifax, honey cake Halifax, Kyiv cake Halifax, traditional Ukrainian cakes Halifax, cake delivery Halifax",
   openGraph: {

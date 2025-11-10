@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title:
     "Birthday Cakes Leeds £25+ | Same-Day | 5★ | Custom Themes",
   description:
-    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake & custom themes | 127+ reviews | Kids & adults | Free design consultation!",
+    "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake & custom themes | Kids & adults | 5★ rated (127+ reviews) | Free consultation!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {

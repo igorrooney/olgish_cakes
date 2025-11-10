@@ -9,7 +9,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Best Wedding Cakes Guide | 5★ Expert Tips | Leeds",
   description:
-    "★★★★★ Expert guide to best wedding cakes | Ukrainian honey cake | Traditional & modern designs | Flavor tips | From £150 | Leeds specialist | Read now!",
+    "Expert guide to best wedding cakes | Ukrainian honey cake | Traditional & modern designs | Flavor tips | 5★ rated | From £150 | Leeds specialist | Read now!",
   keywords:
     "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavors, wedding cake designs, wedding cake advice",
   openGraph: {

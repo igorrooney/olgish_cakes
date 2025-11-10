@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title:
     "Celebration Cakes Leeds £35+ | 5★ | Anniversary & Party",
   description:
-    "★★★★★ Celebration cakes Leeds from £35 | Anniversary, graduation & party cakes | Ukrainian honey cake | Same-day delivery | 127+ reviews | Order today!",
+    "Celebration cakes Leeds from £35 | Anniversary, graduation & party cakes | Ukrainian honey cake | Same-day delivery | 5★ rated (127+ reviews) | Order!",
   keywords:
     "celebration cakes Leeds, party cakes, anniversary cakes, graduation cakes, special occasion cakes, Ukrainian celebration cakes, custom celebration cakes Leeds, event cakes",
   openGraph: {

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title:
     "Cakes York £25+ | 5★ | Ukrainian Honey Cake Delivery",
   description:
-    "★★★★★ Cakes York from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday | Same-day delivery | 127+ reviews | Order fresh cakes in York today!",
+    "Cakes York from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh cakes in York!",
   keywords:
     "cakes York, Ukrainian cakes York, custom cakes York, wedding cakes York, birthday cakes York, cake delivery York, bakery York, traditional Ukrainian cakes York",
   openGraph: {

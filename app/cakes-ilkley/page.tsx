@@ -6,7 +6,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Ilkley £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "★★★★★ Cakes Ilkley from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday | Same-day delivery | 127+ reviews | Order fresh Ilkley cakes today!",
+    "Cakes Ilkley from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Ilkley cakes!",
   keywords:
     "cakes Ilkley, Ukrainian cakes Ilkley, honey cake Ilkley, Kyiv cake Ilkley, traditional Ukrainian cakes Ilkley, cake delivery Ilkley",
   openGraph: {

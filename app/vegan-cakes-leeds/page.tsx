@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title:
     "Vegan Cakes Leeds £35+ | 5★ | Plant-Based Ukrainian",
   description:
-    "★★★★★ Vegan cakes Leeds from £35 | 100% plant-based | Dairy-free Ukrainian honey cake | Wedding & birthday | 127+ reviews | Same-day delivery | Book!",
+    "Vegan cakes Leeds from £35 | 100% plant-based | Dairy-free Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery!",
   keywords:
     "vegan cakes Leeds, dairy-free Ukrainian cakes, vegan honey cake, vegan Medovik, plant-based cakes Leeds, vegan birthday cakes, vegan wedding cakes, dairy-free cakes Leeds, vegan cake delivery Leeds, Ukrainian vegan desserts",
   openGraph: {

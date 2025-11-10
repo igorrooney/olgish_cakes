@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title:
     "Wedding Cakes Leeds | Custom Designs | From £150 | 5★ Rated",
   description:
-    "★★★★★ Wedding cakes Leeds from £150 | Custom Ukrainian honey cake designs | Free tasting | Venue setup | 127+ reviews | Book consultation today!",
+    "Wedding cakes Leeds from £150 | Custom Ukrainian honey cake designs | Free tasting & venue setup | 5★ rated (127+ reviews) | Book consultation!",
   keywords:
     "wedding cakes Leeds, custom wedding cakes Leeds, wedding cake tasting Leeds, wedding cake consultation Leeds, venue setup wedding cake Leeds, honey cake wedding cake, Ukrainian wedding cakes, luxury wedding cakes",
   openGraph: {

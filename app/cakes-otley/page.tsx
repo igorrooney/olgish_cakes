@@ -6,7 +6,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cakes Otley £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "★★★★★ Cakes Otley from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | Same-day delivery | 127+ reviews | Order fresh Otley cakes!",
+    "Cakes Otley from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Otley cakes!",
   keywords:
     "cakes Otley, Ukrainian cakes Otley, honey cake Otley, Kyiv cake Otley, traditional Ukrainian cakes Otley, cake delivery Otley",
   openGraph: {
