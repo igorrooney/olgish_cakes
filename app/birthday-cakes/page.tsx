@@ -541,7 +541,7 @@ export default async function BirthdayCakesPage() {
               cake (Medovik) with 5 layers of soft honey sponge and buttercream made with condensed milk. Kyiv
               cake is premium cake with meringue and cashew nuts, filled with custard cream. I also make Vanilla
               Delicia birthday cake and Chocolate Delicia sponge cake. For all flavours, see my{" "}
-              <Link href="/cake-flavours" style={{ color: "inherit", textDecoration: "underline" }}>
+              <Link href="/cake-flavors" style={{ color: "inherit", textDecoration: "underline" }}>
                 complete flavour guide
               </Link>
               .
