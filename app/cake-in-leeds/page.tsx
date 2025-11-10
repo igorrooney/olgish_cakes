@@ -339,7 +339,7 @@ export default function CakeInLeedsPage() {
                   <MuiLink component={Link} href="/custom-cake-design" underline="none" sx={{ color: colors.primary.main }}>Custom Cake Design Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Have a special vision for your cake? I offer custom cake design in Leeds. Tell me what you want - colors, theme, style - and I'll create it. Every custom cake is unique and made just for your celebration. Perfect for corporate events, anniversaries, and special occasions.
+                  Have a special vision for your cake? I offer custom cake design in Leeds. Tell me what you want - colours, theme, style - and I'll create it. Every custom cake is unique and made just for your celebration. Perfect for corporate events, anniversaries, and special occasions.
                 </Typography>
               </Grid>
             </Grid>

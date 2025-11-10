@@ -90,15 +90,15 @@ export default async function WeddingCakesPage() {
       price: "From £80",
     },
     {
-      name: "Ukrainian Flavors Wedding Cakes",
+      name: "Ukrainian Flavours Wedding Cakes",
       description:
-        "Traditional Ukrainian cake flavors like honey cake and Kyiv cake for special wedding experience",
+        "Traditional Ukrainian cake flavours like honey cake and Kyiv cake for special wedding experience",
       price: "From £90",
     },
     {
       name: "Wedding Cake Consultation",
       description:
-        "Personal consultation to talk about design, flavors, and wedding cake needs",
+        "Personal consultation to talk about design, flavours, and wedding cake needs",
       price: "Free",
     },
     {
@@ -298,8 +298,8 @@ export default async function WeddingCakesPage() {
               },
               {
                 title: "Wedding Consultation",
-                description:
-                  "Personal consultation to talk about design, flavors, and wedding cake needs",
+                  description:
+                    "Personal consultation to talk about design, flavours, and wedding cake needs",
                 icon: "💍",
               },
               {
@@ -596,7 +596,7 @@ export default async function WeddingCakesPage() {
               Wedding Cake Pricing Leeds
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Wedding cake prices start from £150 for a two-tier cake serving 40-50 guests. Final pricing depends on the size, design complexity, flavor choices, and decorative elements. I offer transparent pricing with no hidden fees. A typical three-tier wedding cake serving 100-120 guests ranges from £250-£400. Custom sugar flowers, intricate piping, and premium flavors like Ukrainian honey cake may add to the final cost.
+              Wedding cake prices start from £150 for a two-tier cake serving 40-50 guests. Final pricing depends on the size, design complexity, flavour choices, and decorative elements. I offer transparent pricing with no hidden fees. A typical three-tier wedding cake serving 100-120 guests ranges from £250-£400. Custom sugar flowers, intricate piping, and premium flavours like Ukrainian honey cake may add to the final cost.
             </Typography>
             <Grid container spacing={3}>
               {[
@@ -655,7 +655,7 @@ export default async function WeddingCakesPage() {
                   rating: "5/5"
                 },
                 {
-                  quote: "We wanted something different for our wedding and the Ukrainian Kyiv cake was perfect. Beautiful presentation, unique flavors, and Olgish made the whole process so easy. Highly recommend!",
+                  quote: "We wanted something different for our wedding and the Ukrainian Kyiv cake was perfect. Beautiful presentation, unique flavours, and Olgish made the whole process so easy. Highly recommend!",
                   author: "Sarah & Tom, Married at Thorpe Park Hotel",
                   rating: "5/5"
                 },

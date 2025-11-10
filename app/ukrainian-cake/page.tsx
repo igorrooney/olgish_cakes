@@ -195,7 +195,7 @@ export default function UkrainianCakePage() {
               Ukrainian cake is not just a dessert - it's a piece of Ukrainian culture and tradition that I bring to Leeds. Every Ukrainian cake I make follows recipes passed down through my family for generations, using traditional methods you won't find in regular British bakeries. When you taste authentic Ukrainian cake, you taste the history and love that goes into every layer.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              What makes Ukrainian cake different from British cakes? Ukrainian cakes have unique flavors, delicate textures, and special techniques perfected over centuries. We don't use shortcuts or artificial ingredients. Every Ukrainian cake takes time and skill to make properly. The honey cake needs to soak overnight, the Kyiv cake requires perfect meringue layers, and the Napoleon needs paper-thin pastry. These aren't quick desserts - they're traditional Ukrainian masterpieces.
+              What makes Ukrainian cake different from British cakes? Ukrainian cakes have unique flavours, delicate textures, and special techniques perfected over centuries. We don't use shortcuts or artificial ingredients. Every Ukrainian cake takes time and skill to make properly. The honey cake needs to soak overnight, the Kyiv cake requires perfect meringue layers, and the Napoleon needs paper-thin pastry. These aren't quick desserts - they're traditional Ukrainian masterpieces.
             </Typography>
           </Paper>
 
@@ -214,7 +214,7 @@ export default function UkrainianCakePage() {
               {
                 icon: <LocalOfferIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
                 title: 'Premium Natural Ingredients',
-                description: 'I use only the best ingredients - real Yorkshire honey, organic eggs, fresh cream, and high-quality flour. No artificial flavors, no preservatives, no shortcuts. Just natural ingredients that make Ukrainian cake taste the way it should.'
+                description: 'I use only the best ingredients - real Yorkshire honey, organic eggs, fresh cream, and high-quality flour. No artificial flavours, no preservatives, no shortcuts. Just natural ingredients that make Ukrainian cake taste the way it should.'
               },
               {
                 icon: <SchoolIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
@@ -255,7 +255,7 @@ export default function UkrainianCakePage() {
                   Medovik (Honey Cake)
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  The most famous Ukrainian cake. Medovik has thin honey-soaked layers with rich cream filling. The honey flavor is subtle and sophisticated, not too sweet. After soaking overnight, the layers become incredibly soft and melt in your mouth. This is the Ukrainian cake that makes people fall in love with Ukrainian desserts.
+                  The most famous Ukrainian cake. Medovik has thin honey-soaked layers with rich cream filling. The honey flavour is subtle and sophisticated, not too sweet. After soaking overnight, the layers become incredibly soft and melt in your mouth. This is the Ukrainian cake that makes people fall in love with Ukrainian desserts.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   I use real Yorkshire honey and traditional Ukrainian methods to make my <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
@@ -291,7 +291,7 @@ export default function UkrainianCakePage() {
                   While originally from Vienna, Sacher cake is very popular in Ukraine. I make it the Ukrainian way - with dark chocolate sponge, apricot jam, and glossy chocolate glaze. It's rich and sophisticated, perfect for chocolate lovers.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  My version uses premium dark chocolate and fresh apricot jam. The glaze needs to be mirror-smooth and set perfectly. This Ukrainian cake is for people who appreciate deep chocolate flavor without too much sweetness.
+                  My version uses premium dark chocolate and fresh apricot jam. The glaze needs to be mirror-smooth and set perfectly. This Ukrainian cake is for people who appreciate deep chocolate flavour without too much sweetness.
                 </Typography>
               </Grid>
             </Grid>
@@ -307,13 +307,13 @@ export default function UkrainianCakePage() {
               Many people ask me what's different about Ukrainian cake compared to British cakes. The difference is big. British cakes are usually sponge-based with buttercream or fondant. They're good, but they're simple. Ukrainian cake is more complex and sophisticated.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              Ukrainian cake has multiple thin layers instead of thick sponge. We use different fillings - sour cream, condensed milk, custard - not just buttercream. The flavors are more subtle and balanced. Ukrainian cake isn't about bright colors and fondant decorations - it's about taste and texture.
+              Ukrainian cake has multiple thin layers instead of thick sponge. We use different fillings - sour cream, condensed milk, custard - not just buttercream. The flavours are more subtle and balanced. Ukrainian cake isn't about bright colours and fondant decorations - it's about taste and texture.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
               Another big difference is how we make Ukrainian cake. British cakes can be made quickly. Ukrainian cake takes time - sometimes two days. The honey cake needs to soak, the meringue needs to dry, the pastry needs to rest. You can't rush Ukrainian cake. That's why authentic Ukrainian cake tastes so special.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              When people in Leeds try my Ukrainian cake for the first time, they're always surprised. They expect something like British cake, but it's completely different. The layers are so thin and delicate. The flavors are more refined. Many tell me they've never tasted anything like it before. That's because authentic Ukrainian cake isn't common in Leeds - or anywhere in the UK.
+              When people in Leeds try my Ukrainian cake for the first time, they're always surprised. They expect something like British cake, but it's completely different. The layers are so thin and delicate. The flavours are more refined. Many tell me they've never tasted anything like it before. That's because authentic Ukrainian cake isn't common in Leeds - or anywhere in the UK.
             </Typography>
           </Paper>
 
@@ -359,7 +359,7 @@ export default function UkrainianCakePage() {
               Ukrainian cake traditions go back many generations. My grandmother learned from her grandmother, and I learned from my grandmother. These recipes are precious to Ukrainian families. When I came to Leeds, I wanted to share this tradition with people here.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              For Ukrainian people living in Leeds, my cakes bring memories of home. They taste the flavors they grew up with. For British people, my Ukrainian cakes are a discovery - something new and special they haven't experienced before. Both groups tell me these cakes are different from anything else they can buy in Leeds.
+              For Ukrainian people living in Leeds, my cakes bring memories of home. They taste the flavours they grew up with. For British people, my Ukrainian cakes are a discovery - something new and special they haven't experienced before. Both groups tell me these cakes are different from anything else they can buy in Leeds.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
               Making Ukrainian cake is my way of keeping Ukrainian culture alive in Yorkshire. Every cake I make is a little piece of Ukraine. I'm proud to be the only authentic Ukrainian baker in Leeds making traditional Ukrainian cakes the proper way.

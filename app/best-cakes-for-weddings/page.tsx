@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Expert guide to best wedding cakes | Ukrainian honey cake | Traditional & modern designs | Flavor tips | 5★ rated | From £150 | Leeds specialist | Read now!",
   keywords:
-    "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavors, wedding cake designs, wedding cake advice",
+    "best cakes for weddings, wedding cake guide, Ukrainian wedding cakes, traditional wedding cakes, wedding cake flavours, wedding cake designs, wedding cake advice",
   openGraph: {
     title: "Best Cakes for Weddings | Wedding Guide",
     description:
@@ -176,7 +176,7 @@ export default async function BestCakesForWeddingsPage() {
                 {
                   name: "Traditional Ukrainian Honey Cake",
                   description:
-                    "Perfect for couples who want to honor Ukrainian heritage with an traditional honey cake featuring delicate layers and rich honey flavor",
+                    "Perfect for couples who want to honour Ukrainian heritage with an traditional honey cake featuring delicate layers and rich honey flavour",
                   bestFor: "Ukrainian heritage weddings, traditional celebrations",
                   servingSize: "Serves 80-100 guests",
                   price: "From £200",
@@ -313,12 +313,12 @@ export default async function BestCakesForWeddingsPage() {
                   },
                   {
                     factor: "Season",
-                    advice: "Consider seasonal flavors and decorations",
+                    advice: "Consider seasonal flavours and decorations",
                     tips: [
-                      "Spring: Light flavors, fresh flowers",
-                      "Summer: Fruit-based cakes, bright colors",
-                      "Autumn: Spiced flavors, warm tones",
-                      "Winter: Rich flavors, elegant decorations",
+                      "Spring: Light flavours, fresh flowers",
+                      "Summer: Fruit-based cakes, bright colours",
+                      "Autumn: Spiced flavours, warm tones",
+                      "Winter: Rich flavours, elegant decorations",
                     ],
                   },
                   {

@@ -561,7 +561,7 @@ export function QuoteForm() {
                   rows={4}
                   value={formData.specialRequests}
                   onChange={e => handleInputChange("specialRequests", e.target.value)}
-                  placeholder="Tell us about any specific requirements, color preferences, themes, or special requests..."
+                  placeholder="Tell us about any specific requirements, colour preferences, themes, or special requests..."
                   sx={{ mb: 2 }}
                 />
               </Grid>

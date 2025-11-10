@@ -48,7 +48,7 @@ export default function CustomCakeDesignPage() {
     },
     {
       name: "Birthday Cake Design",
-      description: "Personalized birthday cakes with custom themes, colors, and decorations",
+      description: "Personalised birthday cakes with custom themes, colours, and decorations",
       price: "From £35",
     },
     {
@@ -228,7 +228,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Birthday Cakes",
                 description:
-                  "Personalized birthday cakes with custom themes, colors, and decorations",
+                  "Personalised birthday cakes with custom themes, colours, and decorations",
                 icon: "🎂",
               },
               {
@@ -514,14 +514,14 @@ export default function CustomCakeDesignPage() {
                     "Traditional Ukrainian embroidery patterns, floral motifs, and geometric designs inspired by Ukrainian folk art.",
                 },
                 {
-                  title: "Ukrainian Colors",
+                  title: "Ukrainian Colours",
                   description:
-                    "Traditional Ukrainian color palette including blue and yellow, representing the Ukrainian flag and cultural heritage.",
+                    "Traditional Ukrainian colour palette including blue and yellow, representing the Ukrainian flag and cultural heritage.",
                 },
                 {
-                  title: "Ukrainian Flavors",
+                  title: "Ukrainian Flavours",
                   description:
-                    "Authentic Ukrainian cake flavors like Medovik (honey), Kyiv cake, and traditional Ukrainian ingredients.",
+                    "Authentic Ukrainian cake flavours like Medovik (honey), Kyiv cake, and traditional Ukrainian ingredients.",
                 },
                 {
                   title: "Cultural Symbols",

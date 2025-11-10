@@ -82,7 +82,7 @@ export default async function BirthdayCakesPage() {
       blocksToText(cake.description).toLowerCase().includes("birthday")
   );
 
-  // Get popular cakes for the flavors section - filter out Christmas and seasonal
+  // Get popular cakes for the flavours section - filter out Christmas and seasonal
   const popularCakes = allCakes
     .filter(
       cake =>
@@ -185,7 +185,7 @@ export default async function BirthdayCakesPage() {
     "@type": "ItemList",
     name: "Birthday Cakes",
     description:
-      "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavors and modern designs.",
+      "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavours and modern designs.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     itemListElement: birthdayCakes.map((cake: Cake, index: number) => ({
       "@type": "ListItem",
@@ -704,7 +704,7 @@ export default async function BirthdayCakesPage() {
               Need a birthday cake today? I offer same-day delivery across Leeds for orders placed before 10am. Perfect for last-minute birthday celebrations or when you need a fresh cake delivered quickly. My same-day service covers Leeds city centre, Headingley, Roundhay, Chapel Allerton, Moortown, and surrounding areas.
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              Standard birthday cake orders require 3-5 days notice for custom designs. However, I keep a selection of popular flavors available for urgent orders. Contact me to check same-day availability. Delivery fees range from £5 for nearby Leeds areas to £12 for outer Leeds postcodes.
+              Standard birthday cake orders require 3-5 days notice for custom designs. However, I keep a selection of popular flavours available for urgent orders. Contact me to check same-day availability. Delivery fees range from £5 for nearby Leeds areas to £12 for outer Leeds postcodes.
             </Typography>
           </Paper>
 
@@ -737,12 +737,12 @@ export default async function BirthdayCakesPage() {
               {[
                 {
                   age: "Children (1-12 years)",
-                  description: "Fun, colorful designs featuring popular characters, unicorns, dinosaurs, princesses, superheroes, and more. Perfect for children's birthday parties with kid-friendly flavors.",
+                  description: "Fun, colourful designs featuring popular characters, unicorns, dinosaurs, princesses, superheroes, and more. Perfect for children's birthday parties with kid-friendly flavours.",
                   popular: "Unicorn cakes, Dinosaur cakes, Princess cakes, Superhero cakes"
                 },
                 {
                   age: "Teenagers (13-19 years)",
-                  description: "Trendy designs featuring sports themes, music, gaming, or sophisticated color schemes. Can incorporate hobbies and interests for personalized birthday celebrations.",
+                  description: "Trendy designs featuring sports themes, music, gaming, or sophisticated colour schemes. Can incorporate hobbies and interests for personalised birthday celebrations.",
                   popular: "Sport themes, Gaming cakes, Music themes, Minimalist designs"
                 },
                 {
@@ -752,7 +752,7 @@ export default async function BirthdayCakesPage() {
                 },
                 {
                   age: "Seniors (60+ years)",
-                  description: "Classic and traditional designs with timeless elegance. Can feature favorite flowers, hobbies, or family themes. Traditional flavors highly recommended.",
+                  description: "Classic and traditional designs with timeless elegance. Can feature favourite flowers, hobbies, or family themes. Traditional flavours highly recommended.",
                   popular: "Classic Victoria sponge, Traditional fruit cake, Elegant florals"
                 },
               ].map((category, index) => (

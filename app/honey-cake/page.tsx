@@ -123,7 +123,7 @@ export default function HoneyCakePage() {
         name: 'How long does honey cake last?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Honey cake stays fresh in the refrigerator for 5-7 days when stored in an airtight container. In fact, many people say it tastes even better after a few days as the flavors develop further. You can also freeze individual slices for up to 3 months.'
+          text: 'Honey cake stays fresh in the refrigerator for 5-7 days when stored in an airtight container. In fact, many people say it tastes even better after a few days as the flavours develop further. You can also freeze individual slices for up to 3 months.'
         }
       },
       {
@@ -244,7 +244,7 @@ export default function HoneyCakePage() {
               Honey cake, called Medovik in Ukrainian, is the most famous Ukrainian and Russian dessert. This isn't just any cake - it's a cultural treasure that Ukrainian families have been making for generations. Every bite tells a story of tradition, skill, and the magic that happens when you combine honey, cream, and time.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              What makes honey cake so special? It's not about fancy decorations or bright colors. The beauty of honey cake is in its simplicity and sophistication. Eight to twelve paper-thin honey layers, soaked overnight in rich cream filling, creating a texture that melts in your mouth. The flavor is subtle and refined - not too sweet, with the gentle taste of real honey coming through in every bite.
+              What makes honey cake so special? It's not about fancy decorations or bright colours. The beauty of honey cake is in its simplicity and sophistication. Eight to twelve paper-thin honey layers, soaked overnight in rich cream filling, creating a texture that melts in your mouth. The flavour is subtle and refined - not too sweet, with the gentle taste of real honey coming through in every bite.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
               I learned to make honey cake from my grandmother in Ukraine. She learned from her mother, who learned from her mother before. The recipe has been in my family for generations. Now I make authentic honey cake in Leeds, keeping this Ukrainian tradition alive and sharing it with Yorkshire people who appreciate real, handmade desserts.
@@ -264,7 +264,7 @@ export default function HoneyCakePage() {
               The layers are what make honey cake unique. Each layer is rolled incredibly thin - about 2-3 millimeters. When you cut a slice, you can count 8, 10, sometimes 12 distinct layers. These aren't thick sponge layers like British cakes. They're delicate, crisp when first baked, and then transform into something magical after soaking in cream overnight.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              The filling is just as important. Traditional honey cake uses sour cream or cream made with condensed milk - not buttercream. This creates a lighter, more refined taste. The cream soaks into the honey layers overnight, softening them while the honey flavor permeates the cream. After this soaking process, the layers and cream become one harmonious dessert.
+              The filling is just as important. Traditional honey cake uses sour cream or cream made with condensed milk - not buttercream. This creates a lighter, more refined taste. The cream soaks into the honey layers overnight, softening them while the honey flavour permeates the cream. After this soaking process, the layers and cream become one harmonious dessert.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
               Many people ask me if honey cake is like British layer cakes. No. British cakes have thick sponge layers with buttercream. They're made quickly. Honey cake requires two days - one day to make and assemble, one day to soak. You cannot rush authentic honey cake. That patience is what creates its unique texture and taste.
@@ -287,7 +287,7 @@ export default function HoneyCakePage() {
               Instead of being angry, the empress was amazed. The honey in the cake tasted completely different from raw honey - it was subtle, sophisticated, transformed by the baking process. She ordered honey cake to be made regularly for the imperial court. From there, it spread throughout Russia and Ukraine, becoming one of the most beloved desserts in Eastern Europe.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
-              Like many legends, this story might be partly myth. But it captures something true about honey cake - the honey flavor is so refined and sophisticated that even people who don't usually like honey fall in love with this cake. I see this happen all the time when people in Leeds try my honey cake for the first time.
+              Like many legends, this story might be partly myth. But it captures something true about honey cake - the honey flavour is so refined and sophisticated that even people who don't usually like honey fall in love with this cake. I see this happen all the time when people in Leeds try my honey cake for the first time.
             </Typography>
           </Paper>
 
@@ -364,7 +364,7 @@ export default function HoneyCakePage() {
                     Overnight Soaking
                   </Typography>
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                    The assembled cake goes in the refrigerator for at least 12 hours, preferably 24 hours. This is the most important step. During this time, the cream soaks into the layers, softening them and allowing flavors to meld. Fresh honey cake is good. Properly soaked honey cake is magical.
+                    The assembled cake goes in the refrigerator for at least 12 hours, preferably 24 hours. This is the most important step. During this time, the cream soaks into the layers, softening them and allowing flavours to meld. Fresh honey cake is good. Properly soaked honey cake is magical.
                   </Typography>
                 </Box>
               </Grid>
@@ -398,7 +398,7 @@ export default function HoneyCakePage() {
                     Condensed Milk Version
                   </Typography>
                   <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                    Uses condensed milk in the cream, creating a sweeter, richer flavor. This version is popular in Russia and Ukraine. The condensed milk also helps the cream hold its shape better.
+                    Uses condensed milk in the cream, creating a sweeter, richer flavour. This version is popular in Russia and Ukraine. The condensed milk also helps the cream hold its shape better.
                   </Typography>
                 </Box>
               </Grid>
@@ -408,7 +408,7 @@ export default function HoneyCakePage() {
                     Chocolate Honey Cake
                   </Typography>
                   <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                    Adds cocoa to the honey layers, creating a darker, more complex flavor. The chocolate enhances the honey without overpowering it. This modern twist is becoming popular with younger generations.
+                    Adds cocoa to the honey layers, creating a darker, more complex flavour. The chocolate enhances the honey without overpowering it. This modern twist is becoming popular with younger generations.
                   </Typography>
                 </Box>
               </Grid>
@@ -418,7 +418,7 @@ export default function HoneyCakePage() {
                     Honey Cake with Nuts
                   </Typography>
                   <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
-                    Adds crushed walnuts or hazelnuts to the cream layers. The nuts add crunch and complement the honey flavor beautifully. Some families include nuts in their traditional recipe.
+                    Adds crushed walnuts or hazelnuts to the cream layers. The nuts add crunch and complement the honey flavour beautifully. Some families include nuts in their traditional recipe.
                   </Typography>
                 </Box>
               </Grid>
@@ -476,7 +476,7 @@ export default function HoneyCakePage() {
               },
               {
                 question: 'How long does honey cake last?',
-                answer: 'Honey cake stays fresh in the refrigerator for 5-7 days when stored in an airtight container. In fact, many people say it tastes even better after a few days as the flavors develop further. You can also freeze individual slices for up to 3 months.'
+                answer: 'Honey cake stays fresh in the refrigerator for 5-7 days when stored in an airtight container. In fact, many people say it tastes even better after a few days as the flavours develop further. You can also freeze individual slices for up to 3 months.'
               },
               {
                 question: 'Why is honey cake soaked overnight?',
@@ -488,7 +488,7 @@ export default function HoneyCakePage() {
               },
               {
                 question: 'Is honey cake very sweet?',
-                answer: 'No! That\'s one of the beautiful things about honey cake. Unlike many Western cakes, it\'s not overly sweet. The honey provides subtle, sophisticated sweetness. The sour cream in traditional recipes adds balance. Even people who don\'t usually like sweet desserts often love honey cake because the flavors are so refined.'
+                answer: 'No! That\'s one of the beautiful things about honey cake. Unlike many Western cakes, it\'s not overly sweet. The honey provides subtle, sophisticated sweetness. The sour cream in traditional recipes adds balance. Even people who don\'t usually like sweet desserts often love honey cake because the flavours are so refined.'
               },
               {
                 question: 'Can I order honey cake for special occasions?',
@@ -524,7 +524,7 @@ export default function HoneyCakePage() {
               Ready to Try Authentic Honey Cake?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, fontSize: '1.1rem', maxWidth: '700px', mx: 'auto' }}>
-              Order traditional Ukrainian honey cake made with real Yorkshire honey. Each cake is handmade to order and soaked overnight for perfect flavor. Same-day delivery available across Leeds.
+              Order traditional Ukrainian honey cake made with real Yorkshire honey. Each cake is handmade to order and soaked overnight for perfect flavour. Same-day delivery available across Leeds.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button
