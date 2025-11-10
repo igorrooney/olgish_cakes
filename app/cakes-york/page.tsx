@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Cakes York | Ukrainian Cakes",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
     url: "https://olgishcakes.co.uk/cakes-york",
     siteName: "Olgish Cakes",
     images: [
@@ -126,7 +126,7 @@ export default async function CakesYorkPage() {
             >
               Experience real Ukrainian cakes delivered fresh to York. From traditional honey
               cake to custom celebration cakes, I bring the taste of Ukraine to your doorstep in
-              York and around areas.
+              York and surrounding areas.
             </Typography>
             <Chip
               label="Fresh Delivery to York"
@@ -154,7 +154,7 @@ export default async function CakesYorkPage() {
               {
                 title: "Fresh Delivery to York",
                 description:
-                  "Professional delivery service covering York city centre and around areas. Same-day and next-day delivery available.",
+                  "Professional delivery service covering York city centre and surrounding areas. Same-day and next-day delivery available.",
                   icon: "🚚",
                 },
                 {

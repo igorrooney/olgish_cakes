@@ -333,7 +333,7 @@ export default function AllergenInformationPage() {
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               I'm committed to making my Ukrainian cakes accessible to everyone. I can adapt my
               traditional recipes to accommodate various dietary requirements while keeping
-              real flavors.
+              authentic flavours.
             </Typography>
             <Grid container spacing={4}>
               {[

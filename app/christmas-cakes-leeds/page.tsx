@@ -291,7 +291,7 @@ export default function ChristmasCakesLeedsPage() {
                   days in advance to ensure availability and proper preparation time.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
-                  <strong>Delivery:</strong> I offer free delivery across Leeds and around areas.
+                  <strong>Delivery:</strong> I offer free delivery across Leeds and surrounding areas.
                   Christmas cakes are delivered fresh on your chosen date.
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.8 }}>

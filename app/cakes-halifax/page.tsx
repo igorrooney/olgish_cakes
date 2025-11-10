@@ -46,7 +46,7 @@ export default async function CakesHalifaxPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Halifax Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and around areas.",
+              "Fresh, handmade cakes in Halifax. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Halifax and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-halifax",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
@@ -244,7 +244,7 @@ export default async function CakesHalifaxPage() {
                     • Hebden Bridge
                   </Typography>
                   <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    • And around areas
+                    • And surrounding areas
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>

@@ -41,7 +41,7 @@ export default function CakesIlkleyPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Ilkley Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and around areas.",
+              "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-ilkley",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",

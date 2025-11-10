@@ -47,7 +47,7 @@ export default async function CakesHuddersfieldPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Huddersfield Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Huddersfield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Huddersfield and around areas.",
+              "Fresh, handmade cakes in Huddersfield. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Huddersfield and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-huddersfield",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",

@@ -206,7 +206,7 @@ export default async function UkrainianBakeryLeedsPage() {
       {
         "@type": "Question",
         name: "Can I order a custom cake?",
-        acceptedAnswer: { "@type": "Answer", text: "Yes. We create custom birthday and wedding cakes with Ukrainian flavours." }
+        acceptedAnswer: { "@type": "Answer", text: "Yes. I create custom birthday and wedding cakes with Ukrainian flavours." }
       }
     ]
   } as const;
@@ -607,7 +607,7 @@ export default async function UkrainianBakeryLeedsPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Taste the real flavors of Ukraine right here in Leeds. Order your traditional
+              Taste the authentic flavours of Ukraine right here in Leeds. Order your traditional
               Ukrainian cake today and experience the warmth of Ukrainian hospitality.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

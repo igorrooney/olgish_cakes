@@ -100,7 +100,7 @@ export default async function BirthdayCakesPage() {
     },
     {
       name: "Adult Birthday Cakes",
-      description: "Nice and sophisticated birthday cakes for adults",
+      description: "Elegant and sophisticated birthday cakes for adults",
       price: "From £45",
     },
     {
@@ -340,7 +340,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Adult Birthday Cakes",
                 description:
-                  "Nice and sophisticated birthday cakes for adults, featuring Ukrainian flavors and modern designs",
+                  "Elegant and sophisticated birthday cakes for adults, featuring Ukrainian flavours and modern designs",
                 icon: "🎉",
               },
               {
@@ -352,7 +352,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Ukrainian Birthday Cakes",
                 description:
-                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with real flavors and cultural meaning",
+                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with authentic flavours and cultural meaning",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (
@@ -369,9 +369,9 @@ export default async function BirthdayCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Box sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
-                  </Typography>
+                  </Box>
                   <Typography
                     variant="h3"
                     component="h3"
@@ -508,7 +508,7 @@ export default async function BirthdayCakesPage() {
 
           <AreasWeCover
             title="Birthday Cake Delivery Areas"
-            subtitle="I deliver birthday cakes across Leeds and around towns."
+            subtitle="I deliver birthday cakes across Leeds and surrounding towns."
           />
 
           {/* Birthday Cake Flavors */}
@@ -541,7 +541,7 @@ export default async function BirthdayCakesPage() {
               cake (Medovik) with 5 layers of soft honey sponge and buttercream made with condensed milk. Kyiv
               cake is premium cake with meringue and cashew nuts, filled with custard cream. I also make Vanilla
               Delicia birthday cake and Chocolate Delicia sponge cake. For all flavours, see my{" "}
-              <Link href="/cake-flavors" style={{ color: "inherit", textDecoration: "underline" }}>
+              <Link href="/cake-flavours" style={{ color: "inherit", textDecoration: "underline" }}>
                 complete flavour guide
               </Link>
               .
@@ -618,19 +618,19 @@ export default async function BirthdayCakesPage() {
                   step: "1",
                   title: "Consultation",
                   description:
-                    "We discuss your birthday cake vision, including theme, colors, flavors, and any special requirements. This can be in-person, over the phone, or via video call.",
+                    "I discuss your birthday cake vision, including theme, colours, flavours, and any special requirements. This can be in-person, over the phone, or via video call.",
                 },
                 {
                   step: "2",
                   title: "Design & Tasting",
                   description:
-                    "We create a custom design proposal and arrange a tasting session with our signature Ukrainian flavors and classic birthday cake options.",
+                    "I create a custom design proposal and arrange a tasting session with my signature Ukrainian flavours and classic birthday cake options.",
                 },
                 {
                   step: "3",
                   title: "Final Design",
                   description:
-                    "After the tasting, we finalize the design, flavors, and all details. A 50% deposit secures your birthday cake order.",
+                    "After the tasting, I finalize the design, flavours, and all details. A 50% deposit secures your birthday cake order.",
                 },
                 {
                   step: "4",

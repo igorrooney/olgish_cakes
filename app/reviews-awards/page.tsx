@@ -576,7 +576,7 @@ export default function ReviewsAwardsPage() {
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Taste the real flavors of Ukrainian cakes that my customers love. Order today and
+              Taste the authentic flavours of Ukrainian cakes that my customers love. Order today and
               become part of my growing family of satisfied customers.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

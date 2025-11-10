@@ -111,7 +111,7 @@ export default async function CakesPudseyPage() {
               🚚 Fast Delivery to Pudsey
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              I deliver my traditional Ukrainian cakes to Pudsey and around areas. Same-day
+              I deliver my traditional Ukrainian cakes to Pudsey and surrounding areas. Same-day
               delivery available for orders placed before 2 PM.
             </Typography>
             <Grid container spacing={2}>

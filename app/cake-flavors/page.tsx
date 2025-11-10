@@ -179,7 +179,7 @@ export default function CakeFlavorsPage() {
                 lineHeight: 1.6,
               }}
             >
-              Discover the real flavors of Ukrainian cakes. From traditional honey cake to
+              Discover the authentic flavours of Ukrainian cakes. From traditional honey cake to
               modern variations, explore my range of delicious Ukrainian cake flavors and
               ingredients.
             </Typography>
@@ -589,7 +589,7 @@ export default function CakeFlavorsPage() {
               Experience Ukrainian Flavors
             </Typography>
             <Typography variant="h3" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Order your favorite Ukrainian cake flavor today and taste the real flavors of
+              Order your favorite Ukrainian cake flavor today and taste the authentic flavours of
               Ukraine
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>

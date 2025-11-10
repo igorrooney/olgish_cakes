@@ -59,7 +59,7 @@ export default function CustomCakeDesignPage() {
     {
       name: "Ukrainian Design Cakes",
       description:
-        "Traditional Ukrainian-inspired designs with real flavors and cultural elements",
+        "Traditional Ukrainian-inspired designs with authentic flavours and cultural elements",
       price: "From £50",
     },
   ];
@@ -69,13 +69,13 @@ export default function CustomCakeDesignPage() {
       step: "1",
       title: "Initial Consultation",
       description:
-        "We discuss your vision, theme, colors, guest count, and any special requirements.",
+        "I discuss your vision, theme, colours, guest count, and any special requirements.",
     },
     {
       step: "2",
       title: "Design Concept",
       description:
-        "We create a custom design proposal with sketches, color schemes, and flavor combinations.",
+        "I create a custom design proposal with sketches, colour schemes, and flavour combinations.",
     },
     {
       step: "3",
@@ -240,7 +240,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Ukrainian Designs",
                 description:
-                  "Traditional Ukrainian-inspired designs with real flavors and cultural elements",
+                  "Traditional Ukrainian-inspired designs with authentic flavours and cultural elements",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (
@@ -306,13 +306,13 @@ export default function CustomCakeDesignPage() {
                   step: "1",
                   title: "Initial Consultation",
                   description:
-                    "We discuss your vision, theme, colors, guest count, and any special requirements. This can be in-person, over the phone, or via video call.",
+                    "I discuss your vision, theme, colours, guest count, and any special requirements. This can be in-person, over the phone, or via video call.",
                 },
                 {
                   step: "2",
                   title: "Design Concept",
                   description:
-                    "We create a custom design proposal with sketches, color schemes, and flavor combinations that match your vision and preferences.",
+                    "I create a custom design proposal with sketches, colour schemes, and flavour combinations that match your vision and preferences.",
                 },
                 {
                   step: "3",
@@ -574,7 +574,7 @@ export default function CustomCakeDesignPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               Custom cake pricing varies based on design complexity, size, ingredients, and
-              decoration requirements. We offer transparent pricing and will provide a detailed
+              decoration requirements. I offer transparent pricing and will provide a detailed
               quote after our initial consultation.
             </Typography>
             <Grid container spacing={4}>

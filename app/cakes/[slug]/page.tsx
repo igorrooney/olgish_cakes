@@ -430,7 +430,7 @@ export default async function CakePage({ params }: PageProps) {
                 name: `Is delivery available for the ${cake.name}?`,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and around areas.",
+                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and surrounding areas.",
                 },
               },
               {

@@ -170,9 +170,9 @@ export default async function WakefieldWeddingCakesPage() {
             mb: 4,
             lineHeight: 1.7
           }}>
-            🎂 Wakefield's best wedding cake designer! We create unforgettable memories with our
+            🎂 Wakefield's best wedding cake designer! I create unforgettable memories with my
             authentic Ukrainian wedding cakes. From traditional honey cakes to modern Kyiv cake designs,
-            we make bespoke wedding cakes that show your unique love story. Free consultation
+            I make bespoke wedding cakes that show your unique love story. Free consultation
             and delivery throughout Wakefield and surrounding areas.
           </Typography>
 
@@ -520,7 +520,7 @@ export default async function WakefieldWeddingCakesPage() {
                   Can you accommodate dietary restrictions?
                 </Typography>
                 <Typography variant="body1">
-                  Absolutely! We specialize in gluten-friendly, dairy-free, and vegan wedding cakes.
+                  Absolutely! I specialize in gluten-friendly, dairy-free, and vegan wedding cakes.
                   All dietary requirements can be accommodated without compromising on taste or design.
                 </Typography>
               </Box>

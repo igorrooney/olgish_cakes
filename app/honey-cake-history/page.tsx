@@ -461,7 +461,7 @@ export default function HoneyCakeHistoryPage() {
               variant="body1"
               sx={{ mb: 4, color: "text.secondary", maxWidth: "600px", mx: "auto" }}
             >
-              Taste the real flavors of Ukrainian tradition with my handcrafted honey cake
+              Taste the authentic flavours of Ukrainian tradition with my handcrafted honey cake
               cakes. Made using traditional recipes and techniques, my honey cake brings the rich
               history and cultural heritage of Ukraine to your table.
             </Typography>

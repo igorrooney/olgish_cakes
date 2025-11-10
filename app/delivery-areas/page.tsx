@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds | Cake Delivery Areas",
     description:
-      "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire.",
+      "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
@@ -63,7 +63,7 @@ export default function DeliveryAreasPage() {
             "@type": "Service",
             name: "Cake Delivery Leeds",
             description:
-              "Fresh cake delivery across Leeds and around areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
+              "Fresh cake delivery across Leeds and surrounding areas. Local cake delivery service covering West Yorkshire. Same-day and next-day cake delivery available.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -204,7 +204,7 @@ export default function DeliveryAreasPage() {
               {
                 title: "Local Service",
                 description:
-                  "Local delivery service covering Leeds and around areas with personal attention to detail",
+                  "Local delivery service covering Leeds and surrounding areas with personal attention to detail",
                 icon: "📍",
               },
               {
@@ -277,7 +277,7 @@ export default function DeliveryAreasPage() {
               My Delivery Areas
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              I deliver fresh Ukrainian cakes across Leeds and around areas in West Yorkshire. My
+              I deliver fresh Ukrainian cakes across Leeds and surrounding areas in West Yorkshire. My
               local delivery service makes sure your cake arrives fresh and beautiful for your
               special occasion.
             </Typography>
