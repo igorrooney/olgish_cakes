@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip, Card, CardContent, Link as MuiLink } from '@mui/material'
+import { Container, Typography, Box, Grid, Paper, Button, Chip, Card, CardContent } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { ArrowForwardIcon, LocalShippingIcon, CheckCircleIcon, StarIcon, CakeOutlinedIcon } from '@/lib/mui-optimization'
+import { ArrowForwardIcon, LocalShippingIcon, CheckCircleIcon, StarIcon, CakeOutlinedIcon, Link as MuiLink } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 

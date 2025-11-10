@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails, Link as MuiLink } from '@mui/material'
+import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon, LocalDiningIcon, DesignServicesIcon, KitchenIcon, OpacityIcon, CakeIcon, AccessTimeIcon } from '@/lib/mui-optimization'
+import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon, LocalDiningIcon, DesignServicesIcon, KitchenIcon, OpacityIcon, CakeIcon, AccessTimeIcon, Link as MuiLink } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
