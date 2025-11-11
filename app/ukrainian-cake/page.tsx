@@ -8,11 +8,11 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
-  description: '★★★★★ Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love. Order now!',
+  description: 'Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love. Order now!',
   keywords: 'ukrainian cake, ukrainian cakes, traditional ukrainian cake, authentic ukrainian cake, ukrainian cake near me, ukrainian bakery, medovik, kyiv cake, ukrainian desserts',
   openGraph: {
     title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
-    description: '★★★★★ Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love. Order now!',
+    description: 'Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love. Order now!',
     url: `${BUSINESS_CONSTANTS.BASE_URL}/ukrainian-cake`,
     siteName: 'Olgish Cakes',
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
-    description: '★★★★★ Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love.',
+    description: 'Discover authentic Ukrainian cakes in Leeds. Traditional Medovik honey cake, Kyiv cake & Napoleon. Real Ukrainian recipes, handmade with love.',
     images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/ukrainian-cakes-collection.jpg`]
   },
   alternates: {

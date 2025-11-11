@@ -4,11 +4,11 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Cake by Post UK | Letterbox Cake Delivery Across Britain",
-  description: "★★★★★ Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales. Order cake by post today!",
+  description: "Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales. Order cake by post today!",
   keywords: "cake by post uk, cake by post, cakes by post uk, send cake by post uk, order cake by post uk, letterbox cake uk, cake delivery uk, postal cake uk, uk cake by post, cakes delivered by post uk, honey cake by post uk, birthday cake by post uk, cake gift uk",
   openGraph: {
     title: "Cake by Post UK | Letterbox Cake Delivery Across Britain",
-    description: "★★★★★ Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales. Order today!",
+    description: "Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales. Order today!",
     url: "https://olgishcakes.co.uk/cake-by-post-service",
     siteName: "Olgish Cakes",
     images: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Cake by Post UK | Letterbox Cake Delivery Across Britain",
-    description: "★★★★★ Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales.",
+    description: "Cake by post UK - send delicious Ukrainian honey cake anywhere in Britain. Letterbox delivery across England, Scotland, Wales.",
     images: ["https://olgishcakes.co.uk/images/cake-by-post-service.jpg"],
   },
   alternates: {

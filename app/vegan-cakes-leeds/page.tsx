@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title:
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
+      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavours like honey cake (Medovik) adapted for vegan diets.",
     url: "https://olgishcakes.co.uk/vegan-cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title:
       "Vegan Cakes Leeds | Dairy-Free Ukrainian Cakes",
     description:
-      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavors like honey cake (Medovik) adapted for vegan diets.",
+      "Delicious vegan Ukrainian cakes in Leeds. Dairy-free, egg-free cakes made with plant-based ingredients. Traditional Ukrainian flavours like honey cake (Medovik) adapted for vegan diets.",
     images: ["https://olgishcakes.co.uk/images/vegan-cakes-leeds.jpg"],
   },
   alternates: {
@@ -457,7 +457,7 @@ export default function VeganCakesLeedsPage() {
             >
               Contact us today to discuss your vegan cake requirements, get a quote, or place an
               order. We're here to make your vegan celebration special with authentic Ukrainian
-              flavors.
+              flavours.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

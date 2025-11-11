@@ -16,13 +16,13 @@ import { BUSINESS_CONSTANTS } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
   description:
-    "★★★★★ Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
+    "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
   keywords:
     "cake delivery Leeds, same day cake delivery Leeds, cake delivery service Leeds, next day cake delivery Leeds, Ukrainian cake delivery Leeds, birthday cake delivery Leeds, wedding cake delivery Leeds",
   openGraph: {
     title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
     description:
-      "★★★★★ Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
+      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
     url: "https://olgishcakes.co.uk/cake-delivery-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
     description:
-      "★★★★★ Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Order today!",
+      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Order today!",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {

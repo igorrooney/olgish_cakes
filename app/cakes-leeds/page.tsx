@@ -10,13 +10,13 @@ import { getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 export const metadata: Metadata = {
   title: "Birthday Cakes Leeds from £25 | 5★ Rated",
   description:
-    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
+    "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
   keywords:
     "cakes Leeds, bakery Leeds, custom cakes Leeds, wedding cakes Leeds, birthday cakes Leeds, cake delivery Leeds, Ukrainian cakes Leeds, local bakery Leeds, fresh cakes Leeds",
   openGraph: {
     title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
-      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
+      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Birthday Cakes Leeds from £25 | 5★ Rated",
     description:
-      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
+      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Custom designs | Children's & adult themes | Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-leeds.jpg"],
   },
   alternates: {

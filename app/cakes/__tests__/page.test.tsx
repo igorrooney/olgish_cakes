@@ -72,9 +72,9 @@ describe('CakesPage', () => {
       expect(metadata.title).toContain('Leeds')
     })
 
-    it('should have description with stars', () => {
-      expect(metadata.description).toContain('★')
+    it('should have description with reviews', () => {
       expect(metadata.description).toContain('127+')
+      expect(metadata.description).toContain('5-star reviews')
     })
 
     it('should have keywords as string', () => {

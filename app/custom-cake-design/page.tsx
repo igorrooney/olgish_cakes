@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Custom Cake Design Leeds | Personalized Cakes",
     description:
-      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavours. Free consultation available.",
     url: "https://olgishcakes.co.uk/custom-cake-design",
     siteName: "Olgish Cakes",
     images: [
@@ -81,7 +81,7 @@ export default function CustomCakeDesignPage() {
       step: "3",
       title: "Tasting Session",
       description:
-        "Sample our signature Ukrainian flavors and traditional cake options to find the perfect combination.",
+        "Sample our signature Ukrainian flavours and traditional cake options to find the perfect combination.",
     },
     {
       step: "4",
@@ -318,13 +318,13 @@ export default function CustomCakeDesignPage() {
                   step: "3",
                   title: "Tasting Session",
                   description:
-                    "Sample our signature Ukrainian flavors and traditional cake options to find the perfect combination for your custom cake.",
+                    "Sample our signature Ukrainian flavours and traditional cake options to find the perfect combination for your custom cake.",
                 },
                 {
                   step: "4",
                   title: "Final Design",
                   description:
-                    "After the tasting, we finalize all details including design, flavors, size, and delivery arrangements. A 50% deposit secures your order.",
+                    "After the tasting, we finalize all details including design, flavours, size, and delivery arrangements. A 50% deposit secures your order.",
                 },
                 {
                   step: "5",
@@ -427,10 +427,10 @@ export default function CustomCakeDesignPage() {
                 {
                   category: "Flavor Combinations",
                   options: [
-                    "Traditional Ukrainian flavors",
-                    "Classic wedding cake flavors",
+                    "Traditional Ukrainian flavours",
+                    "Classic wedding cake flavours",
                     "Modern fusion combinations",
-                    "Seasonal fruit flavors",
+                    "Seasonal fruit flavours",
                     "Chocolate and caramel",
                     "Light and refreshing options",
                   ],

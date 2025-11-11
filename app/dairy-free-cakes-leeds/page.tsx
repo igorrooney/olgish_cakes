@@ -299,7 +299,7 @@ export default async function DairyFreeCakesLeedsPage() {
             >
               <Grid container spacing={3}>
                 {[
-                  "Authentic Ukrainian flavors without dairy ingredients",
+                  "Authentic Ukrainian flavours without dairy ingredients",
                   "Suitable for lactose intolerance and dairy allergies",
                   "Perfect for vegan and plant-based diets",
                   "Same beautiful designs and quality as our regular cakes",

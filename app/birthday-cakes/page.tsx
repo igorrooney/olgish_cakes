@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title:
       "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [

@@ -34,7 +34,7 @@ const structuredData = {
   "@type": "Service",
   name: "Valentine's Day Cakes Leeds",
   description:
-    "Custom Valentine's Day cakes in Leeds with romantic designs, heart shapes, and chocolate flavors. Same-day delivery available.",
+    "Custom Valentine's Day cakes in Leeds with romantic designs, heart shapes, and chocolate flavours. Same-day delivery available.",
   provider: {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
@@ -70,7 +70,7 @@ const valentineCakes = [
   },
   {
     name: "Love in Bloom",
-    description: "Vanilla cake with rose-flavored buttercream and edible flowers",
+    description: "Vanilla cake with rose-flavoured buttercream and edible flowers",
     price: "£50",
     features: ["Rose buttercream", "Edible flowers", "Elegant design", "Perfect for romance"],
   },

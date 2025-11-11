@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Celebration Cakes Leeds | Party Cakes",
     description:
-      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+      "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavours.",
     url: "https://olgishcakes.co.uk/celebration-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -63,7 +63,7 @@ export default async function CelebrationCakesPage() {
             "@type": "Service",
             name: "Celebration Cakes Leeds",
             description:
-              "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavors.",
+              "Beautiful celebration cakes in Leeds for all special occasions. Anniversary cakes, party cakes, graduation cakes, and more. Ukrainian-inspired celebration cakes with traditional flavours.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -222,7 +222,7 @@ export default async function CelebrationCakesPage() {
                 {
                   title: "Anniversary Cakes",
                   description:
-                    "Nice anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavors",
+                    "Nice anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavours",
                   icon: "💕",
                 },
                 {
@@ -277,7 +277,7 @@ export default async function CelebrationCakesPage() {
               {
                 title: "Baby Shower Cakes",
                 description:
-                  "Sweet baby shower cakes celebrating new life with delicate designs and gentle flavors",
+                  "Sweet baby shower cakes celebrating new life with delicate designs and gentle flavours",
                 icon: "👶",
               },
               {
@@ -465,8 +465,8 @@ export default async function CelebrationCakesPage() {
               Celebration Cake Flavors
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              My celebration cakes feature a selection of flavors perfect for special occasions.
-              From traditional Ukrainian favorites to classic celebration flavors, I have something
+              My celebration cakes feature a selection of flavours perfect for special occasions.
+              From traditional Ukrainian favorites to classic celebration flavours, I have something
               for every taste and occasion.
             </Typography>
             <Grid container spacing={3}>

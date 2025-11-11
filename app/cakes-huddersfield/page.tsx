@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   title:
     "Birthday Cakes Huddersfield from £25 | 5★ Rated",
   description:
-    "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+    "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Huddersfield, birthday cakes in Huddersfield, custom birthday cakes Huddersfield, children's birthday cakes Huddersfield, cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, cake delivery Huddersfield, bakery Huddersfield",
   openGraph: {
     title: "Birthday Cakes Huddersfield from £25 | 5★ Rated",
     description:
-      "★★★★★ Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-huddersfield",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
     type: "website",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Birthday Cakes Huddersfield from £25 | Same-Day Delivery",
     description:
-      "★★★★★ Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
+      "Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
   },
   alternates: {

@@ -8,11 +8,11 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
-  description: '★★★★★ Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs from £25. Order now!',
+  description: 'Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs from £25. Order now!',
   keywords: 'cake in leeds, cakes leeds, leeds bakery, ukrainian bakery leeds, cake delivery leeds, birthday cake leeds, wedding cake leeds, best cake leeds',
   openGraph: {
     title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
-    description: '★★★★★ Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs from £25. Order now!',
+    description: 'Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs from £25. Order now!',
     url: `${BUSINESS_CONSTANTS.BASE_URL}/cake-in-leeds`,
     siteName: 'Olgish Cakes',
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
-    description: '★★★★★ Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs.',
+    description: 'Best cake in Leeds! Authentic Ukrainian cakes, same-day delivery across Leeds. Traditional Medovik, Kyiv cake & custom designs.',
     images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/cakes-leeds-delivery.jpg`]
   },
   alternates: {
@@ -238,7 +238,7 @@ export default function CakeInLeedsPage() {
               Authentic Ukrainian cakes made fresh daily in Leeds. Same-day delivery across Yorkshire.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', mb: 3 }}>
-              <Chip label="★★★★★ 127+ Reviews" sx={{ bgcolor: 'secondary.main', color: 'primary.main', fontWeight: 'bold' }} />
+              <Chip label="5★ Rated - 127+ Reviews" sx={{ bgcolor: 'secondary.main', color: 'primary.main', fontWeight: 'bold' }} />
               <Chip label="Same-Day Delivery" sx={{ bgcolor: 'white', color: 'primary.main' }} />
               <Chip label="From £25" sx={{ bgcolor: 'white', color: 'primary.main' }} />
             </Box>
@@ -252,7 +252,7 @@ export default function CakeInLeedsPage() {
               Looking for cake in Leeds? I'm Olga, and I run the only authentic Ukrainian bakery in Leeds. I make traditional Ukrainian cakes that you won't find anywhere else in Yorkshire. Every cake is handmade using recipes my family taught me in Ukraine. When you order cake in Leeds from me, you get something special - not mass-produced supermarket cake, but real Ukrainian tradition made with love.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              I started making cakes in Leeds because I missed the authentic Ukrainian cakes from home. British cakes are nice, but Ukrainian cakes are different - more layers, better textures, more sophisticated flavors. Now Leeds people can taste real Ukrainian tradition without traveling to Ukraine. My customers tell me they've never had cake like this before. That makes me proud.
+              I started making cakes in Leeds because I missed the authentic Ukrainian cakes from home. British cakes are nice, but Ukrainian cakes are different - more layers, better textures, more sophisticated flavours. Now Leeds people can taste real Ukrainian tradition without traveling to Ukraine. My customers tell me they've never had cake like this before. That makes me proud.
             </Typography>
             <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
               Whether you need birthday cake in Leeds, wedding cake, or just want to try something new, I make every cake fresh to order. I deliver across all of Leeds - from city centre to Roundhay, Headingley to Morley. Same-day delivery available if you order before noon. Prices start from £25, so authentic Ukrainian cake in Leeds is affordable for everyone.
@@ -315,7 +315,7 @@ export default function CakeInLeedsPage() {
                   <MuiLink component={Link} href="/birthday-cakes" underline="none" sx={{ color: colors.primary.main }}>Birthday Cake Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Need birthday cake in Leeds? I make beautiful custom birthday cakes with any design you want. From simple elegant cakes to elaborate themed creations, every birthday cake is made fresh and designed just for you. Popular flavors include honey cake, vanilla, and chocolate. Order 2 days ahead for custom designs.
+                  Need birthday cake in Leeds? I make beautiful custom birthday cakes with any design you want. From simple elegant cakes to elaborate themed creations, every birthday cake is made fresh and designed just for you. Popular flavours include honey cake, vanilla, and chocolate. Order 2 days ahead for custom designs.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -323,7 +323,7 @@ export default function CakeInLeedsPage() {
                   <MuiLink component={Link} href="/wedding-cakes" underline="none" sx={{ color: colors.primary.main }}>Wedding Cake Leeds</MuiLink>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Your wedding cake should be as special as your day. I create stunning wedding cakes in Leeds with beautiful designs and delicious flavors. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting for wedding cakes.
+                  Your wedding cake should be as special as your day. I create stunning wedding cakes in Leeds with beautiful designs and delicious flavours. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting for wedding cakes.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -383,7 +383,7 @@ export default function CakeInLeedsPage() {
               Many Leeds bakeries make good cakes, but Ukrainian cakes are different. Most cakes in Leeds are sponge-based with buttercream. They're nice for children's parties. But Ukrainian cakes are more sophisticated. They're for people who appreciate fine desserts.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
-              Ukrainian cakes have multiple thin layers - 8, 10, sometimes 12 layers in one cake. Each layer is paper-thin. The fillings are different too - we use sour cream, condensed milk, custard, not just buttercream. The flavors are more subtle and refined. When Leeds people try my Ukrainian cakes, they're surprised how different they taste.
+              Ukrainian cakes have multiple thin layers - 8, 10, sometimes 12 layers in one cake. Each layer is paper-thin. The fillings are different too - we use sour cream, condensed milk, custard, not just buttercream. The flavours are more subtle and refined. When Leeds people try my Ukrainian cakes, they're surprised how different they taste.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: '1.1rem' }}>
               Another difference is time. British cakes can be made in a few hours. Ukrainian cakes take longer - my honey cake soaks overnight, the meringue needs time to dry, the pastry needs to rest. I can't rush Ukrainian cakes. That's why they taste so special. In Leeds, nobody else makes cakes this way.

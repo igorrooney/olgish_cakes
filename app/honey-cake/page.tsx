@@ -8,11 +8,11 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
-  description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight. Order from £25!',
+  description: 'Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight. Order from £25!',
   keywords: 'honey cake, medovik, ukrainian honey cake, honey cake near me, buy honey cake, traditional honey cake, medovik cake, honey cake leeds',
   openGraph: {
     title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
-    description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight. Order from £25!',
+    description: 'Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight. Order from £25!',
     url: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`,
     siteName: 'Olgish Cakes',
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
-    description: '★★★★★ Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight.',
+    description: 'Authentic honey cake (Medovik) in Leeds. Traditional Ukrainian recipe, handmade with real honey. 8 delicate layers soaked overnight.',
     images: [`${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-medovik.jpg`]
   },
   alternates: {
@@ -115,7 +115,7 @@ export default function HoneyCakePage() {
         name: 'What is honey cake (Medovik)?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Honey cake, called Medovik in Ukrainian and Russian, is a traditional layered cake with 8-12 thin honey-infused layers alternated with cream filling. The layers are soaked overnight, becoming incredibly soft and flavorful. It\'s one of the most beloved desserts in Ukraine and Eastern Europe.'
+          text: 'Honey cake, called Medovik in Ukrainian and Russian, is a traditional layered cake with 8-12 thin honey-infused layers alternated with cream filling. The layers are soaked overnight, becoming incredibly soft and flavourful. It\'s one of the most beloved desserts in Ukraine and Eastern Europe.'
         }
       },
       {
@@ -434,7 +434,7 @@ export default function HoneyCakePage() {
             <Grid container spacing={3}>
               {[
                 'Authentic Ukrainian recipe from my grandmother',
-                'Made with real Yorkshire honey, not artificial flavoring',
+                'Made with real Yorkshire honey, not artificial flavouring',
                 'Each layer rolled paper-thin by hand',
                 'Soaked overnight for perfect texture',
                 'Fresh ingredients - no preservatives',
@@ -472,7 +472,7 @@ export default function HoneyCakePage() {
             {[
               {
                 question: 'What is honey cake (Medovik)?',
-                answer: 'Honey cake, called Medovik in Ukrainian and Russian, is a traditional layered cake with 8-12 thin honey-infused layers alternated with cream filling. The layers are soaked overnight, becoming incredibly soft and flavorful. It\'s one of the most beloved desserts in Ukraine and Eastern Europe.'
+                answer: 'Honey cake, called Medovik in Ukrainian and Russian, is a traditional layered cake with 8-12 thin honey-infused layers alternated with cream filling. The layers are soaked overnight, becoming incredibly soft and flavourful. It\'s one of the most beloved desserts in Ukraine and Eastern Europe.'
               },
               {
                 question: 'How long does honey cake last?',

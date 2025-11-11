@@ -19,13 +19,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | 5★ Rated | Same-Day Delivery Yorkshire",
   description:
-    "★★★★★ Cake delivery Leeds from £5 | Same-day delivery | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving Leeds & Yorkshire | Order before 10am today!",
+    "Cake delivery Leeds from £5 | Same-day delivery | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving Leeds & Yorkshire | Order before 10am today!",
   keywords:
     "cake delivery Leeds, cake delivery areas, local cake delivery, cake delivery West Yorkshire, same day cake delivery Leeds, next day cake delivery, Ukrainian cake delivery",
   openGraph: {
     title: "Cake Delivery Leeds | 5★ Rated | Same-Day Delivery Yorkshire",
     description:
-      "★★★★★ Cake delivery Leeds from £5 | Same-day delivery | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving Leeds & Yorkshire | Order before 10am today!",
+      "Cake delivery Leeds from £5 | Same-day delivery | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving Leeds & Yorkshire | Order before 10am today!",
     url: "https://olgishcakes.co.uk/delivery-areas",
     siteName: "Olgish Cakes",
     images: [

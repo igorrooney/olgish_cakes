@@ -373,7 +373,7 @@ export default function AllergenInformationPage() {
                   diet: "Nut-Free",
                   icon: "🥜❌",
                   description:
-                    "Traditional recipes adapted to exclude nuts while keeping real Ukrainian flavors",
+                    "Traditional recipes adapted to exclude nuts while keeping real Ukrainian flavours",
                   options: ["Nut-free Kyiv cake", "Nut-free fillings", "Alternative toppings"],
                   notice: "Made in a kitchen that handles nuts",
                 },

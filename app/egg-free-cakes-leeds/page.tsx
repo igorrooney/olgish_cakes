@@ -181,7 +181,7 @@ export default async function EggFreeCakesPage() {
             {[
               {
                 title: "Traditional Taste",
-                description: "Authentic Ukrainian flavors without compromising on taste",
+                description: "Authentic Ukrainian flavours without compromising on taste",
                 icon: "🏺",
               },
               {

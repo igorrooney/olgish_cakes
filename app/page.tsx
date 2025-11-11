@@ -84,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Enhanced description with event information
   let description =
-    "★★★★★ #1 Ukrainian bakery in Leeds. Real honey cake (Medovik), Kyiv cake & custom designs. Same-day delivery across Yorkshire. Order now!";
+    "#1 Ukrainian bakery in Leeds. Real honey cake (Medovik), Kyiv cake & custom designs. Same-day delivery across Yorkshire. Order now!";
 
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     description += ` Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}!`;
