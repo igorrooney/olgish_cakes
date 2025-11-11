@@ -255,6 +255,7 @@ export default async function CakePage({ params }: PageProps) {
               condition: "https://schema.org/NewCondition",
               priceValidUntil: getPriceValidUntil(30),
               url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
+              image: productImageUrl,
               seller: {
                 "@type": "Organization",
                 name: "Olgish Cakes",

@@ -241,6 +241,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             condition: "https://schema.org/NewCondition",
             priceValidUntil: getPriceValidUntil(30),
             url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`,
+            image: imagesForJsonLd[0],
             seller: {
               "@type": "Organization",
               name: "Olgish Cakes",

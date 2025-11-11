@@ -210,17 +210,19 @@ export function ContactForm({
             {
               "@type": "Offer",
               itemOffered: {
-                "@type": "Product",
+                "@type": "Service",
                 name: "Ukrainian Honey Cake",
                 description: "Traditional Ukrainian honey cake (Medovik)",
+                serviceType: "Cake Baking and Delivery",
               },
             },
             {
               "@type": "Offer",
               itemOffered: {
-                "@type": "Product",
+                "@type": "Service",
                 name: "Custom Wedding Cakes",
                 description: "Custom designed wedding cakes",
+                serviceType: "Cake Baking and Delivery",
               },
             },
           ],
