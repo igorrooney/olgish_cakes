@@ -163,7 +163,7 @@ export default async function CakeGalleryPage() {
                 {
                   category: "Birthday Cakes",
                   icon: "🎂",
-                  description: "Colorful and fun birthday cakes for all ages",
+                  description: "Colourful and fun birthday cakes for all ages",
                   count: "Custom designs available",
                 },
                 {

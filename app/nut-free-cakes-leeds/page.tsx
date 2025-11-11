@@ -7,13 +7,13 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
   title: "Nut Free Cakes Leeds | Allergen-Safe Birthday & Wedding Cakes",
   description:
-    "★★★★★ Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
+    "Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
   keywords:
     "nut free cakes Leeds, nut-free cakes Leeds, nut free cake near me, allergen-safe cakes Leeds, allergy-friendly cakes Leeds, Ukrainian nut-free cakes, nut-free honey cake, nut-free desserts Leeds, nut allergy cakes, safe birthday cakes Leeds",
   openGraph: {
     title: "Nut Free Cakes Leeds | Allergen-Safe Birthday & Wedding Cakes",
     description:
-      "★★★★★ Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
+      "Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
     url: "https://olgishcakes.co.uk/nut-free-cakes-leeds",
     images: ["https://olgishcakes.co.uk/images/nut-free-cakes-leeds.jpg"],
     type: "website",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nut Free Cakes Leeds | Allergen-Safe Birthday & Wedding Cakes",
     description:
-      "★★★★★ Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
+      "Safe nut-free cakes in Leeds from £25. Birthday, wedding & celebration cakes. Dedicated nut-free environment. 127+ 5-star reviews. Order today!",
     images: ["https://olgishcakes.co.uk/images/nut-free-cakes-leeds.jpg"],
   },
   alternates: {

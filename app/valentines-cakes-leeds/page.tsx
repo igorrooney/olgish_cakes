@@ -4,9 +4,9 @@ import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Valentine's Day Cakes Leeds | Romantic Cakes",
+  title: "Valentine's Cakes Leeds £35+ | 5★ | Romantic Hearts",
   description:
-    "Order beautiful Valentine's Day cakes in Leeds. Romantic heart-shaped cakes, chocolate lovers cakes, and custom designs. Same-day delivery available in Leeds and around areas.",
+    "Valentine's cakes Leeds from £35 | Heart-shaped designs | Red velvet & chocolate | 5★ rated (127+ reviews) | Same-day delivery | Surprise your loved one!",
   keywords:
     "valentine's day cakes leeds, romantic cakes, heart shaped cakes, chocolate cakes, valentine cakes delivery leeds",
   openGraph: {
@@ -34,7 +34,7 @@ const structuredData = {
   "@type": "Service",
   name: "Valentine's Day Cakes Leeds",
   description:
-    "Custom Valentine's Day cakes in Leeds with romantic designs, heart shapes, and chocolate flavors. Same-day delivery available.",
+    "Custom Valentine's Day cakes in Leeds with romantic designs, heart shapes, and chocolate flavours. Same-day delivery available.",
   provider: {
     "@type": "LocalBusiness",
     name: "Olgish Cakes",
@@ -70,7 +70,7 @@ const valentineCakes = [
   },
   {
     name: "Love in Bloom",
-    description: "Vanilla cake with rose-flavored buttercream and edible flowers",
+    description: "Vanilla cake with rose-flavoured buttercream and edible flowers",
     price: "£50",
     features: ["Rose buttercream", "Edible flowers", "Elegant design", "Perfect for romance"],
   },

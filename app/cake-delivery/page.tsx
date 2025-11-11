@@ -8,13 +8,13 @@ import { AreasWeCover } from "../components/AreasWeCover";
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds – Same‑day Options",
   description:
-    "Professional cake delivery across Leeds and around areas with careful handling and optional venue setup for weddings. Same‑day options when available. Prices from £5.",
+    "Professional cake delivery across Leeds and surrounding areas with careful handling and optional venue setup for weddings. Same‑day options when available. Prices from £5.",
   keywords:
     "cake delivery Leeds, same day cake delivery Leeds, wedding cake delivery Leeds, birthday cake delivery Leeds, celebration cake delivery, venue setup wedding cakes, local cake delivery Leeds, Wakefield cake delivery, York cake delivery, Bradford cake delivery",
   openGraph: {
     title: "Cake Delivery Leeds – Same‑day Options",
     description:
-      "Professional cake delivery across Leeds and around areas. Optional wedding cake setup at your venue. Same‑day options when available.",
+      "Professional cake delivery across Leeds and surrounding areas. Optional wedding cake setup at your venue. Same‑day options when available.",
     url: "https://olgishcakes.co.uk/cake-delivery",
     siteName: "Olgish Cakes",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds – Same‑day Options",
     description:
-      "Professional cake delivery across Leeds and around areas with careful handling and venue setup for weddings.",
+      "Professional cake delivery across Leeds and surrounding areas with careful handling and venue setup for weddings.",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
@@ -79,7 +79,7 @@ export default function CakeDeliveryPage() {
             "@type": "Service",
             name: "Cake Delivery Leeds",
             description:
-              "Professional cake delivery service in Leeds and around areas. Wedding cake delivery with venue setup, birthday cake delivery, and celebration cake delivery.",
+              "Professional cake delivery service in Leeds and surrounding areas. Wedding cake delivery with venue setup, birthday cake delivery, and celebration cake delivery.",
             provider: {
               "@type": "Bakery",
               name: "Olgish Cakes",
@@ -152,7 +152,7 @@ export default function CakeDeliveryPage() {
                 name: "Which areas do you deliver to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I deliver across Leeds and around areas including Wakefield, Bradford, York, Harrogate and more."
+                  text: "I deliver across Leeds and surrounding areas including Wakefield, Bradford, York, Harrogate and more."
                 }
               },
               {
@@ -227,7 +227,7 @@ export default function CakeDeliveryPage() {
                 lineHeight: 1.6,
               }}
             >
-              Reliable cake delivery service across Leeds and around areas. I make sure your
+              Reliable cake delivery service across Leeds and surrounding areas. I make sure your
               Ukrainian cakes arrive fresh, safe, and nicely presented for your special
               occasions.
             </Typography>
@@ -267,7 +267,7 @@ export default function CakeDeliveryPage() {
               },
               {
                 title: "Local Leeds Delivery",
-                description: "Fast delivery service across Leeds and around areas",
+                description: "Fast delivery service across Leeds and surrounding areas",
                 icon: "🚚",
               },
             ].map((service, index) => (
@@ -328,7 +328,7 @@ export default function CakeDeliveryPage() {
               Delivery Areas
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
-              I provide professional cake delivery service across Leeds and around areas. My
+              I provide professional cake delivery service across Leeds and surrounding areas. My
               delivery team makes sure your cake arrives safely and on time, with careful handling and
               professional setup when needed.
             </Typography>
@@ -349,7 +349,7 @@ export default function CakeDeliveryPage() {
                 "Beeston",
                 "Hunslet",
                 "Holbeck",
-                "And around areas",
+                "And surrounding areas",
               ].map((area, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -705,7 +705,7 @@ export default function CakeDeliveryPage() {
             },
             {
               q: "Which areas do you cover?",
-              a: "Leeds and around areas such as Wakefield, Bradford, York and Harrogate.",
+              a: "Leeds and surrounding areas such as Wakefield, Bradford, York and Harrogate.",
             },
             { q: "How much does delivery cost?", a: "From £5 in Leeds. Distance and setup may affect pricing." },
             { q: "Can you set up wedding cakes at the venue?", a: "Yes, we offer full delivery and professional setup." },

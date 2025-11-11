@@ -4,9 +4,9 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Otley | Ukrainian Cakes",
+  title: "Cakes Otley £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "Traditional Ukrainian cakes in Otley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Otley. Order now for special occasions.",
+    "Cakes Otley from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Otley cakes!",
   keywords:
     "cakes Otley, Ukrainian cakes Otley, honey cake Otley, Kyiv cake Otley, traditional Ukrainian cakes Otley, cake delivery Otley",
   openGraph: {
@@ -41,7 +41,7 @@ export default function CakesOtleyPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Otley Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Otley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Otley and around areas.",
+              "Fresh, handmade cakes in Otley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Otley and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-otley",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",

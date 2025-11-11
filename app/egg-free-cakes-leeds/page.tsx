@@ -6,9 +6,9 @@ import Link from "next/link";
 
 import { colors } from "@/lib/design-system";
 export const metadata: Metadata = {
-  title: "Egg-Free Cakes Leeds | Ukrainian Cakes",
+  title: "Egg-Free Cakes Leeds £25+ | 5★ | Safe & Delicious",
   description:
-    "Delicious egg-free Ukrainian cakes in Leeds. Handcrafted egg-free honey cake, Kyiv cake, and traditional Ukrainian desserts. Perfect for egg allergies.",
+    "Egg-free cakes Leeds from £25 | Safe for egg allergies | Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery!",
   keywords:
     "egg-free cakes Leeds, Ukrainian egg-free cakes, egg-free honey cake, egg-free desserts, egg allergy cakes, allergy-friendly cakes Leeds",
   openGraph: {
@@ -181,7 +181,7 @@ export default async function EggFreeCakesPage() {
             {[
               {
                 title: "Traditional Taste",
-                description: "Authentic Ukrainian flavors without compromising on taste",
+                description: "Authentic Ukrainian flavours without compromising on taste",
                 icon: "🏺",
               },
               {

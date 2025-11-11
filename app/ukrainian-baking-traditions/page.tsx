@@ -417,7 +417,7 @@ export default function UkrainianBakingTraditionsPage() {
             Experience Ukrainian Baking Traditions
           </Typography>
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
-            Taste the real flavors of traditional Ukrainian baking with my handcrafted cakes
+            Taste the authentic flavours of traditional Ukrainian baking with my handcrafted cakes
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Button

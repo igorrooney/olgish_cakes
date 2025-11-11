@@ -220,7 +220,7 @@ export default function UkrainianCakeGuidePage() {
               Ukrainian cake-making is more than just baking—it's cultural art that has been
               passed down through many generations. Each cake tells story of tradition, family
               history, and rich food culture of Ukraine. In Leeds, this tradition
-              still grows, bringing real flavors and traditional techniques to
+              still grows, bringing authentic flavours and traditional techniques to
               Yorkshire's different food scene.
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -402,7 +402,7 @@ export default function UkrainianCakeGuidePage() {
               variant="body1"
               sx={{ mb: 4, lineHeight: 1.8, maxWidth: "600px", mx: "auto" }}
             >
-              Ready to taste the real flavors of Ukraine? Olgish Cakes brings traditional
+              Ready to taste the authentic flavours of Ukraine? Olgish Cakes brings traditional
               recipes and modern art together to create unforgettable desserts for your special
               occasions.
             </Typography>

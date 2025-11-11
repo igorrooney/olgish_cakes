@@ -8,15 +8,15 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Cakes York | Ukrainian Cakes",
+    "Cakes York £25+ | 5★ | Ukrainian Honey Cake Delivery",
   description:
-    "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
+    "Cakes York from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh cakes in York!",
   keywords:
     "cakes York, Ukrainian cakes York, custom cakes York, wedding cakes York, birthday cakes York, cake delivery York, bakery York, traditional Ukrainian cakes York",
   openGraph: {
     title: "Cakes York | Ukrainian Cakes",
     description:
-      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and around areas.",
+      "Fresh Ukrainian cakes delivered to York. Custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Professional cake delivery service covering York and surrounding areas.",
     url: "https://olgishcakes.co.uk/cakes-york",
     siteName: "Olgish Cakes",
     images: [
@@ -126,7 +126,7 @@ export default async function CakesYorkPage() {
             >
               Experience real Ukrainian cakes delivered fresh to York. From traditional honey
               cake to custom celebration cakes, I bring the taste of Ukraine to your doorstep in
-              York and around areas.
+              York and surrounding areas.
             </Typography>
             <Chip
               label="Fresh Delivery to York"
@@ -154,7 +154,7 @@ export default async function CakesYorkPage() {
               {
                 title: "Fresh Delivery to York",
                 description:
-                  "Professional delivery service covering York city centre and around areas. Same-day and next-day delivery available.",
+                  "Professional delivery service covering York city centre and surrounding areas. Same-day and next-day delivery available.",
                   icon: "🚚",
                 },
                 {

@@ -24,7 +24,7 @@ jest.mock('@mui/material', () => ({
 describe('WeddingCakesPage', () => {
   it('should have wedding-specific metadata', () => {
     expect(metadata.title).toContain('Wedding')
-    expect(metadata.description).toContain('wedding')
+    expect(metadata.description.toLowerCase()).toContain('wedding')
   })
 
   it('should render without crashing', async () => {

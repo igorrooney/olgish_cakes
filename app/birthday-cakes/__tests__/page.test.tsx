@@ -107,12 +107,12 @@ describe('BirthdayCakesPage', () => {
     })
 
     it('should have social proof in title', () => {
-      expect(metadata.title).toContain('5★ Rated')
+      expect(metadata.title).toContain('5★')
     })
 
     it('should have optimized description with pricing and reviews', () => {
       expect(metadata.description).toContain('£25')
-      expect(metadata.description).toContain('127+ 5-star reviews')
+      expect(metadata.description).toContain('127+ reviews')
       expect(metadata.description).toContain('Same-day delivery')
     })
 

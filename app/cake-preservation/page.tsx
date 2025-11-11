@@ -6,13 +6,13 @@ import { colors } from '@/lib/design-system';
 export const metadata: Metadata = {
   title: "How to Preserve Cakes | Complete Cake Storage Guide",
   description:
-    "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
+    "Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
   keywords:
     "how to preserve cakes, how to preserve cake, cake preservation, how to store cakes, cake storage tips, preserve wedding cake, preserve birthday cake, honey cake storage, medovik storage",
   openGraph: {
     title: "How to Preserve Cakes | Complete Cake Storage Guide",
     description:
-      "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
+      "Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes. Complete guide from Ukrainian baker.",
     url: "https://olgishcakes.co.uk/cake-preservation",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
     type: "article",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "How to Preserve Cakes | Complete Cake Storage Guide",
     description:
-      "★★★★★ Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes.",
+      "Learn how to preserve cakes and keep them fresh. Expert tips for storing wedding cakes, birthday cakes, honey cakes.",
     images: ["https://olgishcakes.co.uk/images/cake-preservation.jpg"],
   },
   alternates: {

@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
     
   const metaDescription = isHoneyCake
-    ? (cake.seo?.metaDescription || `★★★★★ Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
+    ? (cake.seo?.metaDescription || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
     : (cake.seo?.metaDescription ||
       (cake.shortDescription
         ? blocksToText(cake.shortDescription).substring(0, 160)
@@ -430,7 +430,7 @@ export default async function CakePage({ params }: PageProps) {
                 name: `Is delivery available for the ${cake.name}?`,
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and around areas.",
+                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and surrounding areas.",
                 },
               },
               {

@@ -557,7 +557,7 @@ export default function UkrainianCultureBakingPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               While I honor traditional Ukrainian recipes and techniques, modern Ukrainian baking
-              also embraces contemporary innovations while keeping real flavors and
+              also embraces contemporary innovations while keeping authentic flavours and
               cultural meaning.
             </Typography>
             <Grid container spacing={4}>

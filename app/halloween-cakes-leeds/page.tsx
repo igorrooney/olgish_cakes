@@ -4,9 +4,9 @@ import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
-  title: "Halloween Cakes Leeds | Spooky Cakes",
+  title: "Halloween Cakes Leeds £35+ | 5★ | Spooky Designs",
   description:
-    "Order spooky Halloween cakes in Leeds. Pumpkin cakes, ghost designs, and Halloween-themed creations. Same-day delivery available in Leeds and around areas.",
+    "Halloween cakes Leeds from £35 | Spooky pumpkin & ghost designs | Custom themes | 5★ rated (127+ reviews) | Same-day delivery | Perfect for parties!",
   keywords:
     "halloween cakes leeds, spooky cakes, pumpkin cakes, ghost cakes, halloween cake delivery leeds",
   openGraph: {
@@ -82,9 +82,9 @@ const halloweenCakes = [
   },
   {
     name: "Monster Mash",
-    description: "Colorful cake with monster faces and Halloween candy",
+    description: "Colourful cake with monster faces and Halloween candy",
     price: "£60",
-    features: ["Monster faces", "Colorful design", "Halloween candy", "Fun for kids"],
+    features: ["Monster faces", "Colourful design", "Halloween candy", "Fun for kids"],
   },
 ];
 

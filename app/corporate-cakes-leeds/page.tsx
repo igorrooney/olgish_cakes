@@ -20,9 +20,9 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Corporate Cakes Leeds | Office Cakes",
+    "Corporate Cakes Leeds £50+ | 5★ | Office Catering",
   description:
-    "Corporate cake catering in Leeds. Office cakes, business events, and corporate catering with Ukrainian cakes. Professional delivery service for meetings, conferences, and office celebrations.",
+    "Corporate cakes Leeds from £50 | Office catering & business events | Ukrainian specialties | Bulk orders | 5★ rated (127+ reviews) | Professional service!",
   keywords:
     "corporate cakes Leeds, office cakes, business catering Leeds, corporate catering, Ukrainian corporate cakes, office celebrations, business events, conference catering",
   openGraph: {

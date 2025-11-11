@@ -387,7 +387,7 @@ export default async function TraditionalUkrainianCakesPage() {
               color="text.secondary"
               sx={{ mb: 4, maxWidth: "600px", mx: "auto" }}
             >
-              Order your traditional Ukrainian cake today and taste the real flavors that have been cherished
+              Order your traditional Ukrainian cake today and taste the authentic flavours that have been cherished
               for generations. Perfect for celebrations, special occasions, or simply to experience
               the warmth of Ukrainian hospitality.
             </Typography>

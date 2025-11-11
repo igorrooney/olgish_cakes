@@ -6,9 +6,9 @@ import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Cakes Pudsey | Ukrainian Cakes",
+  title: "Cakes Pudsey £25+ | 5★ | Ukrainian Honey Cake Delivery",
   description:
-    "traditional Ukrainian cakes in Pudsey. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Pudsey. Order now for special occasions.",
+    "Cakes Pudsey from £25 | Traditional Ukrainian honey cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Pudsey cakes!",
   keywords:
     "cakes Pudsey, Ukrainian cakes Pudsey, honey cake Pudsey, Kyiv cake Pudsey, traditional Ukrainian cakes Pudsey, cake delivery Pudsey",
   openGraph: {
@@ -111,7 +111,7 @@ export default async function CakesPudseyPage() {
               🚚 Fast Delivery to Pudsey
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-              I deliver my traditional Ukrainian cakes to Pudsey and around areas. Same-day
+              I deliver my traditional Ukrainian cakes to Pudsey and surrounding areas. Same-day
               delivery available for orders placed before 2 PM.
             </Typography>
             <Grid container spacing={2}>

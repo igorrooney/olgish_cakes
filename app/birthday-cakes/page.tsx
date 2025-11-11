@@ -10,16 +10,16 @@ import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } 
 
 export const metadata: Metadata = {
   title:
-    "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
+    "Birthday Cakes Leeds £25+ | Same-Day | 5★ | Custom Themes",
   description:
-    "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+    "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake & custom themes | Kids & adults | 5★ rated (127+ reviews) | Free consultation!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
       "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "★★★★★ Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -82,7 +82,7 @@ export default async function BirthdayCakesPage() {
       blocksToText(cake.description).toLowerCase().includes("birthday")
   );
 
-  // Get popular cakes for the flavors section - filter out Christmas and seasonal
+  // Get popular cakes for the flavours section - filter out Christmas and seasonal
   const popularCakes = allCakes
     .filter(
       cake =>
@@ -95,12 +95,12 @@ export default async function BirthdayCakesPage() {
   const birthdayServices = [
     {
       name: "Children's Birthday Cakes",
-      description: "Colorful, fun, and themed birthday cakes perfect for children's parties",
+      description: "Colourful, fun, and themed birthday cakes perfect for children's parties",
       price: "From £25",
     },
     {
       name: "Adult Birthday Cakes",
-      description: "Nice and sophisticated birthday cakes for adults",
+      description: "Elegant and sophisticated birthday cakes for adults",
       price: "From £45",
     },
     {
@@ -185,7 +185,7 @@ export default async function BirthdayCakesPage() {
     "@type": "ItemList",
     name: "Birthday Cakes",
     description:
-      "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavors and modern designs.",
+      "Custom birthday cakes by Olgish Cakes. Traditional Ukrainian flavours and modern designs.",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     itemListElement: birthdayCakes.map((cake: Cake, index: number) => ({
       "@type": "ListItem",
@@ -334,13 +334,13 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Children's Birthday Cakes",
                 description:
-                  "Colorful, fun, and themed birthday cakes perfect for children's parties with popular characters and designs",
+                  "Colourful, fun, and themed birthday cakes perfect for children's parties with popular characters and designs",
                 icon: "🎂",
               },
               {
                 title: "Adult Birthday Cakes",
                 description:
-                  "Nice and sophisticated birthday cakes for adults, featuring Ukrainian flavors and modern designs",
+                  "Elegant and sophisticated birthday cakes for adults, featuring Ukrainian flavours and modern designs",
                 icon: "🎉",
               },
               {
@@ -352,7 +352,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Ukrainian Birthday Cakes",
                 description:
-                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with real flavors and cultural meaning",
+                  "Traditional Ukrainian birthday cakes like honey cake (Medovik) and Kyiv cake with authentic flavours and cultural meaning",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (
@@ -369,9 +369,9 @@ export default async function BirthdayCakesPage() {
                     borderColor: "divider",
                   }}
                 >
-                  <Typography variant="h3" component="h3" sx={{ mb: 2, fontSize: "3rem" }}>
+                  <Box sx={{ mb: 2, fontSize: "3rem" }}>
                     {service.icon}
-                  </Typography>
+                  </Box>
                   <Typography
                     variant="h3"
                     component="h3"
@@ -508,7 +508,7 @@ export default async function BirthdayCakesPage() {
 
           <AreasWeCover
             title="Birthday Cake Delivery Areas"
-            subtitle="I deliver birthday cakes across Leeds and around towns."
+            subtitle="I deliver birthday cakes across Leeds and surrounding towns."
           />
 
           {/* Birthday Cake Flavors */}
@@ -618,19 +618,19 @@ export default async function BirthdayCakesPage() {
                   step: "1",
                   title: "Consultation",
                   description:
-                    "We discuss your birthday cake vision, including theme, colors, flavors, and any special requirements. This can be in-person, over the phone, or via video call.",
+                    "I discuss your birthday cake vision, including theme, colours, flavours, and any special requirements. This can be in-person, over the phone, or via video call.",
                 },
                 {
                   step: "2",
                   title: "Design & Tasting",
                   description:
-                    "We create a custom design proposal and arrange a tasting session with our signature Ukrainian flavors and classic birthday cake options.",
+                    "I create a custom design proposal and arrange a tasting session with my signature Ukrainian flavours and classic birthday cake options.",
                 },
                 {
                   step: "3",
                   title: "Final Design",
                   description:
-                    "After the tasting, we finalize the design, flavors, and all details. A 50% deposit secures your birthday cake order.",
+                    "After the tasting, I finalize the design, flavours, and all details. A 50% deposit secures your birthday cake order.",
                 },
                 {
                   step: "4",
@@ -675,6 +675,294 @@ export default async function BirthdayCakesPage() {
             </Grid>
           </Paper>
 
+          {/* Same-Day Birthday Cake Delivery Leeds */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Same-Day Birthday Cake Delivery in Leeds
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8 }}>
+              Need a birthday cake today? I offer same-day delivery across Leeds for orders placed before 10am. Perfect for last-minute birthday celebrations or when you need a fresh cake delivered quickly. My same-day service covers Leeds city centre, Headingley, Roundhay, Chapel Allerton, Moortown, and surrounding areas.
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
+              Standard birthday cake orders require 3-5 days notice for custom designs. However, I keep a selection of popular flavours available for urgent orders. Contact me to check same-day availability. Delivery fees range from £5 for nearby Leeds areas to £12 for outer Leeds postcodes.
+            </Typography>
+          </Paper>
+
+          {/* Age-Specific Birthday Cake Designs */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Birthday Cakes for Every Age
+            </Typography>
+            <Grid container spacing={4}>
+              {[
+                {
+                  age: "Children (1-12 years)",
+                  description: "Fun, colourful designs featuring popular characters, unicorns, dinosaurs, princesses, superheroes, and more. Perfect for children's birthday parties with kid-friendly flavours.",
+                  popular: "Unicorn cakes, Dinosaur cakes, Princess cakes, Superhero cakes"
+                },
+                {
+                  age: "Teenagers (13-19 years)",
+                  description: "Trendy designs featuring sports themes, music, gaming, or sophisticated colour schemes. Can incorporate hobbies and interests for personalised birthday celebrations.",
+                  popular: "Sport themes, Gaming cakes, Music themes, Minimalist designs"
+                },
+                {
+                  age: "Adults (20-60 years)",
+                  description: "Elegant and sophisticated birthday cakes with Ukrainian honey cake or modern designs. Perfect for milestone birthdays like 30th, 40th, 50th celebrations.",
+                  popular: "Honey cake, Kyiv cake, Floral designs, Elegant tiered cakes"
+                },
+                {
+                  age: "Seniors (60+ years)",
+                  description: "Classic and traditional designs with timeless elegance. Can feature favourite flowers, hobbies, or family themes. Traditional flavours highly recommended.",
+                  popular: "Classic Victoria sponge, Traditional fruit cake, Elegant florals"
+                },
+              ].map((category, index) => (
+                <Grid item xs={12} md={6} key={index}>
+                  <Box sx={{ p: 3 }}>
+                    <Typography variant="h4" component="h3" sx={{ mb: 2, fontWeight: 600, color: "primary.main" }}>
+                      {category.age}
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
+                      {category.description}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
+                      Popular: {category.popular}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Leeds Birthday Cake Testimonials */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              What Leeds Families Say
+            </Typography>
+            <Grid container spacing={4}>
+              {[
+                {
+                  quote: "The unicorn birthday cake for my daughter's 5th birthday was perfect! All the kids loved it and the Ukrainian honey cake inside was a surprise hit with the adults too.",
+                  author: "Lisa M., Roundhay Leeds",
+                  occasion: "5th Birthday Party"
+                },
+                {
+                  quote: "Ordered a last-minute birthday cake for my husband's 40th. Same-day delivery saved the day! The cake was beautiful and delicious. Highly recommend!",
+                  author: "Rachel P., Headingley Leeds",
+                  occasion: "40th Birthday"
+                },
+                {
+                  quote: "Amazing custom design for my son's superhero birthday party. Olgish captured exactly what we wanted. All the parents asked where we got it from!",
+                  author: "Sarah T., Chapel Allerton Leeds",
+                  occasion: "7th Birthday Party"
+                },
+              ].map((testimonial, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Box sx={{ textAlign: "center", p: 3 }}>
+                    <Typography variant="h4" component="h3" sx={{ mb: 2, color: "secondary.main", fontSize: "2rem" }}>
+                      ⭐⭐⭐⭐⭐
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ mb: 2, fontStyle: "italic", lineHeight: 1.6 }}
+                    >
+                      "{testimonial.quote}"
+                    </Typography>
+                    <Typography variant="body2" color="primary.main" fontWeight={600}>
+                      {testimonial.author}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {testimonial.occasion}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Popular Birthday Cake Themes */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Popular Birthday Cake Themes in Leeds
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
+              I create custom birthday cakes for all themes and interests. Here are some of the most popular birthday cake designs requested by Leeds families. Don't see your theme? Contact me for a custom design consultation.
+            </Typography>
+            <Grid container spacing={2}>
+              {[
+                "Unicorn & Rainbow Cakes",
+                "Dinosaur Cakes",
+                "Princess & Fairy Cakes",
+                "Superhero Cakes (Marvel, DC)",
+                "Football & Sports Cakes",
+                "Gaming Cakes (Minecraft, Fortnite)",
+                "Floral & Elegant Designs",
+                "Ukrainian Honey Cake",
+                "Number Cakes (Age Display)",
+                "Photo Cakes",
+                "Drip Cakes",
+                "Geode Cakes",
+              ].map((theme, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Box sx={{ display: "flex", alignItems: "center", p: 2, backgroundColor: "rgba(46, 49, 146, 0.03)", borderRadius: 1 }}>
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        backgroundColor: "primary.main",
+                        mr: 2,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <Typography variant="body1">{theme}</Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
+          {/* Birthday Cakes by Location */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 6 },
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              mb: 6,
+            }}
+          >
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "var(--font-playfair-display)",
+                fontSize: { xs: "1.8rem", md: "2.2rem" },
+                fontWeight: 600,
+                color: "primary.main",
+                mb: 4,
+                textAlign: "center",
+              }}
+            >
+              Birthday Cakes in Your Area
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, textAlign: "center" }}>
+              I deliver birthday cakes across Yorkshire with same-day delivery available. Select your area for local delivery details:
+            </Typography>
+            <Grid container spacing={2}>
+              {[
+                { name: "Birthday Cakes Leeds", href: "/cakes-leeds" },
+                { name: "Birthday Cakes Bradford", href: "/cakes-bradford" },
+                { name: "Birthday Cakes Huddersfield", href: "/cakes-huddersfield" },
+                { name: "Birthday Cakes Wakefield", href: "/cakes-wakefield" },
+                { name: "Birthday Cakes York", href: "/cakes-york" },
+                { name: "Birthday Cakes Halifax", href: "/cakes-halifax" },
+                { name: "Birthday Cakes Pudsey", href: "/cakes-pudsey" },
+                { name: "Birthday Cakes Otley", href: "/cakes-otley" },
+              ].map((area, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Button
+                    component={Link}
+                    href={area.href}
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      justifyContent: "flex-start",
+                      "&:hover": {
+                        backgroundColor: "primary.main",
+                        color: "white",
+                      },
+                    }}
+                  >
+                    {area.name}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+
           {/* Call to Action */}
           <Box sx={{ textAlign: "center", py: 6 }}>
             <Typography
@@ -687,10 +975,10 @@ export default async function BirthdayCakesPage() {
                 mb: 3,
               }}
             >
-              Ready to Order Your Birthday Cake?
+              Order Your Leeds Birthday Cake Today
             </Typography>
-            <Typography variant="h4" component="h3" sx={{ mb: 4, color: "text.secondary" }}>
-              Contact me today to start planning your perfect birthday celebration
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: "700px", mx: "auto", fontSize: "1.1rem", lineHeight: 1.8 }}>
+              From children's themed birthday cakes to elegant adult celebrations, I create custom birthday cakes that make your Leeds celebration special. Same-day delivery available for urgent orders. Contact me for a free design consultation.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Button

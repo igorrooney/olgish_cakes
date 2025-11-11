@@ -4,9 +4,9 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 export const metadata: Metadata = {
-  title: "Cakes Ilkley | Ukrainian Cakes",
+  title: "Cakes Ilkley £25+ | 5★ | Ukrainian Bakery Delivery",
   description:
-    "Traditional Ukrainian cakes in Ilkley. Handcrafted honey cake, Kyiv cake, and real Ukrainian desserts delivered to Ilkley. Order now for special occasions.",
+    "Cakes Ilkley from £25 | Ukrainian honey cake & Kyiv cake | Wedding & birthday cakes | 5★ rated (127+ reviews) | Same-day delivery | Order fresh Ilkley cakes!",
   keywords:
     "cakes Ilkley, Ukrainian cakes Ilkley, honey cake Ilkley, Kyiv cake Ilkley, traditional Ukrainian cakes Ilkley, cake delivery Ilkley",
   openGraph: {
@@ -41,7 +41,7 @@ export default function CakesIlkleyPage() {
             "@type": "LocalBusiness",
             name: "Olgish Cakes - Ilkley Ukrainian Bakery",
             description:
-              "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and around areas.",
+              "Fresh, handmade cakes in Ilkley. Ukrainian bakery offering custom cakes, wedding cakes, birthday cakes, and traditional Ukrainian desserts. Local cake delivery in Ilkley and surrounding areas.",
             url: "https://olgishcakes.co.uk/cakes-ilkley",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",

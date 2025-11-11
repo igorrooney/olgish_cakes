@@ -5,15 +5,15 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title:
-    "Custom Cake Design Leeds | Personalized Cakes",
+    "Custom Cake Design Leeds | 5★ | Free Consultation",
   description:
-    "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+    "Custom cake design Leeds | Personalized wedding & birthday cakes | Ukrainian-inspired designs | Free consultation | 5★ rated (127+ reviews) | From £35!",
   keywords:
     "custom cake design Leeds, personalized cakes Leeds, wedding cake design, birthday cake design, celebration cakes Leeds, custom cake consultation, unique cake designs, Ukrainian cake design",
   openGraph: {
     title: "Custom Cake Design Leeds | Personalized Cakes",
     description:
-      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavors. Free consultation available.",
+      "Custom cake design service in Leeds. Personalized wedding cakes, birthday cakes, and celebration cakes. Ukrainian-inspired designs with traditional flavours. Free consultation available.",
     url: "https://olgishcakes.co.uk/custom-cake-design",
     siteName: "Olgish Cakes",
     images: [
@@ -43,12 +43,12 @@ export default function CustomCakeDesignPage() {
   const designServices = [
     {
       name: "Wedding Cake Design",
-      description: "Nice wedding cakes designed to match your wedding theme and personal style",
+      description: "Stunning wedding cakes designed to match your wedding theme and personal style",
       price: "From £80",
     },
     {
       name: "Birthday Cake Design",
-      description: "Personalized birthday cakes with custom themes, colors, and decorations",
+      description: "Personalised birthday cakes with custom themes, colours, and decorations",
       price: "From £35",
     },
     {
@@ -59,7 +59,7 @@ export default function CustomCakeDesignPage() {
     {
       name: "Ukrainian Design Cakes",
       description:
-        "Traditional Ukrainian-inspired designs with real flavors and cultural elements",
+        "Traditional Ukrainian-inspired designs with authentic flavours and cultural elements",
       price: "From £50",
     },
   ];
@@ -69,19 +69,19 @@ export default function CustomCakeDesignPage() {
       step: "1",
       title: "Initial Consultation",
       description:
-        "We discuss your vision, theme, colors, guest count, and any special requirements.",
+        "I discuss your vision, theme, colours, guest count, and any special requirements.",
     },
     {
       step: "2",
       title: "Design Concept",
       description:
-        "We create a custom design proposal with sketches, color schemes, and flavor combinations.",
+        "I create a custom design proposal with sketches, colour schemes, and flavour combinations.",
     },
     {
       step: "3",
       title: "Tasting Session",
       description:
-        "Sample our signature Ukrainian flavors and traditional cake options to find the perfect combination.",
+        "Sample our signature Ukrainian flavours and traditional cake options to find the perfect combination.",
     },
     {
       step: "4",
@@ -222,13 +222,13 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Wedding Cakes",
                 description:
-                  "Nice wedding cakes designed to match your wedding theme and personal style",
+                  "Stunning wedding cakes designed to match your wedding theme and personal style",
                 icon: "💍",
               },
               {
                 title: "Birthday Cakes",
                 description:
-                  "Personalized birthday cakes with custom themes, colors, and decorations",
+                  "Personalised birthday cakes with custom themes, colours, and decorations",
                 icon: "🎂",
               },
               {
@@ -240,7 +240,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Ukrainian Designs",
                 description:
-                  "Traditional Ukrainian-inspired designs with real flavors and cultural elements",
+                  "Traditional Ukrainian-inspired designs with authentic flavours and cultural elements",
                 icon: "🇺🇦",
               },
             ].map((service, index) => (
@@ -306,25 +306,25 @@ export default function CustomCakeDesignPage() {
                   step: "1",
                   title: "Initial Consultation",
                   description:
-                    "We discuss your vision, theme, colors, guest count, and any special requirements. This can be in-person, over the phone, or via video call.",
+                    "I discuss your vision, theme, colours, guest count, and any special requirements. This can be in-person, over the phone, or via video call.",
                 },
                 {
                   step: "2",
                   title: "Design Concept",
                   description:
-                    "We create a custom design proposal with sketches, color schemes, and flavor combinations that match your vision and preferences.",
+                    "I create a custom design proposal with sketches, colour schemes, and flavour combinations that match your vision and preferences.",
                 },
                 {
                   step: "3",
                   title: "Tasting Session",
                   description:
-                    "Sample our signature Ukrainian flavors and traditional cake options to find the perfect combination for your custom cake.",
+                    "Sample our signature Ukrainian flavours and traditional cake options to find the perfect combination for your custom cake.",
                 },
                 {
                   step: "4",
                   title: "Final Design",
                   description:
-                    "After the tasting, we finalize all details including design, flavors, size, and delivery arrangements. A 50% deposit secures your order.",
+                    "After the tasting, we finalize all details including design, flavours, size, and delivery arrangements. A 50% deposit secures your order.",
                 },
                 {
                   step: "5",
@@ -427,10 +427,10 @@ export default function CustomCakeDesignPage() {
                 {
                   category: "Flavor Combinations",
                   options: [
-                    "Traditional Ukrainian flavors",
-                    "Classic wedding cake flavors",
+                    "Traditional Ukrainian flavours",
+                    "Classic wedding cake flavours",
                     "Modern fusion combinations",
-                    "Seasonal fruit flavors",
+                    "Seasonal fruit flavours",
                     "Chocolate and caramel",
                     "Light and refreshing options",
                   ],
@@ -514,14 +514,14 @@ export default function CustomCakeDesignPage() {
                     "Traditional Ukrainian embroidery patterns, floral motifs, and geometric designs inspired by Ukrainian folk art.",
                 },
                 {
-                  title: "Ukrainian Colors",
+                  title: "Ukrainian Colours",
                   description:
-                    "Traditional Ukrainian color palette including blue and yellow, representing the Ukrainian flag and cultural heritage.",
+                    "Traditional Ukrainian colour palette including blue and yellow, representing the Ukrainian flag and cultural heritage.",
                 },
                 {
-                  title: "Ukrainian Flavors",
+                  title: "Ukrainian Flavours",
                   description:
-                    "Authentic Ukrainian cake flavors like Medovik (honey), Kyiv cake, and traditional Ukrainian ingredients.",
+                    "Authentic Ukrainian cake flavours like Medovik (honey), Kyiv cake, and traditional Ukrainian ingredients.",
                 },
                 {
                   title: "Cultural Symbols",
@@ -574,7 +574,7 @@ export default function CustomCakeDesignPage() {
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8 }}>
               Custom cake pricing varies based on design complexity, size, ingredients, and
-              decoration requirements. We offer transparent pricing and will provide a detailed
+              decoration requirements. I offer transparent pricing and will provide a detailed
               quote after our initial consultation.
             </Typography>
             <Grid container spacing={4}>
