@@ -95,7 +95,7 @@ export default async function BirthdayCakesPage() {
   const birthdayServices = [
     {
       name: "Children's Birthday Cakes",
-      description: "Colorful, fun, and themed birthday cakes perfect for children's parties",
+      description: "Colourful, fun, and themed birthday cakes perfect for children's parties",
       price: "From £25",
     },
     {
@@ -334,7 +334,7 @@ export default async function BirthdayCakesPage() {
               {
                 title: "Children's Birthday Cakes",
                 description:
-                  "Colorful, fun, and themed birthday cakes perfect for children's parties with popular characters and designs",
+                  "Colourful, fun, and themed birthday cakes perfect for children's parties with popular characters and designs",
                 icon: "🎂",
               },
               {

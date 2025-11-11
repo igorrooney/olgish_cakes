@@ -222,7 +222,7 @@ export default async function CelebrationCakesPage() {
                 {
                   title: "Anniversary Cakes",
                   description:
-                    "Nice anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavours",
+                    "Beautiful anniversary cakes celebrating love and commitment with romantic designs and Ukrainian flavours",
                   icon: "💕",
                 },
                 {

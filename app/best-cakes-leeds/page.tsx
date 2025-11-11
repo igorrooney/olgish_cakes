@@ -86,11 +86,11 @@ const bestCakes = [
   },
   {
     name: "Birthday Celebration Cake",
-    description: "Colorful birthday cake with fun decorations and great taste",
+    description: "Colourful birthday cake with fun decorations and great taste",
     rating: "4.8",
     reviews: "78",
     price: "£40",
-    features: ["Colorful design", "Fun decorations", "Great taste", "Perfect for parties"],
+    features: ["Colourful design", "Fun decorations", "Great taste", "Perfect for parties"],
   },
 ];
 

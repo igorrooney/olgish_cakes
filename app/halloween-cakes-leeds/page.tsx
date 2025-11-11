@@ -82,9 +82,9 @@ const halloweenCakes = [
   },
   {
     name: "Monster Mash",
-    description: "Colorful cake with monster faces and Halloween candy",
+    description: "Colourful cake with monster faces and Halloween candy",
     price: "£60",
-    features: ["Monster faces", "Colorful design", "Halloween candy", "Fun for kids"],
+    features: ["Monster faces", "Colourful design", "Halloween candy", "Fun for kids"],
   },
 ];
 

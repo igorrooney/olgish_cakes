@@ -43,7 +43,7 @@ export default function CustomCakeDesignPage() {
   const designServices = [
     {
       name: "Wedding Cake Design",
-      description: "Nice wedding cakes designed to match your wedding theme and personal style",
+      description: "Stunning wedding cakes designed to match your wedding theme and personal style",
       price: "From £80",
     },
     {
@@ -222,7 +222,7 @@ export default function CustomCakeDesignPage() {
               {
                 title: "Wedding Cakes",
                 description:
-                  "Nice wedding cakes designed to match your wedding theme and personal style",
+                  "Stunning wedding cakes designed to match your wedding theme and personal style",
                 icon: "💍",
               },
               {
