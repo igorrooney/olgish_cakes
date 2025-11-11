@@ -65,8 +65,9 @@ describe('GiftHampersPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use revalidateTime', () => {
-      expect(revalidate).toBe(60)
+    it('should use static revalidation time of 300 seconds', () => {
+      // Changed to static revalidation as part of Next.js 16 upgrade
+      expect(revalidate).toBe(300)
     })
   })
 

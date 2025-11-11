@@ -59,10 +59,9 @@ describe('CakesPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use revalidateTime from fetchCakes', () => {
-      const { getRevalidateTime } = require('../../utils/fetchCakes')
-
-      expect(revalidate).toBe(getRevalidateTime())
+    it('should use static revalidation time of 300 seconds', () => {
+      // Changed to static revalidation as part of Next.js 16 upgrade
+      expect(revalidate).toBe(300)
     })
   })
 
