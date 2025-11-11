@@ -222,5 +222,120 @@ describe('CakeDetailPage', () => {
       expect(scripts.length).toBeGreaterThan(0)
     })
   })
+
+  describe('Structured Data - GSC Merchant Listings Compliance', () => {
+    it('should include Product structured data with required fields', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      // Verify Product exists
+      expect(jsonLd['@type']).toBe('Product')
+      expect(jsonLd.name).toBeDefined()
+      expect(jsonLd.description).toBeDefined()
+      expect(jsonLd.image).toBeDefined()
+    })
+
+    it('should include image field in Offer (GSC Merchant listings fix)', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      // Verify Offer has image field (required by Google Merchant listings)
+      expect(jsonLd.offers).toBeDefined()
+      expect(jsonLd.offers['@type']).toBe('Offer')
+      expect(jsonLd.offers.image).toBeDefined()
+      expect(typeof jsonLd.offers.image).toBe('string')
+    })
+
+    it('should include shippingDetails in Offer', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      expect(jsonLd.offers.shippingDetails).toBeDefined()
+      expect(jsonLd.offers.shippingDetails['@type']).toBe('OfferShippingDetails')
+    })
+
+    it('should include hasMerchantReturnPolicy in Offer', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      expect(jsonLd.offers.hasMerchantReturnPolicy).toBeDefined()
+      expect(jsonLd.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
+    })
+
+    it('should include aggregateRating', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      expect(jsonLd.aggregateRating).toBeDefined()
+      expect(jsonLd.aggregateRating['@type']).toBe('AggregateRating')
+      expect(jsonLd.aggregateRating.ratingValue).toBeDefined()
+      expect(jsonLd.aggregateRating.reviewCount).toBeDefined()
+    })
+
+    it('should include review array', async () => {
+      mockFetch.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      expect(jsonLd.review).toBeDefined()
+      expect(Array.isArray(jsonLd.review)).toBe(true)
+      expect(jsonLd.review.length).toBeGreaterThan(0)
+    })
+  })
 })
 

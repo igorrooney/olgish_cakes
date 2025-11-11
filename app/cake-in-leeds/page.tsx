@@ -125,25 +125,28 @@ export default function CakeInLeedsPage() {
         {
           '@type': 'Offer',
           itemOffered: {
-            '@type': 'Product',
+            '@type': 'Service',
             name: 'Ukrainian Honey Cake',
-            description: 'Traditional Ukrainian honey cake with delicate layers'
+            description: 'Traditional Ukrainian honey cake with delicate layers',
+            serviceType: 'Cake Baking and Delivery'
           }
         },
         {
           '@type': 'Offer',
           itemOffered: {
-            '@type': 'Product',
+            '@type': 'Service',
             name: 'Birthday Cake Leeds',
-            description: 'Custom birthday cakes made fresh to order'
+            description: 'Custom birthday cakes made fresh to order',
+            serviceType: 'Cake Baking and Delivery'
           }
         },
         {
           '@type': 'Offer',
           itemOffered: {
-            '@type': 'Product',
+            '@type': 'Service',
             name: 'Wedding Cake Leeds',
-            description: 'Beautiful wedding cakes designed for your special day'
+            description: 'Beautiful wedding cakes designed for your special day',
+            serviceType: 'Cake Baking and Delivery'
           }
         }
       ]

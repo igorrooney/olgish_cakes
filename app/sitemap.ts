@@ -3,7 +3,7 @@ import { MetadataRoute } from "next";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 async function getCakes() {
-  const query = `*[_type == "cake"] {
+  const query = `*[_type == "cake" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
     _updatedAt,
     seo {
@@ -15,7 +15,7 @@ async function getCakes() {
 }
 
 async function getBlogPosts() {
-  const query = `*[_type == "blogPost" && status == "published"] {
+  const query = `*[_type == "blogPost" && status == "published" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
     _updatedAt,
     publishDate,
@@ -30,7 +30,7 @@ async function getBlogPosts() {
 }
 
 async function getGiftHampers() {
-  const query = `*[_type == "giftHamper"] {
+  const query = `*[_type == "giftHamper" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
     _updatedAt,
     seo {
@@ -49,36 +49,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getGiftHampers(),
   ]);
 
-  const cakeRoutes = cakes.map(
-    (cake: {
-      slug: { current: string };
-      _updatedAt: string;
-      seo?: { priority?: number; changefreq?: string };
-    }) => ({
-      url: `${baseUrl}/cakes/${cake.slug.current}`,
-      lastModified: new Date(cake._updatedAt),
-      changeFrequency:
-        (cake.seo?.changefreq as
-          | "always"
-          | "hourly"
-          | "daily"
-          | "weekly"
-          | "monthly"
-          | "yearly"
-          | "never") || "weekly",
-      priority: cake.seo?.priority || 0.8,
-    })
-  );
+  const cakeRoutes = cakes
+    .filter((cake: { slug: { current: string } | null }) => cake.slug?.current)
+    .map(
+      (cake: {
+        slug: { current: string };
+        _updatedAt: string;
+        seo?: { priority?: number; changefreq?: string };
+      }) => ({
+        url: `${baseUrl}/cakes/${cake.slug.current}`,
+        lastModified: new Date(cake._updatedAt),
+        changeFrequency:
+          (cake.seo?.changefreq as
+            | "always"
+            | "hourly"
+            | "daily"
+            | "weekly"
+            | "monthly"
+            | "yearly"
+            | "never") || "weekly",
+        priority: cake.seo?.priority || 0.8,
+      })
+    );
 
-  const blogRoutes = blogPosts.map(
-    (post: {
-      slug: { current: string };
-      _updatedAt: string;
-      publishDate?: string;
-      featured?: boolean;
-      category?: string;
-      seo?: { priority?: number; changefreq?: string };
-    }) => {
+  const blogRoutes = blogPosts
+    .filter((post: { slug: { current: string } | null }) => post.slug?.current)
+    .map(
+      (post: {
+        slug: { current: string };
+        _updatedAt: string;
+        publishDate?: string;
+        featured?: boolean;
+        category?: string;
+        seo?: { priority?: number; changefreq?: string };
+      }) => {
       // Higher priority for featured posts and recent content
       const isRecent = post.publishDate &&
         new Date(post.publishDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days
@@ -105,27 +109,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   );
 
-  const giftHamperRoutes = giftHampers.map(
-    (hamper: {
-      _id: string;
-      slug: { current: string };
-      _updatedAt: string;
-      seo?: { priority?: number; changefreq?: string };
-    }) => ({
-      url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
-      lastModified: new Date(hamper._updatedAt),
-      changeFrequency:
-        (hamper.seo?.changefreq as
-          | "always"
-          | "hourly"
-          | "daily"
-          | "weekly"
-          | "monthly"
-          | "yearly"
-          | "never") || "weekly",
-      priority: hamper.seo?.priority || 0.7,
-    })
-  );
+  const giftHamperRoutes = giftHampers
+    .filter((hamper: { slug: { current: string } | null; _id?: string }) => hamper.slug?.current || hamper._id)
+    .map(
+      (hamper: {
+        _id: string;
+        slug: { current: string };
+        _updatedAt: string;
+        seo?: { priority?: number; changefreq?: string };
+      }) => ({
+        url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
+        lastModified: new Date(hamper._updatedAt),
+        changeFrequency:
+          (hamper.seo?.changefreq as
+            | "always"
+            | "hourly"
+            | "daily"
+            | "weekly"
+            | "monthly"
+            | "yearly"
+            | "never") || "weekly",
+        priority: hamper.seo?.priority || 0.7,
+      })
+    );
 
   // Core pages with high priority
   const corePages = [

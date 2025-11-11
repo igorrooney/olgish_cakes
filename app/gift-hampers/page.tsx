@@ -165,13 +165,6 @@ export default async function GiftHampersPage() {
                   },
                   shippingDetails: getOfferShippingDetails(),
                   hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-                },
-                aggregateRating: {
-                  "@type": "AggregateRating",
-                  ratingValue: testimonialStats.averageRating.toFixed(1),
-                  reviewCount: testimonialStats.count.toString(),
-                  bestRating: "5",
-                  worstRating: "1"
                 }
               }
             };

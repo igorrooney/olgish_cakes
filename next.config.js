@@ -170,6 +170,10 @@ const nextConfig = {
             key: "Expires",
             value: "0",
           },
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
+          },
         ],
       },
       // Static assets caching

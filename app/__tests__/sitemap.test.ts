@@ -194,5 +194,64 @@ describe('sitemap', () => {
       expect(entry?.changeFrequency).toBe('daily')
     })
   })
+
+  describe('GSC Compliance - Test Items Filtering', () => {
+    it('should query with filters to exclude test items from cakes', async () => {
+      mockFetch.mockResolvedValue([])
+
+      await sitemap()
+
+      const cakesQuery = mockFetch.mock.calls[0][0]
+      
+      // Verify the query includes test filtering
+      expect(cakesQuery).toContain('!slug.current match "test*"')
+      expect(cakesQuery).toContain('!slug.current match "*test*"')
+      expect(cakesQuery).toContain('defined(slug.current)')
+    })
+
+    it('should query with filters to exclude test items from blog posts', async () => {
+      mockFetch.mockResolvedValue([])
+
+      await sitemap()
+
+      const blogQuery = mockFetch.mock.calls[1][0]
+      
+      // Verify the query includes test filtering
+      expect(blogQuery).toContain('!slug.current match "test*"')
+      expect(blogQuery).toContain('!slug.current match "*test*"')
+      expect(blogQuery).toContain('defined(slug.current)')
+    })
+
+    it('should query with filters to exclude test items from gift hampers', async () => {
+      mockFetch.mockResolvedValue([])
+
+      await sitemap()
+
+      const hampersQuery = mockFetch.mock.calls[2][0]
+      
+      // Verify the query includes test filtering
+      expect(hampersQuery).toContain('!slug.current match "test*"')
+      expect(hampersQuery).toContain('!slug.current match "*test*"')
+      expect(hampersQuery).toContain('defined(slug.current)')
+    })
+
+    it('should not include items with undefined slugs', async () => {
+      mockFetch
+        .mockResolvedValueOnce([
+          { slug: { current: 'valid-cake' }, _updatedAt: '2025-01-01' },
+          { slug: null, _updatedAt: '2025-01-01' } // Invalid - no slug
+        ])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+
+      const result = await sitemap()
+
+      const validEntry = result.find(entry => entry.url.includes('/cakes/valid-cake'))
+      const invalidEntry = result.find(entry => entry.url.includes('null'))
+
+      expect(validEntry).toBeDefined()
+      expect(invalidEntry).toBeUndefined()
+    })
+  })
 })
 

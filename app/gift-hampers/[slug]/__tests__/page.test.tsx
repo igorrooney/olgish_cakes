@@ -71,12 +71,65 @@ describe('HamperDetailPage', () => {
   })
 
   describe('generateMetadata', () => {
-    it('should generate metadata', async () => {
+    it('should generate metadata with default fallback', async () => {
       mockFetch.mockResolvedValue(mockHamper)
 
       const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
 
       expect(metadata.title).toContain('Deluxe Hamper')
+      expect(metadata.title).toContain('Luxury Gift Hampers')
+    })
+
+    it('should prioritize custom SEO fields over defaults', async () => {
+      const hamperWithSEO = {
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Custom SEO Title for Testing',
+          metaDescription: 'Custom SEO Description for Testing',
+          keywords: ['custom', 'seo', 'keywords']
+        }
+      }
+      mockFetch.mockResolvedValue(hamperWithSEO)
+
+      const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
+
+      expect(metadata.title).toBe('Custom SEO Title for Testing')
+      expect(metadata.description).toBe('Custom SEO Description for Testing')
+      expect(metadata.keywords).toBe('custom, seo, keywords')
+    })
+
+    it('should use special "cake-by-post" optimization when no custom SEO', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' }
+      }
+      mockFetch.mockResolvedValue(cakeByPostHamper)
+
+      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+
+      expect(metadata.title).toContain('Cake by Post')
+      expect(metadata.title).toContain('Ukrainian Honey Cake')
+      expect(metadata.description).toContain('Letterbox-friendly')
+    })
+
+    it('should prioritize custom SEO even for "cake-by-post" hamper', async () => {
+      const cakeByPostWithSEO = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        seo: {
+          metaTitle: 'My Custom Cake by Post Title',
+          metaDescription: 'My custom description',
+          keywords: ['custom', 'keywords']
+        }
+      }
+      mockFetch.mockResolvedValue(cakeByPostWithSEO)
+
+      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+
+      // Custom SEO should override the hardcoded "cake-by-post" optimization
+      expect(metadata.title).toBe('My Custom Cake by Post Title')
+      expect(metadata.description).toBe('My custom description')
+      expect(metadata.keywords).toBe('custom, keywords')
     })
 
     it('should return 404 metadata for missing hamper', async () => {
@@ -105,6 +158,169 @@ describe('HamperDetailPage', () => {
       }).rejects.toThrow('NEXT_NOT_FOUND')
       
       expect(notFound).toHaveBeenCalled()
+    })
+  })
+
+  describe('Structured Data - additionalProperty Bug Fix', () => {
+    it('should include delivery method properties for cake-by-post hampers', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockFetch.mockResolvedValue(cakeByPostHamper)
+
+      const page = await HamperDetailPage({ params: { slug: 'cake-by-post' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      expect(productScript).toBeDefined()
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      // Verify cake-by-post specific properties exist
+      expect(jsonLd.additionalProperty).toBeDefined()
+      const properties = jsonLd.additionalProperty
+      
+      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: any) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      
+      expect(deliveryMethod).toBeDefined()
+      expect(deliveryMethod.value).toBe('Letterbox Post')
+      expect(packaging).toBeDefined()
+      expect(packaging.value).toBe('Vacuum Sealed')
+      expect(shelfLife).toBeDefined()
+      expect(shelfLife.value).toBe('7 days')
+    })
+
+    it('should include ingredient properties when present', async () => {
+      const hamperWithIngredients = {
+        ...mockHamper,
+        ingredients: ['Flour', 'Honey', 'Eggs', 'Sugar'],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockFetch.mockResolvedValue(hamperWithIngredients)
+
+      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const properties = jsonLd.additionalProperty
+      
+      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      expect(ingredients).toBeDefined()
+      expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
+    })
+
+    it('should include allergen properties when present', async () => {
+      const hamperWithAllergens = {
+        ...mockHamper,
+        allergens: ['Gluten', 'Eggs', 'Dairy'],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockFetch.mockResolvedValue(hamperWithAllergens)
+
+      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const properties = jsonLd.additionalProperty
+      
+      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      expect(allergens).toBeDefined()
+      expect(allergens.value).toBe('Gluten, Eggs, Dairy')
+    })
+
+    it('CRITICAL: should preserve ALL additionalProperty fields when multiple conditions are true', async () => {
+      // This is the critical test for the bug fix
+      // Previously, when both isCakeByPost and allergens/ingredients existed,
+      // the spread operator would overwrite the first additionalProperty array
+      const fullHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        ingredients: ['Flour', 'Honey', 'Eggs', 'Sugar'],
+        allergens: ['Gluten', 'Eggs', 'Dairy'],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockFetch.mockResolvedValue(fullHamper)
+
+      const page = await HamperDetailPage({ params: { slug: 'cake-by-post' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const properties = jsonLd.additionalProperty
+      
+      // Verify ALL properties are present (no overwrites occurred)
+      expect(properties).toHaveLength(5) // 3 from cake-by-post + 1 ingredients + 1 allergens
+      
+      // Verify cake-by-post properties
+      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: any) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      
+      expect(deliveryMethod).toBeDefined()
+      expect(deliveryMethod.value).toBe('Letterbox Post')
+      expect(packaging).toBeDefined()
+      expect(packaging.value).toBe('Vacuum Sealed')
+      expect(shelfLife).toBeDefined()
+      expect(shelfLife.value).toBe('7 days')
+      
+      // Verify ingredients property
+      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      expect(ingredients).toBeDefined()
+      expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
+      
+      // Verify allergens property
+      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      expect(allergens).toBeDefined()
+      expect(allergens.value).toBe('Gluten, Eggs, Dairy')
+      
+      // Ensure no duplicates
+      const propertyNames = properties.map((p: any) => p.name)
+      const uniqueNames = [...new Set(propertyNames)]
+      expect(propertyNames.length).toBe(uniqueNames.length)
+    })
+
+    it('should not include properties when conditions are false', async () => {
+      const basicHamper = {
+        ...mockHamper,
+        // No cake-by-post, no ingredients, no allergens
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockFetch.mockResolvedValue(basicHamper)
+
+      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const properties = jsonLd.additionalProperty
+      
+      // Should be an empty array when no conditions are met
+      expect(properties).toHaveLength(0)
     })
   })
 })

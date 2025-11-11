@@ -151,5 +151,119 @@ describe('GiftHampersPage', () => {
       expect(screen.getByTestId('gift-hamper-card')).toBeInTheDocument()
     })
   })
+
+  describe('Structured Data - GSC Compliance', () => {
+    it('should have ItemList structured data', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const itemListScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"ItemList"')
+      )
+
+      expect(itemListScript).toBeDefined()
+    })
+
+    it('should NOT have aggregateRating on individual products in ItemList', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const itemListScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"ItemList"')
+      )
+
+      expect(itemListScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+      
+      // Verify ItemList exists
+      expect(jsonLd['@type']).toBe('ItemList')
+      
+      // Verify products don't have aggregateRating (GSC fix for "multiple aggregate ratings" error)
+      if (jsonLd.itemListElement && jsonLd.itemListElement.length > 0) {
+        jsonLd.itemListElement.forEach((listItem: any) => {
+          expect(listItem.item.aggregateRating).toBeUndefined()
+        })
+      }
+    })
+
+    it('should have offers with shipping and return policy on products', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const itemListScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"ItemList"')
+      )
+
+      const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+      
+      if (jsonLd.itemListElement && jsonLd.itemListElement.length > 0) {
+        const product = jsonLd.itemListElement[0].item
+        
+        // Verify offers exist
+        expect(product.offers).toBeDefined()
+        expect(product.offers['@type']).toBe('Offer')
+        
+        // Verify shipping details (GSC Merchant listings requirement)
+        expect(product.offers.shippingDetails).toBeDefined()
+        
+        // Verify return policy (GSC Merchant listings requirement)
+        expect(product.offers.hasMerchantReturnPolicy).toBeDefined()
+      }
+    })
+
+    it('should have LocalBusiness with single aggregateRating', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const localBusinessScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"LocalBusiness"')
+      )
+
+      expect(localBusinessScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(localBusinessScript!.textContent || '{}')
+      
+      // Verify single aggregateRating exists at business level
+      expect(jsonLd.aggregateRating).toBeDefined()
+      expect(jsonLd.aggregateRating['@type']).toBe('AggregateRating')
+      expect(jsonLd.aggregateRating.ratingValue).toBeDefined()
+      expect(jsonLd.aggregateRating.reviewCount).toBeDefined()
+    })
+
+    it('should have breadcrumb structured data', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const breadcrumbScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"BreadcrumbList"')
+      )
+
+      expect(breadcrumbScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(breadcrumbScript!.textContent || '{}')
+      expect(jsonLd['@type']).toBe('BreadcrumbList')
+      expect(jsonLd.itemListElement).toHaveLength(2)
+      expect(jsonLd.itemListElement[0].name).toBe('Home')
+      expect(jsonLd.itemListElement[1].name).toBe('Gift Hampers')
+    })
+
+    it('should have FAQ structured data', async () => {
+      const page = await GiftHampersPage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+
+      expect(faqScript).toBeDefined()
+    })
+  })
 })
 
