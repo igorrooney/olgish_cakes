@@ -214,6 +214,11 @@ export default async function GiftHamperPage({ params }: PageProps) {
                 value: "7 days"
               }
             ] : []),
+            ...(hamper.ingredients && hamper.ingredients.length > 0 ? [{
+              "@type": "PropertyValue",
+              name: "Ingredients",
+              value: hamper.ingredients.join(", ")
+            }] : []),
             ...(hamper.allergens && hamper.allergens.length > 0 ? [{
               "@type": "PropertyValue",
               name: "Allergens",
@@ -318,37 +323,6 @@ export default async function GiftHamperPage({ params }: PageProps) {
               datePublished: "2025-08-15"
             }
           ],
-          ...(hamper.ingredients?.length
-            ? {
-                additionalProperty: [
-                  {
-                    "@type": "PropertyValue",
-                    name: "Ingredients",
-                    value: hamper.ingredients.join(", "),
-                  },
-                ],
-              }
-            : {}),
-          ...(hamper.allergens?.length
-            ? {
-                additionalProperty: [
-                  ...(hamper.ingredients?.length
-                    ? [
-                        {
-                          "@type": "PropertyValue",
-                          name: "Ingredients",
-                          value: hamper.ingredients.join(", "),
-                        },
-                      ]
-                    : []),
-                  {
-                    "@type": "PropertyValue",
-                    name: "Allergens",
-                    value: hamper.allergens.join(", "),
-                  },
-                ],
-              }
-            : {}),
         } as const;
 
         const faqJsonLd = isCakeByPost
