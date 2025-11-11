@@ -23,8 +23,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://olgishcakes.co.uk/search" },
 };
 
-export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
-  const query = (searchParams?.q || "").toString().trim();
+export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const resolvedParams = await searchParams;
+  const query = (resolvedParams?.q || "").toString().trim();
 
   const suggestions = [
     { label: "All Cakes", href: "/cakes" },
@@ -138,9 +139,11 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
         <Grid container spacing={2}>
           {suggestions.map(link => (
             <Grid item xs={12} sm={6} md={4} key={link.href}>
-              <Button component={Link} href={link.href} variant="outlined" color="primary" fullWidth>
-                {link.label}
-              </Button>
+              <Link href={link.href} style={{ textDecoration: 'none', display: 'block' }}>
+                <Button variant="outlined" color="primary" fullWidth>
+                  {link.label}
+                </Button>
+              </Link>
             </Grid>
           ))}
         </Grid>

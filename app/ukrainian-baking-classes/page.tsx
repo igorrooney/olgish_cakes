@@ -350,21 +350,9 @@ export default function UkrainianBakingClassesPage() {
                         ))}
                       </Box>
 
-                      <Button
-                        variant="contained"
-                        component={Link}
-                        href="/contact"
-                        sx={{
-                          backgroundColor: "primary.main",
-                          width: "100%",
-                          py: 1.5,
-                          "&:hover": {
-                            backgroundColor: "primary.dark",
-                          },
-                        }}
-                      >
+                      <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", width: "100%", py: 1.5, "&:hover": { backgroundColor: "primary.dark", }, }}>
                         Book This Class
-                      </Button>
+                      </Button></Link>
                     </Box>
                   </Paper>
                 </Grid>
@@ -564,40 +552,12 @@ export default function UkrainianBakingClassesPage() {
               place!
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Book a Class
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/contact"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 Contact for Private Classes
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

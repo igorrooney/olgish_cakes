@@ -365,15 +365,13 @@ export default async function WeddingCakesPage() {
                   Every wedding cake is custom-designed to match your unique vision. Contact me to
                   discuss your wedding cake requirements and view my portfolio.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="contained"
+                <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   Wedding Cake Consultation
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -785,23 +783,23 @@ export default async function WeddingCakesPage() {
                 { name: "Wedding Cakes Skipton", href: "/cakes-skipton" },
               ].map((area, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
-                  <Button
-                    component={Link}
-                    href={area.href}
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      py: 1.5,
-                      justifyContent: "flex-start",
-                      "&:hover": {
-                        backgroundColor: "primary.main",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    {area.name}
-                  </Button>
+                  <Link href={area.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        py: 1.5,
+                        justifyContent: "flex-start",
+                        "&:hover": {
+                          backgroundColor: "primary.main",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {area.name}
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -829,26 +827,22 @@ export default async function WeddingCakesPage() {
               Let me create the perfect wedding cake for your Leeds celebration. Contact me today to schedule your free consultation and tasting session. I'll work with you to design a stunning wedding cake that reflects your style and delights your guests with authentic Ukrainian flavours.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Book Free Consultation
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -446,32 +446,28 @@ export default function UkrainianWeddingTraditionsPage() {
             Order traditional Ukrainian wedding cakes and make your special day truly memorable
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/wedding-cakes"
-              variant="contained"
+            <Link href="/wedding-cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Browse Wedding Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="outlined"
+            </Link>
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Plan Your Wedding Cake
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

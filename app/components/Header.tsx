@@ -257,9 +257,11 @@ const MobileMenuItem = memo(
             />
           </ListItemButton>
         ) : (
-          <ListItemButton component={Link} href={item.href} onClick={handleClick} sx={menuStyles}>
-            <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
-          </ListItemButton>
+          <Link href={item.href} style={{ textDecoration: 'none', display: 'block' }}>
+            <ListItemButton onClick={handleClick} sx={menuStyles}>
+              <ListItemText primary={<Typography sx={textStyles}>{item.name}</Typography>} />
+            </ListItemButton>
+          </Link>
         )}
       </ListItem>
     );
@@ -306,7 +308,8 @@ const MobileSubmenuItem = memo(
 
     return (
       <ListItem disablePadding sx={{ mb: isFeatured ? 1 : 0.5 }}>
-        <ListItemButton component={Link} href={item.href} onClick={onNavigate} sx={buttonStyles}>
+        <Link href={item.href} style={{ textDecoration: 'none', display: 'block' }}>
+          <ListItemButton onClick={onNavigate} sx={buttonStyles}>
           <ListItemText
             primary={
               <Typography
@@ -331,6 +334,7 @@ const MobileSubmenuItem = memo(
             }
           />
         </ListItemButton>
+        </Link>
       </ListItem>
     );
   }
@@ -702,10 +706,12 @@ export function Header() {
                               Featured
                             </Typography>
                             {item.megaMenu.featured.map(featuredItem => (
-                              <Box
+                              <Link 
                                 key={featuredItem.name}
-                                component={Link}
                                 href={featuredItem.href}
+                                style={{ textDecoration: 'none', display: 'block' }}
+                              >
+                              <Box
                                 onClick={handleCakesMenuClose}
                                 sx={{
                                   display: "block",
@@ -736,6 +742,7 @@ export function Header() {
                                   {featuredItem.description}
                                 </Typography>
                               </Box>
+                              </Link>
                             ))}
                           </Box>
 
@@ -757,10 +764,12 @@ export function Header() {
                                   {category.title}
                                 </Typography>
                                 {category.items.map(categoryItem => (
-                                  <Box
+                                  <Link
                                     key={categoryItem.name}
-                                    component={Link}
                                     href={categoryItem.href}
+                                    style={{ textDecoration: 'none', display: 'block' }}
+                                  >
+                                  <Box
                                     onClick={handleCakesMenuClose}
                                     sx={{
                                       display: "block",
@@ -783,6 +792,7 @@ export function Header() {
                                   >
                                     {categoryItem.name}
                                   </Box>
+                                  </Link>
                                 ))}
                               </Box>
                             ))}
@@ -909,10 +919,12 @@ export function Header() {
                         }}
                       >
                         {item.dropdown.map(dropdownItem => (
-                          <MenuItem
+                          <Link
                             key={dropdownItem.name}
-                            component={Link}
                             href={dropdownItem.href}
+                            style={{ textDecoration: 'none', display: 'block' }}
+                          >
+                          <MenuItem
                             onClick={handleMenuClose}
                             sx={{
                               color:
@@ -931,6 +943,7 @@ export function Header() {
                           >
                             {dropdownItem.name}
                           </MenuItem>
+                          </Link>
                         ))}
                       </Menu>
                     </Box>

@@ -7,7 +7,7 @@ interface UseViewTrackingOptions {
 
 export function useViewTracking({ postId, enabled = true }: UseViewTrackingOptions) {
   const hasTracked = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
     if (!enabled || !postId || hasTracked.current) {

@@ -149,26 +149,22 @@ export default function CakesIlkleyPage() {
               enjoy traditional Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Cakes Ilkley
               </Button>
-              <Button
-                component={Link}
-                href="/delivery-areas"
-                variant="outlined"
+            </Link>
+              <Link href="/delivery-areas" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Delivery Areas
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

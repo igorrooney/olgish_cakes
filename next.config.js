@@ -27,31 +27,22 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: false,
   // Enhanced performance optimizations
-  optimizeFonts: true,
   trailingSlash: false,
+  // Empty turbopack config to acknowledge webpack config migration in progress
+  turbopack: {},
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],
-    turbo: {
-      rules: {
-        "*.svg": {
-          loaders: ["@svgr/webpack"],
-          as: "*.js",
-        },
-      },
-    },
     // Enable new performance optimizations
     optimizeServerReact: true,
-    serverComponentsExternalPackages: ["@sanity/client"],
     // Enable modern JavaScript features
     esmExternals: true,
     // Performance optimizations
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
-    // Enable faster builds
-    typedRoutes: false,
   },
+  // Server external packages (moved from experimental in Next.js 16)
+  serverExternalPackages: ["@sanity/client"],
   // Enhanced performance settings
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

@@ -412,15 +412,13 @@ export default async function BirthdayCakesPage() {
                   Every birthday cake is custom-designed to match your unique vision. Contact me to
                   discuss your birthday cake requirements and view my portfolio.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="contained"
+                <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   Birthday Cake Consultation
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -941,23 +939,23 @@ export default async function BirthdayCakesPage() {
                 { name: "Birthday Cakes Otley", href: "/cakes-otley" },
               ].map((area, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
-                  <Button
-                    component={Link}
-                    href={area.href}
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      py: 1.5,
-                      justifyContent: "flex-start",
-                      "&:hover": {
-                        backgroundColor: "primary.main",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    {area.name}
-                  </Button>
+                  <Link href={area.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        py: 1.5,
+                        justifyContent: "flex-start",
+                        "&:hover": {
+                          backgroundColor: "primary.main",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {area.name}
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -981,26 +979,22 @@ export default async function BirthdayCakesPage() {
               From children's themed birthday cakes to elegant adult celebrations, I create custom birthday cakes that make your Leeds celebration special. Same-day delivery available for urgent orders. Contact me for a free design consultation.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Birthday Cake
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -615,25 +615,9 @@ export default function BestCakesByPostUKPage() {
               <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
                 Choose from our selection of letterbox-friendly cakes and surprise someone special today.
               </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                component={Link}
-                href="/cake-by-post-service"
-                sx={{
-                  bgcolor: "white",
-                  color: "primary.main",
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  "&:hover": {
-                    bgcolor: "#f5f5f5",
-                  },
-                }}
-              >
+              <Link href="/cake-by-post-service" style={{ textDecoration: 'none' }}><Button variant="contained" size="large" sx={{ bgcolor: "white", color: "primary.main", px: 4, py: 1.5, fontSize: "1.1rem", fontWeight: 600, "&:hover": { bgcolor: "#f5f5f5", }, }}>
                 Order Cake by Post
-              </Button>
+              </Button></Link>
             </Card>
 
             {/* Related Articles */}

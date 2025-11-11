@@ -376,26 +376,22 @@ export default function NutFreeCakesLeedsPage() {
               Contact me today for a safe, delicious nut-free cake in Leeds
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Nut-Free Cake
               </Button>
-              <Button
-                component={Link}
-                href="/allergen-information"
-                variant="outlined"
+            </Link>
+              <Link href="/allergen-information" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View Allergen Information
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

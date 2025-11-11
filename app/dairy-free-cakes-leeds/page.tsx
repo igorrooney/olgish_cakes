@@ -191,15 +191,13 @@ export default async function DairyFreeCakesLeedsPage() {
               ))}
             </Grid>
             <Box sx={{ textAlign: "center", mt: 4 }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
-                size="large"
-              >
+                size="large">
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
 
@@ -346,26 +344,22 @@ export default async function DairyFreeCakesLeedsPage() {
               you have the perfect dairy-free cake for your celebration.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Dairy-Free Cake
               </Button>
-              <Button
-                component={Link}
-                href="/vegan-cakes-leeds"
-                variant="outlined"
+            </Link>
+              <Link href="/vegan-cakes-leeds" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View Vegan Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

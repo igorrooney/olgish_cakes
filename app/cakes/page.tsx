@@ -8,7 +8,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 // Enable revalidation for this page
-export const revalidate = getRevalidateTime();
+export const revalidate = 300; // 5 minutes
 
 // Force static generation
 export const dynamic = 'force-static';
@@ -197,16 +197,9 @@ export default async function CakesPage() {
               <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", fontStyle: "italic" }}>
                 <strong>Perfect for:</strong> Adult birthdays, milestone celebrations, Ukrainian family gatherings, or anyone who appreciates sophisticated desserts. Prices for Ukrainian birthday cakes start from £45 for custom designs.
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                component={Link}
-                href="/get-custom-quote"
-                sx={{ px: 4, py: 2 }}
-              >
+              <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}><Button variant="contained" color="primary" size="large" sx={{ px: 4, py: 2 }}>
                 Order Ukrainian Birthday Cake
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
 

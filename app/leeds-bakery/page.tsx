@@ -53,12 +53,16 @@ export default function LeedsBakeryPage() {
             </Typography>
             <Chip label="Same‑day options" sx={{ backgroundColor: "primary.main", color: "white", fontSize: "1.1rem", px: 3, py: 1, mb: 4 }} />
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button component={Link} href="/cakes" variant="contained" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
                 Browse Cakes
               </Button>
-              <Button component={Link} href="/cake-delivery" variant="outlined" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
+            </Link>
+              <Link href="/cake-delivery" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
                 Delivery Info
               </Button>
+            </Link>
             </Box>
           </Box>
 

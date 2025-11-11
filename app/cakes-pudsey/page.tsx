@@ -253,32 +253,28 @@ export default async function CakesPudseyPage() {
               Pudsey
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="contained"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 size="large"
                 sx={{
                   bgcolor: "white",
                   color: "#005BBB",
                   "&:hover": { bgcolor: "#f5f5f5" },
-                }}
-              >
+                }}>
                 Browse All Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="outlined"
+            </Link>
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 size="large"
                 sx={{
                   borderColor: "white",
                   color: "white",
                   "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-                }}
-              >
+                }}>
                 Contact Me
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

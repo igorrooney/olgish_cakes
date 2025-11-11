@@ -402,26 +402,22 @@ export default function UkrainianCakeRecipesPage() {
               Order my real Ukrainian cakes or join my baking classes to learn these traditional techniques
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="contained"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Ukrainian Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/ukrainian-baking-classes"
-                variant="outlined"
+            </Link>
+              <Link href="/ukrainian-baking-classes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Join Baking Classes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

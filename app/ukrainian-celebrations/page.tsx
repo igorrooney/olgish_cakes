@@ -476,32 +476,28 @@ export default function UkrainianCelebrationsPage() {
             traditions alive
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Order Traditional Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/ukrainian-culture-baking"
-              variant="outlined"
+            </Link>
+            <Link href="/ukrainian-culture-baking" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Learn More About Culture
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

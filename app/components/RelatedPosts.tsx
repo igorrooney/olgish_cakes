@@ -81,10 +81,9 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
 
           return (
             <Grid item xs={12} md={4} key={post._id}>
-              <Card
-                component={Link}
-                href={`/blog/${post.slug.current}`}
-                sx={{
+              <Link href={`/blog/${post.slug.current}`} style={{ textDecoration: 'none', display: 'block' }}>
+                <Card
+                  sx={{
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
@@ -177,6 +176,7 @@ export function RelatedPosts({ posts, currentPostId, currentCategory }: RelatedP
                   </Typography>
                 </CardContent>
               </Card>
+              </Link>
             </Grid>
           );
         })}

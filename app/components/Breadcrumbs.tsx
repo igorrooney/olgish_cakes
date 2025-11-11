@@ -148,7 +148,6 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
         return (
           <MuiLink
             key={item.label}
-            component={Link}
             href={item.href}
             color="inherit"
             underline="hover"

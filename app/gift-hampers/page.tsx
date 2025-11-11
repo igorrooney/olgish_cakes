@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
 import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
-export const revalidate = getRevalidateTime();
+export const revalidate = 300; // 5 minutes
 
 // Force static generation
 export const dynamic = "force-static";

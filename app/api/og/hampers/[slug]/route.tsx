@@ -15,8 +15,8 @@ async function getHamper(slug: string) {
   return client.fetch(query, { slug });
 }
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
-  const { slug } = params;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const hamper = await getHamper(slug);
 
   const name: string = hamper?.name || "Gift Hamper";

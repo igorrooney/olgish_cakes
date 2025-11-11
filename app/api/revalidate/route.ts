@@ -32,9 +32,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate tags for broader cache invalidation
-    revalidateTag("cakes");
-    revalidateTag("testimonials");
-    revalidateTag("faqs");
+    revalidateTag("cakes", "max");
+    revalidateTag("testimonials", "max");
+    revalidateTag("faqs", "max");
 
     return NextResponse.json({
       success: true,

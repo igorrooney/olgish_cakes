@@ -462,10 +462,8 @@ export default function ReturnPolicyPage() {
             </Typography>
 
             <Box sx={{ mt: 6, textAlign: "center" }}>
-              <Button
-                component={Link}
-                href="/"
-                variant="contained"
+              <Link href="/" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
                 sx={{
@@ -481,10 +479,10 @@ export default function ReturnPolicyPage() {
                     boxShadow: "0 6px 20px rgba(0, 91, 187, 0.3)",
                   },
                   transition: "all 0.3s ease",
-                }}
-              >
+                }}>
                 Back to Home
               </Button>
+            </Link>
             </Box>
           </Paper>
         </Container>

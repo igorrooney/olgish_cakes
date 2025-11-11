@@ -355,15 +355,13 @@ export default async function CakesBradfordPage() {
             </Grid>
             {allCakes.length > 6 && (
               <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="outlined"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   View All Cakes
                 </Button>
+            </Link>
               </Box>
             )}
           </Box>
@@ -383,9 +381,11 @@ export default async function CakesBradfordPage() {
                 { name: "Custom Design", href: "/custom-cake-design" },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Button component={Link} href={service.href} variant="outlined" color="primary" fullWidth sx={{ py: 1.5 }}>
-                    {service.name}
-                  </Button>
+                  <Link href={service.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button variant="outlined" color="primary" fullWidth sx={{ py: 1.5 }}>
+                      {service.name}
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -417,26 +417,22 @@ export default async function CakesBradfordPage() {
               Contact me today to create the perfect birthday cake for your celebration
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Birthday Cake Now
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Browse All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -329,10 +329,8 @@ export function CakePageClient({ cake }: PageProps) {
               authentic recipes and premium ingredients.
             </Typography>
 
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="outlined"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: colors.primary.main,
@@ -352,10 +350,10 @@ export function CakePageClient({ cake }: PageProps) {
                   transform: "translateY(-2px)",
                   boxShadow: shadows.lg,
                 },
-              }}
-            >
+              }}>
               Browse All Cakes
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

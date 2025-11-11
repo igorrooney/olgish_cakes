@@ -186,9 +186,11 @@ export default function DeliveryAreasPage() {
               }}
             />
             <Box sx={{ mt: 2 }}>
-              <Button component={Link} href="/market-schedule" variant="outlined" color="primary">
-                See Where To Find Us Locally (Market Schedule)
-              </Button>
+              <Link href="/market-schedule" style={{ textDecoration: 'none' }}>
+                <Button variant="outlined" color="primary">
+                  See Where To Find Us Locally (Market Schedule)
+                </Button>
+              </Link>
             </Box>
           </Box>
 
@@ -621,36 +623,30 @@ export default function DeliveryAreasPage() {
               Contact me to check delivery availability in your area
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Check Delivery Availability
               </Button>
-              <Button
-                component={Link}
-                href="/market-schedule"
-                variant="outlined"
+            </Link>
+              <Link href="/market-schedule" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Visit My Local Market Stall
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View My Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

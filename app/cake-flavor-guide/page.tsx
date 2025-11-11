@@ -343,15 +343,13 @@ export default function CakeFlavorGuidePage() {
             </Grid>
           </Paper>
           <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
-              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
-            >
+              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}>
               Browse All Cakes
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

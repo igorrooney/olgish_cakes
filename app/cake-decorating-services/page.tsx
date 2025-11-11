@@ -306,15 +306,13 @@ export default function CakeDecoratingServicesPage() {
             </Grid>
           </Paper>
           <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Button
-              component={Link}
-              href="/custom-cake-design"
-              variant="contained"
+            <Link href="/custom-cake-design" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
-              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
-            >
+              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}>
               Start Your Custom Cake
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

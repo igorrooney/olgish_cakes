@@ -58,13 +58,14 @@ async function getCake(slug: string, preview = false): Promise<Cake | null> {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const cake = await getCake(params.slug);
+  const { slug } = await params;
+  const cake = await getCake(slug);
 
   if (!cake) {
     return {
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   // Special optimization for honey cake "buy honey cake online" keyword
-  const isHoneyCake = params.slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
+  const isHoneyCake = slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
   
   // Use SEO fields if available, otherwise generate from content
   const metaTitle = isHoneyCake
@@ -169,7 +170,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CakePage({ params }: PageProps) {
-  const cake = await getCake(params.slug);
+  const { slug } = await params;
+  const cake = await getCake(slug);
 
   if (!cake) {
     notFound();

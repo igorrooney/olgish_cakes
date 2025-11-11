@@ -458,7 +458,9 @@ export default function HoneyCakePage() {
                 <strong>I'm the only baker in Leeds making authentic Ukrainian honey cake the traditional way.</strong> Other bakeries might offer "honey cake," but it's not the same. They use shortcuts - thick layers, buttercream instead of proper cream, no overnight soaking. That's not real Medovik.
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
-                When you order my <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main, fontWeight: 'bold' }}>honey cake</MuiLink>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
+                When you order my <Link href="/cakes/honey-cake-medovik" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main, fontWeight: 'bold' }}>honey cake</MuiLink>
+            </Link>, you get the real thing - made exactly how my grandmother taught me, with the same care and attention that Ukrainian families have used for generations.
               </Typography>
             </Box>
           </Paper>
@@ -527,10 +529,8 @@ export default function HoneyCakePage() {
               Order traditional Ukrainian honey cake made with real Yorkshire honey. Each cake is handmade to order and soaked overnight for perfect flavour. Same-day delivery available across Leeds.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button
-                component={Link}
-                href="/cakes/honey-cake-medovik"
-                variant="contained"
+              <Link href="/cakes/honey-cake-medovik" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 size="large"
                 sx={{
                   bgcolor: 'secondary.main',
@@ -544,10 +544,9 @@ export default function HoneyCakePage() {
               >
                 Order Honey Cake Now
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 size="large"
                 sx={{
                   borderColor: 'white',
@@ -556,10 +555,10 @@ export default function HoneyCakePage() {
                   py: 2,
                   fontSize: '1.1rem',
                   '&:hover': { borderColor: 'secondary.main', bgcolor: 'white', color: 'primary.main' }
-                }}
-              >
+                }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

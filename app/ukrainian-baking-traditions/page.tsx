@@ -420,32 +420,28 @@ export default function UkrainianBakingTraditionsPage() {
             Taste the authentic flavours of traditional Ukrainian baking with my handcrafted cakes
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Browse Traditional Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/ukrainian-baking-classes"
-              variant="outlined"
+            </Link>
+            <Link href="/ukrainian-baking-classes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Learn to Bake
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

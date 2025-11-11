@@ -20,7 +20,7 @@ interface CakeCardProps {
   variant?: "featured" | "catalog";
 }
 
-const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): JSX.Element {
+const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
 
@@ -387,21 +387,21 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         )}
 
         {/* Action Button with enhanced accessibility */}
-        <OutlineButton
-          component={Link}
-          href={`/cakes/${cake.slug.current}`}
-          sx={{
-            mt: "auto",
-            py: spacing.md,
-            width: "100%",
-            fontWeight: typography.fontWeight.medium,
-          }}
-          aria-label={`Order ${cake.name} now from Olgish Cakes Leeds`}
-          // Enhanced button attributes for SEO
-          title={`Order ${cake.name} - ${cake.category} | Olgish Cakes Leeds`}
-        >
-          Order Now
-        </OutlineButton>
+        <Link href={`/cakes/${cake.slug.current}`} style={{ textDecoration: 'none', display: 'block' }}>
+          <OutlineButton
+            sx={{
+              mt: "auto",
+              py: spacing.md,
+              width: "100%",
+              fontWeight: typography.fontWeight.medium,
+            }}
+            aria-label={`Order ${cake.name} now from Olgish Cakes Leeds`}
+            // Enhanced button attributes for SEO
+            title={`Order ${cake.name} - ${cake.category} | Olgish Cakes Leeds`}
+          >
+            Order Now
+          </OutlineButton>
+        </Link>
       </CardContent>
     </ProductCard>
   );

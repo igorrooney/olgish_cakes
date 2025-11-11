@@ -299,21 +299,9 @@ export default function VeganCakesLeedsPage() {
                         >
                           {cake.price}
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          component={Link}
-                          href="/contact"
-                          sx={{
-                            borderColor: "primary.main",
-                            color: "primary.main",
-                            "&:hover": {
-                              backgroundColor: "primary.main",
-                              color: "white",
-                            },
-                          }}
-                        >
+                        <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                           Order Now
-                        </Button>
+                        </Button></Link>
                       </Box>
                     </Box>
                   </Paper>
@@ -460,40 +448,12 @@ export default function VeganCakesLeedsPage() {
               flavours.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Order Vegan Cake
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/allergen-information"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/allergen-information" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 Allergen Information
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

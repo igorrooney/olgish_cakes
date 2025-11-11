@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate cache tags for product feeds
-    revalidateTag('cakes');
-    revalidateTag('gift-hampers');
-    revalidateTag('merchant-center-feed');
+    revalidateTag('cakes', 'max');
+    revalidateTag('gift-hampers', 'max');
+    revalidateTag('merchant-center-feed', 'max');
 
     // Log the revalidation
     console.log('Merchant Center feed cache revalidated at:', new Date().toISOString());
@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Revalidate cache tags
-    revalidateTag('cakes');
-    revalidateTag('gift-hampers');
-    revalidateTag('merchant-center-feed');
+    revalidateTag('cakes', 'max');
+    revalidateTag('gift-hampers', 'max');
+    revalidateTag('merchant-center-feed', 'max');
 
     return NextResponse.json({
       success: true,

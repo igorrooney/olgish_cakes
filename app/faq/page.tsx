@@ -187,10 +187,8 @@ export default async function FAQPage() {
             >
               Have a specific question about my Ukrainian-style cakes?
             </Typography>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="contained"
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               color="primary"
               size="large"
               sx={{
@@ -206,10 +204,10 @@ export default async function FAQPage() {
                   boxShadow: "0 6px 20px rgba(0, 91, 187, 0.3)",
                 },
                 transition: "all 0.3s ease",
-              }}
-            >
+              }}>
               Contact Me
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

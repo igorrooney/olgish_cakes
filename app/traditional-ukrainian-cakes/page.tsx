@@ -297,15 +297,13 @@ export default async function TraditionalUkrainianCakesPage() {
                   I am currently preparing my traditional Ukrainian cake collection. Please check back soon
                   for real Ukrainian desserts!
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="contained"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   View All Cakes
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -385,26 +383,22 @@ export default async function TraditionalUkrainianCakesPage() {
               the warmth of Ukrainian hospitality.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order traditional Cake
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

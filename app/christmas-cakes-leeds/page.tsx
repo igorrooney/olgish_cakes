@@ -392,26 +392,22 @@ export default function ChristmasCakesLeedsPage() {
               and make sure you have the perfect Christmas cakes for your celebration.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Christmas Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/traditional-ukrainian-cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/traditional-ukrainian-cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Ukrainian Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

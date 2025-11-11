@@ -315,7 +315,9 @@ export default function CakeInLeedsPage() {
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <MuiLink component={Link} href="/birthday-cakes" underline="none" sx={{ color: colors.primary.main }}>Birthday Cake Leeds</MuiLink>
+                  <Link href="/birthday-cakes" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }}>Birthday Cake Leeds</MuiLink>
+            </Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Need birthday cake in Leeds? I make beautiful custom birthday cakes with any design you want. From simple elegant cakes to elaborate themed creations, every birthday cake is made fresh and designed just for you. Popular flavours include honey cake, vanilla, and chocolate. Order 2 days ahead for custom designs.
@@ -323,7 +325,9 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <MuiLink component={Link} href="/wedding-cakes" underline="none" sx={{ color: colors.primary.main }}>Wedding Cake Leeds</MuiLink>
+                  <Link href="/wedding-cakes" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }}>Wedding Cake Leeds</MuiLink>
+            </Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Your wedding cake should be as special as your day. I create stunning wedding cakes in Leeds with beautiful designs and delicious flavours. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting for wedding cakes.
@@ -331,15 +335,23 @@ export default function CakeInLeedsPage() {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="none" sx={{ color: colors.primary.main }}>Traditional Ukrainian Cakes</MuiLink>
+                  <Link href="/cakes/honey-cake-medovik" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }}>Traditional Ukrainian Cakes</MuiLink>
+            </Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Try authentic Ukrainian cakes in Leeds. My <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>, <MuiLink component={Link} href="/cakes/kyiv-cake" underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
+                  Try authentic Ukrainian cakes in Leeds. My <Link href="/cakes/honey-cake-medovik" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>
+            </Link>, <Link href="/cakes/kyiv-cake" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink>
+            </Link>, and Napoleon are made exactly how they're made in Ukraine. These aren't British versions - they're the real thing. Perfect for people who miss Ukrainian cakes or want to try something new.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h3" component="h3" sx={{ fontSize: '1.8rem', fontWeight: 600, color: 'primary.main', mb: 2 }}>
-                  <MuiLink component={Link} href="/custom-cake-design" underline="none" sx={{ color: colors.primary.main }}>Custom Cake Design Leeds</MuiLink>
+                  <Link href="/custom-cake-design" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }}>Custom Cake Design Leeds</MuiLink>
+            </Link>
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
                   Have a special vision for your cake? I offer custom cake design in Leeds. Tell me what you want - colours, theme, style - and I'll create it. Every custom cake is unique and made just for your celebration. Perfect for corporate events, anniversaries, and special occasions.
@@ -516,10 +528,8 @@ export default function CakeInLeedsPage() {
               Order your authentic Ukrainian cake today. Same-day delivery available across Leeds. Call <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink> or order online now.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="contained"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 size="large"
                 sx={{
                   bgcolor: 'secondary.main',
@@ -533,10 +543,9 @@ export default function CakeInLeedsPage() {
               >
                 View All Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/get-custom-quote"
-                variant="outlined"
+            </Link>
+              <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 size="large"
                 sx={{
                   borderColor: 'white',
@@ -545,10 +554,10 @@ export default function CakeInLeedsPage() {
                   py: 2,
                   fontSize: '1.1rem',
                   '&:hover': { borderColor: 'secondary.main', bgcolor: 'white', color: 'primary.main' }
-                }}
-              >
+                }}>
                 Get Custom Quote
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -334,26 +334,22 @@ export default function CakeSizeGuidePage() {
             Contact me for personalized advice on cake sizing, portions, and custom orders. I'm here to help you choose the perfect cake for your celebration.
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="contained"
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               color="primary"
               size="large"
-              sx={{ px: 4, py: 1.5 }}
-            >
+              sx={{ px: 4, py: 1.5 }}>
               Get Size Advice
             </Button>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="outlined"
+            </Link>
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               color="primary"
               size="large"
-              sx={{ px: 4, py: 1.5 }}
-            >
+              sx={{ px: 4, py: 1.5 }}>
               Browse All Cakes
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

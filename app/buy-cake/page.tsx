@@ -55,12 +55,16 @@ export default function BuyCakePage() {
               Order Ukrainian cakes with delivery across Leeds. Fast checkout, secure payment, custom options.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button component={Link} href="/cakes" variant="contained" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
                 Browse Cakes
               </Button>
-              <Button component={Link} href="/contact" variant="outlined" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
+            </Link>
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined" color="primary" size="large" sx={{ px: 4, py: 1.5 }}>
                 Get Custom Quote
               </Button>
+            </Link>
             </Box>
           </Box>
 
