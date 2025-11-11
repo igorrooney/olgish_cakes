@@ -71,22 +71,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const isCakeByPost = hamper.slug?.current === "cake-by-post";
+  
+  // Prioritize custom SEO fields first, then special case optimizations, then generic fallbacks
   const metaTitle =
+    hamper.seo?.metaTitle ||
     (isCakeByPost &&
       "Cake by Post Gift Hamper | Traditional Ukrainian Honey Cake UK Delivery") ||
-    hamper.seo?.metaTitle ||
     `${hamper.name} | Luxury Gift Hampers`;
+  
   const metaDescription =
+    hamper.seo?.metaDescription ||
     (isCakeByPost &&
       "Buy traditional Ukrainian honey cake by post from OlgishCakes. Letterbox-friendly gift hamper with vacuum-packed cake slices. Perfect surprise delivery for birthdays, anniversaries & special occasions across the UK.") ||
-    hamper.seo?.metaDescription ||
     (hamper.shortDescription
       ? blocksToText(hamper.shortDescription).substring(0, 160)
       : `${hamper.name} premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.`);
   const keywords =
+    hamper.seo?.keywords?.join(", ") ||
     (isCakeByPost &&
       "cake by post, cakes delivered by post, letterbox cakes, order cake online UK, postal cakes UK, cake delivery by post, cake by post UK, cakes delivered UK, honey cake by post, letterbox friendly cake, surprise cake delivery, birthday cake by post, anniversary cake delivery, cake gift by post") ||
-    hamper.seo?.keywords?.join(", ") ||
     `${hamper.name}, gift hamper, luxury hamper, gourmet hamper, Leeds gift hamper, Yorkshire hamper, food gift UK`;
   const canonicalUrl =
     hamper.seo?.canonicalUrl || `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`;

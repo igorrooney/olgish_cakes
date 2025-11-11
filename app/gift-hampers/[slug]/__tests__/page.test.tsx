@@ -71,12 +71,65 @@ describe('HamperDetailPage', () => {
   })
 
   describe('generateMetadata', () => {
-    it('should generate metadata', async () => {
+    it('should generate metadata with default fallback', async () => {
       mockFetch.mockResolvedValue(mockHamper)
 
       const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
 
       expect(metadata.title).toContain('Deluxe Hamper')
+      expect(metadata.title).toContain('Luxury Gift Hampers')
+    })
+
+    it('should prioritize custom SEO fields over defaults', async () => {
+      const hamperWithSEO = {
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Custom SEO Title for Testing',
+          metaDescription: 'Custom SEO Description for Testing',
+          keywords: ['custom', 'seo', 'keywords']
+        }
+      }
+      mockFetch.mockResolvedValue(hamperWithSEO)
+
+      const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
+
+      expect(metadata.title).toBe('Custom SEO Title for Testing')
+      expect(metadata.description).toBe('Custom SEO Description for Testing')
+      expect(metadata.keywords).toBe('custom, seo, keywords')
+    })
+
+    it('should use special "cake-by-post" optimization when no custom SEO', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' }
+      }
+      mockFetch.mockResolvedValue(cakeByPostHamper)
+
+      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+
+      expect(metadata.title).toContain('Cake by Post')
+      expect(metadata.title).toContain('Ukrainian Honey Cake')
+      expect(metadata.description).toContain('Letterbox-friendly')
+    })
+
+    it('should prioritize custom SEO even for "cake-by-post" hamper', async () => {
+      const cakeByPostWithSEO = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        seo: {
+          metaTitle: 'My Custom Cake by Post Title',
+          metaDescription: 'My custom description',
+          keywords: ['custom', 'keywords']
+        }
+      }
+      mockFetch.mockResolvedValue(cakeByPostWithSEO)
+
+      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+
+      // Custom SEO should override the hardcoded "cake-by-post" optimization
+      expect(metadata.title).toBe('My Custom Cake by Post Title')
+      expect(metadata.description).toBe('My custom description')
+      expect(metadata.keywords).toBe('custom, keywords')
     })
 
     it('should return 404 metadata for missing hamper', async () => {
