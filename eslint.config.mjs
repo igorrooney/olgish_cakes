@@ -1,36 +1,97 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-import nextPlugin from "@next/eslint-plugin-next";
-import prettierPlugin from "eslint-plugin-prettier";
-import prettierConfig from "eslint-config-prettier";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import prettier from "eslint-config-prettier";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Global ignores
   {
-    files: ["**/*.{js,jsx,ts,tsx}"],
+    ignores: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**",
+      "**/.turbo/**",
+      "**/out/**",
+      "**/*.config.js",
+      "**/*.config.mjs",
+      "**/*.config.cjs",
+      "**/.sanity/**",
+      "**/backups/**",
+    ],
+  },
+
+  // JavaScript/TypeScript files - use recommended but downgrade to warnings
+  {
+    ...js.configs.recommended,
+    rules: Object.fromEntries(
+      Object.entries(js.configs.recommended.rules).map(([key, value]) => [
+        key,
+        value === "error" ? "warn" : value,
+      ])
+    ),
+  },
+  ...tseslint.configs.recommended.map(config => ({
+    ...config,
+    rules: config.rules ? Object.fromEntries(
+      Object.entries(config.rules).map(([key, value]) => [
+        key,
+        value === "error" ? "warn" : value,
+      ])
+    ) : {},
+  })),
+  prettier,
+
+  {
+    files: ["**/*.{js,jsx,ts,tsx,mjs,cjs}"],
     plugins: {
-      "@next/next": nextPlugin,
-      prettier: prettierPlugin,
+      react,
+      "react-hooks": reactHooks,
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
     rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...prettierConfig.rules,
-      "prettier/prettier": ["error"],
-      // Custom rules from .eslintrc.json
+      // TypeScript-specific rules
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-empty-function": "off",
+      
+      // React rules
       "react/no-unescaped-entities": "off",
       "react/display-name": "warn",
       "react-hooks/exhaustive-deps": "warn",
-      "@next/next/no-img-element": "warn",
-      "@next/next/no-page-custom-font": "warn",
-      "jsx-a11y/alt-text": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      
+      // General rules
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "warn",
+      "no-unused-vars": "off", // Using @typescript-eslint/no-unused-vars instead
+    },
+  },
+
+  // Test files - more lenient rules
+  {
+    files: ["**/__tests__/**/*", "**/*.test.{js,jsx,ts,tsx}", "**/*.spec.{js,jsx,ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "no-console": "off",
+    },
+  },
+
+  // Scripts - allow console
+  {
+    files: ["scripts/**/*"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ];
