@@ -581,7 +581,7 @@ export function Header() {
                     priority
                     style={{
                       height: "auto",
-                      width: "auto",
+                      maxWidth: "120px",
                     }}
                   />
                 </Box>

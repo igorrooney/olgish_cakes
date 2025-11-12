@@ -21,7 +21,8 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Enhanced performance settings
-    unoptimized: false,
+    // Disable optimization in development to bypass private IP check
+    unoptimized: process.env.NODE_ENV === "development",
   },
   compress: true,
   poweredByHeader: false,
