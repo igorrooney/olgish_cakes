@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     revalidateTag('merchant-center-feed', 'max');
 
     // Log the revalidation
-    console.log('Merchant Center feed cache revalidated at:', new Date().toISOString());
+    console.warn('Merchant Center feed cache revalidated at:', new Date().toISOString());
 
     return NextResponse.json({
       success: true,

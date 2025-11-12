@@ -12,24 +12,16 @@ import {
   EmailIcon,
   PhoneIcon,
   LocationOnIcon,
-  StarIcon,
-  VerifiedIcon,
-  LocalShippingIcon,
-  FavoriteIcon,
-  SecurityIcon,
 } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
-  BodyText,
   Container as DesignContainer,
-  ContactInfo,
   AccessibleIconButton,
-  TouchTargetWrapper,
 } from "@/lib/ui-components";
 import { Box, Grid, Stack, Typography } from "@/lib/mui-optimization";
 
-const { colors, typography, spacing, shadows, borderRadius } = designTokens;
+const { colors, typography, spacing } = designTokens;
 
 // Feature flag: control visibility of Gift Hampers links (default enabled)
 const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";

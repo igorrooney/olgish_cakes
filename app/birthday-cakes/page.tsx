@@ -7,6 +7,7 @@ import { AreasWeCover } from "../components/AreasWeCover";
 import Link from "next/link";
 import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
 import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
+import { urlFor } from "@/sanity/lib/image";
 
 export const metadata: Metadata = {
   title:
@@ -202,17 +203,6 @@ export default async function BirthdayCakesPage() {
               }
             }
           }
-          type UrlForFunction = (source: CakeImage | { asset?: { _ref?: string } }) => UrlForReturn
-          let urlFor: UrlForFunction
-          try {
-            urlFor = require('@/sanity/lib/image').urlFor as UrlForFunction
-          } catch (error) {
-            // Fallback for build environments where dynamic import might fail
-            urlFor = (_image: CakeImage | { asset?: { _ref?: string } }): UrlForReturn => ({
-              width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
-            })
-          }
-
           // Get the best available image
           const mainImage: CakeImage | undefined = cake.mainImage?.asset?._ref
             ? cake.mainImage as CakeImage

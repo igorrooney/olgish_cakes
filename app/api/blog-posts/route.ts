@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Creating blog post with data:', {
+    console.warn('Creating blog post with data:', {
       title,
       category,
       status,
@@ -142,14 +142,14 @@ export async function POST(request: NextRequest) {
     let featuredImageAsset = null
     if (featuredImage && featuredImage.size > 0) {
       try {
-        console.log('Uploading image to Sanity...')
+        console.warn('Uploading image to Sanity...')
         // Upload image to Sanity
         const imageBuffer = await featuredImage.arrayBuffer()
         const imageAsset = await client.assets.upload('image', Buffer.from(imageBuffer), {
           filename: featuredImage.name,
           contentType: featuredImage.type,
         })
-        console.log('Image uploaded successfully:', imageAsset._id)
+        console.warn('Image uploaded successfully:', imageAsset._id)
 
         featuredImageAsset = {
           _type: 'image',
@@ -171,14 +171,14 @@ export async function POST(request: NextRequest) {
     let cardImageAsset = null
     if (cardImage && cardImage.size > 0) {
       try {
-        console.log('Uploading card image to Sanity...')
+        console.warn('Uploading card image to Sanity...')
         // Upload image to Sanity
         const imageBuffer = await cardImage.arrayBuffer()
         const imageAsset = await client.assets.upload('image', Buffer.from(imageBuffer), {
           filename: cardImage.name,
           contentType: cardImage.type,
         })
-        console.log('Card image uploaded successfully:', imageAsset._id)
+        console.warn('Card image uploaded successfully:', imageAsset._id)
 
         cardImageAsset = {
           _type: 'image',
@@ -223,9 +223,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('Creating document in Sanity...')
+    console.warn('Creating document in Sanity...')
     const result = await client.create(doc)
-    console.log('Blog post created successfully:', result._id)
+    console.warn('Blog post created successfully:', result._id)
 
     return NextResponse.json({ success: true, id: result._id })
   } catch (error) {

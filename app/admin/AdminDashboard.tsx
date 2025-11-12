@@ -7,36 +7,28 @@ import {
   Card,
   CardContent,
   Typography,
-  Button,
   Chip,
+  Divider,
+  CircularProgress,
   Paper,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
   Alert,
-  CircularProgress,
-  IconButton,
-  Tooltip
 } from '@mui/material';
 import {
   ShoppingCart,
   TrendingUp,
   Article,
   Email,
-  Settings,
   Analytics,
   ContentPaste,
   Store,
-  People,
   LocalShipping,
-  Assessment,
   Refresh,
   OpenInNew,
   CheckCircle,
-  Warning,
-  Error as ErrorIcon
 } from '@mui/icons-material';
 import { AdminAuthGuard } from '@/components/AdminAuthGuard';
 import { designTokens } from '@/lib/design-system';
@@ -204,7 +196,7 @@ export function AdminDashboard() {
         } else {
           alert('Failed to clear cache');
         }
-      } catch (err) {
+      } catch {
         alert('Error clearing cache');
       }
     }

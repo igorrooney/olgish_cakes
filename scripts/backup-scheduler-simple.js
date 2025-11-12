@@ -155,12 +155,13 @@ class BackupScheduler {
       case 'daily':
         return `${minutes} ${hours} * * *`;
       
-      case 'weekly':
+      case 'weekly': {
         const dayMap = {
           sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
           thursday: 4, friday: 5, saturday: 6
         };
         return `${minutes} ${hours} * * ${dayMap[schedule.day]}`;
+      }
       
       case 'monthly':
         return `${minutes} ${hours} ${schedule.day} * *`;

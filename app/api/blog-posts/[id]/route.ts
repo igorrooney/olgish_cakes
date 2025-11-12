@@ -133,7 +133,7 @@ export async function PATCH(
     const body = await request.json()
     const { id } = await params
 
-    console.log('Patching blog post:', id, body)
+    console.warn('Patching blog post:', id, body)
 
     const result = await client
       .patch(id)

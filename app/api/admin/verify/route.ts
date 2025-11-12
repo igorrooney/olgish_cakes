@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       success: true,
       user: { username: user.username, role: user.role }
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Token verification failed' },
       { status: 401 }

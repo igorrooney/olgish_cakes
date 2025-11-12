@@ -107,16 +107,16 @@ export class PerformanceMonitor {
   }
 
   logMetrics(): void {
-    console.group("Performance Metrics");
+    console.warn("=== Performance Metrics ===");
     this.metrics.forEach((times, name) => {
       const avg = this.getAverageTime(name);
       const min = Math.min(...times);
       const max = Math.max(...times);
-      console.log(
+      console.warn(
         `${name}: avg=${avg.toFixed(2)}ms, min=${min.toFixed(2)}ms, max=${max.toFixed(2)}ms`
       );
     });
-    console.groupEnd();
+    console.warn("=== End Performance Metrics ===");
   }
 }
 

@@ -4,25 +4,12 @@ import { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Button,
   Card,
   CardContent,
   Grid,
   Chip,
+  Button,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Switch,
-  FormControlLabel,
-  Avatar,
-  Paper,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { BlogPost } from '@/lib/sanity-blog';
@@ -47,7 +34,7 @@ export default function BlogAdminPage() {
 
       const data = await response.json();
       setPosts(data.posts || []);
-    } catch (error) {
+    } catch {
       // Error handling without console logging
     } finally {
       setLoading(false);

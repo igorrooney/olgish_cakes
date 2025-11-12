@@ -65,7 +65,7 @@ export function SEOAnalytics({
   };
 
   const trackUserEngagement = () => {
-    let startTime = Date.now();
+    const startTime = Date.now();
     let maxScrollDepth = 0;
     let isPageVisible = true;
 

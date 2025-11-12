@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     // Verify token (simplified check for now)
     // In production, you might want to use jose.VerifyJWT for proper verification
     return NextResponse.json({ authenticated: true }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }

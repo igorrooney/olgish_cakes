@@ -14,7 +14,6 @@ class GCPStorageProvider {
   }
 
   async upload({ filePath, bucket, key }) {
-    const fs = require('fs');
     
     try {
       const bucketObj = this.storage.bucket(bucket);
@@ -42,7 +41,6 @@ class GCPStorageProvider {
   }
 
   async download({ bucket, key, localPath }) {
-    const fs = require('fs');
     
     try {
       const bucketObj = this.storage.bucket(bucket);

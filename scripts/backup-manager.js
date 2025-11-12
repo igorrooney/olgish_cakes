@@ -54,7 +54,6 @@ class BackupManager {
     console.log('🚀 Starting backup process...');
     
     try {
-      const backupOptions = {
         ...this.config.backup.options,
         ...options
       };

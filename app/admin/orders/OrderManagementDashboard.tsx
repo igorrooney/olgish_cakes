@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Card,
@@ -25,7 +25,6 @@ import {
   TableRow,
   TableSortLabel,
   TablePagination,
-  Paper,
   IconButton,
   Alert,
   Snackbar,
@@ -225,17 +224,6 @@ export function OrderManagementDashboard() {
     selectedDesignType: 'standard',
   });
 
-  useEffect(() => {
-    fetchOrders();
-    fetchMonthlyEarnings();
-    fetchCakes();
-  }, []); // Only fetch on component mount
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(0);
-  }, [searchTerm, statusFilter, monthFilter]);
-
   // Generate month options for the current year and previous year
   const generateMonthOptions = () => {
     const months = [];
@@ -268,7 +256,11 @@ export function OrderManagementDashboard() {
 
   const monthOptions = generateMonthOptions();
 
-  const fetchOrders = async (isRefresh = false) => {
+  const showNotification = useCallback((message: string, severity: 'success' | 'error' | 'info') => {
+    setNotification({ open: true, message, severity });
+  }, []);
+
+  const fetchOrders = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) {
         setIsRefreshing(true);
@@ -296,7 +288,7 @@ export function OrderManagementDashboard() {
         setLoading(false);
       }
     }
-  };
+  }, [showNotification]);
 
   const fetchMonthlyEarnings = async () => {
     try {
@@ -332,9 +324,17 @@ export function OrderManagementDashboard() {
     }
   };
 
-  const showNotification = (message: string, severity: 'success' | 'error' | 'info') => {
-    setNotification({ open: true, message, severity });
-  };
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchOrders();
+    fetchMonthlyEarnings();
+    fetchCakes();
+  }, [fetchOrders]); // Fetch on component mount
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm, statusFilter, monthFilter]);
 
   const handleCakeSelection = (cakeId: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === cakeId);

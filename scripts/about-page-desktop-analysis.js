@@ -13,7 +13,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Desktop Analysis Configuration
-const CONFIG = {
   desktopBreakpoints: {
     small: 1024,
     medium: 1440,

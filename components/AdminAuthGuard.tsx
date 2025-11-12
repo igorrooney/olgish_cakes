@@ -34,7 +34,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
       } else {
         setIsAuthenticated(false);
       }
-    } catch (error) {
+    } catch {
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);

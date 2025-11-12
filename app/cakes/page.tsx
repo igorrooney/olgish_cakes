@@ -1,7 +1,6 @@
 import { Container, Grid, Typography, Box, Button, Paper } from "@/lib/mui-optimization";
 import CakeCard from "../components/CakeCard";
-import { getAllCakes, getRevalidateTime } from "../utils/fetchCakes";
-import Loading from "@/app/components/Loading";
+import { getAllCakes } from "../utils/fetchCakes";
 import HeroSection from "./HeroSection";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Metadata } from "next";

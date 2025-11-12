@@ -2,8 +2,6 @@ import fs from "fs";
 import path from "path";
 
 // Configuration
-const WCAG_MIN_SIZE = 44; // Minimum touch target size in pixels
-const WCAG_MIN_SPACING = 8; // Minimum spacing between touch targets in pixels
 
 // Files to scan and fix
 const SCAN_PATHS = ["app", "lib", "components"];

@@ -12,7 +12,7 @@ export function verifyToken(token: string): AdminUser | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AdminUser;
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

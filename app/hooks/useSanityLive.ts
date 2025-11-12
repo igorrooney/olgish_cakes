@@ -70,6 +70,7 @@ export function useSanityLive<T>({
       mounted = false;
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, serializedParams, enabled]);
 
   return { data, isLoading, error };

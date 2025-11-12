@@ -66,7 +66,7 @@ class InternalLinkingOptimizer {
   }
 
   // Generate anchor text variations for natural linking
-  generateAnchorTexts(targetUrl, sourceContext) {
+  generateAnchorTexts(targetUrl, _sourceContext) {
     const anchorTextMap = {
       '/cake-postal-delivery': [
         'cake postal delivery',

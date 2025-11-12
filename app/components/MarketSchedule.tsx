@@ -23,7 +23,7 @@ import {
 } from "@/lib/mui-optimization";
 import Link from "next/link";
 import Image from "next/image";
-import { colors, spacing, typography } from "@/lib/design-system";
+import { colors, typography } from "@/lib/design-system";
 import { AnimatedDiv, AnimatedSection } from "./AnimatedSection";
 import type { MarketSchedule } from "@/app/types/marketSchedule";
 import { urlFor } from "@/sanity/lib/image";

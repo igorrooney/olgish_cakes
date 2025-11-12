@@ -7,7 +7,6 @@
 
 const fs = require("fs").promises;
 const path = require("path");
-const https = require("https");
 
 class AdvancedSEOAutomation {
   constructor() {
@@ -103,7 +102,6 @@ class AdvancedSEOAutomation {
     for (const competitor of this.competitors) {
       try {
         // Simulate competitor analysis (in real implementation, use proper tools)
-        const competitorData = {
           domain: competitor,
           estimatedKeywords: Math.floor(Math.random() * 500) + 200,
           estimatedTraffic: Math.floor(Math.random() * 10000) + 1000,
@@ -317,7 +315,6 @@ class AdvancedSEOAutomation {
 
   // Content freshness automation
   async generateContentUpdatePlan() {
-    const today = new Date();
     const plans = {
       daily: {
         tasks: [

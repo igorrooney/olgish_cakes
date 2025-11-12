@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, Typography, Button, Box, Chip } from "@/lib/mui-optimization";
+import { CardContent, Typography, Box, Chip } from "@/lib/mui-optimization";
 import Image from "next/image";
 import Link from "next/link";
 import { Cake, blocksToText } from "@/types/cake";

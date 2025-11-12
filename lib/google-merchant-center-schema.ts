@@ -6,6 +6,7 @@
  */
 
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { urlFor } from "@/sanity/lib/image";
 
 export interface MerchantCenterProductData {
   id: string;
@@ -245,18 +246,6 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
       cake.images?.find((img: any) => img.asset?._ref) ||
       cake.images?.[0];
   
-  // Import urlFor dynamically to avoid build issues
-  let urlFor: any;
-  try {
-    urlFor = require('@/sanity/lib/image').urlFor;
-  } catch (error) {
-    // Fallback for build environments where dynamic import might fail
-    console.warn('Could not import urlFor, using fallback image URL generation');
-    urlFor = (image: any) => ({
-      width: () => ({ height: () => ({ url: () => `${baseUrl}/images/placeholder-cake.jpg` }) })
-    });
-  }
-  
   const imageUrl = mainImage?.asset?._ref 
     ? urlFor(mainImage).width(800).height(800).url()
     : `${baseUrl}/images/placeholder-cake.jpg`;
@@ -307,18 +296,6 @@ export function generateHamperMerchantCenterSchema(hamper: any): any {
   const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) || 
                    hamper.images?.find((img: any) => img.asset?._ref) || 
                    hamper.images?.[0];
-  
-  // Import urlFor dynamically to avoid build issues
-  let urlFor: any;
-  try {
-    urlFor = require('@/sanity/lib/image').urlFor;
-  } catch (error) {
-    // Fallback for build environments where dynamic import might fail
-    console.warn('Could not import urlFor, using fallback image URL generation');
-    urlFor = (image: any) => ({
-      width: () => ({ height: () => ({ url: () => `${baseUrl}/images/placeholder-cake.jpg` }) })
-    });
-  }
   
   const imageUrl = mainImage?.asset?._ref 
     ? urlFor(mainImage).width(800).height(800).url()

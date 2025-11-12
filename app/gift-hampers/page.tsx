@@ -1,7 +1,6 @@
 import { Container, Grid, Typography, Box } from "@/lib/mui-optimization";
 import GiftHamperCard from "../components/GiftHamperCard";
 import { getAllGiftHampers } from "../utils/fetchGiftHampers";
-import { getRevalidateTime } from "../utils/fetchCakes";
 import HeroSection from "./HeroSection";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { urlFor } from "@/sanity/lib/image";

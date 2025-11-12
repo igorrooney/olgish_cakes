@@ -9,8 +9,6 @@
  * Usage: pnpm tsx scripts/validate-structured-data.ts
  */
 
-import { readFile } from 'fs/promises';
-import { join } from 'path';
 
 interface ValidationResult {
   url: string;

@@ -58,7 +58,7 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
   // Return cached stats if still valid
   if (cachedStats && Date.now() - cachedStats.timestamp < CACHE_DURATION) {
     if (process.env.NODE_ENV !== 'production') {
-      console.log('[Testimonials] Using cached stats:', cachedStats);
+      console.warn('[Testimonials] Using cached stats:', cachedStats);
     }
     return { count: cachedStats.count, averageRating: cachedStats.averageRating };
   }
@@ -82,7 +82,7 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
 
     const queryEndTime = performance.now();
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[Testimonials] Stats fetched in ${(queryEndTime - queryStartTime).toFixed(2)}ms: ${count} testimonials, avg rating: ${averageRating.toFixed(1)}`);
+      console.warn(`[Testimonials] Stats fetched in ${(queryEndTime - queryStartTime).toFixed(2)}ms: ${count} testimonials, avg rating: ${averageRating.toFixed(1)}`);
     }
 
     return { count, averageRating };

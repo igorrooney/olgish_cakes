@@ -64,7 +64,7 @@ async function createBackup() {
 
   let documents = [];
   let assets = [];
-  let downloadedAssets = [];
+  const downloadedAssets = [];
   let totalAssetsSize = 0;
 
   // Fetch documents (unless assets-only)

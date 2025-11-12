@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔄 Starting weekly backup (full with images)...');
+    console.warn('🔄 Starting weekly backup (full with images)...');
 
     // Run the weekly backup
     const result = execSync('npm run backup:weekly', {

@@ -4,7 +4,6 @@ import { designTokens } from "@/lib/design-system";
 import {
   Container as DesignContainer,
   AccessibleIconButton,
-  TouchTargetWrapper,
 } from "@/lib/ui-components";
 import { CloseIcon, KeyboardArrowDownIcon, MenuIcon } from "@/lib/mui-optimization";
 import { Box, Button, IconButton, Typography } from "@/lib/mui-optimization";

@@ -7,7 +7,6 @@ import {
   Paper,
   Chip,
   Button,
-  List,
   ListItem,
   ListItemText,
   ListItemIcon,

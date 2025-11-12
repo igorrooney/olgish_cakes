@@ -22,7 +22,7 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
   const pathname = usePathname();
 
   // Map of route segments to human-readable names
-  const routeNameMap: Record<string, string> = {
+  const routeNameMap: Record<string, string> = useMemo(() => ({
     "cakes": "Cakes",
     "birthday-cakes": "Birthday Cakes",
     "wedding-cakes": "Wedding Cakes",
@@ -40,7 +40,7 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
     "testimonials": "Testimonials",
     "blog": "Blog",
     "market-schedule": "Market Schedule",
-  };
+  }), []);
 
   // Generate breadcrumbs from pathname if no items provided
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
@@ -106,7 +106,7 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
       "@type": "BreadcrumbList",
       itemListElement,
     };
-  }, [breadcrumbItems, pathname]);
+  }, [breadcrumbItems, pathname, routeNameMap]);
 
   // Hide breadcrumbs on home page
   if (pathname === "/") return null;

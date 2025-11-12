@@ -6,8 +6,6 @@ import {
   Grid,
   Paper,
   Chip,
-  Button,
-  Avatar,
   Rating,
 } from "@mui/material";
 import Link from "next/link";

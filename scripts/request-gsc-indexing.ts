@@ -54,7 +54,6 @@ async function requestIndexingForUrl(url: string): Promise<IndexingResult> {
     // For now, we'll generate GSC inspection links
     
     // Extract path from URL for GSC inspection link
-    const urlPath = url.replace('https://olgishcakes.co.uk', '');
     const inspectionLink = `https://search.google.com/search-console/inspect?resource_id=${SITE_URL}&url=${encodeURIComponent(url)}`;
     
     return {

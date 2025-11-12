@@ -8,14 +8,12 @@ import {
   Chip,
   Button,
   Alert,
-  Stepper,
   Step,
   StepLabel,
   StepContent,
 } from "@mui/material";
 import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import Link from "next/link";
-import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { InteractiveLink } from "./InteractiveLink";
 

@@ -142,9 +142,9 @@ export function WebVitalsMonitor() {
 // Performance optimization utilities
 export const performanceOptimizations = {
   // Debounce function for performance
-  debounce: (func: Function, wait: number) => {
+  debounce: <T extends (...args: unknown[]) => unknown>(func: T, wait: number) => {
     let timeout: NodeJS.Timeout;
-    return function executedFunction(...args: any[]) {
+    return function executedFunction(...args: Parameters<T>) {
       const later = () => {
         clearTimeout(timeout);
         func(...args);
@@ -155,9 +155,9 @@ export const performanceOptimizations = {
   },
 
   // Throttle function for performance
-  throttle: (func: Function, limit: number) => {
+  throttle: <T extends (...args: unknown[]) => unknown>(func: T, limit: number) => {
     let inThrottle: boolean;
-    return function executedFunction(this: any, ...args: any[]) {
+    return function executedFunction(this: unknown, ...args: Parameters<T>) {
       if (!inThrottle) {
         func.apply(this, args);
         inThrottle = true;

@@ -282,7 +282,7 @@ export function batchValidateProductSchemas(
   }
 
   if (logErrors) {
-    console.log(`[Schema Validation] ${validCount}/${schemas.length} schemas are valid`);
+    console.warn(`[Schema Validation] ${validCount}/${schemas.length} schemas are valid`);
   }
 
   return validCount;

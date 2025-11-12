@@ -5,7 +5,6 @@ import { isAdminAuthenticated } from "./lib/admin-auth";
 export async function proxy(request: NextRequest) {
   // Force HTTPS redirect for all HTTP requests (except localhost in development)
   const isLocalhost = request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1";
-  const isDevelopment = process.env.NODE_ENV === "development";
   
   if (
     !isLocalhost && // Skip HTTPS redirect for localhost

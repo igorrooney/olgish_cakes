@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -43,8 +41,6 @@ export const metadata: Metadata = {
 };
 
 export default async function SeasonalCakesPage() {
-  const cakes = await getAllCakes();
-
   return (
     <>
       <Script

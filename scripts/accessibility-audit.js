@@ -11,7 +11,6 @@ function auditLinks() {
 
   tsxFiles.forEach(file => {
     const content = fs.readFileSync(file, "utf8");
-    const lines = content.split("\n");
 
     // Check for Link components without aria-label (improved regex)
     const linkRegex = /<Link[^>]*href=[^>]*>(?![\s\S]*?aria-label)[\s\S]*?<\/Link>/g;

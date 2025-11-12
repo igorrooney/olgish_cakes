@@ -1,5 +1,6 @@
 import { Cake } from "@/types/cake";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { urlFor } from "@/sanity/lib/image";
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -106,17 +107,6 @@ export function OrderModalStructuredData({
       },
     ],
     image: (() => {
-      // Import urlFor dynamically to avoid build issues
-      let urlFor: any;
-      try {
-        urlFor = require('@/sanity/lib/image').urlFor;
-      } catch (error) {
-        // Fallback for build environments where dynamic import might fail
-        urlFor = (image: any) => ({
-          width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
-        });
-      }
-
       // Get the best available image
       const mainImage = cake.mainImage?.asset?._ref
         ? cake.mainImage

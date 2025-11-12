@@ -1,15 +1,15 @@
 import { getClient } from "@/sanity/lib/client";
-import { Cake, CakeImage, blocksToText } from "@/types/cake";
+import { Cake, blocksToText } from "@/types/cake";
 import { notFound } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
-import { getRevalidateTime } from "@/app/utils/fetchCakes";
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { getMerchantReturnPolicy } from "@/app/utils/seo";
 import { getOfferShippingDetails } from "@/app/utils/seo";
+import { urlFor } from "@/sanity/lib/image";
 
 // Enable revalidation for this page with optimization
 export const revalidate = 60; // 1 minute for better data freshness
@@ -179,21 +179,6 @@ export default async function CakePage({ params }: PageProps) {
 
   // Ensure image is always present and absolute for Product JSON-LD
   const productImageUrl = (() => {
-    // Import urlFor dynamically to avoid build issues
-    interface ImageUrlBuilder {
-      width: (w: number) => { height: (h: number) => { url: () => string } };
-    }
-    
-    let urlFor: (image: CakeImage | { asset?: { _ref: string } }) => ImageUrlBuilder;
-    try {
-      urlFor = require('@/sanity/lib/image').urlFor;
-    } catch (error) {
-      // Fallback for build environments where dynamic import might fail
-      urlFor = () => ({
-        width: () => ({ height: () => ({ url: () => "https://olgishcakes.co.uk/images/placeholder-cake.jpg" }) })
-      });
-    }
-
     // Get the best available image
     const mainImage = cake.mainImage?.asset?._ref
       ? cake.mainImage

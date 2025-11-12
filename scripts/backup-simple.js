@@ -7,7 +7,6 @@
 import { createClient } from '@sanity/client';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
@@ -58,7 +57,7 @@ async function createBackup() {
 
   // Only fetch assets if this is a full backup (not daily)
   let assets = [];
-  let downloadedAssets = [];
+  const downloadedAssets = [];
   let totalAssetsSize = 0;
   
   if (scheduleType !== 'daily') {

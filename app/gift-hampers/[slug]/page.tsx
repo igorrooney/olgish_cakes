@@ -1,7 +1,6 @@
 import { getClient } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getRevalidateTime } from "@/app/utils/fetchCakes";
 import { blocksToText } from "@/types/cake";
 import { GiftHamper } from "@/types/giftHamper";
 import { Container } from "@mui/material";

@@ -21,10 +21,7 @@ export function useAnalytics() {
       });
     }
 
-    // Console logging for development
-    if (process.env.NODE_ENV === "development") {
-
-    }
+    // Console logging for development - intentionally empty for now
   }, []);
 
   const trackMobileMenuInteraction = useCallback(

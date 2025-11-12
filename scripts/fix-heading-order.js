@@ -71,7 +71,7 @@ function analyzeHeadingStructure(filePath) {
 // Function to fix heading order issues
 function fixHeadingOrder(filePath) {
   try {
-    let content = fs.readFileSync(filePath, "utf8");
+    const content = fs.readFileSync(filePath, "utf8");
     let modified = false;
 
     // Fix h2 with large font size to h3
@@ -139,7 +139,7 @@ function main() {
   console.log(`🔍 Analyzing ${tsxFiles.length} TypeScript files for heading order issues...\n`);
 
   for (const file of tsxFiles) {
-    const { headingStructure, issues } = analyzeHeadingStructure(file);
+    const { issues } = analyzeHeadingStructure(file);
 
     if (issues.length > 0) {
       allIssues.push(...issues);

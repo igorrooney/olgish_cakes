@@ -6,9 +6,7 @@ import {
   FavoriteIcon,
   LocalShippingIcon,
   VerifiedIcon,
-  StarIcon,
   LocationOnIcon,
-  PhoneIcon,
   EmailIcon,
 } from "@/lib/mui-optimization";
 import {
@@ -41,6 +39,7 @@ import MarketSchedule from "./components/MarketSchedule";
 import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 import { DEFAULT_REVIEWS, DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
 import type { GiftHamperImage } from "@/types/giftHamper";
+import { urlFor } from "@/sanity/lib/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -561,7 +560,7 @@ export default async function Home() {
               {featuredHampers.slice(0, 6).map(h => {
                 const main = h.images?.find((img: GiftHamperImage) => img.isMain) || h.images?.[0];
                 const url = main?.asset?._ref
-                  ? require("@/sanity/lib/image").urlFor(main).width(800).height(800).url()
+                  ? urlFor(main).width(800).height(800).url()
                   : "/images/placeholder.jpg";
                 return (
                   <a

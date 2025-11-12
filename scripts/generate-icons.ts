@@ -122,7 +122,7 @@ async function generateAllIcons() {
       marginRatio: 0,
     });
     await fs.writeFile(spec.outputPath, buffer);
-    // eslint-disable-next-line no-console
+     
     console.log(`Generated ${spec.outputPath}`);
   }
 
@@ -133,7 +133,7 @@ async function generateAllIcons() {
       marginRatio: 0,
     });
     await fs.writeFile(spec.outputPath, buffer);
-    // eslint-disable-next-line no-console
+     
     console.log(`Generated ${spec.outputPath}`);
   }
 
@@ -144,7 +144,7 @@ async function generateAllIcons() {
       marginRatio: spec.marginRatio ?? 0,
     });
     await fs.writeFile(spec.outputPath, buffer);
-    // eslint-disable-next-line no-console
+     
     console.log(`Generated ${spec.outputPath}`);
   }
 
@@ -154,7 +154,7 @@ async function generateAllIcons() {
     marginRatio: 0.12,
   });
   await fs.writeFile(path.join(appDir, "apple-icon.png"), appleIconBuffer);
-  // eslint-disable-next-line no-console
+   
   console.log(`Generated ${path.join(appDir, "apple-icon.png")}`);
 
   // Generate Windows tile icon (150x150)
@@ -163,17 +163,17 @@ async function generateAllIcons() {
     marginRatio: 0.12,
   });
   await fs.writeFile(path.join(publicDir, "mstile-150x150.png"), winTile150);
-  // eslint-disable-next-line no-console
+   
   console.log(`Generated ${path.join(publicDir, "mstile-150x150.png")}`);
 
   // Generate Safari pinned tab SVG (monochrome)
   await writePinnedTabSvg(inputSvgPath, path.join(publicDir, "safari-pinned-tab.svg"));
-  // eslint-disable-next-line no-console
+   
   console.log(`Generated ${path.join(publicDir, "safari-pinned-tab.svg")}`);
 }
 
 generateAllIcons().catch(err => {
-  // eslint-disable-next-line no-console
+   
   console.error(err);
   process.exit(1);
 });

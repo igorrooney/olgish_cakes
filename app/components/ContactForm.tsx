@@ -6,7 +6,6 @@ import {
   BodyText,
   PrimaryButton,
   StyledTextField,
-  TouchTargetWrapper,
   AccessibleIconButton,
 } from "@/lib/ui-components";
 import {

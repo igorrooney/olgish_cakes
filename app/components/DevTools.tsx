@@ -6,7 +6,6 @@ import {
   Box,
   Typography,
   Alert,
-  IconButton,
   Tooltip,
   SettingsIcon,
   CloseIcon,

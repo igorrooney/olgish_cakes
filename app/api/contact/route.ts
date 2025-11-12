@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Name, email, and message are required" }, { status: 400 });
     }
 
-    let attachments = [];
+    const attachments = [];
     let base64Image = "";
     let imageBuffer: ArrayBuffer | null = null;
 
@@ -296,11 +296,10 @@ Olgish Cakes
               stack: e?.stack,
               name: e?.name
             });
-          }
-        } else {
-
         }
-        const orderData = {
+      }
+        
+      const orderData = {
           name,
           email,
           phone,

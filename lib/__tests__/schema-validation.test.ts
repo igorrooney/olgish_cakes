@@ -928,7 +928,7 @@ describe('schema-validation', () => {
     it('should log summary', () => {
       batchValidateProductSchemas([validSchema], true)
 
-      expect(console.log).toHaveBeenCalledWith('[Schema Validation] 1/1 schemas are valid')
+      expect(console.warn).toHaveBeenCalledWith('[Schema Validation] 1/1 schemas are valid')
     })
 
     it('should handle empty schemas array', () => {

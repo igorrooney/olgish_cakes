@@ -3,7 +3,6 @@
 import { useState, useEffect, memo, useMemo, useCallback } from "react";
 import {
   Box,
-  IconButton,
   ImageList,
   ImageListItem,
   Typography,
