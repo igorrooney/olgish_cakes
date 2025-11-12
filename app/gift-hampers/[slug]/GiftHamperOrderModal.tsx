@@ -138,7 +138,7 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
                 variant="h5"
                 component="div"
                 id="hamper-order-modal-title"
-                sx={{ fontFamily: "var(--font-playfair-display)", fontWeight: 600, mb: 1 }}
+                sx={{ fontFamily: "var(--font-alice)", fontWeight: 600, mb: 1 }}
               >
                 Order {hamper.name}
               </Typography>

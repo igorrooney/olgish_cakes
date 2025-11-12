@@ -147,7 +147,7 @@ export default function CookiePolicyPage() {
               variant="h2"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 4,
                 color: "primary.main",

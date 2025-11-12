@@ -160,7 +160,7 @@ ${formData.message}
                 component="div"
                 id="order-modal-title"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontWeight: 600,
                   mb: 1,
                 }}

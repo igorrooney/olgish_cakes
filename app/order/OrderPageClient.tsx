@@ -494,7 +494,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
             variant="h2"
             component="h2"
             sx={{
-              fontFamily: "var(--font-playfair-display)",
+              fontFamily: "var(--font-alice)",
               fontWeight: 600,
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
@@ -669,7 +669,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontWeight: 600,
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   textAlign: "center",
@@ -831,7 +831,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
               variant="h2"
               component="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
@@ -897,7 +897,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
               variant="h2"
               component="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
@@ -996,7 +996,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontWeight: 600,
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   mb: 2,

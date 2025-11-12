@@ -144,7 +144,7 @@ export default async function CakesHuddersfieldPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -183,7 +183,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Why Choose Our Birthday Cakes Section */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose Our Birthday Cakes in Huddersfield?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -199,7 +199,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Types of Birthday Cakes */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Birthday Cakes for Every Celebration in Huddersfield
             </Typography>
             <Grid container spacing={4}>
@@ -259,7 +259,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Popular Birthday Cake Flavors */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Most Popular Birthday Cakes in Huddersfield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -331,7 +331,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Cake Services in Huddersfield */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
               Cake Services in Huddersfield
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, textAlign: "center", lineHeight: 1.8 }}>
@@ -348,7 +348,7 @@ export default async function CakesHuddersfieldPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",

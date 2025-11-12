@@ -195,7 +195,7 @@ export const TestimonialsList = memo(function TestimonialsList({
                         variant="h3"
                         component="h3"
                         sx={{
-                          fontFamily: "var(--font-playfair-display)",
+                          fontFamily: "var(--font-alice)",
                           color: "#2c5282",
                         }}
                       >

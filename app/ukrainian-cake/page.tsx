@@ -200,7 +200,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* What Makes Ukrainian Cake Special */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             What Makes Ukrainian Cake Special?
           </Typography>
 
@@ -244,7 +244,7 @@ export default function UkrainianCakePage() {
           </Grid>
 
           {/* Traditional Ukrainian Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Traditional Ukrainian Cakes
           </Typography>
 
@@ -304,7 +304,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Ukrainian Cake vs British Cake */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Ukrainian Cake vs British Cake
           </Typography>
 
@@ -324,7 +324,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Why Choose Olgish Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Why Choose Olgish Cakes for Ukrainian Cake in Leeds?
           </Typography>
 
@@ -353,7 +353,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Cultural Significance */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             The Cultural Story Behind Ukrainian Cake
           </Typography>
 

@@ -151,7 +151,7 @@ export default async function FAQPage() {
               variant="h2"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 2,
                 color: "primary.main",
@@ -165,7 +165,7 @@ export default async function FAQPage() {
               color="text.secondary"
               sx={{
                 mb: 4,
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.25rem", md: "1.5rem" },
                 fontWeight: 400,
               }}

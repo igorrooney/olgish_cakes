@@ -256,7 +256,7 @@ export default function CakeByPostGuidePage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 3,
                 color: "primary.main",

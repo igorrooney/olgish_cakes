@@ -105,7 +105,7 @@ export default async function CakesPage() {
 
         {/* Cakes Collection - Moved to top */}
         <Container maxWidth="lg" className="py-8">
-          <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 6, textAlign: "center" }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 6, textAlign: "center" }}>
             Traditional Ukrainian Cake Collection
           </Typography>
           
@@ -133,7 +133,7 @@ export default async function CakesPage() {
         {/* Ukrainian Cakes Information Section - Moved below cakes */}
         <Container maxWidth="lg" sx={{ py: 6 }}>
           <Box sx={{ mb: 8 }}>
-            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Traditional Ukrainian Cakes in Leeds
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem", textAlign: "left" }}>
@@ -149,7 +149,7 @@ export default async function CakesPage() {
 
           {/* Ukrainian Birthday Cakes Section */}
           <Box sx={{ mb: 8, p: { xs: 4, md: 6 }, backgroundColor: "rgba(46, 49, 146, 0.05)", borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
-            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Ukrainian Birthday Cakes in Leeds
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -203,7 +203,7 @@ export default async function CakesPage() {
           </Box>
 
           <Box sx={{ mb: 8 }}>
-            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Ukrainian Cake Comparison Guide
             </Typography>
             <Grid container spacing={4}>
@@ -254,7 +254,7 @@ export default async function CakesPage() {
           </Box>
 
           <Box sx={{ mb: 8 }}>
-            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" component="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose Ukrainian Cakes?
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.8, fontSize: "1.1rem" }}>

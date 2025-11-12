@@ -252,7 +252,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* What is Honey Cake */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             What is Honey Cake (Medovik)?
           </Typography>
 
@@ -272,7 +272,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* History and Legend */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             The Legend of Honey Cake
           </Typography>
 
@@ -292,7 +292,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* How Honey Cake is Made */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             How Traditional Honey Cake is Made
           </Typography>
 
@@ -372,7 +372,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* Types of Honey Cake */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Different Types of Honey Cake
           </Typography>
 
@@ -426,7 +426,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* Why Order from Olgish Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Why Order Honey Cake from Olgish Cakes?
           </Typography>
 
@@ -466,7 +466,7 @@ export default function HoneyCakePage() {
           </Paper>
 
           {/* FAQ Section */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Honey Cake Questions Answered
           </Typography>
 

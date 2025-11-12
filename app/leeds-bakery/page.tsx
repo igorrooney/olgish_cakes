@@ -45,7 +45,7 @@ export default function LeedsBakeryPage() {
       <Box sx={{ background: "linear-gradient(135deg, #FFF5E6 0%, #FFFFFF 50%, #FFF5E6 100%)", minHeight: "100vh", py: { xs: 4, md: 8 } }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
-            <Typography variant="h1" component="h1" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2.5rem", md: "3.5rem" }, fontWeight: 700, color: "primary.main", mb: 3, lineHeight: 1.2 }}>
+            <Typography variant="h1" component="h1" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2.5rem", md: "3.5rem" }, fontWeight: 700, color: "primary.main", mb: 3, lineHeight: 1.2 }}>
               Leeds Bakery – Ukrainian Cakes
             </Typography>
             <Typography variant="h2" component="h2" sx={{ color: "text.secondary", maxWidth: "800px", mx: "auto", mb: 4, lineHeight: 1.6 }}>
@@ -67,7 +67,7 @@ export default function LeedsBakeryPage() {
           </Box>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose My Leeds Bakery
             </Typography>
             <Grid container spacing={3}>

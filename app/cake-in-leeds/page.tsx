@@ -263,7 +263,7 @@ export default function CakeInLeedsPage() {
           </Paper>
 
           {/* Why Choose Us */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Why Olgish Cakes is the Best Cake in Leeds
           </Typography>
 
@@ -307,7 +307,7 @@ export default function CakeInLeedsPage() {
           </Grid>
 
           {/* Types of Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Types of Cake in Leeds We Offer
           </Typography>
 
@@ -361,7 +361,7 @@ export default function CakeInLeedsPage() {
           </Paper>
 
           {/* Delivery Areas */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Cake Delivery Across Leeds
           </Typography>
 
@@ -389,7 +389,7 @@ export default function CakeInLeedsPage() {
           </Paper>
 
           {/* Ukrainian vs British Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Ukrainian Cakes vs Regular Cakes in Leeds
           </Typography>
 
@@ -409,7 +409,7 @@ export default function CakeInLeedsPage() {
           </Paper>
 
           {/* Pricing */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Cake Prices in Leeds
           </Typography>
 
@@ -458,7 +458,7 @@ export default function CakeInLeedsPage() {
           </Paper>
 
           {/* How to Order */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             How to Order Cake in Leeds
           </Typography>
 

@@ -156,7 +156,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-playfair-display), Georgia, serif;
+  font-family: var(--font-alice), Georgia, serif;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

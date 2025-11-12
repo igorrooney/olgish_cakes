@@ -773,7 +773,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 variant="h1"
                 component="h1"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontSize: { xs: "2rem", md: "3rem" },
                   fontWeight: 700,
                   color: "#1e293b",

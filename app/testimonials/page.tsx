@@ -161,7 +161,7 @@ export default async function TestimonialsPage({
             <Typography
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
