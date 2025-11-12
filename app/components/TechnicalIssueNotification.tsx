@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Alert, AlertTitle, IconButton, Typography, Button } from "@/lib/mui-optimization";
 import CloseIcon from "@mui/icons-material/Close";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -10,8 +10,24 @@ import { colors, spacing, borderRadius } from "@/lib/design-system";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import Link from "next/link";
 
+const STORAGE_KEY = "olgish-technical-notification-dismissed";
+
 export function TechnicalIssueNotification() {
   const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    // Check if user has dismissed the banner in this session
+    const isDismissed = sessionStorage.getItem(STORAGE_KEY);
+    if (isDismissed === "true") {
+      setIsVisible(false);
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    // Save dismissal to sessionStorage (persists for current session only)
+    sessionStorage.setItem(STORAGE_KEY, "true");
+    setIsVisible(false);
+  };
 
   if (!isVisible) {
     return null;
@@ -191,7 +207,7 @@ export function TechnicalIssueNotification() {
 
           {/* Close Button */}
           <IconButton
-            onClick={() => setIsVisible(false)}
+            onClick={handleDismiss}
             aria-label="Dismiss notification"
             sx={{
               color: "#7A5C00",
