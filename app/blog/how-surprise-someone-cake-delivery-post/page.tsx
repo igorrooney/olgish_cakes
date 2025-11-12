@@ -654,25 +654,9 @@ export default function HowSurpriseSomeoneCakeDeliveryPage() {
               <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
                 Use our expert tips to create unforgettable cake delivery surprises that will make someone's day extra special.
               </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                component={Link}
-                href="/cake-by-post-service"
-                sx={{
-                  bgcolor: "white",
-                  color: "primary.main",
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  "&:hover": {
-                    bgcolor: "#f5f5f5",
-                  },
-                }}
-              >
+              <Link href="/cake-by-post-service" style={{ textDecoration: 'none' }}><Button variant="contained" size="large" sx={{ bgcolor: "white", color: "primary.main", px: 4, py: 1.5, fontSize: "1.1rem", fontWeight: 600, "&:hover": { bgcolor: "#f5f5f5", }, }}>
                 Order Surprise Cake Now
-              </Button>
+              </Button></Link>
             </Card>
 
             {/* Related Articles */}

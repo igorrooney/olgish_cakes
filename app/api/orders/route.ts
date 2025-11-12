@@ -15,11 +15,15 @@ function generateOrderNumber(): string {
 export async function POST(request: NextRequest) {
   // Temporarily bypass authentication for testing
   // TODO: Re-enable authentication once login flow is working
+  console.log('📦 Orders API: Received order creation request');
+  
   try {
     const orderData = await request.json();
+    console.log('📦 Orders API: Parsed order data for customer:', orderData.email);
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
+    console.log('📦 Orders API: Generated order number:', orderNumber);
 
     // Prepare order document for Sanity
     const orderDoc = {
@@ -99,9 +103,12 @@ export async function POST(request: NextRequest) {
     };
 
     // Create order in Sanity using server client with write permissions
+    console.log('📦 Orders API: Creating order in Sanity...');
     const createdOrder = await serverClient.create(orderDoc);
+    console.log('✅ Orders API: Order created in Sanity with ID:', createdOrder._id);
 
     // Send confirmation email to customer
+    console.log('📧 Orders API: Sending confirmation email to customer...');
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
@@ -112,7 +119,7 @@ export async function POST(request: NextRequest) {
       // Initialize Resend at runtime
       const resend = new Resend(process.env.RESEND_API_KEY);
 
-      await resend.emails.send({
+      const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: orderData.email,
         bcc: 'igorrooney@gmail.com',
@@ -314,23 +321,30 @@ export async function POST(request: NextRequest) {
           </html>
         `,
       });
+      
+      if (customerEmailResult.error) {
+        console.error('❌ Orders API: Customer email error:', customerEmailResult.error);
+      } else {
+        console.log('✅ Orders API: Customer confirmation email sent successfully');
+      }
     } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError);
+      console.error('❌ Orders API: Failed to send confirmation email:', emailError);
       // Don't fail the order creation if email fails
     }
 
     // Send notification to admin
+    console.log('📧 Orders API: Sending notification email to admin...');
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
-        console.error('RESEND_API_KEY not configured - skipping admin notification');
+        console.error('❌ Orders API: RESEND_API_KEY not configured - skipping admin notification');
         throw new Error('Email service not configured');
       }
 
       // Initialize Resend at runtime (reuse from above if available, or create new instance)
       const resend = new Resend(process.env.RESEND_API_KEY);
 
-      await resend.emails.send({
+      const adminEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
         subject: `🆕 New Order #${orderNumber} - ${orderData.name}`,
@@ -540,10 +554,18 @@ export async function POST(request: NextRequest) {
           </html>
         `,
       });
+      
+      if (adminEmailResult.error) {
+        console.error('❌ Orders API: Admin email error:', adminEmailResult.error);
+      } else {
+        console.log('✅ Orders API: Admin notification email sent successfully');
+      }
     } catch (emailError) {
-      console.error('Failed to send admin notification:', emailError);
+      console.error('❌ Orders API: Failed to send admin notification:', emailError);
+      // Don't fail the order if admin email fails
     }
 
+    console.log('✅ Orders API: Order process completed successfully');
     return NextResponse.json({
       success: true,
       orderId: createdOrder._id,
@@ -552,9 +574,19 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Order creation error:', error);
+    console.error('❌ Orders API: Order creation error:', error);
+    console.error('❌ Orders API: Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
     return NextResponse.json(
-      { error: 'Failed to create order', details: error instanceof Error ? error.message : 'Unknown error' },
+      { 
+        error: 'Failed to create order', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }

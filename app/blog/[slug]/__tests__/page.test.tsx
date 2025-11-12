@@ -75,7 +75,7 @@ describe('BlogPostPage', () => {
     it('should generate metadata', async () => {
       mockGetBlogPost.mockResolvedValue(mockPost)
 
-      const metadata = await generateMetadata({ params: { slug: 'test-post' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'test-post' }) })
 
       expect(metadata.title).toContain('Test Post')
     }, 10000)
@@ -83,7 +83,7 @@ describe('BlogPostPage', () => {
     it('should return 404 for missing post', async () => {
       mockGetBlogPost.mockResolvedValue(null)
 
-      const metadata = await generateMetadata({ params: { slug: 'missing' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'missing' }) })
 
       expect(metadata.title).toContain('Not Found')
     }, 10000)
@@ -94,14 +94,14 @@ describe('BlogPostPage', () => {
       mockGetBlogPost.mockResolvedValue(mockPost)
 
       // Server component - just verify it returns without throwing
-      await expect(BlogPostPage({ params: { slug: 'test-post' } })).resolves.toBeDefined()
+      await expect(BlogPostPage({ params: Promise.resolve({ slug: 'test-post' }) })).resolves.toBeDefined()
     }, 10000)
 
     it('should call notFound for missing post', async () => {
       mockGetBlogPost.mockResolvedValue(null)
 
       await expect(async () => {
-        await BlogPostPage({ params: { slug: 'missing' } })
+        await BlogPostPage({ params: Promise.resolve({ slug: 'missing' }) })
       }).rejects.toThrow('NEXT_NOT_FOUND')
       
       expect(notFound).toHaveBeenCalled()

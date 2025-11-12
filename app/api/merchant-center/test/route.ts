@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       getAllGiftHampers(),
     ]);
 
-    let testProducts = [];
+    const testProducts = [];
 
     if (type === 'cakes' || type === 'all') {
       testProducts.push(...cakes.slice(0, type === 'cakes' ? limit : Math.ceil(limit / 2)));

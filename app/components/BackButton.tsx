@@ -1,6 +1,8 @@
 "use client";
 
-import { Button, ArrowBackIcon } from "@/lib/mui-optimization";
+import { Button } from "@/lib/mui-optimization";
+// Import icons directly for better HMR support
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { designTokens } from "@/lib/design-system";

@@ -84,7 +84,7 @@ export default async function CakeGalleryPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -136,7 +136,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -213,7 +213,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -239,15 +239,13 @@ export default async function CakeGalleryPage() {
                   My traditional Ukrainian cake collection features real recipes from Ukraine.
                   Contact me to learn more about my Ukrainian desserts.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="contained"
+                <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   Order traditional Cake
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -267,7 +265,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -293,15 +291,13 @@ export default async function CakeGalleryPage() {
                   Every custom cake is uniquely designed to match your vision. Contact me to discuss
                   your custom cake requirements and view my portfolio.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="contained"
+                <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   Order Custom Cake
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -331,7 +327,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -459,7 +455,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -525,7 +521,7 @@ export default async function CakeGalleryPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -538,26 +534,22 @@ export default async function CakeGalleryPage() {
               Contact me to discuss your cake requirements and bring your vision to life
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Your Cake
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

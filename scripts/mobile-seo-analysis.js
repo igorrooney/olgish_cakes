@@ -13,7 +13,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Mobile Analysis Configuration
-const CONFIG = {
   mobileBreakpoints: {
     small: 320,
     medium: 768,

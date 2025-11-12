@@ -4,7 +4,9 @@ import { memo, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
 import { Box } from "@/lib/mui-optimization";
 import { AccessibleIconButton } from "@/lib/ui-components";
-import { ArrowBackIcon, ArrowForwardIcon } from "@/lib/mui-optimization";
+// Import icons directly for better HMR support
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { urlFor } from "@/sanity/lib/image";
 import { GiftHamperImage } from "@/types/giftHamper";
 

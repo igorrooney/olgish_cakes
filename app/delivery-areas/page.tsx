@@ -7,8 +7,6 @@ import {
   Paper,
   Chip,
   Button,
-  List,
-  ListItem,
   ListItemText,
   ListItemIcon,
 } from "@mui/material";
@@ -149,7 +147,7 @@ export default function DeliveryAreasPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -186,9 +184,11 @@ export default function DeliveryAreasPage() {
               }}
             />
             <Box sx={{ mt: 2 }}>
-              <Button component={Link} href="/market-schedule" variant="outlined" color="primary">
-                See Where To Find Us Locally (Market Schedule)
-              </Button>
+              <Link href="/market-schedule" style={{ textDecoration: 'none' }}>
+                <Button variant="outlined" color="primary">
+                  See Where To Find Us Locally (Market Schedule)
+                </Button>
+              </Link>
             </Box>
           </Box>
 
@@ -266,7 +266,7 @@ export default function DeliveryAreasPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -450,7 +450,7 @@ export default function DeliveryAreasPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -530,7 +530,7 @@ export default function DeliveryAreasPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -608,7 +608,7 @@ export default function DeliveryAreasPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -621,36 +621,30 @@ export default function DeliveryAreasPage() {
               Contact me to check delivery availability in your area
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Check Delivery Availability
               </Button>
-              <Button
-                component={Link}
-                href="/market-schedule"
-                variant="outlined"
+            </Link>
+              <Link href="/market-schedule" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Visit My Local Market Stall
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View My Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

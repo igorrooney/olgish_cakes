@@ -115,7 +115,7 @@ export default function AnniversaryCakesLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -165,7 +165,7 @@ export default function AnniversaryCakesLeedsPage() {
           </Box>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Popular Anniversary Cake Flavours
             </Typography>
 
@@ -218,7 +218,7 @@ export default function AnniversaryCakesLeedsPage() {
           </Paper>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Anniversary Cake Decoration Ideas
             </Typography>
 
@@ -263,7 +263,7 @@ export default function AnniversaryCakesLeedsPage() {
           </Paper>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose My Anniversary Cakes?
             </Typography>
 
@@ -321,7 +321,7 @@ export default function AnniversaryCakesLeedsPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 color: "primary.main",
                 mb: 3,
@@ -339,26 +339,22 @@ export default function AnniversaryCakesLeedsPage() {
               Let me create something beautiful for your love story.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Anniversary Cake
               </Button>
-              <Button
-                component={Link}
-                href="/custom-cake-design"
-                variant="outlined"
+            </Link>
+              <Link href="/custom-cake-design" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Custom Design
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

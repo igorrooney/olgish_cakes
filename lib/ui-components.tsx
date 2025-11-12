@@ -5,12 +5,10 @@ import React, { forwardRef } from "react";
 import {
   Button,
   Card,
-  CardContent,
   TextField,
   Chip,
   Typography,
   Box,
-  Paper,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -23,11 +21,6 @@ import {
   FavoriteIcon,
   StarIcon,
   ExpandMoreIcon,
-  ArrowForwardIcon,
-  LocalShippingIcon,
-  CakeIcon,
-  EmailIcon,
-  PhoneIcon,
 } from "@/lib/mui-optimization";
 import { designTokens } from "./design-system";
 import { getPriceValidUntil } from "@/app/utils/seo";

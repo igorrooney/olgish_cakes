@@ -87,7 +87,7 @@ export default function CakesSkiptonPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -131,7 +131,7 @@ export default function CakesSkiptonPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 color: "primary.main",
                 mb: 3,
@@ -148,26 +148,22 @@ export default function CakesSkiptonPage() {
               enjoy traditional Ukrainian flavors delivered to your door.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Cakes Skipton
               </Button>
-              <Button
-                component={Link}
-                href="/delivery-areas"
-                variant="outlined"
+            </Link>
+              <Link href="/delivery-areas" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Delivery Areas
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

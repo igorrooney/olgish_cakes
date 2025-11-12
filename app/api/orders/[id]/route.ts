@@ -7,11 +7,12 @@ import { urlFor } from "@/sanity/lib/image";
 // GET - Fetch single order by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const order = await serverClient.fetch(
-      `*[_type == "order" && _id == "${params.id}"][0]{
+      `*[_type == "order" && _id == "${id}"][0]{
         _id,
         _createdAt,
         _updatedAt,
@@ -62,9 +63,10 @@ export async function GET(
 // PATCH - Update order (status, tracking, notes, etc.)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Handle both JSON and FormData requests
     let updates: any = {};
     let images: File[] = [];
@@ -108,7 +110,7 @@ export async function PATCH(
 
     // Get current order to compare changes
     const currentOrder = await serverClient.fetch(
-      `*[_type == "order" && _id == "${params.id}"][0]{
+      `*[_type == "order" && _id == "${id}"][0]{
         _id,
         orderNumber,
         status,
@@ -272,7 +274,7 @@ export async function PATCH(
 
     // Update order in Sanity
     const updatedOrder = await serverClient
-      .patch(params.id)
+      .patch(id)
       .set(updateDoc)
       .commit();
 
@@ -307,14 +309,15 @@ export async function PATCH(
 // DELETE - Delete order (soft delete by default, permanent delete with password)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json().catch(() => ({}));
     const { password, permanent } = body;
 
     const currentOrder = await serverClient.fetch(
-      `*[_type == "order" && _id == "${params.id}"][0]`
+      `*[_type == "order" && _id == "${id}"][0]`
     );
 
     if (!currentOrder) {
@@ -343,7 +346,7 @@ export async function DELETE(
       }
 
       // Permanently delete the order from Sanity
-      await serverClient.delete(params.id);
+      await serverClient.delete(id);
 
       return NextResponse.json({
         success: true,
@@ -353,7 +356,7 @@ export async function DELETE(
 
     // Default behavior: Soft delete by changing status to cancelled
     const cancelledOrder = await serverClient
-      .patch(params.id)
+      .patch(id)
       .set({
         status: 'cancelled',
         'pricing.paymentStatus': 'cancelled',

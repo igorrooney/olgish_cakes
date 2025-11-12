@@ -151,7 +151,7 @@ export default async function FAQPage() {
               variant="h2"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 2,
                 color: "primary.main",
@@ -165,7 +165,7 @@ export default async function FAQPage() {
               color="text.secondary"
               sx={{
                 mb: 4,
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.25rem", md: "1.5rem" },
                 fontWeight: 400,
               }}
@@ -187,10 +187,8 @@ export default async function FAQPage() {
             >
               Have a specific question about my Ukrainian-style cakes?
             </Typography>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="contained"
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               color="primary"
               size="large"
               sx={{
@@ -206,10 +204,10 @@ export default async function FAQPage() {
                   boxShadow: "0 6px 20px rgba(0, 91, 187, 0.3)",
                 },
                 transition: "all 0.3s ease",
-              }}
-            >
+              }}>
               Contact Me
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

@@ -141,7 +141,7 @@ function generateReport() {
 
   console.log("\n📋 Optimization Recommendations:\n");
 
-  Object.entries(recommendations).forEach(([key, rec]) => {
+  Object.entries(recommendations).forEach(([ rec]) => {
     console.log(`🔧 ${rec.description}:`);
     rec.implementation.forEach((impl, index) => {
       console.log(`   ${index + 1}. ${impl}`);

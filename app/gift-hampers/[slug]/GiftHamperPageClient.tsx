@@ -223,10 +223,8 @@ export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
               Discover our curated range of luxury Ukrainian gift hampers, thoughtfully assembled
               for every occasion.
             </Typography>
-            <Button
-              component={Link}
-              href="/gift-hampers"
-              variant="outlined"
+            <Link href="/gift-hampers" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: colors.primary.main,
@@ -246,10 +244,10 @@ export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
                   transform: "translateY(-2px)",
                   boxShadow: shadows.lg,
                 },
-              }}
-            >
+              }}>
               Browse All Gift Hampers
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

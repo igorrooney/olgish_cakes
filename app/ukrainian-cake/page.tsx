@@ -200,7 +200,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* What Makes Ukrainian Cake Special */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             What Makes Ukrainian Cake Special?
           </Typography>
 
@@ -244,7 +244,7 @@ export default function UkrainianCakePage() {
           </Grid>
 
           {/* Traditional Ukrainian Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Traditional Ukrainian Cakes
           </Typography>
 
@@ -258,7 +258,9 @@ export default function UkrainianCakePage() {
                   The most famous Ukrainian cake. Medovik has thin honey-soaked layers with rich cream filling. The honey flavour is subtle and sophisticated, not too sweet. After soaking overnight, the layers become incredibly soft and melt in your mouth. This is the Ukrainian cake that makes people fall in love with Ukrainian desserts.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I use real Yorkshire honey and traditional Ukrainian methods to make my <MuiLink component={Link} href="/cakes/honey-cake-medovik" underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
+                  I use real Yorkshire honey and traditional Ukrainian methods to make my <Link href="/cakes/honey-cake-medovik" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main }}>honey cake (Medovik)</MuiLink>
+            </Link>. Every layer is rolled thin by hand, and the cream is made fresh. This Ukrainian cake takes two days to make properly, but the result is worth every minute.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -269,7 +271,9 @@ export default function UkrainianCakePage() {
                   The legendary Ukrainian cake from Kyiv. This cake has two crispy hazelnut meringue layers filled with rich chocolate buttercream and covered with roasted cashews. The combination of crunchy meringue and smooth chocolate is incredible. Kyiv cake is a symbol of Ukrainian confectionery excellence.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  Making proper <MuiLink component={Link} href="/cakes/kyiv-cake" underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
+                  Making proper <Link href="/cakes/kyiv-cake" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main }}>Kyiv cake</MuiLink>
+            </Link> is difficult. The meringue needs to be perfect - crispy outside, slightly chewy inside. The chocolate cream must be smooth and not too sweet. This Ukrainian cake requires skill and experience to get right.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -280,7 +284,9 @@ export default function UkrainianCakePage() {
                   Classic Ukrainian cake with thin puff pastry layers and vanilla custard cream. The pastry is crispy and light, the cream is smooth and rich. Napoleon cake is perfect for tea parties and family celebrations. In Ukraine, every grandmother has her own Napoleon recipe.
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
-                  I make my <MuiLink component={Link} href="/cakes/napoleon-cake" underline="always" sx={{ color: colors.primary.main }}>Napoleon cake</MuiLink> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
+                  I make my <Link href="/cakes/napoleon-cake" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="always" sx={{ color: colors.primary.main }}>Napoleon cake</MuiLink>
+            </Link> with 7-9 paper-thin pastry layers. Rolling the dough this thin takes practice, but it creates that special texture that makes Ukrainian Napoleon different from French mille-feuille.
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -298,7 +304,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Ukrainian Cake vs British Cake */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Ukrainian Cake vs British Cake
           </Typography>
 
@@ -318,7 +324,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Why Choose Olgish Cakes */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             Why Choose Olgish Cakes for Ukrainian Cake in Leeds?
           </Typography>
 
@@ -347,7 +353,7 @@ export default function UkrainianCakePage() {
           </Paper>
 
           {/* Cultural Significance */}
-          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-playfair-display)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
+          <Typography variant="h2" component="h2" sx={{ fontFamily: 'var(--font-alice)', fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 600, color: 'primary.main', mb: 4, textAlign: 'center' }}>
             The Cultural Story Behind Ukrainian Cake
           </Typography>
 
@@ -375,10 +381,8 @@ export default function UkrainianCakePage() {
               Order your traditional Ukrainian cake today and taste the real Ukrainian tradition. Same-day delivery available across Leeds and Yorkshire. Call <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink> or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.secondary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="contained"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 size="large"
                 sx={{
                   bgcolor: 'secondary.main',
@@ -392,10 +396,9 @@ export default function UkrainianCakePage() {
               >
                 View All Ukrainian Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/get-custom-quote"
-                variant="outlined"
+            </Link>
+              <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 size="large"
                 sx={{
                   borderColor: 'white',
@@ -404,10 +407,10 @@ export default function UkrainianCakePage() {
                   py: 2,
                   fontSize: '1.1rem',
                   '&:hover': { borderColor: 'secondary.main', bgcolor: 'white', color: 'primary.main' }
-                }}
-              >
+                }}>
                 Get Custom Quote
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -1,7 +1,6 @@
 import { Container, Grid, Typography, Box } from "@/lib/mui-optimization";
 import GiftHamperCard from "../components/GiftHamperCard";
 import { getAllGiftHampers } from "../utils/fetchGiftHampers";
-import { getRevalidateTime } from "../utils/fetchCakes";
 import HeroSection from "./HeroSection";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { urlFor } from "@/sanity/lib/image";
@@ -10,7 +9,7 @@ import type { Metadata } from "next";
 import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
 import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
 
-export const revalidate = getRevalidateTime();
+export const revalidate = 300; // 5 minutes
 
 // Force static generation
 export const dynamic = "force-static";

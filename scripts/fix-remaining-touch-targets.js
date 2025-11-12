@@ -2,8 +2,6 @@ import fs from "fs";
 import path from "path";
 
 // Configuration
-const WCAG_MIN_SIZE = 44; // Minimum touch target size in pixels
-const WCAG_MIN_SPACING = 8; // Minimum spacing between touch targets in pixels
 
 // Files that need touch target fixes based on audit results
 const FILES_TO_FIX = [
@@ -116,7 +114,7 @@ function fixFile(filePath) {
     const originalContent = content;
 
     // Apply all fixes
-    Object.entries(TOUCH_TARGET_FIXES).forEach(([fixName, fixFunction]) => {
+    Object.entries(TOUCH_TARGET_FIXES).forEach(([ fixFunction]) => {
       content = fixFunction(content);
     });
 

@@ -1,8 +1,9 @@
 "use client";
 
+// Import icons directly for better HMR support
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
-  ArrowBackIcon,
-  ArrowForwardIcon,
   CakeOutlinedIcon,
   CelebrationIcon,
   CloudUploadIcon,

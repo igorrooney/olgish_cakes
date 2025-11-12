@@ -256,7 +256,7 @@ export default function CakeByPostGuidePage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 3,
                 color: "primary.main",
@@ -744,10 +744,8 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
                   Surprise someone special with our traditional Ukrainian honey cake delivered straight to their door.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/gift-hampers/cake-by-post"
-                  variant="contained"
+                <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   size="large"
                   sx={{
                     backgroundColor: "white",
@@ -761,10 +759,10 @@ export default function CakeByPostGuidePage() {
                     "&:hover": {
                       backgroundColor: "grey.100",
                     },
-                  }}
-                >
+                  }}>
                   Order Cake by Post Now
                 </Button>
+            </Link>
               </Box>
             </Grid>
 
@@ -817,10 +815,8 @@ export default function CakeByPostGuidePage() {
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
                     Ready to send a delicious surprise? Order our traditional Ukrainian honey cake by post today.
                   </Typography>
-                  <Button
-                    component={Link}
-                    href="/gift-hampers/cake-by-post"
-                    variant="contained"
+                  <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                     fullWidth
                     sx={{
                       backgroundColor: "primary.main",
@@ -830,10 +826,10 @@ export default function CakeByPostGuidePage() {
                       fontWeight: 600,
                       borderRadius: 2,
                       textTransform: "none",
-                    }}
-                  >
+                    }}>
                     Order Cake by Post
                   </Button>
+            </Link>
                 </Card>
               </Box>
             </Grid>

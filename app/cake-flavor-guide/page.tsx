@@ -199,7 +199,7 @@ export default function CakeFlavorGuidePage() {
           </Grid>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Traditional Ukrainian Flavours
             </Typography>
 
@@ -232,7 +232,7 @@ export default function CakeFlavorGuidePage() {
           </Paper>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Popular Celebration Flavours
             </Typography>
 
@@ -289,7 +289,7 @@ export default function CakeFlavorGuidePage() {
           </Paper>
 
           <Paper elevation={0} sx={{ p: { xs: 4, md: 6 }, backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Allergen Information
             </Typography>
 
@@ -343,15 +343,13 @@ export default function CakeFlavorGuidePage() {
             </Grid>
           </Paper>
           <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
-              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}
-            >
+              sx={{ bgcolor: "#FFD700", color: "#005BBB", "&:hover": { bgcolor: "#ffe066" } }}>
               Browse All Cakes
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

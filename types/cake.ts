@@ -56,7 +56,7 @@ export function blocksToText(blocks: RichTextBlock[]): string {
   return blocks
     .map(block => {
       if (block._type === "block") {
-        return block.children?.map((child) => child.text).join("") || "";
+        return block.children?.map((_child) => _child.text).join("") || "";
       }
       return "";
     })

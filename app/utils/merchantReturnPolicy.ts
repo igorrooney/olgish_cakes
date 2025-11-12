@@ -52,7 +52,7 @@ export function validateMerchantReturnPolicies(structuredData: any): {
   fixedData: any;
 } {
   const missingPolicies: string[] = [];
-  let fixedData = { ...structuredData };
+  const fixedData = { ...structuredData };
 
   // Check if this is a Product with offers
   if (structuredData["@type"] === "Product" && structuredData.offers) {

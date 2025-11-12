@@ -6,7 +6,7 @@
  * constantly changing review dates on each build. Updated quarterly to maintain freshness.
  */
 
-import { Review, AggregateRating, WithContext } from "schema-dts";
+import { Review, WithContext } from "schema-dts";
 
 // Fixed review dates - update these quarterly to keep them reasonably current
 // Last updated: October 30, 2025

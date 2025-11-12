@@ -124,7 +124,7 @@ describe('CakeDetailPage', () => {
     it('should generate metadata for existing cake', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
       expect(metadata.title).toBe('Custom Title')
       expect(metadata.description).toBe('Custom Description')
@@ -134,7 +134,7 @@ describe('CakeDetailPage', () => {
       const cakeWithoutSEO = { ...mockCake, seo: undefined }
       mockFetch.mockResolvedValue(cakeWithoutSEO)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
       expect(metadata.title).toContain('Honey Cake')
     })
@@ -148,7 +148,7 @@ describe('CakeDetailPage', () => {
       }
       mockFetch.mockResolvedValue(cakeWithoutSEO)
 
-      const metadata = await generateMetadata({ params: { slug: 'vanilla-cake' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
 
       expect(metadata.description).toContain('Converted text')
     })
@@ -161,7 +161,7 @@ describe('CakeDetailPage', () => {
       }
       mockFetch.mockResolvedValue(honeyCake)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake-medovik' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake-medovik' }) })
 
       expect(metadata.title).toContain('Buy Honey Cake Online')
       expect(metadata.description).toContain('Buy authentic honey cake')
@@ -171,7 +171,7 @@ describe('CakeDetailPage', () => {
     it('should return 404 metadata for missing cake', async () => {
       mockFetch.mockResolvedValue(null)
 
-      const metadata = await generateMetadata({ params: { slug: 'non-existent' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
       expect(metadata.title).toContain('Not Found')
     })
@@ -179,7 +179,7 @@ describe('CakeDetailPage', () => {
     it('should include OpenGraph data', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
       expect(metadata.openGraph).toBeDefined()
     })
@@ -187,7 +187,7 @@ describe('CakeDetailPage', () => {
     it('should include keywords', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const metadata = await generateMetadata({ params: { slug: 'honey-cake' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
       expect(metadata.keywords).toBeDefined()
     })
@@ -197,7 +197,7 @@ describe('CakeDetailPage', () => {
     it('should render cake page', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
       expect(() => render(page)).not.toThrow()
     })
@@ -206,7 +206,7 @@ describe('CakeDetailPage', () => {
       mockFetch.mockResolvedValue(null)
 
       await expect(async () => {
-        await CakeDetailPage({ params: { slug: 'non-existent' } })
+        await CakeDetailPage({ params: Promise.resolve({ slug: 'non-existent' }) })
       }).rejects.toThrow('NEXT_NOT_FOUND')
 
       expect(notFound).toHaveBeenCalled()
@@ -215,7 +215,7 @@ describe('CakeDetailPage', () => {
     it('should include structured data', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -227,7 +227,7 @@ describe('CakeDetailPage', () => {
     it('should include Product structured data with required fields', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -249,7 +249,7 @@ describe('CakeDetailPage', () => {
     it('should include image field in Offer (GSC Merchant listings fix)', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -269,7 +269,7 @@ describe('CakeDetailPage', () => {
     it('should include shippingDetails in Offer', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -286,7 +286,7 @@ describe('CakeDetailPage', () => {
     it('should include hasMerchantReturnPolicy in Offer', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -303,7 +303,7 @@ describe('CakeDetailPage', () => {
     it('should include aggregateRating', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -322,7 +322,7 @@ describe('CakeDetailPage', () => {
     it('should include review array', async () => {
       mockFetch.mockResolvedValue(mockCake)
 
-      const page = await CakeDetailPage({ params: { slug: 'honey-cake' } })
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')

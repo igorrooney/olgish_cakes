@@ -117,19 +117,17 @@ export default async function RetirementCakesPage() {
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
             Order 3 days in advance for custom retirement cake designs and decorations
           </Typography>
-          <Button
-            component={Link}
-            href="/cakes"
-            variant="contained"
+          <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
             size="large"
             sx={{
               bgcolor: "white",
               color: colors.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
-            }}
-          >
+            }}>
             Order Now
           </Button>
+            </Link>
         </Paper>
 
         {/* Popular Retirement Cakes */}
@@ -292,32 +290,28 @@ export default async function RetirementCakesPage() {
             unforgettable
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Browse Retirement Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="outlined"
+            </Link>
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Contact Us
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

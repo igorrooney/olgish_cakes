@@ -8,12 +8,11 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-const { execSync } = require("child_process");
+const {} = require("child_process");
 
 // Configuration
 const SITE_URL = "https://olgishcakes.co.uk";
 const GOOGLE_PAGESPEED_API_KEY = process.env.GOOGLE_PAGESPEED_API_KEY;
-const GOOGLE_SEARCH_CONSOLE_API_KEY = process.env.GOOGLE_SEARCH_CONSOLE_API_KEY;
 
 class SEOOptimizer {
   constructor() {

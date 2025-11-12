@@ -4,23 +4,9 @@ import { useEffect } from "react";
 
 export function PerformanceOptimizer() {
   useEffect(() => {
-    // Preload critical resources
-    const preloadCriticalImages = () => {
-      const criticalImages = [
-        "/images/olgish-cakes-logo-bakery-brand.png",
-        "/images/hero-cake.jpg",
-        "/images/cake-hero-banner.jpg",
-      ];
-
-      criticalImages.forEach((src) => {
-        const link = document.createElement("link");
-        link.rel = "preload";
-        link.as = "image";
-        link.href = src;
-        link.crossOrigin = "anonymous";
-        document.head.appendChild(link);
-      });
-    };
+    // Note: Next.js Image component with priority prop handles preloading efficiently
+    // Manual preloading is not needed and can cause "unused preload" warnings
+    // Critical images are handled by Next.js Image's built-in optimization
 
     // Optimize scroll performance
     const optimizeScroll = () => {
@@ -69,7 +55,6 @@ export function PerformanceOptimizer() {
     };
 
     // Initialize optimizations
-    preloadCriticalImages();
     const cleanupScroll = optimizeScroll();
     const cleanupImages = optimizeImages();
 

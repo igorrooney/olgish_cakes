@@ -85,7 +85,11 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Learn more about our <MuiLink component={Link} href="/blog/cake-by-post-uk-complete-guide" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our complete guide to cake by post delivery">complete guide to cake by post delivery</MuiLink> or discover the <MuiLink component={Link} href="/blog/best-cakes-you-can-send-by-post-uk" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Learn about the best honey cake for postal delivery">best honey cake for postal delivery</MuiLink>.
+            Learn more about our <Link href="/blog/cake-by-post-uk-complete-guide" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our complete guide to cake by post delivery">complete guide to cake by post delivery</MuiLink>
+            </Link> or discover the <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Learn about the best honey cake for postal delivery">best honey cake for postal delivery</MuiLink>
+            </Link>.
           </Typography>
         </Container>
       </Box>
@@ -164,7 +168,11 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
                     Experience the authentic taste of traditional Ukrainian honey cake (honey cake),
                     handcrafted in Leeds using time-honored recipes and premium ingredients.
-                    Learn more about our <MuiLink component={Link} href="/honey-cake-history" underline="none" sx={{ color: colors.primary.main }} aria-label="Learn about the history of honey cake">honey cake history</MuiLink> and <MuiLink component={Link} href="/traditional-ukrainian-cakes" underline="none" sx={{ color: colors.primary.main }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</MuiLink>.
+                    Learn more about our <Link href="/honey-cake-history" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }} aria-label="Learn about the history of honey cake">honey cake history</MuiLink>
+            </Link> and <Link href="/traditional-ukrainian-cakes" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</MuiLink>
+            </Link>.
                   </Typography>
                 </CardContent>
               </Card>
@@ -271,7 +279,9 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
               lineHeight: 1.6,
             }}
           >
-            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <MuiLink component={Link} href="/blog/top-5-reasons-order-letterbox-cakes-online" underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our top 5 reasons to order honey cake by post online">top 5 reasons to order honey cake by post online</MuiLink>.
+            Our simple 4-step process makes ordering cake by post easy. For detailed information, check out our <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ textDecoration: 'none' }}>
+              <MuiLink underline="none" sx={{ color: colors.primary.main, fontWeight: 600 }} aria-label="Read our top 5 reasons to order honey cake by post online">top 5 reasons to order honey cake by post online</MuiLink>
+            </Link>.
           </Typography>
 
           <Grid container spacing={4}>
@@ -521,10 +531,8 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/gift-hampers/cake-by-post"
-              variant="contained"
+            <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 backgroundColor: colors.primary.main,
@@ -538,15 +546,13 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                 "&:hover": {
                   backgroundColor: colors.primary.dark,
                 },
-              }}
-            >
+              }}>
               Buy Cake by Post Now
             </Button>
+            </Link>
 
-            <Button
-              component={Link}
-              href="/contact"
-              variant="outlined"
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: colors.primary.main,
@@ -561,10 +567,10 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   backgroundColor: colors.primary.main,
                   color: colors.primary.contrast,
                 },
-              }}
-            >
+              }}>
               Contact Us
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>
@@ -602,10 +608,8 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
                     Discover the best cakes you can send by post in the UK, from traditional recipes to modern delivery innovations.
                   </Typography>
-                  <Button
-                    component={Link}
-                    href="/blog/best-cakes-you-can-send-by-post-uk"
-                    variant="outlined"
+                  <Link href="/blog/best-cakes-you-can-send-by-post-uk" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                     size="small"
                     sx={{
                       borderColor: colors.primary.main,
@@ -615,10 +619,10 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                         backgroundColor: colors.primary.main,
                         color: colors.primary.contrast,
                       },
-                    }}
-                  >
+                    }}>
                     Read More
                   </Button>
+            </Link>
                 </CardContent>
               </Card>
             </Grid>
@@ -632,10 +636,8 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
                     Learn why ordering letterbox cakes online is becoming the preferred way to surprise loved ones.
                   </Typography>
-                  <Button
-                    component={Link}
-                    href="/blog/top-5-reasons-order-letterbox-cakes-online"
-                    variant="outlined"
+                  <Link href="/blog/top-5-reasons-order-letterbox-cakes-online" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                     size="small"
                     sx={{
                       borderColor: colors.primary.main,
@@ -645,10 +647,10 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                         backgroundColor: colors.primary.main,
                         color: colors.primary.contrast,
                       },
-                    }}
-                  >
+                    }}>
                     Read More
                   </Button>
+            </Link>
                 </CardContent>
               </Card>
             </Grid>
@@ -662,10 +664,8 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
                     Expert tips for creating perfect surprise moments with cake delivery by post.
                   </Typography>
-                  <Button
-                    component={Link}
-                    href="/blog/how-surprise-someone-cake-delivery-post"
-                    variant="outlined"
+                  <Link href="/blog/how-surprise-someone-cake-delivery-post" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                     size="small"
                     sx={{
                       borderColor: colors.primary.main,
@@ -675,20 +675,18 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                         backgroundColor: colors.primary.main,
                         color: colors.primary.contrast,
                       },
-                    }}
-                  >
+                    }}>
                     Read More
                   </Button>
+            </Link>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
 
           <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Button
-              component={Link}
-              href="/blog"
-              variant="contained"
+            <Link href="/blog" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 backgroundColor: colors.primary.main,
@@ -702,10 +700,10 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                 "&:hover": {
                   backgroundColor: colors.primary.dark,
                 },
-              }}
-            >
+              }}>
               View All Blog Posts
             </Button>
+            </Link>
           </Box>
         </Container>
       </Box>

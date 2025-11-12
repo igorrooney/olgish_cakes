@@ -93,7 +93,7 @@ export function FAQItems({ items }: FAQItemsProps) {
                     variant="h6"
                     sx={{
                       fontWeight: 600,
-                      fontFamily: "var(--font-playfair-display)",
+                      fontFamily: "var(--font-alice)",
                       fontSize: "1.1rem",
                       transition: "color 0.3s ease",
                       color: expanded === panel ? "primary.main" : "text.primary",

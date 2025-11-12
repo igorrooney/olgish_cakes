@@ -11,7 +11,7 @@ export const criticalCSS = `
   /* Critical CSS for above-the-fold content */
   body {
     margin: 0;
-    font-family: var(--font-playfair-display), Georgia, serif;
+    font-family: var(--font-alice), Georgia, serif;
     line-height: 1.6;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

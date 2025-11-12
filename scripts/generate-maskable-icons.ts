@@ -64,13 +64,13 @@ async function generateMaskableIcons() {
 
     const outPath = path.join(outputDir, `maskable-${size}x${size}.png`);
     await fs.writeFile(outPath, composed);
-    // eslint-disable-next-line no-console
+     
     console.log(`Generated ${outPath}`);
   }
 }
 
 generateMaskableIcons().catch(err => {
-  // eslint-disable-next-line no-console
+   
   console.error(err);
   process.exit(1);
 });

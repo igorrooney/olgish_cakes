@@ -1,4 +1,3 @@
-import { Metadata } from 'next'
 
 // Extend Next.js Metadata type with custom properties used in tests
 declare module 'next' {

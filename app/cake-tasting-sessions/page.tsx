@@ -134,7 +134,7 @@ export default function CakeTastingSessionsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -187,7 +187,7 @@ export default function CakeTastingSessionsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -263,7 +263,7 @@ export default function CakeTastingSessionsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -340,7 +340,7 @@ export default function CakeTastingSessionsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -417,7 +417,7 @@ export default function CakeTastingSessionsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -484,26 +484,22 @@ export default function CakeTastingSessionsPage() {
               personalized cake tasting session.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Book Tasting Session
               </Button>
-              <Button
-                component={Link}
-                href="/wedding-cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/wedding-cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View Wedding Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

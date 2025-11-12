@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Process file attachment
-    let attachments = [];
+    const attachments = [];
     let base64Image = "";
     let imageBuffer: ArrayBuffer | null = null;
 
@@ -430,8 +430,6 @@ Olgish Cakes
             name: e?.name
           });
         }
-      } else {
-
       }
 
       const orderData = {

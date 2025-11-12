@@ -218,7 +218,6 @@ function analyzeContentOptimization(content) {
   // Check heading structure
   const h1Count = (content.match(/variant="h1"/g) || []).length;
   const h2Count = (content.match(/variant="h2"/g) || []).length;
-  const h3Count = (content.match(/variant="h3"/g) || []).length;
 
   if (h1Count === 1) {
     results.score += 3;

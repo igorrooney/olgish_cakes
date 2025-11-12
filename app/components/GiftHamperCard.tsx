@@ -34,7 +34,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
   testimonialStats = DEFAULT_TESTIMONIAL_STATS,
-}: GiftHamperCardProps): JSX.Element {
+}: GiftHamperCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;
 
@@ -276,19 +276,19 @@ const GiftHamperCard = memo(function GiftHamperCard({
           </Typography>
         )}
 
-        <OutlineButton
-          component={Link}
-          href={`/gift-hampers/${hamper.slug?.current || hamper._id}`}
-          sx={{
-            mt: "auto",
-            py: spacing.md,
-            width: "100%",
-            fontWeight: typography.fontWeight.medium,
-          }}
-          aria-label={`Order ${hamper.name} now`}
-        >
-          Order Now
-        </OutlineButton>
+        <Link href={`/gift-hampers/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
+          <OutlineButton
+            sx={{
+              mt: "auto",
+              py: spacing.md,
+              width: "100%",
+              fontWeight: typography.fontWeight.medium,
+            }}
+            aria-label={`Order ${hamper.name} now`}
+          >
+            Order Now
+          </OutlineButton>
+        </Link>
       </Box>
     </ProductCard>
   );

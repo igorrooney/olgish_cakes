@@ -121,19 +121,17 @@ export default async function FathersDayCakesPage() {
           <Typography variant="body1" sx={{ mb: 3, fontSize: "1.1rem" }}>
             Order by June 14th for guaranteed delivery on Father's Day weekend
           </Typography>
-          <Button
-            component={Link}
-            href="/cakes"
-            variant="contained"
+          <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
             size="large"
             sx={{
               bgcolor: "white",
               color: colors.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
-            }}
-          >
+            }}>
             Order Now
           </Button>
+            </Link>
         </Paper>
 
         {/* Popular Father's Day Cakes */}
@@ -293,32 +291,28 @@ export default async function FathersDayCakesPage() {
             Order your special Ukrainian Father's Day cake today and show Dad how much you care
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Browse Father's Day Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="outlined"
+            </Link>
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Contact Us
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

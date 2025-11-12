@@ -88,7 +88,7 @@ export default defineType({
           title: "Phone Number",
           type: "string",
           validation: Rule =>
-            Rule.regex(/^\+?[\d\s\-\(\)]+$/, {
+            Rule.regex(/^\+?[\d\s\-()]+$/, {
               name: "phone",
               invert: false,
             }),
@@ -104,7 +104,7 @@ export default defineType({
           title: "WhatsApp Number",
           type: "string",
           validation: Rule =>
-            Rule.regex(/^\+?[\d\s\-\(\)]+$/, {
+            Rule.regex(/^\+?[\d\s\-()]+$/, {
               name: "phone",
               invert: false,
             }),

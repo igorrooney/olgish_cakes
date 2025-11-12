@@ -25,8 +25,17 @@ jest.mock('@/lib/mui-optimization', () => ({
   Box: ({ children, role, sx, ...props }: any) => (
     <div data-testid="box" role={role} {...props}>{children}</div>
   ),
-  ArrowBackIcon: () => <span>←</span>,
-  ArrowForwardIcon: () => <span>→</span>
+}))
+
+// Mock direct icon imports
+jest.mock('@mui/icons-material/ArrowBack', () => ({
+  __esModule: true,
+  default: () => <span>←</span>
+}))
+
+jest.mock('@mui/icons-material/ArrowForward', () => ({
+  __esModule: true,
+  default: () => <span>→</span>
 }))
 
 // Mock UI components

@@ -77,7 +77,7 @@ export default function GraduationCakesLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -130,7 +130,7 @@ export default function GraduationCakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -219,7 +219,7 @@ export default function GraduationCakesLeedsPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 color: "primary.main",
                 mb: 3,
@@ -236,26 +236,22 @@ export default function GraduationCakesLeedsPage() {
               place your order and ensure you have the perfect graduation cake for your celebration.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Graduation Cake
               </Button>
-              <Button
-                component={Link}
-                href="/custom-cake-design"
-                variant="outlined"
+            </Link>
+              <Link href="/custom-cake-design" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Custom Design
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

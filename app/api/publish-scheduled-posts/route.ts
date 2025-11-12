@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const today = now.toISOString().split('T')[0]
     const currentTime = now.toTimeString().split(' ')[0]
 
-    console.log(`Checking for scheduled posts on ${today} at ${currentTime}`)
+    console.warn(`Checking for scheduled posts on ${today} at ${currentTime}`)
 
     // Find posts scheduled for today that haven't been published yet
     const scheduledPosts = await client.fetch(`
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         publishDate <= "${today}T23:59:59.999Z"]
     `)
 
-    console.log(`Found ${scheduledPosts.length} scheduled posts for today`)
+    console.warn(`Found ${scheduledPosts.length} scheduled posts for today`)
 
     const publishedPosts = []
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
             publishedAt: new Date().toISOString()
           })
 
-          console.log(`Published post: ${post.title}`)
+          console.warn(`Published post: ${post.title}`)
         } catch (error) {
           console.error(`Error publishing post ${post._id}:`, error)
         }

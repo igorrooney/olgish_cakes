@@ -85,7 +85,7 @@ export default function HoneyCakeVsKyivCakePage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -458,40 +458,12 @@ export default function HoneyCakeVsKyivCakePage() {
               place your order or get a custom combination.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Order Both Cakes
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/traditional-ukrainian-cakes"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/traditional-ukrainian-cakes" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 View All Ukrainian Cakes
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

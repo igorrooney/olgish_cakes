@@ -151,7 +151,7 @@ export default function CakeFlavorsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -195,7 +195,7 @@ export default function CakeFlavorsPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -349,7 +349,7 @@ export default function CakeFlavorsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -408,7 +408,7 @@ export default function CakeFlavorsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -495,7 +495,7 @@ export default function CakeFlavorsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -572,7 +572,7 @@ export default function CakeFlavorsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -586,26 +586,22 @@ export default function CakeFlavorsPage() {
               Ukraine
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="contained"
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View Our Cakes
               </Button>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="outlined"
+            </Link>
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Custom Cake
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

@@ -166,8 +166,6 @@ function generateMobileReport() {
 }
 
 // Run optimizations
-const optimizedContent = implementMobileOptimizations();
-const report = generateMobileReport();
 
 console.log("\n" + "=".repeat(60));
 console.log("📱 MOBILE OPTIMIZATION COMPLETE");

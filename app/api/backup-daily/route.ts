@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔄 Starting daily backup (documents only)...');
+    console.warn('🔄 Starting daily backup (documents only)...');
 
     // Run the daily backup
     const result = execSync('npm run backup:daily', {

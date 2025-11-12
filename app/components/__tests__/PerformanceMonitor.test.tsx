@@ -7,7 +7,7 @@ import { renderHook, act } from '@testing-library/react'
 describe('usePerformanceMonitor', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'warn').mockImplementation(() => {})
     window.gtag = jest.fn()
   })
 
@@ -73,7 +73,7 @@ describe('usePerformanceMonitor', () => {
     const endTimer = result.current.startTimer('menuOpenTime')
     endTimer()
 
-    expect(console.log).toHaveBeenCalled()
+    expect(console.warn).toHaveBeenCalled()
   })
 
   it('should not log in production', () => {
@@ -84,7 +84,7 @@ describe('usePerformanceMonitor', () => {
     const endTimer = result.current.startTimer('menuOpenTime')
     endTimer()
 
-    expect(console.log).not.toHaveBeenCalled()
+    expect(console.warn).not.toHaveBeenCalled()
   })
 
   it('should send to gtag when available', () => {

@@ -70,7 +70,7 @@ export default function HoneyCakeHistoryPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -466,40 +466,12 @@ export default function HoneyCakeHistoryPage() {
               history and cultural heritage of Ukraine to your table.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/cakes"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/cakes" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Order Honey Cake
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/ukrainian-culture-baking"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/ukrainian-culture-baking" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 Learn More About Ukrainian Baking
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

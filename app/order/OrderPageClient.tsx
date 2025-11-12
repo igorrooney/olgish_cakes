@@ -494,7 +494,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
             variant="h2"
             component="h2"
             sx={{
-              fontFamily: "var(--font-playfair-display)",
+              fontFamily: "var(--font-alice)",
               fontWeight: 600,
               fontSize: { xs: "2rem", md: "2.5rem" },
               textAlign: "center",
@@ -669,7 +669,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontWeight: 600,
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   textAlign: "center",
@@ -831,7 +831,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
               variant="h2"
               component="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
@@ -897,7 +897,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
               variant="h2"
               component="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 textAlign: "center",
@@ -996,7 +996,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 variant="h2"
                 component="h2"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontWeight: 600,
                   fontSize: { xs: "2rem", md: "2.5rem" },
                   mb: 2,
@@ -1016,10 +1016,8 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 Join hundreds of satisfied customers who trust us with their special occasions
               </Typography>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="contained"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   size="large"
                   sx={{
                     bgcolor: colors.secondary.main,
@@ -1031,14 +1029,12 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                     "&:hover": {
                       bgcolor: colors.secondary.dark,
                     },
-                  }}
-                >
+                  }}>
                   Browse Our Cakes
                 </Button>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="outlined"
+            </Link>
+                <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                   sx={{
                     borderColor: colors.primary.contrast,
                     color: colors.primary.contrast,
@@ -1051,10 +1047,10 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                       bgcolor: "rgba(255,255,255,0.1)",
                     },
                   }}
-                  size="large"
-                >
+                  size="large">
                   Contact Us
                 </Button>
+            </Link>
               </Box>
 
               {/* Related Pages Links */}

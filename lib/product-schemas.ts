@@ -288,7 +288,7 @@ export function generateAllProductSchemas(cakes: Cake[], testimonialStats: Testi
   }
   
   if (process.env.NODE_ENV !== 'production') {
-    console.log(`[Product Schemas] Successfully generated ${schemas.length} product schemas in ${duration.toFixed(2)}ms`);
+    console.warn(`[Product Schemas] Successfully generated ${schemas.length} product schemas in ${duration.toFixed(2)}ms`);
     
     // Validate all generated schemas in development
     batchValidateProductSchemas(schemas);

@@ -51,7 +51,7 @@ class AdvancedSEORanking {
   }
 
   // Generate keyword-optimized content for target pages
-  generateKeywordOptimizedContent(keyword, location = 'Leeds') {
+  generateKeywordOptimizedContent(keyword, _location = 'Leeds') {
     const contentTemplates = {
       'cake postal delivery': {
         title: 'Cake Postal Delivery | Letterbox Cakes by Post UK',

@@ -247,7 +247,7 @@ export default async function CakesLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -349,7 +349,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -370,15 +370,13 @@ export default async function CakesLeedsPage() {
 
             {allCakes.length > 6 && (
               <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="outlined"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   View All Cakes
                 </Button>
+            </Link>
               </Box>
             )}
           </Box>
@@ -398,7 +396,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -462,7 +460,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -528,7 +526,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -587,7 +585,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -607,35 +605,35 @@ export default async function CakesLeedsPage() {
                 { name: "Nut-Free Cakes Leeds", href: "/nut-free-cakes-leeds", description: "Safe allergen-free cakes for nut allergies" },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Button
-                    component={Link}
-                    href={service.href}
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      py: 2,
-                      px: 3,
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      height: "100%",
-                      textAlign: "left",
-                      "&:hover": {
-                        backgroundColor: "primary.main",
-                        color: "white",
-                        "& .MuiTypography-root": {
+                  <Link href={service.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      sx={{
+                        py: 2,
+                        px: 3,
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        height: "100%",
+                        textAlign: "left",
+                        "&:hover": {
+                          backgroundColor: "primary.main",
                           color: "white",
+                          "& .MuiTypography-root": {
+                            color: "white",
+                          },
                         },
-                      },
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                      {service.name}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {service.description}
-                    </Typography>
-                  </Button>
+                      }}
+                    >
+                      <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        {service.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {service.description}
+                      </Typography>
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -656,7 +654,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -679,16 +677,16 @@ export default async function CakesLeedsPage() {
                 { name: "Cakes Otley", href: "/cakes-otley" },
               ].map((area, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
-                  <Button
-                    component={Link}
-                    href={area.href}
-                    variant="text"
-                    color="primary"
-                    fullWidth
-                    sx={{ py: 1, justifyContent: "flex-start" }}
-                  >
-                    {area.name}
-                  </Button>
+                  <Link href={area.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button
+                      variant="text"
+                      color="primary"
+                      fullWidth
+                      sx={{ py: 1, justifyContent: "flex-start" }}
+                    >
+                      {area.name}
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -699,7 +697,7 @@ export default async function CakesLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -717,26 +715,22 @@ export default async function CakesLeedsPage() {
               order your fresh, handmade cake or schedule a consultation.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Cake
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 View All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

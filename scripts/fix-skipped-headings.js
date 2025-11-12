@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 // Function to analyze and fix skipped heading levels
 function fixSkippedHeadings(filePath) {
   try {
-    let content = fs.readFileSync(filePath, "utf8");
+    const content = fs.readFileSync(filePath, "utf8");
     const lines = content.split("\n");
     let modified = false;
 

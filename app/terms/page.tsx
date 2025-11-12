@@ -147,7 +147,7 @@ export default function TermsOfServicePage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 4,
                 color: "primary.main",
@@ -289,9 +289,11 @@ export default function TermsOfServicePage() {
             </Typography>
 
             <Box sx={{ mt: 6, textAlign: "center" }}>
-              <Button component={Link} href="/" variant="contained" color="primary" size="large">
+              <Link href="/" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" color="primary" size="large">
                 Return to Home
               </Button>
+            </Link>
             </Box>
           </Paper>
         </Container>

@@ -74,7 +74,7 @@ describe('HamperDetailPage', () => {
     it('should generate metadata with default fallback', async () => {
       mockFetch.mockResolvedValue(mockHamper)
 
-      const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
       expect(metadata.title).toContain('Deluxe Hamper')
       expect(metadata.title).toContain('Luxury Gift Hampers')
@@ -91,7 +91,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(hamperWithSEO)
 
-      const metadata = await generateMetadata({ params: { slug: 'deluxe-hamper' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
       expect(metadata.title).toBe('Custom SEO Title for Testing')
       expect(metadata.description).toBe('Custom SEO Description for Testing')
@@ -105,7 +105,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(cakeByPostHamper)
 
-      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
       expect(metadata.title).toContain('Cake by Post')
       expect(metadata.title).toContain('Ukrainian Honey Cake')
@@ -124,7 +124,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(cakeByPostWithSEO)
 
-      const metadata = await generateMetadata({ params: { slug: 'cake-by-post' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
       // Custom SEO should override the hardcoded "cake-by-post" optimization
       expect(metadata.title).toBe('My Custom Cake by Post Title')
@@ -135,7 +135,7 @@ describe('HamperDetailPage', () => {
     it('should return 404 metadata for missing hamper', async () => {
       mockFetch.mockResolvedValue(null)
 
-      const metadata = await generateMetadata({ params: { slug: 'non-existent' } })
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
       expect(metadata.title).toContain('Not Found')
     })
@@ -145,7 +145,7 @@ describe('HamperDetailPage', () => {
     it('should render hamper page', async () => {
       mockFetch.mockResolvedValue(mockHamper)
 
-      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
       expect(() => render(page)).not.toThrow()
     })
@@ -154,7 +154,7 @@ describe('HamperDetailPage', () => {
       mockFetch.mockResolvedValue(null)
 
       await expect(async () => {
-        await HamperDetailPage({ params: { slug: 'non-existent' } })
+        await HamperDetailPage({ params: Promise.resolve({ slug: 'non-existent' }) })
       }).rejects.toThrow('NEXT_NOT_FOUND')
       
       expect(notFound).toHaveBeenCalled()
@@ -170,7 +170,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(cakeByPostHamper)
 
-      const page = await HamperDetailPage({ params: { slug: 'cake-by-post' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -205,7 +205,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(hamperWithIngredients)
 
-      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -229,7 +229,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(hamperWithAllergens)
 
-      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -258,7 +258,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(fullHamper)
 
-      const page = await HamperDetailPage({ params: { slug: 'cake-by-post' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
@@ -308,7 +308,7 @@ describe('HamperDetailPage', () => {
       }
       mockFetch.mockResolvedValue(basicHamper)
 
-      const page = await HamperDetailPage({ params: { slug: 'deluxe-hamper' } })
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')

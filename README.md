@@ -30,12 +30,20 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
    ```bash
    pnpm install
    ```
-3. Create a `.env.local` file with your Sanity credentials:
+3. Create a `.env.local` file with required credentials:
    ```
+   # Sanity CMS
    NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
    NEXT_PUBLIC_SANITY_DATASET=production
    SANITY_API_TOKEN=your_token
+   
+   # Email (Required for contact/order forms)
+   RESEND_API_KEY=your_resend_api_key
+   NEXTAUTH_URL=http://localhost:3000
+   CONTACT_EMAIL_TO=hello@olgishcakes.co.uk
    ```
+   
+   See [Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md) for detailed email configuration.
 4. Run the development server:
    ```bash
    pnpm run dev
@@ -95,4 +103,5 @@ The site is deployed on Vercel. Each push to the main branch triggers an automat
 
 - **[Structured Data Guide](docs/STRUCTURED_DATA_IMPROVEMENTS.md)** - Schema implementation
 - **[Validation Guide](docs/SCHEMA_VALIDATION_GUIDE.md)** - How to validate schemas
+- **[Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md)** - Configure email notifications for orders and contact forms
 - **[Improvements Summary](IMPROVEMENTS_SUMMARY.md)** - Recent enhancements

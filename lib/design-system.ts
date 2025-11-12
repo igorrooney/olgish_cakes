@@ -87,8 +87,8 @@ export const colors = {
 
 export const typography = {
   fontFamily: {
-    primary: "var(--font-playfair-display), Georgia, serif",
-    display: "var(--font-playfair-display), Georgia, serif",
+    primary: "var(--font-alice), Georgia, serif",
+    display: "var(--font-alice), Georgia, serif",
     mono: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
   },
 

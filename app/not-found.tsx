@@ -24,9 +24,11 @@ export default function NotFound() {
         <Typography variant="body1" color="text.secondary">
           The page you are looking for doesn't exist or has been moved.
         </Typography>
-        <Button component={Link} href="/" variant="contained" size="large" sx={{ mt: 2 }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" size="large" sx={{ mt: 2 }}>
           Return Home
         </Button>
+            </Link>
       </Box>
     </Container>
   );

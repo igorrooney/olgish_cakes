@@ -25,7 +25,7 @@ export function usePerformanceMonitor() {
 
       // Log performance metrics in development
       if (process.env.NODE_ENV === "development") {
-        console.log(`Performance: ${metric} took ${metricsRef.current[metric].toFixed(2)}ms`);
+        console.warn(`Performance: ${metric} took ${metricsRef.current[metric].toFixed(2)}ms`);
       }
 
       // Send to analytics if available

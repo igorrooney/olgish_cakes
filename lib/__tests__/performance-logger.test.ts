@@ -97,7 +97,7 @@ describe('performance-logger', () => {
       performanceTime += 100
       endTimer('test-metric')
 
-      expect(console.log).toHaveBeenCalled()
+      expect(console.warn).toHaveBeenCalled()
     })
 
     it('should not log immediately in production', () => {
@@ -107,7 +107,7 @@ describe('performance-logger', () => {
       performanceTime += 100
       endTimer('test-metric')
 
-      expect(console.log).not.toHaveBeenCalled()
+      expect(console.warn).not.toHaveBeenCalled()
     })
 
     it('should respect logImmediately parameter', () => {
@@ -117,7 +117,7 @@ describe('performance-logger', () => {
       performanceTime += 100
       endTimer('test-metric', {}, false)
 
-      expect(console.log).not.toHaveBeenCalled()
+      expect(console.warn).not.toHaveBeenCalled()
     })
 
     it('should delete timer after ending', () => {
@@ -288,7 +288,7 @@ describe('performance-logger', () => {
 
       logPerformanceSummary()
 
-      expect(console.log).toHaveBeenCalled()
+      expect(console.warn).toHaveBeenCalled()
     })
 
     it('should not log in production', () => {
@@ -300,7 +300,7 @@ describe('performance-logger', () => {
 
       logPerformanceSummary()
 
-      expect(console.log).not.toHaveBeenCalled()
+      expect(console.warn).not.toHaveBeenCalled()
     })
 
     it('should display metrics count', () => {
@@ -315,7 +315,7 @@ describe('performance-logger', () => {
 
       logPerformanceSummary()
 
-      const output = (console.log as jest.Mock).mock.calls.map(call => call.join(' ')).join('\n')
+      const output = (console.warn as jest.Mock).mock.calls.map(call => call.join(' ')).join('\n')
       expect(output).toContain('2')
     })
   })

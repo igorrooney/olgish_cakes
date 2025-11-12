@@ -6,9 +6,7 @@ import {
   FavoriteIcon,
   LocalShippingIcon,
   VerifiedIcon,
-  StarIcon,
   LocationOnIcon,
-  PhoneIcon,
   EmailIcon,
 } from "@/lib/mui-optimization";
 import {
@@ -41,6 +39,7 @@ import MarketSchedule from "./components/MarketSchedule";
 import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
 import { DEFAULT_REVIEWS, DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
 import type { GiftHamperImage } from "@/types/giftHamper";
+import { urlFor } from "@/sanity/lib/image";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -530,37 +529,16 @@ export default async function Home() {
             </AnimatedDiv>
             <AnimatedDiv variants={fadeInUp} className="mb-12">
               <div className="flex-responsive gap-4 sm:gap-6 justify-center items-center">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="large"
-                  component={Link}
-                  href="/cakes"
-                  className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center"
-                  endIcon={<ArrowForwardIcon />}
+                <Link href="/cakes" style={{ textDecoration: 'none' }}><Button variant="contained" color="secondary" size="large" className="bg-secondary hover:bg-secondary-dark px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 min-h-[44px] flex items-center justify-center" endIcon={<ArrowForwardIcon />}
                 >
                   Explore My Collection
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  size="large"
-                  component={Link}
-                  href="/get-custom-quote"
-                  className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center"
-                >
+                </Button></Link>
+                <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}><Button variant="outlined" color="inherit" size="large" className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center">
                   Get Custom Quote
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  size="large"
-                  component={Link}
-                  href="/market-schedule"
-                  className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center"
-                >
+                </Button></Link>
+                <Link href="/market-schedule" style={{ textDecoration: 'none' }}><Button variant="outlined" color="inherit" size="large" className="px-8 sm:px-10 py-4 text-lg sm:text-xl font-semibold border-2 hover:bg-white hover:text-primary transition-all duration-300 min-h-[44px] flex items-center justify-center">
                   Find Us at Local Markets
-                </Button>
+                </Button></Link>
               </div>
             </AnimatedDiv>
           </AnimatedDiv>
@@ -582,7 +560,7 @@ export default async function Home() {
               {featuredHampers.slice(0, 6).map(h => {
                 const main = h.images?.find((img: GiftHamperImage) => img.isMain) || h.images?.[0];
                 const url = main?.asset?._ref
-                  ? require("@/sanity/lib/image").urlFor(main).width(800).height(800).url()
+                  ? urlFor(main).width(800).height(800).url()
                   : "/images/placeholder.jpg";
                 return (
                   <a
@@ -928,25 +906,13 @@ export default async function Home() {
 
                 <AnimatedDiv variants={fadeInUp}>
                   <div className="flex-responsive gap-4 justify-center">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      component={Link}
-                      href="/about"
-                      className="px-8 py-4 text-lg font-semibold"
-                      endIcon={<ArrowForwardIcon />}
+                    <Link href="/about" style={{ textDecoration: 'none' }}><Button variant="contained" color="primary" className="px-8 py-4 text-lg font-semibold" endIcon={<ArrowForwardIcon />}
                     >
                       Learn About Me
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      component={Link}
-                      href="/get-custom-quote"
-                      className="px-8 py-4 text-lg font-semibold"
-                    >
+                    </Button></Link>
+                    <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}><Button variant="outlined" color="primary" className="px-8 py-4 text-lg font-semibold">
                       Get Custom Quote
-                    </Button>
+                    </Button></Link>
                   </div>
                 </AnimatedDiv>
               </AnimatedDiv>
@@ -1161,16 +1127,10 @@ export default async function Home() {
             transition={{ delay: 0.4 }}
             className="text-center mt-12"
           >
-            <Button
-              variant="outlined"
-              color="primary"
-              component={Link}
-              href="/testimonials"
-              className="px-8 py-3 text-lg font-semibold"
-              endIcon={<ArrowForwardIcon />}
+            <Link href="/testimonials" style={{ textDecoration: 'none' }}><Button variant="outlined" color="primary" className="px-8 py-3 text-lg font-semibold" endIcon={<ArrowForwardIcon />}
             >
               Read More Reviews
-            </Button>
+            </Button></Link>
           </AnimatedDiv>
         </Container>
       </AnimatedSection>
@@ -1358,16 +1318,14 @@ export default async function Home() {
             ))}
           </Grid>
           <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Button
-              component={Link}
-              href="/delivery-areas"
-              variant="outlined"
+            <Link href="/delivery-areas" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               color="primary"
               size="large"
-              sx={{ px: 4, py: 2 }}
-            >
+              sx={{ px: 4, py: 2 }}>
               View All Delivery Areas
             </Button>
+            </Link>
           </Box>
         </Container>
       </AnimatedSection>

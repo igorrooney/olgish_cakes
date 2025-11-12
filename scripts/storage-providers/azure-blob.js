@@ -2,7 +2,7 @@
  * Azure Blob Storage Provider for Sanity Backups
  */
 
-const { BlobServiceClient } = require('@azure/storage-blob');
+const { BlobServiceClient, DefaultAzureCredential } = require('@azure/storage-blob');
 
 class AzureBlobProvider {
   constructor() {

@@ -180,7 +180,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               /* Critical CSS for above-the-fold content */
-              body { margin: 0; font-family: var(--font-playfair-display), Georgia, serif; }
+              body { margin: 0; font-family: var(--font-alice), Georgia, serif; }
               .critical-loading { opacity: 0; transition: opacity 0.3s; }
               .critical-loaded { opacity: 1; }
 

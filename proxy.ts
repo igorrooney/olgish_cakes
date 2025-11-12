@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isAdminAuthenticated } from "./lib/admin-auth";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Force HTTPS redirect for all HTTP requests (except localhost in development)
   const isLocalhost = request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1";
-  const isDevelopment = process.env.NODE_ENV === "development";
   
   if (
     !isLocalhost && // Skip HTTPS redirect for localhost

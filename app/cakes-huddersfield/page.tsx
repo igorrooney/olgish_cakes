@@ -144,7 +144,7 @@ export default async function CakesHuddersfieldPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -183,7 +183,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Why Choose Our Birthday Cakes Section */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose Our Birthday Cakes in Huddersfield?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -199,7 +199,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Types of Birthday Cakes */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Birthday Cakes for Every Celebration in Huddersfield
             </Typography>
             <Grid container spacing={4}>
@@ -259,7 +259,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Popular Birthday Cake Flavors */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Most Popular Birthday Cakes in Huddersfield
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -331,7 +331,7 @@ export default async function CakesHuddersfieldPage() {
 
           {/* Cake Services in Huddersfield */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 3, textAlign: "center" }}>
               Cake Services in Huddersfield
             </Typography>
             <Typography variant="body1" sx={{ mb: 3, textAlign: "center", lineHeight: 1.8 }}>
@@ -348,7 +348,7 @@ export default async function CakesHuddersfieldPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -361,26 +361,22 @@ export default async function CakesHuddersfieldPage() {
               Contact me today to discuss your birthday celebration and cake design
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Birthday Cake Now
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Browse All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

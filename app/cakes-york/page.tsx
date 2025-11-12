@@ -103,7 +103,7 @@ export default async function CakesYorkPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -226,22 +226,9 @@ export default async function CakesYorkPage() {
               ))}
             </Grid>
             <Box sx={{ textAlign: "center", mt: 4 }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/cakes"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/cakes" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 View All Cakes
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
 
@@ -385,40 +372,12 @@ export default async function CakesYorkPage() {
               delivery to York.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Contact Us
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/how-to-order"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/how-to-order" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 How to Order
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

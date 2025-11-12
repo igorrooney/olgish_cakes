@@ -415,32 +415,28 @@ export default function HowToMakeHoneyCakePage() {
             Don't have time to bake? Order my real Ukrainian honey cake made with traditional recipes
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/cakes"
-              variant="contained"
+            <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Order Honey Cake
             </Button>
-            <Button
-              component={Link}
-              href="/ukrainian-cake-recipes"
-              variant="outlined"
+            </Link>
+            <Link href="/ukrainian-cake-recipes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               More Recipes
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

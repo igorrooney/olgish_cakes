@@ -170,7 +170,7 @@ export default function GiftCardsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -324,20 +324,9 @@ export default function GiftCardsPage() {
                       >
                         {option.description}
                       </Typography>
-                      <Button
-                        variant="contained"
-                        component={Link}
-                        href="/contact"
-                        sx={{
-                          backgroundColor: "primary.main",
-                          width: "100%",
-                          "&:hover": {
-                            backgroundColor: "primary.dark",
-                          },
-                        }}
-                      >
+                      <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", width: "100%", "&:hover": { backgroundColor: "primary.dark", }, }}>
                         Purchase Gift Card
-                      </Button>
+                      </Button></Link>
                     </Box>
                   </Paper>
                 </Grid>
@@ -401,23 +390,9 @@ export default function GiftCardsPage() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    component={Link}
-                    href="/contact"
-                    sx={{
-                      backgroundColor: "white",
-                      color: "primary.main",
-                      px: 4,
-                      py: 2,
-                      fontSize: "1.1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(255,255,255,0.9)",
-                      },
-                    }}
-                  >
+                  <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "white", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "rgba(255,255,255,0.9)", }, }}>
                     Order Custom Gift Card
-                  </Button>
+                  </Button></Link>
                 </Grid>
               </Grid>
             </Paper>
@@ -630,40 +605,12 @@ export default function GiftCardsPage() {
               Ukrainian cake.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Purchase Gift Card
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/cakes"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 View Cake Collection
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>

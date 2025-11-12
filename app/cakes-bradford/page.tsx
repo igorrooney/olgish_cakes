@@ -143,7 +143,7 @@ export default async function CakesBradfordPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -182,7 +182,7 @@ export default async function CakesBradfordPage() {
 
           {/* Why Choose Our Birthday Cakes Section */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose Our Birthday Cakes in Bradford?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -198,7 +198,7 @@ export default async function CakesBradfordPage() {
 
           {/* Types of Birthday Cakes */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Birthday Cakes for Every Bradford Celebration
             </Typography>
             <Grid container spacing={4}>
@@ -258,7 +258,7 @@ export default async function CakesBradfordPage() {
 
           {/* Popular Birthday Cake Flavors */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Most Requested Birthday Cakes in Bradford
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -336,7 +336,7 @@ export default async function CakesBradfordPage() {
             <Typography
               variant="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -355,22 +355,20 @@ export default async function CakesBradfordPage() {
             </Grid>
             {allCakes.length > 6 && (
               <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="outlined"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   View All Cakes
                 </Button>
+            </Link>
               </Box>
             )}
           </Box>
 
           {/* Cake Services in Bradford */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h3" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h3" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Cake Services Available in Bradford
             </Typography>
             <Grid container spacing={2}>
@@ -383,9 +381,11 @@ export default async function CakesBradfordPage() {
                 { name: "Custom Design", href: "/custom-cake-design" },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Button component={Link} href={service.href} variant="outlined" color="primary" fullWidth sx={{ py: 1.5 }}>
-                    {service.name}
-                  </Button>
+                  <Link href={service.href} style={{ textDecoration: 'none', display: 'block' }}>
+                    <Button variant="outlined" color="primary" fullWidth sx={{ py: 1.5 }}>
+                      {service.name}
+                    </Button>
+                  </Link>
                 </Grid>
               ))}
             </Grid>
@@ -404,7 +404,7 @@ export default async function CakesBradfordPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -417,26 +417,22 @@ export default async function CakesBradfordPage() {
               Contact me today to create the perfect birthday cake for your celebration
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Birthday Cake Now
               </Button>
-              <Button
-                component={Link}
-                href="/cakes"
-                variant="outlined"
+            </Link>
+              <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Browse All Cakes
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

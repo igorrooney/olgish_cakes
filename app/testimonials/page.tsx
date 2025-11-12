@@ -90,9 +90,10 @@ export const metadata: Metadata = {
 export default async function TestimonialsPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const page = Number(searchParams.page) || 1;
+  const resolvedParams = await searchParams;
+  const page = Number(resolvedParams.page) || 1;
   const pageSize = 6;
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
@@ -160,7 +161,7 @@ export default async function TestimonialsPage({
             <Typography
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 600,
                 color: "primary.main",

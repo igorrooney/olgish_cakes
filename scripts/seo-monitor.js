@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const path = require("path");
 
 console.log("🔍 Starting SEO Monitor for Olgish Cakes...\n");
 

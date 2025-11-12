@@ -123,19 +123,17 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             Book your gluten-friendly wedding cake consultation and sample our delicious Ukrainian
             cakes
           </Typography>
-          <Button
-            component={Link}
-            href="/cake-tasting-sessions"
-            variant="contained"
+          <Link href="/cake-tasting-sessions" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
             size="large"
             sx={{
               bgcolor: "white",
               color: colors.primary.main,
               "&:hover": { bgcolor: "#f5f5f5" },
-            }}
-          >
+            }}>
             Book Tasting Session
           </Button>
+            </Link>
         </Paper>
 
         {/* Popular Gluten-Friendly Wedding Cakes */}
@@ -357,32 +355,28 @@ export default async function GlutenFriendlyWeddingCakesPage() {
             day with tradition and taste
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Button
-              component={Link}
-              href="/wedding-cakes"
-              variant="contained"
+            <Link href="/wedding-cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
               size="large"
               sx={{
                 bgcolor: "white",
                 color: colors.primary.main,
                 "&:hover": { bgcolor: "#f5f5f5" },
-              }}
-            >
+              }}>
               Browse Wedding Cakes
             </Button>
-            <Button
-              component={Link}
-              href="/contact"
-              variant="outlined"
+            </Link>
+            <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               size="large"
               sx={{
                 borderColor: "white",
                 color: "white",
                 "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
+              }}>
               Plan Your Wedding Cake
             </Button>
+            </Link>
           </Box>
         </Box>
       </Container>

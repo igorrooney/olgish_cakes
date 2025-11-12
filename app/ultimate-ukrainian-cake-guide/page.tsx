@@ -1,12 +1,6 @@
 import { Metadata } from "next";
-import {
-  generateAdvancedMetaTitle,
-  generateAdvancedMetaDescription,
-  generateAdvancedStructuredData,
-} from "@/lib/advanced-seo";
 import { generatePageMetadata } from "@/app/utils/seo";
 import { Container, Typography, Box, Grid, Card, CardContent, Chip } from "@mui/material";
-import Image from "next/image";
 import { StructuredData } from "@/app/components/StructuredData";
 import Link from "next/link";
 

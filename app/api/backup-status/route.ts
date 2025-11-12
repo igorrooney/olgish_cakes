@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
+import { promises as fs, statSync } from 'fs';
 import path from 'path';
 
 export async function GET(request: NextRequest) {
@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
             .map(f => ({ name: f, path: path.join(dirPath, f) }))
             .sort((a, b) => {
               try {
-                const aStats = require('fs').statSync(a.path);
-                const bStats = require('fs').statSync(b.path);
+                const aStats = statSync(a.path);
+                const bStats = statSync(b.path);
                 return bStats.mtime.getTime() - aStats.mtime.getTime();
               } catch {
                 return 0;
@@ -36,13 +36,13 @@ export async function GET(request: NextRequest) {
 
           if (latestFile) {
             try {
-              const stats = require('fs').statSync(latestFile.path);
+              const stats = statSync(latestFile.path);
               latestBackup = {
                 name: latestFile.name,
                 size: Math.round(stats.size / 1024), // KB
                 created: stats.mtime.toISOString()
               };
-            } catch (error) {
+            } catch {
               latestBackup = { name: latestFile.name };
             }
           }
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
           latestBackup
         };
 
-      } catch (error) {
+      } catch {
         status.backups[dir] = {
           totalBackups: 0,
           totalReports: 0,

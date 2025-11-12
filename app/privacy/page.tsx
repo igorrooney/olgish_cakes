@@ -148,7 +148,7 @@ export default function PrivacyPolicyPage() {
               variant="h2"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 4,
                 color: "primary.main",
@@ -273,10 +273,8 @@ export default function PrivacyPolicyPage() {
             <Typography variant="body1">Address: Based in Allerton Grange, Leeds LS17</Typography>
 
             <Box sx={{ mt: 6, textAlign: "center" }}>
-              <Button
-                component={Link}
-                href="/"
-                variant="contained"
+              <Link href="/" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
                 sx={{
@@ -292,10 +290,10 @@ export default function PrivacyPolicyPage() {
                     boxShadow: "0 6px 20px rgba(0, 91, 187, 0.3)",
                   },
                   transition: "all 0.3s ease",
-                }}
-              >
+                }}>
                 Back to Home
               </Button>
+            </Link>
             </Box>
           </Paper>
         </Container>

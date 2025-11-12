@@ -22,11 +22,11 @@ const client = createClient({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const formData = await request.formData()
-    const { id } = params
+    const { id } = await params
 
     const title = formData.get('title') as string
     const content = formData.get('content') as string
@@ -127,13 +127,13 @@ export async function PUT(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json()
-    const { id } = params
+    const { id } = await params
 
-    console.log('Patching blog post:', id, body)
+    console.warn('Patching blog post:', id, body)
 
     const result = await client
       .patch(id)
@@ -153,10 +153,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     await client.delete(id)
 

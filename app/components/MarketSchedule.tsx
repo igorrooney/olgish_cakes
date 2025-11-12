@@ -23,7 +23,7 @@ import {
 } from "@/lib/mui-optimization";
 import Link from "next/link";
 import Image from "next/image";
-import { colors, spacing, typography } from "@/lib/design-system";
+import { colors, typography } from "@/lib/design-system";
 import { AnimatedDiv, AnimatedSection } from "./AnimatedSection";
 import type { MarketSchedule } from "@/app/types/marketSchedule";
 import { urlFor } from "@/sanity/lib/image";
@@ -522,34 +522,19 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                 and new cake arrivals.
               </Typography>
               <div className="flex flex-wrap justify-center gap-4">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  href="/contact"
-                  className="px-8 py-3 text-lg font-semibold"
-                  endIcon={<ArrowForwardIcon />}
+                <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" color="primary" className="px-8 py-3 text-lg font-semibold" endIcon={<ArrowForwardIcon />}
                   sx={{ py: 3 }}
                 >
                   Get in Touch
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  component={Link}
-                  href="/market-schedule"
-                  className="px-8 py-3 text-lg font-semibold"
-                >
+                </Button></Link>
+                <Link href="/market-schedule" style={{ textDecoration: 'none' }}><Button variant="outlined" color="primary" className="px-8 py-3 text-lg font-semibold">
                   View Full Market Schedule
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  component={Link}
-                  href="https://www.instagram.com/olgish_cakes"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                </Button></Link>
+                <Button 
+                  variant="outlined" 
+                  color="primary" 
                   className="px-8 py-3 text-lg font-semibold"
+                  onClick={() => window.open('https://www.instagram.com/olgish_cakes', '_blank', 'noopener,noreferrer')}
                 >
                   Follow @olgish_cakes
                 </Button>

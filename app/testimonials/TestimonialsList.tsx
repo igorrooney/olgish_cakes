@@ -12,8 +12,7 @@ import {
 } from "@/lib/mui-optimization";
 import { useRouter } from "next/navigation";
 import { urlFor } from "@/sanity/lib/image";
-import { useState, memo, useCallback, useMemo, lazy, Suspense } from "react";
-import { designTokens } from "@/lib/design-system";
+import { useState, memo, useCallback, useMemo, Suspense } from "react";
 import { BodyText } from "@/lib/ui-components";
 import { AccessibleIconButton } from "@/lib/ui-components";
 import { TestimonialSkeleton } from "@/lib/skeleton-components";
@@ -196,7 +195,7 @@ export const TestimonialsList = memo(function TestimonialsList({
                         variant="h3"
                         component="h3"
                         sx={{
-                          fontFamily: "var(--font-playfair-display)",
+                          fontFamily: "var(--font-alice)",
                           color: "#2c5282",
                         }}
                       >

@@ -87,8 +87,8 @@ function parseMarkdown(content: string) {
   };
 
   const lines = content.split('\n');
-  const elements: JSX.Element[] = [];
-  let currentList: JSX.Element[] = [];
+  const elements: React.JSX.Element[] = [];
+  let currentList: React.JSX.Element[] = [];
 
   lines.forEach((line, index) => {
     // Headers
@@ -468,11 +468,12 @@ interface BlogPost {
 }
 
 interface BlogPostPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = await getBlogPost(params.slug);
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
 
   if (!post) {
     return {
@@ -518,7 +519,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       site: "@olgishcakes",
     },
     alternates: {
-      canonical: `https://olgishcakes.co.uk/blog/${params.slug}`,
+      canonical: `https://olgishcakes.co.uk/blog/${slug}`,
     },
     robots: {
       index: true,
@@ -535,7 +536,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getBlogPost(params.slug);
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
 
   if (!post) {
     notFound();
@@ -588,7 +590,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     timeRequired: `PT${post.readTime}M`,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://olgishcakes.co.uk/blog/${params.slug}`,
+      "@id": `https://olgishcakes.co.uk/blog/${slug}`,
     },
     articleBody: post.content ? post.content : post.excerpt,
     keywords: (post as any).keywords ? (Array.isArray((post as any).keywords) ? (post as any).keywords.join(", ") : (post as any).keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
@@ -620,7 +622,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `https://olgishcakes.co.uk/blog/${params.slug}`
+        "item": `https://olgishcakes.co.uk/blog/${slug}`
       }
     ]
   };
@@ -631,7 +633,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@type": "ImageGallery",
     "name": `${post.title} - Image Gallery`,
     "description": `Images related to ${post.title}`,
-    "url": `https://olgishcakes.co.uk/blog/${params.slug}`,
+    "url": `https://olgishcakes.co.uk/blog/${slug}`,
     "mainEntity": {
       "@type": "ImageObject",
       "contentUrl": imageUrl,
@@ -690,25 +692,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               items={[
                 { label: "Home", href: "/" },
                 { label: "Blog", href: "/blog" },
-                { label: post.title, href: `/blog/${params.slug}` },
+                { label: post.title, href: `/blog/${slug}` },
               ]}
             />
           </Box>
 
           {/* Back to Blog Button */}
           <Box sx={{ mb: 4 }}>
-            <Button
-              component={Link}
-              href="/blog"
-              variant="outlined"
+            <Link href="/blog" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
               startIcon={
                 <svg
                   width="20"
                   height="20"
                   viewBox="0 0 24 24"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M19 12H5M12 19L5 12L12 5"
                     stroke="currentColor"
@@ -737,6 +736,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             >
               Back to Blog
             </Button>
+            </Link>
           </Box>
 
           <Box sx={{ maxWidth: "800px", mx: "auto" }}>
@@ -773,7 +773,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 variant="h1"
                 component="h1"
                 sx={{
-                  fontFamily: "var(--font-playfair-display)",
+                  fontFamily: "var(--font-alice)",
                   fontSize: { xs: "2rem", md: "3rem" },
                   fontWeight: 700,
                   color: "#1e293b",
@@ -1047,10 +1047,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   justifyContent="center"
                   alignItems="center"
                 >
-                  <Button
-                    component={Link}
-                    href="/get-custom-quote"
-                    variant="contained"
+                  <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                     size="large"
                     sx={{
                       backgroundColor: "#FEF102",
@@ -1068,14 +1066,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         boxShadow: "0 6px 20px rgba(254, 241, 2, 0.4)",
                       },
                       transition: "all 0.3s ease",
-                    }}
-                  >
+                    }}>
                     Request Custom Quote
                   </Button>
-                  <Button
-                    component={Link}
-                    href="/contact"
-                    variant="outlined"
+            </Link>
+                  <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                     size="large"
                     sx={{
                       borderColor: "#2E3192",
@@ -1094,10 +1090,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         boxShadow: "0 6px 20px rgba(46, 49, 146, 0.3)",
                       },
                       transition: "all 0.3s ease",
-                    }}
-                  >
+                    }}>
                     Schedule Consultation
                   </Button>
+            </Link>
                 </Stack>
 
                 <Typography

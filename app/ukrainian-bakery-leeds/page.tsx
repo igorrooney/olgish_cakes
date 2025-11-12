@@ -242,7 +242,7 @@ export default async function UkrainianBakeryLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -343,7 +343,7 @@ export default async function UkrainianBakeryLeedsPage() {
             <Typography
               variant="h2"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -363,15 +363,13 @@ export default async function UkrainianBakeryLeedsPage() {
                   Our traditional Ukrainian cake collection features authentic recipes from Ukraine.
                   Contact us to learn more about our Ukrainian desserts.
                 </Typography>
-                <Button
-                  component={Link}
-                  href="/cakes"
-                  variant="contained"
+                <Link href="/cakes" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                   color="primary"
-                  size="large"
-                >
+                  size="large">
                   View All Cakes
                 </Button>
+            </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -399,7 +397,7 @@ export default async function UkrainianBakeryLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -472,7 +470,7 @@ export default async function UkrainianBakeryLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -546,7 +544,7 @@ export default async function UkrainianBakeryLeedsPage() {
             <Typography
               variant="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "1.8rem", md: "2.2rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -594,7 +592,7 @@ export default async function UkrainianBakeryLeedsPage() {
             <Typography
               variant="h4"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 600,
                 color: "primary.main",
                 mb: 3,
@@ -611,26 +609,22 @@ export default async function UkrainianBakeryLeedsPage() {
               Ukrainian cake today and experience the warmth of Ukrainian hospitality.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Order Ukrainian Cake
               </Button>
-              <Button
-                component={Link}
-                href="/about"
-                variant="outlined"
+            </Link>
+              <Link href="/about" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 1.5 }}
-              >
+                sx={{ px: 4, py: 1.5 }}>
                 Learn More About Us
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

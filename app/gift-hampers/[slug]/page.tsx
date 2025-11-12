@@ -1,7 +1,6 @@
 import { getClient } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getRevalidateTime } from "@/app/utils/fetchCakes";
 import { blocksToText } from "@/types/cake";
 import { GiftHamper } from "@/types/giftHamper";
 import { Container } from "@mui/material";
@@ -15,7 +14,7 @@ import { getPriceValidUntil } from "@/app/utils/seo";
 import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
 import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
 
-export const revalidate = getRevalidateTime();
+export const revalidate = 300; // 5 minutes
 
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
@@ -58,11 +57,12 @@ async function getGiftHamper(slug: string, preview = false): Promise<GiftHamper 
 }
 
 interface PageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const hamper = await getGiftHamper(params.slug);
+  const { slug } = await params;
+  const hamper = await getGiftHamper(slug);
   if (!hamper) {
     return {
       title: "Gift Hamper Not Found | Olgish Cakes",
@@ -92,12 +92,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "cake by post, cakes delivered by post, letterbox cakes, order cake online UK, postal cakes UK, cake delivery by post, cake by post UK, cakes delivered UK, honey cake by post, letterbox friendly cake, surprise cake delivery, birthday cake by post, anniversary cake delivery, cake gift by post") ||
     `${hamper.name}, gift hamper, luxury hamper, gourmet hamper, Leeds gift hamper, Yorkshire hamper, food gift UK`;
   const canonicalUrl =
-    hamper.seo?.canonicalUrl || `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`;
+    hamper.seo?.canonicalUrl || `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}`;
 
   const primaryImage = hamper.images?.find(img => img.isMain) || hamper.images?.[0];
   const ogImageUrl = primaryImage?.asset?._ref
     ? urlFor(primaryImage).width(1200).height(630).url()
-    : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug?.current || params.slug}.jpg`;
+    : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug?.current || slug}.jpg`;
 
   return {
     title: metaTitle,
@@ -115,13 +115,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       siteName: "Olgish Cakes",
       locale: "en_GB",
-      images: [{ url: `/api/og/hampers/${hamper.slug?.current || params.slug}` }],
+      images: [{ url: `/api/og/hampers/${hamper.slug?.current || slug}` }],
     },
     twitter: {
       card: "summary_large_image",
       title: metaTitle,
       description: metaDescription,
-      images: [`/api/og/hampers/${hamper.slug?.current || params.slug}`],
+      images: [`/api/og/hampers/${hamper.slug?.current || slug}`],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
     },
@@ -140,8 +140,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GiftHamperPage({ params }: PageProps) {
+  const { slug } = await params;
   const [hamper, testimonialStats] = await Promise.all([
-    getGiftHamper(params.slug),
+    getGiftHamper(slug),
     getAllTestimonialsStats()
   ]);
   if (!hamper) notFound();
@@ -161,7 +162,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
         const productJsonLd = {
           "@context": "https://schema.org",
           "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`,
+          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`,
           name: hamper.name,
           description: isCakeByPost
             ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
@@ -239,13 +240,13 @@ export default async function GiftHamperPage({ params }: PageProps) {
           }),
           offers: {
             "@type": "Offer",
-            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#offer`,
+            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#offer`,
             price: hamper.price,
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
             condition: "https://schema.org/NewCondition",
             priceValidUntil: getPriceValidUntil(30),
-            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`,
+            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}`,
             image: imagesForJsonLd[0],
             seller: {
               "@type": "Organization",
@@ -286,7 +287,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             "@type": "OrderAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#order`,
+              urlTemplate: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#order`,
               actionPlatform: [
                 "https://schema.org/DesktopWebPlatform",
                 "https://schema.org/MobileWebPlatform"
@@ -305,7 +306,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`
               },
               reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "Emily Carter" },
@@ -315,7 +316,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}#product`
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`
               },
               reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
               author: { "@type": "Person", name: "James Wilson" },
@@ -402,7 +403,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               "@type": "ListItem",
               position: 3,
               name: hamper.name,
-              item: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || params.slug}`,
+              item: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}`,
             },
           ],
         } as const;

@@ -54,7 +54,7 @@ class PerformanceLogger {
 
     if (logImmediately && !this.isProduction) {
       const metadataStr = metadata ? ` (${JSON.stringify(metadata)})` : '';
-      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms${metadataStr}`);
+      console.warn(`[Performance] ${name}: ${duration.toFixed(2)}ms${metadataStr}`);
     }
 
     return duration;
@@ -124,23 +124,23 @@ class PerformanceLogger {
 
     const summary = this.getSummary();
     
-    console.log('\n' + '='.repeat(60));
-    console.log('⚡ PERFORMANCE SUMMARY');
-    console.log('='.repeat(60));
-    console.log(`Total operations:  ${this.metrics.length}`);
-    console.log(`Total time:        ${summary.total.toFixed(2)}ms`);
-    console.log(`Average:           ${summary.average.toFixed(2)}ms`);
-    console.log(`Min:               ${summary.min.toFixed(2)}ms`);
-    console.log(`Max:               ${summary.max.toFixed(2)}ms`);
-    console.log('='.repeat(60) + '\n');
+    console.warn('\n' + '='.repeat(60));
+    console.warn('⚡ PERFORMANCE SUMMARY');
+    console.warn('='.repeat(60));
+    console.warn(`Total operations:  ${this.metrics.length}`);
+    console.warn(`Total time:        ${summary.total.toFixed(2)}ms`);
+    console.warn(`Average:           ${summary.average.toFixed(2)}ms`);
+    console.warn(`Min:               ${summary.min.toFixed(2)}ms`);
+    console.warn(`Max:               ${summary.max.toFixed(2)}ms`);
+    console.warn('='.repeat(60) + '\n');
 
     if (this.metrics.length > 0) {
-      console.log('📊 Individual Metrics:');
+      console.warn('📊 Individual Metrics:');
       this.metrics.forEach(metric => {
         const metadataStr = metric.metadata ? ` ${JSON.stringify(metric.metadata)}` : '';
-        console.log(`  • ${metric.name}: ${metric.duration.toFixed(2)}ms${metadataStr}`);
+        console.warn(`  • ${metric.name}: ${metric.duration.toFixed(2)}ms${metadataStr}`);
       });
-      console.log('');
+      console.warn('');
     }
   }
 

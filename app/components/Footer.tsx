@@ -12,24 +12,16 @@ import {
   EmailIcon,
   PhoneIcon,
   LocationOnIcon,
-  StarIcon,
-  VerifiedIcon,
-  LocalShippingIcon,
-  FavoriteIcon,
-  SecurityIcon,
 } from "@/lib/mui-optimization";
 import { designTokens } from "@/lib/design-system";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
-  BodyText,
   Container as DesignContainer,
-  ContactInfo,
   AccessibleIconButton,
-  TouchTargetWrapper,
 } from "@/lib/ui-components";
 import { Box, Grid, Stack, Typography } from "@/lib/mui-optimization";
 
-const { colors, typography, spacing, shadows, borderRadius } = designTokens;
+const { colors, typography, spacing } = designTokens;
 
 // Feature flag: control visibility of Gift Hampers links (default enabled)
 const isGiftHampersEnabled = process.env.NEXT_PUBLIC_FEATURE_GIFT_HAMPERS_ENABLED !== "false";
@@ -587,9 +579,13 @@ export default function Footer() {
                   src="/images/olgish-cakes-logo-bakery-brand.png"
                   alt="Olgish Cakes - Ukrainian Bakery Leeds"
                   width={120}
-                  height={40}
+                  height={85}
                   priority={false}
                   title="Olgish Cakes - Real Ukrainian Bakery in Leeds"
+                  style={{
+                    height: "auto",
+                    width: "auto",
+                  }}
                 />
                 <Typography
                   variant="body2"

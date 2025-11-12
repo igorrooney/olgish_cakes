@@ -150,7 +150,7 @@ export default function AccessibilityStatementPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontWeight: 700,
                 mb: 4,
                 color: "primary.main",
@@ -476,10 +476,8 @@ export default function AccessibilityStatementPage() {
             </Box>
 
             <Box sx={{ mt: 6, textAlign: "center" }}>
-              <Button
-                component={Link}
-                href="/"
-                variant="contained"
+              <Link href="/" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
                 sx={{
@@ -495,10 +493,10 @@ export default function AccessibilityStatementPage() {
                     boxShadow: "0 6px 20px rgba(0, 91, 187, 0.3)",
                   },
                   transition: "all 0.3s ease",
-                }}
-              >
+                }}>
                 Back to Home
               </Button>
+            </Link>
             </Box>
           </Paper>
         </Container>

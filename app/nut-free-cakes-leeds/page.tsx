@@ -148,7 +148,7 @@ export default function NutFreeCakesLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -187,7 +187,7 @@ export default function NutFreeCakesLeedsPage() {
 
           {/* Why Choose Our Nut-Free Cakes */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Why Choose Our Nut-Free Cakes in Leeds?
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -203,7 +203,7 @@ export default function NutFreeCakesLeedsPage() {
 
           {/* Safety Measures */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Our Nut-Free Safety Measures
             </Typography>
             <Grid container spacing={4}>
@@ -263,7 +263,7 @@ export default function NutFreeCakesLeedsPage() {
 
           {/* Types of Nut-Free Cakes */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Nut-Free Cake Options in Leeds
             </Typography>
             <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.8, fontSize: "1.1rem" }}>
@@ -279,7 +279,7 @@ export default function NutFreeCakesLeedsPage() {
 
           {/* FAQ Section */}
           <Box sx={{ mb: 6 }}>
-            <Typography variant="h2" sx={{ fontFamily: "var(--font-playfair-display)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
+            <Typography variant="h2" sx={{ fontFamily: "var(--font-alice)", fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: 600, color: "primary.main", mb: 4, textAlign: "center" }}>
               Nut-Free Cakes FAQs
             </Typography>
             <Grid container spacing={3}>
@@ -363,7 +363,7 @@ export default function NutFreeCakesLeedsPage() {
               variant="h3"
               component="h3"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2rem", md: "2.5rem" },
                 fontWeight: 600,
                 color: "primary.main",
@@ -376,26 +376,22 @@ export default function NutFreeCakesLeedsPage() {
               Contact me today for a safe, delicious nut-free cake in Leeds
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                component={Link}
-                href="/contact"
-                variant="contained"
+              <Link href="/contact" style={{ textDecoration: 'none' }}>
+              <Button variant="contained"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 Order Nut-Free Cake
               </Button>
-              <Button
-                component={Link}
-                href="/allergen-information"
-                variant="outlined"
+            </Link>
+              <Link href="/allergen-information" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined"
                 color="primary"
                 size="large"
-                sx={{ px: 4, py: 2 }}
-              >
+                sx={{ px: 4, py: 2 }}>
                 View Allergen Information
               </Button>
+            </Link>
             </Box>
           </Box>
         </Container>

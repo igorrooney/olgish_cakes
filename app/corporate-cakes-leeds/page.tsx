@@ -173,7 +173,7 @@ export default function CorporateCakesLeedsPage() {
               variant="h1"
               component="h1"
               sx={{
-                fontFamily: "var(--font-playfair-display)",
+                fontFamily: "var(--font-alice)",
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "primary.main",
@@ -321,21 +321,9 @@ export default function CorporateCakesLeedsPage() {
                       ))}
                     </Box>
 
-                    <Button
-                      variant="contained"
-                      component={Link}
-                      href="/contact"
-                      sx={{
-                        backgroundColor: "primary.main",
-                        width: "100%",
-                        py: 1.5,
-                        "&:hover": {
-                          backgroundColor: "primary.dark",
-                        },
-                      }}
-                    >
+                    <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", width: "100%", py: 1.5, "&:hover": { backgroundColor: "primary.dark", }, }}>
                       Get Quote
-                    </Button>
+                    </Button></Link>
                   </Paper>
                 </Grid>
               ))}
@@ -562,40 +550,12 @@ export default function CorporateCakesLeedsPage() {
               quote and make sure your next business event is memorable with real Ukrainian cakes.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                component={Link}
-                href="/contact"
-                sx={{
-                  backgroundColor: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.dark",
-                  },
-                }}
-              >
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="contained" sx={{ backgroundColor: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.dark", }, }}>
                 Get Corporate Quote
-              </Button>
-              <Button
-                variant="outlined"
-                component={Link}
-                href="/contact"
-                sx={{
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  px: 4,
-                  py: 2,
-                  fontSize: "1.1rem",
-                  "&:hover": {
-                    backgroundColor: "primary.main",
-                    color: "white",
-                  },
-                }}
-              >
+              </Button></Link>
+              <Link href="/contact" style={{ textDecoration: 'none' }}><Button variant="outlined" sx={{ borderColor: "primary.main", color: "primary.main", px: 4, py: 2, fontSize: "1.1rem", "&:hover": { backgroundColor: "primary.main", color: "white", }, }}>
                 Schedule Consultation
-              </Button>
+              </Button></Link>
             </Box>
           </Box>
         </Container>
