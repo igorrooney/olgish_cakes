@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Alert, AlertTitle, IconButton, Typography, Button } from "@/lib/mui-optimization";
 import CloseIcon from "@mui/icons-material/Close";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -10,8 +10,24 @@ import { colors, spacing, borderRadius } from "@/lib/design-system";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import Link from "next/link";
 
+const STORAGE_KEY = "olgish-technical-notification-dismissed";
+
 export function TechnicalIssueNotification() {
   const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    // Check if user has dismissed the banner in this session
+    const isDismissed = sessionStorage.getItem(STORAGE_KEY);
+    if (isDismissed === "true") {
+      setIsVisible(false);
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    // Save dismissal to sessionStorage (persists for current session only)
+    sessionStorage.setItem(STORAGE_KEY, "true");
+    setIsVisible(false);
+  };
 
   if (!isVisible) {
     return null;
@@ -22,7 +38,7 @@ export function TechnicalIssueNotification() {
       sx={{
         backgroundColor: "#FFF9E6",
         borderBottom: `2px solid ${colors.warning.main}`,
-        py: spacing.lg,
+        py: { xs: spacing.sm, md: spacing.lg },
         position: "relative",
       }}
       role="alert"
@@ -32,23 +48,23 @@ export function TechnicalIssueNotification() {
         sx={{
           maxWidth: "1200px",
           mx: "auto",
-          px: { xs: spacing.md, md: spacing.xl },
+          px: { xs: spacing.sm, md: spacing.xl },
         }}
       >
         <Box
           sx={{
             display: "flex",
             alignItems: "flex-start",
-            gap: spacing.md,
+            gap: { xs: spacing.sm, md: spacing.md },
           }}
         >
           {/* Info Icon */}
           <InfoIcon
             sx={{
               color: colors.warning.main,
-              fontSize: "2rem",
+              fontSize: { xs: "1.25rem", md: "2rem" },
               flexShrink: 0,
-              mt: 0.5,
+              mt: { xs: 0.25, md: 0.5 },
             }}
           />
 
@@ -59,8 +75,9 @@ export function TechnicalIssueNotification() {
               sx={{
                 fontWeight: 600,
                 color: "#7A5C00",
-                mb: spacing.sm,
-                fontSize: { xs: "1rem", md: "1.125rem" },
+                mb: { xs: "4px", md: spacing.sm },
+                fontSize: { xs: "0.875rem", md: "1.125rem" },
+                lineHeight: { xs: 1.3, md: 1.4 },
               }}
             >
               Important Notice: Order Confirmation System Update
@@ -70,9 +87,9 @@ export function TechnicalIssueNotification() {
               variant="body1"
               sx={{
                 color: "#5C4700",
-                mb: spacing.md,
-                lineHeight: 1.6,
-                fontSize: { xs: "0.9rem", md: "1rem" },
+                mb: { xs: "6px", md: spacing.md },
+                lineHeight: { xs: 1.4, md: 1.6 },
+                fontSize: { xs: "0.75rem", md: "1rem" },
               }}
             >
               We recently resolved a technical issue with our order confirmation email system that may
@@ -84,9 +101,9 @@ export function TechnicalIssueNotification() {
               variant="body1"
               sx={{
                 color: "#5C4700",
-                mb: spacing.lg,
-                lineHeight: 1.6,
-                fontSize: { xs: "0.9rem", md: "1rem" },
+                mb: { xs: spacing.sm, md: spacing.lg },
+                lineHeight: { xs: 1.4, md: 1.6 },
+                fontSize: { xs: "0.75rem", md: "1rem" },
               }}
             >
               If you submitted an order during this period and <strong>did not receive a confirmation email</strong>, 
@@ -98,7 +115,7 @@ export function TechnicalIssueNotification() {
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
-                gap: spacing.md,
+                gap: { xs: "6px", md: spacing.md },
                 alignItems: "center",
               }}
             >
@@ -111,13 +128,14 @@ export function TechnicalIssueNotification() {
                   color: "white",
                   textTransform: "none",
                   fontWeight: 600,
-                  px: spacing.lg,
-                  py: spacing.sm,
+                  px: { xs: spacing.sm, md: spacing.lg },
+                  py: { xs: "4px", md: spacing.sm },
                   borderRadius: borderRadius.md,
                   "&:hover": {
                     backgroundColor: colors.primary.dark,
                   },
-                  fontSize: { xs: "0.875rem", md: "1rem" },
+                  fontSize: { xs: "0.75rem", md: "1rem" },
+                  minHeight: { xs: "32px", md: "auto" },
                 }}
               >
                 Place New Order
@@ -127,20 +145,21 @@ export function TechnicalIssueNotification() {
                 component="a"
                 href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`}
                 variant="outlined"
-                startIcon={<EmailIcon />}
+                startIcon={<EmailIcon sx={{ fontSize: { xs: "0.875rem", md: "1.25rem" } }} />}
                 sx={{
                   borderColor: colors.primary.main,
                   color: colors.primary.main,
                   textTransform: "none",
                   fontWeight: 600,
-                  px: spacing.lg,
-                  py: spacing.sm,
+                  px: { xs: spacing.sm, md: spacing.lg },
+                  py: { xs: "4px", md: spacing.sm },
                   borderRadius: borderRadius.md,
                   "&:hover": {
                     borderColor: colors.primary.dark,
                     backgroundColor: "rgba(46, 49, 146, 0.04)",
                   },
-                  fontSize: { xs: "0.875rem", md: "1rem" },
+                  fontSize: { xs: "0.75rem", md: "1rem" },
+                  minHeight: { xs: "32px", md: "auto" },
                 }}
               >
                 Email Us
@@ -150,20 +169,22 @@ export function TechnicalIssueNotification() {
                 component="a"
                 href={PHONE_UTILS.telLink}
                 variant="outlined"
-                startIcon={<PhoneIcon />}
+                startIcon={<PhoneIcon sx={{ fontSize: { xs: "0.875rem", md: "1.25rem" } }} />}
                 sx={{
                   borderColor: colors.primary.main,
                   color: colors.primary.main,
                   textTransform: "none",
                   fontWeight: 600,
-                  px: spacing.lg,
-                  py: spacing.sm,
+                  px: { xs: spacing.sm, md: spacing.lg },
+                  py: { xs: "4px", md: spacing.sm },
                   borderRadius: borderRadius.md,
                   "&:hover": {
                     borderColor: colors.primary.dark,
                     backgroundColor: "rgba(46, 49, 146, 0.04)",
                   },
-                  fontSize: { xs: "0.875rem", md: "1rem" },
+                  fontSize: { xs: "0.75rem", md: "1rem" },
+                  minHeight: { xs: "32px", md: "auto" },
+                  display: { xs: "none", sm: "inline-flex" }, // Hide on mobile to save space
                 }}
               >
                 Call {PHONE_UTILS.displayPhone}
@@ -174,19 +195,19 @@ export function TechnicalIssueNotification() {
               variant="body2"
               sx={{
                 color: "#6B5500",
-                mt: spacing.md,
+                mt: { xs: "6px", md: spacing.md },
                 fontStyle: "italic",
-                fontSize: { xs: "0.8rem", md: "0.875rem" },
+                fontSize: { xs: "0.7rem", md: "0.875rem" },
+                lineHeight: { xs: 1.3, md: 1.4 },
               }}
             >
-              We apologize for any inconvenience and are committed to ensuring your orders are fulfilled
-              perfectly. All systems are now operating normally.
+              We apologize for any inconvenience. All systems are now operating normally.
             </Typography>
           </Box>
 
           {/* Close Button */}
           <IconButton
-            onClick={() => setIsVisible(false)}
+            onClick={handleDismiss}
             aria-label="Dismiss notification"
             sx={{
               color: "#7A5C00",
