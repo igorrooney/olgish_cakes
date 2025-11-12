@@ -1,6 +1,7 @@
 "use client";
 
-import { createTheme } from "@mui/material/styles";
+// Import createTheme directly for better HMR support with Turbopack
+import createTheme from "@mui/material/styles/createTheme";
 import { designTokens } from "./design-system";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;

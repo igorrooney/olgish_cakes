@@ -27,7 +27,12 @@ jest.mock('@/lib/mui-optimization', () => ({
       {children}
     </button>
   ),
-  ArrowBackIcon: () => <span data-testid="arrow-back-icon">←</span>
+}))
+
+// Mock direct icon import
+jest.mock('@mui/icons-material/ArrowBack', () => ({
+  __esModule: true,
+  default: () => <span data-testid="arrow-back-icon">←</span>
 }))
 
 // Mock design system

@@ -40,6 +40,12 @@ const nextConfig = {
     // Performance optimizations
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
   },
+  // Modularize imports for better tree-shaking and HMR support
+  modularizeImports: {
+    "@mui/icons-material": {
+      transform: "@mui/icons-material/{{member}}",
+    },
+  },
   // Server external packages (moved from experimental in Next.js 16)
   serverExternalPackages: ["@sanity/client"],
   // Enhanced performance settings

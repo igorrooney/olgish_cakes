@@ -32,7 +32,8 @@ import {
   Stack,
   Typography,
 } from "@/lib/mui-optimization";
-import { styled } from "@mui/material/styles";
+// Import styled directly for better HMR support with Turbopack
+import styled from "@mui/material/styles/styled";
 import { motion } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";

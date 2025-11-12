@@ -48,15 +48,15 @@ export { default as Toolbar } from "@mui/material/Toolbar";
 export { default as Skeleton } from "@mui/material/Skeleton";
 export { default as Modal } from "@mui/material/Modal";
 
-// Icons - import only what's needed
+// Icons - direct re-exports for better HMR support
+export { default as ArrowBackIcon } from "@mui/icons-material/ArrowBack";
+export { default as ArrowForwardIcon } from "@mui/icons-material/ArrowForward";
 export { default as CloseIcon } from "@mui/icons-material/Close";
 export { default as KeyboardArrowDownIcon } from "@mui/icons-material/KeyboardArrowDown";
 export { default as MenuIcon } from "@mui/icons-material/Menu";
 export { default as ExpandMoreIcon } from "@mui/icons-material/ExpandMore";
 export { default as CloudUploadIcon } from "@mui/icons-material/CloudUpload";
 export { default as DeleteIcon } from "@mui/icons-material/Delete";
-export { default as ArrowBackIcon } from "@mui/icons-material/ArrowBack";
-export { default as ArrowForwardIcon } from "@mui/icons-material/ArrowForward";
 export { default as InstagramIcon } from "@mui/icons-material/Instagram";
 export { default as FacebookIcon } from "@mui/icons-material/Facebook";
 export { default as YouTubeIcon } from "@mui/icons-material/YouTube";

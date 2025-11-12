@@ -185,6 +185,17 @@ jest.mock('@mui/icons-material/Search', () => ({
   default: () => <span>🔍</span>
 }))
 
+// Mock direct useTheme import
+jest.mock('@mui/material/styles/useTheme', () => ({
+  __esModule: true,
+  default: () => ({
+    breakpoints: {
+      down: () => false,
+      up: () => true
+    }
+  })
+}))
+
 jest.mock('@mui/material/styles', () => ({
   useTheme: () => ({
     breakpoints: {

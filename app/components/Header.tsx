@@ -23,7 +23,8 @@ import {
   Toolbar,
   Skeleton,
 } from "@/lib/mui-optimization";
-import { useTheme } from "@mui/material/styles";
+// Import useTheme directly for better HMR support with Turbopack
+import useTheme from "@mui/material/styles/useTheme";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -575,14 +576,12 @@ export function Header() {
                   <Image
                     src="/images/olgish-cakes-logo-bakery-brand.png"
                     alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Real Ukrainian Desserts Yorkshire"
-                    width={180}
+                    width={120}
                     height={85}
                     priority
                     style={{
                       height: "auto",
-                      maxHeight: "85px",
                       width: "auto",
-                      maxWidth: "180px",
                     }}
                   />
                 </Box>

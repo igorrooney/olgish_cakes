@@ -1,6 +1,12 @@
 /**
  * @jest-environment jsdom
  */
+// Mock MUI createTheme direct import
+jest.mock('@mui/material/styles/createTheme', () => ({
+  __esModule: true,
+  default: jest.requireActual('@mui/material/styles').createTheme
+}))
+
 import { theme } from '../theme'
 
 // Mock design-system module

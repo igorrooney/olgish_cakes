@@ -579,9 +579,13 @@ export default function Footer() {
                   src="/images/olgish-cakes-logo-bakery-brand.png"
                   alt="Olgish Cakes - Ukrainian Bakery Leeds"
                   width={120}
-                  height={40}
+                  height={85}
                   priority={false}
                   title="Olgish Cakes - Real Ukrainian Bakery in Leeds"
+                  style={{
+                    height: "auto",
+                    width: "auto",
+                  }}
                 />
                 <Typography
                   variant="body2"

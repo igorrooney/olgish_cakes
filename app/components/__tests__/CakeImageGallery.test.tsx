@@ -48,8 +48,17 @@ jest.mock('@/lib/mui-optimization', () => ({
   ImageList: ({ children, ...props }: any) => <div data-testid="image-list" {...props}>{children}</div>,
   ImageListItem: ({ children, ...props }: any) => <div data-testid="image-list-item" {...props}>{children}</div>,
   Typography: ({ children, ...props }: any) => <div data-testid="typography" {...props}>{children}</div>,
-  ArrowBackIcon: () => <span>◀</span>,
-  ArrowForwardIcon: () => <span>▶</span>
+}))
+
+// Mock direct icon imports
+jest.mock('@mui/icons-material/ArrowBack', () => ({
+  __esModule: true,
+  default: () => <span>◀</span>
+}))
+
+jest.mock('@mui/icons-material/ArrowForward', () => ({
+  __esModule: true,
+  default: () => <span>▶</span>
 }))
 
 // Mock DesignSelector
