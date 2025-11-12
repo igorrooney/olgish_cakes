@@ -268,11 +268,13 @@ Olgish Cakes
 
     // If this is an order form, also create an order in the system
     if (isOrderInquiry) {
+      let orderCreated = false;
+      let orderError = null;
+      
       try {
         // Upload design image to Sanity and pass image reference in attachments
         let attachmentImages: any[] = [];
         if (designImage) {
-
           try {
             // Convert File to Buffer for Sanity upload
             const arrayBuffer = await designImage.arrayBuffer();
@@ -289,17 +291,19 @@ Olgish Cakes
                 asset: { _type: 'reference', _ref: uploaded._id },
               },
             ];
+            console.log('✅ Successfully uploaded design image to Sanity:', uploaded._id);
           } catch (e: any) {
-            console.error('Failed to upload design image to Sanity:', e);
+            console.error('❌ Failed to upload design image to Sanity:', e);
             console.error('Error details:', {
               message: e?.message,
               stack: e?.stack,
               name: e?.name
             });
+            // Continue without image attachment - don't fail the entire order
+          }
         }
-      }
         
-      const orderData = {
+        const orderData = {
           name,
           email,
           phone,
@@ -330,8 +334,11 @@ Olgish Cakes
         };
 
         // Create order via internal API call
+        console.log('📦 Attempting to create order via /api/orders...');
+        const apiUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+        console.log('🌐 Using API URL:', apiUrl);
 
-        const orderResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/orders`, {
+        const orderResponse = await fetch(`${apiUrl}/api/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -341,13 +348,90 @@ Olgish Cakes
 
         if (orderResponse.ok) {
           const orderResult = await orderResponse.json();
-
+          console.log('✅ Order created successfully:', orderResult);
+          orderCreated = true;
         } else {
-          console.error("Failed to create order:", await orderResponse.text());
+          const errorText = await orderResponse.text();
+          console.error('❌ Failed to create order. Status:', orderResponse.status);
+          console.error('❌ Error response:', errorText);
+          orderError = new Error(`Orders API returned ${orderResponse.status}: ${errorText}`);
         }
-      } catch (orderError) {
-        console.error("Error creating order:", orderError);
-        // Don't fail the email if order creation fails
+      } catch (orderException) {
+        console.error('❌ Exception while creating order:', orderException);
+        orderError = orderException;
+      }
+
+      // FALLBACK: If order creation failed, send email directly from contact API
+      if (!orderCreated && orderError) {
+        console.warn('⚠️  Order creation failed, sending fallback notification emails...');
+        try {
+          // Send admin notification email
+          const adminEmailResponse = await resend.emails.send({
+            from: "Olgish Cakes <hello@olgishcakes.co.uk>",
+            to: recipientEmail,
+            bcc: "igorrooney@gmail.com",
+            replyTo: email,
+            subject: `🆕 New Order Inquiry from ${name}`,
+            html: htmlContent,
+            text: emailContent,
+            attachments: designImage
+              ? [
+                  {
+                    filename: designImage.name,
+                    content: Buffer.from(imageBuffer!),
+                  },
+                ]
+              : [],
+          });
+
+          if (adminEmailResponse.error) {
+            console.error('❌ Fallback admin email failed:', adminEmailResponse.error);
+          } else {
+            console.log('✅ Fallback admin email sent successfully');
+          }
+
+          // Send simple confirmation to customer
+          const customerEmailResponse = await resend.emails.send({
+            from: "Olgish Cakes <hello@olgishcakes.co.uk>",
+            to: email,
+            subject: "Order Inquiry Received - Olgish Cakes",
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+              </head>
+              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; padding: 20px; background-color: #f9f9f9; border-bottom: 2px solid #eee;">
+                  <h1 style="color: #2c5282; margin: 0;">🎂 Order Inquiry Received</h1>
+                </div>
+                <div style="padding: 20px;">
+                  <p>Dear ${name},</p>
+                  <p>Thank you for your order inquiry! We've received your request and will get back to you within 24 hours.</p>
+                  <p>We'll review your requirements and send you a detailed confirmation with next steps.</p>
+                  <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Your Details:</strong></p>
+                    <p style="margin: 5px 0;">Email: ${email}</p>
+                    <p style="margin: 5px 0;">Phone: ${phone}</p>
+                    ${formattedDate ? `<p style="margin: 5px 0;">Date Needed: ${formattedDate}</p>` : ''}
+                  </div>
+                  <p>If you have any questions, please don't hesitate to contact us.</p>
+                  <p>Best regards,<br>Olgish Cakes<br><a href="https://olgishcakes.co.uk">olgishcakes.co.uk</a></p>
+                </div>
+              </body>
+              </html>
+            `,
+          });
+
+          if (customerEmailResponse.error) {
+            console.error('❌ Fallback customer email failed:', customerEmailResponse.error);
+          } else {
+            console.log('✅ Fallback customer email sent successfully');
+          }
+        } catch (fallbackError) {
+          console.error('❌ Fallback email sending failed completely:', fallbackError);
+          // Log but don't throw - we don't want to show error to user
+        }
       }
     }
 
