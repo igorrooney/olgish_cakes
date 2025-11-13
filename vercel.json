@@ -4,11 +4,23 @@
   "crons": [
     {
       "path": "/api/publish-scheduled-posts",
-      "schedule": "0 9 * * *"
+      "schedule": "0 9 * * *",
+      "headers": [
+        {
+          "key": "Authorization",
+          "value": "Bearer ${CRON_SECRET}"
+        }
+      ]
     },
     {
       "path": "/api/publish-scheduled-posts", 
-      "schedule": "0 18 * * *"
+      "schedule": "0 18 * * *",
+      "headers": [
+        {
+          "key": "Authorization",
+          "value": "Bearer ${CRON_SECRET}"
+        }
+      ]
     }
   ],
   "headers": [

@@ -242,7 +242,7 @@ Olgish Cakes
       response = await resend.emails.send({
         from: "Olgish Cakes <hello@olgishcakes.co.uk>",
         to: recipientEmail,
-        bcc: "igorrooney@gmail.com",
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         replyTo: email,
         subject: `New Contact: ${name}`,
         html: htmlContent,
@@ -369,7 +369,7 @@ Olgish Cakes
           const adminEmailResponse = await resend.emails.send({
             from: "Olgish Cakes <hello@olgishcakes.co.uk>",
             to: recipientEmail,
-            bcc: "igorrooney@gmail.com",
+            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
             replyTo: email,
             subject: `🆕 New Order Inquiry from ${name}`,
             html: htmlContent,

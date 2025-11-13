@@ -16,6 +16,7 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; frame-src 'none';",
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -60,6 +61,23 @@ const nextConfig = {
         source: "/(.*)",
         headers: [
           {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https: http:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://www.google-analytics.com https://vercel.live wss://vercel.live",
+              "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests"
+            ].join('; ')
+          },
+          {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
@@ -73,11 +91,11 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
+            value: "strict-origin-when-cross-origin",
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
           },
           // SEO headers
           {
@@ -242,13 +260,13 @@ const nextConfig = {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
-      
+
       // Enhanced performance optimizations
       config.optimization.mergeDuplicateChunks = true;
       config.optimization.removeAvailableModules = true;
       config.optimization.removeEmptyChunks = true;
       config.optimization.providedExports = true;
-      
+
       // Optimize module resolution
       config.resolve.symlinks = false;
       config.resolve.cacheWithContext = false;

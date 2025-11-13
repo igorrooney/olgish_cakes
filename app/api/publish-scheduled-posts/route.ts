@@ -11,6 +11,17 @@ const client = createClient({
 
 export async function GET(request: NextRequest) {
   try {
+    // Security: Verify Vercel Cron Secret
+    const authHeader = request.headers.get('authorization');
+    const expectedToken = process.env.CRON_SECRET;
+    
+    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const now = new Date()
     const today = now.toISOString().split('T')[0]
     const currentTime = now.toTimeString().split(' ')[0]

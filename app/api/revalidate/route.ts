@@ -4,6 +4,17 @@ import { invalidateCache } from "@/app/utils/fetchCakes";
 
 export async function POST(request: NextRequest) {
   try {
+    // Security: Verify revalidation secret
+    const authHeader = request.headers.get('authorization');
+    const expectedToken = process.env.REVALIDATE_SECRET;
+    
+    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { _type, _id, slug } = body;
 

@@ -380,7 +380,7 @@ Olgish Cakes
     const response = await resend.emails.send({
       from: "Olgish Cakes <hello@olgishcakes.co.uk>",
       to: recipientEmail,
-      bcc: "igorrooney@gmail.com",
+      bcc: process.env.ADMIN_BCC_EMAIL || undefined,
       replyTo: email,
       subject: `🎂 Quote Request: ${name} - ${occasion} ${cakeType}`,
       html: htmlContent,

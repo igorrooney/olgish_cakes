@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: orderData.email,
-        bcc: 'igorrooney@gmail.com',
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
         html: `
           <!DOCTYPE html>
@@ -600,10 +600,21 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Security: Validate status to prevent GROQ injection
+    const validStatuses = ['new', 'pending', 'confirmed', 'in-progress', 'completed', 'cancelled', 'refunded'];
+    
     let query = `*[_type == "order"] | order(_createdAt desc)`;
+    let params = {};
 
     if (status) {
-      query = `*[_type == "order" && status == "${status}"] | order(_createdAt desc)`;
+      if (!validStatuses.includes(status)) {
+        return NextResponse.json(
+          { error: 'Invalid status value' },
+          { status: 400 }
+        );
+      }
+      query = `*[_type == "order" && status == $status] | order(_createdAt desc)`;
+      params = { status };
     }
 
     const orders = await serverClient.fetch(`${query}[${offset}...${offset + limit}]{
@@ -642,12 +653,13 @@ export async function GET(request: NextRequest) {
           caption
         }
       }
-    }`);
+    }`, params);
 
     const totalCount = await serverClient.fetch(
       status
-        ? `count(*[_type == "order" && status == "${status}"])`
-        : `count(*[_type == "order"])`
+        ? `count(*[_type == "order" && status == $status])`
+        : `count(*[_type == "order"])`,
+      status ? { status } : {}
     );
 
     return NextResponse.json({
