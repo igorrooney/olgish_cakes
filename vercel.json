@@ -1,6 +1,26 @@
 {
   "version": 2,
   "framework": "nextjs",
+  "firewall": {
+    "rateLimits": [
+      {
+        "name": "api-rate-limit",
+        "limit": 60,
+        "window": "1m",
+        "match": {
+          "path": ["/api/*"]
+        }
+      },
+      {
+        "name": "contact-form-limit",
+        "limit": 10,
+        "window": "1h",
+        "match": {
+          "path": ["/api/contact", "/api/quote", "/api/orders"]
+        }
+      }
+    ]
+  },
   "crons": [
     {
       "path": "/api/publish-scheduled-posts",
