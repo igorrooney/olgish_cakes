@@ -584,7 +584,7 @@ export default function Footer() {
                   title="Olgish Cakes - Real Ukrainian Bakery in Leeds"
                   style={{
                     height: "auto",
-                    width: "auto",
+                    maxWidth: "120px",
                   }}
                 />
                 <Typography
