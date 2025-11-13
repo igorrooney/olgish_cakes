@@ -333,29 +333,66 @@ Olgish Cakes
           attachments: attachmentImages,
         };
 
-        // Create order via internal API call
-        console.log('📦 Attempting to create order via /api/orders...');
-        const apiUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-        console.log('🌐 Using API URL:', apiUrl);
-
-        const orderResponse = await fetch(`${apiUrl}/api/orders`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        // Create order directly in Sanity (no internal HTTP call)
+        console.log('📦 Creating order directly in Sanity...');
+        
+        const orderDoc = {
+          _type: 'order',
+          orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+          status: 'new',
+          customer: {
+            name: orderData.name,
+            email: orderData.email,
+            phone: orderData.phone,
+            address: orderData.address || '',
+            city: orderData.city || '',
+            postcode: orderData.postcode || '',
           },
-          body: JSON.stringify(orderData),
-        });
+          items: [
+            {
+              _key: `item-${Date.now()}`,
+              productId: orderData.productId,
+              productName: orderData.productName,
+              productType: orderData.productType,
+              designType: orderData.designType,
+              quantity: orderData.quantity,
+              unitPrice: orderData.unitPrice,
+              totalPrice: orderData.totalPrice,
+              size: orderData.size,
+              flavor: orderData.flavor,
+              specialInstructions: orderData.specialInstructions,
+            },
+          ],
+          delivery: {
+            method: orderData.deliveryMethod,
+            address: orderData.deliveryAddress,
+            notes: orderData.deliveryNotes,
+          },
+          payment: {
+            method: orderData.paymentMethod,
+            status: 'pending',
+          },
+          messages: [
+            {
+              _key: `msg-${Date.now()}`,
+              message: orderData.message,
+              from: 'customer',
+              timestamp: new Date().toISOString(),
+            },
+          ],
+          metadata: {
+            orderType: orderData.orderType,
+            dateNeeded: orderData.dateNeeded || null,
+            giftNote: orderData.giftNote || '',
+            note: orderData.note || '',
+            referrer: orderData.referrer || '',
+            attachments: orderData.attachments || [],
+          },
+        };
 
-        if (orderResponse.ok) {
-          const orderResult = await orderResponse.json();
-          console.log('✅ Order created successfully:', orderResult);
-          orderCreated = true;
-        } else {
-          const errorText = await orderResponse.text();
-          console.error('❌ Failed to create order. Status:', orderResponse.status);
-          console.error('❌ Error response:', errorText);
-          orderError = new Error(`Orders API returned ${orderResponse.status}: ${errorText}`);
-        }
+        const createdOrder = await serverClient.create(orderDoc);
+        console.log('✅ Order created successfully in Sanity:', createdOrder._id);
+        orderCreated = true;
       } catch (orderException) {
         console.error('❌ Exception while creating order:', orderException);
         orderError = orderException;
