@@ -11,15 +11,19 @@ const client = createClient({
 
 export async function GET(request: NextRequest) {
   try {
-    // Security: Verify Vercel Cron Secret
+    // Security: Verify Vercel Cron Secret (automatically set by Vercel)
     const authHeader = request.headers.get('authorization');
-    const expectedToken = process.env.CRON_SECRET;
+    const cronSecret = process.env.CRON_SECRET;
     
-    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Only enforce auth if CRON_SECRET is set
+    if (cronSecret) {
+      if (authHeader !== `Bearer ${cronSecret}`) {
+        console.error('Unauthorized cron attempt from:', request.headers.get('x-forwarded-for'))
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
     }
 
     const now = new Date()
