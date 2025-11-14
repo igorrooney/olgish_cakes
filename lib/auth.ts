@@ -25,7 +25,12 @@ export async function verifyToken(token: string): Promise<AdminUser | null> {
       role: payload.role as string,
       iat: payload.iat
     };
-  } catch {
+  } catch (error) {
+    // Log JWT verification errors but don't expose sensitive details
+    if (error instanceof Error && error.message.includes('JWT_SECRET')) {
+      console.error('JWT_SECRET environment variable error:', error.message);
+    }
+    // Return null for invalid tokens (malformed, expired, wrong secret, etc.)
     return null;
   }
 }

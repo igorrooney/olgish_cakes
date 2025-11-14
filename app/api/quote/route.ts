@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
+import { quoteFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
@@ -30,9 +31,27 @@ export async function POST(request: NextRequest) {
     const specialRequests = formData.get("specialRequests") as string;
     const designImage = formData.get("designImage") as File | null;
 
-    // Validate required fields
-    if (!name || !email || !phone || !occasion || !cakeType || !dateNeeded || !budget) {
-      return NextResponse.json({ error: "Please fill in all required fields" }, { status: 400 });
+    // Validate form data with Zod schema
+    const validationResult = await validateRequest(quoteFormSchema, {
+      name,
+      email,
+      phone,
+      occasion,
+      dateNeeded,
+      guestCount: guestCount || undefined,
+      cakeType,
+      designStyle: designStyle || undefined,
+      flavors: flavors || undefined,
+      dietaryRequirements: dietaryRequirements || undefined,
+      budget,
+      specialRequests: specialRequests || undefined
+    });
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
+        { status: 400 }
+      );
     }
 
     // Process file attachment

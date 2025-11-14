@@ -10,28 +10,32 @@ jest.mock('resend', () => ({
 }))
 
 // Mock Sanity
+const mockUpload = jest.fn()
+const mockCreate = jest.fn()
 jest.mock('@/sanity/lib/client', () => {
-  const mockUpload = jest.fn()
+  const mockUploadFn = jest.fn()
+  const mockCreateFn = jest.fn()
   return {
     serverClient: {
-      assets: { upload: mockUpload }
+      assets: { upload: mockUploadFn },
+      create: mockCreateFn
     },
-    __mockUpload: mockUpload
+    __mockUpload: mockUploadFn,
+    __mockCreate: mockCreateFn
   }
 })
 
-const { __mockUpload: mockUpload } = jest.requireMock('@/sanity/lib/client')
-
-// Mock fetch for orders API
-global.fetch = jest.fn()
+const { __mockUpload: mockUploadFromMock, __mockCreate: mockCreateFromMock } = jest.requireMock('@/sanity/lib/client')
 
 describe('/api/contact', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
     process.env.CONTACT_EMAIL_TO = 'test@example.com'
+    process.env.SANITY_API_TOKEN = 'test-token'
     mockSend.mockResolvedValue({ error: null })
-    ;(global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) })
+    mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id' })
+    mockUploadFromMock.mockResolvedValue({ _id: 'test-asset-id' })
   })
 
   describe('POST - Environment Validation', () => {
@@ -57,7 +61,7 @@ describe('/api/contact', () => {
 
     it('should return 500 when recipient email missing', async () => {
       delete process.env.CONTACT_EMAIL_TO
-      
+
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
@@ -77,7 +81,8 @@ describe('/api/contact', () => {
     it('should return 400 when name is missing', async () => {
       const formData = new FormData()
       formData.append('email', 'john@example.com')
-      formData.append('message', 'Test')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Test message with enough characters')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',
@@ -92,7 +97,8 @@ describe('/api/contact', () => {
     it('should return 400 when email is missing', async () => {
       const formData = new FormData()
       formData.append('name', 'John')
-      formData.append('message', 'Test')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Test message with enough characters')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',
@@ -108,6 +114,7 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',
@@ -123,6 +130,7 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
       formData.append('isOrderForm', 'true')
 
       const request = new NextRequest('http://localhost/api/contact', {
@@ -159,7 +167,8 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
-      formData.append('message', 'Test')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Test message with enough characters')
       formData.append('designImage', file)
 
       const request = new NextRequest('http://localhost/api/contact', {
@@ -176,8 +185,13 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
       formData.append('message', 'Cake: Honey\nDesign Type: Standard')
       formData.append('isOrderForm', 'true')
+      formData.append('productName', 'Honey Cake')
+      formData.append('quantity', '1')
+      formData.append('unitPrice', '25')
+      formData.append('totalPrice', '25')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',
@@ -186,9 +200,14 @@ describe('/api/contact', () => {
 
       await POST(request)
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/orders'),
-        expect.objectContaining({ method: 'POST' })
+      // Should create order directly in Sanity, not via fetch
+      expect(mockCreateFromMock).toHaveBeenCalled()
+      expect(mockCreateFromMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          _type: 'order',
+          orderNumber: expect.any(String),
+          status: 'new'
+        })
       )
     })
   })
@@ -200,7 +219,8 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
-      formData.append('message', 'Test')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Test message with enough characters')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',
@@ -213,12 +233,17 @@ describe('/api/contact', () => {
     })
 
     it('should handle order creation failure gracefully', async () => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({ ok: false, text: async () => 'Failed' })
+      mockCreateFromMock.mockRejectedValue(new Error('Sanity creation failed'))
 
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
       formData.append('isOrderForm', 'true')
+      formData.append('productName', 'Honey Cake')
+      formData.append('quantity', '1')
+      formData.append('unitPrice', '25')
+      formData.append('totalPrice', '25')
 
       const request = new NextRequest('http://localhost/api/contact', {
         method: 'POST',

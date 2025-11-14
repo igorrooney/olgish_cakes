@@ -5,13 +5,22 @@ export const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits').max(20),
-  message: z.string().min(10, 'Message must be at least 10 characters').max(2000),
+  message: z.string().max(2000).optional(), // Optional when order form, required otherwise
   address: z.string().optional(),
   city: z.string().optional(),
   postcode: z.string().optional(),
   dateNeeded: z.string().optional(),
   cakeInterest: z.string().optional(),
   isOrderForm: z.boolean().optional()
+}).refine((data) => {
+  // Message is required if not an order form
+  if (!data.isOrderForm && (!data.message || data.message.trim().length < 10)) {
+    return false
+  }
+  return true
+}, {
+  message: 'Message must be at least 10 characters when not submitting an order',
+  path: ['message']
 })
 
 // Quote form validation

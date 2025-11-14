@@ -3,12 +3,23 @@ import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
+import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 
-// Generate unique order number
+// Generate unique numeric order number
 function generateOrderNumber(): string {
-  const timestamp = Date.now().toString().slice(-6);
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `OC${timestamp}${random}`;
+  const now = new Date()
+  // Format: YYMMDDHHMMSS + 2 random digits (14 digits) - Professional, readable, unique
+  // Example: 25011314302542 = Jan 13, 2025 at 14:30:25 with random suffix
+  const year = now.getFullYear().toString().slice(-2).padStart(2, '0')
+  const month = (now.getMonth() + 1).toString().padStart(2, '0')
+  const day = now.getDate().toString().padStart(2, '0')
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  const seconds = now.getSeconds().toString().padStart(2, '0')
+  // Add 2 random digits to ensure uniqueness if orders are created in the same second
+  const random = Math.floor(Math.random() * 100).toString().padStart(2, '0')
+  
+  return `${year}${month}${day}${hours}${minutes}${seconds}${random}`
 }
 
 // POST - Create new order
@@ -21,6 +32,47 @@ export async function POST(request: NextRequest) {
     const orderData = await request.json();
     console.log('📦 Orders API: Parsed order data for customer:', orderData.email);
 
+    // Validate order data with Zod schema
+    const validationResult = await validateRequest(orderSchema, {
+      name: orderData.name,
+      email: orderData.email,
+      phone: orderData.phone,
+      address: orderData.address || undefined,
+      city: orderData.city || undefined,
+      postcode: orderData.postcode || undefined,
+      message: orderData.message || '',
+      dateNeeded: orderData.dateNeeded || undefined,
+      orderType: orderData.orderType || 'custom-quote',
+      productType: orderData.productType || 'custom',
+      productId: orderData.productId || undefined,
+      productName: orderData.productName || 'Custom Order',
+      designType: orderData.designType || 'individual',
+      quantity: orderData.quantity || 1,
+      unitPrice: orderData.unitPrice || 0,
+      totalPrice: orderData.totalPrice || 0,
+      size: orderData.size || undefined,
+      flavor: orderData.flavor || undefined,
+      specialInstructions: orderData.specialInstructions || undefined,
+      deliveryMethod: orderData.deliveryMethod || 'collection',
+      deliveryAddress: orderData.deliveryAddress || undefined,
+      deliveryNotes: orderData.deliveryNotes || undefined,
+      giftNote: orderData.giftNote || undefined,
+      note: orderData.note || undefined,
+      paymentMethod: orderData.paymentMethod || 'cash-collection',
+      referrer: orderData.referrer || undefined
+    });
+
+    if (!validationResult.success) {
+      console.error('❌ Orders API: Validation failed:', formatValidationErrors(validationResult.errors));
+      return NextResponse.json(
+        { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
+        { status: 400 }
+      );
+    }
+
+    // Use validated data
+    const validatedOrderData = validationResult.data;
+
     // Generate unique order number
     const orderNumber = generateOrderNumber();
     console.log('📦 Orders API: Generated order number:', orderNumber);
@@ -30,62 +82,62 @@ export async function POST(request: NextRequest) {
       _type: 'order',
       orderNumber,
       status: 'new',
-      orderType: orderData.orderType || 'custom-quote',
+      orderType: validatedOrderData.orderType,
       customer: {
-        name: orderData.name,
-        email: orderData.email,
-        phone: orderData.phone,
-        address: orderData.address || '',
-        city: orderData.city || '',
-        postcode: orderData.postcode || '',
+        name: validatedOrderData.name,
+        email: validatedOrderData.email,
+        phone: validatedOrderData.phone,
+        address: validatedOrderData.address || '',
+        city: validatedOrderData.city || '',
+        postcode: validatedOrderData.postcode || '',
       },
       items: orderData.items || [{
-        productType: orderData.productType || 'custom',
-        productId: orderData.productId || '',
-        productName: orderData.productName || 'Custom Order',
-        designType: orderData.designType || 'individual',
-        quantity: orderData.quantity || 1,
-        unitPrice: orderData.unitPrice || 0,
-        totalPrice: orderData.totalPrice || 0,
-        size: orderData.size || '',
-        flavor: orderData.flavor || '',
-        specialInstructions: orderData.specialInstructions || '',
+        productType: validatedOrderData.productType,
+        productId: validatedOrderData.productId || '',
+        productName: validatedOrderData.productName,
+        designType: validatedOrderData.designType,
+        quantity: validatedOrderData.quantity,
+        unitPrice: validatedOrderData.unitPrice,
+        totalPrice: validatedOrderData.totalPrice,
+        size: validatedOrderData.size || '',
+        flavor: validatedOrderData.flavor || '',
+        specialInstructions: validatedOrderData.specialInstructions || '',
       }],
       delivery: {
-        dateNeeded: orderData.dateNeeded,
-        deliveryMethod: orderData.deliveryMethod || 'collection',
-        deliveryAddress: orderData.deliveryAddress || '',
-        deliveryNotes: orderData.deliveryNotes || '',
-        giftNote: orderData.giftNote || '',
+        dateNeeded: validatedOrderData.dateNeeded || null,
+        deliveryMethod: validatedOrderData.deliveryMethod,
+        deliveryAddress: validatedOrderData.deliveryAddress || '',
+        deliveryNotes: validatedOrderData.deliveryNotes || '',
+        giftNote: validatedOrderData.giftNote || '',
       },
       pricing: {
-        subtotal: orderData.subtotal || orderData.totalPrice || 0,
+        subtotal: orderData.subtotal || validatedOrderData.totalPrice || 0,
         deliveryFee: orderData.deliveryFee || 0,
         discount: orderData.discount || 0,
-        total: orderData.total || orderData.totalPrice || 0,
+        total: orderData.total || validatedOrderData.totalPrice || 0,
         paymentStatus: 'pending',
-        paymentMethod: orderData.paymentMethod || 'cash-collection',
+        paymentMethod: validatedOrderData.paymentMethod,
       },
       messages: (() => {
         const messages = [];
-        if (orderData.message) {
+        if (validatedOrderData.message) {
           const messageWithAttachments = {
-            message: orderData.message,
+            message: validatedOrderData.message,
             attachments: orderData.attachments || [],
           };
 
           messages.push(messageWithAttachments);
         }
-        if (orderData.deliveryNotes || orderData.note) {
-          const additionalNote = orderData.deliveryNotes || orderData.note;
+        if (validatedOrderData.deliveryNotes || validatedOrderData.note) {
+          const additionalNote = validatedOrderData.deliveryNotes || validatedOrderData.note;
           messages.push({
             message: `Additional Notes: ${additionalNote}`,
             attachments: [],
           });
         }
-        if (orderData.giftNote) {
+        if (validatedOrderData.giftNote) {
           messages.push({
-            message: `Gift Note: ${orderData.giftNote}`,
+            message: `Gift Note: ${validatedOrderData.giftNote}`,
             attachments: [],
           });
         }
@@ -94,7 +146,7 @@ export async function POST(request: NextRequest) {
       })(),
       metadata: {
         source: 'website',
-        referrer: orderData.referrer || '',
+        referrer: validatedOrderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
                    request.headers.get('x-real-ip') ||
@@ -121,7 +173,7 @@ export async function POST(request: NextRequest) {
 
       const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
-        to: orderData.email,
+        to: validatedOrderData.email,
         bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
         html: `
@@ -155,7 +207,7 @@ export async function POST(request: NextRequest) {
                     <tr>
                       <td style="padding: 40px 30px;">
                         <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                          Dear <strong>${orderData.name}</strong>,
+                          Dear <strong>${validatedOrderData.name}</strong>,
                         </p>
 
                         <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
@@ -177,10 +229,10 @@ export async function POST(request: NextRequest) {
                               <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
                               <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">New Order</td>
                             </tr>
-                            ${orderData.dateNeeded ? `
+                            ${validatedOrderData.dateNeeded ? `
                             <tr>
                               <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                              <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
+                              <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(validatedOrderData.dateNeeded).toLocaleDateString('en-GB')}</td>
                             </tr>
                             ` : ''}
                             <tr>
@@ -256,21 +308,21 @@ export async function POST(request: NextRequest) {
                         })()}
 
                         <!-- Delivery Information -->
-                        ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
+                        ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                             <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">Delivery Address</h3>
                             <p style="margin: 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
-                              ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
+                              ${validatedOrderData.deliveryAddress}${validatedOrderData.city ? `, ${validatedOrderData.city}` : ''}${validatedOrderData.postcode ? `, ${validatedOrderData.postcode}` : ''}
                             </p>
                           </div>
                         ` : ''}
 
                         <!-- Additional Notes -->
-                        ${orderData.note || orderData.giftNote ? `
+                        ${validatedOrderData.note || validatedOrderData.giftNote ? `
                           <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                             <h3 style="margin: 0 0 12px 0; color: #92400e; font-size: 16px; font-weight: 600;">Additional Notes</h3>
-                            ${orderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${orderData.note}</p>` : ''}
-                            ${orderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${orderData.giftNote}</p>` : ''}
+                            ${validatedOrderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${validatedOrderData.note}</p>` : ''}
+                            ${validatedOrderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${validatedOrderData.giftNote}</p>` : ''}
                           </div>
                         ` : ''}
 
@@ -347,7 +399,7 @@ export async function POST(request: NextRequest) {
       const adminEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
-        subject: `🆕 New Order #${orderNumber} - ${orderData.name}`,
+        subject: `🆕 New Order #${orderNumber} - ${validatedOrderData.name}`,
         html: `
           <!DOCTYPE html>
           <html lang="en">
@@ -370,7 +422,7 @@ export async function POST(request: NextRequest) {
                           🆕 New Order Alert
                         </h1>
                         <p style="margin: 8px 0 0 0; color: #fecaca; font-size: 14px; font-weight: 400;">
-                          Order #${orderNumber} from ${orderData.name}
+                          Order #${orderNumber} from ${validatedOrderData.name}
                         </p>
                       </td>
                     </tr>
@@ -386,41 +438,41 @@ export async function POST(request: NextRequest) {
                           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500; width: 120px;">Name</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.name}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.name}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Email</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="mailto:${orderData.email}" style="color: #2E3192; text-decoration: none;">${orderData.email}</a></td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="mailto:${validatedOrderData.email}" style="color: #2E3192; text-decoration: none;">${validatedOrderData.email}</a></td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Phone</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none;">${orderData.phone}</a></td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none;">${validatedOrderData.phone}</a></td>
                             </tr>
-                            ${orderData.dateNeeded ? `
+                            ${validatedOrderData.dateNeeded ? `
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${new Date(validatedOrderData.dateNeeded).toLocaleDateString('en-GB')}</td>
                             </tr>
                             ` : ''}
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Address</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.address || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.address || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">City</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.city || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.city || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Postcode</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.postcode || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.postcode || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Delivery Method</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.deliveryMethod === 'local-delivery' ? 'Local Delivery' : orderData.deliveryMethod === 'collection' ? 'Collection' : 'Delivery'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.deliveryMethod === 'local-delivery' ? 'Local Delivery' : validatedOrderData.deliveryMethod === 'collection' ? 'Collection' : 'Delivery'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Payment Method</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.paymentMethod === 'cash-collection' ? 'Cash on Collection' : orderData.paymentMethod === 'card-collection' ? 'Card on Collection' : 'Online Payment'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.paymentMethod === 'cash-collection' ? 'Cash on Collection' : validatedOrderData.paymentMethod === 'card-collection' ? 'Card on Collection' : 'Online Payment'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total</td>
@@ -499,28 +551,28 @@ export async function POST(request: NextRequest) {
                         })()}
 
                         <!-- Delivery Information -->
-                        ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
+                        ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Delivery Address</h3>
                             <p style="margin: 0; color: #0c4a6e; font-size: 13px; line-height: 1.5;">
-                              ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
+                              ${validatedOrderData.deliveryAddress}${validatedOrderData.city ? `, ${validatedOrderData.city}` : ''}${validatedOrderData.postcode ? `, ${validatedOrderData.postcode}` : ''}
                             </p>
                           </div>
                         ` : ''}
 
                         <!-- Additional Notes -->
-                        ${orderData.note ? `
+                        ${validatedOrderData.note ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Additional Notes</h3>
-                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.note}</p>
+                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${validatedOrderData.note}</p>
                           </div>
                         ` : ''}
 
                         <!-- Gift Note -->
-                        ${orderData.giftNote ? `
+                        ${validatedOrderData.giftNote ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Gift Note</h3>
-                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.giftNote}</p>
+                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${validatedOrderData.giftNote}</p>
                           </div>
                         ` : ''}
 
@@ -530,7 +582,7 @@ export async function POST(request: NextRequest) {
                              style="display: inline-block; background: #2E3192; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-right: 12px;">
                             View in Sanity Studio
                           </a>
-                          <a href="mailto:${orderData.email}?subject=Re: Order #${orderNumber}"
+                          <a href="mailto:${validatedOrderData.email}?subject=Re: Order #${orderNumber}"
                              style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
                             Reply to Customer
                           </a>

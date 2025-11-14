@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
+import { contactFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
@@ -39,9 +40,34 @@ export async function POST(request: NextRequest) {
     const cakeInterest = formData.get("cakeInterest") as string;
     const isOrderForm = formData.get("isOrderForm") === "true";
 
-    const isMessageRequired = !(formData.get("isOrderForm") === "true");
-    if (!name || !email || (isMessageRequired && !message)) {
-      return NextResponse.json({ error: "Name, email, and message are required" }, { status: 400 });
+    // Validate form data with Zod schema
+    const validationResult = await validateRequest(contactFormSchema, {
+      name,
+      email,
+      phone,
+      message: message || '',
+      address: address || undefined,
+      city: city || undefined,
+      postcode: postcode || undefined,
+      dateNeeded: dateNeeded || undefined,
+      cakeInterest: cakeInterest || undefined,
+      isOrderForm: isOrderForm || undefined
+    });
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
+        { status: 400 }
+      );
+    }
+
+    // Additional check for message when not an order form
+    const isMessageRequired = !isOrderForm;
+    if (isMessageRequired && (!message || message.trim().length < 10)) {
+      return NextResponse.json(
+        { error: "Message must be at least 10 characters when not submitting an order" },
+        { status: 400 }
+      );
     }
 
     const attachments = [];
@@ -336,9 +362,21 @@ Olgish Cakes
         // Create order directly in Sanity (no internal HTTP call)
         console.log('📦 Creating order directly in Sanity...');
         
+        // Generate unique numeric order number (professional format: YYMMDDHHMMSS + 2 random)
+        const now = new Date()
+        const year = now.getFullYear().toString().slice(-2).padStart(2, '0')
+        const month = (now.getMonth() + 1).toString().padStart(2, '0')
+        const day = now.getDate().toString().padStart(2, '0')
+        const hours = now.getHours().toString().padStart(2, '0')
+        const minutes = now.getMinutes().toString().padStart(2, '0')
+        const seconds = now.getSeconds().toString().padStart(2, '0')
+        // Add 2 random digits to ensure uniqueness if orders are created in the same second
+        const random = Math.floor(Math.random() * 100).toString().padStart(2, '0')
+        const orderNumber = `${year}${month}${day}${hours}${minutes}${seconds}${random}`
+        
         const orderDoc = {
           _type: 'order',
-          orderNumber: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+          orderNumber,
           status: 'new',
           customer: {
             name: orderData.name,
