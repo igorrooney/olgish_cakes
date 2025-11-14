@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
 import { contactFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
+import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
@@ -362,17 +363,8 @@ Olgish Cakes
         // Create order directly in Sanity (no internal HTTP call)
         console.log('📦 Creating order directly in Sanity...');
         
-        // Generate unique numeric order number (professional format: YYMMDDHHMMSS + 2 random)
-        const now = new Date()
-        const year = now.getFullYear().toString().slice(-2).padStart(2, '0')
-        const month = (now.getMonth() + 1).toString().padStart(2, '0')
-        const day = now.getDate().toString().padStart(2, '0')
-        const hours = now.getHours().toString().padStart(2, '0')
-        const minutes = now.getMinutes().toString().padStart(2, '0')
-        const seconds = now.getSeconds().toString().padStart(2, '0')
-        // Add 2 random digits to ensure uniqueness if orders are created in the same second
-        const random = Math.floor(Math.random() * 100).toString().padStart(2, '0')
-        const orderNumber = `${year}${month}${day}${hours}${minutes}${seconds}${random}`
+        // Generate unique numeric order number
+        const orderNumber = generateOrderNumber()
         
         const orderDoc = {
           _type: 'order',
@@ -388,7 +380,7 @@ Olgish Cakes
           },
           items: [
             {
-              _key: `item-${Date.now()}`,
+              _key: generateUniqueKey('item'),
               productId: orderData.productId,
               productName: orderData.productName,
               productType: orderData.productType,
@@ -412,7 +404,7 @@ Olgish Cakes
           },
           messages: [
             {
-              _key: `msg-${Date.now()}`,
+              _key: generateUniqueKey('msg'),
               message: orderData.message,
               from: 'customer',
               timestamp: new Date().toISOString(),

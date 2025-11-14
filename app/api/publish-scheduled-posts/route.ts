@@ -12,18 +12,24 @@ const client = createClient({
 export async function GET(request: NextRequest) {
   try {
     // Security: Verify Vercel Cron Secret (automatically set by Vercel)
+    // Always require CRON_SECRET in production per Next.js 16 best practices
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
     
-    // Only enforce auth if CRON_SECRET is set
-    if (cronSecret) {
-      if (authHeader !== `Bearer ${cronSecret}`) {
-        console.error('Unauthorized cron attempt from:', request.headers.get('x-forwarded-for'))
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        );
-      }
+    if (!cronSecret) {
+      console.error('CRON_SECRET not configured')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+    
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      console.error('Unauthorized cron attempt from:', request.headers.get('x-forwarded-for'))
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const now = new Date()
@@ -33,12 +39,16 @@ export async function GET(request: NextRequest) {
     console.warn(`Checking for scheduled posts on ${today} at ${currentTime}`)
 
     // Find posts scheduled for today that haven't been published yet
-    const scheduledPosts = await client.fetch(`
-      *[_type == "blogPost" &&
+    // Use parameterized query to prevent GROQ injection
+    const startOfDay = `${today}T00:00:00.000Z`
+    const endOfDay = `${today}T23:59:59.999Z`
+    const scheduledPosts = await client.fetch(
+      `*[_type == "blogPost" &&
         status == "scheduled" &&
-        publishDate >= "${today}T00:00:00.000Z" &&
-        publishDate <= "${today}T23:59:59.999Z"]
-    `)
+        publishDate >= $startOfDay &&
+        publishDate <= $endOfDay]`,
+      { startOfDay, endOfDay }
+    )
 
     console.warn(`Found ${scheduledPosts.length} scheduled posts for today`)
 

@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { invalidateCache } from "@/app/utils/fetchCakes";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     // Security: Verify revalidation secret
     const authHeader = request.headers.get('authorization');
     const expectedToken = process.env.REVALIDATE_SECRET;
-    
+
     if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -65,8 +65,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET method for testing
-export async function GET() {
+// GET method - protected for security
+export async function GET(request: NextRequest) {
+  // Security: Require authentication even for GET endpoint
+  const authHeader = request.headers.get('authorization');
+  const expectedToken = process.env.REVALIDATE_SECRET;
+
+  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   return NextResponse.json({
     message: "Revalidation webhook is active",
     usage: "POST with Sanity webhook payload",

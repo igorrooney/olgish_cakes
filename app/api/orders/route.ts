@@ -4,23 +4,7 @@ import { Resend } from "resend";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
 import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
-
-// Generate unique numeric order number
-function generateOrderNumber(): string {
-  const now = new Date()
-  // Format: YYMMDDHHMMSS + 2 random digits (14 digits) - Professional, readable, unique
-  // Example: 25011314302542 = Jan 13, 2025 at 14:30:25 with random suffix
-  const year = now.getFullYear().toString().slice(-2).padStart(2, '0')
-  const month = (now.getMonth() + 1).toString().padStart(2, '0')
-  const day = now.getDate().toString().padStart(2, '0')
-  const hours = now.getHours().toString().padStart(2, '0')
-  const minutes = now.getMinutes().toString().padStart(2, '0')
-  const seconds = now.getSeconds().toString().padStart(2, '0')
-  // Add 2 random digits to ensure uniqueness if orders are created in the same second
-  const random = Math.floor(Math.random() * 100).toString().padStart(2, '0')
-  
-  return `${year}${month}${day}${hours}${minutes}${seconds}${random}`
-}
+import { generateOrderNumber } from "@/lib/order-utils";
 
 // POST - Create new order
 export async function POST(request: NextRequest) {

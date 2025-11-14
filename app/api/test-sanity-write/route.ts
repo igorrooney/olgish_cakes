@@ -3,13 +3,19 @@ import { serverClient } from '@/sanity/lib/client'
 
 export async function GET(request: NextRequest) {
   try {
-    // Security: Only allow in non-production or with admin secret
+    // Security: Always require authentication in production
     const adminSecret = process.env.ADMIN_SECRET_TOKEN
     const authHeader = request.headers.get('authorization')
     const isDevelopment = process.env.NODE_ENV === 'development'
     
-    // In production, require authentication
-    if (!isDevelopment && adminSecret) {
+    // In production, always require authentication
+    if (!isDevelopment) {
+      if (!adminSecret) {
+        return NextResponse.json({
+          error: 'Server configuration error',
+          message: 'ADMIN_SECRET_TOKEN not configured'
+        }, { status: 500 })
+      }
       if (!authHeader || authHeader !== `Bearer ${adminSecret}`) {
         return NextResponse.json({
           error: 'Unauthorized',

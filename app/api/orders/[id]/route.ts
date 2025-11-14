@@ -3,6 +3,7 @@ import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
 import { PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
+import { generateUniqueKey } from "@/lib/order-utils";
 
 // GET - Fetch single order by ID
 export async function GET(
@@ -232,7 +233,7 @@ export async function PATCH(
     // Handle internal notes
     if (updates.note || images.length > 0) {
       const newNote = {
-        _key: Date.now().toString(),
+        _key: generateUniqueKey('note'),
         note: updates.note || '',
         author: updates.author || 'Admin',
         createdAt: new Date().toISOString(),
