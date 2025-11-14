@@ -109,7 +109,7 @@ export async function PATCH(
       updates = await request.json();
     }
 
-    // Get current order to compare changes
+    // Get current order to compare changes (including existing notes)
     const currentOrder = await serverClient.fetch(
       `*[_type == "order" && _id == "${id}"][0]{
         _id,
@@ -118,7 +118,22 @@ export async function PATCH(
         customer,
         delivery,
         pricing,
-        items
+        items,
+        notes[]{
+          _key,
+          note,
+          author,
+          createdAt,
+          images[]{
+            _type,
+            asset->{
+              _id,
+              url
+            },
+            alt,
+            caption
+          }
+        }
       }`
     );
 
@@ -230,11 +245,12 @@ export async function PATCH(
       updateDoc.items = [newItem];
     }
 
-    // Handle internal notes
-    if (updates.note || images.length > 0) {
+    // Handle internal notes - only add if there's actual content (note text or images)
+    // Always preserve existing notes by appending new ones
+    if ((updates.note && updates.note.trim()) || images.length > 0) {
       const newNote = {
         _key: generateUniqueKey('note'),
-        note: updates.note || '',
+        note: (updates.note && updates.note.trim()) || '',
         author: updates.author || 'Admin',
         createdAt: new Date().toISOString(),
         images: [] as any[],
@@ -270,7 +286,17 @@ export async function PATCH(
         }
       }
 
-      updateDoc.notes = [...(currentOrder.notes || []), newNote];
+      // Preserve all existing notes and append the new one
+      // This ensures no notes are ever removed when adding a new one
+      const existingNotes = currentOrder.notes || [];
+      updateDoc.notes = [...existingNotes, newNote];
+      console.log(`📝 Adding new note. Total notes after update: ${existingNotes.length + 1}`);
+    } else {
+      // If no new note is being added, ensure existing notes are preserved
+      // Don't modify the notes array if we're not adding anything
+      if (currentOrder.notes && currentOrder.notes.length > 0) {
+        console.log(`📝 No new note to add. Preserving ${currentOrder.notes.length} existing notes.`);
+      }
     }
 
     // Update order in Sanity
@@ -281,15 +307,42 @@ export async function PATCH(
 
     // Send status update email after order is updated (if status changed)
     if (updates.status && updates.status !== currentOrder.status) {
-      // Create a modified order object with the updated delivery method for email
-      const orderForEmail = {
-        ...updatedOrder,
-        delivery: {
-          ...updatedOrder.delivery,
-          deliveryMethod: updates.deliveryMethod || updatedOrder.delivery.deliveryMethod
-        }
-      };
-      await sendStatusUpdateEmail(orderForEmail, updates.status);
+      // Fetch the complete order with all fields including pricing for the email
+      const completeOrder = await serverClient.fetch(
+        `*[_type == "order" && _id == "${id}"][0]{
+          _id,
+          orderNumber,
+          status,
+          customer,
+          items,
+          delivery,
+          pricing,
+          messages[]{
+            message,
+            attachments[]{
+              _type,
+              asset->{
+                _id,
+                url
+              },
+              alt,
+              caption
+            }
+          }
+        }`
+      );
+
+      if (completeOrder) {
+        // Create a modified order object with the updated delivery method for email
+        const orderForEmail = {
+          ...completeOrder,
+          delivery: {
+            ...completeOrder.delivery,
+            deliveryMethod: updates.deliveryMethod || completeOrder.delivery.deliveryMethod
+          }
+        };
+        await sendStatusUpdateEmail(orderForEmail, updates.status);
+      }
     }
 
     return NextResponse.json({
@@ -450,11 +503,14 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
   if (!statusInfo) return;
 
   try {
+    const bccEmail = process.env.ADMIN_BCC_EMAIL || undefined;
+    console.log('📧 Status Update Email: Sending to', order.customer.email, 'BCC:', bccEmail || 'not set');
+    
     // Send the actual email
     await resend.emails.send({
       from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
       to: order.customer.email,
-      bcc: 'igorrooney@gmail.com',
+      bcc: bccEmail,
       subject: statusInfo.subject,
       html: `
         <!DOCTYPE html>
@@ -517,7 +573,17 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           ` : ''}
                           <tr>
                             <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
-                            <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${order.pricing.total}</td>
+                            <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${(() => {
+                              // Use pricing.total if available, otherwise calculate from items
+                              if (order.pricing?.total && order.pricing.total > 0) {
+                                return order.pricing.total;
+                              }
+                              // Calculate total from items as fallback
+                              if (order.items && order.items.length > 0) {
+                                return order.items.reduce((sum: number, item: any) => sum + (item.totalPrice || item.unitPrice || 0), 0);
+                              }
+                              return 0;
+                            })()}</td>
                           </tr>
                         </table>
                       </div>

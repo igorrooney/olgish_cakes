@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { serverClient } from "@/sanity/lib/client";
 import { contactFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
+import { PHONE_UTILS } from "@/lib/constants";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 export async function POST(request: NextRequest) {
@@ -423,6 +424,204 @@ Olgish Cakes
         const createdOrder = await serverClient.create(orderDoc);
         console.log('✅ Order created successfully in Sanity:', createdOrder._id);
         orderCreated = true;
+
+        // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
+        // This happens automatically for every order - no manual intervention needed
+        console.log('📧 Contact API: Sending confirmation email to customer...');
+        try {
+          // Check for Resend API key at runtime
+          if (!process.env.RESEND_API_KEY) {
+            console.error('❌ Contact API: RESEND_API_KEY not configured - skipping confirmation email');
+            throw new Error('Email service not configured');
+          }
+
+          // Validate email address format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(orderData.email)) {
+            console.error('❌ Contact API: Invalid email address format:', orderData.email);
+            throw new Error(`Invalid email address format: ${orderData.email}`);
+          }
+
+          console.log('📧 Contact API: Email details:', {
+            to: orderData.email,
+            bcc: process.env.ADMIN_BCC_EMAIL || 'not set',
+            orderNumber,
+            hasApiKey: !!process.env.RESEND_API_KEY,
+            timestamp: new Date().toISOString()
+          });
+
+          const customerEmailResult = await resend.emails.send({
+            from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+            to: orderData.email,
+            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+            subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
+            html: `
+              <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Order Confirmation - Olgish Cakes</title>
+              </head>
+              <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa;">
+                  <tr>
+                    <td align="center" style="padding: 40px 20px;">
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <tr>
+                          <td style="background: linear-gradient(135deg, #2E3192 0%, #1a237e 100%); padding: 40px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                              🎂 Order Confirmed
+                            </h1>
+                            <p style="margin: 8px 0 0 0; color: #e3f2fd; font-size: 16px; font-weight: 400;">
+                              Thank you for choosing Olgish Cakes
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 40px 30px;">
+                            <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+                              Dear <strong>${orderData.name}</strong>,
+                            </p>
+                            <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
+                              Thank you for your order! We've received your request and will get back to you within 24 hours with confirmation and next steps. Our team is already preparing your delicious treats with love and care.
+                            </p>
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+                              <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">Order Summary</h2>
+                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
+                                  <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">#${orderNumber}</td>
+                                </tr>
+                                <tr>
+                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
+                                  <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">New Order</td>
+                                </tr>
+                                ${orderData.dateNeeded ? `
+                                <tr>
+                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
+                                  <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
+                                </tr>
+                                ` : ''}
+                                <tr>
+                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
+                                  <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${orderData.totalPrice || 0}</td>
+                                </tr>
+                              </table>
+                            </div>
+                            <div style="margin-bottom: 32px;">
+                              <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">Your Order</h3>
+                              <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+                                <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${orderData.productName || 'Custom Order'}</h4>
+                                <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${orderData.totalPrice || orderData.unitPrice || 0}</p>
+                                <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                                  Quantity: ${orderData.quantity || 1}${orderData.productType === 'cake' ? ` • Design: ${orderData.designType === 'individual' ? 'Individual Design' : 'Standard Design'}` : ''}
+                                </p>
+                                ${orderData.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${orderData.specialInstructions}</p>` : ''}
+                              </div>
+                            </div>
+                            ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
+                            <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+                              <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">Delivery Address</h3>
+                              <p style="margin: 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
+                                ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
+                              </p>
+                            </div>
+                            ` : ''}
+                            ${orderData.note || orderData.giftNote ? `
+                            <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+                              <h3 style="margin: 0 0 12px 0; color: #92400e; font-size: 16px; font-weight: 600;">Additional Notes</h3>
+                              ${orderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${orderData.note}</p>` : ''}
+                              ${orderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${orderData.giftNote}</p>` : ''}
+                            </div>
+                            ` : ''}
+                            <div style="background: #eff6ff; border: 1px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
+                              <h3 style="margin: 0 0 12px 0; color: #1e40af; font-size: 16px; font-weight: 600;">What happens next?</h3>
+                              <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px; line-height: 1.6;">
+                                <li>We'll review your order and confirm all details within 24 hours</li>
+                                <li>You'll receive email updates when your order status changes</li>
+                                <li>We'll contact you if we need any additional information</li>
+                                <li>Your order will be prepared fresh and delivered on time</li>
+                              </ul>
+                            </div>
+                            <div style="text-align: center; padding: 24px 0; border-top: 1px solid #e5e7eb;">
+                              <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px;">
+                                Questions about your order? We're here to help!
+                              </p>
+                              <p style="margin: 0 0 20px 0; color: #374151; font-size: 14px;">
+                                📧 <a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 500;">hello@olgishcakes.co.uk</a><br>
+                                📞 <a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none; font-weight: 500;">${PHONE_UTILS.displayPhone}</a>
+                              </p>
+                              <p style="margin: 0; color: #6b7280; font-size: 12px;">
+                                Reply to this email to track your order status
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px; font-weight: 500;">
+                              With love from Leeds, UK
+                            </p>
+                            <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                              © ${new Date().getFullYear()} Olgish Cakes. All rights reserved.<br>
+                              Traditional Ukrainian honey cakes made with love
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+              </html>
+            `,
+          });
+
+          if (customerEmailResult.error) {
+            console.error('❌ Contact API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
+            console.error('❌ Contact API: Email error details:', {
+              message: customerEmailResult.error.message,
+              name: customerEmailResult.error.name,
+              orderNumber,
+              customerEmail: orderData.email
+            });
+            throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
+          } else {
+            console.log('✅ Contact API: Customer confirmation email sent successfully');
+            console.log('✅ Contact API: Email ID:', customerEmailResult.data?.id);
+            // Track successful email in order metadata
+            try {
+              await serverClient
+                .patch(createdOrder._id)
+                .set({
+                  'metadata.emailSent': true,
+                  'metadata.emailAttemptedAt': new Date().toISOString()
+                })
+                .commit();
+            } catch (metadataError) {
+              console.error('❌ Contact API: Failed to update order metadata for success:', metadataError);
+            }
+          }
+        } catch (emailError) {
+          console.error('❌ Contact API: Failed to send confirmation email:', emailError);
+          console.error('❌ Contact API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+          console.error('❌ Contact API: Order was created but email failed - Order ID:', createdOrder._id);
+          // Don't fail the order creation if email fails, but log it prominently
+          // Store email failure in order metadata for tracking
+          try {
+            await serverClient
+              .patch(createdOrder._id)
+              .set({
+                'metadata.emailSent': false,
+                'metadata.emailError': emailError instanceof Error ? emailError.message : 'Unknown error',
+                'metadata.emailAttemptedAt': new Date().toISOString()
+              })
+              .commit();
+          } catch (metadataError) {
+            console.error('❌ Contact API: Failed to update order metadata:', metadataError);
+          }
+        }
       } catch (orderException) {
         console.error('❌ Exception while creating order:', orderException);
         orderError = orderException;

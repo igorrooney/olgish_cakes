@@ -142,7 +142,8 @@ export async function POST(request: NextRequest) {
     const createdOrder = await serverClient.create(orderDoc);
     console.log('✅ Orders API: Order created in Sanity with ID:', createdOrder._id);
 
-    // Send confirmation email to customer
+    // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
+    // This happens automatically for every order - no manual intervention needed
     console.log('📧 Orders API: Sending confirmation email to customer...');
     try {
       // Check for Resend API key at runtime
@@ -153,6 +154,21 @@ export async function POST(request: NextRequest) {
 
       // Initialize Resend at runtime
       const resend = new Resend(process.env.RESEND_API_KEY);
+
+      // Validate email address format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(validatedOrderData.email)) {
+        console.error('❌ Orders API: Invalid email address format:', validatedOrderData.email);
+        throw new Error(`Invalid email address format: ${validatedOrderData.email}`);
+      }
+
+      console.log('📧 Orders API: Email details:', {
+        to: validatedOrderData.email,
+        bcc: process.env.ADMIN_BCC_EMAIL || 'not set',
+        orderNumber,
+        hasApiKey: !!process.env.RESEND_API_KEY,
+        timestamp: new Date().toISOString()
+      });
 
       const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -358,13 +374,49 @@ export async function POST(request: NextRequest) {
       });
       
       if (customerEmailResult.error) {
-        console.error('❌ Orders API: Customer email error:', customerEmailResult.error);
+        console.error('❌ Orders API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
+        console.error('❌ Orders API: Email error details:', {
+          message: customerEmailResult.error.message,
+          name: customerEmailResult.error.name,
+          orderNumber,
+          customerEmail: validatedOrderData.email
+        });
+        // Throw error to be caught and handled properly
+        throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
       } else {
         console.log('✅ Orders API: Customer confirmation email sent successfully');
+        console.log('✅ Orders API: Email ID:', customerEmailResult.data?.id);
+        // Track successful email in order metadata
+        try {
+          await serverClient
+            .patch(createdOrder._id)
+            .set({
+              'metadata.emailSent': true,
+              'metadata.emailAttemptedAt': new Date().toISOString()
+            })
+            .commit();
+        } catch (metadataError) {
+          console.error('❌ Orders API: Failed to update order metadata for success:', metadataError);
+        }
       }
     } catch (emailError) {
       console.error('❌ Orders API: Failed to send confirmation email:', emailError);
-      // Don't fail the order creation if email fails
+      console.error('❌ Orders API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+      console.error('❌ Orders API: Order was created but email failed - Order ID:', createdOrder._id);
+      // Don't fail the order creation if email fails, but log it prominently
+      // Store email failure in order metadata for tracking
+      try {
+        await serverClient
+          .patch(createdOrder._id)
+          .set({
+            'metadata.emailSent': false,
+            'metadata.emailError': emailError instanceof Error ? emailError.message : 'Unknown error',
+            'metadata.emailAttemptedAt': new Date().toISOString()
+          })
+          .commit();
+      } catch (metadataError) {
+        console.error('❌ Orders API: Failed to update order metadata:', metadataError);
+      }
     }
 
     // Send notification to admin
@@ -382,6 +434,7 @@ export async function POST(request: NextRequest) {
       const adminEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         subject: `🆕 New Order #${orderNumber} - ${validatedOrderData.name}`,
         html: `
           <!DOCTYPE html>
@@ -591,13 +644,20 @@ export async function POST(request: NextRequest) {
       });
       
       if (adminEmailResult.error) {
-        console.error('❌ Orders API: Admin email error:', adminEmailResult.error);
+        console.error('❌ Orders API: Admin email error:', JSON.stringify(adminEmailResult.error, null, 2));
+        console.error('❌ Orders API: Admin email error details:', {
+          message: adminEmailResult.error.message,
+          name: adminEmailResult.error.name,
+          orderNumber
+        });
       } else {
         console.log('✅ Orders API: Admin notification email sent successfully');
+        console.log('✅ Orders API: Admin email ID:', adminEmailResult.data?.id);
       }
     } catch (emailError) {
       console.error('❌ Orders API: Failed to send admin notification:', emailError);
-      // Don't fail the order if admin email fails
+      console.error('❌ Orders API: Admin email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+      // Don't fail the order if admin email fails, but log it prominently
     }
 
     console.log('✅ Orders API: Order process completed successfully');
