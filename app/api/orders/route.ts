@@ -7,9 +7,8 @@ import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/vali
 import { generateOrderNumber } from "@/lib/order-utils";
 
 // POST - Create new order
+// Note: This endpoint is public - customers need to submit orders without authentication
 export async function POST(request: NextRequest) {
-  // Temporarily bypass authentication for testing
-  // TODO: Re-enable authentication once login flow is working
   console.log('📦 Orders API: Received order creation request');
   
   try {

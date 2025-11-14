@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate tags for broader cache invalidation
+    // Note: revalidateTag requires 2 parameters in Next.js 16 (tag and cache profile)
     revalidateTag("cakes", "max");
     revalidateTag("testimonials", "max");
     revalidateTag("faqs", "max");

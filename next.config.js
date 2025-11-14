@@ -63,7 +63,9 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
+              // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live",
+              // unsafe-inline required for Google Fonts and Sanity Studio styles
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
