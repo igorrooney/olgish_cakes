@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SignJWT } from "jose";
+import { SignJWT, jwtVerify } from "jose";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // Helper function to get environment variables with runtime validation
 function getAdminCredentials() {
@@ -19,7 +20,7 @@ function getAdminCredentials() {
 }
 
 // POST - Admin login
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { username, password } = await request.json();
 
@@ -77,6 +78,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Apply rate limiting: 5 login attempts per minute
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 5 // 5 login attempts per minute
+});
+
 // GET - Check auth status
 export async function GET(request: NextRequest) {
   try {
@@ -86,10 +93,27 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    // Verify token (simplified check for now)
-    // In production, you might want to use jose.VerifyJWT for proper verification
-    return NextResponse.json({ authenticated: true }, { status: 200 });
-  } catch {
+    // Verify JWT token properly
+    const { ADMIN_USERNAME, JWT_SECRET } = getAdminCredentials();
+    const secret = new TextEncoder().encode(JWT_SECRET);
+
+    try {
+      const { payload } = await jwtVerify(token, secret, {
+        algorithms: ['HS256']
+      });
+
+      // Verify token payload matches admin user
+      if (payload.username === ADMIN_USERNAME && payload.role === 'admin') {
+        return NextResponse.json({ authenticated: true }, { status: 200 });
+      } else {
+        return NextResponse.json({ authenticated: false }, { status: 401 });
+      }
+    } catch (verifyError) {
+      // Token is invalid or expired
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+  } catch (error) {
+    console.error('Admin auth check error:', error);
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }

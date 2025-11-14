@@ -5,10 +5,11 @@ import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
 import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 import { generateOrderNumber } from "@/lib/order-utils";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // POST - Create new order
 // Note: This endpoint is public - customers need to submit orders without authentication
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   console.log('📦 Orders API: Received order creation request');
   
   try {
@@ -686,6 +687,12 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Apply rate limiting: 5 requests per minute for order submissions
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 5 // 5 requests per minute (lower limit for order submissions)
+});
 
 // GET - Fetch orders (with optional filtering)
 export async function GET(request: NextRequest) {

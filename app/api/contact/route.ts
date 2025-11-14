@@ -4,9 +4,10 @@ import { serverClient } from "@/sanity/lib/client";
 import { contactFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
 import { PHONE_UTILS } from "@/lib/constants";
+import { withRateLimit } from "@/lib/rate-limit";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   // Check for required environment variables at runtime
   if (!process.env.RESEND_API_KEY) {
     console.error("RESEND_API_KEY environment variable is not set");
@@ -707,3 +708,9 @@ Olgish Cakes
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
 }
+
+// Apply rate limiting: 10 requests per minute
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 10 // 10 requests per minute
+});
