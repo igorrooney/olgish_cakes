@@ -1,9 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { invalidateCache } from "@/app/utils/fetchCakes";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    // Security: Verify revalidation secret
+    const authHeader = request.headers.get('authorization');
+    const expectedToken = process.env.REVALIDATE_SECRET;
+
+    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { _type, _id, slug } = body;
 
@@ -32,6 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Revalidate tags for broader cache invalidation
+    // Note: revalidateTag requires 2 parameters in Next.js 16 (tag and cache profile)
     revalidateTag("cakes", "max");
     revalidateTag("testimonials", "max");
     revalidateTag("faqs", "max");
@@ -54,8 +66,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET method for testing
-export async function GET() {
+// GET method - protected for security
+export async function GET(request: NextRequest) {
+  // Security: Require authentication even for GET endpoint
+  const authHeader = request.headers.get('authorization');
+  const expectedToken = process.env.REVALIDATE_SECRET;
+
+  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   return NextResponse.json({
     message: "Revalidation webhook is active",
     usage: "POST with Sanity webhook payload",

@@ -26,6 +26,7 @@ describe('email', () => {
 
   describe('sendEmail', () => {
     it('should send email with basic params', async () => {
+      process.env.ADMIN_BCC_EMAIL = 'igorrooney@gmail.com'
       actualMockSend.mockResolvedValue({ data: { id: 'email-123' }, error: null })
 
       await sendEmail({

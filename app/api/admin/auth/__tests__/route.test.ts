@@ -8,6 +8,13 @@ jest.mock('jose', () => ({
     setExpirationTime: jest.fn().mockReturnThis(),
     setIssuedAt: jest.fn().mockReturnThis(),
     sign: jest.fn(() => Promise.resolve('mock-token'))
+  })),
+  jwtVerify: jest.fn(() => Promise.resolve({
+    payload: {
+      username: 'admin',
+      role: 'admin',
+      iat: Math.floor(Date.now() / 1000)
+    }
   }))
 }))
 

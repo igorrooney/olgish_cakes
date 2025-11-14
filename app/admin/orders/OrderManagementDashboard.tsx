@@ -380,10 +380,10 @@ export function OrderManagementDashboard() {
     const firstItem = order.items[0];
     setEditForm({
       status: order.status,
-      trackingNumber: order.delivery.trackingNumber || '',
-      paymentStatus: order.pricing.paymentStatus,
-      paymentMethod: order.pricing.paymentMethod || '',
-      deliveryMethod: order.delivery.deliveryMethod,
+      trackingNumber: order.delivery?.trackingNumber || '',
+      paymentStatus: order.pricing?.paymentStatus || 'pending',
+      paymentMethod: order.pricing?.paymentMethod || '',
+      deliveryMethod: order.delivery?.deliveryMethod || 'collection',
       note: '',
       images: [],
       // Populate customer information
@@ -395,7 +395,7 @@ export function OrderManagementDashboard() {
       customerPostcode: order.customer.postcode || '',
       // Populate pricing information
       itemPrice: firstItem?.totalPrice || 0,
-      totalPrice: order.pricing.total,
+      totalPrice: order.pricing?.total || 0,
       // Populate item selection information
       selectedCakeId: firstItem?.productId || '',
       selectedCakeName: firstItem?.productName || 'Custom Order',
@@ -536,10 +536,22 @@ export function OrderManagementDashboard() {
 
   // Calculate filtered statistics based on current filters
   const getFilteredStatistics = () => {
-    const filtered = filteredOrders;
+    const filtered = filteredOrders || [];
     const totalRevenue = filtered
-      .filter(order => order.status !== 'cancelled')
-      .reduce((sum, order) => sum + order.pricing.total, 0);
+      .filter(order => order && order.status && order.status !== 'cancelled')
+      .reduce((sum, order) => {
+        // Defensive null checks - use optional chaining throughout
+        if (!order) return sum;
+        try {
+          const total = order.pricing?.total;
+          if (total == null || typeof total !== 'number' || isNaN(total)) return sum;
+          return sum + total;
+        } catch (error) {
+          // If anything goes wrong, just skip this order
+          console.warn('Error calculating order total:', error, order);
+          return sum;
+        }
+      }, 0);
 
     const totalOrders = filtered.length;
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
@@ -819,7 +831,14 @@ export function OrderManagementDashboard() {
               </Typography>
               <Typography variant="h4" color="primary">
                 £{monthFilter === 'all'
-                  ? orders.filter(order => order.status !== 'cancelled').reduce((sum, order) => sum + order.pricing.total, 0).toFixed(2)
+                  ? orders
+                      .filter(order => order && order.status !== 'cancelled')
+                      .reduce((sum, order) => {
+                        if (!order || !order.pricing) return sum;
+                        const total = order.pricing.total;
+                        return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
+                      }, 0)
+                      .toFixed(2)
                   : filteredStats.totalRevenue.toFixed(2)
                 }
               </Typography>
@@ -1030,12 +1049,12 @@ export function OrderManagementDashboard() {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2" fontWeight="medium">
-                        £{order.pricing.total.toFixed(2)}
+                        £{(order.pricing?.total || 0).toFixed(2)}
                       </Typography>
                       <Chip
-                        label={order.pricing.paymentStatus}
+                        label={order.pricing?.paymentStatus || 'pending'}
                         size="small"
-                        color={order.pricing.paymentStatus === 'paid' ? 'success' : 'warning'}
+                        color={(order.pricing?.paymentStatus || 'pending') === 'paid' ? 'success' : 'warning'}
                         sx={{ mt: 0.5 }}
                       />
                     </TableCell>
@@ -1048,13 +1067,13 @@ export function OrderManagementDashboard() {
                       />
                     </TableCell>
                     <TableCell>
-                      {order.delivery.dateNeeded ? (
+                      {order.delivery?.dateNeeded ? (
                         <>
                           <Typography variant="body2">
                             {new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {order.delivery.deliveryMethod.replace('-', ' ')}
+                            {order.delivery?.deliveryMethod ? order.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}
                           </Typography>
                         </>
                       ) : (
@@ -1605,20 +1624,20 @@ export function OrderManagementDashboard() {
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Delivery Information</Typography>
                 <Box sx={{ mb: 2 }}>
-                  {selectedOrder.delivery.dateNeeded && (
+                  {selectedOrder.delivery?.dateNeeded && (
                     <Typography><strong>Date Needed:</strong> {new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')}</Typography>
                   )}
-                  <Typography><strong>Method:</strong> {selectedOrder.delivery.deliveryMethod.replace('-', ' ')}</Typography>
-                  {selectedOrder.delivery.trackingNumber && (
+                  <Typography><strong>Method:</strong> {selectedOrder.delivery?.deliveryMethod ? selectedOrder.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}</Typography>
+                  {selectedOrder.delivery?.trackingNumber && (
                     <Typography><strong>Tracking:</strong> {selectedOrder.delivery.trackingNumber}</Typography>
                   )}
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Pricing</Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Typography><strong>Total:</strong> £{selectedOrder.pricing.total}</Typography>
-                  <Typography><strong>Payment Status:</strong> {selectedOrder.pricing.paymentStatus}</Typography>
-                  {selectedOrder.pricing.paymentMethod && (
+                  <Typography><strong>Total:</strong> £{selectedOrder.pricing?.total || 0}</Typography>
+                  <Typography><strong>Payment Status:</strong> {selectedOrder.pricing?.paymentStatus || 'pending'}</Typography>
+                  {selectedOrder.pricing?.paymentMethod && (
                     <Typography><strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod.replace('-', ' ')}</Typography>
                   )}
                 </Box>

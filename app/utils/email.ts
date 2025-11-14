@@ -31,7 +31,7 @@ export async function sendEmail({ to, subject, text, attachments, bcc }: SendEma
     const response = await resend.emails.send({
       from: process.env.NEXT_PUBLIC_EMAIL_FROM || "Olgish Cakes <hello@olgishcakes.co.uk>",
       to,
-      bcc: bcc || "igorrooney@gmail.com",
+      bcc: bcc || process.env.ADMIN_BCC_EMAIL || undefined,
       subject,
       text,
       attachments: resolvedAttachments,

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    const user = verifyToken(token);
+    const user = await verifyToken(token);
 
     if (!user || user.role !== 'admin') {
       return NextResponse.json(
