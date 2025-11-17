@@ -67,7 +67,9 @@ async function handlePOST(request: NextRequest) {
     });
 
     if (!validationResult.success) {
-      console.error('❌ Orders API: Validation failed:', formatValidationErrors(validationResult.errors));
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Validation failed:', formatValidationErrors(validationResult.errors));
+      }
       return NextResponse.json(
         { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
         { status: 400 }
@@ -165,7 +167,9 @@ async function handlePOST(request: NextRequest) {
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
-        console.error('RESEND_API_KEY not configured - skipping confirmation email');
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('RESEND_API_KEY not configured - skipping confirmation email');
+        }
         throw new Error('Email service not configured');
       }
 
@@ -175,7 +179,9 @@ async function handlePOST(request: NextRequest) {
       // Validate email address format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(validatedOrderData.email)) {
-        console.error('❌ Orders API: Invalid email address format:', validatedOrderData.email);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Invalid email address format:', validatedOrderData.email);
+        }
         throw new Error(`Invalid email address format: ${validatedOrderData.email}`);
       }
 
@@ -383,13 +389,15 @@ async function handlePOST(request: NextRequest) {
       });
       
       if (customerEmailResult.error) {
-        console.error('❌ Orders API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
-        console.error('❌ Orders API: Email error details:', {
-          message: customerEmailResult.error.message,
-          name: customerEmailResult.error.name,
-          orderNumber,
-          customerEmail: validatedOrderData.email
-        });
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
+          console.error('❌ Orders API: Email error details:', {
+            message: customerEmailResult.error.message,
+            name: customerEmailResult.error.name,
+            orderNumber,
+            customerEmail: validatedOrderData.email
+          });
+        }
         // Throw error to be caught and handled properly
         throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
       } else {
@@ -403,13 +411,17 @@ async function handlePOST(request: NextRequest) {
             })
             .commit();
         } catch (metadataError) {
-          console.error('❌ Orders API: Failed to update order metadata for success:', metadataError);
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('❌ Orders API: Failed to update order metadata for success:', metadataError);
+          }
         }
       }
     } catch (emailError) {
-      console.error('❌ Orders API: Failed to send confirmation email:', emailError);
-      console.error('❌ Orders API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
-      console.error('❌ Orders API: Order was created but email failed - Order ID:', createdOrder._id);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Failed to send confirmation email:', emailError);
+        console.error('❌ Orders API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+        console.error('❌ Orders API: Order was created but email failed - Order ID:', createdOrder._id);
+      }
       // Don't fail the order creation if email fails, but log it prominently
       // Store email failure in order metadata for tracking
       try {
@@ -422,7 +434,9 @@ async function handlePOST(request: NextRequest) {
           })
           .commit();
       } catch (metadataError) {
-        console.error('❌ Orders API: Failed to update order metadata:', metadataError);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Failed to update order metadata:', metadataError);
+        }
       }
     }
 
@@ -430,7 +444,9 @@ async function handlePOST(request: NextRequest) {
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
-        console.error('❌ Orders API: RESEND_API_KEY not configured - skipping admin notification');
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: RESEND_API_KEY not configured - skipping admin notification');
+        }
         throw new Error('Email service not configured');
       }
 
@@ -650,17 +666,21 @@ async function handlePOST(request: NextRequest) {
       });
       
       if (adminEmailResult.error) {
-        console.error('❌ Orders API: Admin email error:', JSON.stringify(adminEmailResult.error, null, 2));
-        console.error('❌ Orders API: Admin email error details:', {
-          message: adminEmailResult.error.message,
-          name: adminEmailResult.error.name,
-          orderNumber
-        });
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Admin email error:', JSON.stringify(adminEmailResult.error, null, 2));
+          console.error('❌ Orders API: Admin email error details:', {
+            message: adminEmailResult.error.message,
+            name: adminEmailResult.error.name,
+            orderNumber
+          });
+        }
       } else {
       }
     } catch (emailError) {
-      console.error('❌ Orders API: Failed to send admin notification:', emailError);
-      console.error('❌ Orders API: Admin email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Failed to send admin notification:', emailError);
+        console.error('❌ Orders API: Admin email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+      }
       // Don't fail the order if admin email fails, but log it prominently
     }
 
@@ -672,12 +692,14 @@ async function handlePOST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Orders API: Order creation error:', error);
-    console.error('❌ Orders API: Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('❌ Orders API: Order creation error:', error);
+      console.error('❌ Orders API: Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      });
+    }
     
     return NextResponse.json(
       { 
@@ -779,7 +801,9 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Failed to fetch orders:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to fetch orders:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to fetch orders' },
       { status: 500 }

@@ -10,7 +10,9 @@ const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk"
 async function handlePOST(request: NextRequest) {
   // Check for required environment variables at runtime
   if (!process.env.RESEND_API_KEY) {
-    console.error("RESEND_API_KEY environment variable is not set");
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("RESEND_API_KEY environment variable is not set");
+    }
     return NextResponse.json(
       { error: "Internal server error: Email service not configured." },
       { status: 500 }
@@ -18,7 +20,9 @@ async function handlePOST(request: NextRequest) {
   }
 
   if (!recipientEmail) {
-    console.error("Recipient email address (CONTACT_EMAIL_TO) is not configured.");
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Recipient email address (CONTACT_EMAIL_TO) is not configured.");
+    }
     return NextResponse.json(
       { error: "Internal server error: Email configuration missing." },
       { status: 500 }
@@ -291,7 +295,9 @@ Olgish Cakes
     }
 
     if (response.error) {
-      console.error("Resend API Error:", response.error);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Resend API Error:", response.error);
+      }
       throw new Error(response.error.message);
     }
 
@@ -330,12 +336,14 @@ Olgish Cakes
             ]
           } catch (e: unknown) {
             const error = e instanceof Error ? e : new Error(String(e))
-            console.error('❌ Failed to upload design image to Sanity:', error)
-            console.error('Error details:', {
-              message: error.message,
-              stack: error.stack,
-              name: error.name
-            })
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Failed to upload design image to Sanity:', error)
+              console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+              })
+            }
             // Continue without image attachment - don't fail the entire order
           }
         }
@@ -436,14 +444,18 @@ Olgish Cakes
         try {
           // Check for Resend API key at runtime
           if (!process.env.RESEND_API_KEY) {
-            console.error('❌ Contact API: RESEND_API_KEY not configured - skipping confirmation email');
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Contact API: RESEND_API_KEY not configured - skipping confirmation email');
+            }
             throw new Error('Email service not configured');
           }
 
           // Validate email address format
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegex.test(orderData.email)) {
-            console.error('❌ Contact API: Invalid email address format:', orderData.email);
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Contact API: Invalid email address format:', orderData.email);
+            }
             throw new Error(`Invalid email address format: ${orderData.email}`);
           }
 
@@ -577,13 +589,15 @@ Olgish Cakes
           });
 
           if (customerEmailResult.error) {
-            console.error('❌ Contact API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
-            console.error('❌ Contact API: Email error details:', {
-              message: customerEmailResult.error.message,
-              name: customerEmailResult.error.name,
-              orderNumber,
-              customerEmail: orderData.email
-            });
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Contact API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
+              console.error('❌ Contact API: Email error details:', {
+                message: customerEmailResult.error.message,
+                name: customerEmailResult.error.name,
+                orderNumber,
+                customerEmail: orderData.email
+              });
+            }
             throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
           } else {
             // Track successful email in order metadata
@@ -596,13 +610,17 @@ Olgish Cakes
                 })
                 .commit();
             } catch (metadataError) {
-              console.error('❌ Contact API: Failed to update order metadata for success:', metadataError);
+              if (process.env.NODE_ENV !== 'production') {
+                console.error('❌ Contact API: Failed to update order metadata for success:', metadataError);
+              }
             }
           }
         } catch (emailError) {
-          console.error('❌ Contact API: Failed to send confirmation email:', emailError);
-          console.error('❌ Contact API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
-          console.error('❌ Contact API: Order was created but email failed - Order ID:', createdOrder._id);
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('❌ Contact API: Failed to send confirmation email:', emailError);
+            console.error('❌ Contact API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+            console.error('❌ Contact API: Order was created but email failed - Order ID:', createdOrder._id);
+          }
           // Don't fail the order creation if email fails, but log it prominently
           // Store email failure in order metadata for tracking
           try {
@@ -615,17 +633,23 @@ Olgish Cakes
               })
               .commit();
           } catch (metadataError) {
-            console.error('❌ Contact API: Failed to update order metadata:', metadataError);
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Contact API: Failed to update order metadata:', metadataError);
+            }
           }
         }
       } catch (orderException) {
-        console.error('❌ Exception while creating order:', orderException);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Exception while creating order:', orderException);
+        }
         orderError = orderException;
       }
 
       // FALLBACK: If order creation failed, send email directly from contact API
       if (!orderCreated && orderError) {
-        console.warn('⚠️  Order creation failed, sending fallback notification emails...');
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('⚠️  Order creation failed, sending fallback notification emails...');
+        }
         try {
           // Send admin notification email
           const adminEmailResponse = await resend.emails.send({
@@ -647,7 +671,9 @@ Olgish Cakes
           });
 
           if (adminEmailResponse.error) {
-            console.error('❌ Fallback admin email failed:', adminEmailResponse.error);
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Fallback admin email failed:', adminEmailResponse.error);
+            }
           }
           // Email sent successfully - no action needed
 
@@ -685,11 +711,15 @@ Olgish Cakes
           });
 
           if (customerEmailResponse.error) {
-            console.error('❌ Fallback customer email failed:', customerEmailResponse.error);
+            if (process.env.NODE_ENV !== 'production') {
+              console.error('❌ Fallback customer email failed:', customerEmailResponse.error);
+            }
           }
           // Email sent successfully - no action needed
         } catch (fallbackError) {
-          console.error('❌ Fallback email sending failed completely:', fallbackError);
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('❌ Fallback email sending failed completely:', fallbackError);
+          }
           // Log but don't throw - we don't want to show error to user
         }
       }
@@ -697,7 +727,9 @@ Olgish Cakes
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Contact API Error:", error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Contact API Error:", error);
+    }
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
 }

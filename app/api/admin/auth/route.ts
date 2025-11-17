@@ -72,7 +72,9 @@ async function handlePOST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('Admin auth error:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Admin auth error:', error);
+    }
     return NextResponse.json(
       { error: "Authentication failed" },
       { status: 500 }
@@ -118,7 +120,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
   } catch (error) {
-    console.error('Admin auth check error:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Admin auth check error:', error);
+    }
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }

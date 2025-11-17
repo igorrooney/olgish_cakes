@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateRequest, formatValidationErrors } from "@/lib/validation";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -13,7 +14,7 @@ const revalidateSchema = z.object({
   }).optional()
 });
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     // Security: Verify revalidation secret
     const authHeader = request.headers.get('authorization');
@@ -101,7 +102,9 @@ export async function POST(request: NextRequest) {
       revalidated: { _type, _id, slug },
     });
   } catch (error) {
-    console.error("❌ Revalidation error:", error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("❌ Revalidation error:", error);
+    }
     return NextResponse.json(
       {
         success: false,
@@ -112,6 +115,12 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Apply rate limiting: 10 revalidations per minute
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 10 // 10 revalidations per minute
+});
 
 // GET method - protected for security
 export async function GET(request: NextRequest) {
