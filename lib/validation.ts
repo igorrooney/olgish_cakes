@@ -1,10 +1,38 @@
 import { z } from 'zod'
 
+// UK phone number validation
+// Validates UK phone numbers in various formats
+// Supports: +44..., 0..., 0044..., with spaces, dashes, or no separators
+// Examples: +447911123456, 07911123456, +44 7911 123456, 020 1234 5678
+function validateUKPhone(phone: string): boolean {
+  // Remove spaces, dashes, and parentheses for validation
+  const cleaned = phone.replace(/[\s\-()]/g, '')
+  
+  // Check if it starts with UK country code or national format
+  if (cleaned.startsWith('+44')) {
+    // International format: +44 followed by 9-10 digits (excluding leading 0)
+    return /^\+44[1-9]\d{8,9}$/.test(cleaned)
+  } else if (cleaned.startsWith('0044')) {
+    // Alternative international format: 0044 followed by 9-10 digits
+    return /^0044[1-9]\d{8,9}$/.test(cleaned)
+  } else if (cleaned.startsWith('0')) {
+    // National format: 0 followed by 9-10 digits
+    return /^0[1-9]\d{8,9}$/.test(cleaned)
+  }
+  
+  return false
+}
+
 // Contact form validation
 export const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits').max(20),
+  phone: z.string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .max(20, 'Phone number must not exceed 20 characters')
+    .refine((val) => validateUKPhone(val), {
+      message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
+    }),
   message: z.string().max(2000).optional(), // Optional when order form, required otherwise
   address: z.string().optional(),
   city: z.string().optional(),
@@ -27,7 +55,12 @@ export const contactFormSchema = z.object({
 export const quoteFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits').max(20),
+  phone: z.string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .max(20, 'Phone number must not exceed 20 characters')
+    .refine((val) => validateUKPhone(val), {
+      message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
+    }),
   occasion: z.string().min(2, 'Please specify the occasion'),
   dateNeeded: z.string().min(1, 'Date is required'),
   guestCount: z.string().optional(),
@@ -43,7 +76,12 @@ export const quoteFormSchema = z.object({
 export const orderSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
-  phone: z.string().min(10).max(20),
+  phone: z.string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .max(20, 'Phone number must not exceed 20 characters')
+    .refine((val) => validateUKPhone(val), {
+      message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
+    }),
   address: z.string().optional(),
   city: z.string().optional(),
   postcode: z.string().optional(),

@@ -701,10 +701,15 @@ async function handlePOST(request: NextRequest) {
       });
     }
     
+    // Sanitize error message in production
+    const errorMessage = process.env.NODE_ENV === 'production'
+      ? 'Failed to create order'
+      : (error instanceof Error ? error.message : 'Unknown error');
+    
     return NextResponse.json(
       { 
         error: 'Failed to create order', 
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: errorMessage,
         timestamp: new Date().toISOString()
       },
       { status: 500 }

@@ -91,6 +91,7 @@ export interface Cake {
   ingredients: string[];
   allergens?: string[];
   structuredData?: CakeStructuredData;
+  order?: number;
 }
 
 export const sizeLabels: Record<CakeSize["name"], string> = {

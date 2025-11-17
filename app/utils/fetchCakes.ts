@@ -55,7 +55,7 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
   const cached = getCachedData<Cake[]>(cacheKey);
   if (cached && !preview) return cached;
 
-  const query = `*[_type == "cake"] | order(_createdAt desc) {
+  const query = `*[_type == "cake"] | order(order asc, _createdAt desc) {
     _id,
     _createdAt,
     name,
@@ -64,6 +64,7 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
     shortDescription,
     size,
     pricing,
+    order,
     mainImage {
       _type,
       asset
@@ -106,7 +107,7 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   const cached = getCachedData<Cake[]>(cacheKey);
   if (cached && !preview) return cached;
 
-  const query = groq`*[_type == "cake" && isFeatured == true] | order(_createdAt desc) {
+  const query = groq`*[_type == "cake" && isFeatured == true] | order(order asc, _createdAt desc) {
     _id,
     name,
     description,
@@ -114,6 +115,7 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
     pricing,
     category,
     slug,
+    order,
     mainImage {
       _type,
       asset
@@ -159,6 +161,7 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
     shortDescription,
     size,
     pricing,
+    order,
     mainImage {
       _type,
       asset

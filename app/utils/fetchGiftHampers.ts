@@ -28,7 +28,7 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
   const cached = getCachedData<GiftHamper[]>(cacheKey);
   if (cached && !preview) return cached;
 
-  const query = `*[_type == "giftHamper"] | order(_createdAt desc) {
+  const query = `*[_type == "giftHamper"] | order(order asc, _createdAt desc) {
     _id,
     _createdAt,
     name,
@@ -36,6 +36,7 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
     shortDescription,
     description,
     price,
+    order,
     images[] { _type, asset, alt, isMain, caption },
     isFeatured,
     category,
@@ -61,11 +62,12 @@ export async function getFeaturedGiftHampers(preview = false): Promise<GiftHampe
   const cached = getCachedData<GiftHamper[]>(cacheKey);
   if (cached && !preview) return cached;
 
-  const query = `*[_type == "giftHamper" && isFeatured == true] | order(_createdAt desc) {
+  const query = `*[_type == "giftHamper" && isFeatured == true] | order(order asc, _createdAt desc) {
     _id,
     name,
     slug,
     price,
+    order,
     images[] { _type, asset, alt, isMain },
     category
   }`;

@@ -5,6 +5,16 @@ import { NextRequest, NextResponse } from 'next/server'
 // For production with multiple serverless instances on Vercel, use Vercel KV or Redis.
 // See: https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting-sdk
 // Alternative: Use @vercel/firewall SDK for IP-based rate limiting
+//
+// Production Scale Considerations:
+// - This implementation uses a Map for in-memory storage
+// - In serverless environments with multiple instances, each instance has its own Map
+// - For production scale, consider migrating to:
+//   1. Vercel KV (recommended for Vercel deployments): https://vercel.com/docs/storage/vercel-kv
+//   2. Redis (for other platforms or custom infrastructure)
+//   3. Vercel Firewall (for IP-based rate limiting at edge)
+// - The cleanup interval runs every 5 minutes to prevent memory leaks
+// - For high-traffic scenarios, consider implementing a maximum Map size limit
 interface RateLimitStore {
   count: number
   resetTime: number

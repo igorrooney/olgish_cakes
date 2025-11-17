@@ -17,7 +17,9 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     
     if (!cronSecret) {
-      console.error('CRON_SECRET not configured')
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('CRON_SECRET not configured')
+      }
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -25,7 +27,9 @@ export async function GET(request: NextRequest) {
     }
     
     if (authHeader !== `Bearer ${cronSecret}`) {
-      console.error('Unauthorized cron attempt from:', request.headers.get('x-forwarded-for'))
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Unauthorized cron attempt from:', request.headers.get('x-forwarded-for'))
+      }
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -36,7 +40,9 @@ export async function GET(request: NextRequest) {
     const today = now.toISOString().split('T')[0]
     const currentTime = now.toTimeString().split(' ')[0]
 
-    console.warn(`Checking for scheduled posts on ${today} at ${currentTime}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`Checking for scheduled posts on ${today} at ${currentTime}`)
+    }
 
     // Find posts scheduled for today that haven't been published yet
     // Use parameterized query to prevent GROQ injection
@@ -50,7 +56,9 @@ export async function GET(request: NextRequest) {
       { startOfDay, endOfDay }
     )
 
-    console.warn(`Found ${scheduledPosts.length} scheduled posts for today`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`Found ${scheduledPosts.length} scheduled posts for today`)
+    }
 
     const publishedPosts = []
 
@@ -75,9 +83,13 @@ export async function GET(request: NextRequest) {
             publishedAt: new Date().toISOString()
           })
 
-          console.warn(`Published post: ${post.title}`)
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(`Published post: ${post.title}`)
+          }
         } catch (error) {
-          console.error(`Error publishing post ${post._id}:`, error)
+          if (process.env.NODE_ENV !== 'production') {
+            console.error(`Error publishing post ${post._id}:`, error)
+          }
         }
       }
     }
@@ -90,7 +102,9 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error publishing scheduled posts:', error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error publishing scheduled posts:', error)
+    }
     return NextResponse.json(
       {
         success: false,
