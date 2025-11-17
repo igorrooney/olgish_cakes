@@ -481,6 +481,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }
           `}
         </Script>
+
+        {/* Suppress MetaMask extension errors */}
+        <Script id="suppress-extension-errors" strategy="afterInteractive">
+          {`
+            // Suppress MetaMask and other extension errors that are expected
+            const originalError = console.error;
+            console.error = function(...args) {
+              const message = args.join(' ');
+              // Suppress MetaMask extension errors
+              if (message.includes('MetaMask') || message.includes('Failed to connect to MetaMask')) {
+                return;
+              }
+              originalError.apply(console, args);
+            };
+
+            // Suppress unhandled promise rejections from extensions
+            window.addEventListener('unhandledrejection', (event) => {
+              if (event.reason && typeof event.reason === 'object') {
+                const reason = event.reason.toString();
+                if (reason.includes('MetaMask') || reason.includes('extension not found')) {
+                  event.preventDefault();
+                }
+              }
+            });
+          `}
+        </Script>
       </body>
     </html>
   );

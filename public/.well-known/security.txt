@@ -1,0 +1,13 @@
+Contact: mailto:hello@olgishcakes.co.uk
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: en, uk
+Canonical: https://olgishcakes.co.uk/.well-known/security.txt
+
+# Security Policy
+# If you discover a security vulnerability, please report it to us at hello@olgishcakes.co.uk
+# We take security seriously and will respond to all legitimate reports within 48 hours.
+# Please do not publicly disclose the issue until we have addressed it.
+
+# Acknowledgments
+# We appreciate the security research community and will acknowledge valid reports on our website.
+

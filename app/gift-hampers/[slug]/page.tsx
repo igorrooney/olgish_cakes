@@ -44,6 +44,7 @@ async function getGiftHamper(slug: string, preview = false): Promise<GiftHamper 
     description,
     shortDescription,
     price,
+    order,
     category,
     ingredients,
     allergens,

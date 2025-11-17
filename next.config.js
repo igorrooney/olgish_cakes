@@ -60,6 +60,25 @@ const nextConfig = {
         source: "/(.*)",
         headers: [
           {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live",
+              // unsafe-inline required for Google Fonts and Sanity Studio styles
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https: http:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live",
+              "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com https://vercel.live",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests"
+            ].join('; ')
+          },
+          {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
@@ -73,11 +92,11 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
+            value: "strict-origin-when-cross-origin",
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
           },
           // SEO headers
           {
@@ -242,13 +261,13 @@ const nextConfig = {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
-      
+
       // Enhanced performance optimizations
       config.optimization.mergeDuplicateChunks = true;
       config.optimization.removeAvailableModules = true;
       config.optimization.removeEmptyChunks = true;
       config.optimization.providedExports = true;
-      
+
       // Optimize module resolution
       config.resolve.symlinks = false;
       config.resolve.cacheWithContext = false;

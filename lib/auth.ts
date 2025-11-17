@@ -1,23 +1,46 @@
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
+// Helper function to get JWT secret with runtime validation
+function getJWTSecret(): string {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  return JWT_SECRET;
+}
 
 export interface AdminUser {
   username: string;
   role: string;
-  iat: number;
+  iat?: number;
 }
 
-export function verifyToken(token: string): AdminUser | null {
+export async function verifyToken(token: string): Promise<AdminUser | null> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as AdminUser;
-    return decoded;
-  } catch {
+    const secret = new TextEncoder().encode(getJWTSecret());
+    const { payload } = await jwtVerify(token, secret, {
+      algorithms: ['HS256'], // Explicitly require HS256 to prevent algorithm confusion
+      audience: 'olgish-cakes-admin', // Verify audience
+      issuer: 'olgish-cakes', // Verify issuer
+      clockTolerance: '5s' // Allow 5s clock skew for serverless environments
+    });
+    
+    return {
+      username: payload.username as string,
+      role: payload.role as string,
+      iat: payload.iat
+    };
+  } catch (error) {
+    // Log JWT verification errors but don't expose sensitive details
+    if (error instanceof Error && error.message.includes('JWT_SECRET')) {
+      console.error('JWT_SECRET environment variable error:', error.message);
+    }
+    // Return null for invalid tokens (malformed, expired, wrong secret, etc.)
     return null;
   }
 }
 
-export function isAdmin(token: string): boolean {
-  const user = verifyToken(token);
+export async function isAdmin(token: string): Promise<boolean> {
+  const user = await verifyToken(token);
   return user?.role === 'admin';
 }

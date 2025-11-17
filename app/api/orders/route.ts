@@ -1,91 +1,148 @@
 import { NextRequest, NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
-import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
+import { PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
+import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
+import { generateOrderNumber } from "@/lib/order-utils";
+import { withRateLimit } from "@/lib/rate-limit";
 
-// Generate unique order number
-function generateOrderNumber(): string {
-  const timestamp = Date.now().toString().slice(-6);
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `OC${timestamp}${random}`;
+// Type definitions for order items and attachments
+interface OrderItem {
+  productName?: string
+  productType?: string
+  designType?: string
+  quantity?: number
+  unitPrice?: number
+  totalPrice?: number
+  size?: string
+  flavor?: string
+  specialInstructions?: string
+}
+
+interface Attachment {
+  asset?: {
+    _id?: string
+    _ref?: string
+    url?: string
+  }
+  alt?: string
+  caption?: string
 }
 
 // POST - Create new order
-export async function POST(request: NextRequest) {
-  // Temporarily bypass authentication for testing
-  // TODO: Re-enable authentication once login flow is working
-  console.log('📦 Orders API: Received order creation request');
-  
+// Note: This endpoint is public - customers need to submit orders without authentication
+async function handlePOST(request: NextRequest) {
   try {
     const orderData = await request.json();
-    console.log('📦 Orders API: Parsed order data for customer:', orderData.email);
+
+    // Validate order data with Zod schema
+    const validationResult = await validateRequest(orderSchema, {
+      name: orderData.name,
+      email: orderData.email,
+      phone: orderData.phone,
+      address: orderData.address || undefined,
+      city: orderData.city || undefined,
+      postcode: orderData.postcode || undefined,
+      message: orderData.message || '',
+      dateNeeded: orderData.dateNeeded || undefined,
+      orderType: orderData.orderType || 'custom-quote',
+      productType: orderData.productType || 'custom',
+      productId: orderData.productId || undefined,
+      productName: orderData.productName || 'Custom Order',
+      designType: orderData.designType || 'individual',
+      quantity: orderData.quantity || 1,
+      unitPrice: orderData.unitPrice || 0,
+      totalPrice: orderData.totalPrice || 0,
+      size: orderData.size || undefined,
+      flavor: orderData.flavor || undefined,
+      specialInstructions: orderData.specialInstructions || undefined,
+      deliveryMethod: orderData.deliveryMethod || 'collection',
+      deliveryAddress: orderData.deliveryAddress || undefined,
+      deliveryNotes: orderData.deliveryNotes || undefined,
+      giftNote: orderData.giftNote || undefined,
+      note: orderData.note || undefined,
+      paymentMethod: orderData.paymentMethod || 'cash-collection',
+      referrer: orderData.referrer || undefined
+    });
+
+    if (!validationResult.success) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Validation failed:', formatValidationErrors(validationResult.errors));
+      }
+      return NextResponse.json(
+        { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
+        { status: 400 }
+      );
+    }
+
+    // Use validated data
+    const validatedOrderData = validationResult.data;
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
-    console.log('📦 Orders API: Generated order number:', orderNumber);
 
     // Prepare order document for Sanity
     const orderDoc = {
       _type: 'order',
       orderNumber,
       status: 'new',
-      orderType: orderData.orderType || 'custom-quote',
+      orderType: validatedOrderData.orderType,
       customer: {
-        name: orderData.name,
-        email: orderData.email,
-        phone: orderData.phone,
-        address: orderData.address || '',
-        city: orderData.city || '',
-        postcode: orderData.postcode || '',
+        name: validatedOrderData.name,
+        email: validatedOrderData.email,
+        phone: validatedOrderData.phone,
+        address: validatedOrderData.address || '',
+        city: validatedOrderData.city || '',
+        postcode: validatedOrderData.postcode || '',
       },
       items: orderData.items || [{
-        productType: orderData.productType || 'custom',
-        productId: orderData.productId || '',
-        productName: orderData.productName || 'Custom Order',
-        designType: orderData.designType || 'individual',
-        quantity: orderData.quantity || 1,
-        unitPrice: orderData.unitPrice || 0,
-        totalPrice: orderData.totalPrice || 0,
-        size: orderData.size || '',
-        flavor: orderData.flavor || '',
-        specialInstructions: orderData.specialInstructions || '',
+        productType: validatedOrderData.productType,
+        productId: validatedOrderData.productId || '',
+        productName: validatedOrderData.productName,
+        designType: validatedOrderData.designType,
+        quantity: validatedOrderData.quantity,
+        unitPrice: validatedOrderData.unitPrice,
+        totalPrice: validatedOrderData.totalPrice,
+        size: validatedOrderData.size || '',
+        flavor: validatedOrderData.flavor || '',
+        specialInstructions: validatedOrderData.specialInstructions || '',
       }],
       delivery: {
-        dateNeeded: orderData.dateNeeded,
-        deliveryMethod: orderData.deliveryMethod || 'collection',
-        deliveryAddress: orderData.deliveryAddress || '',
-        deliveryNotes: orderData.deliveryNotes || '',
-        giftNote: orderData.giftNote || '',
+        dateNeeded: validatedOrderData.dateNeeded || null,
+        deliveryMethod: validatedOrderData.deliveryMethod,
+        deliveryAddress: validatedOrderData.deliveryAddress || '',
+        deliveryNotes: validatedOrderData.deliveryNotes || '',
+        giftNote: validatedOrderData.giftNote || '',
       },
       pricing: {
-        subtotal: orderData.subtotal || orderData.totalPrice || 0,
+        subtotal: orderData.subtotal || validatedOrderData.totalPrice || 0,
         deliveryFee: orderData.deliveryFee || 0,
         discount: orderData.discount || 0,
-        total: orderData.total || orderData.totalPrice || 0,
+        total: orderData.total || validatedOrderData.totalPrice || 0,
         paymentStatus: 'pending',
-        paymentMethod: orderData.paymentMethod || 'cash-collection',
+        paymentMethod: validatedOrderData.paymentMethod,
       },
       messages: (() => {
         const messages = [];
-        if (orderData.message) {
+        if (validatedOrderData.message) {
           const messageWithAttachments = {
-            message: orderData.message,
+            message: validatedOrderData.message,
             attachments: orderData.attachments || [],
           };
 
           messages.push(messageWithAttachments);
         }
-        if (orderData.deliveryNotes || orderData.note) {
-          const additionalNote = orderData.deliveryNotes || orderData.note;
+        if (validatedOrderData.deliveryNotes || validatedOrderData.note) {
+          const additionalNote = validatedOrderData.deliveryNotes || validatedOrderData.note;
           messages.push({
             message: `Additional Notes: ${additionalNote}`,
             attachments: [],
           });
         }
-        if (orderData.giftNote) {
+        if (validatedOrderData.giftNote) {
           messages.push({
-            message: `Gift Note: ${orderData.giftNote}`,
+            message: `Gift Note: ${validatedOrderData.giftNote}`,
             attachments: [],
           });
         }
@@ -94,7 +151,7 @@ export async function POST(request: NextRequest) {
       })(),
       metadata: {
         source: 'website',
-        referrer: orderData.referrer || '',
+        referrer: validatedOrderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
                    request.headers.get('x-real-ip') ||
@@ -103,26 +160,35 @@ export async function POST(request: NextRequest) {
     };
 
     // Create order in Sanity using server client with write permissions
-    console.log('📦 Orders API: Creating order in Sanity...');
     const createdOrder = await serverClient.create(orderDoc);
-    console.log('✅ Orders API: Order created in Sanity with ID:', createdOrder._id);
 
-    // Send confirmation email to customer
-    console.log('📧 Orders API: Sending confirmation email to customer...');
+    // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
+    // This happens automatically for every order - no manual intervention needed
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
-        console.error('RESEND_API_KEY not configured - skipping confirmation email');
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('RESEND_API_KEY not configured - skipping confirmation email');
+        }
         throw new Error('Email service not configured');
       }
 
       // Initialize Resend at runtime
       const resend = new Resend(process.env.RESEND_API_KEY);
 
+      // Validate email address format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(validatedOrderData.email)) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Invalid email address format:', validatedOrderData.email);
+        }
+        throw new Error(`Invalid email address format: ${validatedOrderData.email}`);
+      }
+
       const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
-        to: orderData.email,
-        bcc: 'igorrooney@gmail.com',
+        to: validatedOrderData.email,
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
         html: `
           <!DOCTYPE html>
@@ -155,7 +221,7 @@ export async function POST(request: NextRequest) {
                     <tr>
                       <td style="padding: 40px 30px;">
                         <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                          Dear <strong>${orderData.name}</strong>,
+                          Dear <strong>${validatedOrderData.name}</strong>,
                         </p>
 
                         <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
@@ -177,10 +243,10 @@ export async function POST(request: NextRequest) {
                               <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
                               <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">New Order</td>
                             </tr>
-                            ${orderData.dateNeeded ? `
+                            ${validatedOrderData.dateNeeded ? `
                             <tr>
                               <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                              <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
+                              <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(validatedOrderData.dateNeeded).toLocaleDateString('en-GB')}</td>
                             </tr>
                             ` : ''}
                             <tr>
@@ -198,7 +264,7 @@ export async function POST(request: NextRequest) {
 
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: any) => `
+                              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                                   <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -226,7 +292,7 @@ export async function POST(request: NextRequest) {
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
                           if (hasIndividualDesign && hasAttachments) {
@@ -237,7 +303,7 @@ export async function POST(request: NextRequest) {
                                   Thank you for providing your design reference! We'll use this to create your perfect cake.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${orderData.attachments.map((attachment: any) => {
+                                  ${orderData.attachments.map((attachment: Attachment) => {
                                     if (attachment.asset) {
                                       const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
                                       return `
@@ -256,21 +322,21 @@ export async function POST(request: NextRequest) {
                         })()}
 
                         <!-- Delivery Information -->
-                        ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
+                        ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                             <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">Delivery Address</h3>
                             <p style="margin: 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
-                              ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
+                              ${validatedOrderData.deliveryAddress}${validatedOrderData.city ? `, ${validatedOrderData.city}` : ''}${validatedOrderData.postcode ? `, ${validatedOrderData.postcode}` : ''}
                             </p>
                           </div>
                         ` : ''}
 
                         <!-- Additional Notes -->
-                        ${orderData.note || orderData.giftNote ? `
+                        ${validatedOrderData.note || validatedOrderData.giftNote ? `
                           <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                             <h3 style="margin: 0 0 12px 0; color: #92400e; font-size: 16px; font-weight: 600;">Additional Notes</h3>
-                            ${orderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${orderData.note}</p>` : ''}
-                            ${orderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${orderData.giftNote}</p>` : ''}
+                            ${validatedOrderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${validatedOrderData.note}</p>` : ''}
+                            ${validatedOrderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${validatedOrderData.giftNote}</p>` : ''}
                           </div>
                         ` : ''}
 
@@ -323,21 +389,64 @@ export async function POST(request: NextRequest) {
       });
       
       if (customerEmailResult.error) {
-        console.error('❌ Orders API: Customer email error:', customerEmailResult.error);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
+          console.error('❌ Orders API: Email error details:', {
+            message: customerEmailResult.error.message,
+            name: customerEmailResult.error.name,
+            orderNumber,
+            customerEmail: validatedOrderData.email
+          });
+        }
+        // Throw error to be caught and handled properly
+        throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
       } else {
-        console.log('✅ Orders API: Customer confirmation email sent successfully');
+        // Track successful email in order metadata
+        try {
+          await serverClient
+            .patch(createdOrder._id)
+            .set({
+              'metadata.emailSent': true,
+              'metadata.emailAttemptedAt': new Date().toISOString()
+            })
+            .commit();
+        } catch (metadataError) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('❌ Orders API: Failed to update order metadata for success:', metadataError);
+          }
+        }
       }
     } catch (emailError) {
-      console.error('❌ Orders API: Failed to send confirmation email:', emailError);
-      // Don't fail the order creation if email fails
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Failed to send confirmation email:', emailError);
+        console.error('❌ Orders API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+        console.error('❌ Orders API: Order was created but email failed - Order ID:', createdOrder._id);
+      }
+      // Don't fail the order creation if email fails, but log it prominently
+      // Store email failure in order metadata for tracking
+      try {
+        await serverClient
+          .patch(createdOrder._id)
+          .set({
+            'metadata.emailSent': false,
+            'metadata.emailError': emailError instanceof Error ? emailError.message : 'Unknown error',
+            'metadata.emailAttemptedAt': new Date().toISOString()
+          })
+          .commit();
+      } catch (metadataError) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Failed to update order metadata:', metadataError);
+        }
+      }
     }
 
     // Send notification to admin
-    console.log('📧 Orders API: Sending notification email to admin...');
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
-        console.error('❌ Orders API: RESEND_API_KEY not configured - skipping admin notification');
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: RESEND_API_KEY not configured - skipping admin notification');
+        }
         throw new Error('Email service not configured');
       }
 
@@ -347,7 +456,8 @@ export async function POST(request: NextRequest) {
       const adminEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
-        subject: `🆕 New Order #${orderNumber} - ${orderData.name}`,
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+        subject: `🆕 New Order #${orderNumber} - ${validatedOrderData.name}`,
         html: `
           <!DOCTYPE html>
           <html lang="en">
@@ -370,7 +480,7 @@ export async function POST(request: NextRequest) {
                           🆕 New Order Alert
                         </h1>
                         <p style="margin: 8px 0 0 0; color: #fecaca; font-size: 14px; font-weight: 400;">
-                          Order #${orderNumber} from ${orderData.name}
+                          Order #${orderNumber} from ${validatedOrderData.name}
                         </p>
                       </td>
                     </tr>
@@ -386,41 +496,41 @@ export async function POST(request: NextRequest) {
                           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500; width: 120px;">Name</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.name}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.name}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Email</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="mailto:${orderData.email}" style="color: #2E3192; text-decoration: none;">${orderData.email}</a></td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="mailto:${validatedOrderData.email}" style="color: #2E3192; text-decoration: none;">${validatedOrderData.email}</a></td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Phone</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none;">${orderData.phone}</a></td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;"><a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none;">${validatedOrderData.phone}</a></td>
                             </tr>
-                            ${orderData.dateNeeded ? `
+                            ${validatedOrderData.dateNeeded ? `
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${new Date(validatedOrderData.dateNeeded).toLocaleDateString('en-GB')}</td>
                             </tr>
                             ` : ''}
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Address</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.address || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.address || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">City</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.city || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.city || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Postcode</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.postcode || 'Not provided'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.postcode || 'Not provided'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Delivery Method</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.deliveryMethod === 'local-delivery' ? 'Local Delivery' : orderData.deliveryMethod === 'collection' ? 'Collection' : 'Delivery'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.deliveryMethod === 'local-delivery' ? 'Local Delivery' : validatedOrderData.deliveryMethod === 'collection' ? 'Collection' : 'Delivery'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Payment Method</td>
-                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${orderData.paymentMethod === 'cash-collection' ? 'Cash on Collection' : orderData.paymentMethod === 'card-collection' ? 'Card on Collection' : 'Online Payment'}</td>
+                              <td style="padding: 6px 0; color: #1f2937; font-size: 14px; font-weight: 600;">${validatedOrderData.paymentMethod === 'cash-collection' ? 'Cash on Collection' : validatedOrderData.paymentMethod === 'card-collection' ? 'Card on Collection' : 'Online Payment'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 6px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total</td>
@@ -437,7 +547,7 @@ export async function POST(request: NextRequest) {
 
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: any) => `
+                              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
                                   <h4 style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -469,7 +579,7 @@ export async function POST(request: NextRequest) {
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
                           if (hasIndividualDesign && hasAttachments) {
@@ -480,7 +590,7 @@ export async function POST(request: NextRequest) {
                                   Thank you for providing your design reference! We'll use this to create your perfect cake.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${orderData.attachments.map((attachment: any) => {
+                                  ${orderData.attachments.map((attachment: Attachment) => {
                                     if (attachment.asset) {
                                       const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
                                       return `
@@ -499,28 +609,28 @@ export async function POST(request: NextRequest) {
                         })()}
 
                         <!-- Delivery Information -->
-                        ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
+                        ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Delivery Address</h3>
                             <p style="margin: 0; color: #0c4a6e; font-size: 13px; line-height: 1.5;">
-                              ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
+                              ${validatedOrderData.deliveryAddress}${validatedOrderData.city ? `, ${validatedOrderData.city}` : ''}${validatedOrderData.postcode ? `, ${validatedOrderData.postcode}` : ''}
                             </p>
                           </div>
                         ` : ''}
 
                         <!-- Additional Notes -->
-                        ${orderData.note ? `
+                        ${validatedOrderData.note ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Additional Notes</h3>
-                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.note}</p>
+                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${validatedOrderData.note}</p>
                           </div>
                         ` : ''}
 
                         <!-- Gift Note -->
-                        ${orderData.giftNote ? `
+                        ${validatedOrderData.giftNote ? `
                           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
                             <h3 style="margin: 0 0 8px 0; color: #0c4a6e; font-size: 14px; font-weight: 600;">Gift Note</h3>
-                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${orderData.giftNote}</p>
+                            <p style="margin: 0; color: #0c4a6e; font-size: 13px;">${validatedOrderData.giftNote}</p>
                           </div>
                         ` : ''}
 
@@ -530,7 +640,7 @@ export async function POST(request: NextRequest) {
                              style="display: inline-block; background: #2E3192; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-right: 12px;">
                             View in Sanity Studio
                           </a>
-                          <a href="mailto:${orderData.email}?subject=Re: Order #${orderNumber}"
+                          <a href="mailto:${validatedOrderData.email}?subject=Re: Order #${orderNumber}"
                              style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
                             Reply to Customer
                           </a>
@@ -556,16 +666,24 @@ export async function POST(request: NextRequest) {
       });
       
       if (adminEmailResult.error) {
-        console.error('❌ Orders API: Admin email error:', adminEmailResult.error);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('❌ Orders API: Admin email error:', JSON.stringify(adminEmailResult.error, null, 2));
+          console.error('❌ Orders API: Admin email error details:', {
+            message: adminEmailResult.error.message,
+            name: adminEmailResult.error.name,
+            orderNumber
+          });
+        }
       } else {
-        console.log('✅ Orders API: Admin notification email sent successfully');
       }
     } catch (emailError) {
-      console.error('❌ Orders API: Failed to send admin notification:', emailError);
-      // Don't fail the order if admin email fails
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('❌ Orders API: Failed to send admin notification:', emailError);
+        console.error('❌ Orders API: Admin email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
+      }
+      // Don't fail the order if admin email fails, but log it prominently
     }
 
-    console.log('✅ Orders API: Order process completed successfully');
     return NextResponse.json({
       success: true,
       orderId: createdOrder._id,
@@ -574,23 +692,36 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Orders API: Order creation error:', error);
-    console.error('❌ Orders API: Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    });
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('❌ Orders API: Order creation error:', error);
+      console.error('❌ Orders API: Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      });
+    }
+    
+    // Sanitize error message in production
+    const errorMessage = process.env.NODE_ENV === 'production'
+      ? 'Failed to create order'
+      : (error instanceof Error ? error.message : 'Unknown error');
     
     return NextResponse.json(
       { 
         error: 'Failed to create order', 
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: errorMessage,
         timestamp: new Date().toISOString()
       },
       { status: 500 }
     );
   }
 }
+
+// Apply rate limiting: 5 requests per minute for order submissions
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 5 // 5 requests per minute (lower limit for order submissions)
+});
 
 // GET - Fetch orders (with optional filtering)
 export async function GET(request: NextRequest) {
@@ -600,10 +731,21 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Security: Validate status to prevent GROQ injection
+    const validStatuses = ['new', 'pending', 'confirmed', 'in-progress', 'completed', 'cancelled', 'refunded'];
+    
     let query = `*[_type == "order"] | order(_createdAt desc)`;
+    let params = {};
 
     if (status) {
-      query = `*[_type == "order" && status == "${status}"] | order(_createdAt desc)`;
+      if (!validStatuses.includes(status)) {
+        return NextResponse.json(
+          { error: 'Invalid status value' },
+          { status: 400 }
+        );
+      }
+      query = `*[_type == "order" && status == $status] | order(_createdAt desc)`;
+      params = { status };
     }
 
     const orders = await serverClient.fetch(`${query}[${offset}...${offset + limit}]{
@@ -642,12 +784,13 @@ export async function GET(request: NextRequest) {
           caption
         }
       }
-    }`);
+    }`, params);
 
     const totalCount = await serverClient.fetch(
       status
-        ? `count(*[_type == "order" && status == "${status}"])`
-        : `count(*[_type == "order"])`
+        ? `count(*[_type == "order" && status == $status])`
+        : `count(*[_type == "order"])`,
+      status ? { status } : {}
     );
 
     return NextResponse.json({
@@ -663,7 +806,9 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Failed to fetch orders:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Failed to fetch orders:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to fetch orders' },
       { status: 500 }

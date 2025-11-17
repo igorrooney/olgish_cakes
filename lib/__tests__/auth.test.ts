@@ -1,10 +1,12 @@
-import jwt from 'jsonwebtoken'
-import { verifyToken, isAdmin, AdminUser } from '../auth'
+import { AdminUser, isAdmin, verifyToken } from '../auth'
 
-// Mock jwt module
-jest.mock('jsonwebtoken')
+// Mock jose module
+jest.mock('jose', () => ({
+  jwtVerify: jest.fn(),
+  SignJWT: jest.fn()
+}))
 
-const mockedJwt = jwt as jest.Mocked<typeof jwt>
+const { jwtVerify: mockedJose } = require('jose')
 
 describe('auth', () => {
   const validToken = 'valid.jwt.token'
@@ -32,111 +34,95 @@ describe('auth', () => {
 
   describe('verifyToken', () => {
     describe('with valid token', () => {
-      it('should return decoded user for valid admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
+      it('should return decoded user for valid admin token', async () => {
+        mockedJose.mockResolvedValue({ payload: mockAdminUser } as any)
 
-        const result = verifyToken(validToken)
+        const result = await verifyToken(validToken)
 
         expect(result).toEqual(mockAdminUser)
-        expect(mockedJwt.verify).toHaveBeenCalled()
+        expect(mockedJose).toHaveBeenCalled()
       })
 
-      it('should return decoded user for valid non-admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockNonAdminUser as any)
+      it('should return decoded user for valid non-admin token', async () => {
+        mockedJose.mockResolvedValue({ payload: mockNonAdminUser } as any)
 
-        const result = verifyToken(validToken)
+        const result = await verifyToken(validToken)
 
         expect(result).toEqual(mockNonAdminUser)
       })
 
-      it('should use JWT_SECRET from environment', () => {
+      it('should use JWT_SECRET from environment', async () => {
         process.env.JWT_SECRET = 'custom-secret'
-        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
+        mockedJose.mockResolvedValue({ payload: mockAdminUser } as any)
 
-        const result = verifyToken(validToken)
+        const result = await verifyToken(validToken)
 
         expect(result).toEqual(mockAdminUser)
-        expect(mockedJwt.verify).toHaveBeenCalled()
+        expect(mockedJose).toHaveBeenCalled()
       })
 
-      it('should use default secret if JWT_SECRET not set', () => {
+      it('should return null if JWT_SECRET not set', async () => {
         delete process.env.JWT_SECRET
-        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
 
-        const result = verifyToken(validToken)
+        const result = await verifyToken(validToken)
 
-        expect(result).toEqual(mockAdminUser)
-        expect(mockedJwt.verify).toHaveBeenCalled()
+        expect(result).toBeNull()
       })
     })
 
     describe('with invalid token', () => {
-      it('should return null for invalid token signature', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('invalid signature')
-        })
+      it('should return null for invalid token signature', async () => {
+        mockedJose.mockRejectedValue(new Error('invalid signature'))
 
-        const result = verifyToken(invalidToken)
+        const result = await verifyToken(invalidToken)
 
         expect(result).toBeNull()
       })
 
-      it('should return null for expired token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('jwt expired')
-        })
+      it('should return null for expired token', async () => {
+        mockedJose.mockRejectedValue(new Error('jwt expired'))
 
-        const result = verifyToken(invalidToken)
+        const result = await verifyToken(invalidToken)
 
         expect(result).toBeNull()
       })
 
-      it('should return null for malformed token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('jwt malformed')
-        })
+      it('should return null for malformed token', async () => {
+        mockedJose.mockRejectedValue(new Error('jwt malformed'))
 
-        const result = verifyToken('malformed')
+        const result = await verifyToken('malformed')
 
         expect(result).toBeNull()
       })
 
-      it('should return null for any JWT error', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('any jwt error')
-        })
+      it('should return null for any JWT error', async () => {
+        mockedJose.mockRejectedValue(new Error('any jwt error'))
 
-        const result = verifyToken(invalidToken)
+        const result = await verifyToken(invalidToken)
 
         expect(result).toBeNull()
       })
 
-      it('should not throw error on verification failure', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('verification failed')
-        })
+      it('should not throw error on verification failure', async () => {
+        mockedJose.mockRejectedValue(new Error('verification failed'))
 
-        expect(() => verifyToken(invalidToken)).not.toThrow()
+        await expect(verifyToken(invalidToken)).resolves.toBeNull()
       })
     })
 
     describe('edge cases', () => {
-      it('should handle empty string token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('jwt must be provided')
-        })
+      it('should handle empty string token', async () => {
+        mockedJose.mockRejectedValue(new Error('jwt must be provided'))
 
-        const result = verifyToken('')
+        const result = await verifyToken('')
 
         expect(result).toBeNull()
       })
 
-      it('should handle null-like tokens', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('invalid token')
-        })
+      it('should handle null-like tokens', async () => {
+        mockedJose.mockRejectedValue(new Error('invalid token'))
 
-        const result = verifyToken('null')
+        const result = await verifyToken('null')
 
         expect(result).toBeNull()
       })
@@ -145,117 +131,108 @@ describe('auth', () => {
 
   describe('isAdmin', () => {
     describe('with admin user', () => {
-      it('should return true for valid admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
+      it('should return true for valid admin token', async () => {
+        mockedJose.mockResolvedValue({ payload: mockAdminUser } as any)
 
-        const result = isAdmin(validToken)
+        const result = await isAdmin(validToken)
 
         expect(result).toBe(true)
       })
 
-      it('should verify token before checking role', () => {
-        mockedJwt.verify.mockReturnValue(mockAdminUser as any)
+      it('should verify token before checking role', async () => {
+        mockedJose.mockResolvedValue({ payload: mockAdminUser } as any)
 
-        isAdmin(validToken)
+        await isAdmin(validToken)
 
-        // Verify was called with the token (secret is captured at module load time)
-        expect(mockedJwt.verify).toHaveBeenCalledWith(validToken, expect.any(String))
+        expect(mockedJose).toHaveBeenCalled()
       })
     })
 
     describe('with non-admin user', () => {
-      it('should return false for valid non-admin token', () => {
-        mockedJwt.verify.mockReturnValue(mockNonAdminUser as any)
+      it('should return false for valid non-admin token', async () => {
+        mockedJose.mockResolvedValue({ payload: mockNonAdminUser } as any)
 
-        const result = isAdmin(validToken)
+        const result = await isAdmin(validToken)
 
         expect(result).toBe(false)
       })
 
-      it('should return false for user role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'user' })
+      it('should return false for user role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: 'user' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should return false for moderator role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'moderator' })
+      it('should return false for moderator role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: 'moderator' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should return false for guest role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'guest' })
+      it('should return false for guest role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: 'guest' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should return false for empty role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: '' })
+      it('should return false for empty role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: '' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
     })
 
     describe('with invalid token', () => {
-      it('should return false for invalid token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('invalid token')
-        })
+      it('should return false for invalid token', async () => {
+        mockedJose.mockRejectedValue(new Error('invalid token'))
 
-        const result = isAdmin(invalidToken)
+        const result = await isAdmin(invalidToken)
 
         expect(result).toBe(false)
       })
 
-      it('should return false when verifyToken returns null', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('verification failed')
-        })
+      it('should return false when verifyToken returns null', async () => {
+        mockedJose.mockRejectedValue(new Error('verification failed'))
 
-        expect(isAdmin(invalidToken)).toBe(false)
+        expect(await isAdmin(invalidToken)).toBe(false)
       })
 
-      it('should return false for expired token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('jwt expired')
-        })
+      it('should return false for expired token', async () => {
+        mockedJose.mockRejectedValue(new Error('jwt expired'))
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
     })
 
     describe('edge cases', () => {
-      it('should return false for undefined role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: undefined as any })
+      it('should return false for undefined role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: undefined as any } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should return false for null role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: null as any })
+      it('should return false for null role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: null as any } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should handle empty string token', () => {
-        mockedJwt.verify.mockImplementation(() => {
-          throw new Error('jwt must be provided')
-        })
+      it('should handle empty string token', async () => {
+        mockedJose.mockRejectedValue(new Error('jwt must be provided'))
 
-        expect(isAdmin('')).toBe(false)
+        expect(await isAdmin('')).toBe(false)
       })
 
-      it('should be case-sensitive for admin role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'Admin' })
+      it('should be case-sensitive for admin role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: 'Admin' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
 
-      it('should be case-sensitive for ADMIN role', () => {
-        mockedJwt.verify.mockReturnValue({  ...mockAdminUser, role: 'ADMIN' })
+      it('should be case-sensitive for ADMIN role', async () => {
+        mockedJose.mockResolvedValue({ payload: { ...mockAdminUser, role: 'ADMIN' } } as any)
 
-        expect(isAdmin(validToken)).toBe(false)
+        expect(await isAdmin(validToken)).toBe(false)
       })
     })
   })

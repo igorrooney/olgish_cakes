@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
     revalidateTag('merchant-center-feed', 'max');
 
     // Log the revalidation
-    console.warn('Merchant Center feed cache revalidated at:', new Date().toISOString());
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Merchant Center feed cache revalidated at:', new Date().toISOString());
+    }
 
     return NextResponse.json({
       success: true,
@@ -30,7 +32,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error revalidating merchant center feed:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error revalidating merchant center feed:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to revalidate feed cache' },
       { status: 500 }
@@ -64,7 +68,9 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error revalidating merchant center feed:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error revalidating merchant center feed:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to revalidate feed cache' },
       { status: 500 }

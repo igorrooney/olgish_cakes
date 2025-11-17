@@ -11,8 +11,9 @@ export async function GET(request: NextRequest) {
         size,
         pricing,
         category,
-        slug
-      } | order(name asc)
+        slug,
+        order
+      } | order(order asc, _createdAt desc)
     `);
 
     // Fetch gift hampers
@@ -22,8 +23,9 @@ export async function GET(request: NextRequest) {
         name,
         price,
         category,
-        slug
-      } | order(name asc)
+        slug,
+        order
+      } | order(order asc, _createdAt desc)
     `);
 
     // Transform data for easier use in the frontend

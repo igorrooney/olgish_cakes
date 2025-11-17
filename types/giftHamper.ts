@@ -60,4 +60,5 @@ export interface GiftHamper {
   category?: string;
   ingredients?: string[];
   allergens?: string[];
+  order?: number;
 }

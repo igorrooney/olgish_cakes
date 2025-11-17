@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SignJWT } from "jose";
+import { SignJWT, jwtVerify } from "jose";
+import { withRateLimit } from "@/lib/rate-limit";
 
 // Helper function to get environment variables with runtime validation
 function getAdminCredentials() {
@@ -19,7 +20,7 @@ function getAdminCredentials() {
 }
 
 // POST - Admin login
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { username, password } = await request.json();
 
@@ -43,6 +44,8 @@ export async function POST(request: NextRequest) {
         iat: Math.floor(Date.now() / 1000)
       })
         .setProtectedHeader({ alg: 'HS256' })
+        .setIssuer('olgish-cakes') // Set issuer for verification
+        .setAudience('olgish-cakes-admin') // Set audience for verification
         .setExpirationTime('24h')
         .setIssuedAt()
         .sign(secret);
@@ -69,13 +72,21 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('Admin auth error:', error);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Admin auth error:', error);
+    }
     return NextResponse.json(
       { error: "Authentication failed" },
       { status: 500 }
     );
   }
 }
+
+// Apply rate limiting: 5 login attempts per minute
+export const POST = withRateLimit(handlePOST, {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 5 // 5 login attempts per minute
+});
 
 // GET - Check auth status
 export async function GET(request: NextRequest) {
@@ -86,10 +97,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    // Verify token (simplified check for now)
-    // In production, you might want to use jose.VerifyJWT for proper verification
-    return NextResponse.json({ authenticated: true }, { status: 200 });
-  } catch {
+    // Verify JWT token properly
+    const { ADMIN_USERNAME, JWT_SECRET } = getAdminCredentials();
+    const secret = new TextEncoder().encode(JWT_SECRET);
+
+    try {
+      const { payload } = await jwtVerify(token, secret, {
+        algorithms: ['HS256'], // Explicitly require HS256 to prevent algorithm confusion
+        audience: 'olgish-cakes-admin', // Verify audience
+        issuer: 'olgish-cakes', // Verify issuer
+        clockTolerance: '5s' // Allow 5s clock skew for serverless environments
+      });
+
+      // Verify token payload matches admin user
+      if (payload.username === ADMIN_USERNAME && payload.role === 'admin') {
+        return NextResponse.json({ authenticated: true }, { status: 200 });
+      } else {
+        return NextResponse.json({ authenticated: false }, { status: 401 });
+      }
+    } catch {
+      // Token is invalid or expired
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Admin auth check error:', error);
+    }
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }

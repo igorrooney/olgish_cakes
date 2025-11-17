@@ -97,14 +97,8 @@ export function WebVitalsMonitor() {
         document.head.appendChild(link);
       });
 
-      // Optimize font loading
-      const fontLink = document.createElement('link');
-      fontLink.rel = 'preload';
-      fontLink.as = 'font';
-      fontLink.type = 'font/woff2';
-      fontLink.crossOrigin = 'anonymous';
-      fontLink.href = '/fonts/alice-v20-latin-regular.woff2';
-      document.head.appendChild(fontLink);
+      // Font loading is handled automatically by Next.js next/font/google
+      // No manual preload needed
     };
 
     // Run optimizations
