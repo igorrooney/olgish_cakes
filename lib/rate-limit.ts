@@ -13,7 +13,8 @@ interface RateLimitStore {
 const rateLimitStore = new Map<string, RateLimitStore>()
 
 // Clean up old entries periodically (every 5 minutes)
-if (typeof setInterval !== 'undefined') {
+// Skip in test environment to avoid keeping tests alive
+if (typeof setInterval !== 'undefined' && process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID) {
   setInterval(() => {
     const now = Date.now()
     for (const [key, value] of rateLimitStore.entries()) {

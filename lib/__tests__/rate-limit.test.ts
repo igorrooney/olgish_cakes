@@ -1,19 +1,26 @@
-import { checkRateLimit, withRateLimit } from '../rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Mock setInterval before any imports to prevent it from running in tests
+jest.spyOn(global, 'setInterval').mockImplementation(() => {
+  return {} as NodeJS.Timeout
+})
+
 // Mock Date.now() for consistent testing
-const mockDateNow = jest.spyOn(Date, 'now')
+let mockDateNow: jest.SpyInstance
 
 describe('rate-limit', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockDateNow.mockReturnValue(1000000) // Start at 1,000,000ms
-    // Clear the rate limit store by resetting the module
     jest.resetModules()
+    // Re-spy on Date.now() after resetting modules
+    mockDateNow = jest.spyOn(Date, 'now')
+    mockDateNow.mockReturnValue(1000000) // Start at 1,000,000ms
   })
 
   afterEach(() => {
-    mockDateNow.mockRestore()
+    if (mockDateNow) {
+      mockDateNow.mockRestore()
+    }
   })
 
   describe('checkRateLimit', () => {
@@ -52,18 +59,30 @@ describe('rate-limit', () => {
         headers: { 'x-forwarded-for': '1.2.3.4' }
       })
 
-      // Make requests up to limit
+      // Set initial time
+      let currentTime = 1000000
+      mockDateNow.mockImplementation(() => currentTime)
+
+      // Make requests up to limit (10 requests, limit is 10)
       for (let i = 0; i < 10; i++) {
         await checkRateLimit(request, { maxRequests: 10, windowMs: 60000 })
       }
 
-      // Advance time past window
-      mockDateNow.mockReturnValue(1000000 + 61000) // 61 seconds later
+      // 11th request should be rate limited (count is now 11, exceeds limit of 10)
+      const atLimit = await checkRateLimit(request, { maxRequests: 10, windowMs: 60000 })
+      expect(atLimit.rateLimited).toBe(true)
+      expect(atLimit.remaining).toBe(0)
 
-      // Should be able to make requests again
+      // Advance time past window (61 seconds later - window was 60 seconds)
+      // resetTime was set to 1000000 + 60000 = 1060000
+      // Now is 1000000 + 61000 = 1061000, which is > 1060000, so entry should be reset
+      currentTime = 1000000 + 61000
+      mockDateNow.mockImplementation(() => currentTime)
+
+      // Should be able to make requests again (window expired, new entry created with count 0, then incremented to 1)
       const result = await checkRateLimit(request, { maxRequests: 10, windowMs: 60000 })
       expect(result.rateLimited).toBe(false)
-      expect(result.remaining).toBe(9)
+      expect(result.remaining).toBe(9) // 10 - 1 = 9
     })
 
     it('should handle multiple IP addresses independently', async () => {
