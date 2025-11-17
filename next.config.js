@@ -70,7 +70,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live",
-              "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com",
+              "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
