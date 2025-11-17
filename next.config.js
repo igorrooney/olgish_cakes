@@ -64,13 +64,13 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live",
               // unsafe-inline required for Google Fonts and Sanity Studio styles
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://www.google-analytics.com https://vercel.live wss://vercel.live",
-              "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live",
+              "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
