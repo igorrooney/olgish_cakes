@@ -302,31 +302,40 @@ Olgish Cakes
       
       try {
         // Upload design image to Sanity and pass image reference in attachments
-        let attachmentImages: any[] = [];
+        interface SanityImageReference {
+          _type: 'image'
+          asset: {
+            _type: 'reference'
+            _ref: string
+          }
+        }
+
+        let attachmentImages: SanityImageReference[] = []
         if (designImage) {
           try {
             // Convert File to Buffer for Sanity upload
-            const arrayBuffer = await designImage.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+            const arrayBuffer = await designImage.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
 
             const uploaded = await serverClient.assets.upload('image', buffer, {
               filename: designImage.name,
               contentType: designImage.type,
-            });
+            })
 
             attachmentImages = [
               {
                 _type: 'image',
                 asset: { _type: 'reference', _ref: uploaded._id },
               },
-            ];
-          } catch (e: any) {
-            console.error('❌ Failed to upload design image to Sanity:', e);
+            ]
+          } catch (e: unknown) {
+            const error = e instanceof Error ? e : new Error(String(e))
+            console.error('❌ Failed to upload design image to Sanity:', error)
             console.error('Error details:', {
-              message: e?.message,
-              stack: e?.stack,
-              name: e?.name
-            });
+              message: error.message,
+              stack: error.stack,
+              name: error.name
+            })
             // Continue without image attachment - don't fail the entire order
           }
         }
@@ -639,8 +648,8 @@ Olgish Cakes
 
           if (adminEmailResponse.error) {
             console.error('❌ Fallback admin email failed:', adminEmailResponse.error);
-          } else {
           }
+          // Email sent successfully - no action needed
 
           // Send simple confirmation to customer
           const customerEmailResponse = await resend.emails.send({
@@ -677,8 +686,8 @@ Olgish Cakes
 
           if (customerEmailResponse.error) {
             console.error('❌ Fallback customer email failed:', customerEmailResponse.error);
-          } else {
           }
+          // Email sent successfully - no action needed
         } catch (fallbackError) {
           console.error('❌ Fallback email sending failed completely:', fallbackError);
           // Log but don't throw - we don't want to show error to user

@@ -1,11 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/client";
 import { Resend } from "resend";
-import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
+import { PHONE_UTILS } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
 import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 import { generateOrderNumber } from "@/lib/order-utils";
 import { withRateLimit } from "@/lib/rate-limit";
+
+// Type definitions for order items and attachments
+interface OrderItem {
+  productName?: string
+  productType?: string
+  designType?: string
+  quantity?: number
+  unitPrice?: number
+  totalPrice?: number
+  size?: string
+  flavor?: string
+  specialInstructions?: string
+}
+
+interface Attachment {
+  asset?: {
+    _id?: string
+    _ref?: string
+    url?: string
+  }
+  alt?: string
+  caption?: string
+}
 
 // POST - Create new order
 // Note: This endpoint is public - customers need to submit orders without authentication
@@ -235,7 +258,7 @@ async function handlePOST(request: NextRequest) {
 
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: any) => `
+                              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                                   <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -263,7 +286,7 @@ async function handlePOST(request: NextRequest) {
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
                           if (hasIndividualDesign && hasAttachments) {
@@ -274,7 +297,7 @@ async function handlePOST(request: NextRequest) {
                                   Thank you for providing your design reference! We'll use this to create your perfect cake.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${orderData.attachments.map((attachment: any) => {
+                                  ${orderData.attachments.map((attachment: Attachment) => {
                                     if (attachment.asset) {
                                       const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
                                       return `
@@ -508,7 +531,7 @@ async function handlePOST(request: NextRequest) {
 
                           ${(() => {
                             if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: any) => `
+                              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
                                   <h4 style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -540,7 +563,7 @@ async function handlePOST(request: NextRequest) {
                         <!-- Design Images Section -->
                         ${(() => {
                           // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: any) => item.designType === 'individual') || orderData.designType === 'individual';
+                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
                           const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
                           if (hasIndividualDesign && hasAttachments) {
@@ -551,7 +574,7 @@ async function handlePOST(request: NextRequest) {
                                   Thank you for providing your design reference! We'll use this to create your perfect cake.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${orderData.attachments.map((attachment: any) => {
+                                  ${orderData.attachments.map((attachment: Attachment) => {
                                     if (attachment.asset) {
                                       const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
                                       return `
