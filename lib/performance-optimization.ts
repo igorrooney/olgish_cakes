@@ -113,7 +113,7 @@ export const resourceOptimization = {
   preloadCriticalResources: () => {
     if (typeof window === 'undefined') return;
     
-    const criticalResources = [
+    const criticalResources: Array<{ href: string; as: string; type?: string; crossOrigin?: string }> = [
       { href: '/images/olgish-cakes-logo-bakery-brand.png', as: 'image' },
       { href: '/android-chrome-192x192.png', as: 'image' }
       // Font loading is handled automatically by Next.js next/font/google
