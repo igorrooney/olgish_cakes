@@ -44,6 +44,8 @@ async function handlePOST(request: NextRequest) {
         iat: Math.floor(Date.now() / 1000)
       })
         .setProtectedHeader({ alg: 'HS256' })
+        .setIssuer('olgish-cakes') // Set issuer for verification
+        .setAudience('olgish-cakes-admin') // Set audience for verification
         .setExpirationTime('24h')
         .setIssuedAt()
         .sign(secret);
@@ -99,7 +101,10 @@ export async function GET(request: NextRequest) {
 
     try {
       const { payload } = await jwtVerify(token, secret, {
-        algorithms: ['HS256']
+        algorithms: ['HS256'], // Explicitly require HS256 to prevent algorithm confusion
+        audience: 'olgish-cakes-admin', // Verify audience
+        issuer: 'olgish-cakes', // Verify issuer
+        clockTolerance: '5s' // Allow 5s clock skew for serverless environments
       });
 
       // Verify token payload matches admin user
@@ -108,7 +113,7 @@ export async function GET(request: NextRequest) {
       } else {
         return NextResponse.json({ authenticated: false }, { status: 401 });
       }
-    } catch (verifyError) {
+    } catch {
       // Token is invalid or expired
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }

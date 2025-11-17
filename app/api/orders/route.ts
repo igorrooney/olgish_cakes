@@ -10,11 +10,8 @@ import { withRateLimit } from "@/lib/rate-limit";
 // POST - Create new order
 // Note: This endpoint is public - customers need to submit orders without authentication
 async function handlePOST(request: NextRequest) {
-  console.log('📦 Orders API: Received order creation request');
-  
   try {
     const orderData = await request.json();
-    console.log('📦 Orders API: Parsed order data for customer:', orderData.email);
 
     // Validate order data with Zod schema
     const validationResult = await validateRequest(orderSchema, {
@@ -59,7 +56,6 @@ async function handlePOST(request: NextRequest) {
 
     // Generate unique order number
     const orderNumber = generateOrderNumber();
-    console.log('📦 Orders API: Generated order number:', orderNumber);
 
     // Prepare order document for Sanity
     const orderDoc = {
@@ -139,13 +135,10 @@ async function handlePOST(request: NextRequest) {
     };
 
     // Create order in Sanity using server client with write permissions
-    console.log('📦 Orders API: Creating order in Sanity...');
     const createdOrder = await serverClient.create(orderDoc);
-    console.log('✅ Orders API: Order created in Sanity with ID:', createdOrder._id);
 
     // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
     // This happens automatically for every order - no manual intervention needed
-    console.log('📧 Orders API: Sending confirmation email to customer...');
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
@@ -162,14 +155,6 @@ async function handlePOST(request: NextRequest) {
         console.error('❌ Orders API: Invalid email address format:', validatedOrderData.email);
         throw new Error(`Invalid email address format: ${validatedOrderData.email}`);
       }
-
-      console.log('📧 Orders API: Email details:', {
-        to: validatedOrderData.email,
-        bcc: process.env.ADMIN_BCC_EMAIL || 'not set',
-        orderNumber,
-        hasApiKey: !!process.env.RESEND_API_KEY,
-        timestamp: new Date().toISOString()
-      });
 
       const customerEmailResult = await resend.emails.send({
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -385,8 +370,6 @@ async function handlePOST(request: NextRequest) {
         // Throw error to be caught and handled properly
         throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
       } else {
-        console.log('✅ Orders API: Customer confirmation email sent successfully');
-        console.log('✅ Orders API: Email ID:', customerEmailResult.data?.id);
         // Track successful email in order metadata
         try {
           await serverClient
@@ -421,7 +404,6 @@ async function handlePOST(request: NextRequest) {
     }
 
     // Send notification to admin
-    console.log('📧 Orders API: Sending notification email to admin...');
     try {
       // Check for Resend API key at runtime
       if (!process.env.RESEND_API_KEY) {
@@ -652,8 +634,6 @@ async function handlePOST(request: NextRequest) {
           orderNumber
         });
       } else {
-        console.log('✅ Orders API: Admin notification email sent successfully');
-        console.log('✅ Orders API: Admin email ID:', adminEmailResult.data?.id);
       }
     } catch (emailError) {
       console.error('❌ Orders API: Failed to send admin notification:', emailError);
@@ -661,7 +641,6 @@ async function handlePOST(request: NextRequest) {
       // Don't fail the order if admin email fails, but log it prominently
     }
 
-    console.log('✅ Orders API: Order process completed successfully');
     return NextResponse.json({
       success: true,
       orderId: createdOrder._id,

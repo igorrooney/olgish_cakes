@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 // Simple in-memory rate limiter
-// For production with multiple instances, consider using Redis or Vercel KV
+// WARNING: In-memory storage only works for single-instance deployments.
+// For production with multiple serverless instances on Vercel, use Vercel KV or Redis.
+// See: https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting-sdk
+// Alternative: Use @vercel/firewall SDK for IP-based rate limiting
 interface RateLimitStore {
   count: number
   resetTime: number

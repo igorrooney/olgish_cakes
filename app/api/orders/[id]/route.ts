@@ -290,12 +290,10 @@ export async function PATCH(
       // This ensures no notes are ever removed when adding a new one
       const existingNotes = currentOrder.notes || [];
       updateDoc.notes = [...existingNotes, newNote];
-      console.log(`📝 Adding new note. Total notes after update: ${existingNotes.length + 1}`);
     } else {
       // If no new note is being added, ensure existing notes are preserved
       // Don't modify the notes array if we're not adding anything
       if (currentOrder.notes && currentOrder.notes.length > 0) {
-        console.log(`📝 No new note to add. Preserving ${currentOrder.notes.length} existing notes.`);
       }
     }
 
@@ -504,7 +502,6 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
 
   try {
     const bccEmail = process.env.ADMIN_BCC_EMAIL || undefined;
-    console.log('📧 Status Update Email: Sending to', order.customer.email, 'BCC:', bccEmail || 'not set');
     
     // Send the actual email
     await resend.emails.send({

@@ -1,6 +1,17 @@
 import { invalidateCache } from "@/app/utils/fetchCakes";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { validateRequest, formatValidationErrors } from "@/lib/validation";
+
+// Webhook payload validation schema
+const revalidateSchema = z.object({
+  _type: z.string().min(1, 'Content type is required'),
+  _id: z.string().optional(),
+  slug: z.object({
+    current: z.string()
+  }).optional()
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +27,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { _type, _id, slug } = body;
+    
+    // Validate webhook payload
+    const validationResult = await validateRequest(revalidateSchema, body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed', 
+          details: formatValidationErrors(validationResult.errors) 
+        },
+        { status: 400 }
+      );
+    }
+
+    const { _type, _id, slug } = validationResult.data;
 
     // Revalidate specific paths based on content type
     if (_type === "cake") {
@@ -40,6 +64,26 @@ export async function POST(request: NextRequest) {
       // Revalidate FAQ pages
       revalidatePath("/faq");
       await invalidateCache("faqs");
+    } else if (_type === "giftHamper") {
+      // Revalidate gift hamper pages
+      if (slug?.current) {
+        revalidatePath(`/gift-hampers/${slug.current}`);
+        revalidatePath("/gift-hampers"); // Revalidate gift hampers list
+        revalidatePath("/"); // Home page might show featured hampers
+      }
+      await invalidateCache("gift-hampers");
+    } else if (_type === "blogPost") {
+      // Revalidate blog pages
+      if (slug?.current) {
+        revalidatePath(`/blog/${slug.current}`);
+        revalidatePath("/blog"); // Revalidate blog list
+      }
+      await invalidateCache("blog-posts");
+    } else if (_type === "marketSchedule") {
+      // Revalidate market schedule page
+      revalidatePath("/market-schedule");
+      revalidatePath("/"); // Home page might link to market schedule
+      await invalidateCache("market-schedule");
     }
 
     // Revalidate tags for broader cache invalidation
@@ -47,6 +91,9 @@ export async function POST(request: NextRequest) {
     revalidateTag("cakes", "max");
     revalidateTag("testimonials", "max");
     revalidateTag("faqs", "max");
+    revalidateTag("gift-hampers", "max");
+    revalidateTag("blog-posts", "max");
+    revalidateTag("market-schedule", "max");
 
     return NextResponse.json({
       success: true,

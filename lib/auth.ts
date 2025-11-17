@@ -18,7 +18,12 @@ export interface AdminUser {
 export async function verifyToken(token: string): Promise<AdminUser | null> {
   try {
     const secret = new TextEncoder().encode(getJWTSecret());
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret, {
+      algorithms: ['HS256'], // Explicitly require HS256 to prevent algorithm confusion
+      audience: 'olgish-cakes-admin', // Verify audience
+      issuer: 'olgish-cakes', // Verify issuer
+      clockTolerance: '5s' // Allow 5s clock skew for serverless environments
+    });
     
     return {
       username: payload.username as string,

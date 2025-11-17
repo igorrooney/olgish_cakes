@@ -320,7 +320,6 @@ Olgish Cakes
                 asset: { _type: 'reference', _ref: uploaded._id },
               },
             ];
-            console.log('✅ Successfully uploaded design image to Sanity:', uploaded._id);
           } catch (e: any) {
             console.error('❌ Failed to upload design image to Sanity:', e);
             console.error('Error details:', {
@@ -363,8 +362,6 @@ Olgish Cakes
         };
 
         // Create order directly in Sanity (no internal HTTP call)
-        console.log('📦 Creating order directly in Sanity...');
-        
         // Generate unique numeric order number
         const orderNumber = generateOrderNumber()
         
@@ -423,12 +420,10 @@ Olgish Cakes
         };
 
         const createdOrder = await serverClient.create(orderDoc);
-        console.log('✅ Order created successfully in Sanity:', createdOrder._id);
         orderCreated = true;
 
         // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
         // This happens automatically for every order - no manual intervention needed
-        console.log('📧 Contact API: Sending confirmation email to customer...');
         try {
           // Check for Resend API key at runtime
           if (!process.env.RESEND_API_KEY) {
@@ -443,13 +438,6 @@ Olgish Cakes
             throw new Error(`Invalid email address format: ${orderData.email}`);
           }
 
-          console.log('📧 Contact API: Email details:', {
-            to: orderData.email,
-            bcc: process.env.ADMIN_BCC_EMAIL || 'not set',
-            orderNumber,
-            hasApiKey: !!process.env.RESEND_API_KEY,
-            timestamp: new Date().toISOString()
-          });
 
           const customerEmailResult = await resend.emails.send({
             from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -589,8 +577,6 @@ Olgish Cakes
             });
             throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
           } else {
-            console.log('✅ Contact API: Customer confirmation email sent successfully');
-            console.log('✅ Contact API: Email ID:', customerEmailResult.data?.id);
             // Track successful email in order metadata
             try {
               await serverClient
@@ -654,7 +640,6 @@ Olgish Cakes
           if (adminEmailResponse.error) {
             console.error('❌ Fallback admin email failed:', adminEmailResponse.error);
           } else {
-            console.log('✅ Fallback admin email sent successfully');
           }
 
           // Send simple confirmation to customer
@@ -693,7 +678,6 @@ Olgish Cakes
           if (customerEmailResponse.error) {
             console.error('❌ Fallback customer email failed:', customerEmailResponse.error);
           } else {
-            console.log('✅ Fallback customer email sent successfully');
           }
         } catch (fallbackError) {
           console.error('❌ Fallback email sending failed completely:', fallbackError);
