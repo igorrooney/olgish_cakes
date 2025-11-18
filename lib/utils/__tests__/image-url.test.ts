@@ -49,6 +49,27 @@ describe('ensureAbsoluteImageUrl', () => {
     const result = ensureAbsoluteImageUrl('')
     expect(result).toBe('https://cdn.sanity.io/')
   })
+
+  it('should use fallback when URL constructor throws an error', () => {
+    // Save original URL constructor
+    const OriginalURL = global.URL
+    
+    // Mock URL constructor to throw an error
+    global.URL = jest.fn().mockImplementation(() => {
+      throw new Error('Invalid URL')
+    }) as typeof URL
+    
+    // Test that fallback logic works
+    const result = ensureAbsoluteImageUrl('test-image.jpg')
+    expect(result).toBe('https://cdn.sanity.io/test-image.jpg')
+    
+    // Test with path starting with /
+    const resultWithSlash = ensureAbsoluteImageUrl('/test-image.jpg')
+    expect(resultWithSlash).toBe('https://cdn.sanity.io/test-image.jpg')
+    
+    // Restore original URL constructor
+    global.URL = OriginalURL
+  })
 })
 
 describe('isValidAbsoluteImageUrl', () => {

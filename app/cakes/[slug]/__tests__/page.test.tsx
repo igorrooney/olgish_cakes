@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 import { render } from '@testing-library/react'
-import CakeDetailPage, { generateStaticParams, generateMetadata, revalidate } from '../page'
+import React from 'react'
+import CakeDetailPage, { generateMetadata, generateStaticParams, revalidate } from '../page'
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -51,7 +52,7 @@ jest.mock('@/app/components/Breadcrumbs', () => ({
 }))
 
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>
+  Container: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }))
 
 // Mock Sanity image URL builder

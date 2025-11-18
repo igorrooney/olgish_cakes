@@ -38,7 +38,7 @@ export function ensureAbsoluteImageUrl(
     // If imageUrl starts with '/', it's treated as absolute path from base
     // If not, it's treated as relative path from base
     return new URL(imageUrl, baseUrl).toString()
-  } catch (error) {
+  } catch {
     // Fallback for edge cases where URL constructor fails
     // This should rarely happen, but provides safety
     const normalizedPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
