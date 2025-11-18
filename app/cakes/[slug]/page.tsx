@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 
@@ -194,9 +195,7 @@ export default async function CakePage({ params }: PageProps) {
     if (mainImage?.asset?._ref) {
       const imageUrl = urlFor(mainImage).width(800).height(800).url()
       // Ensure URL is absolute (Sanity should return absolute, but double-check)
-      return imageUrl.startsWith('http') 
-        ? imageUrl 
-        : `https://cdn.sanity.io${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
+      return ensureAbsoluteImageUrl(imageUrl)
     }
     
     return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
