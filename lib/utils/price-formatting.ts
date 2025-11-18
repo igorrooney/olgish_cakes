@@ -26,7 +26,7 @@ export function formatStructuredDataPrice(
 ): number {
     // If already a number, validate and return
     if (typeof price === 'number') {
-        if (Number.isFinite(price) && !Number.isNaN(price)) {
+        if (Number.isFinite(price) && !Number.isNaN(price) && price >= 0) {
             return price
         }
         return defaultValue
@@ -39,15 +39,27 @@ export function formatStructuredDataPrice(
 
     // If string, extract numeric value
     if (typeof price === 'string') {
-        // Remove currency symbols, "From", "Free", etc.
-        const cleaned = price
-            .replace(/[£$€]/g, '') // Remove currency symbols
-            .replace(/from\s+/gi, '') // Remove "From" prefix
-            .replace(/free/gi, '0') // Replace "Free" with 0
-            .replace(/[^\d.]/g, '') // Keep only digits and decimal point
+        // Replace "Free" with 0 first
+        let cleaned = price.replace(/free/gi, '0')
+        
+        // Remove currency symbols
+        cleaned = cleaned.replace(/[£$€]/g, '')
+        
+        // Remove common prefixes
+        cleaned = cleaned
+            .replace(/from\s+/gi, '')
+            .replace(/starting\s+at\s+/gi, '')
+            .replace(/price:?\s*/gi, '')
             .trim()
 
-        const parsed = parseFloat(cleaned)
+        // Try to parse as-is first (handles scientific notation like "1e2")
+        let parsed = parseFloat(cleaned)
+        
+        // If parseFloat fails or returns NaN, try removing non-numeric chars except decimal, e/E, +/-
+        if (Number.isNaN(parsed)) {
+            const numericOnly = cleaned.replace(/[^\d.eE+-]/g, '')
+            parsed = parseFloat(numericOnly)
+        }
 
         // Validate parsed result
         if (Number.isFinite(parsed) && !Number.isNaN(parsed) && parsed >= 0) {

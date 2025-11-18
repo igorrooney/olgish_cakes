@@ -29,20 +29,34 @@ jest.mock('../../components/Breadcrumbs', () => ({
 
 jest.mock('next/link', () => ({
     __esModule: true,
-    default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+    default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
+        <a href={href} {...props}>{children}</a>
+    )
 }))
 
 jest.mock('@/lib/mui-optimization', () => ({
-    Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Typography: ({ children, component, ...props }: any) => {
+    Container: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+        <div {...props}>{children}</div>
+    ),
+    Typography: ({ children, component, ...props }: { children: React.ReactNode; component?: string; [key: string]: unknown }) => {
         const Component = component || 'div'
         return <Component {...props}>{children}</Component>
     },
-    Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Chip: ({ label, ...props }: any) => <span {...props}>{label}</span>,
-    Button: ({ children, ...props }: any) => <button {...props}>{children}</button>
+    Box: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+        <div {...props}>{children}</div>
+    ),
+    Grid: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+        <div {...props}>{children}</div>
+    ),
+    Paper: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+        <div {...props}>{children}</div>
+    ),
+    Chip: ({ label, ...props }: { label: string; [key: string]: unknown }) => (
+        <span {...props}>{label}</span>
+    ),
+    Button: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+        <button {...props}>{children}</button>
+    )
 }))
 
 describe('TraditionalUkrainianCakesPage', () => {
@@ -61,7 +75,19 @@ describe('TraditionalUkrainianCakesPage', () => {
             expect(Array.isArray(structuredData.itemListElement)).toBe(true)
 
             // Verify each product has numeric price
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: {
+                '@type': string
+                position: number
+                item: {
+                    '@type': string
+                    name: string
+                    offers: {
+                        '@type': string
+                        price: number
+                        priceCurrency: string
+                    }
+                }
+            }) => {
                 const product = listItem.item
                 expect(product['@type']).toBe('Product')
                 expect(product.offers).toBeDefined()
@@ -90,7 +116,14 @@ describe('TraditionalUkrainianCakesPage', () => {
                 'Poppy Seed Roll (Makivnyk)': 20
             }
 
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: {
+                item: {
+                    name: string
+                    offers: {
+                        price: number
+                    }
+                }
+            }) => {
                 const product = listItem.item
                 const expectedPrice = expectedPrices[product.name]
 
@@ -107,7 +140,13 @@ describe('TraditionalUkrainianCakesPage', () => {
             const script = container.querySelector('script[type="application/ld+json"]')
             const structuredData = JSON.parse(script?.textContent || '{}')
 
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: {
+                item: {
+                    offers: {
+                        price: number
+                    }
+                }
+            }) => {
                 const product = listItem.item
 
                 // Price should NOT be a string - must be a number
@@ -122,7 +161,13 @@ describe('TraditionalUkrainianCakesPage', () => {
             const script = container.querySelector('script[type="application/ld+json"]')
             const structuredData = JSON.parse(script?.textContent || '{}')
 
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: {
+                item: {
+                    offers: {
+                        price: number
+                    }
+                }
+            }) => {
                 const product = listItem.item
                 const price = product.offers.price
 
@@ -173,7 +218,19 @@ describe('TraditionalUkrainianCakesPage', () => {
             const script = container.querySelector('script[type="application/ld+json"]')
             const structuredData = JSON.parse(script?.textContent || '{}')
 
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: {
+                '@type': string
+                position: number
+                item: {
+                    '@type': string
+                    name: string
+                    description: string
+                    brand: {
+                        '@type': string
+                        name: string
+                    }
+                }
+            }) => {
                 expect(listItem['@type']).toBe('ListItem')
                 expect(listItem.position).toBeGreaterThan(0)
                 expect(listItem.item['@type']).toBe('Product')

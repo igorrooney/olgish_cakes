@@ -323,7 +323,18 @@ describe('GSC Compliance Fixes', () => {
         ]
       }
 
-      structuredData.itemListElement.forEach((listItem: any) => {
+      structuredData.itemListElement.forEach((listItem: {
+        '@type': string
+        item: {
+          '@type': string
+          name: string
+          offers: {
+            '@type': string
+            price: number
+            priceCurrency: string
+          }
+        }
+      }) => {
         const price = listItem.item.offers.price
         expect(typeof price).toBe('number')
         expect(Number.isFinite(price)).toBe(true)

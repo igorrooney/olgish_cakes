@@ -300,12 +300,26 @@ describe('HomePage', () => {
       expect(scripts.length).toBeGreaterThan(0)
 
       // Find the product schema script
-      let productSchema: any = null
+      let productSchema: {
+        '@type': string
+        offers: {
+          '@type': string
+          price: number
+          priceCurrency: string
+        }
+      } | null = null
       scripts.forEach((script) => {
         try {
-          const data = JSON.parse(script.textContent || '{}')
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@type'?: string
+            offers?: {
+              '@type'?: string
+              price?: number | string
+              priceCurrency?: string
+            }
+          }
           if (data['@type'] === 'Product' && data.offers) {
-            productSchema = data
+            productSchema = data as typeof productSchema
           }
         } catch {
           // Ignore parse errors
@@ -313,14 +327,14 @@ describe('HomePage', () => {
       })
 
       expect(productSchema).toBeTruthy()
-      expect(productSchema.offers).toBeDefined()
-      expect(productSchema.offers['@type']).toBe('Offer')
+      expect(productSchema?.offers).toBeDefined()
+      expect(productSchema?.offers['@type']).toBe('Offer')
 
       // CRITICAL: Price must be a number, not a string
-      expect(typeof productSchema.offers.price).toBe('number')
-      expect(Number.isFinite(productSchema.offers.price)).toBe(true)
-      expect(productSchema.offers.price).toBe(25)
-      expect(productSchema.offers.priceCurrency).toBe('GBP')
+      expect(typeof productSchema?.offers.price).toBe('number')
+      expect(Number.isFinite(productSchema?.offers.price)).toBe(true)
+      expect(productSchema?.offers.price).toBe(25)
+      expect(productSchema?.offers.priceCurrency).toBe('GBP')
     })
 
     it('should not have string prices in structured data', async () => {
@@ -342,7 +356,13 @@ describe('HomePage', () => {
           
           // Check ItemList items
           if (data['@type'] === 'ItemList' && data.itemListElement) {
-            data.itemListElement.forEach((item: any) => {
+            (data.itemListElement as Array<{
+              item?: {
+                offers?: {
+                  price?: number | string
+                }
+              }
+            }>).forEach((item) => {
               if (item.item?.offers) {
                 expect(typeof item.item.offers.price).not.toBe('string')
               }

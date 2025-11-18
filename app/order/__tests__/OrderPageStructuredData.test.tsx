@@ -53,7 +53,17 @@ jest.mock('@/lib/product-schemas', () => ({
 
 jest.mock('next/script', () => ({
     __esModule: true,
-    default: ({ id, type, dangerouslySetInnerHTML, ...props }: any) => {
+    default: ({ 
+        id, 
+        type, 
+        dangerouslySetInnerHTML, 
+        ...props 
+    }: { 
+        id?: string
+        type?: string
+        dangerouslySetInnerHTML?: { __html: string }
+        [key: string]: unknown 
+    }) => {
         if (type === 'application/ld+json' && dangerouslySetInnerHTML) {
             // Extract the JSON content from dangerouslySetInnerHTML
             const content = dangerouslySetInnerHTML.__html || ''
