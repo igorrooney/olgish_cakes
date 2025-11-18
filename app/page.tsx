@@ -243,7 +243,7 @@ export default async function Home() {
     offers: {
       "@type": "Offer",
       "@id": "https://olgishcakes.co.uk/#offer",
-      price: "25",
+      price: 25,
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       priceValidUntil: getPriceValidUntil(30),

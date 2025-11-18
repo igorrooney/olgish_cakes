@@ -52,24 +52,28 @@ export default async function TraditionalUkrainianCakesPage() {
       description:
         "The most beloved Ukrainian cake with delicate honey-infused layers and smooth traditional Ukrainian sour cream filling",
       price: "From £25",
+      numericPrice: 25,
     },
     {
       name: "Kyiv Cake",
       description:
         "Legendary cake with crispy meringue layers, hazelnuts, and rich chocolate-buttercream frosting",
       price: "From £30",
+      numericPrice: 30,
     },
     {
       name: "Napoleon Cake",
       description:
         "Ukrainian version with multiple layers of flaky puff pastry and rich vanilla custard cream",
       price: "From £28",
+      numericPrice: 28,
     },
     {
       name: "Poppy Seed Roll (Makivnyk)",
       description:
         "Traditional Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
       price: "From £20",
+      numericPrice: 20,
     },
   ];
 
@@ -103,7 +107,7 @@ export default async function TraditionalUkrainianCakesPage() {
         },
         offers: {
           "@type": "Offer",
-          price: cake.price,
+          price: cake.numericPrice,
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),

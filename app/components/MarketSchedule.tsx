@@ -1,32 +1,30 @@
 "use client";
 
-import React, { useMemo } from "react";
+import type { MarketSchedule } from "@/app/types/marketSchedule";
+import { colors } from "@/lib/design-system";
 import {
+  AccessTimeIcon,
+  ArrowForwardIcon,
   Box,
   Button,
+  CalendarTodayIcon,
   Card,
   CardContent,
   Chip,
   Container,
-  Grid,
-  Typography,
-  useTheme,
-  useMediaQuery,
-} from "@/lib/mui-optimization";
-import {
-  CalendarTodayIcon,
-  LocationOnIcon,
-  AccessTimeIcon,
-  LocalOfferIcon,
-  ArrowForwardIcon,
   EventIcon,
+  Grid,
+  LocalOfferIcon,
+  LocationOnIcon,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@/lib/mui-optimization";
-import Link from "next/link";
-import Image from "next/image";
-import { colors, typography } from "@/lib/design-system";
-import { AnimatedDiv, AnimatedSection } from "./AnimatedSection";
-import type { MarketSchedule } from "@/app/types/marketSchedule";
 import { urlFor } from "@/sanity/lib/image";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useMemo } from "react";
+import { AnimatedDiv, AnimatedSection } from "./AnimatedSection";
 
 interface MarketScheduleProps {
   events: MarketSchedule[];
@@ -77,8 +75,8 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
           endDate: event.date, // Assuming same day events
           image: event.image?.asset?.url
             ? (event.image.asset.url.startsWith("http")
-                ? event.image.asset.url
-                : `https://olgishcakes.co.uk${event.image.asset.url}`)
+              ? event.image.asset.url
+              : `https://olgishcakes.co.uk${event.image.asset.url}`)
             : "https://olgishcakes.co.uk/images/market-event-placeholder.jpg",
           location: {
             "@type": "Place",
@@ -122,7 +120,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
             url: `https://olgishcakes.co.uk/market-schedule#${encodeURIComponent(event.title.toLowerCase().replace(/\s+/g, "-"))}`,
             validFrom: `${event.date}T${event.startTime}:00Z`,
             // Add price and priceCurrency for free events
-            price: "0",
+            price: 0,
             priceCurrency: "GBP",
           },
           // Local business context
@@ -530,9 +528,9 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                 <Link href="/market-schedule" style={{ textDecoration: 'none' }}><Button variant="outlined" color="primary" className="px-8 py-3 text-lg font-semibold">
                   View Full Market Schedule
                 </Button></Link>
-                <Button 
-                  variant="outlined" 
-                  color="primary" 
+                <Button
+                  variant="outlined"
+                  color="primary"
                   className="px-8 py-3 text-lg font-semibold"
                   onClick={() => window.open('https://www.instagram.com/olgish_cakes', '_blank', 'noopener,noreferrer')}
                 >
