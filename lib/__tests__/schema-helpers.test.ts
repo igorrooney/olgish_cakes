@@ -5,6 +5,15 @@
 import { generatePageProductSchemas, generatePageProductSchemaScripts, PageProductConfig } from '../schema-helpers'
 import { validateProductHasRequiredFields } from '../schema-validation'
 
+// Mock generateProductSchema for runtime validation test
+jest.mock('../../app/utils/seo', () => {
+  const actual = jest.requireActual('../../app/utils/seo')
+  return {
+    ...actual,
+    generateProductSchema: jest.fn(actual.generateProductSchema),
+  }
+})
+
 describe('schema-helpers', () => {
   const mockProducts: PageProductConfig[] = [
     {
@@ -147,6 +156,27 @@ describe('schema-helpers', () => {
         const validation = validateProductHasRequiredFields(schema)
         expect(validation.isValid).toBe(true)
       })
+    })
+
+    it('should throw error if generated schema is invalid (runtime validation)', () => {
+      const { generateProductSchema } = require('../../app/utils/seo')
+      
+      // Mock generateProductSchema to return invalid schema (missing required fields)
+      ;(generateProductSchema as jest.Mock).mockReturnValueOnce({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Invalid Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg'
+        // Missing offers, review, and aggregateRating
+      })
+
+      expect(() => {
+        generatePageProductSchemas([mockProducts[0]], 'test-page')
+      }).toThrow(/Invalid product schema/)
+
+      // Restore original implementation
+      ;(generateProductSchema as jest.Mock).mockRestore()
     })
   })
 })

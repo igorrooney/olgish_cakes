@@ -6,6 +6,7 @@
 import { Product, WithContext } from 'schema-dts'
 import { generateProductSchema } from '../app/utils/seo'
 import { BUSINESS_CONSTANTS } from './constants'
+import { validateProductHasRequiredFields } from './schema-validation'
 import { DEFAULT_AGGREGATE_RATING } from './structured-data-defaults'
 
 export interface PageProductConfig {
@@ -32,7 +33,7 @@ export function generatePageProductSchemas(
   const pageUrl = `${baseUrl}/${pagePath}`
 
   return products.map((product) => {
-    return {
+    const schema = {
       ...generateProductSchema({
         name: product.name,
         description: product.description,
@@ -47,6 +48,16 @@ export function generatePageProductSchemas(
         },
       }),
     } as WithContext<Product>
+
+    // Runtime validation for safety - catch issues early in development
+    const validation = validateProductHasRequiredFields(schema)
+    if (!validation.isValid) {
+      const errorMessage = `Invalid product schema for "${product.name}": ${validation.errors.join(', ')}`
+      console.error('[Schema Helpers]', errorMessage, { product, schema })
+      throw new Error(errorMessage)
+    }
+
+    return schema
   })
 }
 
