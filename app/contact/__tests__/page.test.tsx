@@ -1,9 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-import { validateProductHasRequiredFields } from '@/lib/schema-validation'
 import { render, screen } from '@testing-library/react'
 import { Product, WithContext } from 'schema-dts'
+import { validateProductHasRequiredFields } from '../../../lib/schema-validation'
 import ContactPage, { metadata } from '../page'
 
 // Mock components
@@ -15,17 +15,10 @@ jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
 }))
 
-// Mock Next.js Link and Script
+// Mock Next.js Link
 jest.mock('next/link', () => ({
   __esModule: true,
   default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
-}))
-
-jest.mock('next/script', () => ({
-  __esModule: true,
-  default: ({ id, type, dangerouslySetInnerHTML }: any) => (
-    <script id={id} type={type} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
-  )
 }))
 
 // Mock MUI

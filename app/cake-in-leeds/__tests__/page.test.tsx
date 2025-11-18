@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 
-import { validateProductHasRequiredFields } from '@/lib/schema-validation'
 import { render } from '@testing-library/react'
 import { Metadata } from 'next'
 import { Product, WithContext } from 'schema-dts'
+import { validateProductHasRequiredFields } from '../../../lib/schema-validation'
 
 // Mock all dependencies before importing
 jest.mock('@mui/material', () => ({
@@ -23,13 +23,6 @@ jest.mock('@mui/material', () => ({
 jest.mock('next/link', () => {
   return jest.fn(({ children }) => children)
 })
-
-jest.mock('next/script', () => ({
-  __esModule: true,
-  default: ({ id, type, dangerouslySetInnerHTML }: any) => (
-    <script id={id} type={type} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
-  )
-}))
 
 jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: jest.fn(() => null)

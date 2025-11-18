@@ -1,13 +1,11 @@
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { colors } from '@/lib/design-system'
 import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon, LocalShippingIcon, Link as MuiLink, StarIcon } from '@/lib/mui-optimization'
-import { DEFAULT_AGGREGATE_RATING } from '@/lib/structured-data-defaults'
+import { generatePageProductSchemaScripts } from '@/lib/schema-helpers'
 import { Box, Button, Card, CardContent, Chip, Container, Grid, Paper, Typography } from '@mui/material'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { generateProductSchema } from '../utils/seo'
 
 export const metadata: Metadata = {
   title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
@@ -176,53 +174,32 @@ export default function CakeInLeedsPage() {
   }
 
   // Product structured data for products mentioned on cake-in-leeds page
-  const birthdayCakeLeedsSchema = {
-    ...generateProductSchema({
-      name: 'Birthday Cake Leeds',
-      description: 'Beautiful custom birthday cakes made fresh to order in Leeds. From simple elegant cakes to elaborate themed creations, every birthday cake is designed just for you. Popular flavours include honey cake, vanilla, and chocolate.',
-      image: `${BUSINESS_CONSTANTS.BASE_URL}/images/cakes-leeds-delivery.jpg`,
-      url: `${BUSINESS_CONSTANTS.BASE_URL}/cake-in-leeds`,
-      price: 45,
-      currency: 'GBP',
-      category: 'Birthday Cakes',
-      aggregateRating: {
-        ratingValue: parseFloat(DEFAULT_AGGREGATE_RATING.ratingValue),
-        reviewCount: parseInt(DEFAULT_AGGREGATE_RATING.reviewCount),
+  const productSchemas = generatePageProductSchemaScripts(
+    [
+      {
+        name: 'Birthday Cake Leeds',
+        description: 'Beautiful custom birthday cakes made fresh to order in Leeds. From simple elegant cakes to elaborate themed creations, every birthday cake is designed just for you. Popular flavours include honey cake, vanilla, and chocolate.',
+        image: `${BUSINESS_CONSTANTS.BASE_URL}/images/cakes-leeds-delivery.jpg`,
+        price: 45,
+        category: 'Birthday Cakes',
       },
-    }),
-  }
-
-  const ukrainianHoneyCakeLeedsSchema = {
-    ...generateProductSchema({
-      name: 'Ukrainian Honey Cake',
-      description: 'Authentic Ukrainian honey cake (Medovik) made fresh daily in Leeds. Traditional Ukrainian cakes with multiple thin layers, sophisticated flavours, and authentic recipes from Ukraine. Perfect for people who miss Ukrainian cakes or want to try something new.',
-      image: `${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-hero.jpg`,
-      url: `${BUSINESS_CONSTANTS.BASE_URL}/cake-in-leeds`,
-      price: 25,
-      currency: 'GBP',
-      category: 'Ukrainian Honey Cake',
-      aggregateRating: {
-        ratingValue: parseFloat(DEFAULT_AGGREGATE_RATING.ratingValue),
-        reviewCount: parseInt(DEFAULT_AGGREGATE_RATING.reviewCount),
+      {
+        name: 'Ukrainian Honey Cake',
+        description: 'Authentic Ukrainian honey cake (Medovik) made fresh daily in Leeds. Traditional Ukrainian cakes with multiple thin layers, sophisticated flavours, and authentic recipes from Ukraine. Perfect for people who miss Ukrainian cakes or want to try something new.',
+        image: `${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-hero.jpg`,
+        price: 25,
+        category: 'Ukrainian Honey Cake',
       },
-    }),
-  }
-
-  const weddingCakeLeedsSchema = {
-    ...generateProductSchema({
-      name: 'Wedding Cake Leeds',
-      description: 'Stunning wedding cakes in Leeds with beautiful designs and delicious flavours. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting available for wedding cakes.',
-      image: `${BUSINESS_CONSTANTS.BASE_URL}/images/wedding-cake-hero.jpg`,
-      url: `${BUSINESS_CONSTANTS.BASE_URL}/cake-in-leeds`,
-      price: 150,
-      currency: 'GBP',
-      category: 'Wedding Cakes',
-      aggregateRating: {
-        ratingValue: parseFloat(DEFAULT_AGGREGATE_RATING.ratingValue),
-        reviewCount: parseInt(DEFAULT_AGGREGATE_RATING.reviewCount),
+      {
+        name: 'Wedding Cake Leeds',
+        description: 'Stunning wedding cakes in Leeds with beautiful designs and delicious flavours. Traditional Ukrainian wedding cakes feature elegant decorations and sophisticated taste. Free consultation and cake tasting available for wedding cakes.',
+        image: `${BUSINESS_CONSTANTS.BASE_URL}/images/wedding-cake-hero.jpg`,
+        price: 150,
+        category: 'Wedding Cakes',
       },
-    }),
-  }
+    ],
+    'cake-in-leeds'
+  )
 
   const leedsAreas = [
     { name: 'City Centre', postcodes: 'LS1, LS2' },
@@ -241,36 +218,29 @@ export default function CakeInLeedsPage() {
 
   return (
     <>
-      <Script
+      <script
         id="local-business-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessStructuredData) }}
       />
-      <Script
+      <script
         id="service-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceStructuredData) }}
       />
-      <Script
+      <script
         id="breadcrumb-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
-      <Script
-        id="birthday-cake-leeds-product-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(birthdayCakeLeedsSchema) }}
-      />
-      <Script
-        id="ukrainian-honey-cake-leeds-product-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ukrainianHoneyCakeLeedsSchema) }}
-      />
-      <Script
-        id="wedding-cake-leeds-product-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(weddingCakeLeedsSchema) }}
-      />
+      {productSchemas.map(({ id, schema }) => (
+        <script
+          key={id}
+          id={id}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
 
       <main className="min-h-screen bg-gray-50">
         <Container maxWidth="lg" sx={{ py: 2 }}>
