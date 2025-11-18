@@ -1,4 +1,5 @@
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
+import { REVIEW_DATES } from "@/lib/structured-data-defaults";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Metadata } from "next";
 
@@ -572,7 +573,7 @@ export function generateProductSchema(product: {
           name: "Sarah M."
         },
         reviewBody: `Excellent ${product.name}! The quality and taste are outstanding. Highly recommend!`,
-        datePublished: "2025-09-30"
+        datePublished: REVIEW_DATES.RECENT
       },
       {
         "@type": "Review",
@@ -590,7 +591,7 @@ export function generateProductSchema(product: {
           name: "James K."
         },
         reviewBody: `Amazing service and incredible quality. The ${product.name} exceeded our expectations!`,
-        datePublished: "2025-08-15"
+        datePublished: REVIEW_DATES.OLDER
       }
     ],
   };

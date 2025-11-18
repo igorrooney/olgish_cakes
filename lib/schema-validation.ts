@@ -46,15 +46,43 @@ function isAggregateRating(rating: unknown): rating is AggregateRatingLike {
 }
 
 /**
- * Validate that a product schema has all required fields for Google Search Console
+ * Validates that a Product schema has at least one of the required fields:
+ * offers, review, or aggregateRating (Google Search Console requirement)
  * @param schema - Product schema to validate
  * @returns Object with isValid flag and array of validation errors
  */
+export function validateProductHasRequiredFields(schema: WithContext<Product>): {
+  isValid: boolean;
+  errors: string[]
+} {
+  const errors: string[] = []
+
+  const hasOffers = schema.offers !== undefined && schema.offers !== null
+  const hasReview = schema.review !== undefined && schema.review !== null && 
+    (Array.isArray(schema.review) ? schema.review.length > 0 : true)
+  const hasAggregateRating = schema.aggregateRating !== undefined && schema.aggregateRating !== null
+
+  if (!hasOffers && !hasReview && !hasAggregateRating) {
+    errors.push('Product schema must have at least one of: offers, review, or aggregateRating (Google Search Console requirement)')
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  }
+}
+
 export function validateProductSchema(schema: WithContext<Product>): {
   isValid: boolean;
   errors: string[]
 } {
   const errors: string[] = [];
+
+  // Google Search Console requirement: must have at least one of offers, review, or aggregateRating
+  const requiredFieldsCheck = validateProductHasRequiredFields(schema)
+  if (!requiredFieldsCheck.isValid) {
+    errors.push(...requiredFieldsCheck.errors)
+  }
 
   // Required fields according to Google Merchant Center
   if (!schema.name || typeof schema.name !== 'string') {

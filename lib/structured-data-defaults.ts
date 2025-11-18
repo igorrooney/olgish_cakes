@@ -10,7 +10,7 @@ import { Review, WithContext } from "schema-dts";
 
 // Fixed review dates - update these quarterly to keep them reasonably current
 // Last updated: October 30, 2025
-const REVIEW_DATES = {
+export const REVIEW_DATES = {
   RECENT: "2025-09-30",    // ~1 month ago from October 30, 2025
   OLDER: "2025-08-15"      // ~2.5 months ago from October 30, 2025
 } as const;

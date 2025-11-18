@@ -1,24 +1,25 @@
-import type { Metadata } from "next";
 import {
-  Container,
-  Typography,
   Box,
-  Stack,
-  Link,
-  Grid,
-  Paper,
+  Container,
   Divider,
+  Grid,
+  Link,
+  Paper,
+  Stack,
+  Typography,
 } from "@/lib/mui-optimization";
-import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
+import type { Metadata } from "next";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
 // Import StructuredData
 import {
-  PhoneIcon,
   EmailIcon,
-  InstagramIcon,
   FacebookIcon,
+  InstagramIcon,
+  PhoneIcon,
   WhatsAppIcon,
 } from "@/lib/mui-optimization";
+import { generatePageProductSchemaScripts } from "@/lib/schema-helpers";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -145,13 +146,43 @@ export default function ContactPage() {
     },
   };
 
+  // Product structured data for products mentioned on contact page
+  const productSchemas = generatePageProductSchemaScripts(
+    [
+      {
+        name: "Custom Wedding Cakes",
+        description: "Beautiful custom wedding cakes designed for your special day. Traditional Ukrainian wedding cakes with elegant decorations and sophisticated flavours. Free consultation and cake tasting available.",
+        image: "https://olgishcakes.co.uk/images/wedding-cake-hero.jpg",
+        price: 150,
+        category: "Wedding Cakes",
+      },
+      {
+        name: "Ukrainian Honey Cake",
+        description: "Traditional Ukrainian honey cake (Medovik) made with authentic recipes. Handcrafted with premium ingredients, featuring delicate layers and rich flavours. Perfect for celebrations and special occasions.",
+        image: "https://olgishcakes.co.uk/images/honey-cake-hero.jpg",
+        price: 25,
+        category: "Ukrainian Honey Cake",
+      },
+    ],
+    "contact"
+  );
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
       {/* Structured Data */}
       <script
+        id="contact-page-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {productSchemas.map(({ id, schema }) => (
+        <script
+          key={id}
+          id={id}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
 
       {/* Breadcrumbs */}
       <Box sx={{ mb: 3 }}>
