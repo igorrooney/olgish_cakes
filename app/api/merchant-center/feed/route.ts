@@ -1,9 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/sanity/lib/client";
 import { getAllCakes } from "@/app/utils/fetchCakes";
 import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
-import { unstable_cache } from "next/cache";
 import { urlFor } from "@/sanity/lib/image";
+import { Cake, CakeImage } from "@/types/cake";
+import { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
+import { unstable_cache } from "next/cache";
+import { NextRequest, NextResponse } from "next/server";
+
+interface RichTextChild {
+  text: string;
+  [key: string]: unknown;
+}
+
+interface RichTextBlock {
+  _type: string;
+  children?: RichTextChild[];
+  [key: string]: unknown;
+}
 
 // Cached function to generate the product feed
 const generateProductFeed = unstable_cache(
@@ -68,32 +80,43 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function generateCakeItem(cake: any, baseUrl: string): string {
+function generateCakeItem(cake: Cake, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
 
   // Enhanced image detection - try multiple sources
-  const mainImage = cake.mainImage?.asset?._ref
-    ? cake.mainImage
-    : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+  const mainImage: CakeImage | undefined = cake.mainImage?.asset?._ref
+    ? (cake.mainImage as CakeImage)
+    : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
       cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
-      cake.designs?.individual?.[0];
+      cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
+      cake.designs?.individual?.[0] ||
+      // Fallback to images array (for legacy data like Honey Cake)
+      cake.images?.find((img: CakeImage) => img.asset?._ref) ||
+      cake.images?.[0];
 
   const imageUrl = mainImage?.asset?._ref
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
-  const price = cake.pricing?.standard || cake.pricing?.from || 25;
-  const availability = cake.structuredData?.availability || 'in stock';
+  const price = cake.pricing?.standard || cake.pricing?.individual || 25;
+  const availability = cake.structuredData?.availability === 'InStock' 
+    ? 'in stock' 
+    : cake.structuredData?.availability === 'OutOfStock' 
+      ? 'out of stock' 
+      : cake.structuredData?.availability === 'PreOrder' 
+        ? 'preorder' 
+        : cake.structuredData?.availability === 'Discontinued' 
+          ? 'discontinued' 
+          : 'in stock';
 
   // Handle description properly (could be array or string)
   let description = Array.isArray(cake.shortDescription)
-    ? cake.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    ? cake.shortDescription.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
     : Array.isArray(cake.description)
-    ? cake.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : cake.shortDescription || cake.description || '';
+    ? cake.description.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
+    : (typeof cake.shortDescription === 'string' ? cake.shortDescription : '') || (typeof cake.description === 'string' ? cake.description : '') || '';
 
   // Enhance description for SEO if too short
   if (!description || description.length < 100) {
@@ -158,24 +181,24 @@ function generateCakeItem(cake: any, baseUrl: string): string {
     </item>`;
 }
 
-function generateHamperItem(hamper: any, baseUrl: string): string {
+function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
   const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
-  const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) ||
-                   hamper.images?.find((img: any) => img.asset?._ref) ||
+  const mainImage: GiftHamperImage | undefined = hamper.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) ||
+                   hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
                    hamper.images?.[0];
 
   const imageUrl = mainImage?.asset?._ref
     ? escapeXml(urlFor(mainImage).width(800).height(800).url())
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
-  const price = hamper.price || hamper.pricing?.standard || 35;
+  const price = hamper.price || 35;
 
   // Handle description properly (could be array or string)
   let description = Array.isArray(hamper.shortDescription)
-    ? hamper.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
+    ? hamper.shortDescription.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
     : Array.isArray(hamper.description)
-    ? hamper.description.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : hamper.shortDescription || hamper.description || '';
+    ? hamper.description.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
+    : (typeof hamper.shortDescription === 'string' ? hamper.shortDescription : '') || (typeof hamper.description === 'string' ? hamper.description : '') || '';
 
   // Enhance description for SEO if too short
   if (!description || description.length < 100) {
