@@ -2,7 +2,10 @@
  * @jest-environment jsdom
  */
 
+import { validateProductHasRequiredFields } from '@/lib/schema-validation'
+import { render } from '@testing-library/react'
 import { Metadata } from 'next'
+import { Product, WithContext } from 'schema-dts'
 
 // Mock all dependencies before importing
 jest.mock('@mui/material', () => ({
@@ -21,6 +24,13 @@ jest.mock('next/link', () => {
   return jest.fn(({ children }) => children)
 })
 
+jest.mock('next/script', () => ({
+  __esModule: true,
+  default: ({ id, type, dangerouslySetInnerHTML }: any) => (
+    <script id={id} type={type} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
+  )
+}))
+
 jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: jest.fn(() => null)
 }))
@@ -30,7 +40,74 @@ jest.mock('@/lib/mui-optimization', () => ({
   CheckCircleIcon: jest.fn(() => null),
   LocalShippingIcon: jest.fn(() => null),
   CakeOutlinedIcon: jest.fn(() => null),
-  StarIcon: jest.fn(() => null)
+  StarIcon: jest.fn(() => null),
+  Link: jest.fn(({ children }) => children)
+}))
+
+jest.mock('@/lib/design-system', () => ({
+  colors: {
+    primary: { main: '#2E3192' },
+    secondary: { main: '#FEF102' }
+  }
+}))
+
+jest.mock('@/lib/constants', () => ({
+  BUSINESS_CONSTANTS: {
+    BASE_URL: 'https://olgishcakes.co.uk',
+    PHONE: '+44 786 721 8194',
+    EMAIL: 'hello@olgishcakes.co.uk'
+  }
+}))
+
+// Mock SEO utilities
+jest.mock('../../utils/seo', () => ({
+  generateProductSchema: jest.fn((product: any) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': `${product.url}#product`,
+    name: product.name,
+    description: product.description,
+    image: product.image,
+    url: product.url,
+    brand: {
+      '@type': 'Brand',
+      name: 'Olgish Cakes'
+    },
+    category: product.category,
+    offers: {
+      '@type': 'Offer',
+      price: product.price,
+      priceCurrency: product.currency || 'GBP',
+      availability: 'https://schema.org/InStock'
+    },
+    aggregateRating: product.aggregateRating ? {
+      '@type': 'AggregateRating',
+      ratingValue: product.aggregateRating.ratingValue.toString(),
+      reviewCount: product.aggregateRating.reviewCount.toString(),
+      bestRating: '5',
+      worstRating: '1'
+    } : undefined,
+    review: [
+      {
+        '@type': 'Review',
+        itemReviewed: { '@id': `${product.url}#product` },
+        reviewRating: { '@type': 'Rating', ratingValue: '5' },
+        author: { '@type': 'Person', name: 'Sarah M.' },
+        reviewBody: `Excellent ${product.name}!`,
+        datePublished: '2025-09-30'
+      }
+    ]
+  }))
+}))
+
+jest.mock('@/lib/structured-data-defaults', () => ({
+  DEFAULT_AGGREGATE_RATING: {
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '2',
+    bestRating: '5',
+    worstRating: '1'
+  }
 }))
 
 describe('CakeInLeedsPage', () => {
@@ -220,6 +297,155 @@ describe('CakeInLeedsPage', () => {
       const result = CakeInLeedsPage()
       expect(result).toBeDefined()
       expect(typeof result).toBe('object')
+    })
+  })
+
+  describe('Product Structured Data - Google Search Console Compliance', () => {
+    it('should have Product schemas for Birthday Cake Leeds, Ukrainian Honey Cake, and Wedding Cake Leeds', () => {
+      const { container } = render(<CakeInLeedsPage />)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      const productSchemas: WithContext<Product>[] = []
+      
+      scripts.forEach((script) => {
+        if (script.textContent) {
+          try {
+            const data = JSON.parse(script.textContent)
+            if (data['@type'] === 'Product') {
+              productSchemas.push(data)
+            }
+          } catch (e) {
+            // Ignore non-JSON scripts
+          }
+        }
+      })
+
+      expect(productSchemas.length).toBeGreaterThanOrEqual(3)
+      
+      const birthdayCake = productSchemas.find(s => s.name === 'Birthday Cake Leeds')
+      const ukrainianHoneyCake = productSchemas.find(s => s.name === 'Ukrainian Honey Cake')
+      const weddingCake = productSchemas.find(s => s.name === 'Wedding Cake Leeds')
+      
+      expect(birthdayCake).toBeDefined()
+      expect(ukrainianHoneyCake).toBeDefined()
+      expect(weddingCake).toBeDefined()
+    })
+
+    it('should have Birthday Cake Leeds Product schema with required fields', () => {
+      const { container } = render(<CakeInLeedsPage />)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      let birthdayCakeSchema: WithContext<Product> | null = null
+      
+      scripts.forEach((script) => {
+        if (script.textContent) {
+          try {
+            const data = JSON.parse(script.textContent)
+            if (data['@type'] === 'Product' && data.name === 'Birthday Cake Leeds') {
+              birthdayCakeSchema = data
+            }
+          } catch (e) {
+            // Ignore non-JSON scripts
+          }
+        }
+      })
+
+      expect(birthdayCakeSchema).toBeDefined()
+      if (birthdayCakeSchema) {
+        const validation = validateProductHasRequiredFields(birthdayCakeSchema)
+        expect(validation.isValid).toBe(true)
+        expect(validation.errors).toHaveLength(0)
+        
+        // Verify it has at least one required field
+        const hasOffers = birthdayCakeSchema.offers !== undefined && birthdayCakeSchema.offers !== null
+        const hasReview = birthdayCakeSchema.review !== undefined && birthdayCakeSchema.review !== null
+        const hasAggregateRating = birthdayCakeSchema.aggregateRating !== undefined && birthdayCakeSchema.aggregateRating !== null
+        
+        expect(hasOffers || hasReview || hasAggregateRating).toBe(true)
+        
+        // Verify specific fields
+        expect(hasOffers).toBe(true)
+        expect(hasReview).toBe(true)
+        expect(hasAggregateRating).toBe(true)
+      }
+    })
+
+    it('should have Ukrainian Honey Cake Product schema with required fields', () => {
+      const { container } = render(<CakeInLeedsPage />)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      let ukrainianHoneyCakeSchema: WithContext<Product> | null = null
+      
+      scripts.forEach((script) => {
+        if (script.textContent) {
+          try {
+            const data = JSON.parse(script.textContent)
+            if (data['@type'] === 'Product' && data.name === 'Ukrainian Honey Cake') {
+              ukrainianHoneyCakeSchema = data
+            }
+          } catch (e) {
+            // Ignore non-JSON scripts
+          }
+        }
+      })
+
+      expect(ukrainianHoneyCakeSchema).toBeDefined()
+      if (ukrainianHoneyCakeSchema) {
+        const validation = validateProductHasRequiredFields(ukrainianHoneyCakeSchema)
+        expect(validation.isValid).toBe(true)
+        expect(validation.errors).toHaveLength(0)
+        
+        // Verify it has at least one required field
+        const hasOffers = ukrainianHoneyCakeSchema.offers !== undefined && ukrainianHoneyCakeSchema.offers !== null
+        const hasReview = ukrainianHoneyCakeSchema.review !== undefined && ukrainianHoneyCakeSchema.review !== null
+        const hasAggregateRating = ukrainianHoneyCakeSchema.aggregateRating !== undefined && ukrainianHoneyCakeSchema.aggregateRating !== null
+        
+        expect(hasOffers || hasReview || hasAggregateRating).toBe(true)
+        
+        // Verify specific fields
+        expect(hasOffers).toBe(true)
+        expect(hasReview).toBe(true)
+        expect(hasAggregateRating).toBe(true)
+      }
+    })
+
+    it('should have Wedding Cake Leeds Product schema with required fields', () => {
+      const { container } = render(<CakeInLeedsPage />)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      let weddingCakeSchema: WithContext<Product> | null = null
+      
+      scripts.forEach((script) => {
+        if (script.textContent) {
+          try {
+            const data = JSON.parse(script.textContent)
+            if (data['@type'] === 'Product' && data.name === 'Wedding Cake Leeds') {
+              weddingCakeSchema = data
+            }
+          } catch (e) {
+            // Ignore non-JSON scripts
+          }
+        }
+      })
+
+      expect(weddingCakeSchema).toBeDefined()
+      if (weddingCakeSchema) {
+        const validation = validateProductHasRequiredFields(weddingCakeSchema)
+        expect(validation.isValid).toBe(true)
+        expect(validation.errors).toHaveLength(0)
+        
+        // Verify it has at least one required field
+        const hasOffers = weddingCakeSchema.offers !== undefined && weddingCakeSchema.offers !== null
+        const hasReview = weddingCakeSchema.review !== undefined && weddingCakeSchema.review !== null
+        const hasAggregateRating = weddingCakeSchema.aggregateRating !== undefined && weddingCakeSchema.aggregateRating !== null
+        
+        expect(hasOffers || hasReview || hasAggregateRating).toBe(true)
+        
+        // Verify specific fields
+        expect(hasOffers).toBe(true)
+        expect(hasReview).toBe(true)
+        expect(hasAggregateRating).toBe(true)
+      }
     })
   })
 })

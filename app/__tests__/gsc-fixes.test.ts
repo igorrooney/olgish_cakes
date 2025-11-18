@@ -234,6 +234,51 @@ describe('GSC Compliance Fixes', () => {
       expect(validProductStructure.aggregateRating).toBeDefined()
       expect(validProductStructure.review).toBeDefined()
     })
+
+    it('should have at least one of: offers, review, or aggregateRating (Google Search Console requirement)', () => {
+      // This test documents the Google Search Console requirement that was causing errors
+      // Error: "Either 'offers', 'review' or 'aggregateRating' should be specified."
+      
+      const validProductWithOffers = {
+        '@type': 'Product',
+        name: 'Test Product',
+        offers: { '@type': 'Offer', price: 25 }
+        // Has offers, so valid even without review or aggregateRating
+      }
+
+      const validProductWithReview = {
+        '@type': 'Product',
+        name: 'Test Product',
+        review: [{ '@type': 'Review', author: { '@type': 'Person', name: 'Test' } }]
+        // Has review, so valid even without offers or aggregateRating
+      }
+
+      const validProductWithAggregateRating = {
+        '@type': 'Product',
+        name: 'Test Product',
+        aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '10' }
+        // Has aggregateRating, so valid even without offers or review
+      }
+
+      const invalidProduct = {
+        '@type': 'Product',
+        name: 'Test Product'
+        // Missing offers, review, AND aggregateRating - would cause GSC error
+      }
+
+      // Valid products must have at least one required field
+      expect(validProductWithOffers.offers).toBeDefined()
+      expect(validProductWithReview.review).toBeDefined()
+      expect(validProductWithAggregateRating.aggregateRating).toBeDefined()
+
+      // Invalid product has none of the required fields
+      expect(invalidProduct.offers).toBeUndefined()
+      expect(invalidProduct.review).toBeUndefined()
+      expect(invalidProduct.aggregateRating).toBeUndefined()
+
+      // This would cause Google Search Console error:
+      // "Either 'offers', 'review' or 'aggregateRating' should be specified."
+    })
   })
 
   describe('Merchant Listings - Price Format Fix', () => {

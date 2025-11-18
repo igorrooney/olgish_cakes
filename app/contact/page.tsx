@@ -1,24 +1,27 @@
-import type { Metadata } from "next";
 import {
-  Container,
-  Typography,
   Box,
-  Stack,
-  Link,
-  Grid,
-  Paper,
+  Container,
   Divider,
+  Grid,
+  Link,
+  Paper,
+  Stack,
+  Typography,
 } from "@/lib/mui-optimization";
-import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
+import type { Metadata } from "next";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { ContactForm } from "../components/ContactForm"; // Adjust the path as necessary
 // Import StructuredData
 import {
-  PhoneIcon,
   EmailIcon,
-  InstagramIcon,
   FacebookIcon,
+  InstagramIcon,
+  PhoneIcon,
   WhatsAppIcon,
 } from "@/lib/mui-optimization";
+import { DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
+import Script from "next/script";
+import { generateProductSchema } from "../utils/seo";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -145,12 +148,56 @@ export default function ContactPage() {
     },
   };
 
+  // Product structured data for products mentioned on contact page
+  const customWeddingCakesSchema = {
+    ...generateProductSchema({
+      name: "Custom Wedding Cakes",
+      description: "Beautiful custom wedding cakes designed for your special day. Traditional Ukrainian wedding cakes with elegant decorations and sophisticated flavours. Free consultation and cake tasting available.",
+      image: "https://olgishcakes.co.uk/images/wedding-cake-hero.jpg",
+      url: "https://olgishcakes.co.uk/contact",
+      price: 150,
+      currency: "GBP",
+      category: "Wedding Cakes",
+      aggregateRating: {
+        ratingValue: parseFloat(DEFAULT_AGGREGATE_RATING.ratingValue),
+        reviewCount: parseInt(DEFAULT_AGGREGATE_RATING.reviewCount),
+      },
+    }),
+  };
+
+  const ukrainianHoneyCakeSchema = {
+    ...generateProductSchema({
+      name: "Ukrainian Honey Cake",
+      description: "Traditional Ukrainian honey cake (Medovik) made with authentic recipes. Handcrafted with premium ingredients, featuring delicate layers and rich flavours. Perfect for celebrations and special occasions.",
+      image: "https://olgishcakes.co.uk/images/honey-cake-hero.jpg",
+      url: "https://olgishcakes.co.uk/contact",
+      price: 25,
+      currency: "GBP",
+      category: "Ukrainian Honey Cake",
+      aggregateRating: {
+        ratingValue: parseFloat(DEFAULT_AGGREGATE_RATING.ratingValue),
+        reviewCount: parseInt(DEFAULT_AGGREGATE_RATING.reviewCount),
+      },
+    }),
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 }, px: { xs: 1, md: 0 } }}>
       {/* Structured Data */}
-      <script
+      <Script
+        id="contact-page-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <Script
+        id="custom-wedding-cakes-product-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(customWeddingCakesSchema) }}
+      />
+      <Script
+        id="ukrainian-honey-cake-product-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ukrainianHoneyCakeSchema) }}
       />
 
       {/* Breadcrumbs */}

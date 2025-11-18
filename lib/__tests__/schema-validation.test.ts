@@ -2,6 +2,7 @@ import { Product, Review, WithContext } from 'schema-dts'
 import {
   batchValidateProductSchemas,
   validateMPNUniqueness,
+  validateProductHasRequiredFields,
   validateProductSchema,
   validateReviewSchema
 } from '../schema-validation'
@@ -961,6 +962,150 @@ describe('schema-validation', () => {
       batchValidateProductSchemas([invalidSchema], true)
 
       expect(console.error).toHaveBeenCalled()
+    })
+  })
+
+  describe('validateProductHasRequiredFields', () => {
+    it('should validate product with offers', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg',
+        offers: {
+          '@type': 'Offer',
+          price: 25,
+          priceCurrency: 'GBP'
+        }
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(true)
+      expect(result.errors).toHaveLength(0)
+    })
+
+    it('should validate product with review', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg',
+        review: [
+          {
+            '@type': 'Review',
+            author: { '@type': 'Person', name: 'Test User' },
+            reviewRating: { '@type': 'Rating', ratingValue: '5' }
+          }
+        ]
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(true)
+      expect(result.errors).toHaveLength(0)
+    })
+
+    it('should validate product with aggregateRating', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg',
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '5.0',
+          reviewCount: '10'
+        }
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(true)
+      expect(result.errors).toHaveLength(0)
+    })
+
+    it('should validate product with multiple required fields', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg',
+        offers: {
+          '@type': 'Offer',
+          price: 25,
+          priceCurrency: 'GBP'
+        },
+        review: [
+          {
+            '@type': 'Review',
+            author: { '@type': 'Person', name: 'Test User' },
+            reviewRating: { '@type': 'Rating', ratingValue: '5' }
+          }
+        ],
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '5.0',
+          reviewCount: '10'
+        }
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(true)
+      expect(result.errors).toHaveLength(0)
+    })
+
+    it('should reject product without offers, review, or aggregateRating', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg'
+        // Missing offers, review, and aggregateRating
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(false)
+      expect(result.errors).toContain(
+        'Product schema must have at least one of: offers, review, or aggregateRating (Google Search Console requirement)'
+      )
+    })
+
+    it('should reject product with empty review array', () => {
+      const schema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg',
+        review: []
+        // Empty review array doesn't count
+      }
+
+      const result = validateProductHasRequiredFields(schema)
+      expect(result.isValid).toBe(false)
+      expect(result.errors).toContain(
+        'Product schema must have at least one of: offers, review, or aggregateRating (Google Search Console requirement)'
+      )
+    })
+
+    it('should be integrated into validateProductSchema', () => {
+      const invalidSchema: WithContext<Product> = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: 'Test Product',
+        description: 'Test description',
+        image: 'https://example.com/image.jpg'
+        // Missing offers, review, and aggregateRating
+      }
+
+      const result = validateProductSchema(invalidSchema)
+      expect(result.isValid).toBe(false)
+      expect(result.errors).toContain(
+        'Product schema must have at least one of: offers, review, or aggregateRating (Google Search Console requirement)'
+      )
     })
   })
 })
