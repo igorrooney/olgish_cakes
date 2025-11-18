@@ -1,4 +1,3 @@
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -114,7 +113,7 @@ export default function NutFreeCakesLeedsPage() {
             ],
             offers: {
               "@type": "Offer",
-              price: formatStructuredDataPrice(35, 35),
+              price: 35,
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock"
             },

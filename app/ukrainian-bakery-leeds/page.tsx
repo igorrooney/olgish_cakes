@@ -1,4 +1,3 @@
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -88,7 +87,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "Traditional Ukrainian honey cake with delicate layers and sour cream filling",
               offers: {
                 "@type": "Offer",
-                price: formatStructuredDataPrice(25, 25),
+                price: 25,
                 priceCurrency: "GBP",
                 priceValidUntil: getPriceValidUntil(30),
                 shippingDetails: {
@@ -136,7 +135,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "Legendary Ukrainian cake with meringue layers and chocolate-buttercream",
               offers: {
                 "@type": "Offer",
-                price: formatStructuredDataPrice(30, 30),
+                price: 30,
                 priceCurrency: "GBP",
                 priceValidUntil: getPriceValidUntil(30),
                 shippingDetails: {

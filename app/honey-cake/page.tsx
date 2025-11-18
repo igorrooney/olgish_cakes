@@ -1,7 +1,6 @@
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { colors } from '@/lib/design-system'
 import { AccessTimeIcon, ArrowForwardIcon, CakeIcon, CheckCircleIcon, DesignServicesIcon, ExpandMoreIcon, KitchenIcon, LocalDiningIcon, Link as MuiLink, OpacityIcon } from '@/lib/mui-optimization'
-import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Container, Grid, Paper, Typography } from '@mui/material'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -100,7 +99,7 @@ export default function HoneyCakePage() {
     },
     offers: {
       '@type': 'Offer',
-      price: formatStructuredDataPrice(40, 40),
+      price: 40,
       priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
       url: `${BUSINESS_CONSTANTS.BASE_URL}/cakes/honey-cake-medovik`

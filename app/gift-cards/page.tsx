@@ -1,4 +1,3 @@
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import {
   Box,
   Button,
@@ -107,7 +106,7 @@ export default function GiftCardsPage() {
             },
             offers: {
               "@type": "Offer",
-              price: formatStructuredDataPrice("25.00", 25),
+              price: 25,
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
               priceValidUntil: getPriceValidUntil(30),

@@ -1,4 +1,3 @@
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -129,7 +128,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: formatStructuredDataPrice(25, 25),
+                  price: 25,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),
@@ -149,7 +148,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: formatStructuredDataPrice(40, 40),
+                  price: 40,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),
@@ -169,7 +168,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: formatStructuredDataPrice(150, 150),
+                  price: 150,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),
