@@ -1,19 +1,20 @@
-import type { Metadata } from "next";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import {
-  Container,
-  Typography,
   Box,
+  Button,
+  Chip,
+  Container,
   Grid,
   Paper,
-  Chip,
-  Button,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
@@ -131,7 +132,7 @@ export default function CakePricingPage() {
               name: "Olgish Cakes",
             },
           },
-          price: cake.price,
+          price: formatStructuredDataPrice(cake.price, 25),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           hasMerchantReturnPolicy: {
@@ -183,7 +184,7 @@ export default function CakePricingPage() {
               name: "Olgish Cakes",
             },
           },
-          price: cake.startingPrice,
+          price: formatStructuredDataPrice(cake.startingPrice, 25),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           hasMerchantReturnPolicy: {

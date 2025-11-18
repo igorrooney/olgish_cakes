@@ -4,12 +4,13 @@ import {
   LocalShippingIcon,
   PaymentIcon,
 } from "@/lib/mui-optimization";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Alert, AlertTitle, Box, Card, Container, Grid, Stack, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import { borderRadius, colors, shadows, typography } from "../../lib/design-system";
 import { Breadcrumbs } from "../components/Breadcrumbs";
-import { QuoteForm } from "./QuoteForm";
 import { getPriceValidUntil } from "../utils/seo";
+import { QuoteForm } from "./QuoteForm";
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -118,7 +119,7 @@ const structuredData = {
   serviceType: "Custom Cake Design & Consultation",
   offers: {
     "@type": "Offer",
-    price: "0",
+    price: formatStructuredDataPrice(0, 0),
     priceCurrency: "GBP",
     description: "Free consultation and quote for custom cakes",
     availability: "https://schema.org/InStock",

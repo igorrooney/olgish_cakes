@@ -1,11 +1,11 @@
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
 import Link from "next/link";
-import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
-import { getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
+import { Breadcrumbs } from "../components/Breadcrumbs";
+import CakeCard from "../components/CakeCard";
+import { getAllCakes } from "../utils/fetchCakes";
+import { getMerchantReturnPolicy, getOfferShippingDetails } from "../utils/seo";
 
 export const metadata: Metadata = {
   title: "Birthday Cakes Leeds from £25 | 5★ Rated",
@@ -128,7 +128,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: "25",
+                  price: 25,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),
@@ -148,7 +148,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: "40",
+                  price: 40,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),
@@ -168,7 +168,7 @@ export default async function CakesLeedsPage() {
                       worstRating: "1",
                     },
                   },
-                  price: "150",
+                  price: 150,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   shippingDetails: getOfferShippingDetails(),

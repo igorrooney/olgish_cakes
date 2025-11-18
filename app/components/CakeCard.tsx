@@ -1,17 +1,15 @@
 "use client";
 
-import { CardContent, Typography, Box, Chip } from "@/lib/mui-optimization";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { designTokens } from "@/lib/design-system";
+import { Box, CardContent, Typography } from "@/lib/mui-optimization";
+import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import { urlFor } from "@/sanity/lib/image";
+import { Cake, blocksToText } from "@/types/cake";
 import Image from "next/image";
 import Link from "next/link";
-import { Cake, blocksToText } from "@/types/cake";
-import { RichTextRenderer } from "./RichTextRenderer";
-import { urlFor } from "@/sanity/lib/image";
-import { useState, memo, useMemo, useCallback } from "react";
-import { designTokens } from "@/lib/design-system";
-import { ProductCard, CategoryChip, PriceDisplay, OutlineButton } from "@/lib/ui-components";
-import { getPriceValidUntil } from "@/app/utils/seo";
-import { getMerchantReturnPolicy } from "@/app/utils/seo";
-import { getOfferShippingDetails } from "@/app/utils/seo";
+import { memo, useCallback, useMemo, useState } from "react";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -91,7 +89,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       },
       offers: {
         "@type": "Offer",
-        price: price,
+        price: formatStructuredDataPrice(price, 0),
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         priceValidUntil: getPriceValidUntil(30),

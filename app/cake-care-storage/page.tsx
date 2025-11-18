@@ -1,17 +1,14 @@
-import type { Metadata } from "next";
 import {
-  Container,
-  Typography,
+  Alert,
   Box,
+  Button,
+  Chip,
+  Container,
   Grid,
   Paper,
-  Chip,
-  Button,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Alert,
+  Typography
 } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -96,7 +93,7 @@ export default function CakeCareStoragePage() {
             estimatedCost: {
               "@type": "MonetaryAmount",
               currency: "GBP",
-              value: "0",
+              value: 0,
             },
             supply: [
               {

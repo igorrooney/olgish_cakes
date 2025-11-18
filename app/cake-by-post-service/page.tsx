@@ -1,6 +1,5 @@
-import { Metadata } from "next";
 import { CakeByPostContent } from "@/app/gift-hampers/[slug]/CakeByPostContent";
-import Link from "next/link";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Cake by Post UK | Letterbox Cake Delivery Across Britain",
@@ -92,7 +91,7 @@ export default function CakeByPostServicePage() {
                 description: "Letterbox-friendly pack of 2 slices, vacuum-packed for freshness",
                 offers: {
                   "@type": "Offer",
-                  price: "7.00",
+                  price: 7.00,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                   seller: {

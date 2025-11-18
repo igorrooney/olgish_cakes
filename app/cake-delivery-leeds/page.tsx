@@ -1,17 +1,17 @@
-import type { Metadata } from "next";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
-  Container,
-  Typography,
   Box,
+  Button,
+  Chip,
+  Container,
   Grid,
   Paper,
-  Chip,
-  Button,
+  Typography,
 } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
@@ -130,7 +130,7 @@ export default function CakeDeliveryLeedsPage() {
                     name: "Same Day Delivery Leeds",
                     description: "Same-day cake delivery available when ordered before 10am",
                   },
-                  price: "5",
+                  price: 5,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                 },
@@ -141,7 +141,7 @@ export default function CakeDeliveryLeedsPage() {
                     name: "Next Day Delivery Leeds",
                     description: "Standard next-day delivery service across Leeds",
                   },
-                  price: "5",
+                  price: 5,
                   priceCurrency: "GBP",
                   availability: "https://schema.org/InStock",
                 },

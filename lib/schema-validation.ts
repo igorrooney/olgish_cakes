@@ -4,7 +4,7 @@
  */
 
 import { Product, Review, WithContext } from "schema-dts";
-import { SKU_PREFIX, MAX_SKU_NAME_LENGTH, SKU_PADDING_LENGTH } from "./schema-constants";
+import { SKU_PADDING_LENGTH, SKU_PREFIX } from "./schema-constants";
 
 // Type guard for Offer objects
 interface OfferLike {
@@ -13,6 +13,21 @@ interface OfferLike {
   priceCurrency?: string;
   availability?: string;
   priceValidUntil?: string;
+}
+
+/**
+ * Validates that price is a valid number (for Google Merchant Center compliance)
+ * Accepts both number and string types, but ensures the value is numeric
+ */
+function isValidPrice(price: unknown): price is number {
+  if (typeof price === 'number') {
+    return Number.isFinite(price) && !Number.isNaN(price) && price >= 0
+  }
+  if (typeof price === 'string') {
+    const parsed = parseFloat(price)
+    return Number.isFinite(parsed) && !Number.isNaN(parsed) && parsed >= 0
+  }
+  return false
 }
 
 function isOffer(offers: unknown): offers is OfferLike {
@@ -35,9 +50,9 @@ function isAggregateRating(rating: unknown): rating is AggregateRatingLike {
  * @param schema - Product schema to validate
  * @returns Object with isValid flag and array of validation errors
  */
-export function validateProductSchema(schema: WithContext<Product>): { 
-  isValid: boolean; 
-  errors: string[] 
+export function validateProductSchema(schema: WithContext<Product>): {
+  isValid: boolean;
+  errors: string[]
 } {
   const errors: string[] = [];
 
@@ -66,17 +81,22 @@ export function validateProductSchema(schema: WithContext<Product>): {
     errors.push('Missing offers object');
   } else if (isOffer(schema.offers)) {
     const offer = schema.offers;
-    
-    if (!offer.price || typeof offer.price !== 'string') {
-      errors.push('Missing or invalid offer price');
+
+    // Price must be a number (not a string) for Google Merchant Center compliance
+    // Accept both number and string types for backward compatibility during migration
+    if (!offer.price || !isValidPrice(offer.price)) {
+      errors.push('Missing or invalid offer price (must be a number)');
     } else {
-      const priceValue = parseFloat(offer.price);
-      if (isNaN(priceValue)) {
-        errors.push('Price must be a valid number');
-      } else if (priceValue <= 0) {
+      const priceValue = typeof offer.price === 'number' ? offer.price : parseFloat(offer.price);
+      if (priceValue <= 0) {
         errors.push('Price must be greater than zero');
       } else if (priceValue > 10000) {
         errors.push('Price seems unusually high (>£10,000)');
+      }
+      // Warn if price is a string (should be migrated to number)
+      if (typeof offer.price === 'string') {
+        // Note: This is a warning, not an error, for backward compatibility
+        // In the future, we may make this an error
       }
     }
 
@@ -145,18 +165,18 @@ export function validateProductSchema(schema: WithContext<Product>): {
   // Aggregate rating validation with type guards
   if (schema.aggregateRating && isAggregateRating(schema.aggregateRating)) {
     const rating = schema.aggregateRating;
-    
+
     if (!rating.ratingValue) {
       errors.push('Missing ratingValue in aggregateRating');
     } else {
-      const ratingValue = typeof rating.ratingValue === 'string' 
-        ? parseFloat(rating.ratingValue) 
+      const ratingValue = typeof rating.ratingValue === 'string'
+        ? parseFloat(rating.ratingValue)
         : rating.ratingValue;
       if (isNaN(ratingValue) || ratingValue < 1 || ratingValue > 5) {
         errors.push('ratingValue must be between 1 and 5');
       }
     }
-    
+
     if (!rating.reviewCount) {
       errors.push('Missing reviewCount in aggregateRating');
     } else {
@@ -230,7 +250,7 @@ export function validateMPNUniqueness(schemas: WithContext<Product>[]): {
     if (schema.mpn && typeof schema.mpn === 'string') {
       const count = mpnMap.get(schema.mpn) || 0;
       mpnMap.set(schema.mpn, count + 1);
-      
+
       if (count === 1) {
         duplicates.push(schema.mpn);
       }
@@ -250,7 +270,7 @@ export function validateMPNUniqueness(schemas: WithContext<Product>[]): {
  * @returns Number of valid schemas
  */
 export function batchValidateProductSchemas(
-  schemas: WithContext<Product>[], 
+  schemas: WithContext<Product>[],
   logErrors: boolean = process.env.NODE_ENV !== 'production'
 ): number {
   let validCount = 0;

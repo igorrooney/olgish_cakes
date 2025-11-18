@@ -1,6 +1,7 @@
-import { Cake } from "@/types/cake";
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
+import { Cake } from "@/types/cake";
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -32,7 +33,7 @@ export function OrderModalStructuredData({
     },
     offers: {
       "@type": "Offer",
-      price: currentPrice,
+      price: formatStructuredDataPrice(currentPrice, 0),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       seller: {

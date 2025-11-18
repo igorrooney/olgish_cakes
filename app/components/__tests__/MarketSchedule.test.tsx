@@ -572,6 +572,60 @@ describe('MarketSchedule', () => {
       const json = JSON.parse(script?.textContent || '{}')
       expect(json.itemListElement[0].item.isRelatedTo['@type']).toBe('LocalBusiness')
     })
+
+    it('should have numeric price in offers (not string)', () => {
+      const { container } = render(<MarketSchedule events={mockEvents} />)
+
+      const script = container.querySelector('script')
+      const json = JSON.parse(script?.textContent || '{}')
+
+      json.itemListElement.forEach((listItem: any) => {
+        if (listItem.item.offers) {
+          const price = listItem.item.offers.price
+
+          // CRITICAL: Price must be a number, not a string
+          expect(typeof price).toBe('number')
+          expect(Number.isFinite(price)).toBe(true)
+          expect(Number.isNaN(price)).toBe(false)
+        }
+      })
+    })
+
+    it('should have price as 0 (number) for free events', () => {
+      const { container } = render(<MarketSchedule events={mockEvents} />)
+
+      const script = container.querySelector('script')
+      const json = JSON.parse(script?.textContent || '{}')
+
+      json.itemListElement.forEach((listItem: any) => {
+        if (listItem.item.offers) {
+          const price = listItem.item.offers.price
+
+          // Price should be 0 (number) for free events
+          expect(typeof price).toBe('number')
+          expect(price).toBe(0)
+          expect(listItem.item.offers.priceCurrency).toBe('GBP')
+        }
+      })
+    })
+
+    it('should not have string prices in structured data', () => {
+      const { container } = render(<MarketSchedule events={mockEvents} />)
+
+      const script = container.querySelector('script')
+      const json = JSON.parse(script?.textContent || '{}')
+
+      json.itemListElement.forEach((listItem: any) => {
+        if (listItem.item.offers) {
+          const price = listItem.item.offers.price
+
+          // Price should NOT be a string
+          expect(typeof price).not.toBe('string')
+          // If it were a string, it would contain these, but since it's a number, this check is redundant
+          // The type check above is sufficient
+        }
+      })
+    })
   })
 
   describe('Accessibility', () => {

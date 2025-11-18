@@ -1,10 +1,10 @@
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { colors } from '@/lib/design-system'
+import { AccessTimeIcon, ArrowForwardIcon, CakeIcon, CheckCircleIcon, DesignServicesIcon, ExpandMoreIcon, KitchenIcon, LocalDiningIcon, Link as MuiLink, OpacityIcon } from '@/lib/mui-optimization'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Container, Grid, Paper, Typography } from '@mui/material'
 import type { Metadata } from 'next'
-import { Container, Typography, Box, Grid, Paper, Button, Chip, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
-import { ArrowForwardIcon, ExpandMoreIcon, CheckCircleIcon, LocalDiningIcon, DesignServicesIcon, KitchenIcon, OpacityIcon, CakeIcon, AccessTimeIcon, Link as MuiLink } from '@/lib/mui-optimization'
-import { colors } from '@/lib/design-system'
-import { BUSINESS_CONSTANTS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
@@ -99,7 +99,7 @@ export default function HoneyCakePage() {
     },
     offers: {
       '@type': 'Offer',
-      price: '40',
+      price: 40,
       priceCurrency: 'GBP',
       availability: 'https://schema.org/InStock',
       url: `${BUSINESS_CONSTANTS.BASE_URL}/cakes/honey-cake-medovik`

@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
-import { Breadcrumbs } from "../components/Breadcrumbs";
-import { AreasWeCover } from "../components/AreasWeCover";
-import Link from "next/link";
-import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
-import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
+import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { AreasWeCover } from "../components/AreasWeCover";
+import { Breadcrumbs } from "../components/Breadcrumbs";
+import CakeCard from "../components/CakeCard";
+import { getAllCakes } from "../utils/fetchCakes";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
@@ -150,7 +151,7 @@ export default async function BirthdayCakesPage() {
             name: "Olgish Cakes",
           },
         },
-        price: service.price,
+        price: formatStructuredDataPrice(service.price, 25),
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         priceValidUntil: getPriceValidUntil(30),
@@ -229,7 +230,7 @@ export default async function BirthdayCakesPage() {
         },
         offers: {
           "@type": "Offer",
-          price: cake?.pricing?.standard ?? 0,
+          price: formatStructuredDataPrice(cake?.pricing?.standard ?? 0, 0),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),

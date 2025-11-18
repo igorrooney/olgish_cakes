@@ -4,6 +4,7 @@ import prettier from "eslint-config-prettier";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
+import noStringPriceInOffers from "./eslint-rules/no-string-price-in-offers.js";
 
 const eslintConfig = [
   // Global ignores
@@ -50,6 +51,11 @@ const eslintConfig = [
     plugins: {
       react,
       "react-hooks": reactHooks,
+      local: {
+        rules: {
+          "no-string-price-in-offers": noStringPriceInOffers,
+        },
+      },
     },
     settings: {
       react: {
@@ -74,6 +80,10 @@ const eslintConfig = [
       "prefer-const": "warn",
       "no-unused-vars": "off", // Using @typescript-eslint/no-unused-vars instead
       "no-empty": ["warn", { "allowEmptyCatch": false }],
+      
+      // Structured data compliance: Catch string prices in offer objects
+      // This rule helps prevent Google Merchant Center errors
+      "local/no-string-price-in-offers": "error",
     },
   },
 
@@ -86,6 +96,7 @@ const eslintConfig = [
       "@typescript-eslint/no-require-imports": "off",
       "no-console": "off",
       "react/display-name": "off", // Mock components don't need display names
+      "local/no-string-price-in-offers": "off", // Test files intentionally test string prices
     },
   },
 

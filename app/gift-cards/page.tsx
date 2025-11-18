@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
 import {
-  Container,
-  Typography,
   Box,
-  Grid,
-  Paper,
-  Chip,
   Button,
-  TextField,
+  Chip,
+  Container,
   FormControl,
+  Grid,
   InputLabel,
-  Select,
   MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
-import { getPriceValidUntil } from "../utils/seo";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { getPriceValidUntil } from "../utils/seo";
 
 export const metadata: Metadata = {
   title: "Gift Cards | Ukrainian Cake Gift Cards",
@@ -106,7 +106,7 @@ export default function GiftCardsPage() {
             },
             offers: {
               "@type": "Offer",
-              price: "25.00",
+              price: 25,
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
               priceValidUntil: getPriceValidUntil(30),

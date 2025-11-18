@@ -1,45 +1,41 @@
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
   ArrowForwardIcon,
-  CakeOutlinedIcon,
-  CelebrationIcon,
-  CheckCircleIcon,
-  FavoriteIcon,
-  LocalShippingIcon,
-  VerifiedIcon,
-  LocationOnIcon,
-  EmailIcon,
-} from "@/lib/mui-optimization";
-import {
   Avatar,
   Box,
   Button,
+  CakeOutlinedIcon,
   Card,
   CardContent,
+  CelebrationIcon,
+  CheckCircleIcon,
   Chip,
   Container,
+  FavoriteIcon,
   Grid,
+  LocalShippingIcon,
+  LocationOnIcon,
   Rating,
   Stack,
   Typography,
+  VerifiedIcon
 } from "@/lib/mui-optimization";
+import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from "@/lib/structured-data-defaults";
+import { urlFor } from "@/sanity/lib/image";
+import type { GiftHamperImage } from "@/types/giftHamper";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { colors, spacing, typography } from "../lib/design-system";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { AnimatedDiv, AnimatedSection } from "./components/AnimatedSection";
+import MarketSchedule from "./components/MarketSchedule";
 import { Testimonial } from "./types/testimonial";
 import { getFeaturedCakes } from "./utils/fetchCakes";
 import { getFeaturedGiftHampers } from "./utils/fetchGiftHampers";
-import Image from "next/image";
-import { getFeaturedTestimonials, getAllTestimonialsStats } from "./utils/fetchTestimonials";
 import { getMarketSchedule } from "./utils/fetchMarketSchedule";
-import { getPriceValidUntil } from "./utils/seo";
-import { getOfferShippingDetails } from "./utils/seo";
-import MarketSchedule from "./components/MarketSchedule";
+import { getAllTestimonialsStats, getFeaturedTestimonials } from "./utils/fetchTestimonials";
 import { generateEventSEOMetadata } from "./utils/generateEventStructuredData";
-import { DEFAULT_REVIEWS, DEFAULT_AGGREGATE_RATING } from "@/lib/structured-data-defaults";
-import type { GiftHamperImage } from "@/types/giftHamper";
-import { urlFor } from "@/sanity/lib/image";
+import { getPriceValidUntil } from "./utils/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Fetch market events for dynamic metadata
@@ -243,7 +239,7 @@ export default async function Home() {
     offers: {
       "@type": "Offer",
       "@id": "https://olgishcakes.co.uk/#offer",
-      price: "25",
+      price: 25,
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       priceValidUntil: getPriceValidUntil(30),
@@ -266,7 +262,7 @@ export default async function Home() {
         "@type": "OfferShippingDetails",
         shippingRate: {
           "@type": "MonetaryAmount",
-          value: "15",
+          value: 15,
           currency: "GBP"
         },
         shippingDestination: {

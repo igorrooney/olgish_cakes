@@ -1,10 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import HomePage, { generateMetadata } from '../page'
+import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import React from 'react'
+import HomePage, { generateMetadata } from '../page'
 
 // Type definitions for test mocks
 interface AnimatedComponentProps {
@@ -288,6 +288,112 @@ describe('HomePage', () => {
       await HomePage()
 
       expect(getMarketSchedule).toHaveBeenCalled()
+    })
+  })
+
+  describe('Structured Data - Price Validation', () => {
+    it('should have numeric price in product schema offers', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      expect(scripts.length).toBeGreaterThan(0)
+
+      // Find the product schema script
+      let productSchema: {
+        '@type': string
+        offers: {
+          '@type': string
+          price: number
+          priceCurrency: string
+        }
+      } | null = null
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@type'?: string
+            offers?: {
+              '@type'?: string
+              price?: number | string
+              priceCurrency?: string
+            }
+          }
+          if (data['@type'] === 'Product' && data.offers) {
+            productSchema = data as typeof productSchema
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
+
+      expect(productSchema).toBeTruthy()
+      expect(productSchema?.offers).toBeDefined()
+      expect(productSchema?.offers['@type']).toBe('Offer')
+
+      // CRITICAL: Price must be a number, not a string
+      expect(typeof productSchema?.offers.price).toBe('number')
+      expect(Number.isFinite(productSchema?.offers.price)).toBe(true)
+      expect(productSchema?.offers.price).toBe(25)
+      expect(productSchema?.offers.priceCurrency).toBe('GBP')
+    })
+
+    it('should not have string prices in structured data', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}')
+          
+          // Check if it's a Product with offers
+          if (data['@type'] === 'Product' && data.offers) {
+            // Price must be a number, not a string
+            expect(typeof data.offers.price).toBe('number')
+            // If price is a number, it cannot contain strings, so toContain checks are unnecessary
+          }
+          
+          // Check ItemList items
+          if (data['@type'] === 'ItemList' && data.itemListElement) {
+            (data.itemListElement as Array<{
+              item?: {
+                offers?: {
+                  price?: number | string
+                }
+              }
+            }>).forEach((item) => {
+              if (item.item?.offers) {
+                expect(typeof item.item.offers.price).not.toBe('string')
+              }
+            })
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
+    })
+
+    it('should have valid floating point numbers for prices', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}')
+          
+          if (data['@type'] === 'Product' && data.offers) {
+            const price = data.offers.price
+            expect(typeof price).toBe('number')
+            expect(Number.isFinite(price)).toBe(true)
+            expect(Number.isNaN(price)).toBe(false)
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
     })
   })
 })

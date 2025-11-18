@@ -1,11 +1,11 @@
+import { createPriceData, formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
-import { Breadcrumbs } from "../components/Breadcrumbs";
 import Link from "next/link";
+import { Breadcrumbs } from "../components/Breadcrumbs";
+import CakeCard from "../components/CakeCard";
+import { getAllCakes } from "../utils/fetchCakes";
 import { getPriceValidUntil } from "../utils/seo";
-import { Button } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Traditional Ukrainian Cakes Leeds",
@@ -47,31 +47,39 @@ export default async function TraditionalUkrainianCakesPage() {
   const traditionalCakes = allCakes.filter(cake => cake.category === "traditional");
 
   const traditionalCakeTypes = [
-    {
-      name: "Medovik (Honey Cake)",
-      description:
-        "The most beloved Ukrainian cake with delicate honey-infused layers and smooth traditional Ukrainian sour cream filling",
-      price: "From £25",
-    },
-    {
-      name: "Kyiv Cake",
-      description:
-        "Legendary cake with crispy meringue layers, hazelnuts, and rich chocolate-buttercream frosting",
-      price: "From £30",
-    },
-    {
-      name: "Napoleon Cake",
-      description:
-        "Ukrainian version with multiple layers of flaky puff pastry and rich vanilla custard cream",
-      price: "From £28",
-    },
-    {
-      name: "Poppy Seed Roll (Makivnyk)",
-      description:
-        "Traditional Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
-      price: "From £20",
-    },
-  ];
+    createPriceData(25, "From"),
+    createPriceData(30, "From"),
+    createPriceData(28, "From"),
+    createPriceData(20, "From"),
+  ].map((priceData, index) => {
+    const baseData = [
+      {
+        name: "Medovik (Honey Cake)",
+        description:
+          "The most beloved Ukrainian cake with delicate honey-infused layers and smooth traditional Ukrainian sour cream filling",
+      },
+      {
+        name: "Kyiv Cake",
+        description:
+          "Legendary cake with crispy meringue layers, hazelnuts, and rich chocolate-buttercream frosting",
+      },
+      {
+        name: "Napoleon Cake",
+        description:
+          "Ukrainian version with multiple layers of flaky puff pastry and rich vanilla custard cream",
+      },
+      {
+        name: "Poppy Seed Roll (Makivnyk)",
+        description:
+          "Traditional Ukrainian poppy seed roll with soft yeast dough and sweetened poppy seed filling",
+      },
+    ][index]
+    return {
+      ...baseData,
+      price: priceData.displayPrice,
+      numericPrice: priceData.numericPrice,
+    }
+  })
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -103,7 +111,7 @@ export default async function TraditionalUkrainianCakesPage() {
         },
         offers: {
           "@type": "Offer",
-          price: cake.price,
+          price: formatStructuredDataPrice(cake.numericPrice, 0),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),
@@ -298,12 +306,12 @@ export default async function TraditionalUkrainianCakesPage() {
                   for real Ukrainian desserts!
                 </Typography>
                 <Link href="/cakes" style={{ textDecoration: 'none' }}>
-              <Button variant="contained"
-                  color="primary"
-                  size="large">
-                  View All Cakes
-                </Button>
-            </Link>
+                  <Button variant="contained"
+                    color="primary"
+                    size="large">
+                    View All Cakes
+                  </Button>
+                </Link>
               </Box>
             ) : (
               <Grid container spacing={4}>
@@ -384,21 +392,21 @@ export default async function TraditionalUkrainianCakesPage() {
             </Typography>
             <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/contact" style={{ textDecoration: 'none' }}>
-              <Button variant="contained"
-                color="primary"
-                size="large"
-                sx={{ px: 4, py: 1.5 }}>
-                Order traditional Cake
-              </Button>
-            </Link>
+                <Button variant="contained"
+                  color="primary"
+                  size="large"
+                  sx={{ px: 4, py: 1.5 }}>
+                  Order traditional Cake
+                </Button>
+              </Link>
               <Link href="/cakes" style={{ textDecoration: 'none' }}>
-              <Button variant="outlined"
-                color="primary"
-                size="large"
-                sx={{ px: 4, py: 1.5 }}>
-                View All Cakes
-              </Button>
-            </Link>
+                <Button variant="outlined"
+                  color="primary"
+                  size="large"
+                  sx={{ px: 4, py: 1.5 }}>
+                  View All Cakes
+                </Button>
+              </Link>
             </Box>
           </Box>
         </Container>

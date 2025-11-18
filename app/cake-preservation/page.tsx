@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip } from "@mui/material";
-import Script from "next/script";
 import { colors } from '@/lib/design-system';
+import { Box, Chip, Container, Grid, Paper, Typography } from "@mui/material";
+import type { Metadata } from "next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "How to Preserve Cakes | Complete Cake Storage Guide",
@@ -110,7 +110,7 @@ export default function CakePreservationPage() {
             estimatedCost: {
               "@type": "MonetaryAmount",
               currency: "GBP",
-              value: "0",
+              value: 0,
             },
             supply: [
               {

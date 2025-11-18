@@ -1,13 +1,13 @@
-import Script from "next/script";
-import { getFeaturedTestimonials, getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
-import { client } from "@/sanity/lib/client";
+import { getAllTestimonialsStats, getFeaturedTestimonials } from "@/app/utils/fetchTestimonials";
+import { perfLogger } from "@/lib/performance-logger";
 import { generateAllProductSchemas } from "@/lib/product-schemas";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "@/lib/schema-constants";
-import { perfLogger } from "@/lib/performance-logger";
+import { client } from "@/sanity/lib/client";
+import Script from "next/script";
 
 export async function OrderPageStructuredData() {
   perfLogger.start('OrderPage:Total');
-  
+
   // Fetch recent testimonials and stats in parallel
   perfLogger.start('OrderPage:FetchTestimonials');
   const [testimonials, { count: totalTestimonialCount, averageRating: calculatedAverage }] = await Promise.all([
@@ -15,9 +15,9 @@ export async function OrderPageStructuredData() {
     getAllTestimonialsStats()
   ]);
   perfLogger.end('OrderPage:FetchTestimonials', { count: totalTestimonialCount });
-  
+
   const averageRating = calculatedAverage.toFixed(1);
-  
+
   // Fetch essential cake data for product schemas (optimized query)
   perfLogger.start('OrderPage:FetchCakes');
   const allCakes = await client.fetch(`
@@ -40,14 +40,14 @@ export async function OrderPageStructuredData() {
 
   // Generate all product schemas
   perfLogger.start('OrderPage:GenerateSchemas');
-  const productSchemas = generateAllProductSchemas(allCakes, { 
-    count: totalTestimonialCount, 
-    averageRating: parseFloat(averageRating) 
+  const productSchemas = generateAllProductSchemas(allCakes, {
+    count: totalTestimonialCount,
+    averageRating: parseFloat(averageRating)
   });
   perfLogger.end('OrderPage:GenerateSchemas', { schemasCount: productSchemas.length });
 
   perfLogger.end('OrderPage:Total');
-  
+
   // Check performance thresholds
   if (process.env.NODE_ENV !== 'production') {
     perfLogger.checkThresholds({
@@ -119,7 +119,7 @@ export async function OrderPageStructuredData() {
       offers: {
         "@type": "Offer",
         description: "Professional cake ordering service with consultation and delivery",
-        price: "25",
+        price: 25,
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         validFrom: "2024-01-01",

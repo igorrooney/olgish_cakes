@@ -1,11 +1,11 @@
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { getPriceValidUntil } from "../utils/seo";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
 import Link from "next/link";
-import { Breadcrumbs } from "../components/Breadcrumbs";
 import { AreasWeCover } from "../components/AreasWeCover";
+import { Breadcrumbs } from "../components/Breadcrumbs";
+import CakeCard from "../components/CakeCard";
+import { getAllCakes } from "../utils/fetchCakes";
+import { getPriceValidUntil } from "../utils/seo";
 
 export const metadata: Metadata = {
   title:
@@ -87,7 +87,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "Traditional Ukrainian honey cake with delicate layers and sour cream filling",
               offers: {
                 "@type": "Offer",
-                price: "25",
+                price: 25,
                 priceCurrency: "GBP",
                 priceValidUntil: getPriceValidUntil(30),
                 shippingDetails: {
@@ -135,7 +135,7 @@ export default async function UkrainianBakeryLeedsPage() {
                 "Legendary Ukrainian cake with meringue layers and chocolate-buttercream",
               offers: {
                 "@type": "Offer",
-                price: "30",
+                price: 30,
                 priceCurrency: "GBP",
                 priceValidUntil: getPriceValidUntil(30),
                 shippingDetails: {

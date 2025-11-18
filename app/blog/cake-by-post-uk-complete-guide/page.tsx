@@ -1,6 +1,6 @@
-import { Metadata } from "next";
-import { Container, Typography, Box, Grid, Card, CardContent, List, ListItem, ListItemText, Button } from "@/lib/mui-optimization";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { Box, Button, Card, Container, Grid, List, ListItem, ListItemText, Typography } from "@/lib/mui-optimization";
+import { Metadata } from "next";
 import Link from "next/link";
 import { TocLink } from "./TocLink";
 
@@ -180,7 +180,7 @@ export default function CakeByPostGuidePage() {
     estimatedCost: {
       "@type": "MonetaryAmount",
       currency: "GBP",
-      value: "25"
+      value: 25
     },
     supply: [
       {
