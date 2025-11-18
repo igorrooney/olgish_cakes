@@ -83,7 +83,7 @@ const eslintConfig = [
       
       // Structured data compliance: Catch string prices in offer objects
       // This rule helps prevent Google Merchant Center errors
-      "local/no-string-price-in-offers": "warn",
+      "local/no-string-price-in-offers": "error",
     },
   },
 

@@ -1,18 +1,15 @@
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { getClient } from "@/sanity/lib/client";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
+import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
 import { GiftHamper } from "@/types/giftHamper";
 import { Container } from "@mui/material";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { RichTextRenderer } from "@/app/components/RichTextRenderer";
-import Image from "next/image";
-import { urlFor } from "@/sanity/lib/image";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
-import { urlFor as buildImageUrl } from "@/sanity/lib/image";
-import { getPriceValidUntil } from "@/app/utils/seo";
-import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
-import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
 
 export const revalidate = 300; // 5 minutes
 
@@ -242,7 +239,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
           offers: {
             "@type": "Offer",
             "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#offer`,
-            price: hamper.price,
+            price: formatStructuredDataPrice(hamper.price, 0),
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
             condition: "https://schema.org/NewCondition",

@@ -1,14 +1,13 @@
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { getClient } from "@/sanity/lib/client";
 import { Cake, blocksToText } from "@/types/cake";
-import { notFound } from "next/navigation";
-import { CakePageClient } from "./CakePageClient";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { CakePageClient } from "./CakePageClient";
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
-import { getPriceValidUntil } from "@/app/utils/seo";
-import { getMerchantReturnPolicy } from "@/app/utils/seo";
-import { getOfferShippingDetails } from "@/app/utils/seo";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 
 // Enable revalidation for this page with optimization
@@ -236,7 +235,7 @@ export default async function CakePage({ params }: PageProps) {
             offers: {
               "@type": "Offer",
               "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#offer`,
-              price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+              price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
               condition: "https://schema.org/NewCondition",
@@ -252,7 +251,7 @@ export default async function CakePage({ params }: PageProps) {
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
               eligibleTransactionVolume: {
                 "@type": "PriceSpecification",
-                price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+                price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
                 priceCurrency: "GBP",
                 valueAddedTaxIncluded: true,
               },

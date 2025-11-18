@@ -230,7 +230,7 @@ export default async function BirthdayCakesPage() {
         },
         offers: {
           "@type": "Offer",
-          price: cake?.pricing?.standard ?? 0,
+          price: formatStructuredDataPrice(cake?.pricing?.standard ?? 0, 0),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),

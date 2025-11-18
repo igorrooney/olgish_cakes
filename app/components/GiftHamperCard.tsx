@@ -1,17 +1,17 @@
 "use client";
 
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { designTokens } from "@/lib/design-system";
 import { Box, Typography } from "@/lib/mui-optimization";
+import { DEFAULT_RATING } from "@/lib/schema-constants";
+import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import { urlFor } from "@/sanity/lib/image";
+import { blocksToText } from "@/types/cake";
+import { GiftHamper } from "@/types/giftHamper";
 import Image from "next/image";
 import Link from "next/link";
-import { blocksToText } from "@/types/cake";
-import { urlFor } from "@/sanity/lib/image";
-import { useCallback, useMemo, useState, memo } from "react";
-import { designTokens } from "@/lib/design-system";
-import { ProductCard, PriceDisplay, OutlineButton } from "@/lib/ui-components";
-import { GiftHamper } from "@/types/giftHamper";
-import { getPriceValidUntil } from "@/app/utils/seo";
-import { getOfferShippingDetails, getMerchantReturnPolicy } from "@/app/utils/seo";
-import { DEFAULT_RATING } from "@/lib/schema-constants";
+import { memo, useCallback, useMemo, useState } from "react";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -132,7 +132,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
       ],
       offers: {
         "@type": "Offer",
-        price: price,
+        price: formatStructuredDataPrice(price, 0),
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         priceValidUntil: getPriceValidUntil(30),

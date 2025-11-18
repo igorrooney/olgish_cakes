@@ -1,5 +1,6 @@
 "use client";
 
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import Script from "next/script";
 
 export default function StudioStructuredData() {
@@ -18,7 +19,7 @@ export default function StudioStructuredData() {
           operatingSystem: "Web Browser",
           offers: {
             "@type": "Offer",
-            price: 0,
+            price: formatStructuredDataPrice(0, 0),
             priceCurrency: "GBP",
           },
           author: {

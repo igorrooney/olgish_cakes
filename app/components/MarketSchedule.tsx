@@ -20,6 +20,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@/lib/mui-optimization";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
@@ -120,7 +121,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
             url: `https://olgishcakes.co.uk/market-schedule#${encodeURIComponent(event.title.toLowerCase().replace(/\s+/g, "-"))}`,
             validFrom: `${event.date}T${event.startTime}:00Z`,
             // Add price and priceCurrency for free events
-            price: 0,
+            price: formatStructuredDataPrice(0, 0),
             priceCurrency: "GBP",
           },
           // Local business context

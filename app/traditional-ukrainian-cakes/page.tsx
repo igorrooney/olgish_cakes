@@ -1,4 +1,4 @@
-import { createPriceData } from "@/lib/utils/price-formatting";
+import { createPriceData, formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -111,7 +111,7 @@ export default async function TraditionalUkrainianCakesPage() {
         },
         offers: {
           "@type": "Offer",
-          price: cake.numericPrice,
+          price: formatStructuredDataPrice(cake.numericPrice, 0),
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
           priceValidUntil: getPriceValidUntil(30),

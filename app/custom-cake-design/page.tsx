@@ -1,5 +1,6 @@
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 
@@ -124,7 +125,7 @@ export default function CustomCakeDesignPage() {
             name: "Olgish Cakes",
           },
         },
-        price: service.price,
+        price: formatStructuredDataPrice(service.price, 25),
         priceCurrency: "GBP",
         availability: "https://schema.org/InStock",
         hasMerchantReturnPolicy: {

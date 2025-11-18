@@ -6,6 +6,7 @@
  */
 
 import { getPriceValidUntil } from "@/app/utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 
 export interface MerchantCenterProductData {
@@ -87,7 +88,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
     offers: {
       "@type": "Offer",
       "@id": `${baseUrl}/offers/${data.id}`,
-      price: data.price,
+      price: formatStructuredDataPrice(data.price, 0),
       priceCurrency: data.currency,
       availability: `https://schema.org/${data.availability}`,
       condition: `https://schema.org/${data.condition}`,

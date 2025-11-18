@@ -3,10 +3,8 @@
  * Implements cutting-edge SEO techniques for maximum visibility
  */
 
-import { Metadata } from "next";
-import { getPriceValidUntil } from "@/app/utils/seo";
-import { getMerchantReturnPolicy } from "@/app/utils/seo";
-import { getOfferShippingDetails } from "@/app/utils/seo";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 
 // Advanced keyword research and targeting
 export const ADVANCED_SEO_CONFIG = {
@@ -194,7 +192,7 @@ export function generateAdvancedStructuredData(data: {
         },
         offers: {
           "@type": "Offer",
-          price: data.price || 25,
+          price: formatStructuredDataPrice(data.price || 25, 25),
           priceCurrency: "GBP",
           availability: `https://schema.org/${data.availability || "InStock"}`,
           priceValidUntil: getPriceValidUntil(30),

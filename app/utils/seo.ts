@@ -1,5 +1,6 @@
-import { Metadata } from "next";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
+import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import { Metadata } from "next";
 
 // SEO Configuration
 export const SEO_CONFIG = {
@@ -535,7 +536,7 @@ export function generateProductSchema(product: {
     category: product.category || "Ukrainian Honey Cake",
     offers: {
       "@type": "Offer",
-      price: product.price,
+      price: formatStructuredDataPrice(product.price, 25),
       priceCurrency: product.currency || "GBP",
       availability: product.availability || "https://schema.org/InStock",
       priceValidUntil: getPriceValidUntil(30),
@@ -683,7 +684,7 @@ export function generateServiceSchema(service: {
     ...(service.price && {
       offers: {
         "@type": "Offer",
-        price: service.price,
+        price: formatStructuredDataPrice(service.price, 25),
         priceCurrency: service.currency || "GBP",
         availability: "https://schema.org/InStock",
         seller: {
