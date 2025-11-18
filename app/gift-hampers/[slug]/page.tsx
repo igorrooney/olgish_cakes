@@ -157,25 +157,33 @@ export default async function GiftHamperPage({ params }: PageProps) {
           : ["https://olgishcakes.co.uk/images/placeholder-cake.jpg"];
 
         const isCakeByPost = hamper.slug?.current === "cake-by-post";
+        const brandId = "https://olgishcakes.co.uk/#brand";
         const productJsonLd = {
           "@context": "https://schema.org",
-          "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`,
-          name: hamper.name,
-          description: isCakeByPost
-            ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
-            : hamper.shortDescription?.length
-              ? Array.isArray(hamper.shortDescription)
-                ? hamper.shortDescription
-                    .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
-                    .join(" ")
-                : String(hamper.shortDescription)
-              : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-            logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
-          },
+          "@graph": [
+            // Single Brand entity referenced by the product
+            {
+              "@type": "Brand",
+              "@id": brandId,
+              name: "Olgish Cakes",
+              url: "https://olgishcakes.co.uk",
+              logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
+            },
+            // Product referencing the brand by @id
+            {
+              "@type": "Product",
+              "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`,
+              name: hamper.name,
+              description: isCakeByPost
+                ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
+                : hamper.shortDescription?.length
+                  ? Array.isArray(hamper.shortDescription)
+                    ? hamper.shortDescription
+                        .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
+                        .join(" ")
+                    : String(hamper.shortDescription)
+                  : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
+              brand: { "@id": brandId },
           manufacturer: {
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -322,6 +330,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
               datePublished: "2025-08-15"
             }
           ],
+            }
+          ]
         } as const;
 
         const faqJsonLd = isCakeByPost

@@ -66,85 +66,98 @@ const GiftHamperCard = memo(function GiftHamperCard({
   const structuredData = useMemo(
     () => ({
       "@context": "https://schema.org",
-      "@type": "Product",
-      "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`,
-      name: hamper.name,
-      description: hamper.shortDescription
-        ? blocksToText(hamper.shortDescription)
-        : `${hamper.name} gift hamper`,
-      category: hamper.category || "Gift Hamper",
-      sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-      mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
-      brand: { "@type": "Brand", name: "Olgish Cakes" },
-      image: [imageUrl],
-      ...(hamper.allergens && hamper.allergens.length > 0 && {
-        containsAllergens: hamper.allergens,
-        additionalProperty: [{
-          "@type": "PropertyValue",
-          name: "Allergens",
-          value: hamper.allergens.join(", ")
-        }]
-      }),
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: testimonialStats.averageRating.toFixed(1),
-        reviewCount: testimonialStats.count.toString(),
-        bestRating: "5",
-        worstRating: "1",
-      },
-      review: [
+      "@graph": [
+        // Single Brand entity referenced by the product
         {
-          "@type": "Review",
-          itemReviewed: {
-            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
-          },
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: "5",
-            bestRating: "5",
-            worstRating: "1"
-          },
-          author: {
-            "@type": "Person",
-            name: "Emily R."
-          },
-          reviewBody: `Beautiful ${hamper.name}! The quality is outstanding and the presentation is perfect. Highly recommend!`,
-          datePublished: "2025-09-30"
-        },
-        {
-          "@type": "Review",
-          itemReviewed: {
-            "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
-          },
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: "5",
-            bestRating: "5",
-            worstRating: "1"
-          },
-          author: {
-            "@type": "Person",
-            name: "James K."
-          },
-          reviewBody: `Excellent gift hamper with amazing treats. The recipient was absolutely delighted!`,
-          datePublished: "2025-08-15"
-        }
-      ],
-      offers: {
-        "@type": "Offer",
-        price: formatStructuredDataPrice(price, 0),
-        priceCurrency: "GBP",
-        availability: "https://schema.org/InStock",
-        priceValidUntil: getPriceValidUntil(30),
-        url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}`,
-        seller: {
-          "@type": "Organization",
+          "@type": "Brand",
+          "@id": "https://olgishcakes.co.uk/#brand",
           name: "Olgish Cakes",
           url: "https://olgishcakes.co.uk",
+          logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
         },
-        shippingDetails: getOfferShippingDetails(),
-        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-      },
+        // Product referencing the brand by @id
+        {
+          "@type": "Product",
+          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`,
+          name: hamper.name,
+          description: hamper.shortDescription
+            ? blocksToText(hamper.shortDescription)
+            : `${hamper.name} gift hamper`,
+          category: hamper.category || "Gift Hamper",
+          sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+          mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
+          brand: { "@id": "https://olgishcakes.co.uk/#brand" },
+          image: [imageUrl],
+          ...(hamper.allergens && hamper.allergens.length > 0 && {
+            containsAllergens: hamper.allergens,
+            additionalProperty: [{
+              "@type": "PropertyValue",
+              name: "Allergens",
+              value: hamper.allergens.join(", ")
+            }]
+          }),
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: testimonialStats.averageRating.toFixed(1),
+            reviewCount: testimonialStats.count.toString(),
+            bestRating: "5",
+            worstRating: "1",
+          },
+          review: [
+            {
+              "@type": "Review",
+              itemReviewed: {
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+              },
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: "5",
+                bestRating: "5",
+                worstRating: "1"
+              },
+              author: {
+                "@type": "Person",
+                name: "Emily R."
+              },
+              reviewBody: `Beautiful ${hamper.name}! The quality is outstanding and the presentation is perfect. Highly recommend!`,
+              datePublished: "2025-09-30"
+            },
+            {
+              "@type": "Review",
+              itemReviewed: {
+                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+              },
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: "5",
+                bestRating: "5",
+                worstRating: "1"
+              },
+              author: {
+                "@type": "Person",
+                name: "James K."
+              },
+              reviewBody: `Excellent gift hamper with amazing treats. The recipient was absolutely delighted!`,
+              datePublished: "2025-08-15"
+            }
+          ],
+          offers: {
+            "@type": "Offer",
+            price: formatStructuredDataPrice(price, 0),
+            priceCurrency: "GBP",
+            availability: "https://schema.org/InStock",
+            priceValidUntil: getPriceValidUntil(30),
+            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}`,
+            seller: {
+              "@type": "Organization",
+              name: "Olgish Cakes",
+              url: "https://olgishcakes.co.uk",
+            },
+            shippingDetails: getOfferShippingDetails(),
+            hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+          },
+        }
+      ]
     }),
     [hamper, price, imageUrl, testimonialStats.averageRating, testimonialStats.count]
   );

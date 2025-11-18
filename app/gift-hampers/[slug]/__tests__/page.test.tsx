@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 import { render } from '@testing-library/react'
-import HamperDetailPage, { generateStaticParams, generateMetadata } from '../page'
 import { notFound } from 'next/navigation'
+import HamperDetailPage, { generateMetadata, generateStaticParams } from '../page'
 
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(() => {
@@ -321,6 +321,153 @@ describe('HamperDetailPage', () => {
       
       // Should be an empty array when no conditions are met
       expect(properties).toHaveLength(0)
+    })
+  })
+
+  describe('Brand Field Duplication Prevention', () => {
+    it('should use @graph format for Product structured data', async () => {
+      mockFetch.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@type":"Product"') || script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      
+      // Should use @graph format to prevent duplicate brand fields
+      expect(jsonLd['@graph']).toBeDefined()
+      expect(Array.isArray(jsonLd['@graph'])).toBe(true)
+    })
+
+    it('should have exactly one Brand entity in @graph', async () => {
+      mockFetch.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const graph = jsonLd['@graph'] || []
+      
+      // Count Brand entities
+      const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+      
+      // Should have exactly one Brand entity
+      expect(brandEntities).toHaveLength(1)
+      
+      // Brand should have unique @id
+      expect(brandEntities[0]['@id']).toBe('https://olgishcakes.co.uk/#brand')
+      expect(brandEntities[0].name).toBe('Olgish Cakes')
+    })
+
+    it('should reference brand by @id in product, not inline object', async () => {
+      mockFetch.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const graph = jsonLd['@graph'] || []
+      
+      // Find Product
+      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      expect(product).toBeDefined()
+      
+      // Brand should be a reference by @id, not an inline object
+      expect(product.brand).toBeDefined()
+      expect(product.brand['@id']).toBe('https://olgishcakes.co.uk/#brand')
+      
+      // Should NOT have inline brand object with @type
+      expect(product.brand['@type']).toBeUndefined()
+      expect(product.brand.name).toBeUndefined()
+    })
+
+    it('should NOT have duplicate brand fields in structured data', async () => {
+      mockFetch.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const graph = jsonLd['@graph'] || []
+      
+      // Find Product
+      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      expect(product).toBeDefined()
+      
+      // Check if brand is an inline object (has @type) - should be false
+      const hasInlineBrand = product.brand && product.brand['@type'] === 'Brand'
+      expect(hasInlineBrand).toBe(false)
+    })
+
+    it('should have consistent brand @id in product structured data', async () => {
+      mockFetch.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script => 
+        script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+      
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const graph = jsonLd['@graph'] || []
+      
+      // Find Brand entity
+      const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+      expect(brandEntity).toBeDefined()
+      const brandId = brandEntity['@id']
+      
+      // Find Product
+      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      expect(product).toBeDefined()
+      
+      // Verify product references the same brand @id
+      expect(product.brand['@id']).toBe(brandId)
     })
   })
 })
