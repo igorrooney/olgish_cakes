@@ -191,10 +191,16 @@ export default async function CakePage({ params }: PageProps) {
         cake.images?.find((img) => img.asset?._ref) ||
         cake.images?.[0];
 
-    return mainImage?.asset?._ref
-      ? urlFor(mainImage).width(800).height(800).url()
-      : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
-  })();
+    if (mainImage?.asset?._ref) {
+      const imageUrl = urlFor(mainImage).width(800).height(800).url()
+      // Ensure URL is absolute (Sanity should return absolute, but double-check)
+      return imageUrl.startsWith('http') 
+        ? imageUrl 
+        : `https://cdn.sanity.io${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
+    }
+    
+    return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
+  })()
 
   return (
     <>
@@ -210,7 +216,7 @@ export default async function CakePage({ params }: PageProps) {
             description:
               cake.seo?.metaDescription ||
               (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
-            image: [productImageUrl],
+            image: productImageUrl,
             brand: {
               "@type": "Brand",
               name: "Olgish Cakes",
