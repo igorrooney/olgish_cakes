@@ -1,6 +1,6 @@
-import { Metadata } from "next";
-import { Container, Typography, Box, Grid, Card, CardContent, List, ListItem, ListItemText, Button } from "@/lib/mui-optimization";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { Box, Button, Card, Container, Grid, List, ListItem, ListItemText, Typography } from "@/lib/mui-optimization";
+import { Metadata } from "next";
 import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
 
@@ -131,7 +131,7 @@ export default function BestCakesByPostUKPage() {
     image: "https://olgishcakes.co.uk/images/best-cakes-by-post-uk.jpg",
     offers: {
       "@type": "Offer",
-      price: "25",
+      price: 25,
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       seller: {

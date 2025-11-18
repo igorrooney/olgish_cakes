@@ -1,10 +1,10 @@
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
-import { getAllCakes } from "../utils/fetchCakes";
-import CakeCard from "../components/CakeCard";
 import Link from "next/link";
-import { Breadcrumbs } from "../components/Breadcrumbs";
 import Script from "next/script";
+import { Breadcrumbs } from "../components/Breadcrumbs";
+import CakeCard from "../components/CakeCard";
+import { getAllCakes } from "../utils/fetchCakes";
 
 export const metadata: Metadata = {
   title: "Best Wedding Cakes Guide | 5★ Expert Tips | Leeds",
@@ -64,7 +64,7 @@ export default async function BestCakesForWeddingsPage() {
             estimatedCost: {
               "@type": "MonetaryAmount",
               currency: "GBP",
-              value: "180",
+              value: 180,
             },
             step: [
               {

@@ -1,5 +1,5 @@
+import { Box, Button, Chip, Container, Grid, Paper, Typography } from "@mui/material";
 import type { Metadata } from "next";
-import { Container, Typography, Box, Grid, Paper, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import Script from "next/script";
 
@@ -83,7 +83,7 @@ export default function CakeSizeGuidePage() {
             estimatedCost: {
               "@type": "MonetaryAmount",
               currency: "GBP",
-              value: "0",
+              value: 0,
             },
             step: [
               {

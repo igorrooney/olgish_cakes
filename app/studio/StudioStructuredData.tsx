@@ -18,7 +18,7 @@ export default function StudioStructuredData() {
           operatingSystem: "Web Browser",
           offers: {
             "@type": "Offer",
-            price: "0",
+            price: 0,
             priceCurrency: "GBP",
           },
           author: {

@@ -1,18 +1,15 @@
-import type { Metadata } from "next";
+import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import {
-  Container,
-  Typography,
+  Alert,
   Box,
+  Button,
+  Chip,
+  Container,
   Grid,
   Paper,
-  Chip,
-  Button,
-  Alert,
-  Step,
-  StepLabel,
-  StepContent,
+  Typography
 } from "@mui/material";
-import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { InteractiveLink } from "./InteractiveLink";
@@ -97,7 +94,7 @@ export default function HowToOrderPage() {
             estimatedCost: {
               "@type": "MonetaryAmount",
               currency: "GBP",
-              value: "25",
+              value: 25,
             },
             step: [
               {

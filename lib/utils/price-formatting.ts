@@ -86,7 +86,7 @@ export function formatStructuredDataPrice(
  * ```
  */
 export function formatDisplayPrice(price: number, prefix?: string): string {
-    const formatted = `£${price.toFixed(price % 1 === 0 ? 0 : 2)}`
+    const formatted = `£${Number.isInteger(price) ? price.toFixed(0) : price.toFixed(2)}`
     return prefix ? `${prefix} ${formatted}` : formatted
 }
 
