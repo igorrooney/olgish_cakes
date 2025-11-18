@@ -110,10 +110,9 @@ describe('TraditionalUkrainianCakesPage', () => {
             structuredData.itemListElement.forEach((listItem: any) => {
                 const product = listItem.item
 
-                // Price should NOT be a string
-                expect(typeof product.offers.price).not.toBe('string')
-                expect(product.offers.price).not.toContain('£')
-                expect(product.offers.price).not.toContain('From')
+                // Price should NOT be a string - must be a number
+                expect(typeof product.offers.price).toBe('number')
+                // If price is a number, it cannot contain strings, so toContain checks are unnecessary
             })
         })
 

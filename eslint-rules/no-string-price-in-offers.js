@@ -49,7 +49,17 @@ export default {
                     (prop.key.type === 'Literal' && prop.key.value === '@context'))
               )
 
-              if (hasOfferType || hasStructuredDataContext) {
+              // Check if parent is nested in an offers array
+              const isInOffersArray = parent.parent &&
+                parent.parent.type === 'ArrayExpression' &&
+                parent.parent.parent &&
+                parent.parent.parent.type === 'Property' &&
+                parent.parent.parent.key &&
+                (parent.parent.parent.key.name === 'offers' ||
+                  (parent.parent.parent.key.type === 'Literal' &&
+                    parent.parent.parent.key.value === 'offers'))
+
+              if (hasOfferType || hasStructuredDataContext || isInOffersArray) {
                 context.report({
                   node: node.value,
                   messageId: 'stringPriceInOffer',

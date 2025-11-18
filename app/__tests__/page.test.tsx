@@ -1,10 +1,10 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import HomePage, { generateMetadata } from '../page'
+import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
+import React from 'react'
+import HomePage, { generateMetadata } from '../page'
 
 // Type definitions for test mocks
 interface AnimatedComponentProps {
@@ -335,8 +335,9 @@ describe('HomePage', () => {
           
           // Check if it's a Product with offers
           if (data['@type'] === 'Product' && data.offers) {
-            expect(typeof data.offers.price).not.toBe('string')
-            expect(data.offers.price).not.toContain('£')
+            // Price must be a number, not a string
+            expect(typeof data.offers.price).toBe('number')
+            // If price is a number, it cannot contain strings, so toContain checks are unnecessary
           }
           
           // Check ItemList items
