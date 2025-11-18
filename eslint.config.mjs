@@ -4,6 +4,7 @@ import prettier from "eslint-config-prettier";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
+import noStringPriceInOffers from "./eslint-rules/no-string-price-in-offers.js";
 
 const eslintConfig = [
   // Global ignores
@@ -50,6 +51,11 @@ const eslintConfig = [
     plugins: {
       react,
       "react-hooks": reactHooks,
+      "local": {
+        rules: {
+          "no-string-price-in-offers": noStringPriceInOffers,
+        },
+      },
     },
     settings: {
       react: {
@@ -77,13 +83,7 @@ const eslintConfig = [
       
       // Structured data compliance: Catch string prices in offer objects
       // This rule helps prevent Google Merchant Center errors
-      "no-restricted-syntax": [
-        "warn",
-        {
-          selector: 'ObjectExpression > Property[key.name="price"] > Literal[value.type="string"]',
-          message: '⚠️ Price in structured data offers must be numeric (not a string). Use formatStructuredDataPrice() from lib/utils/price-formatting.ts or ensure price is a number literal.',
-        },
-      ],
+      "local/no-string-price-in-offers": "warn",
     },
   },
 

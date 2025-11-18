@@ -3,7 +3,7 @@
  * Catches patterns like: price: "25" or price: "From £25" in offer objects
  */
 
-module.exports = {
+export default {
   meta: {
     type: 'problem',
     docs: {
@@ -14,7 +14,7 @@ module.exports = {
     fixable: null,
     schema: [],
     messages: {
-      stringPriceInOffer: 'Price in structured data offer must be a number, not a string. Use formatStructuredDataPrice() utility or ensure price is numeric. Found: {{price}}',
+      stringPriceInOffer: 'Price in structured data offer must be a number, not a string. Use formatStructuredDataPrice() from lib/utils/price-formatting.ts or ensure price is numeric. Found: {{price}}',
     },
   },
   create(context) {
@@ -46,7 +46,7 @@ module.exports = {
                 (prop) =>
                   prop.key &&
                   (prop.key.name === '@context' ||
-                    prop.key.type === 'Literal' && prop.key.value === '@context')
+                    (prop.key.type === 'Literal' && prop.key.value === '@context'))
               )
 
               if (hasOfferType || hasStructuredDataContext) {
@@ -65,4 +65,3 @@ module.exports = {
     }
   },
 }
-
