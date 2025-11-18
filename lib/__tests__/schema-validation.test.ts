@@ -1,16 +1,16 @@
+import { Product, Review, WithContext } from 'schema-dts'
 import {
-  validateProductSchema,
+  batchValidateProductSchemas,
   validateMPNUniqueness,
-  validateReviewSchema,
-  batchValidateProductSchemas
+  validateProductSchema,
+  validateReviewSchema
 } from '../schema-validation'
-import { WithContext, Product, Review } from 'schema-dts'
 
 describe('schema-validation', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => {})
-    jest.spyOn(console, 'warn').mockImplementation(() => {})
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    jest.spyOn(console, 'log').mockImplementation(() => { })
+    jest.spyOn(console, 'warn').mockImplementation(() => { })
+    jest.spyOn(console, 'error').mockImplementation(() => { })
   })
 
   afterEach(() => {
@@ -192,21 +192,23 @@ describe('schema-validation', () => {
         }
         const result = validateProductSchema(invalid)
         expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid offer price')
+        expect(result.errors).toContain('Missing or invalid offer price (must be a number)')
       })
 
-      it('should detect non-string price', () => {
-        const invalid = {
+      it('should accept numeric price (preferred for Google Merchant Center)', () => {
+        const valid = {
           ...validSchema,
           offers: {
             '@type': 'Offer',
-            price: 35 as any,
-            priceCurrency: 'GBP'
+            price: 35, // Number is now the preferred type
+            priceCurrency: 'GBP',
+            availability: 'https://schema.org/InStock',
+            priceValidUntil: '2026-01-01'
           }
         }
-        const result = validateProductSchema(invalid as any)
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid offer price')
+        const result = validateProductSchema(valid as any)
+        expect(result.isValid).toBe(true)
+        expect(result.errors).not.toContain('Missing or invalid offer price')
       })
 
       it('should detect NaN price', () => {
@@ -222,7 +224,7 @@ describe('schema-validation', () => {
         }
         const result = validateProductSchema(invalid as any)
         expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Price must be a valid number')
+        expect(result.errors).toContain('Missing or invalid offer price (must be a number)')
       })
 
       it('should detect zero price', () => {
@@ -644,7 +646,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-003' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(true)
       expect(result.duplicates).toHaveLength(0)
@@ -656,7 +658,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(false)
       expect(result.duplicates).toContain('MPN-001')
@@ -669,7 +671,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(false)
       expect(result.duplicates).toContain('MPN-001')
@@ -681,7 +683,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product' } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(true)
     })
@@ -691,7 +693,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 123 as any } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(true)
     })
@@ -709,7 +711,7 @@ describe('schema-validation', () => {
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' } as any,
         { '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' } as any
       ]
-      
+
       const result = validateMPNUniqueness(schemas)
       expect(result.isValid).toBe(false)
       expect(result.duplicates).toContain('DUP')
@@ -868,7 +870,7 @@ describe('schema-validation', () => {
     it('should log errors in development by default', () => {
       const originalEnv = process.env.NODE_ENV
       Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true })
-      
+
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])
 
@@ -878,7 +880,7 @@ describe('schema-validation', () => {
     it('should not log errors in production by default', () => {
       const originalEnv = process.env.NODE_ENV
       Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true })
-      
+
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])
 

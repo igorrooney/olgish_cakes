@@ -74,6 +74,16 @@ const eslintConfig = [
       "prefer-const": "warn",
       "no-unused-vars": "off", // Using @typescript-eslint/no-unused-vars instead
       "no-empty": ["warn", { "allowEmptyCatch": false }],
+      
+      // Structured data compliance: Catch string prices in offer objects
+      // This rule helps prevent Google Merchant Center errors
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: 'ObjectExpression > Property[key.name="price"] > Literal[value.type="string"]',
+          message: '⚠️ Price in structured data offers must be numeric (not a string). Use formatStructuredDataPrice() from lib/utils/price-formatting.ts or ensure price is a number literal.',
+        },
+      ],
     },
   },
 
