@@ -51,7 +51,7 @@ const eslintConfig = [
     plugins: {
       react,
       "react-hooks": reactHooks,
-      "local": {
+      local: {
         rules: {
           "no-string-price-in-offers": noStringPriceInOffers,
         },
@@ -96,6 +96,7 @@ const eslintConfig = [
       "@typescript-eslint/no-require-imports": "off",
       "no-console": "off",
       "react/display-name": "off", // Mock components don't need display names
+      "local/no-string-price-in-offers": "off", // Test files intentionally test string prices
     },
   },
 
