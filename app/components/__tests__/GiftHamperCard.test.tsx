@@ -34,7 +34,15 @@ jest.mock('@/app/utils/seo', () => ({
 }))
 
 jest.mock('@/lib/schema-constants', () => ({
-  DEFAULT_RATING: { defaultValue: '5.0' }
+  DEFAULT_RATING: { defaultValue: '5.0' },
+  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
+}))
+
+jest.mock('@/lib/constants', () => ({
+  BUSINESS_CONSTANTS: {
+    NAME: 'Olgish Cakes',
+    WEBSITE: 'https://olgishcakes.co.uk'
+  }
 }))
 
 // Mock design system

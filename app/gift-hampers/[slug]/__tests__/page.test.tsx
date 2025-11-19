@@ -29,6 +29,17 @@ jest.mock('@/app/utils/seo', () => ({
   getOfferShippingDetails: jest.fn(() => ({}))
 }))
 
+jest.mock('@/lib/schema-constants', () => ({
+  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
+}))
+
+jest.mock('@/lib/constants', () => ({
+  BUSINESS_CONSTANTS: {
+    NAME: 'Olgish Cakes',
+    WEBSITE: 'https://olgishcakes.co.uk'
+  }
+}))
+
 jest.mock('../GiftHamperPageClient', () => ({
   GiftHamperPageClient: () => <div data-testid="hamper-client">Client</div>
 }))
@@ -181,9 +192,14 @@ describe('HamperDetailPage', () => {
       expect(productScript).toBeDefined()
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
       
+      // Extract Product from @graph if present
+      const product = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        : jsonLd
+      
       // Verify cake-by-post specific properties exist
-      expect(jsonLd.additionalProperty).toBeDefined()
-      const properties = jsonLd.additionalProperty
+      expect(product.additionalProperty).toBeDefined()
+      const properties = product.additionalProperty
       
       const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
       const packaging = properties.find((p: any) => p.name === 'Packaging')
@@ -214,7 +230,13 @@ describe('HamperDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      const properties = jsonLd.additionalProperty
+      
+      // Extract Product from @graph if present
+      const product = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        : jsonLd
+      
+      const properties = product.additionalProperty
       
       const ingredients = properties.find((p: any) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
@@ -238,7 +260,13 @@ describe('HamperDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      const properties = jsonLd.additionalProperty
+      
+      // Extract Product from @graph if present
+      const product = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        : jsonLd
+      
+      const properties = product.additionalProperty
       
       const allergens = properties.find((p: any) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
@@ -267,7 +295,13 @@ describe('HamperDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      const properties = jsonLd.additionalProperty
+      
+      // Extract Product from @graph if present
+      const product = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        : jsonLd
+      
+      const properties = product.additionalProperty
       
       // Verify ALL properties are present (no overwrites occurred)
       expect(properties).toHaveLength(5) // 3 from cake-by-post + 1 ingredients + 1 allergens
@@ -317,7 +351,13 @@ describe('HamperDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      const properties = jsonLd.additionalProperty
+      
+      // Extract Product from @graph if present
+      const product = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        : jsonLd
+      
+      const properties = product.additionalProperty || []
       
       // Should be an empty array when no conditions are met
       expect(properties).toHaveLength(0)

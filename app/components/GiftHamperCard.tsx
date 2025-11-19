@@ -1,9 +1,10 @@
 "use client";
 
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
 import { Box, Typography } from "@/lib/mui-optimization";
-import { DEFAULT_RATING } from "@/lib/schema-constants";
+import { BRAND_ID, DEFAULT_RATING } from "@/lib/schema-constants";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
@@ -12,6 +13,7 @@ import { GiftHamper } from "@/types/giftHamper";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
+import type { Brand, Graph, Product } from "schema-dts";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -64,17 +66,17 @@ const GiftHamperCard = memo(function GiftHamperCard({
   }, [hamper.name, hamper.category, hamper.shortDescription]);
 
   const structuredData = useMemo(
-    () => ({
+    (): Graph => ({
       "@context": "https://schema.org",
       "@graph": [
         // Single Brand entity referenced by the product
         {
           "@type": "Brand",
-          "@id": "https://olgishcakes.co.uk/#brand",
-          name: "Olgish Cakes",
-          url: "https://olgishcakes.co.uk",
-          logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
-        },
+          "@id": BRAND_ID,
+          name: BUSINESS_CONSTANTS.NAME,
+          url: BUSINESS_CONSTANTS.WEBSITE,
+          logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
+        } as Brand,
         // Product referencing the brand by @id
         {
           "@type": "Product",
@@ -86,7 +88,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
           category: hamper.category || "Gift Hamper",
           sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
           mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
-          brand: { "@id": "https://olgishcakes.co.uk/#brand" },
+          brand: { "@id": BRAND_ID },
           image: [imageUrl],
           ...(hamper.allergens && hamper.allergens.length > 0 && {
             containsAllergens: hamper.allergens,
@@ -156,7 +158,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             shippingDetails: getOfferShippingDetails(),
             hasMerchantReturnPolicy: getMerchantReturnPolicy(),
           },
-        }
+        } as Product
       ]
     }),
     [hamper, price, imageUrl, testimonialStats.averageRating, testimonialStats.count]

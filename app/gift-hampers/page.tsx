@@ -1,7 +1,10 @@
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { Box, Container, Grid, Typography } from "@/lib/mui-optimization";
+import { BRAND_ID } from "@/lib/schema-constants";
 import { StyledAccordion } from "@/lib/ui-components";
 import { urlFor } from "@/sanity/lib/image";
 import type { Metadata } from "next";
+import type { Brand, Graph } from "schema-dts";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import GiftHamperCard from "../components/GiftHamperCard";
 import { getAllGiftHampers } from "../utils/fetchGiftHampers";
@@ -122,18 +125,17 @@ export default async function GiftHampersPage() {
         } as const;
 
         // Use @graph to structure all entities and avoid duplicate brand fields
-        const brandId = "https://olgishcakes.co.uk/#brand"
-        const itemListJsonLd = {
+        const itemListJsonLd: Graph = {
           "@context": "https://schema.org",
           "@graph": [
             // Single Brand entity referenced by all products
             {
               "@type": "Brand",
-              "@id": brandId,
-              name: "Olgish Cakes",
-              url: "https://olgishcakes.co.uk",
-              logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
-            },
+              "@id": BRAND_ID,
+              name: BUSINESS_CONSTANTS.NAME,
+              url: BUSINESS_CONSTANTS.WEBSITE,
+              logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
+            } as Brand,
             // ItemList with products referencing the brand
             {
               "@type": "ItemList",
@@ -159,7 +161,7 @@ export default async function GiftHampersPage() {
                       : `${h.name} luxury Ukrainian gift hamper`,
                     image: imageUrl,
                     url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-                    brand: { "@id": brandId },
+                    brand: { "@id": BRAND_ID },
                     offers: {
                       "@type": "Offer",
                       price: h.price || 0,

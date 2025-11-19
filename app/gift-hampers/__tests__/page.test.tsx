@@ -52,6 +52,17 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI
+jest.mock('@/lib/schema-constants', () => ({
+  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
+}))
+
+jest.mock('@/lib/constants', () => ({
+  BUSINESS_CONSTANTS: {
+    NAME: 'Olgish Cakes',
+    WEBSITE: 'https://olgishcakes.co.uk'
+  }
+}))
+
 jest.mock('@/lib/mui-optimization', () => ({
   Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -179,12 +190,17 @@ describe('GiftHampersPage', () => {
       
       const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
       
+      // Extract ItemList from @graph if present
+      const itemList = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'ItemList')
+        : jsonLd
+      
       // Verify ItemList exists
-      expect(jsonLd['@type']).toBe('ItemList')
+      expect(itemList['@type']).toBe('ItemList')
       
       // Verify products don't have aggregateRating (GSC fix for "multiple aggregate ratings" error)
-      if (jsonLd.itemListElement && jsonLd.itemListElement.length > 0) {
-        jsonLd.itemListElement.forEach((listItem: any) => {
+      if (itemList.itemListElement && itemList.itemListElement.length > 0) {
+        itemList.itemListElement.forEach((listItem: any) => {
           expect(listItem.item.aggregateRating).toBeUndefined()
         })
       }

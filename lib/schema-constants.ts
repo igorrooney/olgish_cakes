@@ -35,6 +35,24 @@ export const BUSINESS_INFO = {
   addressCountry: "GB"
 } as const;
 
+// Brand structured data constants
+export const BRAND_ID = "https://olgishcakes.co.uk/#brand";
+
+// Brand entity for structured data (using @graph format)
+// Using a function to ensure proper serialization in JSON-LD
+export function getBrandEntity() {
+  return {
+    "@type": "Brand" as const,
+    "@id": BRAND_ID,
+    name: BUSINESS_INFO.name,
+    url: BUSINESS_INFO.url,
+    logo: BUSINESS_INFO.logo
+  };
+}
+
+// Export as constant for direct use (spread when using)
+export const BRAND_ENTITY = getBrandEntity();
+
 // Delivery settings
 export const DELIVERY_SETTINGS = {
   deliveryLeadTimeDays: 1,
