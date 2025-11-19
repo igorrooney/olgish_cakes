@@ -14,11 +14,17 @@ export interface GiftHamperDesigns {
   individual?: GiftHamperImage[];
 }
 
+export interface GiftHamperFAQItem {
+  question: string;
+  answer: string;
+}
+
 export interface GiftHamperSEO {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
   canonicalUrl?: string;
+  faq?: GiftHamperFAQItem[];
 }
 
 export interface GiftHamperSlug {
@@ -35,12 +41,12 @@ export interface GiftHamperMainImage {
   caption?: string;
 }
 
-interface RichTextChild {
+export interface RichTextChild {
   text: string;
   [key: string]: unknown;
 }
 
-interface RichTextBlock {
+export interface RichTextBlock {
   _type: string;
   children?: RichTextChild[];
   [key: string]: unknown;

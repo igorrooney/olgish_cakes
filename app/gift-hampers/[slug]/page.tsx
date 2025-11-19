@@ -7,7 +7,7 @@ import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { getClient } from "@/sanity/lib/client";
 import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
-import { GiftHamper } from "@/types/giftHamper";
+import type { GiftHamper, GiftHamperFAQItem, RichTextBlock, RichTextChild } from "@/types/giftHamper";
 import { Container } from "@mui/material";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -181,7 +181,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
                 : hamper.shortDescription?.length
                   ? Array.isArray(hamper.shortDescription)
                     ? hamper.shortDescription
-                        .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
+                        .map((p: RichTextBlock) => (p.children ? p.children.map((c: RichTextChild) => c.text).join("") : ""))
                         .join(" ")
                     : String(hamper.shortDescription)
                   : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
@@ -383,14 +383,14 @@ export default async function GiftHamperPage({ params }: PageProps) {
                 }
               ]
             }
-          : (hamper?.seo as any)?.faq && Array.isArray((hamper?.seo as any)?.faq)
+          : hamper?.seo?.faq && Array.isArray(hamper.seo.faq)
             ? {
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
-                mainEntity: ((hamper?.seo as any).faq as any[])
-                  .filter(q => q?.question && q?.answer)
+                mainEntity: hamper.seo.faq
+                  .filter((q: GiftHamperFAQItem) => q?.question && q?.answer)
                   .slice(0, 6)
-                  .map(q => ({
+                  .map((q: GiftHamperFAQItem) => ({
                     "@type": "Question",
                     name: q.question,
                     acceptedAnswer: { "@type": "Answer", text: q.answer }

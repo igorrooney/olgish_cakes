@@ -3,6 +3,7 @@ import { Box, Container, Grid, Typography } from "@/lib/mui-optimization";
 import { BRAND_ID } from "@/lib/schema-constants";
 import { StyledAccordion } from "@/lib/ui-components";
 import { urlFor } from "@/sanity/lib/image";
+import type { GiftHamperImage, RichTextBlock, RichTextChild } from "@/types/giftHamper";
 import type { Metadata } from "next";
 import type { Brand, Graph } from "schema-dts";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -142,7 +143,7 @@ export default async function GiftHampersPage() {
               name: "Luxury Ukrainian Gift Hampers",
               itemListElement: (hampers || []).map((h, index) => {
                 // Get the best available image
-                const mainImage = h.images?.find((img: any) => img.isMain && img.asset?._ref) || h.images?.[0];
+                const mainImage = h.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) || h.images?.[0];
                 const imageUrl = mainImage?.asset?._ref
                   ? urlFor(mainImage).width(800).height(800).url()
                   : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
@@ -156,7 +157,7 @@ export default async function GiftHampersPage() {
                     name: h.name,
                     description: h.shortDescription 
                       ? (Array.isArray(h.shortDescription) 
-                        ? h.shortDescription.map((p: any) => p.children?.map((c: any) => c.text).join("") || "").join(" ")
+                        ? h.shortDescription.map((p: RichTextBlock) => p.children?.map((c: RichTextChild) => c.text).join("") || "").join(" ")
                         : String(h.shortDescription))
                       : `${h.name} luxury Ukrainian gift hamper`,
                     image: imageUrl,
