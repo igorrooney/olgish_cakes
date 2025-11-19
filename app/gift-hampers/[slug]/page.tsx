@@ -1,14 +1,17 @@
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
+import { BRAND_ID } from "@/lib/schema-constants";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { getClient } from "@/sanity/lib/client";
 import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
-import { GiftHamper } from "@/types/giftHamper";
+import type { GiftHamper, GiftHamperFAQItem, RichTextBlock, RichTextChild } from "@/types/giftHamper";
 import { Container } from "@mui/material";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { Brand, Graph, Product } from "schema-dts";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
 
 export const revalidate = 300; // 5 minutes
@@ -157,41 +160,48 @@ export default async function GiftHamperPage({ params }: PageProps) {
           : ["https://olgishcakes.co.uk/images/placeholder-cake.jpg"];
 
         const isCakeByPost = hamper.slug?.current === "cake-by-post";
-        const productJsonLd = {
+        const productJsonLd: Graph = {
           "@context": "https://schema.org",
-          "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`,
-          name: hamper.name,
-          description: isCakeByPost
-            ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
-            : hamper.shortDescription?.length
-              ? Array.isArray(hamper.shortDescription)
-                ? hamper.shortDescription
-                    .map((p: any) => (p.children ? p.children.map((c: any) => c.text).join("") : ""))
-                    .join(" ")
-                : String(hamper.shortDescription)
-              : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
-          brand: {
-            "@type": "Brand",
-            name: "Olgish Cakes",
-            logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"
-          },
-          manufacturer: {
-            "@type": "Organization",
-            name: "Olgish Cakes",
-            url: "https://olgishcakes.co.uk",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Leeds",
-              addressRegion: "West Yorkshire",
-              addressCountry: "GB",
-            },
-          },
-          category: isCakeByPost ? "Food & Beverage > Baked Goods > Cakes" : (hamper.category || "Gift Hamper"),
-          image: imagesForJsonLd,
-          sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-          mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
-          keywords: isCakeByPost ? "honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake" : undefined,
+          "@graph": [
+            // Single Brand entity referenced by the product
+            {
+              "@type": "Brand",
+              "@id": BRAND_ID,
+              name: BUSINESS_CONSTANTS.NAME,
+              url: BUSINESS_CONSTANTS.WEBSITE,
+              logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
+            } as Brand,
+            // Product referencing the brand by @id
+            {
+              "@type": "Product",
+              "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || slug}#product`,
+              name: hamper.name,
+              description: isCakeByPost
+                ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
+                : hamper.shortDescription?.length
+                  ? Array.isArray(hamper.shortDescription)
+                    ? hamper.shortDescription
+                        .map((p: RichTextBlock) => (p.children ? p.children.map((c: RichTextChild) => c.text).join("") : ""))
+                        .join(" ")
+                    : String(hamper.shortDescription)
+                  : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
+              brand: { "@id": BRAND_ID },
+              manufacturer: {
+                "@type": "Organization",
+                name: "Olgish Cakes",
+                url: "https://olgishcakes.co.uk",
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Leeds",
+                  addressRegion: "West Yorkshire",
+                  addressCountry: "GB",
+                },
+              },
+              category: isCakeByPost ? "Food & Beverage > Baked Goods > Cakes" : (hamper.category || "Gift Hamper"),
+              image: imagesForJsonLd,
+              sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
+              mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
+              keywords: isCakeByPost ? "honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake" : undefined,
           ...(hamper.allergens && hamper.allergens.length > 0 && {
             containsAllergens: hamper.allergens,
           }),
@@ -322,7 +332,9 @@ export default async function GiftHamperPage({ params }: PageProps) {
               datePublished: "2025-08-15"
             }
           ],
-        } as const;
+            } as Product
+          ]
+        };
 
         const faqJsonLd = isCakeByPost
           ? {
@@ -371,14 +383,14 @@ export default async function GiftHamperPage({ params }: PageProps) {
                 }
               ]
             }
-          : (hamper?.seo as any)?.faq && Array.isArray((hamper?.seo as any)?.faq)
+          : hamper?.seo?.faq && Array.isArray(hamper.seo.faq)
             ? {
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
-                mainEntity: ((hamper?.seo as any).faq as any[])
-                  .filter(q => q?.question && q?.answer)
+                mainEntity: hamper.seo.faq
+                  .filter((q: GiftHamperFAQItem) => q?.question && q?.answer)
                   .slice(0, 6)
-                  .map(q => ({
+                  .map((q: GiftHamperFAQItem) => ({
                     "@type": "Question",
                     name: q.question,
                     acceptedAnswer: { "@type": "Answer", text: q.answer }
@@ -410,16 +422,16 @@ export default async function GiftHamperPage({ params }: PageProps) {
           <>
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, '\u003c') }}
             />
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\u003c') }}
             />
             {faqJsonLd && (
               <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\u003c') }}
               />
             )}
           </>

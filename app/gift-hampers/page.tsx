@@ -1,13 +1,17 @@
-import { Container, Grid, Typography, Box } from "@/lib/mui-optimization";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
+import { Box, Container, Grid, Typography } from "@/lib/mui-optimization";
+import { BRAND_ID } from "@/lib/schema-constants";
+import { StyledAccordion } from "@/lib/ui-components";
+import { urlFor } from "@/sanity/lib/image";
+import type { GiftHamperImage, RichTextBlock, RichTextChild } from "@/types/giftHamper";
+import type { Metadata } from "next";
+import type { Brand, Graph } from "schema-dts";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import GiftHamperCard from "../components/GiftHamperCard";
 import { getAllGiftHampers } from "../utils/fetchGiftHampers";
-import HeroSection from "./HeroSection";
-import { Breadcrumbs } from "../components/Breadcrumbs";
-import { urlFor } from "@/sanity/lib/image";
-import { StyledAccordion } from "@/lib/ui-components";
-import type { Metadata } from "next";
 import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
-import { getPriceValidUntil, getOfferShippingDetails, getMerchantReturnPolicy } from "../utils/seo";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "../utils/seo";
+import HeroSection from "./HeroSection";
 
 export const revalidate = 300; // 5 minutes
 
@@ -121,53 +125,64 @@ export default async function GiftHampersPage() {
           ],
         } as const;
 
-        const itemListJsonLd = {
+        // Use @graph to structure all entities and avoid duplicate brand fields
+        const itemListJsonLd: Graph = {
           "@context": "https://schema.org",
-          "@type": "ItemList",
-          name: "Luxury Ukrainian Gift Hampers",
-          itemListElement: (hampers || []).map((h, index) => {
-            // Get the best available image
-            const mainImage = h.images?.find((img: any) => img.isMain && img.asset?._ref) || h.images?.[0];
-            const imageUrl = mainImage?.asset?._ref
-              ? urlFor(mainImage).width(800).height(800).url()
-              : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
+          "@graph": [
+            // Single Brand entity referenced by all products
+            {
+              "@type": "Brand",
+              "@id": BRAND_ID,
+              name: BUSINESS_CONSTANTS.NAME,
+              url: BUSINESS_CONSTANTS.WEBSITE,
+              logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
+            } as Brand,
+            // ItemList with products referencing the brand
+            {
+              "@type": "ItemList",
+              name: "Luxury Ukrainian Gift Hampers",
+              itemListElement: (hampers || []).map((h, index) => {
+                // Get the best available image
+                const mainImage = h.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) || h.images?.[0];
+                const imageUrl = mainImage?.asset?._ref
+                  ? urlFor(mainImage).width(800).height(800).url()
+                  : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
 
-            return {
-              "@type": "ListItem",
-              position: index + 1,
-              item: {
-                "@type": "Product",
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}#product`,
-                name: h.name,
-                description: h.shortDescription 
-                  ? (Array.isArray(h.shortDescription) 
-                    ? h.shortDescription.map((p: any) => p.children?.map((c: any) => c.text).join("") || "").join(" ")
-                    : String(h.shortDescription))
-                  : `${h.name} luxury Ukrainian gift hamper`,
-                image: imageUrl,
-                url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-                brand: {
-                  "@type": "Brand",
-                  name: "Olgish Cakes"
-                },
-                offers: {
-                  "@type": "Offer",
-                  price: h.price || 0,
-                  priceCurrency: "GBP",
-                  availability: "https://schema.org/InStock",
-                  priceValidUntil: getPriceValidUntil(30),
-                  url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-                  seller: {
-                    "@type": "Organization",
-                    name: "Olgish Cakes",
-                    url: "https://olgishcakes.co.uk"
-                  },
-                  shippingDetails: getOfferShippingDetails(),
-                  hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-                }
-              }
-            };
-          }),
+                return {
+                  "@type": "ListItem",
+                  position: index + 1,
+                  item: {
+                    "@type": "Product",
+                    "@id": `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}#product`,
+                    name: h.name,
+                    description: h.shortDescription 
+                      ? (Array.isArray(h.shortDescription) 
+                        ? h.shortDescription.map((p: RichTextBlock) => p.children?.map((c: RichTextChild) => c.text).join("") || "").join(" ")
+                        : String(h.shortDescription))
+                      : `${h.name} luxury Ukrainian gift hamper`,
+                    image: imageUrl,
+                    url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
+                    brand: { "@id": BRAND_ID },
+                    offers: {
+                      "@type": "Offer",
+                      price: h.price || 0,
+                      priceCurrency: "GBP",
+                      availability: "https://schema.org/InStock",
+                      priceValidUntil: getPriceValidUntil(30),
+                      url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
+                      seller: {
+                        "@type": "Organization",
+                        name: "Olgish Cakes",
+                        url: "https://olgishcakes.co.uk"
+                      },
+                      shippingDetails: getOfferShippingDetails(),
+                      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+                    }
+                  }
+                };
+              }),
+            }
+          ]
         } as const;
 
         const faqJsonLd = {
@@ -207,19 +222,19 @@ export default async function GiftHampersPage() {
           <>
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\u003c') }}
             />
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, '\u003c') }}
             />
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd).replace(/</g, '\u003c') }}
             />
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\u003c') }}
             />
           </>
         );

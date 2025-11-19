@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import GiftHampersPage, { metadata, revalidate, dynamic } from '../page'
+import GiftHampersPage, { dynamic, metadata, revalidate } from '../page'
 
 // Mock utils
 jest.mock('../../utils/fetchGiftHampers', () => ({
@@ -52,6 +52,17 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI
+jest.mock('@/lib/schema-constants', () => ({
+  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
+}))
+
+jest.mock('@/lib/constants', () => ({
+  BUSINESS_CONSTANTS: {
+    NAME: 'Olgish Cakes',
+    WEBSITE: 'https://olgishcakes.co.uk'
+  }
+}))
+
 jest.mock('@/lib/mui-optimization', () => ({
   Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -179,12 +190,17 @@ describe('GiftHampersPage', () => {
       
       const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
       
+      // Extract ItemList from @graph if present
+      const itemList = jsonLd['@graph'] 
+        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'ItemList')
+        : jsonLd
+      
       // Verify ItemList exists
-      expect(jsonLd['@type']).toBe('ItemList')
+      expect(itemList['@type']).toBe('ItemList')
       
       // Verify products don't have aggregateRating (GSC fix for "multiple aggregate ratings" error)
-      if (jsonLd.itemListElement && jsonLd.itemListElement.length > 0) {
-        jsonLd.itemListElement.forEach((listItem: any) => {
+      if (itemList.itemListElement && itemList.itemListElement.length > 0) {
+        itemList.itemListElement.forEach((listItem: any) => {
           expect(listItem.item.aggregateRating).toBeUndefined()
         })
       }
@@ -264,6 +280,154 @@ describe('GiftHampersPage', () => {
       )
 
       expect(faqScript).toBeDefined()
+    })
+
+    describe('Brand Field Duplication Prevention', () => {
+      it('should use @graph format for ItemList structured data', async () => {
+        const page = await GiftHampersPage()
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const itemListScript = Array.from(scripts).find(script => 
+          script.textContent?.includes('"@type":"ItemList"') || script.textContent?.includes('"@graph"')
+        )
+
+        expect(itemListScript).toBeDefined()
+        
+        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+        
+        // Should use @graph format to prevent duplicate brand fields
+        expect(jsonLd['@graph']).toBeDefined()
+        expect(Array.isArray(jsonLd['@graph'])).toBe(true)
+      })
+
+      it('should have exactly one Brand entity in @graph', async () => {
+        const page = await GiftHampersPage()
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const itemListScript = Array.from(scripts).find(script => 
+          script.textContent?.includes('"@graph"')
+        )
+
+        expect(itemListScript).toBeDefined()
+        
+        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+        const graph = jsonLd['@graph'] || []
+        
+        // Count Brand entities
+        const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+        
+        // Should have exactly one Brand entity
+        expect(brandEntities).toHaveLength(1)
+        
+        // Brand should have unique @id
+        expect(brandEntities[0]['@id']).toBe('https://olgishcakes.co.uk/#brand')
+        expect(brandEntities[0].name).toBe('Olgish Cakes')
+      })
+
+      it('should reference brand by @id in all products, not inline objects', async () => {
+        const page = await GiftHampersPage()
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const itemListScript = Array.from(scripts).find(script => 
+          script.textContent?.includes('"@graph"')
+        )
+
+        expect(itemListScript).toBeDefined()
+        
+        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+        const graph = jsonLd['@graph'] || []
+        
+        // Find ItemList
+        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        expect(itemList).toBeDefined()
+        
+        // Check all products in ItemList
+        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
+          itemList.itemListElement.forEach((listItem: any) => {
+            const product = listItem.item
+            
+            // Brand should be a reference by @id, not an inline object
+            expect(product.brand).toBeDefined()
+            expect(product.brand['@id']).toBe('https://olgishcakes.co.uk/#brand')
+            
+            // Should NOT have inline brand object with @type
+            expect(product.brand['@type']).toBeUndefined()
+            expect(product.brand.name).toBeUndefined()
+          })
+        }
+      })
+
+      it('should NOT have duplicate brand fields in structured data', async () => {
+        const page = await GiftHampersPage()
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const itemListScript = Array.from(scripts).find(script => 
+          script.textContent?.includes('"@graph"')
+        )
+
+        expect(itemListScript).toBeDefined()
+        
+        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+        const graph = jsonLd['@graph'] || []
+        
+        // Find ItemList
+        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        expect(itemList).toBeDefined()
+        
+        // Count inline brand objects (should be 0)
+        let inlineBrandCount = 0
+        
+        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
+          itemList.itemListElement.forEach((listItem: any) => {
+            const product = listItem.item
+            
+            // Check if brand is an inline object (has @type)
+            if (product.brand && product.brand['@type'] === 'Brand') {
+              inlineBrandCount++
+            }
+          })
+        }
+        
+        // Should have 0 inline brand objects (all should use @id references)
+        expect(inlineBrandCount).toBe(0)
+      })
+
+      it('should have consistent brand @id across all structured data', async () => {
+        const page = await GiftHampersPage()
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const itemListScript = Array.from(scripts).find(script => 
+          script.textContent?.includes('"@graph"')
+        )
+
+        expect(itemListScript).toBeDefined()
+        
+        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
+        const graph = jsonLd['@graph'] || []
+        
+        // Find Brand entity
+        const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+        expect(brandEntity).toBeDefined()
+        const brandId = brandEntity['@id']
+        
+        // Find ItemList
+        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        expect(itemList).toBeDefined()
+        
+        // Verify all products reference the same brand @id
+        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
+          itemList.itemListElement.forEach((listItem: any) => {
+            const product = listItem.item
+            
+            expect(product.brand['@id']).toBe(brandId)
+          })
+        }
+      })
     })
   })
 })
