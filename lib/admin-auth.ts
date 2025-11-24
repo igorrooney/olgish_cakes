@@ -13,7 +13,11 @@ function getJWTSecret(): string {
 export async function verifyAdminToken(token: string): Promise<{ username: string; role: string } | null> {
   try {
     const secret = new TextEncoder().encode(getJWTSecret());
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret, {
+      issuer: 'olgish-cakes',
+      audience: 'olgish-cakes-admin',
+      algorithms: ['HS256'],
+    });
 
     return {
       username: payload.username as string,

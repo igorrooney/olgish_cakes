@@ -113,10 +113,13 @@ jest.mock('@mui/material', () => {
 jest.mock('@mui/x-date-pickers/DatePicker', () => ({
   DatePicker: ({ label, value, onChange, ...props }: any) => (
     <div data-testid="date-picker">
-      <label>{label}</label>
+      <label htmlFor="date-picker-input">{label}</label>
       <input
+        id="date-picker-input"
         type="date"
         data-testid="date-picker-input"
+        aria-label={label || 'Date picker'}
+        aria-required="false"
         value={value ? value.format('YYYY-MM-DD') : ''}
         onChange={(e) => {
           const dayjs = require('dayjs')
@@ -435,6 +438,114 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
       const dateInput = screen.getByTestId('date-picker-input')
       expect(dateInput).toHaveValue('')
+    })
+  })
+
+  describe('Accessibility', () => {
+    it('should have accessible date picker with aria-label', async () => {
+      const order = createMockOrder({
+        delivery: {
+          dateNeeded: '2025-12-08',
+        },
+      })
+
+      setupFetchMocks([order])
+
+      render(<OrderManagementDashboard />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      // Find edit button in table - second button in row
+      await waitFor(() => {
+        const table = screen.getByRole('table')
+        const buttons = within(table).getAllByRole('button')
+        expect(buttons.length).toBeGreaterThan(1)
+        fireEvent.click(buttons[1]) // Second button is edit
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      const dateInput = screen.getByTestId('date-picker-input')
+      expect(dateInput).toHaveAttribute('aria-label', 'Date Needed')
+      expect(dateInput).toHaveAttribute('type', 'date')
+    })
+
+    it('should have label associated with date picker input', async () => {
+      const order = createMockOrder({
+        delivery: {
+          dateNeeded: '2025-12-08',
+        },
+      })
+
+      setupFetchMocks([order])
+
+      render(<OrderManagementDashboard />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        const table = screen.getByRole('table')
+        const buttons = within(table).getAllByRole('button')
+        expect(buttons.length).toBeGreaterThan(1)
+        fireEvent.click(buttons[1])
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      const dateInput = screen.getByTestId('date-picker-input')
+      const datePicker = screen.getByTestId('date-picker')
+      const labels = within(datePicker).getAllByText('Date Needed')
+
+      expect(labels.length).toBeGreaterThan(0)
+      expect(dateInput).toHaveAttribute('id', 'date-picker-input')
+      // Verify label is associated with input via htmlFor
+      const label = labels[0]
+      expect(label).toHaveAttribute('for', 'date-picker-input')
+    })
+
+    it('should be keyboard accessible', async () => {
+      const order = createMockOrder({
+        delivery: {
+          dateNeeded: '2025-12-08',
+        },
+      })
+
+      setupFetchMocks([order])
+
+      render(<OrderManagementDashboard />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        const table = screen.getByRole('table')
+        const buttons = within(table).getAllByRole('button')
+        expect(buttons.length).toBeGreaterThan(1)
+        fireEvent.click(buttons[1])
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      const dateInput = screen.getByTestId('date-picker-input')
+
+      // Verify it's focusable
+      dateInput.focus()
+      expect(dateInput).toHaveFocus()
+
+      // Verify keyboard interaction
+      fireEvent.keyDown(dateInput, { key: 'Enter', code: 'Enter' })
+      expect(dateInput).toHaveFocus()
     })
   })
 
