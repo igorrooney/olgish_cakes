@@ -441,8 +441,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex flex-col min-h-screen">
                 <UtilityBar />
                 <Header />
-                {/* Technical Issue Notification - Remove after November 20, 2025 */}
-                <TechnicalIssueNotification />
                 <main className="flex-grow">{children}</main>
                 <Footer />
                       <ScrollToTop />
