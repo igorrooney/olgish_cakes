@@ -133,5 +133,63 @@ describe('backup-sanity-to-drive validation patterns', () => {
             expect(errorMessage).toContain(invalidValue)
         })
     })
+
+    describe('Environment variable sanitization', () => {
+        /**
+         * Sanitization function that matches the implementation
+         * This tests the logic without importing the actual function
+         */
+        const sanitizeEnvVar = (value: string | undefined, name: string): string => {
+            if (!value) {
+                return ''
+            }
+            
+            const sanitized = value
+                .trim()
+                .replace(/[\r\n]+/g, '')
+                .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '')
+            
+            return sanitized
+        }
+
+        it('should trim whitespace from environment variables', () => {
+            expect(sanitizeEnvVar('  token123  ', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('\ttoken123\t', 'TEST')).toBe('token123')
+        })
+
+        it('should remove newlines and carriage returns', () => {
+            expect(sanitizeEnvVar('token123\n', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token123\r\n', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token\n123', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token\r\n123', 'TEST')).toBe('token123')
+        })
+
+        it('should remove other control characters', () => {
+            expect(sanitizeEnvVar('token\x00123', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token\x1F123', 'TEST')).toBe('token123')
+        })
+
+        it('should handle empty strings', () => {
+            expect(sanitizeEnvVar('', 'TEST')).toBe('')
+            expect(sanitizeEnvVar(undefined, 'TEST')).toBe('')
+        })
+
+        it('should preserve valid characters', () => {
+            expect(sanitizeEnvVar('sk1234567890abcdef', 'TEST')).toBe('sk1234567890abcdef')
+            expect(sanitizeEnvVar('token-with-hyphens', 'TEST')).toBe('token-with-hyphens')
+            expect(sanitizeEnvVar('token_with_underscores', 'TEST')).toBe('token_with_underscores')
+        })
+
+        it('should handle GitHub Actions secret format (with trailing newline)', () => {
+            // GitHub Actions secrets often have trailing newlines
+            const secretWithNewline = 'sk1234567890abcdef\n'
+            expect(sanitizeEnvVar(secretWithNewline, 'TEST')).toBe('sk1234567890abcdef')
+        })
+
+        it('should handle multiple newlines', () => {
+            expect(sanitizeEnvVar('token\n\n123', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('\n\ntoken\n\n', 'TEST')).toBe('token')
+        })
+    })
 })
 

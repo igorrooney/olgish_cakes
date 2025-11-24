@@ -82,16 +82,51 @@ const logger = {
 }
 
 /**
+ * Sanitizes environment variable values by removing control characters
+ * and trimming whitespace. This prevents issues with GitHub Actions secrets
+ * that may contain trailing newlines or other invalid characters.
+ * 
+ * @param value - The raw environment variable value
+ * @param name - The name of the environment variable (for error messages)
+ * @returns The sanitized value
+ */
+function sanitizeEnvVar(value: string | undefined, name: string): string {
+    if (!value) {
+        return ''
+    }
+    
+    // Trim whitespace and remove control characters (newlines, carriage returns, etc.)
+    // Control characters are: \x00-\x1F and \x7F (except space, tab, newline, carriage return)
+    // We explicitly remove newlines (\n) and carriage returns (\r) which are common in secrets
+    const sanitized = value
+        .trim()
+        .replace(/[\r\n]+/g, '') // Remove all newlines and carriage returns
+        .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // Remove other control characters
+    
+    return sanitized
+}
+
+/**
  * Validates and loads configuration from environment variables
+ * All sensitive values are sanitized to remove control characters
  */
 function loadConfig(): BackupConfig {
-    const projectId = process.env.SANITY_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-    const dataset = process.env.SANITY_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET
-    const authToken = process.env.SANITY_AUTH_TOKEN || process.env.SANITY_API_TOKEN
-    const clientId = process.env.GDRIVE_CLIENT_ID
-    const clientSecret = process.env.GDRIVE_CLIENT_SECRET
-    const refreshToken = process.env.GDRIVE_REFRESH_TOKEN
-    const folderId = process.env.GDRIVE_BACKUP_FOLDER_ID
+    const rawProjectId = process.env.SANITY_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+    const rawDataset = process.env.SANITY_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET
+    const rawAuthToken = process.env.SANITY_AUTH_TOKEN || process.env.SANITY_API_TOKEN
+    const rawClientId = process.env.GDRIVE_CLIENT_ID
+    const rawClientSecret = process.env.GDRIVE_CLIENT_SECRET
+    const rawRefreshToken = process.env.GDRIVE_REFRESH_TOKEN
+    const rawFolderId = process.env.GDRIVE_BACKUP_FOLDER_ID
+
+    // Sanitize all environment variables to remove control characters
+    const projectId = sanitizeEnvVar(rawProjectId, 'SANITY_PROJECT_ID')
+    const dataset = sanitizeEnvVar(rawDataset, 'SANITY_DATASET')
+    const authToken = sanitizeEnvVar(rawAuthToken, 'SANITY_AUTH_TOKEN')
+    const clientId = sanitizeEnvVar(rawClientId, 'GDRIVE_CLIENT_ID')
+    const clientSecret = sanitizeEnvVar(rawClientSecret, 'GDRIVE_CLIENT_SECRET')
+    const refreshToken = sanitizeEnvVar(rawRefreshToken, 'GDRIVE_REFRESH_TOKEN')
+    const folderId = sanitizeEnvVar(rawFolderId, 'GDRIVE_BACKUP_FOLDER_ID')
 
     if (!projectId) {
         throw new Error('Missing required environment variable: SANITY_PROJECT_ID or NEXT_PUBLIC_SANITY_PROJECT_ID')
@@ -311,6 +346,9 @@ async function uploadBackupToDrive(
             }
         }) as DriveFileResponse
 
+        // Ensure stream is closed
+        fileStream.destroy()
+
         if (!response.data.id) {
             throw new Error('Upload completed but no file ID was returned')
         }
@@ -372,6 +410,9 @@ async function main(): Promise<void> {
         logger.success('\n✅ Backup completed successfully!')
         logger.info(`   File: ${filename}`)
         logger.info(`   Google Drive ID: ${fileId}`)
+        
+        // Explicitly exit to ensure GitHub Actions doesn't hang
+        process.exit(0)
     } catch (error) {
         logger.error('\n❌ Backup failed', error)
         process.exit(1)
@@ -379,4 +420,7 @@ async function main(): Promise<void> {
 }
 
 // Run the script
-main()
+main().catch((error) => {
+    logger.error('Unhandled error in main', error)
+    process.exit(1)
+})
