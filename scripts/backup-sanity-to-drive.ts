@@ -19,19 +19,17 @@
  *   pnpm backup:sanity:drive
  */
 
-import { exec } from 'child_process'
+import { spawn } from 'child_process'
 import dotenv from 'dotenv'
 import { createReadStream, existsSync } from 'fs'
 import { mkdir, rm } from 'fs/promises'
 import { google } from 'googleapis'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-import { promisify } from 'util'
 
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
-const execAsync = promisify(exec)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -79,6 +77,26 @@ function loadConfig(): BackupConfig {
         throw new Error('Missing required environment variable: GDRIVE_BACKUP_FOLDER_ID')
     }
 
+    // Validate project ID format (Sanity project IDs are lowercase alphanumeric)
+    if (!/^[a-z0-9]+$/.test(projectId)) {
+        throw new Error(`Invalid SANITY_PROJECT_ID format: must be lowercase alphanumeric, got "${projectId}"`)
+    }
+
+    // Validate dataset name (lowercase, hyphens allowed)
+    if (!/^[a-z0-9-]+$/.test(dataset)) {
+        throw new Error(`Invalid SANITY_DATASET format: must be lowercase alphanumeric with hyphens, got "${dataset}"`)
+    }
+
+    // Validate folder ID format (Google Drive folder IDs are alphanumeric with underscores and hyphens)
+    if (!/^[a-zA-Z0-9_-]+$/.test(folderId)) {
+        throw new Error(`Invalid GDRIVE_BACKUP_FOLDER_ID format: must be alphanumeric with underscores or hyphens, got "${folderId}"`)
+    }
+
+    // Validate OAuth client ID format (typically ends with .apps.googleusercontent.com or is a long string)
+    if (!/^[a-zA-Z0-9._-]+$/.test(clientId)) {
+        throw new Error(`Invalid GDRIVE_CLIENT_ID format`)
+    }
+
     return {
         projectId,
         dataset,
@@ -109,6 +127,17 @@ function createOAuth2Client(config: BackupConfig) {
 }
 
 /**
+ * Creates a timeout promise that rejects after the specified duration
+ */
+function createTimeout(ms: number, operation: string): Promise<never> {
+    return new Promise((_, reject) => {
+        setTimeout(() => {
+            reject(new Error(`${operation} operation timed out after ${ms / 1000 / 60} minutes`))
+        }, ms)
+    })
+}
+
+/**
  * Exports Sanity dataset to a tar.gz file
  * @returns Path to the exported backup file
  */
@@ -133,36 +162,83 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
 
     // Run Sanity CLI export command
     // Note: --no-assets flag is NOT used, so assets are included
-    const exportCommand = `npx sanity@latest dataset export ${config.dataset} "${outputPath}" --project ${config.projectId}`
-
+    // Use spawn with argument arrays to prevent command injection
     console.log('   Running export command...')
-    try {
-        const { stdout, stderr } = await execAsync(exportCommand, {
-            cwd: path.join(__dirname, '..'),
-            env: {
-                ...process.env,
-                SANITY_AUTH_TOKEN: config.authToken,
-                SANITY_TOKEN: config.authToken
-            }
-        })
 
-        if (stderr && !stderr.includes('warning')) {
-            console.warn('   Export warnings:', stderr)
-        }
+    const EXPORT_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
-        if (!existsSync(outputPath)) {
-            throw new Error(`Export file was not created at ${outputPath}`)
-        }
+    return Promise.race([
+        new Promise<string>((resolve, reject) => {
+            const child = spawn(
+                'npx',
+                [
+                    'sanity@latest',
+                    'dataset',
+                    'export',
+                    config.dataset,
+                    outputPath,
+                    '--project',
+                    config.projectId
+                ],
+                {
+                    cwd: path.join(__dirname, '..'),
+                    env: {
+                        ...process.env,
+                        SANITY_AUTH_TOKEN: config.authToken,
+                        SANITY_TOKEN: config.authToken
+                    },
+                    stdio: 'pipe'
+                }
+            )
 
-        console.log(`✅ Export completed: ${filename}`)
-        return outputPath
-    } catch (error) {
-        // Clean up temp directory on error
-        if (existsSync(tempDir)) {
-            await rm(tempDir, { recursive: true, force: true })
-        }
-        throw new Error(`Sanity export failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    }
+            let stdout = ''
+            let stderr = ''
+
+            child.stdout?.on('data', (data) => {
+                stdout += data.toString()
+            })
+
+            child.stderr?.on('data', (data) => {
+                stderr += data.toString()
+            })
+
+            child.on('close', async (code) => {
+                if (code !== 0) {
+                    // Clean up temp directory on error
+                    if (existsSync(tempDir)) {
+                        await rm(tempDir, { recursive: true, force: true })
+                    }
+                    reject(new Error(`Sanity export failed with code ${code}: ${stderr || stdout}`))
+                    return
+                }
+
+                if (stderr && !stderr.includes('warning')) {
+                    console.warn('   Export warnings:', stderr)
+                }
+
+                if (!existsSync(outputPath)) {
+                    // Clean up temp directory on error
+                    if (existsSync(tempDir)) {
+                        await rm(tempDir, { recursive: true, force: true })
+                    }
+                    reject(new Error(`Export file was not created at ${outputPath}`))
+                    return
+                }
+
+                console.log(`✅ Export completed: ${filename}`)
+                resolve(outputPath)
+            })
+
+            child.on('error', async (error) => {
+                // Clean up temp directory on error
+                if (existsSync(tempDir)) {
+                    await rm(tempDir, { recursive: true, force: true })
+                }
+                reject(new Error(`Sanity export failed: ${error.message}`))
+            })
+        }),
+        createTimeout(EXPORT_TIMEOUT, 'Sanity export')
+    ])
 }
 
 /**
@@ -204,8 +280,25 @@ async function uploadBackupToDrive(
 
         return fileId
     } catch (error) {
-        throw new Error(`Google Drive upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        if (errorMessage.includes('timed out')) {
+            throw error
+        }
+        throw new Error(`Google Drive upload failed: ${errorMessage}`)
     }
+}
+
+// Wrap upload with timeout
+async function uploadBackupToDriveWithTimeout(
+    filePath: string,
+    filename: string,
+    config: BackupConfig
+): Promise<string> {
+    const UPLOAD_TIMEOUT = 60 * 60 * 1000 // 1 hour
+    return Promise.race([
+        uploadBackupToDrive(filePath, filename, config),
+        createTimeout(UPLOAD_TIMEOUT, 'Google Drive upload')
+    ])
 }
 
 /**
@@ -223,7 +316,7 @@ async function main(): Promise<void> {
         const filename = path.basename(backupPath)
 
         // Upload to Google Drive
-        const fileId = await uploadBackupToDrive(backupPath, filename, config)
+        const fileId = await uploadBackupToDriveWithTimeout(backupPath, filename, config)
 
         // Clean up temporary file
         const tempDir = path.dirname(backupPath)
