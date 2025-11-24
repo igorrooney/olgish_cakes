@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { logger } from "@/lib/logger";
+import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  IconButton,
-  Box,
-  Typography,
-  Divider,
   Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { Add as AddIcon, Remove as RemoveIcon, Search as SearchIcon } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
 interface AddOrderModalProps {
   open: boolean;
@@ -132,7 +133,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
         setProducts(data.products);
       }
     } catch (error) {
-      console.error('Failed to fetch products:', error);
+      logger.error('Failed to fetch products', error);
     } finally {
       setProductsLoading(false);
     }
@@ -561,24 +562,24 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
                             label="Select Product from Catalog"
                             disabled={productsLoading}
                           >
-                          <MenuItem value="">
-                            <em>Or enter custom product name below</em>
-                          </MenuItem>
-                          {productsLoading ? (
-                            <MenuItem disabled>
-                              Loading products...
+                            <MenuItem value="">
+                              <em>Or enter custom product name below</em>
                             </MenuItem>
-                          ) : products.length === 0 ? (
-                            <MenuItem disabled>
-                              No products found
-                            </MenuItem>
-                          ) : (
-                            products.map((product) => (
-                              <MenuItem key={product.id} value={product.id}>
-                                {product.displayName} - £{product.standardPrice.toFixed(2)} (Standard) / £{product.individualPrice.toFixed(2)} (Individual)
+                            {productsLoading ? (
+                              <MenuItem disabled>
+                                Loading products...
                               </MenuItem>
-                            ))
-                          )}
+                            ) : products.length === 0 ? (
+                              <MenuItem disabled>
+                                No products found
+                              </MenuItem>
+                            ) : (
+                              products.map((product) => (
+                                <MenuItem key={product.id} value={product.id}>
+                                  {product.displayName} - £{product.standardPrice.toFixed(2)} (Standard) / £{product.individualPrice.toFixed(2)} (Individual)
+                                </MenuItem>
+                              ))
+                            )}
                           </Select>
                         </FormControl>
                         {item.isFromCatalog && (
