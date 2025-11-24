@@ -44,6 +44,44 @@ interface BackupConfig {
 }
 
 /**
+ * Google Drive API response type for file creation
+ */
+interface DriveFileResponse {
+    data: {
+        id: string
+        name?: string
+        mimeType?: string
+        size?: string
+        createdTime?: string
+        modifiedTime?: string
+    }
+}
+
+/**
+ * Simple structured logger utility
+ * Can be extended with file output, log levels, etc. in the future
+ */
+const logger = {
+    info: (message: string, ...args: unknown[]) => {
+        console.log(`[INFO] ${message}`, ...args)
+    },
+    warn: (message: string, ...args: unknown[]) => {
+        console.warn(`[WARN] ${message}`, ...args)
+    },
+    error: (message: string, error?: Error | unknown) => {
+        const errorMessage = error instanceof Error ? error.message : String(error || 'Unknown error')
+        const isDev = process.env.NODE_ENV === 'development'
+        const stackTrace = error instanceof Error && error.stack && isDev
+            ? `\nStack: ${error.stack}`
+            : ''
+        console.error(`[ERROR] ${message}: ${errorMessage}${stackTrace}`)
+    },
+    success: (message: string, ...args: unknown[]) => {
+        console.log(`[SUCCESS] ${message}`, ...args)
+    }
+}
+
+/**
  * Validates and loads configuration from environment variables
  */
 function loadConfig(): BackupConfig {
@@ -142,9 +180,9 @@ function createTimeout(ms: number, operation: string): Promise<never> {
  * @returns Path to the exported backup file
  */
 async function exportSanityDataset(config: BackupConfig): Promise<string> {
-    console.log('📦 Starting Sanity dataset export...')
-    console.log(`   Project: ${config.projectId}`)
-    console.log(`   Dataset: ${config.dataset}`)
+    logger.info('📦 Starting Sanity dataset export...')
+    logger.info(`   Project: ${config.projectId}`)
+    logger.info(`   Dataset: ${config.dataset}`)
 
     // Create temporary directory for backup
     const tempDir = path.join(__dirname, '..', '.backup-temp')
@@ -163,7 +201,7 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
     // Run Sanity CLI export command
     // Note: --no-assets flag is NOT used, so assets are included
     // Use spawn with argument arrays to prevent command injection
-    console.log('   Running export command...')
+    logger.info('   Running export command...')
 
     const EXPORT_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
@@ -213,7 +251,7 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
                 }
 
                 if (stderr && !stderr.includes('warning')) {
-                    console.warn('   Export warnings:', stderr)
+                    logger.warn('   Export warnings:', stderr)
                 }
 
                 if (!existsSync(outputPath)) {
@@ -225,7 +263,7 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
                     return
                 }
 
-                console.log(`✅ Export completed: ${filename}`)
+                logger.success(`✅ Export completed: ${filename}`)
                 resolve(outputPath)
             })
 
@@ -234,7 +272,11 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
                 if (existsSync(tempDir)) {
                     await rm(tempDir, { recursive: true, force: true })
                 }
-                reject(new Error(`Sanity export failed: ${error.message}`))
+                const exportError = new Error(`Sanity export failed: ${error.message}`)
+                if (error.stack && process.env.NODE_ENV === 'development') {
+                    exportError.stack = error.stack
+                }
+                reject(exportError)
             })
         }),
         createTimeout(EXPORT_TIMEOUT, 'Sanity export')
@@ -249,8 +291,8 @@ async function uploadBackupToDrive(
     filename: string,
     config: BackupConfig
 ): Promise<string> {
-    console.log('☁️  Starting upload to Google Drive...')
-    console.log(`   Folder ID: ${config.folderId}`)
+    logger.info('☁️  Starting upload to Google Drive...')
+    logger.info(`   Folder ID: ${config.folderId}`)
 
     const oauth2Client = createOAuth2Client(config)
     const drive = google.drive({ version: 'v3', auth: oauth2Client })
@@ -267,16 +309,16 @@ async function uploadBackupToDrive(
                 mimeType: 'application/gzip',
                 body: fileStream
             }
-        })
+        }) as DriveFileResponse
 
         if (!response.data.id) {
             throw new Error('Upload completed but no file ID was returned')
         }
 
         const fileId = response.data.id
-        console.log(`✅ Upload completed: ${filename}`)
-        console.log(`   File ID: ${fileId}`)
-        console.log(`   View: https://drive.google.com/file/d/${fileId}/view`)
+        logger.success(`✅ Upload completed: ${filename}`)
+        logger.info(`   File ID: ${fileId}`)
+        logger.info(`   View: https://drive.google.com/file/d/${fileId}/view`)
 
         return fileId
     } catch (error) {
@@ -284,7 +326,11 @@ async function uploadBackupToDrive(
         if (errorMessage.includes('timed out')) {
             throw error
         }
-        throw new Error(`Google Drive upload failed: ${errorMessage}`)
+        const uploadError = new Error(`Google Drive upload failed: ${errorMessage}`)
+        if (error instanceof Error && error.stack && process.env.NODE_ENV === 'development') {
+            uploadError.stack = error.stack
+        }
+        throw uploadError
     }
 }
 
@@ -306,7 +352,7 @@ async function uploadBackupToDriveWithTimeout(
  */
 async function main(): Promise<void> {
     try {
-        console.log('🚀 Starting Sanity backup to Google Drive (Free)...\n')
+        logger.info('🚀 Starting Sanity backup to Google Drive (Free)...\n')
 
         // Load configuration
         const config = loadConfig()
@@ -321,13 +367,13 @@ async function main(): Promise<void> {
         // Clean up temporary file
         const tempDir = path.dirname(backupPath)
         await rm(tempDir, { recursive: true, force: true })
-        console.log('\n🧹 Cleaned up temporary files')
+        logger.info('\n🧹 Cleaned up temporary files')
 
-        console.log('\n✅ Backup completed successfully!')
-        console.log(`   File: ${filename}`)
-        console.log(`   Google Drive ID: ${fileId}`)
+        logger.success('\n✅ Backup completed successfully!')
+        logger.info(`   File: ${filename}`)
+        logger.info(`   Google Drive ID: ${fileId}`)
     } catch (error) {
-        console.error('\n❌ Backup failed:', error instanceof Error ? error.message : 'Unknown error')
+        logger.error('\n❌ Backup failed', error)
         process.exit(1)
     }
 }
