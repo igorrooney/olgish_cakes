@@ -1,152 +1,77 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { designTokens } from "@/lib/design-system";
+import { logger } from "@/lib/logger";
+import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/lib/order-constants";
+import { urlFor } from "@/sanity/lib/image";
+import type { Order, SortableOrderValue } from "@/types/order";
 import {
+  Add as AddIcon,
+  Cancel as CancelledIcon,
+  Close as CloseIcon,
+  CheckCircle as CompletedIcon,
+  Edit as EditIcon,
+  Image as ImageIcon,
+  Refresh as RefreshIcon,
+  Search as SearchIcon,
+  LocalShipping as ShippingIcon,
+  CloudUpload as UploadIcon,
+  Visibility as ViewIcon,
+  ZoomIn as ZoomIcon
+} from "@mui/icons-material";
+import {
+  Alert,
+  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
+  CardMedia,
   Chip,
-  Button,
+  CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  TextField,
+  DialogContent,
+  DialogTitle,
+  Divider,
   FormControl,
+  Grid,
+  IconButton,
   InputLabel,
-  Select,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
   MenuItem,
+  Select,
+  Snackbar,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TableSortLabel,
-  TablePagination,
-  IconButton,
-  Alert,
-  Snackbar,
-  Grid,
-  Stack,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
-  Divider,
+  TextField,
   Tooltip,
-  CardMedia,
-  CircularProgress,
+  Typography,
 } from "@mui/material";
-import {
-  Edit as EditIcon,
-  Visibility as ViewIcon,
-  LocalShipping as ShippingIcon,
-  CheckCircle as CompletedIcon,
-  Cancel as CancelledIcon,
-  Refresh as RefreshIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  Add as AddIcon,
-  CloudUpload as UploadIcon,
-  Image as ImageIcon,
-  ZoomIn as ZoomIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { type Dayjs } from "dayjs";
+import "dayjs/locale/en-gb";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AddOrderModal } from "./AddOrderModal";
-import { projectId, dataset } from "@/sanity/env";
-import { urlFor } from "@/sanity/lib/image";
-import { designTokens } from "@/lib/design-system";
 
-interface Order {
-  _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  orderNumber: string;
-  status: string;
-  orderType: string;
-  customer: {
-    name: string;
-    email: string;
-    phone: string;
-    address?: string;
-    city?: string;
-    postcode?: string;
-  };
-  items: Array<{
-    productId?: string;
-    productName: string;
-    quantity: number;
-    totalPrice: number;
-    size?: string;
-    designType?: string;
-  }>;
-  delivery: {
-    dateNeeded: string;
-    deliveryMethod: string;
-    trackingNumber?: string;
-    deliveryNotes?: string;
-    giftNote?: string;
-  };
-  pricing: {
-    total: number;
-    paymentStatus: string;
-    paymentMethod?: string;
-  };
-  messages?: Array<{
-    message: string;
-    attachments?: Array<{
-      _type: string;
-      asset: {
-        _type: string;
-        _id: string;
-        _ref: string;
-        url: string;
-      };
-      alt?: string;
-      caption?: string;
-    }>;
-  }>;
-  notes?: Array<{
-    note: string;
-    author: string;
-    createdAt: string;
-    images?: Array<{
-      _type: string;
-      asset: {
-        _type: string;
-        _ref: string;
-      };
-      alt?: string;
-      caption?: string;
-    }>;
-  }>;
-}
+// Set British locale for date formatting
+dayjs.locale("en-gb");
 
-const statusColors = {
-  'new': 'error',
-  'confirmed': 'warning',
-  'in-progress': 'info',
-  'ready-pickup': 'primary',
-  'out-delivery': 'secondary',
-  'delivered': 'success',
-  'completed': 'success',
-  'cancelled': 'error',
-} as const;
-
-const statusLabels = {
-  'new': 'New Order',
-  'confirmed': 'Confirmed',
-  'in-progress': 'In Progress',
-  'ready-pickup': 'Ready for Pickup',
-  'out-delivery': 'Out for Delivery',
-  'delivered': 'Delivered',
-  'completed': 'Completed',
-  'cancelled': 'Cancelled',
-};
+// Order type imported from types/order.ts
+// Status colors and labels imported from lib/order-constants.ts
 
 export function OrderManagementDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -161,7 +86,7 @@ export function OrderManagementDashboard() {
   const [deletePassword, setDeletePassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<{ _type?: string; _id?: string; _ref?: string; url?: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<string>("_createdAt");
@@ -178,17 +103,7 @@ export function OrderManagementDashboard() {
     message: "",
     severity: 'info',
   });
-  const [monthlyEarnings, setMonthlyEarnings] = useState<{
-    currentMonth: number;
-    lastMonth: number;
-    totalOrders: number;
-    averageOrderValue: number;
-  }>({
-    currentMonth: 0,
-    lastMonth: 0,
-    totalOrders: 0,
-    averageOrderValue: 0,
-  });
+  // Removed unused monthlyEarnings state - using filteredStats instead
   const [availableCakes, setAvailableCakes] = useState<Array<{
     _id: string;
     name: string;
@@ -205,6 +120,7 @@ export function OrderManagementDashboard() {
     paymentStatus: '',
     paymentMethod: '',
     deliveryMethod: '',
+    dateNeeded: null as Dayjs | null,
     note: '',
     images: [] as File[],
     // Customer information fields
@@ -279,7 +195,7 @@ export function OrderManagementDashboard() {
         throw new Error(data.error || 'Failed to fetch orders');
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      logger.error('Error fetching orders', error);
       showNotification('Failed to fetch orders', 'error');
     } finally {
       if (isRefresh) {
@@ -290,22 +206,7 @@ export function OrderManagementDashboard() {
     }
   }, [showNotification]);
 
-  const fetchMonthlyEarnings = async () => {
-    try {
-      const response = await fetch(`/api/admin/earnings?t=${Date.now()}`, {
-        credentials: 'include',
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setMonthlyEarnings(data);
-      } else {
-        console.error('Failed to fetch monthly earnings:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching monthly earnings:', error);
-    }
-  };
+  // Removed fetchMonthlyEarnings - not used in component
 
   const fetchCakes = async () => {
     try {
@@ -317,17 +218,16 @@ export function OrderManagementDashboard() {
       if (response.ok) {
         setAvailableCakes(data.cakes || []);
       } else {
-        console.error('Failed to fetch cakes:', data);
+        logger.error('Failed to fetch cakes', data);
       }
     } catch (error) {
-      console.error('Error fetching cakes:', error);
+      logger.error('Error fetching cakes', error);
     }
   };
 
   // Fetch data on component mount
   useEffect(() => {
     fetchOrders();
-    fetchMonthlyEarnings();
     fetchCakes();
   }, [fetchOrders]); // Fetch on component mount
 
@@ -339,10 +239,10 @@ export function OrderManagementDashboard() {
   const handleCakeSelection = (cakeId: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === cakeId);
     if (selectedCake) {
-      const newPrice = editForm.selectedDesignType === 'individual' 
-        ? selectedCake.pricing.individual 
+      const newPrice = editForm.selectedDesignType === 'individual'
+        ? selectedCake.pricing.individual
         : selectedCake.pricing.standard;
-      
+
       setEditForm({
         ...editForm,
         selectedCakeId: cakeId,
@@ -357,10 +257,10 @@ export function OrderManagementDashboard() {
   const handleDesignTypeChange = (designType: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === editForm.selectedCakeId);
     if (selectedCake) {
-      const newPrice = designType === 'individual' 
-        ? selectedCake.pricing.individual 
+      const newPrice = designType === 'individual'
+        ? selectedCake.pricing.individual
         : selectedCake.pricing.standard;
-      
+
       setEditForm({
         ...editForm,
         selectedDesignType: designType,
@@ -378,12 +278,18 @@ export function OrderManagementDashboard() {
   const handleEditOrder = (order: Order) => {
     setSelectedOrder(order);
     const firstItem = order.items[0];
+    // Parse dateNeeded if it exists
+    const dateNeeded = order.delivery?.dateNeeded
+      ? dayjs(order.delivery.dateNeeded)
+      : null;
+
     setEditForm({
       status: order.status,
       trackingNumber: order.delivery?.trackingNumber || '',
       paymentStatus: order.pricing?.paymentStatus || 'pending',
       paymentMethod: order.pricing?.paymentMethod || '',
       deliveryMethod: order.delivery?.deliveryMethod || 'collection',
+      dateNeeded,
       note: '',
       images: [],
       // Populate customer information
@@ -433,11 +339,8 @@ export function OrderManagementDashboard() {
         setDeleteConfirmOpen(false);
         setEditDialogOpen(false);
         setDeletePassword("");
-        // Refresh both orders and earnings data
-        await Promise.all([
-          fetchOrders(),
-          fetchMonthlyEarnings()
-        ]);
+        // Refresh orders data
+        await fetchOrders();
       } else {
         const errorData = await response.json();
         if (errorData.error === 'Invalid password') {
@@ -447,7 +350,7 @@ export function OrderManagementDashboard() {
         }
       }
     } catch (error) {
-      console.error('Error deleting order:', error);
+      logger.error('Error deleting order', error);
       showNotification('Failed to delete order', 'error');
     } finally {
       setIsDeleting(false);
@@ -464,6 +367,12 @@ export function OrderManagementDashboard() {
       formData.append('status', editForm.status);
       formData.append('trackingNumber', editForm.trackingNumber);
       formData.append('deliveryMethod', editForm.deliveryMethod);
+      // Format dateNeeded as YYYY-MM-DD for API (ISO format)
+      if (editForm.dateNeeded) {
+        formData.append('dateNeeded', editForm.dateNeeded.format('YYYY-MM-DD'));
+      } else {
+        formData.append('dateNeeded', '');
+      }
       formData.append('paymentStatus', editForm.paymentStatus);
       formData.append('paymentMethod', editForm.paymentMethod);
       formData.append('note', editForm.note);
@@ -484,7 +393,7 @@ export function OrderManagementDashboard() {
       formData.append('selectedDesignType', editForm.selectedDesignType);
 
       // Add images to FormData
-      editForm.images.forEach((image, index) => {
+      editForm.images.forEach((image) => {
         formData.append(`images`, image);
       });
 
@@ -498,13 +407,12 @@ export function OrderManagementDashboard() {
         showNotification('Order updated successfully', 'success');
         setEditDialogOpen(false);
         fetchOrders(); // Refresh orders list
-        fetchMonthlyEarnings(); // Refresh earnings data
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update order');
       }
     } catch (error) {
-      console.error('Error updating order:', error);
+      logger.error('Error updating order', error);
       showNotification('Failed to update order', 'error');
     } finally {
       setIsSaving(false);
@@ -512,27 +420,30 @@ export function OrderManagementDashboard() {
   };
 
 
-  const filteredOrders = orders.filter(order => {
-    // Apply search filter with null checks
-    const matchesSearch = searchTerm === "" ||
-      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Memoize filtered orders for performance
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      // Apply search filter with null checks
+      const matchesSearch = searchTerm === "" ||
+        order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Apply status filter (if not "all")
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      // Apply status filter (if not "all")
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
 
-    // Apply month filter
-    const matchesMonth = monthFilter === "all" || (() => {
-      const orderDate = new Date(order._createdAt);
-      const orderYear = orderDate.getFullYear();
-      const orderMonth = String(orderDate.getMonth() + 1).padStart(2, '0');
-      const filterValue = `${orderYear}-${orderMonth}`;
-      return filterValue === monthFilter;
-    })();
+      // Apply month filter
+      const matchesMonth = monthFilter === "all" || (() => {
+        const orderDate = new Date(order._createdAt);
+        const orderYear = orderDate.getFullYear();
+        const orderMonth = String(orderDate.getMonth() + 1).padStart(2, '0');
+        const filterValue = `${orderYear}-${orderMonth}`;
+        return filterValue === monthFilter;
+      })();
 
-    return matchesSearch && matchesStatus && matchesMonth;
-  });
+      return matchesSearch && matchesStatus && matchesMonth;
+    });
+  }, [orders, searchTerm, statusFilter, monthFilter]);
 
   // Calculate filtered statistics based on current filters
   const getFilteredStatistics = () => {
@@ -548,7 +459,7 @@ export function OrderManagementDashboard() {
           return sum + total;
         } catch (error) {
           // If anything goes wrong, just skip this order
-          console.warn('Error calculating order total:', error, order);
+          logger.warn('Error calculating order total', { error, order });
           return sum;
         }
       }, 0);
@@ -572,56 +483,72 @@ export function OrderManagementDashboard() {
 
   const filteredStats = getFilteredStatistics();
 
-  const sortedOrders = [...filteredOrders].sort((a, b) => {
-    let aValue: any;
-    let bValue: any;
+  // Memoize sorted orders for performance
+  const sortedOrders = useMemo(() => {
+    return [...filteredOrders].sort((a, b) => {
+      let aValue: SortableOrderValue;
+      let bValue: SortableOrderValue;
 
-    switch (sortField) {
-      case 'orderNumber':
-        aValue = a.orderNumber || '';
-        bValue = b.orderNumber || '';
-        break;
-      case 'customer':
-        aValue = a.customer?.name || '';
-        bValue = b.customer?.name || '';
-        break;
-      case 'status':
-        aValue = a.status || '';
-        bValue = b.status || '';
-        break;
-      case 'dateNeeded':
-        aValue = a.delivery?.dateNeeded ? new Date(a.delivery.dateNeeded) : null;
-        bValue = b.delivery?.dateNeeded ? new Date(b.delivery.dateNeeded) : null;
-        // Handle null values - put them at the end when sorting
-        if (!aValue && !bValue) return 0;
-        if (!aValue) return 1;
-        if (!bValue) return -1;
-        break;
-      case 'orderDate':
-        aValue = new Date(a._createdAt || 0);
-        bValue = new Date(b._createdAt || 0);
-        break;
-      case 'total':
-        aValue = a.pricing?.total || 0;
-        bValue = b.pricing?.total || 0;
-        break;
-      case '_createdAt':
-      default:
-        aValue = new Date(a._createdAt || 0);
-        bValue = new Date(b._createdAt || 0);
-        break;
-    }
+      switch (sortField) {
+        case 'orderNumber':
+          aValue = a.orderNumber || '';
+          bValue = b.orderNumber || '';
+          break;
+        case 'customer':
+          aValue = a.customer?.name || '';
+          bValue = b.customer?.name || '';
+          break;
+        case 'status':
+          aValue = a.status || '';
+          bValue = b.status || '';
+          break;
+        case 'dateNeeded':
+          aValue = a.delivery?.dateNeeded ? new Date(a.delivery.dateNeeded) : null;
+          bValue = b.delivery?.dateNeeded ? new Date(b.delivery.dateNeeded) : null;
+          // Handle null values - put them at the end when sorting
+          if (!aValue && !bValue) return 0;
+          if (!aValue) return 1;
+          if (!bValue) return -1;
+          break;
+        case 'orderDate':
+          aValue = new Date(a._createdAt || 0);
+          bValue = new Date(b._createdAt || 0);
+          break;
+        case 'total':
+          aValue = a.pricing?.total || 0;
+          bValue = b.pricing?.total || 0;
+          break;
+        case '_createdAt':
+        default:
+          aValue = new Date(a._createdAt || 0);
+          bValue = new Date(b._createdAt || 0);
+          break;
+      }
 
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc'
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
 
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+      if (aValue === null || bValue === null) {
+        if (aValue === null && bValue === null) return 0;
+        return aValue === null ? 1 : -1;
+      }
+
+      if (aValue instanceof Date && bValue instanceof Date) {
+        return sortDirection === 'asc'
+          ? aValue.getTime() - bValue.getTime()
+          : bValue.getTime() - aValue.getTime();
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+
+      return 0;
+    });
+  }, [filteredOrders, sortField, sortDirection]);
 
   // Paginate the sorted orders
   const paginatedOrders = sortedOrders.slice(
@@ -662,12 +589,12 @@ export function OrderManagementDashboard() {
     }));
   };
 
-  const handleImageClick = (imageAsset: any) => {
+  const handleImageClick = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string }) => {
     setSelectedImage(imageAsset);
     setImageViewerOpen(true);
   };
 
-  const getImageUrl = (imageAsset: any) => {
+  const getImageUrl = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string } | null | undefined) => {
     if (!imageAsset) {
       return '';
     }
@@ -677,7 +604,7 @@ export function OrderManagementDashboard() {
       const imageUrl = urlFor(imageAsset).width(400).height(400).url();
       return imageUrl;
     } catch (error) {
-      console.error('Error generating image URL:', error);
+      logger.error('Error generating image URL', error);
       return '';
     }
   };
@@ -724,7 +651,7 @@ export function OrderManagementDashboard() {
                 {monthFilter === 'all' ? 'Total Revenue' : 'Filtered Revenue'}
               </Typography>
               <Typography variant="h4" color="success.main">
-                £{filteredStats.totalRevenue.toFixed(2)}
+                £{(filteredStats?.totalRevenue || 0).toFixed(2)}
               </Typography>
               {monthFilter !== 'all' && (
                 <Typography variant="caption" color="text.secondary">
@@ -741,7 +668,7 @@ export function OrderManagementDashboard() {
                 Average Order Value
               </Typography>
               <Typography variant="h4" color="primary">
-                £{filteredStats.averageOrderValue.toFixed(2)}
+                £{(filteredStats?.averageOrderValue || 0).toFixed(2)}
               </Typography>
               {monthFilter !== 'all' && (
                 <Typography variant="caption" color="text.secondary">
@@ -832,14 +759,14 @@ export function OrderManagementDashboard() {
               <Typography variant="h4" color="primary">
                 £{monthFilter === 'all'
                   ? orders
-                      .filter(order => order && order.status !== 'cancelled')
-                      .reduce((sum, order) => {
-                        if (!order || !order.pricing) return sum;
-                        const total = order.pricing.total;
-                        return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
-                      }, 0)
-                      .toFixed(2)
-                  : filteredStats.totalRevenue.toFixed(2)
+                    .filter(order => order && order.status !== 'cancelled')
+                    .reduce((sum, order) => {
+                      if (!order || !order.pricing) return sum;
+                      const total = order.pricing.total;
+                      return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
+                    }, 0)
+                    .toFixed(2)
+                  : (filteredStats?.totalRevenue || 0).toFixed(2)
                 }
               </Typography>
               <Button
@@ -1061,26 +988,37 @@ export function OrderManagementDashboard() {
                     <TableCell>
                       <Chip
                         icon={getStatusIcon(order.status)}
-                        label={statusLabels[order.status as keyof typeof statusLabels]}
-                        color={statusColors[order.status as keyof typeof statusColors]}
+                        label={ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] || order.status}
+                        color={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS] || 'default'}
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
-                      {order.delivery?.dateNeeded ? (
-                        <>
-                          <Typography variant="body2">
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                        {order.delivery?.dateNeeded ? (
+                          <Typography variant="body2" fontWeight="medium">
                             {new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {order.delivery?.deliveryMethod ? order.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}
+                        ) : (
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                            Date not specified
                           </Typography>
-                        </>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          Not specified
+                        )}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            fontWeight: order.delivery?.deliveryMethod ? 500 : 400,
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {order.delivery?.deliveryMethod
+                            ? order.delivery.deliveryMethod
+                              .replace(/-/g, ' ')
+                              .replace(/\b\w/g, (char) => char.toUpperCase())
+                            : 'Delivery method not specified'}
                         </Typography>
-                      )}
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
@@ -1154,6 +1092,22 @@ export function OrderManagementDashboard() {
                 value={editForm.trackingNumber}
                 onChange={(e) => setEditForm({ ...editForm, trackingNumber: e.target.value })}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+                <DatePicker
+                  label="Date Needed"
+                  value={editForm.dateNeeded}
+                  onChange={(newValue) => setEditForm({ ...editForm, dateNeeded: newValue })}
+                  format="DD/MM/YYYY"
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "medium",
+                    },
+                  }}
+                />
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -1518,29 +1472,121 @@ export function OrderManagementDashboard() {
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Customer Information</Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Typography><strong>Name:</strong> {selectedOrder.customer.name}</Typography>
-                  <Typography><strong>Email:</strong> {selectedOrder.customer.email}</Typography>
-                  <Typography><strong>Phone:</strong> {selectedOrder.customer.phone}</Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Name:</strong> {selectedOrder.customer.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Email:</strong>{' '}
+                    <Typography
+                      component="a"
+                      href={`mailto:${selectedOrder.customer.email}`}
+                      sx={{
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {selectedOrder.customer.email}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Phone:</strong>{' '}
+                    <Typography
+                      component="a"
+                      href={`tel:${selectedOrder.customer.phone}`}
+                      sx={{
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {selectedOrder.customer.phone}
+                    </Typography>
+                  </Typography>
                   {selectedOrder.customer.address && (
-                    <Typography><strong>Address:</strong> {selectedOrder.customer.address}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Address:</strong> {selectedOrder.customer.address}
+                    </Typography>
                   )}
                   {selectedOrder.customer.city && (
-                    <Typography><strong>City:</strong> {selectedOrder.customer.city}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>City:</strong> {selectedOrder.customer.city}
+                    </Typography>
                   )}
                   {selectedOrder.customer.postcode && (
-                    <Typography><strong>Postcode:</strong> {selectedOrder.customer.postcode}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Postcode:</strong> {selectedOrder.customer.postcode}
+                    </Typography>
                   )}
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Order Items</Typography>
                 {selectedOrder.items.map((item, index) => (
                   <Box key={index} sx={{ mb: 2, p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography><strong>{item.productName}</strong></Typography>
-                    <Typography>Quantity: {item.quantity}</Typography>
-                    <Typography>Price: £{item.totalPrice}</Typography>
-                    {item.designType && (
-                      <Typography>Design: {item.designType}</Typography>
-                    )}
+                    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      {item.productName}
+                    </Typography>
+                    <Grid container spacing={1} sx={{ mt: 0.5 }}>
+                      {item.productType && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Product Type:</strong> {item.productType === 'cake' ? 'Cake' : item.productType === 'gift-hamper' ? 'Gift Hamper' : item.productType}
+                          </Typography>
+                        </Grid>
+                      )}
+                      <Grid item xs={6} sm={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Quantity:</strong> {item.quantity}
+                        </Typography>
+                      </Grid>
+                      {item.unitPrice != null && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Unit Price:</strong> £{(item.unitPrice || 0).toFixed(2)}
+                          </Typography>
+                        </Grid>
+                      )}
+                      <Grid item xs={6} sm={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Total Price:</strong> £{(item.totalPrice || 0).toFixed(2)}
+                        </Typography>
+                      </Grid>
+                      {item.size && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Size:</strong> {item.size}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.flavor && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Flavor:</strong> {item.flavor}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.designType && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Design:</strong> {item.designType === 'standard' ? 'Standard Design' : item.designType === 'individual' ? 'Individual Design' : item.designType}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.specialInstructions && (
+                        <Grid item xs={12}>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            <strong>Special Instructions:</strong>
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 0.5, p: 1, bgcolor: 'grey.50', borderRadius: 0.5, whiteSpace: 'pre-wrap' }}>
+                            {item.specialInstructions}
+                          </Typography>
+                        </Grid>
+                      )}
+                    </Grid>
 
                     {/* Display design images for individual designs */}
                     {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (() => {
@@ -1550,71 +1596,71 @@ export function OrderManagementDashboard() {
                             Design Reference Images:
                           </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {(() => {
-                            const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
-                            const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
+                            {(() => {
+                              const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
+                              const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
 
-                            if (allAttachments.length === 0) {
-                              return (
-                                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                                  No design images found. Messages: {selectedOrder.messages.length},
-                                  Messages with attachments: {messagesWithAttachments.length}
-                                </Typography>
-                              );
-                            }
+                              if (allAttachments.length === 0) {
+                                return (
+                                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                    No design images found. Messages: {selectedOrder.messages.length},
+                                    Messages with attachments: {messagesWithAttachments.length}
+                                  </Typography>
+                                );
+                              }
 
-                            return allAttachments.map((attachment, index) => {
-                              if (!attachment) return null;
-                              const imageUrl = getImageUrl(attachment.asset);
+                              return allAttachments.map((attachment, index) => {
+                                if (!attachment) return null;
+                                const imageUrl = getImageUrl(attachment.asset);
 
-                              return (
-                                <Box
-                                  key={index}
-                                  sx={{
-                                    position: 'relative',
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                      opacity: 0.8,
-                                    },
-                                  }}
-                                  onClick={() => handleImageClick(attachment.asset)}
-                                >
-                                  <CardMedia
-                                    component="img"
+                                return (
+                                  <Box
+                                    key={index}
                                     sx={{
-                                      width: 100,
-                                      height: 100,
-                                      objectFit: 'cover',
-                                      borderRadius: 1,
-                                      border: `2px solid ${designTokens.colors.border.light}`,
-                                    }}
-                                    image={imageUrl}
-                                    alt={attachment.alt || 'Design reference'}
-                                    onError={(e) => {
-                                      console.error('Failed to load design image:', e);
-                                    }}
-                                  />
-                                  <IconButton
-                                    size="small"
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 4,
-                                      right: 4,
-                                      bgcolor: 'rgba(0,0,0,0.5)',
-                                      color: 'white',
+                                      position: 'relative',
+                                      cursor: 'pointer',
                                       '&:hover': {
-                                        bgcolor: 'rgba(0,0,0,0.7)',
+                                        opacity: 0.8,
                                       },
                                     }}
+                                    onClick={() => handleImageClick(attachment.asset)}
                                   >
-                                    <ZoomIcon fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              );
-                            });
-                          })()}
+                                    <CardMedia
+                                      component="img"
+                                      sx={{
+                                        width: 100,
+                                        height: 100,
+                                        objectFit: 'cover',
+                                        borderRadius: 1,
+                                        border: `2px solid ${designTokens.colors.border.light}`,
+                                      }}
+                                      image={imageUrl}
+                                      alt={attachment.alt || 'Design reference'}
+                                      onError={(e) => {
+                                        logger.error('Failed to load design image', e);
+                                      }}
+                                    />
+                                    <IconButton
+                                      size="small"
+                                      sx={{
+                                        position: 'absolute',
+                                        top: 4,
+                                        right: 4,
+                                        bgcolor: 'rgba(0,0,0,0.5)',
+                                        color: 'white',
+                                        '&:hover': {
+                                          bgcolor: 'rgba(0,0,0,0.7)',
+                                        },
+                                      }}
+                                    >
+                                      <ZoomIcon fontSize="small" />
+                                    </IconButton>
+                                  </Box>
+                                );
+                              });
+                            })()}
+                          </Box>
                         </Box>
-                      </Box>
                       );
                     })()}
                   </Box>
@@ -1625,40 +1671,118 @@ export function OrderManagementDashboard() {
                 <Typography variant="h6" gutterBottom>Delivery Information</Typography>
                 <Box sx={{ mb: 2 }}>
                   {selectedOrder.delivery?.dateNeeded && (
-                    <Typography><strong>Date Needed:</strong> {new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Date Needed:</strong> {new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')}
+                    </Typography>
                   )}
-                  <Typography><strong>Method:</strong> {selectedOrder.delivery?.deliveryMethod ? selectedOrder.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}</Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Method:</strong> {selectedOrder.delivery?.deliveryMethod
+                      ? selectedOrder.delivery.deliveryMethod
+                        .replace('-', ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())
+                      : 'Not specified'}
+                  </Typography>
+                  {selectedOrder.delivery?.deliveryAddress && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Delivery Address:</strong>
+                    </Typography>
+                  )}
+                  {selectedOrder.delivery?.deliveryAddress && (
+                    <Typography variant="body2" sx={{ mb: 1, ml: 2, p: 1, bgcolor: 'grey.50', borderRadius: 0.5, whiteSpace: 'pre-wrap' }}>
+                      {selectedOrder.delivery.deliveryAddress}
+                    </Typography>
+                  )}
                   {selectedOrder.delivery?.trackingNumber && (
-                    <Typography><strong>Tracking:</strong> {selectedOrder.delivery.trackingNumber}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Tracking Number:</strong> {selectedOrder.delivery.trackingNumber}
+                    </Typography>
                   )}
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Pricing</Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Typography><strong>Total:</strong> £{selectedOrder.pricing?.total || 0}</Typography>
-                  <Typography><strong>Payment Status:</strong> {selectedOrder.pricing?.paymentStatus || 'pending'}</Typography>
+                  {selectedOrder.pricing?.subtotal != null && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Subtotal:</strong> £{(selectedOrder.pricing.subtotal || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  {selectedOrder.pricing?.deliveryFee != null && selectedOrder.pricing.deliveryFee > 0 && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Delivery Fee:</strong> £{(selectedOrder.pricing.deliveryFee || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  {selectedOrder.pricing?.discount != null && selectedOrder.pricing.discount > 0 && (
+                    <Typography variant="body2" sx={{ mb: 0.5, color: 'success.main' }}>
+                      <strong>Discount:</strong> -£{(selectedOrder.pricing.discount || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    <strong>Total:</strong> £{(selectedOrder.pricing?.total || 0).toFixed(2)}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Payment Status:</strong> {selectedOrder.pricing?.paymentStatus
+                      ? selectedOrder.pricing.paymentStatus.charAt(0).toUpperCase() + selectedOrder.pricing.paymentStatus.slice(1)
+                      : 'Pending'}
+                  </Typography>
                   {selectedOrder.pricing?.paymentMethod && (
-                    <Typography><strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod.replace('-', ' ')}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod
+                        .replace('-', ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    </Typography>
                   )}
                 </Box>
 
-                {selectedOrder.delivery.deliveryNotes && (
+                {selectedOrder.delivery?.deliveryNotes && (
                   <>
-                    <Typography variant="h6" gutterBottom>Additional Notes</Typography>
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-                      <Typography>{selectedOrder.delivery.deliveryNotes}</Typography>
+                    <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Delivery Notes</Typography>
+                    <Box sx={{ mb: 2, p: 1.5, bgcolor: 'grey.100', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
+                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {selectedOrder.delivery.deliveryNotes}
+                      </Typography>
                     </Box>
                   </>
                 )}
 
-                {selectedOrder.delivery.giftNote && (
-                  <>
-                    <Typography variant="h6" gutterBottom>Gift Note</Typography>
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-                      <Typography>{selectedOrder.delivery.giftNote}</Typography>
-                    </Box>
-                  </>
-                )}
+                {(() => {
+                  // Check both delivery.giftNote (new format) and metadata.giftNote (old format) for backwards compatibility
+                  const giftNote = selectedOrder.delivery?.giftNote || selectedOrder.metadata?.giftNote;
+                  if (giftNote) {
+                    return (
+                      <>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                          💝 Gift Note
+                        </Typography>
+                        <Box
+                          sx={{
+                            mb: 2,
+                            p: 2,
+                            bgcolor: 'primary.50',
+                            borderRadius: 1,
+                            border: '2px solid',
+                            borderColor: 'primary.main',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              whiteSpace: 'pre-wrap',
+                              fontStyle: 'italic',
+                              color: 'text.primary',
+                              lineHeight: 1.6
+                            }}
+                          >
+                            {giftNote}
+                          </Typography>
+                        </Box>
+                      </>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {/* Customer Messages Section */}
                 {selectedOrder.messages && selectedOrder.messages.length > 0 && (
@@ -1669,7 +1793,7 @@ export function OrderManagementDashboard() {
                         <Typography variant="body2" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
                           {message.message}
                         </Typography>
-                        
+
                         {/* Display message attachments if they exist */}
                         {message.attachments && message.attachments.length > 0 && (
                           <Box sx={{ mt: 1 }}>
@@ -1681,7 +1805,7 @@ export function OrderManagementDashboard() {
                                 .filter(attachment => attachment && attachment.asset)
                                 .map((attachment, imgIndex) => {
                                   const imageUrl = getImageUrl(attachment.asset);
-                                  
+
                                   return (
                                     <Box
                                       key={imgIndex}
@@ -1706,7 +1830,7 @@ export function OrderManagementDashboard() {
                                         image={imageUrl}
                                         alt={attachment.alt || 'Message attachment'}
                                         onError={(e) => {
-                                          console.error('Failed to load message image:', e);
+                                          logger.error('Failed to load message image', e);
                                         }}
                                       />
                                       <IconButton
@@ -1755,53 +1879,53 @@ export function OrderManagementDashboard() {
                                 .filter(image => image && image.asset)
                                 .map((image, imgIndex) => {
 
-                                const imageUrl = getImageUrl(image.asset);
+                                  const imageUrl = getImageUrl(image.asset);
 
-                                return (
-                                  <Box
-                                    key={imgIndex}
-                                    sx={{
-                                      position: 'relative',
-                                      cursor: 'pointer',
-                                      '&:hover': {
-                                        opacity: 0.8,
-                                      },
-                                    }}
-                                    onClick={() => handleImageClick(image.asset)}
-                                  >
-                                    <CardMedia
-                                      component="img"
+                                  return (
+                                    <Box
+                                      key={imgIndex}
                                       sx={{
-                                        width: 100,
-                                        height: 100,
-                                        objectFit: 'cover',
-                                        borderRadius: 1,
-                                        border: `2px solid ${designTokens.colors.border.light}`,
-                                      }}
-                                      image={imageUrl}
-                                      alt={image.alt || 'Note attachment'}
-                                      onError={(e) => {
-                                        console.error('Failed to load thumbnail image:', e);
-                                      }}
-                                    />
-                                    <IconButton
-                                      size="small"
-                                      sx={{
-                                        position: 'absolute',
-                                        top: 4,
-                                        right: 4,
-                                        bgcolor: 'rgba(0,0,0,0.5)',
-                                        color: 'white',
+                                        position: 'relative',
+                                        cursor: 'pointer',
                                         '&:hover': {
-                                          bgcolor: 'rgba(0,0,0,0.7)',
+                                          opacity: 0.8,
                                         },
                                       }}
+                                      onClick={() => handleImageClick(image.asset)}
                                     >
-                                      <ZoomIcon fontSize="small" />
-                                    </IconButton>
-                                  </Box>
-                                );
-                              })}
+                                      <CardMedia
+                                        component="img"
+                                        sx={{
+                                          width: 100,
+                                          height: 100,
+                                          objectFit: 'cover',
+                                          borderRadius: 1,
+                                          border: `2px solid ${designTokens.colors.border.light}`,
+                                        }}
+                                        image={imageUrl}
+                                        alt={image.alt || 'Note attachment'}
+                                        onError={(e) => {
+                                          logger.error('Failed to load thumbnail image', e);
+                                        }}
+                                      />
+                                      <IconButton
+                                        size="small"
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 4,
+                                          right: 4,
+                                          bgcolor: 'rgba(0,0,0,0.5)',
+                                          color: 'white',
+                                          '&:hover': {
+                                            bgcolor: 'rgba(0,0,0,0.7)',
+                                          },
+                                        }}
+                                      >
+                                        <ZoomIcon fontSize="small" />
+                                      </IconButton>
+                                    </Box>
+                                  );
+                                })}
                             </Box>
                           </Box>
                         )}
@@ -1831,7 +1955,6 @@ export function OrderManagementDashboard() {
         onClose={() => setAddOrderModalOpen(false)}
         onOrderCreated={() => {
           fetchOrders();
-          fetchMonthlyEarnings();
         }}
       />
 
@@ -1854,7 +1977,7 @@ export function OrderManagementDashboard() {
           {selectedImage && (
             <Box sx={{ textAlign: 'center' }}>
               <img
-                src={urlFor(selectedImage).width(800).height(600).url()}
+                src={urlFor(selectedImage).width(800).height(600).url() || ''}
                 alt="Note attachment"
                 style={{
                   maxWidth: '100%',
@@ -1863,7 +1986,7 @@ export function OrderManagementDashboard() {
                   borderRadius: '8px',
                 }}
                 onError={(e) => {
-                  console.error('Failed to load image in modal:', e);
+                  logger.error('Failed to load image in modal', e);
                 }}
               />
             </Box>
