@@ -49,6 +49,7 @@ next-env.d.ts
 
 # Sanity backups
 /backups/
+.backup-temp/
 *.tar.gz
 *.zip
 backup-*.json

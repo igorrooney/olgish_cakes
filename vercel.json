@@ -1,16 +1,6 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "crons": [
-    {
-      "path": "/api/publish-scheduled-posts",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/publish-scheduled-posts", 
-      "schedule": "0 18 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
