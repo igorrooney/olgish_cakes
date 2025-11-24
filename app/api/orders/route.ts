@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { serverClient } from "@/sanity/lib/client";
-import { Resend } from "resend";
 import { PHONE_UTILS } from "@/lib/constants";
-import { urlFor } from "@/sanity/lib/image";
-import { orderSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
 import { generateOrderNumber } from "@/lib/order-utils";
 import { withRateLimit } from "@/lib/rate-limit";
+import { formatValidationErrors, orderSchema, validateRequest } from "@/lib/validation";
+import { serverClient } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 
 // Type definitions for order items and attachments
 interface OrderItem {
@@ -154,8 +154,8 @@ async function handlePOST(request: NextRequest) {
         referrer: validatedOrderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
-                   request.headers.get('x-real-ip') ||
-                   'unknown',
+          request.headers.get('x-real-ip') ||
+          'unknown',
       },
     };
 
@@ -263,8 +263,8 @@ async function handlePOST(request: NextRequest) {
                           </h3>
 
                           ${(() => {
-                            if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: OrderItem) => `
+            if (orderData.items && orderData.items.length > 0) {
+              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                                   <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -274,8 +274,8 @@ async function handlePOST(request: NextRequest) {
                                   ${item.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${item.specialInstructions}</p>` : ''}
                                 </div>
                               `).join('');
-                            } else {
-                              return `
+            } else {
+              return `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
                                   <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${orderData.productName || 'Custom Order'}</h4>
                                   <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${orderData.totalPrice || orderData.unitPrice || 0}</p>
@@ -285,18 +285,18 @@ async function handlePOST(request: NextRequest) {
                                   ${orderData.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${orderData.specialInstructions}</p>` : ''}
                                 </div>
                               `;
-                            }
-                          })()}
+            }
+          })()}
                         </div>
 
                         <!-- Design Images Section -->
                         ${(() => {
-                          // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
-                          const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
+            // Check if any items have individual design and if there are attachments
+            const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
+            const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
-                          if (hasIndividualDesign && hasAttachments) {
-                            return `
+            if (hasIndividualDesign && hasAttachments) {
+              return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                                 <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
                                 <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
@@ -304,22 +304,22 @@ async function handlePOST(request: NextRequest) {
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                                   ${orderData.attachments.map((attachment: Attachment) => {
-                                    if (attachment.asset) {
-                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
-                                      return `
+                if (attachment.asset) {
+                  const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                  return `
                                         <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
                                           <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
                                         </div>
                                       `;
-                                    }
-                                    return '';
-                                  }).join('')}
+                }
+                return '';
+              }).join('')}
                                 </div>
                               </div>
                             `;
-                          }
-                          return '';
-                        })()}
+            }
+            return '';
+          })()}
 
                         <!-- Delivery Information -->
                         ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
@@ -387,7 +387,7 @@ async function handlePOST(request: NextRequest) {
           </html>
         `,
       });
-      
+
       if (customerEmailResult.error) {
         if (process.env.NODE_ENV !== 'production') {
           console.error('❌ Orders API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
@@ -546,8 +546,8 @@ async function handlePOST(request: NextRequest) {
                           </h3>
 
                           ${(() => {
-                            if (orderData.items && orderData.items.length > 0) {
-                              return orderData.items.map((item: OrderItem) => `
+            if (orderData.items && orderData.items.length > 0) {
+              return orderData.items.map((item: OrderItem) => `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
                                   <h4 style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                                   <p style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -559,8 +559,8 @@ async function handlePOST(request: NextRequest) {
                                   ${item.specialInstructions ? `<p style="margin: 6px 0 0 0; color: #374151; font-size: 13px; font-style: italic;"><strong>Special Instructions:</strong> ${item.specialInstructions}</p>` : ''}
                                 </div>
                               `).join('');
-                            } else {
-                              return `
+            } else {
+              return `
                                 <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;">
                                   <h4 style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 600;">${orderData.productName || 'Custom Order'}</h4>
                                   <p style="margin: 0 0 6px 0; color: #1f2937; font-size: 15px; font-weight: 700;">£${orderData.totalPrice || orderData.unitPrice || 0}</p>
@@ -572,18 +572,18 @@ async function handlePOST(request: NextRequest) {
                                   ${orderData.specialInstructions ? `<p style="margin: 6px 0 0 0; color: #374151; font-size: 13px; font-style: italic;"><strong>Special Instructions:</strong> ${orderData.specialInstructions}</p>` : ''}
                                 </div>
                               `;
-                            }
-                          })()}
+            }
+          })()}
                         </div>
 
                         <!-- Design Images Section -->
                         ${(() => {
-                          // Check if any items have individual design and if there are attachments
-                          const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
-                          const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
+            // Check if any items have individual design and if there are attachments
+            const hasIndividualDesign = orderData.items?.some((item: OrderItem) => item.designType === 'individual') || orderData.designType === 'individual';
+            const hasAttachments = orderData.attachments && orderData.attachments.length > 0;
 
-                          if (hasIndividualDesign && hasAttachments) {
-                            return `
+            if (hasIndividualDesign && hasAttachments) {
+              return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                                 <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
                                 <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
@@ -591,22 +591,22 @@ async function handlePOST(request: NextRequest) {
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                                   ${orderData.attachments.map((attachment: Attachment) => {
-                                    if (attachment.asset) {
-                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
-                                      return `
+                if (attachment.asset) {
+                  const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                  return `
                                         <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
                                           <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
                                         </div>
                                       `;
-                                    }
-                                    return '';
-                                  }).join('')}
+                }
+                return '';
+              }).join('')}
                                 </div>
                               </div>
                             `;
-                          }
-                          return '';
-                        })()}
+            }
+            return '';
+          })()}
 
                         <!-- Delivery Information -->
                         ${validatedOrderData.deliveryMethod !== 'collection' && validatedOrderData.deliveryAddress ? `
@@ -664,7 +664,7 @@ async function handlePOST(request: NextRequest) {
           </html>
         `,
       });
-      
+
       if (adminEmailResult.error) {
         if (process.env.NODE_ENV !== 'production') {
           console.error('❌ Orders API: Admin email error:', JSON.stringify(adminEmailResult.error, null, 2));
@@ -700,15 +700,15 @@ async function handlePOST(request: NextRequest) {
         name: error instanceof Error ? error.name : undefined
       });
     }
-    
+
     // Sanitize error message in production
     const errorMessage = process.env.NODE_ENV === 'production'
       ? 'Failed to create order'
       : (error instanceof Error ? error.message : 'Unknown error');
-    
+
     return NextResponse.json(
-      { 
-        error: 'Failed to create order', 
+      {
+        error: 'Failed to create order',
         details: errorMessage,
         timestamp: new Date().toISOString()
       },
@@ -733,7 +733,7 @@ export async function GET(request: NextRequest) {
 
     // Security: Validate status to prevent GROQ injection
     const validStatuses = ['new', 'pending', 'confirmed', 'in-progress', 'completed', 'cancelled', 'refunded'];
-    
+
     let query = `*[_type == "order"] | order(_createdAt desc)`;
     let params = {};
 
@@ -751,13 +751,28 @@ export async function GET(request: NextRequest) {
     const orders = await serverClient.fetch(`${query}[${offset}...${offset + limit}]{
       _id,
       _createdAt,
+      _updatedAt,
       orderNumber,
       status,
       orderType,
       customer,
       items,
-      delivery,
-      pricing,
+      delivery{
+        dateNeeded,
+        deliveryMethod,
+        deliveryAddress,
+        trackingNumber,
+        deliveryNotes,
+        giftNote
+      },
+      pricing{
+        subtotal,
+        deliveryFee,
+        discount,
+        total,
+        paymentStatus,
+        paymentMethod
+      },
       messages[]{
         message,
         attachments[]{
@@ -783,7 +798,8 @@ export async function GET(request: NextRequest) {
           alt,
           caption
         }
-      }
+      },
+      metadata
     }`, params);
 
     const totalCount = await serverClient.fetch(

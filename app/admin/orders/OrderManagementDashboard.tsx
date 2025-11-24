@@ -1,65 +1,71 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { designTokens } from "@/lib/design-system";
+import { urlFor } from "@/sanity/lib/image";
 import {
+  Add as AddIcon,
+  Cancel as CancelledIcon,
+  Close as CloseIcon,
+  CheckCircle as CompletedIcon,
+  Edit as EditIcon,
+  Image as ImageIcon,
+  Refresh as RefreshIcon,
+  Search as SearchIcon,
+  LocalShipping as ShippingIcon,
+  CloudUpload as UploadIcon,
+  Visibility as ViewIcon,
+  ZoomIn as ZoomIcon
+} from "@mui/icons-material";
+import {
+  Alert,
+  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
-  Typography,
+  CardMedia,
   Chip,
-  Button,
+  CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  TextField,
+  DialogContent,
+  DialogTitle,
+  Divider,
   FormControl,
+  Grid,
+  IconButton,
   InputLabel,
-  Select,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemSecondaryAction,
+  ListItemText,
   MenuItem,
+  Select,
+  Snackbar,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TableSortLabel,
-  TablePagination,
-  IconButton,
-  Alert,
-  Snackbar,
-  Grid,
-  Stack,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
-  Divider,
+  TextField,
   Tooltip,
-  CardMedia,
-  CircularProgress,
+  Typography,
 } from "@mui/material";
-import {
-  Edit as EditIcon,
-  Visibility as ViewIcon,
-  LocalShipping as ShippingIcon,
-  CheckCircle as CompletedIcon,
-  Cancel as CancelledIcon,
-  Refresh as RefreshIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  Add as AddIcon,
-  CloudUpload as UploadIcon,
-  Image as ImageIcon,
-  ZoomIn as ZoomIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { type Dayjs } from "dayjs";
+import "dayjs/locale/en-gb";
+import { useCallback, useEffect, useState } from "react";
 import { AddOrderModal } from "./AddOrderModal";
-import { projectId, dataset } from "@/sanity/env";
-import { urlFor } from "@/sanity/lib/image";
-import { designTokens } from "@/lib/design-system";
+
+// Set British locale for date formatting
+dayjs.locale("en-gb");
 
 interface Order {
   _id: string;
@@ -77,21 +83,29 @@ interface Order {
     postcode?: string;
   };
   items: Array<{
+    productType?: string;
     productId?: string;
     productName: string;
     quantity: number;
+    unitPrice?: number;
     totalPrice: number;
     size?: string;
+    flavor?: string;
     designType?: string;
+    specialInstructions?: string;
   }>;
   delivery: {
-    dateNeeded: string;
+    dateNeeded?: string;
     deliveryMethod: string;
+    deliveryAddress?: string;
     trackingNumber?: string;
     deliveryNotes?: string;
     giftNote?: string;
   };
   pricing: {
+    subtotal?: number;
+    deliveryFee?: number;
+    discount?: number;
     total: number;
     paymentStatus: string;
     paymentMethod?: string;
@@ -124,6 +138,10 @@ interface Order {
       caption?: string;
     }>;
   }>;
+  metadata?: {
+    giftNote?: string;
+    [key: string]: unknown;
+  };
 }
 
 const statusColors = {
@@ -205,6 +223,7 @@ export function OrderManagementDashboard() {
     paymentStatus: '',
     paymentMethod: '',
     deliveryMethod: '',
+    dateNeeded: null as Dayjs | null,
     note: '',
     images: [] as File[],
     // Customer information fields
@@ -339,10 +358,10 @@ export function OrderManagementDashboard() {
   const handleCakeSelection = (cakeId: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === cakeId);
     if (selectedCake) {
-      const newPrice = editForm.selectedDesignType === 'individual' 
-        ? selectedCake.pricing.individual 
+      const newPrice = editForm.selectedDesignType === 'individual'
+        ? selectedCake.pricing.individual
         : selectedCake.pricing.standard;
-      
+
       setEditForm({
         ...editForm,
         selectedCakeId: cakeId,
@@ -357,10 +376,10 @@ export function OrderManagementDashboard() {
   const handleDesignTypeChange = (designType: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === editForm.selectedCakeId);
     if (selectedCake) {
-      const newPrice = designType === 'individual' 
-        ? selectedCake.pricing.individual 
+      const newPrice = designType === 'individual'
+        ? selectedCake.pricing.individual
         : selectedCake.pricing.standard;
-      
+
       setEditForm({
         ...editForm,
         selectedDesignType: designType,
@@ -378,12 +397,18 @@ export function OrderManagementDashboard() {
   const handleEditOrder = (order: Order) => {
     setSelectedOrder(order);
     const firstItem = order.items[0];
+    // Parse dateNeeded if it exists
+    const dateNeeded = order.delivery?.dateNeeded
+      ? dayjs(order.delivery.dateNeeded)
+      : null;
+
     setEditForm({
       status: order.status,
       trackingNumber: order.delivery?.trackingNumber || '',
       paymentStatus: order.pricing?.paymentStatus || 'pending',
       paymentMethod: order.pricing?.paymentMethod || '',
       deliveryMethod: order.delivery?.deliveryMethod || 'collection',
+      dateNeeded,
       note: '',
       images: [],
       // Populate customer information
@@ -464,6 +489,12 @@ export function OrderManagementDashboard() {
       formData.append('status', editForm.status);
       formData.append('trackingNumber', editForm.trackingNumber);
       formData.append('deliveryMethod', editForm.deliveryMethod);
+      // Format dateNeeded as YYYY-MM-DD for API (ISO format)
+      if (editForm.dateNeeded) {
+        formData.append('dateNeeded', editForm.dateNeeded.format('YYYY-MM-DD'));
+      } else {
+        formData.append('dateNeeded', '');
+      }
       formData.append('paymentStatus', editForm.paymentStatus);
       formData.append('paymentMethod', editForm.paymentMethod);
       formData.append('note', editForm.note);
@@ -724,7 +755,7 @@ export function OrderManagementDashboard() {
                 {monthFilter === 'all' ? 'Total Revenue' : 'Filtered Revenue'}
               </Typography>
               <Typography variant="h4" color="success.main">
-                £{filteredStats.totalRevenue.toFixed(2)}
+                £{(filteredStats?.totalRevenue || 0).toFixed(2)}
               </Typography>
               {monthFilter !== 'all' && (
                 <Typography variant="caption" color="text.secondary">
@@ -741,7 +772,7 @@ export function OrderManagementDashboard() {
                 Average Order Value
               </Typography>
               <Typography variant="h4" color="primary">
-                £{filteredStats.averageOrderValue.toFixed(2)}
+                £{(filteredStats?.averageOrderValue || 0).toFixed(2)}
               </Typography>
               {monthFilter !== 'all' && (
                 <Typography variant="caption" color="text.secondary">
@@ -832,14 +863,14 @@ export function OrderManagementDashboard() {
               <Typography variant="h4" color="primary">
                 £{monthFilter === 'all'
                   ? orders
-                      .filter(order => order && order.status !== 'cancelled')
-                      .reduce((sum, order) => {
-                        if (!order || !order.pricing) return sum;
-                        const total = order.pricing.total;
-                        return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
-                      }, 0)
-                      .toFixed(2)
-                  : filteredStats.totalRevenue.toFixed(2)
+                    .filter(order => order && order.status !== 'cancelled')
+                    .reduce((sum, order) => {
+                      if (!order || !order.pricing) return sum;
+                      const total = order.pricing.total;
+                      return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
+                    }, 0)
+                    .toFixed(2)
+                  : (filteredStats?.totalRevenue || 0).toFixed(2)
                 }
               </Typography>
               <Button
@@ -1067,20 +1098,31 @@ export function OrderManagementDashboard() {
                       />
                     </TableCell>
                     <TableCell>
-                      {order.delivery?.dateNeeded ? (
-                        <>
-                          <Typography variant="body2">
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                        {order.delivery?.dateNeeded ? (
+                          <Typography variant="body2" fontWeight="medium">
                             {new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {order.delivery?.deliveryMethod ? order.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}
+                        ) : (
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                            Date not specified
                           </Typography>
-                        </>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          Not specified
+                        )}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            fontWeight: order.delivery?.deliveryMethod ? 500 : 400,
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {order.delivery?.deliveryMethod
+                            ? order.delivery.deliveryMethod
+                              .replace(/-/g, ' ')
+                              .replace(/\b\w/g, (char) => char.toUpperCase())
+                            : 'Delivery method not specified'}
                         </Typography>
-                      )}
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
@@ -1154,6 +1196,22 @@ export function OrderManagementDashboard() {
                 value={editForm.trackingNumber}
                 onChange={(e) => setEditForm({ ...editForm, trackingNumber: e.target.value })}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+                <DatePicker
+                  label="Date Needed"
+                  value={editForm.dateNeeded}
+                  onChange={(newValue) => setEditForm({ ...editForm, dateNeeded: newValue })}
+                  format="DD/MM/YYYY"
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      size: "medium",
+                    },
+                  }}
+                />
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -1518,29 +1576,121 @@ export function OrderManagementDashboard() {
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Customer Information</Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Typography><strong>Name:</strong> {selectedOrder.customer.name}</Typography>
-                  <Typography><strong>Email:</strong> {selectedOrder.customer.email}</Typography>
-                  <Typography><strong>Phone:</strong> {selectedOrder.customer.phone}</Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Name:</strong> {selectedOrder.customer.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Email:</strong>{' '}
+                    <Typography
+                      component="a"
+                      href={`mailto:${selectedOrder.customer.email}`}
+                      sx={{
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {selectedOrder.customer.email}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Phone:</strong>{' '}
+                    <Typography
+                      component="a"
+                      href={`tel:${selectedOrder.customer.phone}`}
+                      sx={{
+                        color: 'primary.main',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {selectedOrder.customer.phone}
+                    </Typography>
+                  </Typography>
                   {selectedOrder.customer.address && (
-                    <Typography><strong>Address:</strong> {selectedOrder.customer.address}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Address:</strong> {selectedOrder.customer.address}
+                    </Typography>
                   )}
                   {selectedOrder.customer.city && (
-                    <Typography><strong>City:</strong> {selectedOrder.customer.city}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>City:</strong> {selectedOrder.customer.city}
+                    </Typography>
                   )}
                   {selectedOrder.customer.postcode && (
-                    <Typography><strong>Postcode:</strong> {selectedOrder.customer.postcode}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Postcode:</strong> {selectedOrder.customer.postcode}
+                    </Typography>
                   )}
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Order Items</Typography>
                 {selectedOrder.items.map((item, index) => (
                   <Box key={index} sx={{ mb: 2, p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
-                    <Typography><strong>{item.productName}</strong></Typography>
-                    <Typography>Quantity: {item.quantity}</Typography>
-                    <Typography>Price: £{item.totalPrice}</Typography>
-                    {item.designType && (
-                      <Typography>Design: {item.designType}</Typography>
-                    )}
+                    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                      {item.productName}
+                    </Typography>
+                    <Grid container spacing={1} sx={{ mt: 0.5 }}>
+                      {item.productType && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Product Type:</strong> {item.productType === 'cake' ? 'Cake' : item.productType === 'gift-hamper' ? 'Gift Hamper' : item.productType}
+                          </Typography>
+                        </Grid>
+                      )}
+                      <Grid item xs={6} sm={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Quantity:</strong> {item.quantity}
+                        </Typography>
+                      </Grid>
+                      {item.unitPrice != null && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Unit Price:</strong> £{(item.unitPrice || 0).toFixed(2)}
+                          </Typography>
+                        </Grid>
+                      )}
+                      <Grid item xs={6} sm={4}>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Total Price:</strong> £{(item.totalPrice || 0).toFixed(2)}
+                        </Typography>
+                      </Grid>
+                      {item.size && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Size:</strong> {item.size}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.flavor && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Flavor:</strong> {item.flavor}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.designType && (
+                        <Grid item xs={6} sm={4}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Design:</strong> {item.designType === 'standard' ? 'Standard Design' : item.designType === 'individual' ? 'Individual Design' : item.designType}
+                          </Typography>
+                        </Grid>
+                      )}
+                      {item.specialInstructions && (
+                        <Grid item xs={12}>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            <strong>Special Instructions:</strong>
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 0.5, p: 1, bgcolor: 'grey.50', borderRadius: 0.5, whiteSpace: 'pre-wrap' }}>
+                            {item.specialInstructions}
+                          </Typography>
+                        </Grid>
+                      )}
+                    </Grid>
 
                     {/* Display design images for individual designs */}
                     {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (() => {
@@ -1550,71 +1700,71 @@ export function OrderManagementDashboard() {
                             Design Reference Images:
                           </Typography>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {(() => {
-                            const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
-                            const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
+                            {(() => {
+                              const messagesWithAttachments = selectedOrder.messages.filter(message => message.attachments && message.attachments.length > 0);
+                              const allAttachments = messagesWithAttachments.flatMap(message => message.attachments).filter(attachment => attachment && attachment.asset);
 
-                            if (allAttachments.length === 0) {
-                              return (
-                                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                                  No design images found. Messages: {selectedOrder.messages.length},
-                                  Messages with attachments: {messagesWithAttachments.length}
-                                </Typography>
-                              );
-                            }
+                              if (allAttachments.length === 0) {
+                                return (
+                                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                    No design images found. Messages: {selectedOrder.messages.length},
+                                    Messages with attachments: {messagesWithAttachments.length}
+                                  </Typography>
+                                );
+                              }
 
-                            return allAttachments.map((attachment, index) => {
-                              if (!attachment) return null;
-                              const imageUrl = getImageUrl(attachment.asset);
+                              return allAttachments.map((attachment, index) => {
+                                if (!attachment) return null;
+                                const imageUrl = getImageUrl(attachment.asset);
 
-                              return (
-                                <Box
-                                  key={index}
-                                  sx={{
-                                    position: 'relative',
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                      opacity: 0.8,
-                                    },
-                                  }}
-                                  onClick={() => handleImageClick(attachment.asset)}
-                                >
-                                  <CardMedia
-                                    component="img"
+                                return (
+                                  <Box
+                                    key={index}
                                     sx={{
-                                      width: 100,
-                                      height: 100,
-                                      objectFit: 'cover',
-                                      borderRadius: 1,
-                                      border: `2px solid ${designTokens.colors.border.light}`,
-                                    }}
-                                    image={imageUrl}
-                                    alt={attachment.alt || 'Design reference'}
-                                    onError={(e) => {
-                                      console.error('Failed to load design image:', e);
-                                    }}
-                                  />
-                                  <IconButton
-                                    size="small"
-                                    sx={{
-                                      position: 'absolute',
-                                      top: 4,
-                                      right: 4,
-                                      bgcolor: 'rgba(0,0,0,0.5)',
-                                      color: 'white',
+                                      position: 'relative',
+                                      cursor: 'pointer',
                                       '&:hover': {
-                                        bgcolor: 'rgba(0,0,0,0.7)',
+                                        opacity: 0.8,
                                       },
                                     }}
+                                    onClick={() => handleImageClick(attachment.asset)}
                                   >
-                                    <ZoomIcon fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              );
-                            });
-                          })()}
+                                    <CardMedia
+                                      component="img"
+                                      sx={{
+                                        width: 100,
+                                        height: 100,
+                                        objectFit: 'cover',
+                                        borderRadius: 1,
+                                        border: `2px solid ${designTokens.colors.border.light}`,
+                                      }}
+                                      image={imageUrl}
+                                      alt={attachment.alt || 'Design reference'}
+                                      onError={(e) => {
+                                        console.error('Failed to load design image:', e);
+                                      }}
+                                    />
+                                    <IconButton
+                                      size="small"
+                                      sx={{
+                                        position: 'absolute',
+                                        top: 4,
+                                        right: 4,
+                                        bgcolor: 'rgba(0,0,0,0.5)',
+                                        color: 'white',
+                                        '&:hover': {
+                                          bgcolor: 'rgba(0,0,0,0.7)',
+                                        },
+                                      }}
+                                    >
+                                      <ZoomIcon fontSize="small" />
+                                    </IconButton>
+                                  </Box>
+                                );
+                              });
+                            })()}
+                          </Box>
                         </Box>
-                      </Box>
                       );
                     })()}
                   </Box>
@@ -1625,40 +1775,118 @@ export function OrderManagementDashboard() {
                 <Typography variant="h6" gutterBottom>Delivery Information</Typography>
                 <Box sx={{ mb: 2 }}>
                   {selectedOrder.delivery?.dateNeeded && (
-                    <Typography><strong>Date Needed:</strong> {new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Date Needed:</strong> {new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')}
+                    </Typography>
                   )}
-                  <Typography><strong>Method:</strong> {selectedOrder.delivery?.deliveryMethod ? selectedOrder.delivery.deliveryMethod.replace('-', ' ') : 'Not specified'}</Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Method:</strong> {selectedOrder.delivery?.deliveryMethod
+                      ? selectedOrder.delivery.deliveryMethod
+                        .replace('-', ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())
+                      : 'Not specified'}
+                  </Typography>
+                  {selectedOrder.delivery?.deliveryAddress && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Delivery Address:</strong>
+                    </Typography>
+                  )}
+                  {selectedOrder.delivery?.deliveryAddress && (
+                    <Typography variant="body2" sx={{ mb: 1, ml: 2, p: 1, bgcolor: 'grey.50', borderRadius: 0.5, whiteSpace: 'pre-wrap' }}>
+                      {selectedOrder.delivery.deliveryAddress}
+                    </Typography>
+                  )}
                   {selectedOrder.delivery?.trackingNumber && (
-                    <Typography><strong>Tracking:</strong> {selectedOrder.delivery.trackingNumber}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Tracking Number:</strong> {selectedOrder.delivery.trackingNumber}
+                    </Typography>
                   )}
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Pricing</Typography>
                 <Box sx={{ mb: 2 }}>
-                  <Typography><strong>Total:</strong> £{selectedOrder.pricing?.total || 0}</Typography>
-                  <Typography><strong>Payment Status:</strong> {selectedOrder.pricing?.paymentStatus || 'pending'}</Typography>
+                  {selectedOrder.pricing?.subtotal != null && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Subtotal:</strong> £{(selectedOrder.pricing.subtotal || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  {selectedOrder.pricing?.deliveryFee != null && selectedOrder.pricing.deliveryFee > 0 && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Delivery Fee:</strong> £{(selectedOrder.pricing.deliveryFee || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  {selectedOrder.pricing?.discount != null && selectedOrder.pricing.discount > 0 && (
+                    <Typography variant="body2" sx={{ mb: 0.5, color: 'success.main' }}>
+                      <strong>Discount:</strong> -£{(selectedOrder.pricing.discount || 0).toFixed(2)}
+                    </Typography>
+                  )}
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    <strong>Total:</strong> £{(selectedOrder.pricing?.total || 0).toFixed(2)}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Payment Status:</strong> {selectedOrder.pricing?.paymentStatus
+                      ? selectedOrder.pricing.paymentStatus.charAt(0).toUpperCase() + selectedOrder.pricing.paymentStatus.slice(1)
+                      : 'Pending'}
+                  </Typography>
                   {selectedOrder.pricing?.paymentMethod && (
-                    <Typography><strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod.replace('-', ' ')}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Payment Method:</strong> {selectedOrder.pricing.paymentMethod
+                        .replace('-', ' ')
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    </Typography>
                   )}
                 </Box>
 
-                {selectedOrder.delivery.deliveryNotes && (
+                {selectedOrder.delivery?.deliveryNotes && (
                   <>
-                    <Typography variant="h6" gutterBottom>Additional Notes</Typography>
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-                      <Typography>{selectedOrder.delivery.deliveryNotes}</Typography>
+                    <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Delivery Notes</Typography>
+                    <Box sx={{ mb: 2, p: 1.5, bgcolor: 'grey.100', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
+                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {selectedOrder.delivery.deliveryNotes}
+                      </Typography>
                     </Box>
                   </>
                 )}
 
-                {selectedOrder.delivery.giftNote && (
-                  <>
-                    <Typography variant="h6" gutterBottom>Gift Note</Typography>
-                    <Box sx={{ mb: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
-                      <Typography>{selectedOrder.delivery.giftNote}</Typography>
-                    </Box>
-                  </>
-                )}
+                {(() => {
+                  // Check both delivery.giftNote (new format) and metadata.giftNote (old format) for backwards compatibility
+                  const giftNote = selectedOrder.delivery?.giftNote || (selectedOrder as any).metadata?.giftNote;
+                  if (giftNote) {
+                    return (
+                      <>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                          💝 Gift Note
+                        </Typography>
+                        <Box
+                          sx={{
+                            mb: 2,
+                            p: 2,
+                            bgcolor: 'primary.50',
+                            borderRadius: 1,
+                            border: '2px solid',
+                            borderColor: 'primary.main',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              whiteSpace: 'pre-wrap',
+                              fontStyle: 'italic',
+                              color: 'text.primary',
+                              lineHeight: 1.6
+                            }}
+                          >
+                            {giftNote}
+                          </Typography>
+                        </Box>
+                      </>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {/* Customer Messages Section */}
                 {selectedOrder.messages && selectedOrder.messages.length > 0 && (
@@ -1669,7 +1897,7 @@ export function OrderManagementDashboard() {
                         <Typography variant="body2" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
                           {message.message}
                         </Typography>
-                        
+
                         {/* Display message attachments if they exist */}
                         {message.attachments && message.attachments.length > 0 && (
                           <Box sx={{ mt: 1 }}>
@@ -1681,7 +1909,7 @@ export function OrderManagementDashboard() {
                                 .filter(attachment => attachment && attachment.asset)
                                 .map((attachment, imgIndex) => {
                                   const imageUrl = getImageUrl(attachment.asset);
-                                  
+
                                   return (
                                     <Box
                                       key={imgIndex}
@@ -1755,53 +1983,53 @@ export function OrderManagementDashboard() {
                                 .filter(image => image && image.asset)
                                 .map((image, imgIndex) => {
 
-                                const imageUrl = getImageUrl(image.asset);
+                                  const imageUrl = getImageUrl(image.asset);
 
-                                return (
-                                  <Box
-                                    key={imgIndex}
-                                    sx={{
-                                      position: 'relative',
-                                      cursor: 'pointer',
-                                      '&:hover': {
-                                        opacity: 0.8,
-                                      },
-                                    }}
-                                    onClick={() => handleImageClick(image.asset)}
-                                  >
-                                    <CardMedia
-                                      component="img"
+                                  return (
+                                    <Box
+                                      key={imgIndex}
                                       sx={{
-                                        width: 100,
-                                        height: 100,
-                                        objectFit: 'cover',
-                                        borderRadius: 1,
-                                        border: `2px solid ${designTokens.colors.border.light}`,
-                                      }}
-                                      image={imageUrl}
-                                      alt={image.alt || 'Note attachment'}
-                                      onError={(e) => {
-                                        console.error('Failed to load thumbnail image:', e);
-                                      }}
-                                    />
-                                    <IconButton
-                                      size="small"
-                                      sx={{
-                                        position: 'absolute',
-                                        top: 4,
-                                        right: 4,
-                                        bgcolor: 'rgba(0,0,0,0.5)',
-                                        color: 'white',
+                                        position: 'relative',
+                                        cursor: 'pointer',
                                         '&:hover': {
-                                          bgcolor: 'rgba(0,0,0,0.7)',
+                                          opacity: 0.8,
                                         },
                                       }}
+                                      onClick={() => handleImageClick(image.asset)}
                                     >
-                                      <ZoomIcon fontSize="small" />
-                                    </IconButton>
-                                  </Box>
-                                );
-                              })}
+                                      <CardMedia
+                                        component="img"
+                                        sx={{
+                                          width: 100,
+                                          height: 100,
+                                          objectFit: 'cover',
+                                          borderRadius: 1,
+                                          border: `2px solid ${designTokens.colors.border.light}`,
+                                        }}
+                                        image={imageUrl}
+                                        alt={image.alt || 'Note attachment'}
+                                        onError={(e) => {
+                                          console.error('Failed to load thumbnail image:', e);
+                                        }}
+                                      />
+                                      <IconButton
+                                        size="small"
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 4,
+                                          right: 4,
+                                          bgcolor: 'rgba(0,0,0,0.5)',
+                                          color: 'white',
+                                          '&:hover': {
+                                            bgcolor: 'rgba(0,0,0,0.7)',
+                                          },
+                                        }}
+                                      >
+                                        <ZoomIcon fontSize="small" />
+                                      </IconButton>
+                                    </Box>
+                                  );
+                                })}
                             </Box>
                           </Box>
                         )}

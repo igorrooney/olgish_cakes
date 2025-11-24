@@ -1,10 +1,10 @@
+import { PHONE_UTILS } from "@/lib/constants";
+import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
+import { withRateLimit } from "@/lib/rate-limit";
+import { contactFormSchema, formatValidationErrors, validateRequest } from "@/lib/validation";
+import { serverClient } from "@/sanity/lib/client";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { serverClient } from "@/sanity/lib/client";
-import { contactFormSchema, validateRequest, formatValidationErrors } from "@/lib/validation";
-import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
-import { PHONE_UTILS } from "@/lib/constants";
-import { withRateLimit } from "@/lib/rate-limit";
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
 async function handlePOST(request: NextRequest) {
@@ -98,11 +98,11 @@ async function handlePOST(request: NextRequest) {
       dateNeededDisplay ||
       (dateNeeded
         ? new Date(dateNeeded).toLocaleDateString("en-GB", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
         : null);
 
     const emailContent = `
@@ -135,15 +135,14 @@ GIFT NOTE
 ${formData.get("giftNote")}
 ` : ""}
 
-${
-  designImage
-    ? `
+${designImage
+        ? `
 ATTACHMENTS
 ───────────
 • Design Reference Image: ${designImage.name}
 `
-    : ""
-}
+        : ""
+      }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Best regards,
@@ -248,8 +247,7 @@ Olgish Cakes
     </div>
     ` : ""}
 
-    ${
-      designImage
+    ${designImage
         ? `
     <div class="section">
       <div class="section-title">Design Reference</div>
@@ -257,7 +255,7 @@ Olgish Cakes
     </div>
     `
         : ""
-    }
+      }
   </div>
 
   <div class="footer">
@@ -282,11 +280,11 @@ Olgish Cakes
         text: emailContent, // Fallback plain text version
         attachments: designImage
           ? [
-              {
-                filename: designImage.name,
-                content: Buffer.from(imageBuffer!),
-              },
-            ]
+            {
+              filename: designImage.name,
+              content: Buffer.from(imageBuffer!),
+            },
+          ]
           : [],
       });
     } else {
@@ -305,7 +303,7 @@ Olgish Cakes
     if (isOrderInquiry) {
       let orderCreated = false;
       let orderError = null;
-      
+
       try {
         // Upload design image to Sanity and pass image reference in attachments
         interface SanityImageReference {
@@ -347,7 +345,7 @@ Olgish Cakes
             // Continue without image attachment - don't fail the entire order
           }
         }
-        
+
         const orderData = {
           name,
           email,
@@ -381,11 +379,12 @@ Olgish Cakes
         // Create order directly in Sanity (no internal HTTP call)
         // Generate unique numeric order number
         const orderNumber = generateOrderNumber()
-        
+
         const orderDoc = {
           _type: 'order',
           orderNumber,
           status: 'new',
+          orderType: orderData.orderType || 'custom-quote',
           customer: {
             name: orderData.name,
             email: orderData.email,
@@ -410,29 +409,31 @@ Olgish Cakes
             },
           ],
           delivery: {
-            method: orderData.deliveryMethod,
-            address: orderData.deliveryAddress,
-            notes: orderData.deliveryNotes,
+            dateNeeded: orderData.dateNeeded || null,
+            deliveryMethod: orderData.deliveryMethod,
+            deliveryAddress: orderData.deliveryAddress || '',
+            deliveryNotes: orderData.deliveryNotes || '',
+            giftNote: orderData.giftNote || '',
           },
-          payment: {
-            method: orderData.paymentMethod,
-            status: 'pending',
+          pricing: {
+            subtotal: orderData.totalPrice || 0,
+            deliveryFee: 0,
+            discount: 0,
+            total: orderData.totalPrice || 0,
+            paymentStatus: 'pending',
+            paymentMethod: orderData.paymentMethod,
           },
           messages: [
             {
               _key: generateUniqueKey('msg'),
               message: orderData.message,
-              from: 'customer',
-              timestamp: new Date().toISOString(),
+              attachments: orderData.attachments || [],
             },
           ],
           metadata: {
-            orderType: orderData.orderType,
-            dateNeeded: orderData.dateNeeded || null,
-            giftNote: orderData.giftNote || '',
-            note: orderData.note || '',
+            source: 'website',
             referrer: orderData.referrer || '',
-            attachments: orderData.attachments || [],
+            userAgent: request.headers.get('user-agent') || '',
           },
         };
 
@@ -662,11 +663,11 @@ Olgish Cakes
             text: emailContent,
             attachments: designImage
               ? [
-                  {
-                    filename: designImage.name,
-                    content: Buffer.from(imageBuffer!),
-                  },
-                ]
+                {
+                  filename: designImage.name,
+                  content: Buffer.from(imageBuffer!),
+                },
+              ]
               : [],
           });
 

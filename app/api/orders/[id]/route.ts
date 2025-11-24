@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { serverClient } from "@/sanity/lib/client";
-import { Resend } from "resend";
 import { PHONE_UTILS } from "@/lib/constants";
-import { urlFor } from "@/sanity/lib/image";
 import { generateUniqueKey } from "@/lib/order-utils";
+import { serverClient } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
 
 // GET - Fetch single order by ID
 export async function GET(
@@ -22,8 +22,22 @@ export async function GET(
         orderType,
         customer,
         items,
-        delivery,
-        pricing,
+        delivery{
+          dateNeeded,
+          deliveryMethod,
+          deliveryAddress,
+          trackingNumber,
+          deliveryNotes,
+          giftNote
+        },
+        pricing{
+          subtotal,
+          deliveryFee,
+          discount,
+          total,
+          paymentStatus,
+          paymentMethod
+        },
         messages,
         notes{
           note,
@@ -39,7 +53,12 @@ export async function GET(
             caption
           }
         },
-        metadata
+        metadata{
+          giftNote,
+          orderType,
+          source,
+          referrer
+        }
       }`
     );
 
@@ -82,6 +101,9 @@ export async function PATCH(
       updates.status = formData.get('status') as string;
       updates.trackingNumber = formData.get('trackingNumber') as string;
       updates.deliveryMethod = formData.get('deliveryMethod') as string;
+      // Extract dateNeeded (format: YYYY-MM-DD)
+      const dateNeeded = formData.get('dateNeeded') as string;
+      updates.dateNeeded = dateNeeded && dateNeeded.trim() ? dateNeeded : null;
       updates.paymentStatus = formData.get('paymentStatus') as string;
       updates.paymentMethod = formData.get('paymentMethod') as string;
       updates.note = formData.get('note') as string;
@@ -162,6 +184,11 @@ export async function PATCH(
       updateDoc['delivery.deliveryMethod'] = updates.deliveryMethod;
     }
 
+    // Handle date needed updates
+    if (updates.dateNeeded !== undefined) {
+      updateDoc['delivery.dateNeeded'] = updates.dateNeeded;
+    }
+
     // Handle payment status updates
     if (updates.paymentStatus) {
       updateDoc['pricing.paymentStatus'] = updates.paymentStatus;
@@ -210,7 +237,7 @@ export async function PATCH(
     if (updates.itemPrice !== undefined) {
       const newItemPrice = parseFloat(updates.itemPrice);
       if (!isNaN(newItemPrice) && currentOrder.items && currentOrder.items.length > 0) {
-        const updatedItems = currentOrder.items.map((item: any, index: number) => 
+        const updatedItems = currentOrder.items.map((item: any, index: number) =>
           index === 0 ? { ...item, totalPrice: newItemPrice, unitPrice: newItemPrice } : item
         );
         updateDoc.items = updatedItems;
@@ -226,9 +253,9 @@ export async function PATCH(
     }
 
     // Handle item selection updates
-    if (updates.selectedCakeId !== undefined || updates.selectedCakeName !== undefined || 
-        updates.selectedCakeSize !== undefined || updates.selectedDesignType !== undefined) {
-      
+    if (updates.selectedCakeId !== undefined || updates.selectedCakeName !== undefined ||
+      updates.selectedCakeSize !== undefined || updates.selectedDesignType !== undefined) {
+
       const newItem = {
         productType: 'cake',
         productId: updates.selectedCakeId || currentOrder.items[0]?.productId || '',
@@ -502,7 +529,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
 
   try {
     const bccEmail = process.env.ADMIN_BCC_EMAIL || undefined;
-    
+
     // Send the actual email
     await resend.emails.send({
       from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
@@ -571,16 +598,16 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           <tr>
                             <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
                             <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${(() => {
-                              // Use pricing.total if available, otherwise calculate from items
-                              if (order.pricing?.total && order.pricing.total > 0) {
-                                return order.pricing.total;
-                              }
-                              // Calculate total from items as fallback
-                              if (order.items && order.items.length > 0) {
-                                return order.items.reduce((sum: number, item: any) => sum + (item.totalPrice || item.unitPrice || 0), 0);
-                              }
-                              return 0;
-                            })()}</td>
+          // Use pricing.total if available, otherwise calculate from items
+          if (order.pricing?.total && order.pricing.total > 0) {
+            return order.pricing.total;
+          }
+          // Calculate total from items as fallback
+          if (order.items && order.items.length > 0) {
+            return order.items.reduce((sum: number, item: any) => sum + (item.totalPrice || item.unitPrice || 0), 0);
+          }
+          return 0;
+        })()}</td>
                           </tr>
                         </table>
                       </div>
@@ -605,18 +632,18 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
 
                       <!-- Design Images Section -->
                       ${(() => {
-                        // Check if any items have individual design and if there are message attachments
-                        const hasIndividualDesign = order.items?.some((item: any) => item.designType === 'individual');
-                        const hasAttachments = order.messages?.some((message: any) => message.attachments && message.attachments.length > 0);
+          // Check if any items have individual design and if there are message attachments
+          const hasIndividualDesign = order.items?.some((item: any) => item.designType === 'individual');
+          const hasAttachments = order.messages?.some((message: any) => message.attachments && message.attachments.length > 0);
 
-                        if (hasIndividualDesign && hasAttachments) {
-                          const allAttachments = order.messages
-                            .filter((message: any) => message.attachments && message.attachments.length > 0)
-                            .flatMap((message: any) => message.attachments)
-                            .filter((attachment: any) => attachment && attachment.asset);
+          if (hasIndividualDesign && hasAttachments) {
+            const allAttachments = order.messages
+              .filter((message: any) => message.attachments && message.attachments.length > 0)
+              .flatMap((message: any) => message.attachments)
+              .filter((attachment: any) => attachment && attachment.asset);
 
-                          if (allAttachments.length > 0) {
-                            return `
+            if (allAttachments.length > 0) {
+              return `
                               <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                                 <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
                                 <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
@@ -624,23 +651,23 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                                   ${allAttachments.map((attachment: any) => {
-                                    if (attachment.asset) {
-                                      const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
-                                      return `
+                if (attachment.asset) {
+                  const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
+                  return `
                                         <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
                                           <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
                                         </div>
                                       `;
-                                    }
-                                    return '';
-                                  }).join('')}
+                }
+                return '';
+              }).join('')}
                                 </div>
                               </div>
                             `;
-                          }
-                        }
-                        return '';
-                      })()}
+            }
+          }
+          return '';
+        })()}
 
                       ${newStatus === 'out-delivery' && order.delivery.trackingNumber ? `
                         <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
