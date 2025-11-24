@@ -1,7 +1,10 @@
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { PHONE_UTILS } from "@/lib/constants";
+import { logger } from "@/lib/logger";
 import { generateUniqueKey } from "@/lib/order-utils";
 import { serverClient } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
+import type { Order, OrderItem, OrderMessage, OrderMessageAttachment, OrderUpdate } from "@/types/order";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -10,10 +13,20 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Verify admin authentication
+  const isAuthenticated = await isAdminAuthenticated(request);
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
-    const order = await serverClient.fetch(
-      `*[_type == "order" && _id == "${id}"][0]{
+    // Use parameterized query to prevent GROQ injection
+    const order = await serverClient.fetch<Order | null>(
+      `*[_type == "order" && _id == $id][0]{
         _id,
         _createdAt,
         _updatedAt,
@@ -59,7 +72,8 @@ export async function GET(
           source,
           referrer
         }
-      }`
+      }`,
+      { id }
     );
 
     if (!order) {
@@ -72,7 +86,7 @@ export async function GET(
     return NextResponse.json(order);
 
   } catch (error) {
-    console.error('Failed to fetch order:', error);
+    logger.error('Failed to fetch order', error);
     return NextResponse.json(
       { error: 'Failed to fetch order' },
       { status: 500 }
@@ -85,10 +99,19 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Verify admin authentication
+  const isAuthenticated = await isAdminAuthenticated(request);
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     // Handle both JSON and FormData requests
-    let updates: any = {};
+    let updates: OrderUpdate = {};
     let images: File[] = [];
 
     const contentType = request.headers.get('content-type');
@@ -132,8 +155,9 @@ export async function PATCH(
     }
 
     // Get current order to compare changes (including existing notes)
-    const currentOrder = await serverClient.fetch(
-      `*[_type == "order" && _id == "${id}"][0]{
+    // Use parameterized query to prevent GROQ injection
+    const currentOrder = await serverClient.fetch<Order | null>(
+      `*[_type == "order" && _id == $id][0]{
         _id,
         orderNumber,
         status,
@@ -156,7 +180,8 @@ export async function PATCH(
             caption
           }
         }
-      }`
+      }`,
+      { id }
     );
 
     if (!currentOrder) {
@@ -167,7 +192,8 @@ export async function PATCH(
     }
 
     // Prepare update document
-    const updateDoc: any = {};
+    // Sanity uses dot notation for nested fields, so we use Record<string, unknown>
+    const updateDoc: Record<string, unknown> = {};
 
     // Handle status updates
     if (updates.status && updates.status !== currentOrder.status) {
@@ -237,7 +263,7 @@ export async function PATCH(
     if (updates.itemPrice !== undefined) {
       const newItemPrice = parseFloat(updates.itemPrice);
       if (!isNaN(newItemPrice) && currentOrder.items && currentOrder.items.length > 0) {
-        const updatedItems = currentOrder.items.map((item: any, index: number) =>
+        const updatedItems = currentOrder.items.map((item: OrderItem, index: number) =>
           index === 0 ? { ...item, totalPrice: newItemPrice, unitPrice: newItemPrice } : item
         );
         updateDoc.items = updatedItems;
@@ -256,14 +282,15 @@ export async function PATCH(
     if (updates.selectedCakeId !== undefined || updates.selectedCakeName !== undefined ||
       updates.selectedCakeSize !== undefined || updates.selectedDesignType !== undefined) {
 
+      const itemPrice = updates.itemPrice ? parseFloat(updates.itemPrice) : (currentOrder.items[0]?.unitPrice ?? 0);
       const newItem = {
         productType: 'cake',
         productId: updates.selectedCakeId || currentOrder.items[0]?.productId || '',
         productName: updates.selectedCakeName || currentOrder.items[0]?.productName || 'Custom Order',
         designType: updates.selectedDesignType || currentOrder.items[0]?.designType || 'standard',
         quantity: currentOrder.items[0]?.quantity || 1,
-        unitPrice: parseFloat(updates.itemPrice) || currentOrder.items[0]?.unitPrice || 0,
-        totalPrice: parseFloat(updates.itemPrice) || currentOrder.items[0]?.totalPrice || 0,
+        unitPrice: itemPrice,
+        totalPrice: itemPrice,
         size: updates.selectedCakeSize || currentOrder.items[0]?.size || '',
         flavor: currentOrder.items[0]?.flavor || '',
         specialInstructions: currentOrder.items[0]?.specialInstructions || '',
@@ -293,8 +320,8 @@ export async function PATCH(
 
             // Upload image to Sanity
             const imageAsset = await serverClient.assets.upload('image', buffer, {
-              filename: imageFile.name,
-              contentType: imageFile.type,
+              filename: imageFile.name ?? 'image.jpg',
+              contentType: imageFile.type ?? 'image/jpeg',
             });
 
             newNote.images.push({
@@ -303,11 +330,11 @@ export async function PATCH(
                 _type: 'reference',
                 _ref: imageAsset._id,
               },
-              alt: imageFile.name,
+              alt: imageFile.name ?? 'Uploaded image',
               caption: '',
             });
           } catch (imageError) {
-            console.error('Failed to upload image:', imageError);
+            logger.error('Failed to upload image', imageError);
             // Continue with other images even if one fails
           }
         }
@@ -317,12 +344,9 @@ export async function PATCH(
       // This ensures no notes are ever removed when adding a new one
       const existingNotes = currentOrder.notes || [];
       updateDoc.notes = [...existingNotes, newNote];
-    } else {
-      // If no new note is being added, ensure existing notes are preserved
-      // Don't modify the notes array if we're not adding anything
-      if (currentOrder.notes && currentOrder.notes.length > 0) {
-      }
     }
+    // Note: If no new note is being added, existing notes are automatically preserved
+    // by Sanity's patch operation, so no explicit handling is needed
 
     // Update order in Sanity
     const updatedOrder = await serverClient
@@ -333,8 +357,9 @@ export async function PATCH(
     // Send status update email after order is updated (if status changed)
     if (updates.status && updates.status !== currentOrder.status) {
       // Fetch the complete order with all fields including pricing for the email
-      const completeOrder = await serverClient.fetch(
-        `*[_type == "order" && _id == "${id}"][0]{
+      // Use parameterized query to prevent GROQ injection
+      const completeOrder = await serverClient.fetch<Order | null>(
+        `*[_type == "order" && _id == $id][0]{
           _id,
           orderNumber,
           status,
@@ -354,7 +379,8 @@ export async function PATCH(
               caption
             }
           }
-        }`
+        }`,
+        { id }
       );
 
       if (completeOrder) {
@@ -377,7 +403,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Failed to update order:', error);
+    logger.error('Failed to update order', error);
     return NextResponse.json(
       { error: 'Failed to update order', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
@@ -390,13 +416,24 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Verify admin authentication
+  const isAuthenticated = await isAdminAuthenticated(request);
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
     const { password, permanent } = body;
 
-    const currentOrder = await serverClient.fetch(
-      `*[_type == "order" && _id == "${id}"][0]`
+    // Use parameterized query to prevent GROQ injection
+    const currentOrder = await serverClient.fetch<Order | null>(
+      `*[_type == "order" && _id == $id][0]`,
+      { id }
     );
 
     if (!currentOrder) {
@@ -453,7 +490,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Failed to delete order:', error);
+    logger.error('Failed to delete order', error);
     return NextResponse.json(
       { error: 'Failed to delete order', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
@@ -462,10 +499,10 @@ export async function DELETE(
 }
 
 // Helper function to send status update emails
-async function sendStatusUpdateEmail(order: any, newStatus: string) {
+async function sendStatusUpdateEmail(order: Order, newStatus: string) {
   // Check for Resend API key at runtime
   if (!process.env.RESEND_API_KEY) {
-    console.error('RESEND_API_KEY not configured - skipping status update email');
+    logger.error('RESEND_API_KEY not configured - skipping status update email');
     return;
   }
 
@@ -604,7 +641,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
           }
           // Calculate total from items as fallback
           if (order.items && order.items.length > 0) {
-            return order.items.reduce((sum: number, item: any) => sum + (item.totalPrice || item.unitPrice || 0), 0);
+            return order.items.reduce((sum: number, item: OrderItem) => sum + (item.totalPrice || item.unitPrice || 0), 0);
           }
           return 0;
         })()}</td>
@@ -618,7 +655,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                           Your Order
                         </h3>
 
-                        ${order.items.map((item: any) => `
+                        ${order.items.map((item: OrderItem) => `
                           <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                             <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                             <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -633,14 +670,14 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                       <!-- Design Images Section -->
                       ${(() => {
           // Check if any items have individual design and if there are message attachments
-          const hasIndividualDesign = order.items?.some((item: any) => item.designType === 'individual');
-          const hasAttachments = order.messages?.some((message: any) => message.attachments && message.attachments.length > 0);
+          const hasIndividualDesign = order.items?.some((item: OrderItem) => item.designType === 'individual');
+          const hasAttachments = order.messages && order.messages.some((message: OrderMessage) => message.attachments && message.attachments.length > 0);
 
-          if (hasIndividualDesign && hasAttachments) {
+          if (hasIndividualDesign && hasAttachments && order.messages) {
             const allAttachments = order.messages
-              .filter((message: any) => message.attachments && message.attachments.length > 0)
-              .flatMap((message: any) => message.attachments)
-              .filter((attachment: any) => attachment && attachment.asset);
+              .filter((message: OrderMessage) => message.attachments && message.attachments.length > 0)
+              .flatMap((message: OrderMessage) => message.attachments || [])
+              .filter((attachment: OrderMessageAttachment) => attachment && attachment.asset);
 
             if (allAttachments.length > 0) {
               return `
@@ -650,7 +687,7 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
                                   We're using your design reference to create your perfect cake.
                                 </p>
                                 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${allAttachments.map((attachment: any) => {
+                                  ${allAttachments.map((attachment: OrderMessageAttachment) => {
                 if (attachment.asset) {
                   const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
                   return `
@@ -751,6 +788,6 @@ async function sendStatusUpdateEmail(order: any, newStatus: string) {
       `,
     });
   } catch (emailError) {
-    console.error('Failed to send status update email:', emailError);
+    logger.error('Failed to send status update email', emailError);
   }
 }

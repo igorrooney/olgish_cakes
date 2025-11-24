@@ -1,7 +1,10 @@
 "use client";
 
 import { designTokens } from "@/lib/design-system";
+import { logger } from "@/lib/logger";
+import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/lib/order-constants";
 import { urlFor } from "@/sanity/lib/image";
+import type { Order, SortableOrderValue } from "@/types/order";
 import {
   Add as AddIcon,
   Cancel as CancelledIcon,
@@ -61,110 +64,14 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { type Dayjs } from "dayjs";
 import "dayjs/locale/en-gb";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AddOrderModal } from "./AddOrderModal";
 
 // Set British locale for date formatting
 dayjs.locale("en-gb");
 
-interface Order {
-  _id: string;
-  _createdAt: string;
-  _updatedAt: string;
-  orderNumber: string;
-  status: string;
-  orderType: string;
-  customer: {
-    name: string;
-    email: string;
-    phone: string;
-    address?: string;
-    city?: string;
-    postcode?: string;
-  };
-  items: Array<{
-    productType?: string;
-    productId?: string;
-    productName: string;
-    quantity: number;
-    unitPrice?: number;
-    totalPrice: number;
-    size?: string;
-    flavor?: string;
-    designType?: string;
-    specialInstructions?: string;
-  }>;
-  delivery: {
-    dateNeeded?: string;
-    deliveryMethod: string;
-    deliveryAddress?: string;
-    trackingNumber?: string;
-    deliveryNotes?: string;
-    giftNote?: string;
-  };
-  pricing: {
-    subtotal?: number;
-    deliveryFee?: number;
-    discount?: number;
-    total: number;
-    paymentStatus: string;
-    paymentMethod?: string;
-  };
-  messages?: Array<{
-    message: string;
-    attachments?: Array<{
-      _type: string;
-      asset: {
-        _type: string;
-        _id: string;
-        _ref: string;
-        url: string;
-      };
-      alt?: string;
-      caption?: string;
-    }>;
-  }>;
-  notes?: Array<{
-    note: string;
-    author: string;
-    createdAt: string;
-    images?: Array<{
-      _type: string;
-      asset: {
-        _type: string;
-        _ref: string;
-      };
-      alt?: string;
-      caption?: string;
-    }>;
-  }>;
-  metadata?: {
-    giftNote?: string;
-    [key: string]: unknown;
-  };
-}
-
-const statusColors = {
-  'new': 'error',
-  'confirmed': 'warning',
-  'in-progress': 'info',
-  'ready-pickup': 'primary',
-  'out-delivery': 'secondary',
-  'delivered': 'success',
-  'completed': 'success',
-  'cancelled': 'error',
-} as const;
-
-const statusLabels = {
-  'new': 'New Order',
-  'confirmed': 'Confirmed',
-  'in-progress': 'In Progress',
-  'ready-pickup': 'Ready for Pickup',
-  'out-delivery': 'Out for Delivery',
-  'delivered': 'Delivered',
-  'completed': 'Completed',
-  'cancelled': 'Cancelled',
-};
+// Order type imported from types/order.ts
+// Status colors and labels imported from lib/order-constants.ts
 
 export function OrderManagementDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -179,7 +86,7 @@ export function OrderManagementDashboard() {
   const [deletePassword, setDeletePassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<{ _type?: string; _id?: string; _ref?: string; url?: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<string>("_createdAt");
@@ -196,17 +103,7 @@ export function OrderManagementDashboard() {
     message: "",
     severity: 'info',
   });
-  const [monthlyEarnings, setMonthlyEarnings] = useState<{
-    currentMonth: number;
-    lastMonth: number;
-    totalOrders: number;
-    averageOrderValue: number;
-  }>({
-    currentMonth: 0,
-    lastMonth: 0,
-    totalOrders: 0,
-    averageOrderValue: 0,
-  });
+  // Removed unused monthlyEarnings state - using filteredStats instead
   const [availableCakes, setAvailableCakes] = useState<Array<{
     _id: string;
     name: string;
@@ -298,7 +195,7 @@ export function OrderManagementDashboard() {
         throw new Error(data.error || 'Failed to fetch orders');
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      logger.error('Error fetching orders', error);
       showNotification('Failed to fetch orders', 'error');
     } finally {
       if (isRefresh) {
@@ -309,22 +206,7 @@ export function OrderManagementDashboard() {
     }
   }, [showNotification]);
 
-  const fetchMonthlyEarnings = async () => {
-    try {
-      const response = await fetch(`/api/admin/earnings?t=${Date.now()}`, {
-        credentials: 'include',
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setMonthlyEarnings(data);
-      } else {
-        console.error('Failed to fetch monthly earnings:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching monthly earnings:', error);
-    }
-  };
+  // Removed fetchMonthlyEarnings - not used in component
 
   const fetchCakes = async () => {
     try {
@@ -336,17 +218,16 @@ export function OrderManagementDashboard() {
       if (response.ok) {
         setAvailableCakes(data.cakes || []);
       } else {
-        console.error('Failed to fetch cakes:', data);
+        logger.error('Failed to fetch cakes', data);
       }
     } catch (error) {
-      console.error('Error fetching cakes:', error);
+      logger.error('Error fetching cakes', error);
     }
   };
 
   // Fetch data on component mount
   useEffect(() => {
     fetchOrders();
-    fetchMonthlyEarnings();
     fetchCakes();
   }, [fetchOrders]); // Fetch on component mount
 
@@ -458,11 +339,8 @@ export function OrderManagementDashboard() {
         setDeleteConfirmOpen(false);
         setEditDialogOpen(false);
         setDeletePassword("");
-        // Refresh both orders and earnings data
-        await Promise.all([
-          fetchOrders(),
-          fetchMonthlyEarnings()
-        ]);
+        // Refresh orders data
+        await fetchOrders();
       } else {
         const errorData = await response.json();
         if (errorData.error === 'Invalid password') {
@@ -472,7 +350,7 @@ export function OrderManagementDashboard() {
         }
       }
     } catch (error) {
-      console.error('Error deleting order:', error);
+      logger.error('Error deleting order', error);
       showNotification('Failed to delete order', 'error');
     } finally {
       setIsDeleting(false);
@@ -515,7 +393,7 @@ export function OrderManagementDashboard() {
       formData.append('selectedDesignType', editForm.selectedDesignType);
 
       // Add images to FormData
-      editForm.images.forEach((image, index) => {
+      editForm.images.forEach((image) => {
         formData.append(`images`, image);
       });
 
@@ -529,13 +407,12 @@ export function OrderManagementDashboard() {
         showNotification('Order updated successfully', 'success');
         setEditDialogOpen(false);
         fetchOrders(); // Refresh orders list
-        fetchMonthlyEarnings(); // Refresh earnings data
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update order');
       }
     } catch (error) {
-      console.error('Error updating order:', error);
+      logger.error('Error updating order', error);
       showNotification('Failed to update order', 'error');
     } finally {
       setIsSaving(false);
@@ -543,27 +420,30 @@ export function OrderManagementDashboard() {
   };
 
 
-  const filteredOrders = orders.filter(order => {
-    // Apply search filter with null checks
-    const matchesSearch = searchTerm === "" ||
-      order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Memoize filtered orders for performance
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      // Apply search filter with null checks
+      const matchesSearch = searchTerm === "" ||
+        order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Apply status filter (if not "all")
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      // Apply status filter (if not "all")
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
 
-    // Apply month filter
-    const matchesMonth = monthFilter === "all" || (() => {
-      const orderDate = new Date(order._createdAt);
-      const orderYear = orderDate.getFullYear();
-      const orderMonth = String(orderDate.getMonth() + 1).padStart(2, '0');
-      const filterValue = `${orderYear}-${orderMonth}`;
-      return filterValue === monthFilter;
-    })();
+      // Apply month filter
+      const matchesMonth = monthFilter === "all" || (() => {
+        const orderDate = new Date(order._createdAt);
+        const orderYear = orderDate.getFullYear();
+        const orderMonth = String(orderDate.getMonth() + 1).padStart(2, '0');
+        const filterValue = `${orderYear}-${orderMonth}`;
+        return filterValue === monthFilter;
+      })();
 
-    return matchesSearch && matchesStatus && matchesMonth;
-  });
+      return matchesSearch && matchesStatus && matchesMonth;
+    });
+  }, [orders, searchTerm, statusFilter, monthFilter]);
 
   // Calculate filtered statistics based on current filters
   const getFilteredStatistics = () => {
@@ -579,7 +459,7 @@ export function OrderManagementDashboard() {
           return sum + total;
         } catch (error) {
           // If anything goes wrong, just skip this order
-          console.warn('Error calculating order total:', error, order);
+          logger.warn('Error calculating order total', { error, order });
           return sum;
         }
       }, 0);
@@ -603,56 +483,72 @@ export function OrderManagementDashboard() {
 
   const filteredStats = getFilteredStatistics();
 
-  const sortedOrders = [...filteredOrders].sort((a, b) => {
-    let aValue: any;
-    let bValue: any;
+  // Memoize sorted orders for performance
+  const sortedOrders = useMemo(() => {
+    return [...filteredOrders].sort((a, b) => {
+      let aValue: SortableOrderValue;
+      let bValue: SortableOrderValue;
 
-    switch (sortField) {
-      case 'orderNumber':
-        aValue = a.orderNumber || '';
-        bValue = b.orderNumber || '';
-        break;
-      case 'customer':
-        aValue = a.customer?.name || '';
-        bValue = b.customer?.name || '';
-        break;
-      case 'status':
-        aValue = a.status || '';
-        bValue = b.status || '';
-        break;
-      case 'dateNeeded':
-        aValue = a.delivery?.dateNeeded ? new Date(a.delivery.dateNeeded) : null;
-        bValue = b.delivery?.dateNeeded ? new Date(b.delivery.dateNeeded) : null;
-        // Handle null values - put them at the end when sorting
-        if (!aValue && !bValue) return 0;
-        if (!aValue) return 1;
-        if (!bValue) return -1;
-        break;
-      case 'orderDate':
-        aValue = new Date(a._createdAt || 0);
-        bValue = new Date(b._createdAt || 0);
-        break;
-      case 'total':
-        aValue = a.pricing?.total || 0;
-        bValue = b.pricing?.total || 0;
-        break;
-      case '_createdAt':
-      default:
-        aValue = new Date(a._createdAt || 0);
-        bValue = new Date(b._createdAt || 0);
-        break;
-    }
+      switch (sortField) {
+        case 'orderNumber':
+          aValue = a.orderNumber || '';
+          bValue = b.orderNumber || '';
+          break;
+        case 'customer':
+          aValue = a.customer?.name || '';
+          bValue = b.customer?.name || '';
+          break;
+        case 'status':
+          aValue = a.status || '';
+          bValue = b.status || '';
+          break;
+        case 'dateNeeded':
+          aValue = a.delivery?.dateNeeded ? new Date(a.delivery.dateNeeded) : null;
+          bValue = b.delivery?.dateNeeded ? new Date(b.delivery.dateNeeded) : null;
+          // Handle null values - put them at the end when sorting
+          if (!aValue && !bValue) return 0;
+          if (!aValue) return 1;
+          if (!bValue) return -1;
+          break;
+        case 'orderDate':
+          aValue = new Date(a._createdAt || 0);
+          bValue = new Date(b._createdAt || 0);
+          break;
+        case 'total':
+          aValue = a.pricing?.total || 0;
+          bValue = b.pricing?.total || 0;
+          break;
+        case '_createdAt':
+        default:
+          aValue = new Date(a._createdAt || 0);
+          bValue = new Date(b._createdAt || 0);
+          break;
+      }
 
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc'
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
 
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+      if (aValue === null || bValue === null) {
+        if (aValue === null && bValue === null) return 0;
+        return aValue === null ? 1 : -1;
+      }
+
+      if (aValue instanceof Date && bValue instanceof Date) {
+        return sortDirection === 'asc'
+          ? aValue.getTime() - bValue.getTime()
+          : bValue.getTime() - aValue.getTime();
+      }
+
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+
+      return 0;
+    });
+  }, [filteredOrders, sortField, sortDirection]);
 
   // Paginate the sorted orders
   const paginatedOrders = sortedOrders.slice(
@@ -693,12 +589,12 @@ export function OrderManagementDashboard() {
     }));
   };
 
-  const handleImageClick = (imageAsset: any) => {
+  const handleImageClick = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string }) => {
     setSelectedImage(imageAsset);
     setImageViewerOpen(true);
   };
 
-  const getImageUrl = (imageAsset: any) => {
+  const getImageUrl = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string } | null | undefined) => {
     if (!imageAsset) {
       return '';
     }
@@ -708,7 +604,7 @@ export function OrderManagementDashboard() {
       const imageUrl = urlFor(imageAsset).width(400).height(400).url();
       return imageUrl;
     } catch (error) {
-      console.error('Error generating image URL:', error);
+      logger.error('Error generating image URL', error);
       return '';
     }
   };
@@ -1092,8 +988,8 @@ export function OrderManagementDashboard() {
                     <TableCell>
                       <Chip
                         icon={getStatusIcon(order.status)}
-                        label={statusLabels[order.status as keyof typeof statusLabels]}
-                        color={statusColors[order.status as keyof typeof statusColors]}
+                        label={ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] || order.status}
+                        color={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS] || 'default'}
                         variant="outlined"
                       />
                     </TableCell>
@@ -1741,7 +1637,7 @@ export function OrderManagementDashboard() {
                                       image={imageUrl}
                                       alt={attachment.alt || 'Design reference'}
                                       onError={(e) => {
-                                        console.error('Failed to load design image:', e);
+                                        logger.error('Failed to load design image', e);
                                       }}
                                     />
                                     <IconButton
@@ -1851,7 +1747,7 @@ export function OrderManagementDashboard() {
 
                 {(() => {
                   // Check both delivery.giftNote (new format) and metadata.giftNote (old format) for backwards compatibility
-                  const giftNote = selectedOrder.delivery?.giftNote || (selectedOrder as any).metadata?.giftNote;
+                  const giftNote = selectedOrder.delivery?.giftNote || selectedOrder.metadata?.giftNote;
                   if (giftNote) {
                     return (
                       <>
@@ -1934,7 +1830,7 @@ export function OrderManagementDashboard() {
                                         image={imageUrl}
                                         alt={attachment.alt || 'Message attachment'}
                                         onError={(e) => {
-                                          console.error('Failed to load message image:', e);
+                                          logger.error('Failed to load message image', e);
                                         }}
                                       />
                                       <IconButton
@@ -2009,7 +1905,7 @@ export function OrderManagementDashboard() {
                                         image={imageUrl}
                                         alt={image.alt || 'Note attachment'}
                                         onError={(e) => {
-                                          console.error('Failed to load thumbnail image:', e);
+                                          logger.error('Failed to load thumbnail image', e);
                                         }}
                                       />
                                       <IconButton
@@ -2059,7 +1955,6 @@ export function OrderManagementDashboard() {
         onClose={() => setAddOrderModalOpen(false)}
         onOrderCreated={() => {
           fetchOrders();
-          fetchMonthlyEarnings();
         }}
       />
 
@@ -2082,7 +1977,7 @@ export function OrderManagementDashboard() {
           {selectedImage && (
             <Box sx={{ textAlign: 'center' }}>
               <img
-                src={urlFor(selectedImage).width(800).height(600).url()}
+                src={urlFor(selectedImage).width(800).height(600).url() || ''}
                 alt="Note attachment"
                 style={{
                   maxWidth: '100%',
@@ -2091,7 +1986,7 @@ export function OrderManagementDashboard() {
                   borderRadius: '8px',
                 }}
                 onError={(e) => {
-                  console.error('Failed to load image in modal:', e);
+                  logger.error('Failed to load image in modal', e);
                 }}
               />
             </Box>

@@ -1,4 +1,5 @@
 import { jwtVerify } from 'jose';
+import { logger } from './logger';
 
 // Helper function to get JWT secret with runtime validation
 function getJWTSecret(): string {
@@ -13,13 +14,13 @@ export async function verifyAdminToken(token: string): Promise<{ username: strin
   try {
     const secret = new TextEncoder().encode(getJWTSecret());
     const { payload } = await jwtVerify(token, secret);
-    
+
     return {
       username: payload.username as string,
       role: payload.role as string
     };
   } catch (error) {
-    console.error('Token verification failed:', error);
+    logger.error('Token verification failed', error);
     return null;
   }
 }
@@ -38,7 +39,7 @@ export async function isAdminAuthenticated(request: Request): Promise<boolean> {
     const payload = await verifyAdminToken(token);
     return payload !== null && payload.role === 'admin';
   } catch (error) {
-    console.error('Admin authentication check failed:', error);
+    logger.error('Admin authentication check failed', error);
     return false;
   }
 }
