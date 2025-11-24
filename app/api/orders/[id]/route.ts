@@ -4,7 +4,7 @@ import { logger } from "@/lib/logger";
 import { generateUniqueKey } from "@/lib/order-utils";
 import { serverClient } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import type { Order, OrderItem, OrderMessage, OrderMessageAttachment, OrderUpdate } from "@/types/order";
+import type { Order, OrderItem, OrderMessage, OrderMessageAttachment, OrderNoteImage, OrderUpdate } from "@/types/order";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -307,7 +307,7 @@ export async function PATCH(
         note: (updates.note && updates.note.trim()) || '',
         author: updates.author || 'Admin',
         createdAt: new Date().toISOString(),
-        images: [] as any[],
+        images: [] as OrderNoteImage[],
       };
 
       // Process uploaded images
