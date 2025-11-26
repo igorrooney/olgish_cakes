@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export function MobileHero() {
   return (
@@ -17,28 +18,39 @@ export function MobileHero() {
           </h1>
         </div>
         
-        {/* Tablet: Image gallery layout */}
-        <div className="hidden lg:grid lg:grid-cols-3 lg:gap-4 lg:relative lg:w-full lg:max-w-4xl lg:mt-8">
-          <div className="relative w-full h-64 lg:h-80 rounded-box border border-primary-50 overflow-hidden">
-            <img
-              src="https://picsum.photos/250/250?random=1"
-              alt="Cake 1"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="relative w-full h-64 lg:h-80 rounded-box border border-primary-50 overflow-hidden">
-            <img
-              src="https://picsum.photos/250/250?random=2"
-              alt="Cake 2"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="relative w-full h-64 lg:h-80 rounded-box shadow-xl overflow-hidden">
-            <img
-              src="https://picsum.photos/300/300?random=3"
-              alt="Featured Cake"
-              className="w-full h-full object-cover"
-            />
+        {/* Mobile & Tablet: Image gallery layout with overlapping middle image */}
+        <div className="relative w-full lg:max-w-4xl flex items-center justify-center">
+          <div className="relative w-full h-32 lg:h-80 flex items-center justify-center">
+            {/* Left: White cake with chocolate drizzle */}
+            <div className="absolute left-0 w-1/3 h-32 lg:h-80 rounded-box border border-primary-50 overflow-hidden z-10">
+              <Image
+                src="https://picsum.photos/250/250?random=1"
+                alt="White cake with dark chocolate drizzle and chocolate pieces"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 33vw, 300px"
+              />
+            </div>
+            {/* Middle: Dark chocolate cake with golden Christmas tree - overlapping half of each side */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1/3 h-32 lg:h-80 rounded-box border border-primary-50 overflow-hidden z-20 shadow-xl">
+              <Image
+                src="https://picsum.photos/250/250?random=2"
+                alt="Dark chocolate cake with golden Christmas tree design"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 33vw, 300px"
+              />
+            </div>
+            {/* Right: Colorful cake with sprinkles */}
+            <div className="absolute right-0 w-1/3 h-32 lg:h-80 rounded-box border border-primary-50 overflow-hidden z-10">
+              <Image
+                src="https://picsum.photos/300/300?random=3"
+                alt="Colorful cake with various sprinkles and candies"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 33vw, 300px"
+              />
+            </div>
           </div>
         </div>
 
