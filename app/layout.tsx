@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Alice, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
@@ -37,6 +38,30 @@ const inter = Inter({
   preload: true,
   fallback: ["system-ui", "sans-serif"],
   adjustFontFallback: true,
+});
+
+const moreSugar = localFont({
+  src: [
+    {
+      path: "./fonts/more_sugar/MoreSugar-Thin.ttf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "./fonts/more_sugar/MoreSugar-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/more_sugar/MoreSugar-Extras.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-more-sugar",
+  display: "swap",
+  preload: true,
+  fallback: ["cursive", "fantasy"],
 });
 
 const primary = designTokens.colors.primary.main;
@@ -186,7 +211,7 @@ export default function RootLayout({
   children: React.ReactNode 
 }) {
   return (
-    <html lang="en-GB" className={`${alice.variable} ${inter.variable}`}>
+    <html lang="en-GB" className={`${alice.variable} ${inter.variable} ${moreSugar.variable}`}>
       <head>
         {/* Critical CSS inlining */}
         <style

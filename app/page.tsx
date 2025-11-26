@@ -1,6 +1,5 @@
 
 import {
-  MobileHeader,
   MobileHero,
   MobileAbout,
   MobileBestsellers,
@@ -14,7 +13,6 @@ import {
 export default async function Home() {
   return (
     <div className="min-h-screen bg-base-100">
-      <MobileHeader />
       <main className="flex flex-col">
         <MobileHero />
         <MobileAbout />

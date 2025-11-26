@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
@@ -136,6 +136,8 @@ export const MobileNav = memo(function MobileNav({ navigation }: MobileNavProps)
   const { startTimer } = usePerformanceMonitor();
   const [mobileMenuState, setMobileMenuState] = useState<Record<string, boolean>>({});
 
+  const drawerRef = useRef<HTMLDivElement>(null)
+
   // Track drawer open/close via checkbox changes
   const handleDrawerChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,6 +150,57 @@ export const MobileNav = memo(function MobileNav({ navigation }: MobileNavProps)
     },
     [trackMobileMenuInteraction]
   );
+
+  // Handle click outside to close drawer
+  useEffect(() => {
+    const checkbox = document.getElementById(drawerId) as HTMLInputElement
+    if (!checkbox || !drawerRef.current) return
+
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      // Only handle if drawer is open
+      if (!checkbox || !checkbox.checked) return
+
+      const target = event.target as HTMLElement
+      if (!target) return
+
+      // Get drawer elements
+      const drawerSide = drawerRef.current?.querySelector('.drawer-side')
+      const drawerMenu = drawerRef.current?.querySelector('aside.menu')
+      const drawerToggle = drawerRef.current?.querySelector('.drawer-toggle')
+      
+      // Don't interfere if clicking the toggle button
+      if (drawerToggle?.contains(target)) {
+        return
+      }
+
+      // Close if clicking outside the drawer-side entirely
+      if (drawerSide && !drawerSide.contains(target)) {
+        checkbox.checked = false
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }))
+        return
+      }
+
+      // Close if clicking inside drawer-side but outside the menu (e.g., on overlay)
+      if (drawerSide?.contains(target) && drawerMenu && !drawerMenu.contains(target)) {
+        checkbox.checked = false
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }))
+        return
+      }
+    }
+
+    // Use a small delay to ensure event listeners are attached after render
+    const timeoutId = setTimeout(() => {
+      // Listen for clicks on the document
+      document.addEventListener('click', handleClickOutside, true)
+      document.addEventListener('touchend', handleClickOutside, true)
+    }, 0)
+
+    return () => {
+      clearTimeout(timeoutId)
+      document.removeEventListener('click', handleClickOutside, true)
+      document.removeEventListener('touchend', handleClickOutside, true)
+    }
+  }, [])
 
   // Mobile gestures hook - close drawer on swipe
   const { triggerHapticFeedback } = useMobileGestures({
@@ -196,7 +249,7 @@ export const MobileNav = memo(function MobileNav({ navigation }: MobileNavProps)
   }, [trackNavigation, pathname, startTimer]);
 
   return (
-    <div className="drawer drawer-end">
+    <div className="drawer drawer-end" ref={drawerRef}>
       <input
         id={drawerId}
         type="checkbox"
@@ -205,7 +258,11 @@ export const MobileNav = memo(function MobileNav({ navigation }: MobileNavProps)
         aria-hidden="true"
       />
       <div className="drawer-side">
-        <label htmlFor={drawerId} aria-label="close sidebar" className="drawer-overlay" />
+        <label 
+          htmlFor={drawerId} 
+          aria-label="close sidebar" 
+          className="drawer-overlay"
+        />
         <aside className="menu bg-base-100 min-h-full w-full max-w-[320px] p-0 flex flex-col">
           {/* Mobile Header */}
           <div className="bg-gradient-to-br from-primary to-primary-focus text-primary-content p-4 relative overflow-hidden">

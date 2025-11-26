@@ -1,11 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { colors } from "@/lib/design-system";
 
 export function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (!isMenuOpen) return;
+
+      const target = event.target as Node;
+      
+      // Don't close if clicking on the menu button
+      if (buttonRef.current?.contains(target)) {
+        return;
+      }
+
+      // Close if clicking outside the menu
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Add event listeners
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <header className="bg-base-100 sticky top-0 z-50 relative">
@@ -25,6 +56,7 @@ export function MobileHeader() {
         </div>
         <div className="navbar-end">
           <button
+            ref={buttonRef}
             type="button"
             className="h-12 w-12 rounded-btn shadow-btn bg-base-100 hover:bg-base-200 flex items-center justify-center p-0"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -73,11 +105,17 @@ export function MobileHeader() {
         </div>
       </div>
       {isMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible">
+        <div ref={menuRef} className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible">
           <div className="grid grid-cols-2 gap-2 p-2">
             <div className="flex flex-col items-start">
               <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p className="font-display text-sm text-primary-400 leading-5">
+                <p 
+                  className="font-moreSugar text-sm leading-5" 
+                  style={{ 
+                    color: colors.navigation.main,
+                    fontFamily: "var(--font-more-sugar), cursive, fantasy"
+                  }}
+                >
                   MENU
                 </p>
               </div>
@@ -119,7 +157,13 @@ export function MobileHeader() {
             </div>
             <div className="flex flex-col items-start">
               <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p className="font-display text-sm text-primary-400 leading-5">
+                <p 
+                  className="font-moreSugar text-sm leading-5" 
+                  style={{ 
+                    color: colors.navigation.main,
+                    fontFamily: "var(--font-more-sugar), cursive, fantasy"
+                  }}
+                >
                   LEARN HUB
                 </p>
               </div>

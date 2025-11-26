@@ -1,16 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Header } from "./Header";
+import { MobileHeader } from "./mobile-homepage/MobileHeader";
 
 export function ConditionalHeader() {
-  const pathname = usePathname();
-  
-  // Hide Header on home page where MobileHeader is used
-  if (pathname === "/") {
-    return null;
-  }
-  
-  return <Header />;
+  // Use MobileHeader on all pages (homepage already includes it in page.tsx)
+  return <MobileHeader />;
 }
 

@@ -83,12 +83,18 @@ export const colors = {
     medium: "#BDBDBD",
     dark: "#757575",
   },
+
+  // Navigation Colors
+  navigation: {
+    main: "#6467CE", // Menu color
+  },
 } as const;
 
 export const typography = {
   fontFamily: {
     primary: "var(--font-alice), Georgia, serif",
     display: "var(--font-alice), Georgia, serif",
+    moreSugar: "var(--font-more-sugar), cursive, fantasy",
     mono: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
   },
 

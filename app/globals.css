@@ -219,6 +219,10 @@ body {
   font-family: var(--font-alice), Georgia, serif;
 }
 
+.font-moreSugar {
+  font-family: var(--font-more-sugar), cursive, fantasy !important;
+}
+
 /* Ensure lists display properly */
 ul,
 ol {

@@ -36,7 +36,6 @@ import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
 import { NavigationStructuredData } from "./NavigationStructuredData";
 import { usePerformanceMonitor } from "./PerformanceMonitor";
 import { MobileNavbar } from "./MobileNavbar";
-import { MobileMenu } from "./MobileMenu";
 
 const { colors, typography, spacing, shadows, borderRadius } = designTokens;
 
@@ -537,11 +536,6 @@ export function Header() {
           onDrawerToggle={handleDrawerToggle}
           drawerOpen={mobileOpen}
         />
-      </div>
-
-      {/* Mobile Menu - DaisyUI Drawer - rendered at root level for proper z-index */}
-      <div className="md:hidden">
-        <MobileMenu isOpen={mobileOpen} onClose={handleDrawerToggle} />
       </div>
 
       {/* Desktop Header - shown only on desktop */}
