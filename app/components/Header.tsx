@@ -35,6 +35,8 @@ import { useMobileGestures } from "@/app/hooks/useMobileGestures";
 import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
 import { NavigationStructuredData } from "./NavigationStructuredData";
 import { usePerformanceMonitor } from "./PerformanceMonitor";
+import { MobileNavbar } from "./MobileNavbar";
+import { MobileMenu } from "./MobileMenu";
 
 const { colors, typography, spacing, shadows, borderRadius } = designTokens;
 
@@ -527,6 +529,22 @@ export function Header() {
   return (
     <>
       <NavigationStructuredData navigation={navigation} />
+      
+      {/* Mobile Navbar - shown only on mobile */}
+      <div className="md:hidden">
+        <MobileNavbar
+          navigation={navigation}
+          onDrawerToggle={handleDrawerToggle}
+          drawerOpen={mobileOpen}
+        />
+      </div>
+
+      {/* Mobile Menu - DaisyUI Drawer - rendered at root level for proper z-index */}
+      <div className="md:hidden">
+        <MobileMenu isOpen={mobileOpen} onClose={handleDrawerToggle} />
+      </div>
+
+      {/* Desktop Header - shown only on desktop */}
       <AppBar
         position="sticky"
         elevation={0}
@@ -536,6 +554,7 @@ export function Header() {
           backgroundColor: colors.background.paper,
           borderBottom: `1px solid ${colors.border.light}`,
           boxShadow: shadows.sm,
+          display: { xs: "none", md: "block" },
         }}
       >
         <DesignContainer
@@ -594,7 +613,7 @@ export function Header() {
             {/* Navigation and Order Now button on the right */}
             <Box
               sx={{
-                display: { xs: "none", md: "flex" },
+                display: "flex",
                 gap: 2,
                 alignItems: "center",
                 flexWrap: "nowrap",
@@ -1090,369 +1109,8 @@ export function Header() {
               </Link>
             </Box>
 
-            {/* Mobile Menu Button */}
-
-            <AccessibleIconButton
-              color="primary"
-              ariaLabel="Open mobile menu"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{
-                display: { md: "none" },
-                color: colors.primary.main,
-                "&:hover": {
-                  backgroundColor: colors.background.subtle,
-                },
-              }}
-            >
-              <MenuIcon />
-            </AccessibleIconButton>
           </Toolbar>
         </DesignContainer>
-
-        {/* Professional Mobile Navigation Drawer */}
-        <Drawer
-          variant="temporary"
-          anchor="right"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better mobile performance
-          }}
-          sx={mobileDrawerStyles}
-        >
-          {/* Mobile Header */}
-          <Box sx={mobileHeaderStyles}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                position: "relative",
-                zIndex: 1,
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  fontFamily: typography.fontFamily.display,
-                  fontWeight: typography.fontWeight.bold,
-                  letterSpacing: 0.5,
-                }}
-              >
-                Menu
-              </Typography>
-              <AccessibleIconButton
-                onClick={handleDrawerToggle}
-                ariaLabel="Close mobile menu"
-                title="Close menu"
-                sx={{
-                  color: colors.primary.contrast,
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                  backdropFilter: "blur(10px)",
-                  minWidth: "56px", // Larger touch target for close button
-                  minHeight: "56px", // Larger touch target for close button
-                  width: "56px",
-                  height: "56px",
-                  padding: "16px", // Ensure adequate padding
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.2)",
-                  },
-                }}
-              >
-                <CloseIcon />
-              </AccessibleIconButton>
-            </Box>
-
-            {/* Order Now Button (mobile) */}
-            <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
-              <Link
-                href="/order"
-                passHref
-                style={{ textDecoration: "none" }}
-                aria-label="Order your custom cake now"
-              >
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={handleMobileNavigation}
-                  sx={{
-                    minHeight: "48px", // WCAG touch target requirement
-                    py: 2, // Increased padding for better touch targets
-                    borderRadius: 3,
-                    backgroundColor: colors.primary.contrast,
-                    color: colors.primary.main,
-                    fontWeight: typography.fontWeight.bold,
-                    fontSize: typography.fontSize.base,
-                    boxShadow: shadows.lg,
-                    textTransform: "none",
-                    letterSpacing: 0.5,
-                    transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
-                    "&:hover": {
-                      backgroundColor: colors.background.paper,
-                      transform: "translateY(-2px)",
-                      boxShadow: shadows.xl,
-                    },
-                    "&:focus": {
-                      outline: `2px solid ${colors.primary.main}`,
-                      outlineOffset: "2px",
-                    },
-                  }}
-                  size="large"
-                >
-                  Order Your Cake Now
-                </Button>
-              </Link>
-            </Box>
-
-            {/* Mobile search - compact, pill, with icon */}
-            <Box sx={{ mt: 2, position: "relative", zIndex: 1 }}>
-              <Box component="form" role="search" method="GET" action="/search" sx={{ display: "flex", gap: 1 }}>
-                <TextField
-                  name="q"
-                  placeholder="Search site"
-                  size="small"
-                  fullWidth
-                  inputProps={{ "aria-label": "Search site" }}
-                  variant="outlined"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: borderRadius.lg,
-                      backgroundColor: "#fff",
-                    },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton type="submit" aria-label="Submit search" size="small">
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-            </Box>
-
-            {/* Call Us Button (mobile) */}
-            <Box sx={{ mt: 1, position: "relative", zIndex: 1 }}>
-              <Button
-                component="a"
-                href={CLIENT_BUSINESS_INFO.telLink}
-                fullWidth
-                sx={{
-                  minHeight: "48px",
-                  py: 2,
-                  borderRadius: 3,
-                  color: colors.primary.contrast,
-                  border: `1px solid ${colors.primary.contrast}`,
-                  backgroundColor: "transparent",
-                  fontWeight: typography.fontWeight.bold,
-                  fontSize: typography.fontSize.base,
-                  textTransform: "none",
-                  letterSpacing: 0.5,
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    transform: "translateY(-1px)",
-                  },
-                  "&:focus": {
-                    outline: `2px solid ${colors.primary.contrast}`,
-                    outlineOffset: "2px",
-                  },
-                }}
-                size="large"
-              >
-                Call Us Now
-              </Button>
-            </Box>
-          </Box>
-
-          {/* Mobile Navigation List */}
-          <Box sx={{ flex: 1, overflow: "auto" }}>
-            {/* Breadcrumb Navigation */}
-            {Object.keys(mobileMenuState).length > 0 && (
-              <MobileBreadcrumbs
-                items={[
-                  { label: "Menu", href: "#" },
-                  ...Object.entries(mobileMenuState)
-                    .filter(([_, isOpen]) => isOpen)
-                    .map(([menuKey]) => ({
-                      label: menuKey,
-                      href: `#${menuKey.toLowerCase()}`,
-                    })),
-                ]}
-                onNavigate={href => {
-                  const menuKey = href.replace("#", "");
-                  if (mobileMenuState[menuKey]) {
-                    toggleMobileSubmenu(menuKey);
-                  }
-                }}
-              />
-            )}
-            <List sx={{ p: 0 }}>
-              {navigation.map((item, index) => {
-                const isActive = pathname === item.href;
-                const isMegaMenu = item.megaMenu !== undefined;
-                const isDropdown = item.dropdown !== undefined;
-
-                if (isMegaMenu) {
-                  const menuKey = item.name;
-                  const isOpen = mobileMenuState[menuKey];
-                  const onToggle = () => toggleMobileSubmenu(menuKey);
-                  const onNavigate = () => {
-                    handleMobileNavigation();
-                  };
-
-                  return (
-                    <Box key={item.name}>
-                      <MobileMenuItem
-                        item={item}
-                        isActive={isActive}
-                        pathname={pathname}
-                        onToggle={onToggle}
-                        isOpen={isOpen}
-                        onNavigate={onNavigate}
-                        hasSubmenu={true}
-                      />
-                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box sx={{ backgroundColor: colors.background.subtle }}>
-                          {/* Featured Section */}
-                          <Box sx={{ p: 2, pb: 1 }}>
-                            <Typography
-                              variant="subtitle2"
-                              sx={{
-                                color: colors.primary.main,
-                                fontWeight: typography.fontWeight.bold,
-                                mb: 1,
-                                textTransform: "uppercase",
-                                letterSpacing: 0.5,
-                                fontSize: typography.fontSize.sm,
-                              }}
-                            >
-                              Featured
-                            </Typography>
-                            {item.megaMenu.featured.map(featuredItem => (
-                              <MobileSubmenuItem
-                                key={featuredItem.name}
-                                item={featuredItem}
-                                pathname={pathname}
-                                onNavigate={handleMobileNavigation}
-                                isFeatured={true}
-                              />
-                            ))}
-                          </Box>
-
-                          {/* Categories */}
-                          {item.megaMenu.categories.map(category => (
-                            <Box key={category.title} sx={{ p: 2, pt: 1 }}>
-                              <Typography
-                                variant="subtitle2"
-                                sx={{
-                                  color: colors.text.secondary,
-                                  fontWeight: typography.fontWeight.semibold,
-                                  mb: 1.5,
-                                  textTransform: "uppercase",
-                                  letterSpacing: 0.5,
-                                  fontSize: typography.fontSize.sm,
-                                }}
-                              >
-                                {category.title}
-                              </Typography>
-                              {category.items.map(categoryItem => (
-                                <MobileSubmenuItem
-                                  key={categoryItem.name}
-                                  item={categoryItem}
-                                  pathname={pathname}
-                                  onNavigate={handleMobileNavigation}
-                                />
-                              ))}
-                            </Box>
-                          ))}
-                        </Box>
-                      </Collapse>
-                    </Box>
-                  );
-                }
-
-                if (isDropdown) {
-                  const dropdownKey = item.name;
-                  const isOpen = mobileMenuState[dropdownKey];
-                  const onToggle = () => toggleMobileSubmenu(dropdownKey);
-                  const onNavigate = () => {
-                    handleMobileNavigation();
-                  };
-
-                  return (
-                    <Box key={item.name}>
-                      <MobileMenuItem
-                        item={item}
-                        isActive={isActive}
-                        pathname={pathname}
-                        onToggle={onToggle}
-                        isOpen={isOpen}
-                        onNavigate={onNavigate}
-                        hasSubmenu={true}
-                      />
-                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box sx={{ backgroundColor: colors.background.subtle }}>
-                          {item.dropdown.map(dropdownItem => (
-                            <MobileSubmenuItem
-                              key={dropdownItem.name}
-                              item={dropdownItem}
-                              pathname={pathname}
-                              onNavigate={handleMobileNavigation}
-                            />
-                          ))}
-                        </Box>
-                      </Collapse>
-                    </Box>
-                  );
-                }
-
-                return (
-                  <MobileMenuItem
-                    key={item.name}
-                    item={item}
-                    isActive={isActive}
-                    pathname={pathname}
-                    onToggle={() => {}}
-                    isOpen={false}
-                    onNavigate={handleMobileNavigation}
-                    hasSubmenu={false}
-                  />
-                );
-              })}
-            </List>
-
-            {/* Loading State */}
-            {isLoading && (
-              <Box sx={{ p: 3, textAlign: "center" }}>
-                <Skeleton variant="rectangular" width="100%" height={40} sx={{ mb: 1 }} />
-                <Skeleton variant="rectangular" width="80%" height={20} />
-              </Box>
-            )}
-          </Box>
-
-          {/* Mobile Footer */}
-          <Box
-            sx={{
-              p: 3,
-              borderTop: `1px solid ${colors.border.light}`,
-              backgroundColor: colors.background.subtle,
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{
-                color: colors.text.secondary,
-                textAlign: "center",
-                fontSize: typography.fontSize.sm,
-              }}
-            >
-              Real Ukrainian Honey Cakes
-            </Typography>
-          </Box>
-        </Drawer>
       </AppBar>
     </>
   );

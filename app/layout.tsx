@@ -1,25 +1,23 @@
-import type { Metadata, Viewport } from "next";
-import { Alice } from "next/font/google";
-import { Providers } from "./providers";
-import "./globals.css";
-import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
-import { theme } from "@/lib/theme";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
+import { CssBaseline, ThemeProvider } from "@/lib/mui-optimization";
+import { theme } from "@/lib/theme";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Header } from "./components/Header";
-import UtilityBar from "./components/UtilityBar";
-import Footer from "./components/Footer";
-import { ScrollToTop } from "./components/ScrollToTop";
-import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
-import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
-import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
-import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import type { Metadata, Viewport } from "next";
+import { Alice, Inter } from "next/font/google";
 import Script from "next/script";
 import { Suspense } from "react";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { TechnicalIssueNotification } from "./components/TechnicalIssueNotification";
+import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
+import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
+import Footer from "./components/Footer";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import { ConditionalHeader } from "./components/ConditionalHeader";
+import { CriticalCSS, PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { ScrollToTop } from "./components/ScrollToTop";
+import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
+import "./globals.css";
+import { Providers } from "./providers";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -28,6 +26,16 @@ const alice = Alice({
   display: "swap",
   preload: true,
   fallback: ["Georgia", "serif"],
+  adjustFontFallback: true,
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
   adjustFontFallback: true,
 });
 
@@ -172,9 +180,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
+}) {
   return (
-    <html lang="en-GB" className={`${alice.variable}`}>
+    <html lang="en-GB" className={`${alice.variable} ${inter.variable}`}>
       <head>
         {/* Critical CSS inlining */}
         <style
@@ -439,15 +451,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CssBaseline />
             <Providers>
               <div className="flex flex-col min-h-screen">
-                <UtilityBar />
-                <Header />
+                <ConditionalHeader />
                 <main className="flex-grow">{children}</main>
-                <Footer />
-                      <ScrollToTop />
-                      <WebVitalsMonitor />
-                      <PerformanceOptimizer />
-                      <DynamicCookieConsent />
-                      <DynamicDevTools />
+                {/* <Footer /> */}
+                <ScrollToTop />
+                <WebVitalsMonitor />
+                <PerformanceOptimizer />
+                <DynamicCookieConsent />
+                <DynamicDevTools />
               </div>
             </Providers>
           </ThemeProvider>

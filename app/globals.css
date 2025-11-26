@@ -1,5 +1,49 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: light --default;
+  root: ":root";
+  logs: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "olgish-cakes";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: oklch(98% 0.02 60);
+  --color-base-200: oklch(95% 0.03 60);
+  --color-base-300: oklch(92% 0.04 60);
+  --color-base-content: oklch(20% 0.05 240);
+  --color-primary: oklch(45% 0.15 270);
+  --color-primary-content: oklch(98% 0.01 60);
+  --color-secondary: oklch(70% 0.25 200);
+  --color-secondary-content: oklch(98% 0.01 200);
+  --color-accent: oklch(75% 0.12 30);
+  --color-accent-content: oklch(20% 0.05 30);
+  --color-neutral: oklch(50% 0.05 240);
+  --color-neutral-content: oklch(98% 0.01 240);
+  --color-info: oklch(70% 0.2 220);
+  --color-info-content: oklch(98% 0.01 220);
+  --color-success: oklch(55% 0.2 150);
+  --color-success-content: oklch(98% 0.01 150);
+  --color-warning: oklch(80% 0.25 80);
+  --color-warning-content: oklch(20% 0.05 80);
+  --color-error: oklch(65% 0.3 30);
+  --color-error-content: oklch(98% 0.01 30);
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+
+  --depth: 1;
+  --noise: 0;
+}
 
 /* WCAG Touch Target Utilities */
 @layer utilities {
@@ -155,11 +199,24 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-alice), Georgia, serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font family utilities for design system */
+.font-sans {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive, system-ui, sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-alice), Georgia, serif;
 }
 
 /* Ensure lists display properly */

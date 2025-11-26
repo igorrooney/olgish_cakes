@@ -8,26 +8,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Ukrainian brand colors - WCAG AA compliant
+        // Figma design tokens - Primary colors
+        primary: {
+          50: "#ECECF9",
+          100: "#D8D9F3",
+          200: "#B1B3E7",
+          400: "#6467CE",
+          500: "#2E3192",
+          700: "#252774",
+          800: "#181A4E",
+        },
+        // Accent colors from Figma
+        accent: {
+          50: "#FFEBE5",
+          200: "#FFAF99",
+        },
+        // Base colors from Figma
+        base: {
+          100: "#FFF5E6", // amber-50 background
+          200: "#FFF5E6",
+          300: "#E5E6E6",
+          content: "#1F2937",
+        },
+        // Ukrainian brand colors - kept for compatibility
         ukrainian: {
           blue: "#2E3192",
           yellow: "#FEF102",
           honey: "#D4A76A",
           cream: "#FFF5E6",
           berry: "#8B0000",
-        },
-        // Primary colors
-        primary: {
-          50: "#F0F6FF",
-          100: "#E0EDFF",
-          200: "#C7DBFF",
-          300: "#A5C4FF",
-          400: "#82A3FF",
-          500: "#4A4DB0", // Updated tone for WCAG AA
-          600: "#2E3192", // Main primary (brand)
-          700: "#1F2368",
-          800: "#1B1E59", // Dark primary
-          900: "#002F5D",
         },
         // Status colors - WCAG AA compliant
         success: {
@@ -36,7 +45,7 @@ module.exports = {
           200: "#BBF7D0",
           300: "#86EFAC",
           400: "#4ADE80",
-          500: "#1D8348", // WCAG AA compliant
+          500: "#219653", // From Figma Green 1
           600: "#16A34A",
           700: "#15803D",
           800: "#166534",
@@ -48,7 +57,7 @@ module.exports = {
           200: "#FECACA",
           300: "#FCA5A5",
           400: "#F87171",
-          500: "#D04436", // WCAG AA compliant
+          500: "#D04436",
           600: "#DC2626",
           700: "#B91C1C",
           800: "#991B1B",
@@ -62,7 +71,7 @@ module.exports = {
           400: "#FBBF24",
           500: "#F39C12",
           600: "#D97706",
-          700: "#867100", // WCAG AA compliant dark secondary
+          700: "#867100",
           800: "#92400E",
           900: "#78350F",
         },
@@ -72,12 +81,52 @@ module.exports = {
           200: "#BFDBFE",
           300: "#93C5FD",
           400: "#60A5FA",
-          500: "#2A7AAF", // WCAG AA compliant
+          500: "#2A7AAF",
           600: "#2563EB",
           700: "#1D4ED8",
           800: "#1E40AF",
           900: "#1E3A8A",
         },
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["'Comic Sans MS'", "'Chalkboard SE'", "'Comic Neue'", "cursive", "system-ui", "sans-serif"],
+        body: ["var(--font-alice)", "Georgia", "serif"],
+      },
+      fontSize: {
+        xs: ["12px", { lineHeight: "16px" }],
+        sm: ["14px", { lineHeight: "20px" }],
+        base: ["16px", { lineHeight: "22px" }],
+        xl: ["20px", { lineHeight: "28px" }],
+        "2xl": ["24px", { lineHeight: "40px" }],
+      },
+      spacing: {
+        0: "0px",
+        1: "4px",
+        2: "8px",
+        3: "12px",
+        4: "16px",
+        5: "20px",
+        6: "24px",
+        8: "32px",
+        10: "40px",
+        12: "48px",
+      },
+      borderRadius: {
+        btn: "8px",
+        box: "16px",
+        rounded: "1000px",
+      },
+      boxShadow: {
+        sm: "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
+        btn: "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
+        xl: "0px 8px 10px -6px rgba(0, 0, 0, 0.1), 0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+      },
+      screens: {
+        mobile: "390px",
+        tablet: "1024px",
+        "small-laptop": "1280px",
+        "large-laptop": "1512px",
       },
     },
   },
