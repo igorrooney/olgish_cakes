@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { colors } from "@/lib/design-system";
 
 export function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -139,13 +138,7 @@ export function MobileHeader() {
           <div className="grid grid-cols-2 gap-2 p-2">
             <div className="flex flex-col items-start">
               <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p 
-                  className="font-moreSugar text-sm leading-5" 
-                  style={{ 
-                    color: colors.navigation.main,
-                    fontFamily: "var(--font-more-sugar), cursive, fantasy"
-                  }}
-                >
+                <p className="font-moreSugar text-sm leading-5 text-[#6467CE]">
                   MENU
                 </p>
               </div>
@@ -192,13 +185,7 @@ export function MobileHeader() {
             </div>
             <div className="flex flex-col items-start">
               <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p 
-                  className="font-moreSugar text-sm leading-5" 
-                  style={{ 
-                    color: colors.navigation.main,
-                    fontFamily: "var(--font-more-sugar), cursive, fantasy"
-                  }}
-                >
+                <p className="font-moreSugar text-sm leading-5 text-[#6467CE]">
                   LEARN HUB
                 </p>
               </div>

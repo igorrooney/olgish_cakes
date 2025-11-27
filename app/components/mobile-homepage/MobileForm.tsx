@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -13,6 +13,7 @@ const formSchema = z.object({
   occasion: z.string().optional(),
   date: z.string().min(1, "Please select a date"),
   requirements: z.string().optional(),
+  csrfToken: z.string().min(1, "CSRF token is required"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -33,6 +34,23 @@ export function MobileForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [csrfToken, setCsrfToken] = useState<string>("");
+
+  // Fetch CSRF token on component mount
+  useEffect(() => {
+    async function fetchCsrfToken() {
+      try {
+        const response = await fetch('/api/csrf-token');
+        if (response.ok) {
+          const data = await response.json();
+          setCsrfToken(data.token);
+        }
+      } catch (error) {
+        console.error('Failed to fetch CSRF token:', error);
+      }
+    }
+    fetchCsrfToken();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +59,12 @@ export function MobileForm() {
     setSubmitSuccess(false);
 
     try {
-      const validated = formSchema.parse(formData);
+      // Include CSRF token in submission
+      if (!csrfToken) {
+        throw new Error('CSRF token not loaded. Please refresh the page and try again.');
+      }
+
+      const validated = formSchema.parse({ ...formData, csrfToken });
       
       const response = await fetch('/api/custom-cake-enquiry', {
         method: 'POST',
@@ -49,6 +72,7 @@ export function MobileForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(validated),
+        credentials: 'same-origin', // Include cookies for CSRF validation
       });
 
       if (!response.ok) {

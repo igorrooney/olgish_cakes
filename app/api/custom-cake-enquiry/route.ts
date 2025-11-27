@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { validateCsrfToken } from "@/lib/csrf";
 
 const formSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -11,9 +12,15 @@ const formSchema = z.object({
   occasion: z.string().optional(),
   date: z.string().min(1, "Please select a date"),
   requirements: z.string().optional(),
+  csrfToken: z.string().min(1, "CSRF token is required"),
 });
 
-// Rate limiting: simple in-memory store (use Redis in production)
+// Rate limiting: simple in-memory store
+// NOTE: This in-memory implementation won't work across serverless instances.
+// For production, use Redis or Vercel's built-in rate limiting.
+// Example Redis implementation:
+//   - Use @upstash/ratelimit or similar
+//   - Or implement with Vercel Edge Config
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 5; // 5 requests
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
@@ -48,19 +55,42 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // Validate input
+    // CSRF Protection: Validate CSRF token
+    const cookieToken = request.cookies.get('csrf-token')?.value || null;
+    const submittedToken = body.csrfToken;
+
+    if (!cookieToken || !submittedToken) {
+      return NextResponse.json(
+        { error: "CSRF token missing" },
+        { status: 403 }
+      );
+    }
+
+    if (!validateCsrfToken(submittedToken, cookieToken)) {
+      return NextResponse.json(
+        { error: "Invalid CSRF token" },
+        { status: 403 }
+      );
+    }
+
+    // Validate input (includes csrfToken validation)
     const validated = formSchema.parse(body);
+    
+    // Remove csrfToken from validated data before processing
+    const { csrfToken: _, ...formData } = validated;
 
     // TODO: Send email notification or save to database
-    // Example: await sendEmail(validated);
-    // Example: await saveToDatabase(validated);
+    // Example: await sendEmail(formData);
+    // Example: await saveToDatabase(formData);
 
-    // Log the submission (remove in production or use proper logging)
-    console.log("Custom cake enquiry received:", {
-      fullName: validated.fullName,
-      email: validated.email,
-      date: validated.date,
-    });
+    // Log the submission in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Custom cake enquiry received:", {
+        fullName: formData.fullName,
+        email: formData.email,
+        date: formData.date,
+      });
+    }
 
     return NextResponse.json(
       { message: "Enquiry submitted successfully" },
