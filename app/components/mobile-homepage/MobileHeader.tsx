@@ -15,7 +15,12 @@ export function MobileHeader() {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (!isMenuOpen) return;
 
-      const target = event.target as Node;
+      const target = event.target;
+      
+      // Type guard instead of assertion
+      if (!(target instanceof Node)) {
+        return;
+      }
       
       // Don't close if clicking on the menu button
       if (buttonRef.current?.contains(target)) {
@@ -35,6 +40,23 @@ export function MobileHeader() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isMenuOpen]);
 
@@ -62,6 +84,8 @@ export function MobileHeader() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+            aria-haspopup="true"
             style={{ minWidth: '48px', minHeight: '48px' }}
           >
             {isMenuOpen ? (
@@ -72,14 +96,14 @@ export function MobileHeader() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 style={{ display: 'block', flexShrink: 0, width: '24px', height: '24px' }}
+                aria-hidden="true"
               >
                 <path
                   d="M6 18L18 6M6 6l12 12"
-                  stroke="#1F2937"
+                  className="stroke-base-content"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{ stroke: '#1F2937' }}
                 />
               </svg>
             ) : (
@@ -90,14 +114,14 @@ export function MobileHeader() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 style={{ display: 'block', flexShrink: 0, width: '24px', height: '24px' }}
+                aria-hidden="true"
               >
                 <path
                   d="M4 6h16M4 12h16M4 18h16"
-                  stroke="#1F2937"
+                  className="stroke-base-content"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{ stroke: '#1F2937' }}
                 />
               </svg>
             )}
@@ -105,7 +129,13 @@ export function MobileHeader() {
         </div>
       </div>
       {isMenuOpen && (
-        <div ref={menuRef} className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible">
+        <div
+          ref={menuRef}
+          id="mobile-menu"
+          role="menu"
+          className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible"
+          aria-label="Main navigation"
+        >
           <div className="grid grid-cols-2 gap-2 p-2">
             <div className="flex flex-col items-start">
               <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
@@ -121,6 +151,7 @@ export function MobileHeader() {
               </div>
               <Link
                 href="/cakes"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -128,6 +159,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/custom-cakes"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -135,6 +167,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/farmers-markets"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -142,6 +175,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/faqs"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -149,6 +183,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/contact"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -169,6 +204,7 @@ export function MobileHeader() {
               </div>
               <Link
                 href="/learn/articles"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -176,6 +212,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/learn/guides"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -183,6 +220,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/learn/workshops"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -190,6 +228,7 @@ export function MobileHeader() {
               </Link>
               <Link
                 href="/learn/customer-stories"
+                role="menuitem"
                 className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
