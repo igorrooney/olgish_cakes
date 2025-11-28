@@ -144,5 +144,6 @@ module.exports = {
     "md:flex-col",
     "lg:flex-col",
     "xl:flex-col",
+    "text-primary-400",
   ],
 };

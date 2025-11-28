@@ -9,12 +9,12 @@ export function MobileHero() {
       <div className="flex flex-col items-center gap-6 lg:gap-8">
         {/* Mobile: Simple heading, Tablet: Rotated heading with decorative elements */}
         <div className="relative w-full lg:min-h-[300px] flex items-center justify-center">
-          <h1 className="font-display text-2xl lg:text-4xl text-primary-700 text-center uppercase tracking-wider leading-10 lg:leading-[56px] lg:tracking-[7.68px] lg:rotate-[-2.4deg]">
+          <h1 className="hero-heading font-moreSugar text-center uppercase tracking-[0.16em] rotate-[-2.4deg] text-primary-700 font-normal">
             Handmade Cakes
             <br />
             delivered
             <br />
-            <span className="lg:block">to your door from leeds</span>
+            to your door from leeds
           </h1>
         </div>
         

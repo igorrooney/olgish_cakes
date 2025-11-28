@@ -14,7 +14,7 @@
   --color-base-100: oklch(98% 0.02 60);
   --color-base-200: oklch(95% 0.03 60);
   --color-base-300: oklch(92% 0.04 60);
-  --color-base-content: oklch(20% 0.05 240);
+  --color-base-content: #1F2937;
   --color-primary: oklch(45% 0.15 270);
   --color-primary-content: oklch(98% 0.01 60);
   --color-secondary: oklch(70% 0.25 200);
@@ -221,6 +221,23 @@ body {
 
 .font-moreSugar {
   font-family: var(--font-more-sugar), cursive, fantasy !important;
+}
+
+/* Mobile Hero Heading - Override global h1 styles */
+h1.hero-heading {
+  font-family: var(--font-more-sugar), cursive, fantasy;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 40px;
+  color: #252774;
+}
+
+@media (min-width: 1024px) {
+  h1.hero-heading {
+    font-size: 48px;
+    line-height: 56px;
+  }
 }
 
 /* Ensure lists display properly */

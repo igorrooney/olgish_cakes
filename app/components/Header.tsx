@@ -592,10 +592,7 @@ export function Header() {
                     width={120}
                     height={85}
                     priority
-                    style={{
-                      height: "auto",
-                      maxWidth: "120px",
-                    }}
+                    className="h-auto w-20 tablet:w-16 small-laptop:w-[120px]"
                   />
                 </Box>
               </Link>

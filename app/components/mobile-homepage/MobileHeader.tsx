@@ -1,8 +1,9 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { colors } from "@/lib/design-system"
 
 export function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,7 +65,7 @@ export function MobileHeader() {
       <div className="navbar px-4 py-4 lg:px-10 lg:py-4">
         <div className="navbar-start">
           <Link href="/" className="flex items-center gap-2 p-2">
-            <div className="w-12 h-12 relative">
+            <div className="w-12 h-12 lg:w-16 lg:h-16 relative">
               <Image
                 src="/images/olgish-cakes-logo-bakery-brand.png"
                 alt="Olgish Cakes Logo"
@@ -137,15 +138,19 @@ export function MobileHeader() {
         >
           <div className="grid grid-cols-2 gap-2 p-2">
             <div className="flex flex-col items-start">
-              <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p className="font-moreSugar text-sm leading-5 text-[#6467CE]">
+              <div className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn" style={{ minHeight: '36px' }}>
+                <p
+                  className="font-moreSugar text-sm leading-none"
+                  style={{ color: colors.navigation.main }}
+                >
                   MENU
                 </p>
               </div>
               <Link
                 href="/cakes"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cakes by post
@@ -153,7 +158,8 @@ export function MobileHeader() {
               <Link
                 href="/custom-cakes"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Custom cakes
@@ -161,7 +167,8 @@ export function MobileHeader() {
               <Link
                 href="/farmers-markets"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Farmers markets
@@ -169,7 +176,8 @@ export function MobileHeader() {
               <Link
                 href="/faqs"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 FAQs
@@ -177,22 +185,27 @@ export function MobileHeader() {
               <Link
                 href="/contact"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
               </Link>
             </div>
             <div className="flex flex-col items-start">
-              <div className="w-full px-4 py-0 h-9 flex items-center rounded-btn">
-                <p className="font-moreSugar text-sm leading-5 text-[#6467CE]">
+              <div className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn" style={{ minHeight: '36px' }}>
+                <p
+                  className="font-moreSugar text-sm leading-none"
+                  style={{ color: colors.navigation.main }}
+                >
                   LEARN HUB
                 </p>
               </div>
               <Link
                 href="/learn/articles"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Articles
@@ -200,7 +213,8 @@ export function MobileHeader() {
               <Link
                 href="/learn/guides"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Guides
@@ -208,7 +222,8 @@ export function MobileHeader() {
               <Link
                 href="/learn/workshops"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Workshops
@@ -216,7 +231,8 @@ export function MobileHeader() {
               <Link
                 href="/learn/customer-stories"
                 role="menuitem"
-                className="w-full px-4 py-0 h-9 flex items-center rounded-btn text-base-content font-sans text-sm"
+                className="w-full h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none"
+                style={{ minHeight: '36px', fontFamily: 'Inter' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Customer stories
