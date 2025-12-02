@@ -59,7 +59,7 @@ Before starting, ensure you have:
 
 1. **Go to your GitHub repository**
    ```
-   https://github.com/YOUR_USERNAME/olgish_cakes/settings/secrets/actions
+   https://github.com/igorrooney/olgish_cakes/settings/secrets/actions
    ```
 
 2. **Update these secrets:**
@@ -79,7 +79,7 @@ Before starting, ensure you have:
 
 3. **Click "Run workflow"** button
 
-4. **Select branch** (usually `main`) and click "Run workflow"
+4. **Select branch** (usually `master`) and click "Run workflow"
 
 5. **Monitor the run** - It should complete successfully within 2-3 minutes
 
@@ -204,7 +204,7 @@ This scope only allows access to files created by the app, not all Drive files.
 
 If you continue experiencing issues:
 
-1. Check the [GitHub Actions logs](https://github.com/YOUR_USERNAME/olgish_cakes/actions)
+1. Check the [GitHub Actions logs](https://github.com/igorrooney/olgish_cakes/actions)
 2. Verify all secrets are set correctly
 3. Ensure Google Cloud project is properly configured
 4. Review Google Cloud Console audit logs for OAuth issues
@@ -226,6 +226,6 @@ pnpm setup:gdrive
 pnpm backup:sanity:drive
 
 # Check workflow status
-# Go to: https://github.com/YOUR_USERNAME/olgish_cakes/actions
+# Go to: https://github.com/igorrooney/olgish_cakes/actions
 ```
 
