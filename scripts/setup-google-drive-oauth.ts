@@ -50,6 +50,25 @@ const logger = {
   }
 }
 
+async function createBackupFolder(oauth2Client: InstanceType<typeof google.auth.OAuth2>): Promise<string> {
+  const drive = google.drive({ version: 'v3', auth: oauth2Client })
+  
+  try {
+    const response = await drive.files.create({
+      requestBody: {
+        name: 'Sanity Backups',
+        mimeType: 'application/vnd.google-apps.folder'
+      },
+      fields: 'id, name, webViewLink'
+    })
+
+    return response.data.id || ''
+  } catch (error) {
+    logger.error('Failed to create backup folder', error)
+    throw error
+  }
+}
+
 async function main() {
   logger.info('🔐 Google Drive OAuth Setup\n')
   logger.info('This script will help you get a refresh token for Google Drive access.\n')
@@ -91,23 +110,43 @@ async function main() {
     const { tokens } = await oauth2Client.getToken(code)
     
     if (!tokens.refresh_token) {
-      logger.error('\n❌ No refresh token received. Make sure you:')
-      logger.error('   - Set access_type to "offline"')
-      logger.error('   - Include prompt: "consent"')
-      logger.error('   - Are using the app for the first time or revoked access')
+      logger.error('\n❌ No refresh token received. This may happen if you previously authorized this app.')
+      logger.error('   To fix this:')
+      logger.error('   1. Go to https://myaccount.google.com/permissions')
+      logger.error('   2. Find and remove this app')
+      logger.error('   3. Run this script again')
+      rl.close()
       process.exit(1)
     }
 
-    logger.success('\n✅ Success! Here are your tokens:\n')
-    logger.info('Add these to your .env.local file:\n')
+    logger.success('\n✅ Successfully obtained refresh token!')
+    
+    // Test the token by creating a backup folder
+    logger.info('\n⏳ Testing token by creating "Sanity Backups" folder...')
+    oauth2Client.setCredentials({ refresh_token: tokens.refresh_token })
+    
+    const folderId = await createBackupFolder(oauth2Client)
+    
+    logger.success('\n✅ Test successful! Folder created.')
+    logger.info('\n📝 Add these to your .env.local file:\n')
     logger.info(`GDRIVE_CLIENT_ID=${clientId}`)
     logger.info(`GDRIVE_CLIENT_SECRET=${clientSecret}`)
-    logger.info(`GDRIVE_REFRESH_TOKEN=${tokens.refresh_token}\n`)
+    logger.info(`GDRIVE_REFRESH_TOKEN=${tokens.refresh_token}`)
+    logger.info(`GDRIVE_BACKUP_FOLDER_ID=${folderId}\n`)
+    logger.info(`📁 View folder: https://drive.google.com/drive/folders/${folderId}\n`)
+    
+    logger.info('💡 For GitHub Actions, add these as repository secrets:')
+    logger.info('   Settings → Secrets and variables → Actions → New repository secret\n')
     logger.warn('⚠️  Keep these tokens secure and never commit them to version control!\n')
 
     rl.close()
   } catch (error) {
-    logger.error('\n❌ Error getting tokens', error)
+    logger.error('\n❌ Error during setup', error)
+    logger.info('\n💡 Troubleshooting:')
+    logger.info('   • Make sure Google Drive API is enabled in Google Cloud Console')
+    logger.info('   • Check that your email is added as a test user in OAuth consent screen')
+    logger.info('   • Try revoking access at https://myaccount.google.com/permissions')
+    rl.close()
     process.exit(1)
   }
 }

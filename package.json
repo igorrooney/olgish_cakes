@@ -59,7 +59,7 @@
     "backup:setup": "node scripts/quick-setup.js",
     "backup:manager": "node scripts/backup-manager.js",
     "backup:sanity:drive": "tsx scripts/backup-sanity-to-drive.ts",
-    "setup:gdrive-oauth": "tsx scripts/setup-google-drive-oauth.ts",
+    "setup:gdrive": "tsx scripts/setup-google-drive-oauth.ts",
     "seo:ranking": "node scripts/advanced-seo-ranking.js",
     "seo:linking": "node scripts/internal-linking-optimizer.js",
     "seo:full-analysis": "npm run seo:ranking && npm run seo:linking",
