@@ -16,6 +16,7 @@ export const colors = {
     main: "#2E3192",
     light: "#4A4DB0", // Adjusted tone for WCAG AA compliance
     dark: "#1F2368",
+    800: "#181A4E",
     contrast: "#FFFFFF",
   },
   secondary: {

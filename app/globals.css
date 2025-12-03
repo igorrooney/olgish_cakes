@@ -223,6 +223,10 @@ body {
   font-family: var(--font-more-sugar), cursive, fantasy !important;
 }
 
+.font-oldenburg {
+  font-family: var(--font-oldenburg), Georgia, serif;
+}
+
 /* Mobile Hero Heading - Override global h1 styles */
 h1.hero-heading {
   font-family: var(--font-more-sugar), cursive, fantasy;

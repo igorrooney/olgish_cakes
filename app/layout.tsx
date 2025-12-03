@@ -5,15 +5,14 @@ import { theme } from "@/lib/theme";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { Alice, Inter } from "next/font/google";
+import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
+import { ConditionalHeader } from "./components/ConditionalHeader";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
-import Footer from "./components/Footer";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
-import { ConditionalHeader } from "./components/ConditionalHeader";
 import { CriticalCSS, PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
@@ -37,6 +36,16 @@ const inter = Inter({
   display: "swap",
   preload: true,
   fallback: ["system-ui", "sans-serif"],
+  adjustFontFallback: true,
+});
+
+const oldenburg = Oldenburg({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-oldenburg",
+  display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"],
   adjustFontFallback: true,
 });
 
@@ -211,7 +220,7 @@ export default function RootLayout({
   children: React.ReactNode 
 }) {
   return (
-    <html lang="en-GB" className={`${alice.variable} ${inter.variable} ${moreSugar.variable}`}>
+    <html lang="en-GB" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
       <head>
         {/* Critical CSS inlining */}
         <style
