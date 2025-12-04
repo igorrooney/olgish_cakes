@@ -8,6 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Navigation color from design system
+        navigation: {
+          DEFAULT: "#6467CE",
+          main: "#6467CE",
+        },
         // Figma design tokens - Primary colors
         primary: {
           50: "#ECECF9",

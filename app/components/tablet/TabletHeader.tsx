@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { colors } from "@/lib/design-system"
 
 export function TabletHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -140,11 +139,8 @@ export function TabletHeader() {
           <div className="grid grid-cols-3 gap-8 p-8">
             {/* MENU Column */}
             <div className="flex flex-col items-start">
-              <div className="w-full h-9 min-h-0 max-h-9 px-4 mb-2 flex items-center" style={{ minHeight: '36px' }}>
-                <p
-                  className="font-moreSugar text-sm leading-none"
-                  style={{ color: colors.navigation.main }}
-                >
+              <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
                   MENU
                 </p>
               </div>
@@ -152,8 +148,7 @@ export function TabletHeader() {
                 <Link
                   href="/cakes"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Cakes by post
@@ -161,8 +156,7 @@ export function TabletHeader() {
                 <Link
                   href="/custom-cakes"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Custom cakes
@@ -170,8 +164,7 @@ export function TabletHeader() {
                 <Link
                   href="/farmers-markets"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Farmers markets
@@ -179,8 +172,7 @@ export function TabletHeader() {
                 <Link
                   href="/faqs"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   FAQs
@@ -188,8 +180,7 @@ export function TabletHeader() {
                 <Link
                   href="/contact"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Contact
@@ -201,11 +192,8 @@ export function TabletHeader() {
             <div className="grid grid-cols-2 gap-8">
               {/* CUSTOM CAKES Column 1 */}
               <div className="flex flex-col items-start">
-                <div className="w-full h-9 min-h-0 max-h-9 px-4 mb-2 flex items-center" style={{ minHeight: '36px' }}>
-                  <p
-                    className="font-moreSugar text-sm leading-none whitespace-nowrap"
-                    style={{ color: colors.navigation.main }}
-                  >
+                <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                  <p className="font-moreSugar text-sm leading-none whitespace-nowrap text-[color:var(--color-navigation)]">
                     CUSTOM CAKES
                   </p>
                 </div>
@@ -260,7 +248,7 @@ export function TabletHeader() {
 
               {/* CUSTOM CAKES Column 2 */}
               <div className="flex flex-col items-start">
-                <div className="w-full h-9 min-h-0 max-h-9 px-4 mb-2 flex items-center" style={{ minHeight: '36px' }}>
+                <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
                 </div>
                 <nav className="flex flex-col w-full" aria-label="Custom cakes menu">
                   <Link
@@ -305,11 +293,8 @@ export function TabletHeader() {
 
             {/* LEARN HUB Column */}
             <div className="flex flex-col items-start pl-8">
-              <div className="w-full h-9 min-h-0 max-h-9 px-4 mb-2 flex items-center" style={{ minHeight: '36px' }}>
-                <p
-                  className="font-moreSugar text-sm leading-none"
-                  style={{ color: colors.navigation.main }}
-                >
+              <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
                   LEARN HUB
                 </p>
               </div>
@@ -317,8 +302,7 @@ export function TabletHeader() {
                 <Link
                   href="/learn/articles"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Articles
@@ -326,8 +310,7 @@ export function TabletHeader() {
                 <Link
                   href="/learn/guides"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Guides
@@ -335,8 +318,7 @@ export function TabletHeader() {
                 <Link
                   href="/learn/workshops"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Workshops
@@ -344,8 +326,7 @@ export function TabletHeader() {
                 <Link
                   href="/learn/customer-stories"
                   role="menuitem"
-                  className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
-                  style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Customer stories

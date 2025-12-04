@@ -1,8 +1,15 @@
-import { cookies } from 'next/headers';
 import { randomBytes, createHmac } from 'crypto';
 
 const CSRF_TOKEN_COOKIE = 'csrf-token';
-const CSRF_SECRET = process.env.CSRF_SECRET || 'change-this-secret-in-production';
+
+if (!process.env.CSRF_SECRET || process.env.CSRF_SECRET.length < 32) {
+  throw new Error(
+    'CSRF_SECRET environment variable must be set to a cryptographically secure value (min 32 chars). ' +
+    'Generate with: openssl rand -hex 32'
+  );
+}
+
+const CSRF_SECRET: string = process.env.CSRF_SECRET;
 
 /**
  * Generate a CSRF token

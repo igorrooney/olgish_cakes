@@ -10,7 +10,7 @@ export function MobileFooter() {
         {/* Mobile: Vertical layout, Tablet: Horizontal multi-column */}
         <div className="flex flex-col gap-8 lg:flex-row lg:gap-10 lg:flex-wrap">
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm lg:text-xl text-primary-400 uppercase">
+            <h3 className="font-display text-sm lg:text-xl text-[color:var(--color-navigation)] uppercase">
               NAVIGATION
             </h3>
             <ul className="menu menu-vertical gap-2">
@@ -47,15 +47,25 @@ export function MobileFooter() {
             </ul>
           </div>
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm lg:text-xl text-primary-400 uppercase">
+            <h3 className="font-display text-sm lg:text-xl text-[color:var(--color-navigation)] uppercase">
               CONTACT
             </h3>
             <ul className="menu menu-vertical gap-2">
-              <li className="font-sans text-sm lg:text-base text-base-content">
-                +44 786 721 8194
+              <li>
+                <a
+                  href="tel:+447867218194"
+                  className="link font-sans text-sm lg:text-base text-base-content"
+                >
+                  +44 786 721 8194
+                </a>
               </li>
-              <li className="font-sans text-sm lg:text-base text-base-content">
-                hello@olgishcakes.co.uk
+              <li>
+                <a
+                  href="mailto:hello@olgishcakes.co.uk"
+                  className="link font-sans text-sm lg:text-base text-base-content"
+                >
+                  hello@olgishcakes.co.uk
+                </a>
               </li>
               <li className="font-sans text-sm lg:text-base text-base-content">
                 Allerton Grange
@@ -66,7 +76,7 @@ export function MobileFooter() {
             </ul>
           </div>
           <div className="flex flex-col gap-2">
-            <h3 className="font-display text-sm lg:text-xl text-primary-400 uppercase">
+            <h3 className="font-display text-sm lg:text-xl text-[color:var(--color-navigation)] uppercase">
               FOOTER
             </h3>
             <ul className="menu menu-vertical gap-2">

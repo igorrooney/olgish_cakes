@@ -102,10 +102,10 @@ export function MobileHero() {
 
         {/* Body Text */}
         <div className="flex flex-col gap-4 text-center lg:gap-6 lg:max-w-4xl px-2">
-          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center" style={{ color: '#181A4E' }}>
+          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center text-primary-800">
             Small-batch, hand-decorated cakes baked in Leeds.
           </p>
-          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center" style={{ color: '#181A4E' }}>
+          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center text-primary-800">
             Delivered nationwide by post, or brought to your door across Leeds and West Yorkshire.
           </p>
         </div>
@@ -114,8 +114,7 @@ export function MobileHero() {
         <div className="flex flex-col gap-4 w-full lg:flex-row lg:gap-4 lg:max-w-4xl lg:justify-center">
           <Link
             href="/cakes"
-            className="flex items-center justify-center gap-2 h-12 lg:h-16 px-4 lg:px-6 rounded-full font-sans text-sm lg:text-lg font-semibold shadow-btn transition-colors lg:flex-1 lg:max-w-[424px]"
-            style={{ backgroundColor: '#2E3192', color: '#FFFFFF' }}
+            className="btn btn-primary flex items-center justify-center gap-2 h-12 lg:h-16 px-4 lg:px-6 rounded-full! font-sans text-sm lg:text-lg font-semibold shadow-btn transition-colors lg:flex-1 lg:max-w-[424px]"
           >
             <span>Shop cakes by post</span>
             <svg
@@ -134,8 +133,7 @@ export function MobileHero() {
           </Link>
           <Link
             href="/custom-cakes"
-            className="flex items-center justify-center h-12 lg:h-16 px-4 lg:px-6 rounded-full font-sans text-sm lg:text-lg font-semibold transition-colors lg:flex-1 lg:max-w-[424px]"
-            style={{ backgroundColor: '#FFF5E6', border: '2px solid #2E3192', color: '#2E3192' }}
+            className="flex items-center justify-center h-12 lg:h-16 px-4 lg:px-6 rounded-full font-sans text-sm lg:text-lg font-semibold transition-colors lg:flex-1 lg:max-w-[424px] bg-[#FFF5E6] border-2 border-[#2E3192] text-[#2E3192]"
           >
             <span>Custom cake enquiry form</span>
           </Link>
