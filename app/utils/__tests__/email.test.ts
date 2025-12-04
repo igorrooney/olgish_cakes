@@ -82,7 +82,13 @@ describe('email', () => {
     it('should handle attachments', async () => {
       actualMockSend.mockResolvedValue({ data: { id: 'email-123' }, error: null })
 
-      const mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' })
+      // Create a mock File with arrayBuffer method
+      const mockArrayBuffer = jest.fn().mockResolvedValue(new ArrayBuffer(8))
+      const mockFile = {
+        name: 'test.txt',
+        type: 'text/plain',
+        arrayBuffer: mockArrayBuffer
+      } as unknown as File
 
       await sendEmail({
         to: 'customer@example.com',
@@ -109,8 +115,19 @@ describe('email', () => {
     it('should handle multiple attachments', async () => {
       actualMockSend.mockResolvedValue({ data: { id: 'email-123' }, error: null })
 
-      const file1 = new File(['content1'], 'file1.txt', { type: 'text/plain' })
-      const file2 = new File(['content2'], 'file2.txt', { type: 'text/plain' })
+      // Create mock Files with arrayBuffer method
+      const mockArrayBuffer1 = jest.fn().mockResolvedValue(new ArrayBuffer(8))
+      const mockArrayBuffer2 = jest.fn().mockResolvedValue(new ArrayBuffer(8))
+      const file1 = {
+        name: 'file1.txt',
+        type: 'text/plain',
+        arrayBuffer: mockArrayBuffer1
+      } as unknown as File
+      const file2 = {
+        name: 'file2.txt',
+        type: 'text/plain',
+        arrayBuffer: mockArrayBuffer2
+      } as unknown as File
 
       await sendEmail({
         to: 'customer@example.com',
@@ -172,7 +189,13 @@ describe('email', () => {
     it('should handle file conversion to buffer', async () => {
       actualMockSend.mockResolvedValue({ data: { id: 'email-123' }, error: null })
 
-      const mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' })
+      // Create a mock File with arrayBuffer method
+      const mockArrayBuffer = jest.fn().mockResolvedValue(new ArrayBuffer(8))
+      const mockFile = {
+        name: 'test.txt',
+        type: 'text/plain',
+        arrayBuffer: mockArrayBuffer
+      } as unknown as File
 
       await sendEmail({
         to: 'customer@example.com',

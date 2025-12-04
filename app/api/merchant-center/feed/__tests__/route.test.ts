@@ -1,4 +1,6 @@
 /**
+ * @jest-environment node
+ * 
  * Unit tests for Google Merchant Center Feed Route
  * 
  * These tests prevent the "Missing field 'image'" issue in Google Search Console

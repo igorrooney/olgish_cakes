@@ -1,25 +1,23 @@
-import type { Metadata, Viewport } from "next";
-import { Alice } from "next/font/google";
-import { Providers } from "./providers";
-import "./globals.css";
-import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
-import { theme } from "@/lib/theme";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
+import { CssBaseline, ThemeProvider } from "@/lib/mui-optimization";
+import { theme } from "@/lib/theme";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Header } from "./components/Header";
-import UtilityBar from "./components/UtilityBar";
-import Footer from "./components/Footer";
-import { ScrollToTop } from "./components/ScrollToTop";
-import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
-import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
-import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
-import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import type { Metadata, Viewport } from "next";
+import { Alice, Inter, Oldenburg } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { TechnicalIssueNotification } from "./components/TechnicalIssueNotification";
+import { ConditionalHeader } from "./components/ConditionalHeader";
+import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
+import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
+import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import { CriticalCSS, PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { ScrollToTop } from "./components/ScrollToTop";
+import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
+import "./globals.css";
+import { Providers } from "./providers";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -29,6 +27,50 @@ const alice = Alice({
   preload: true,
   fallback: ["Georgia", "serif"],
   adjustFontFallback: true,
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+  adjustFontFallback: true,
+});
+
+const oldenburg = Oldenburg({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-oldenburg",
+  display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"],
+  adjustFontFallback: true,
+});
+
+const moreSugar = localFont({
+  src: [
+    {
+      path: "./fonts/more_sugar/MoreSugar-Thin.ttf",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "./fonts/more_sugar/MoreSugar-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/more_sugar/MoreSugar-Extras.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-more-sugar",
+  display: "swap",
+  preload: true,
+  fallback: ["cursive", "fantasy"],
 });
 
 const primary = designTokens.colors.primary.main;
@@ -172,9 +214,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
+}) {
   return (
-    <html lang="en-GB" className={`${alice.variable}`}>
+    <html lang="en-GB" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
       <head>
         {/* Critical CSS inlining */}
         <style
@@ -439,15 +485,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CssBaseline />
             <Providers>
               <div className="flex flex-col min-h-screen">
-                <UtilityBar />
-                <Header />
+                <ConditionalHeader />
                 <main className="flex-grow">{children}</main>
-                <Footer />
-                      <ScrollToTop />
-                      <WebVitalsMonitor />
-                      <PerformanceOptimizer />
-                      <DynamicCookieConsent />
-                      <DynamicDevTools />
+                {/* <Footer /> */}
+                <ScrollToTop />
+                <WebVitalsMonitor />
+                <PerformanceOptimizer />
+                <DynamicCookieConsent />
+                <DynamicDevTools />
               </div>
             </Providers>
           </ThemeProvider>

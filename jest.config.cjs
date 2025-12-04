@@ -8,9 +8,14 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
-  testEnvironment: 'jest-environment-node',
+  testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // Mock server-only modules
+    'server-only': '<rootDir>/__mocks__/empty.js',
+    // Mock Next.js fonts
+    '@next/font/(.*)': '<rootDir>/__mocks__/empty.js',
+    'next/font/(.*)': '<rootDir>/__mocks__/empty.js',
   },
   collectCoverageFrom: [
     'lib/**/*.{js,jsx,ts,tsx}',
