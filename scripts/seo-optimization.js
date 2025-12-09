@@ -5,10 +5,17 @@
  * This script helps improve Google rankings through various SEO optimizations
  */
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
-const {} = require("child_process");
+import fs from "fs";
+import path from "path";
+import https from "https";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration
 const SITE_URL = "https://olgishcakes.co.uk";
@@ -29,13 +36,19 @@ class SEOOptimizer {
   async checkPerformance() {
     console.log("🔍 Checking performance metrics...");
 
+    if (!GOOGLE_PAGESPEED_API_KEY) {
+      console.warn("Skipping performance check: GOOGLE_PAGESPEED_API_KEY is not set");
+      return;
+    }
+
     try {
       // Check Core Web Vitals
       const pagespeedUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${SITE_URL}&key=${GOOGLE_PAGESPEED_API_KEY}&strategy=mobile&category=performance`;
 
-      const performanceData = await this.makeRequest(pagespeedUrl);
+      const rawPerformanceData = await this.makeRequest(pagespeedUrl);
+      const performanceData = this.safeParse(rawPerformanceData);
 
-      if (performanceData) {
+      if (performanceData?.lighthouseResult?.audits) {
         const metrics = performanceData.lighthouseResult.audits;
 
         this.results.performance = {
@@ -257,6 +270,14 @@ class SEOOptimizer {
     });
   }
 
+  safeParse(data) {
+    try {
+      return typeof data === "string" ? JSON.parse(data) : data;
+    } catch {
+      return null;
+    }
+  }
+
   hashContent(content) {
     // Simple hash function for content comparison
     let hash = 0;
@@ -332,12 +353,18 @@ class AdvancedSEOOptimizer extends SEOOptimizer {
   async checkMobileResponsiveness() {
     console.log("🔍 Checking mobile responsiveness...");
 
+    if (!GOOGLE_PAGESPEED_API_KEY) {
+      console.warn("Skipping mobile responsiveness check: GOOGLE_PAGESPEED_API_KEY is not set");
+      return;
+    }
+
     try {
       const mobileUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${SITE_URL}&key=${GOOGLE_PAGESPEED_API_KEY}&strategy=mobile&category=accessibility`;
 
-      const mobileData = await this.makeRequest(mobileUrl);
+      const rawMobileData = await this.makeRequest(mobileUrl);
+      const mobileData = this.safeParse(rawMobileData);
 
-      if (mobileData) {
+      if (mobileData?.lighthouseResult?.categories?.accessibility) {
         const accessibilityScore = mobileData.lighthouseResult.categories.accessibility.score * 100;
 
         if (accessibilityScore < 90) {
@@ -425,8 +452,8 @@ async function main() {
 }
 
 // Run if called directly
-if (require.main === module) {
-  main();
+if (process.argv[1] === __filename) {
+  await main();
 }
 
-module.exports = { SEOOptimizer, AdvancedSEOOptimizer };
+export { SEOOptimizer, AdvancedSEOOptimizer };

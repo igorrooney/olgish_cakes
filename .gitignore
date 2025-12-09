@@ -13,6 +13,20 @@
 /.next/
 /out/
 
+# reports
+/reports/
+/performance-check-report.json
+/lighthouse-summary.json
+/reports/**/*.json
+/reports/**/*.html
+/reports/**/*.csv
+/reports/**/*.txt
+# lighthouse exports
+lighthouse-*.json
+lighthouse-*.html
+# generated sitemap
+/public/sitemap.xml
+
 # production
 /build
 

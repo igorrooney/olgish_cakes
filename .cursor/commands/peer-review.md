@@ -3,8 +3,8 @@
 You are reviewing a commercial Next.js app for Olgish Cakes. Pull the target PR via GitHub MCP and review the diff and repo. Use Next.js MCP and Context7 to load best practices for every dependency in package.json. Work from the PR diff, CI outputs, and local runs. Propose precise fixes. Apply safe autofixes where low risk. Follow the project scripts.
 
 Inputs
-OWNER: <owner>
-REPO: <repo>
+OWNER: igorrooney
+REPO: olgish_cakes
 PR_NUMBER: <number>
 
 MCP tasks

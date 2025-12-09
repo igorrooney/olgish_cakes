@@ -11,6 +11,7 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^nanoid$': '<rootDir>/test/mocks/nanoid.cjs',
   },
   collectCoverageFrom: [
     'lib/**/*.{js,jsx,ts,tsx}',
@@ -82,7 +83,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: [
-    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion)(?:/|$))',
+    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion|@sanity|next-sanity|nanoid)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
 };
