@@ -11,16 +11,17 @@ Never use the any type in TypeScript.
 Always use Context7 MCP when working with any libraries or APIs.
 
 Primary stack
-Next.js App Router
-React 18
-TypeScript
-Tailwind CSS with DaisyUI
-Sanity v3 with next-sanity
-MUI v5 with Emotion for legacy UI only
-Testing Library and Jest
-nuqs for URL state
-Node 18+
+Next.js 16 (App Router)
+React 19
+TypeScript 5.3
+Tailwind CSS 3.4 with DaisyUI
+Sanity 3.88 with next-sanity 7.1 and @sanity/client 7.12
+MUI 6.3 with Emotion for legacy UI only
+Testing Library (@testing-library/react 14.1, jest-dom 6.1) and Jest 29.7
+nuqs 1.16 for URL state
+Node 20.9+ and pnpm 10.8
 Vercel deploy
+Keep these versions aligned with package.json whenever dependencies are upgraded.
 
 Package truths
 Use pnpm for installs and scripts.

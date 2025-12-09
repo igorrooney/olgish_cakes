@@ -86,7 +86,7 @@
     "@mui/material": "^6.3.1",
     "@mui/x-date-pickers": "^7.28.3",
     "@portabletext/react": "^3.2.1",
-    "@sanity/client": "^6.29.0",
+    "@sanity/client": "7.12.1",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.88.1",
     "@vercel/analytics": "^1.5.0",
@@ -152,6 +152,7 @@
   },
   "overrides": {
     "@types/react": "19.2.3",
-    "@types/react-dom": "19.2.2"
+    "@types/react-dom": "19.2.2",
+    "@sanity/client": "7.12.1"
   }
 }
