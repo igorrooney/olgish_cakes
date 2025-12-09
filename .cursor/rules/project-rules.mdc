@@ -1,0 +1,227 @@
+---
+alwaysApply: true
+---
+Purpose
+Commercial professional project.
+Goal: Rank #1 on Google for all key searches.
+All code and content follow SEO best practices.
+Generated text sounds natural, written by a Ukrainian living in England with English as second language.
+Tone: simple, real, human.
+Never use the any type in TypeScript.
+Always use Context7 MCP when working with any libraries or APIs.
+
+Primary stack
+Next.js App Router
+React 18
+TypeScript
+Tailwind CSS with DaisyUI
+Sanity v3 with next-sanity
+MUI v5 with Emotion for legacy UI only
+Testing Library and Jest
+nuqs for URL state
+Node 18+
+Vercel deploy
+
+Package truths
+Use pnpm for installs and scripts.
+Follow Next App Router conventions.
+Use Tailwind for layout and spacing.
+Use DaisyUI for UI components in new code.
+Use MUI and Emotion only when touching legacy UI.
+Use Sanity for content.
+Do not add new UI libraries beyond DaisyUI and existing MUI and Emotion.
+Do not add other libraries outside package.json.
+When integrating or importing any library, use Context7 MCP for setup, context management, and lifecycle handling.
+
+Code style and structure
+Follow Standard.js style.
+Use 2 space indentation.
+Use single quotes except when escaping.
+Avoid semicolons unless required by syntax.
+Avoid unused variables.
+Add a space after keywords.
+Add a space before function parentheses.
+Use strict equality triple equals.
+Add spaces around infix operators.
+Place a space after each comma.
+Place else on same line as closing brace.
+Always use braces for multi line if blocks.
+Always handle an err parameter in callbacks.
+Use camelCase for variables and functions.
+Use PascalCase for React components.
+Never use the any type.
+Use strict typing with interfaces and generics.
+Write concise, functional, declarative code.
+Avoid classes.
+Prefer helpers over duplication.
+Order in each component file: exported component, subcomponents, helpers, static content.
+
+Naming conventions
+Use lowercase with dashes for directories.
+Example: components/auth-wizard
+Favor named exports for components.
+
+React best practices
+Use the function keyword for components.
+Keep hooks only at top level.
+Create custom hooks for reusable logic.
+Use React.memo for components with stable props.
+Use useCallback for stable callbacks.
+Use useMemo for heavy computations.
+Avoid inline functions in JSX.
+Prefer composition.
+Use children and render props patterns.
+Use React.lazy and Suspense for code splitting.
+Use refs only for DOM access.
+Prefer controlled components.
+Add error boundaries for client trees.
+Clean up subscriptions and handlers inside useEffect.
+Use short circuit logic and ternary operators for rendering.
+
+State and URL
+Lift state up when needed.
+Use context when prop drilling grows.
+Use nuqs for URL search state.
+
+UI and styling
+Use DaisyUI components for UI.
+Use Tailwind for layout, spacing, and utilities.
+Use DaisyUI themes and Tailwind config as the design system.
+All colours, font families, font sizes, font weights, radii, shadows and spacing tokens live in the design system.
+Do not hardcode colours or fonts in JSX, CSS, or inline styles.
+Do not hardcode hex codes, rgb, hsl, or font stacks in components.
+Use design tokens and theme classes, for example text-primary, bg-base-100, font-heading, rounded-box from the design system.
+If a new colour or font is needed, add it to the design system first, then use the token.
+Keep existing MUI and Emotion components working in legacy areas.
+Use Emotion only for styles already present.
+Keep CSS modular and scoped.
+Do not add new UI kits or frameworks beyond DaisyUI.
+Use Context7 MCP when handling library specific style contexts or providers and when working with the design system.
+
+Sanity CMS
+Use next-sanity and @sanity packages.
+Keep GROQ queries in a lib/queries folder.
+Avoid overfetching.
+Validate and parse data close to components.
+Always provide SEO friendly titles, slugs, and metadata.
+Use Context7 MCP for Sanity client configuration and context management.
+
+SEO rules
+Every page must include:
+Title tag <title> with 50 to 60 characters.
+Meta description tag <meta name="description"> with 150 to 160 characters.
+Meta keywords tag <meta name="keywords"> when relevant.
+Open Graph tags og:title, og:description, og:image, og:type, og:url.
+Structured data JSON LD when needed.
+
+Use one <h1> per page with 50 to 70 characters.
+Follow logical heading hierarchy with h2 and h3.
+
+Body text:
+Minimum 300 words per page.
+Prefer 800 to 1200 words for long form content.
+Use natural keyword distribution.
+Avoid keyword stuffing.
+
+Use descriptive, readable slugs.
+Optimize all images with alt text and fixed width and height.
+Include canonical URL.
+Use semantic HTML tags main, section, article, header, footer.
+Lazy load below the fold content.
+Keep Core Web Vitals:
+LCP under 2.5 seconds.
+CLS under 0.1.
+FID under 100 milliseconds.
+
+Pre render all SEO critical content on the server.
+Avoid duplicate or conflicting metadata.
+Use internal links with clear anchor text.
+Maintain XML sitemap and robots.txt.
+
+Integration and performance
+Prefer React Server Components where possible.
+Limit use client, useEffect, and useState to real client needs.
+Use client components only for UI behavior or browser APIs.
+Wrap client components in Suspense with a fallback UI.
+Use dynamic import for non critical imports.
+Use next/image with priority and loading set to lazy.
+Keep global CSS minimal.
+Rely on Tailwind purge in production.
+Use Context7 MCP to wrap third party contexts or providers.
+Measure performance with Lighthouse and fix regressions fast.
+
+Data and server actions
+Follow Next.js data fetching patterns and server actions.
+Handle expected errors as return values, not thrown exceptions.
+Do not mix client only state or hooks inside Server Components.
+
+Forms and validation
+Use controlled inputs.
+Use HTML constraints or manual validation.
+Validate on client and server.
+Always show clear and helpful error messages.
+
+Error handling
+Use guard clauses first.
+Return early on invalid data.
+Place the happy path last.
+Avoid unnecessary else statements.
+Log errors clearly and never expose private data.
+
+Accessibility
+Use semantic HTML.
+Add ARIA attributes when needed.
+Ensure keyboard navigation.
+Keep focus order and focus styles consistent.
+
+Testing
+Use Jest with jest-environment-jsdom.
+Use React Testing Library for components.
+Write integration tests for key flows.
+Use snapshot tests only for stable markup.
+Unit test coverage target stays at 100 percent.
+Current coverage stays lower, do not block work on that history.
+All new tests must reach 100 percent coverage.
+Cover all functions, branches, and components.
+CI fails if coverage drops below 100 percent.
+
+Security
+Sanitize all user inputs.
+Avoid dangerouslySetInnerHTML unless data passes through a sanitizer.
+Never expose secrets in client code.
+
+Internationalization
+Do not add i18n libraries without approval.
+All text should sound natural in English written by a Ukrainian living in England.
+
+Project scripts
+pnpm dev for local development.
+pnpm build for build.
+pnpm start to serve.
+pnpm lint, pnpm type-check, pnpm test for QA.
+Use existing scripts for migrations and seeding.
+
+Legacy compatibility
+Keep existing MUI and Emotion code working.
+Do not create new UI with MUI.
+Use DaisyUI for all new UI layers.
+Do not add new UI kits beyond DaisyUI.
+Modify legacy CSS only when needed.
+Migrate legacy MUI views to DaisyUI when requested.
+
+Next.js specifics
+Use generateMetadata in React Server Components for SEO.
+Follow route segment conventions in the App Router.
+Do not fetch data in client components.
+
+Web Vitals
+Optimize LCP with priority images and font loading.
+Prevent CLS with fixed dimensions for media and iframes.
+Keep event handlers stable for low input delay.
+
+AI edit conventions
+Before multi file edits, print a short plan.
+Show unified diffs grouped by file path.
+Preserve exports and APIs unless requested to change.
+Follow all rules in this document for every reply.
+Always apply Context7 MCP integration rules when using or editing any library, provider, external context, or design system.
