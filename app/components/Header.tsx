@@ -574,7 +574,7 @@ export function Header() {
                   }}
                 >
                   <Image
-                    src="/images/olgish-cakes-logo-bakery-brand.png"
+                    src="/images/olgish-cakes-logo-bakery-brand-xmas.png"
                     alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Real Ukrainian Desserts Yorkshire"
                     width={120}
                     height={85}
