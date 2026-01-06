@@ -111,12 +111,12 @@ export function MobileForm() {
   };
 
   return (
-    <section className="bg-base-100 px-6 py-8">
-      <div className="flex flex-col gap-6">
-        <h2 className="font-display text-2xl text-primary-700 text-center uppercase tracking-wider leading-10">
+    <section className="bg-base-100 px-4 py-8">
+      <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+        <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[32px] text-center">
           Custom cake enquiry form
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="form-control">
             <label className="label" htmlFor="fullName">
               <span className="label-text font-sans text-sm text-base-content">
@@ -127,7 +127,7 @@ export function MobileForm() {
               id="fullName"
               type="text"
               placeholder="Enter name"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.fullName ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.fullName ? 'input-error' : ''}`}
               value={formData.fullName}
               onChange={(e) => {
                 setFormData({ ...formData, fullName: e.target.value });
@@ -156,7 +156,7 @@ export function MobileForm() {
               id="email"
               type="email"
               placeholder="your@email.com"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.email ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.email ? 'input-error' : ''}`}
               value={formData.email}
               onChange={(e) => {
                 setFormData({ ...formData, email: e.target.value });
@@ -185,7 +185,7 @@ export function MobileForm() {
               id="phone"
               type="tel"
               placeholder="+44 (0) 7XXX XXX XXX"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.phone ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.phone ? 'input-error' : ''}`}
               value={formData.phone}
               onChange={(e) => {
                 setFormData({ ...formData, phone: e.target.value });
@@ -214,7 +214,7 @@ export function MobileForm() {
               id="address"
               type="text"
               placeholder="Enter address line 1"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.address ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.address ? 'input-error' : ''}`}
               value={formData.address}
               onChange={(e) => {
                 setFormData({ ...formData, address: e.target.value });
@@ -243,7 +243,7 @@ export function MobileForm() {
               id="city"
               type="text"
               placeholder="Enter city"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.city ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.city ? 'input-error' : ''}`}
               value={formData.city}
               onChange={(e) => {
                 setFormData({ ...formData, city: e.target.value });
@@ -272,7 +272,7 @@ export function MobileForm() {
               id="postcode"
               type="text"
               placeholder="Enter postcode"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.postcode ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.postcode ? 'input-error' : ''}`}
               value={formData.postcode}
               onChange={(e) => {
                 setFormData({ ...formData, postcode: e.target.value });
@@ -301,7 +301,7 @@ export function MobileForm() {
               </span>
             </label>
             <select
-              className="select select-bordered bg-white rounded-box border-base-content border-opacity-20"
+              className="select bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)]"
               value={formData.occasion}
               onChange={(e) =>
                 setFormData({ ...formData, occasion: e.target.value })
@@ -324,7 +324,7 @@ export function MobileForm() {
             <input
               id="date"
               type="date"
-              className={`input input-bordered bg-white rounded-box border-base-content border-opacity-20 ${errors.date ? 'input-error' : ''}`}
+              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.date ? 'input-error' : ''}`}
               value={formData.date}
               onChange={(e) => {
                 setFormData({ ...formData, date: e.target.value });
@@ -353,7 +353,7 @@ export function MobileForm() {
               </span>
             </label>
             <textarea
-              className="textarea textarea-bordered bg-white rounded-box border-base-content border-opacity-20 min-h-32"
+              className="textarea bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] min-h-32"
               placeholder="Enter requirements"
               value={formData.requirements}
               onChange={(e) =>
@@ -373,13 +373,13 @@ export function MobileForm() {
             <div className="join w-full">
               <button
                 type="button"
-                className="btn join-item bg-primary-100 text-primary-400 rounded-l-box"
+                className="btn join-item h-8 min-h-0 rounded-l-[16px] bg-primary-100 text-primary-400"
               >
                 CHOOSE A FILE
               </button>
               <input
                 type="text"
-                className="input input-bordered join-item bg-white rounded-r-box border-base-content border-opacity-20 flex-1"
+                className="input join-item h-8 min-h-0 flex-1 rounded-r-[16px] border border-[rgba(31,41,55,0.2)] bg-white"
                 placeholder="cake.png"
                 readOnly
               />
@@ -405,7 +405,7 @@ export function MobileForm() {
           )}
           <button
             type="submit"
-            className="btn btn-primary bg-primary-500 text-white rounded-full h-8 shadow-btn"
+            className="btn h-8 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700"
             disabled={isSubmitting}
             aria-busy={isSubmitting}
           >

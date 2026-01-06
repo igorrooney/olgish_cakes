@@ -1,107 +1,49 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export function MobileAbout() {
   return (
-    <section className="bg-base-100 px-6 py-8 lg:px-20 lg:py-12">
-      <div className="flex flex-col gap-6 lg:gap-8">
-        {/* Mobile: Simple card */}
-        <div className="bg-primary-50 rounded-box p-5 opacity-87 lg:hidden">
-          <div className="flex flex-col gap-4">
-            <h2 className="font-display text-2xl text-primary-500 text-center uppercase tracking-wider">
-              Meet Olgish
-            </h2>
-            <p className="font-body text-sm text-base-content text-center leading-7 tracking-wide">
-              Olga, a passionate baker from Ukraine, brings the taste of home and heart to every handcrafted cake she creates.
-            </p>
+    <section className="bg-base-100 px-4 pb-8 pt-4">
+      <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+        <div className="relative h-[405px] w-full overflow-hidden rounded-[16px]">
+          <Image
+            src="/design/mobile-home/about-olga.png"
+            alt="Olga, founder of Olgish Cakes"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute left-2 top-2 h-12 w-12">
+            <Image
+              src="/design/mobile-home/about-sticker.png"
+              alt=""
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="absolute right-4 bottom-4 h-12 w-12 opacity-90">
+            <Image
+              src="/design/mobile-home/about-sticker.png"
+              alt=""
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
-        
-        {/* Tablet: Image + text side by side with navigation links */}
-        <div className="hidden lg:flex lg:gap-8 lg:items-start lg:max-w-5xl lg:mx-auto">
-          <div className="flex-shrink-0">
-            <div className="relative w-80 h-[550px] rounded-box overflow-hidden">
-              <Image
-                src="https://picsum.photos/440/550?random=profile"
-                alt="Olga"
-                fill
-                className="object-cover"
-              />
-            </div>
+
+        <div className="rounded-[16px] bg-primary-50 px-4 py-5">
+          <p className="font-oldenburg text-[15px] leading-[32px] tracking-[0.08em] text-base-content text-center">
+            Olga, a passionate baker from Ukraine, brings the taste of home and heart to every handcrafted cake she creates.
+          </p>
+          <div className="mt-4 flex justify-center">
+            <Link href="/cakes" className="flex items-center gap-2 text-base text-base-content">
+              <span className="font-oldenburg">See all cakes</span>
+              <span className="font-oldenburg text-primary-500 text-lg">{">"}</span>
+            </Link>
           </div>
-          <div className="flex-1 flex flex-col gap-6">
-            <div className="bg-primary-50 rounded-box p-8 opacity-95">
-              <p className="font-body text-base text-base-content leading-7">
-                Olga, a passionate baker from Ukraine, brings the taste of home and heart to every handcrafted cake she creates.
-                <br />
-                <br />
-                Add paragraph
-              </p>
-            </div>
-            <div className="flex flex-col gap-6">
-              <Link
-                href="/cakes"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">See all cakes</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/cakes/bestsellers"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">View bestsellers</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/farmers-markets"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">Visit our market stall</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/reviews"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">Check our reviews</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/occasions"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">Browse occasion cakes</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/custom-cakes"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">Custom cake enquiry</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-              <Link
-                href="/instagram"
-                className="flex items-center gap-1 text-xl text-base-content"
-              >
-                <span className="font-body">Follow our instagram</span>
-                <span className="font-body text-primary-500 text-2xl">{`>`}</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex justify-center lg:hidden">
-          <Link
-            href="/cakes"
-            className="flex items-center gap-1 text-base text-base-content"
-          >
-            <span className="font-body">See all cakes</span>
-            <span className="font-body text-primary-500">{`>`}</span>
-          </Link>
         </div>
       </div>
     </section>

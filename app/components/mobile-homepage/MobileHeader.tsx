@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
 import Link from "next/link"
+import Image from "next/image"
 
 export function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,14 +60,14 @@ export function MobileHeader() {
   }, [isMenuOpen]);
 
   return (
-    <header className="bg-base-100 sticky top-0 z-50 relative">
-      <div className="navbar px-4 py-4 lg:px-10 lg:py-4">
+    <header className="bg-base-100 sticky top-0 z-50 shadow-sm">
+      <div className="navbar px-4 py-3">
         <div className="navbar-start">
           <Link href="/" className="flex items-center gap-2 p-2">
-            <div className="w-12 h-12 lg:w-16 lg:h-16 relative">
+            <div className="relative h-12 w-12">
               <Image
-                src="/images/olgish-cakes-logo-bakery-brand.png"
-                alt="Olgish Cakes Logo"
+                src="/design/mobile-home/navbar-logo.png"
+                alt="Olgish Cakes logo"
                 fill
                 className="object-contain"
                 priority
@@ -94,12 +94,12 @@ export function MobileHeader() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ display: 'block', flexShrink: 0, width: '24px', height: '24px' }}
                 aria-hidden="true"
+                className="text-primary-700"
               >
                 <path
                   d="M6 18L18 6M6 6l12 12"
-                  className="stroke-base-content"
+                  stroke="currentColor"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -112,12 +112,12 @@ export function MobileHeader() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ display: 'block', flexShrink: 0, width: '24px', height: '24px' }}
                 aria-hidden="true"
+                className="text-primary-700"
               >
                 <path
                   d="M4 6h16M4 12h16M4 18h16"
-                  className="stroke-base-content"
+                  stroke="currentColor"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"

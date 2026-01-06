@@ -5,37 +5,10 @@ import Link from "next/link";
 
 export function MobileHero() {
   return (
-    <section className="bg-base-100 px-6 py-8 lg:px-20 lg:py-12">
-      <div className="flex flex-col items-center gap-6 lg:gap-8">
-        {/* Mobile: Simple heading, Tablet: Rotated heading with decorative elements */}
-        <div className="relative w-full lg:min-h-[300px] flex items-center justify-center">
-          {/* Decorative Elements */}
-          {/* Light purple star - near heading */}
-          <svg className="absolute top-2 right-[45%] w-6 h-6 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#D8B4FE" opacity="0.6" />
-          </svg>
-
-          {/* Light blue wavy line - top right */}
-          <svg className="absolute top-0 right-4 w-16 h-8 lg:w-24 lg:h-12" viewBox="0 0 64 32" fill="none">
-            <path d="M0 16C8 8 16 8 24 16C32 24 40 24 48 16C56 8 56 8 64 16" stroke="#BFDBFE" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-          </svg>
-
-          {/* Light orange wavy line - middle right */}
-          <svg className="absolute top-1/3 right-2 w-12 h-8 lg:w-20 lg:h-12" viewBox="0 0 48 32" fill="none">
-            <path d="M0 16C6 8 12 8 18 16C24 24 30 24 36 16C42 8 42 8 48 16" stroke="#FED7AA" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-          </svg>
-
-          {/* Light purple C-shape - middle left */}
-          <svg className="absolute top-1/2 left-4 w-10 h-10 lg:w-16 lg:h-16" viewBox="0 0 40 40" fill="none">
-            <path d="M30 8C24 8 18 14 18 20C18 26 24 32 30 32" stroke="#DDD6FE" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-          </svg>
-
-          {/* Light orange wavy line - bottom left */}
-          <svg className="absolute bottom-2 left-8 w-14 h-6 lg:w-20 lg:h-10" viewBox="0 0 56 24" fill="none">
-            <path d="M0 12C7 6 14 6 21 12C28 18 35 18 42 12C49 6 49 6 56 12" stroke="#FDBA74" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-          </svg>
-
-          <h1 className="hero-heading font-moreSugar text-center uppercase tracking-[0.16em] rotate-[-2.4deg] text-primary-700 font-normal">
+    <section className="bg-base-100 px-4 pt-6 pb-10 overflow-hidden">
+      <div className="relative mx-auto flex max-w-[430px] flex-col items-center gap-6">
+        <div className="relative flex w-full flex-col items-center justify-center">
+          <h1 className="mt-2 font-moreSugar text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] leading-[40px]">
             Handmade Cakes
             <br />
             delivered
@@ -44,98 +17,69 @@ export function MobileHero() {
           </h1>
         </div>
 
-        {/* Mobile & Tablet: Image gallery layout with overlapping middle image */}
-        <div className="relative w-full lg:max-w-4xl flex items-center justify-center">
-          <div className="relative w-full h-48 lg:h-[480px] flex items-center justify-center">
-            {/* Left: White cake with chocolate drizzle - 28% width, shorter height */}
-            <div className="absolute left-0 w-[28%] h-32 lg:h-80 rounded-box border border-primary-50 overflow-hidden z-10">
-              <Image
-                src="/images/placeholder-cake.jpg"
-                alt="White cake with dark chocolate drizzle and chocolate pieces"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 28vw, 280px"
-                priority
-              />
-            </div>
-
-            {/* Middle: Dark chocolate cake - 55% width, much taller, overlapping both sides */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-[55%] h-48 lg:h-[480px] rounded-box border border-primary-50 overflow-hidden z-30 shadow-xl">
-              <Image
-                src="/images/placeholder-cake.jpg"
-                alt="Dark chocolate cake with golden Christmas tree design"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 55vw, 550px"
-                priority
-              />
-
-              {/* HANDCRAFTED CAKES Badge - positioned in upper right of middle image */}
-              <div className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 z-40">
-                <svg className="w-16 h-16 lg:w-24 lg:h-24" viewBox="0 0 100 100">
-                  {/* Jagged circle background */}
-                  <path d="M50 5 L52 15 L55 5 L57 15 L60 5 L62 15 L65 7 L67 17 L70 9 L72 19 L75 12 L77 22 L80 15 L82 25 L85 20 L87 30 L89 25 L91 35 L92 31 L93 41 L94 38 L94 48 L95 46 L94 56 L94 54 L93 64 L92 62 L91 72 L89 70 L87 80 L85 78 L82 85 L80 83 L77 88 L75 86 L72 90 L70 88 L67 92 L65 90 L62 93 L60 91 L57 94 L55 92 L52 95 L50 93 L48 95 L45 92 L43 94 L40 91 L38 93 L35 90 L33 92 L30 88 L28 90 L25 86 L23 88 L20 83 L18 85 L15 78 L13 80 L11 70 L9 72 L8 62 L7 64 L6 54 L6 56 L5 46 L6 48 L7 38 L8 41 L9 31 L11 35 L13 25 L15 30 L18 20 L20 25 L23 15 L25 22 L28 12 L30 19 L33 9 L35 17 L38 7 L40 15 L43 5 L45 15 L48 5 Z"
-                    fill="#FFE5CC"
-                    stroke="#FF9966"
-                    strokeWidth="2"
-                  />
-                  {/* Text */}
-                  <text x="50" y="45" textAnchor="middle" className="text-[9px] lg:text-[11px] font-sans font-bold" fill="#D97706">HANDCRAFTED</text>
-                  <text x="50" y="58" textAnchor="middle" className="text-[9px] lg:text-[11px] font-sans font-bold" fill="#D97706">CAKES</text>
-                </svg>
-              </div>
-            </div>
-
-            {/* Right: Colorful cake with sprinkles - 28% width, shorter height */}
-            <div className="absolute right-0 w-[28%] h-32 lg:h-80 rounded-box border border-primary-50 overflow-hidden z-10">
-              <Image
-                src="/images/placeholder-cake.jpg"
-                alt="Colorful cake with various sprinkles and candies"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 28vw, 280px"
-                priority
-              />
-            </div>
+        <div className="relative h-[178px] w-[350px] max-w-full">
+          <div className="absolute left-0 top-[22px] h-[142px] w-[142px] rounded-[16px] border border-primary-50 overflow-hidden shadow-sm">
+            <Image
+              src="/design/mobile-home/hero-left.png"
+              alt="Birthday cake with chocolate drizzle"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute left-1/2 top-0 h-[169px] w-[169px] rounded-[16px] border border-primary-50 overflow-hidden shadow-[0px_4px_4px_rgba(0,0,0,0.25)] -translate-x-1/2 translate-y-[6px] z-[1]">
+            <Image
+              src="/design/mobile-home/hero-main.png"
+              alt="Signature Olgish cake"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute right-0 top-[22px] h-[142px] w-[142px] rounded-[16px] border border-primary-50 overflow-hidden shadow-sm">
+            <Image
+              src="/design/mobile-home/hero-right.png"
+              alt="Honey cake (Medovik)"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          <div className="absolute right-[-10px] top-[0px] h-12 w-12">
+            <Image
+              src="/design/mobile-home/hero-doodles.png"
+              alt=""
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
-        {/* Body Text */}
-        <div className="flex flex-col gap-4 text-center lg:gap-6 lg:max-w-4xl px-2">
-          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center text-primary-800">
+        <div className="flex flex-col gap-4 px-2 text-center">
+          <p className="font-oldenburg text-base leading-[22px] tracking-[1.92px] text-primary-800 font-normal">
             Small-batch, hand-decorated cakes baked in Leeds.
           </p>
-          <p className="font-oldenburg text-base lg:text-2xl tracking-[0.12em] leading-[22px] flex items-center justify-center text-primary-800">
+          <p className="font-oldenburg text-base leading-[22px] tracking-[1.92px] text-primary-800 font-normal">
             Delivered nationwide by post, or brought to your door across Leeds and West Yorkshire.
           </p>
         </div>
 
-        {/* Call-to-Action Buttons */}
-        <div className="flex flex-col gap-4 w-full lg:flex-row lg:gap-4 lg:max-w-4xl lg:justify-center">
+        <div className="flex w-full flex-col gap-3">
           <Link
             href="/cakes"
-            className="btn btn-primary flex items-center justify-center gap-2 h-12 lg:h-16 px-4 lg:px-6 rounded-full! font-sans text-sm lg:text-lg font-semibold shadow-btn transition-colors lg:flex-1 lg:max-w-[424px]"
+            className="btn btn-primary btn-block gap-2 text-sm font-semibold"
           >
-            <span>Shop cakes by post</span>
-            <svg
-              className="size-[1.2em]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.6 4.8M17 13l1.6 4.8M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"
-              />
+            Shop cakes by post
+            <svg width="16" height="16" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+              <path fillRule="evenodd" clipRule="evenodd" d="M0 0.5C0 0.223858 0.223858 0 0.5 0H1.42379C1.9901 0 2.48567 0.380725 2.63159 0.92792L2.78579 1.50617C3.02337 1.50206 3.26145 1.5 3.5 1.5C6.96908 1.5 10.337 1.93628 13.5515 2.75722C13.6862 2.79162 13.8005 2.88055 13.867 3.00266C13.9335 3.12478 13.9461 3.26905 13.9018 3.40084C13.3455 5.05735 12.6851 6.66602 11.9283 8.21903C11.8445 8.39093 11.6701 8.5 11.4788 8.5H4C3.34689 8.5 2.79127 8.9174 2.58535 9.5H12.5C12.7761 9.5 13 9.72386 13 10C13 10.2761 12.7761 10.5 12.5 10.5H2C1.72386 10.5 1.5 10.2761 1.5 10C1.5 8.83672 2.29452 7.85901 3.37051 7.57992L1.92081 2.14356L1.92081 2.14356L1.66535 1.18558L1.66535 1.18558C1.63617 1.07615 1.53706 1 1.42379 1H0.5C0.223858 1 0 0.776142 0 0.5ZM3.05147 2.50249L4.38414 7.5H11.1649C11.7693 6.23424 12.3084 4.9313 12.7776 3.59553C9.80255 2.87945 6.69591 2.5 3.5 2.5C3.35029 2.5 3.20078 2.50083 3.05147 2.50249ZM1.5 12C1.5 11.4477 1.94772 11 2.5 11C3.05228 11 3.5 11.4477 3.5 12C3.5 12.5523 3.05228 13 2.5 13C1.94772 13 1.5 12.5523 1.5 12ZM10 12C10 11.4477 10.4477 11 11 11C11.5523 11 12 11.4477 12 12C12 12.5523 11.5523 13 11 13C10.4477 13 10 12.5523 10 12Z" fill="white" />
             </svg>
           </Link>
           <Link
-            href="/custom-cakes"
-            className="flex items-center justify-center h-12 lg:h-16 px-4 lg:px-6 rounded-full font-sans text-sm lg:text-lg font-semibold transition-colors lg:flex-1 lg:max-w-[424px] bg-[#FFF5E6] border-2 border-[#2E3192] text-[#2E3192]"
+            href="/get-custom-quote"
+            className="btn btn-outline btn-block border-primary-500 bg-base-100 text-primary-500 shadow-btn text-sm font-semibold leading-[14px]"
           >
-            <span>Custom cake enquiry form</span>
+            Custom cake enquiry form
           </Link>
         </div>
       </div>

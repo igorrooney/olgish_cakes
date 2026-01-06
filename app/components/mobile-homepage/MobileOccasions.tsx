@@ -3,26 +3,34 @@
 import Image from "next/image";
 
 const occasions = [
-  { name: "Kids Birthdays", image: "https://picsum.photos/98/98?random=1" },
-  { name: "Adult Birthdays", image: "https://picsum.photos/98/98?random=2" },
-  { name: "Christmas", image: "https://picsum.photos/98/98?random=3" },
-  { name: "Anniversaries", image: "https://picsum.photos/98/98?random=4" },
-  { name: "Ukrainian", image: "https://picsum.photos/98/98?random=5" },
-  { name: "Custom cakes", image: "https://picsum.photos/98/98?random=6" },
+  { name: "Kids Birthdays", image: "/design/mobile-home/occasions-kids.png" },
+  { name: "Adult Birthdays", image: "/design/mobile-home/occasions-adults.png" },
+  { name: "Christmas", image: "/design/mobile-home/occasions-christmas.png" },
+  { name: "Anniversaries", image: "/design/mobile-home/occasions-anniversaries.png" },
+  { name: "Ukrainian", image: "/design/mobile-home/occasions-ukrainian.png" },
+  { name: "Custom cakes", image: "/design/mobile-home/occasions-custom.png" },
 ];
 
 export function MobileOccasions() {
   return (
-    <section className="bg-base-100 px-6 py-8 lg:px-20 lg:py-12">
-      <div className="flex flex-col gap-6 lg:gap-8">
-        <h2 className="font-display text-2xl lg:text-4xl text-primary-700 text-center uppercase tracking-wider leading-10 lg:leading-[40px] lg:tracking-[4.32px]">
-          <span className="lg:block">Cakes for any </span>
-          <span className="lg:block">occasion</span>
+    <section className="bg-base-100 px-4 py-8">
+      <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
+        <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
+          Cakes for any occasion
         </h2>
-        <div className="grid grid-cols-3 gap-4 lg:gap-6 lg:max-w-2xl lg:mx-auto">
-          {occasions.map((occasion, index) => (
-            <div key={index} className="flex flex-col items-center gap-1 lg:gap-2">
-              <div className="relative w-24 h-24 lg:w-56 lg:h-56 rounded-box border border-primary-50 overflow-hidden">
+        <div className="absolute right-2 top-10 h-12 w-10">
+          <Image
+            src="/design/mobile-home/occasions-sticker.png"
+            alt=""
+            fill
+            className="object-contain"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          {occasions.map((occasion) => (
+            <div key={occasion.name} className="flex flex-col items-center gap-1">
+              <div className="relative h-24 w-24 rounded-[16px] border border-primary-50 overflow-hidden">
                 <Image
                   src={occasion.image}
                   alt={occasion.name}
@@ -30,13 +38,13 @@ export function MobileOccasions() {
                   className="object-cover"
                 />
               </div>
-              <p className="font-body text-xs lg:text-base text-base-content text-center">
+              <p className="font-oldenburg text-xs text-base-content text-center leading-[15px]">
                 {occasion.name}
               </p>
             </div>
           ))}
         </div>
-        <p className="font-body text-2xl lg:text-2xl text-base-content text-center lg:mt-4">
+        <p className="font-oldenburg text-[24px] text-base-content text-center">
           + many more!
         </p>
       </div>

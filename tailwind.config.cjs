@@ -150,5 +150,7 @@ module.exports = {
     "lg:flex-col",
     "xl:flex-col",
     "text-primary-400",
+    "text-primary-700",
+    "border-primary-50",
   ],
 };

@@ -45,17 +45,17 @@ const allReviews: Review[] = [
 
 export function MobileReviews() {
   return (
-    <section className="bg-base-100 px-6 py-8 lg:px-20 lg:py-12">
-      <div className="flex flex-col gap-6 lg:gap-8">
-        <h2 className="font-display text-2xl lg:text-4xl text-primary-700 text-center uppercase tracking-wider leading-10 lg:leading-[40px] lg:tracking-[4.32px]">
+    <section className="bg-base-100 px-4 py-8">
+      <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+        <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
           Our reviews
         </h2>
-        {/* Mobile: Single review */}
-        <div className="flex flex-col gap-6 lg:hidden">
+
+        <div className="flex flex-col gap-5">
           {reviews.map((review, index) => (
             <div
               key={index}
-              className="card bg-base-100 border border-base-content border-opacity-20 rounded-box p-5"
+              className="rounded-[16px] border border-[rgba(0,0,0,0.2)] bg-amber-50 p-5 shadow-[0px_2px_4px_rgba(7,4,146,0.1),0px_24px_60px_rgba(6,47,125,0.05),0px_12px_24px_rgba(27,59,119,0.05)]"
             >
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
@@ -76,84 +76,12 @@ export function MobileReviews() {
                   </span>
                 </div>
                 <h3 className="font-sans text-lg font-medium text-base-content">
-                  {review.text.split(" ").slice(0, 4).join(" ")}
+                  The BEST cake ever!!
                 </h3>
-                <p className="font-sans text-sm text-base-content">
+                <p className="font-sans text-sm text-base-content leading-[22px]">
                   {review.text}
                 </p>
-                <div className="divider my-1 h-px bg-base-300 w-15"></div>
-                <p className="font-sans text-sm font-bold text-base-content">
-                  {review.author}
-                </p>
-              </div>
-            </div>
-          ))}
-          <div className="flex justify-center gap-2">
-            <button className="btn btn-circle btn-sm bg-base-300 border-none">
-              <svg
-                className="w-5 h-5 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <button className="btn btn-circle btn-sm bg-base-300 border-none">
-              <svg
-                className="w-5 h-5 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        {/* Tablet: 2-column grid */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:max-w-3xl lg:mx-auto">
-          {allReviews.map((review, index) => (
-            <div
-              key={index}
-              className="card bg-base-100 border border-base-content border-opacity-20 rounded-box p-5"
-            >
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <div className="rating rating-sm">
-                    {[...Array(5)].map((_, i) => (
-                      <input
-                        key={i}
-                        type="radio"
-                        name={`rating-tablet-${index}`}
-                        className="mask mask-star-2 bg-success-500"
-                        checked={i < review.rating}
-                        readOnly
-                      />
-                    ))}
-                  </div>
-                  <span className="font-sans text-xs text-base-content">
-                    {review.date}
-                  </span>
-                </div>
-                <h3 className="font-sans text-lg font-medium text-base-content">
-                  {review.text.split(" ").slice(0, 4).join(" ")}
-                </h3>
-                <p className="font-sans text-sm text-base-content">
-                  {review.text}
-                </p>
-                <div className="divider my-1 h-px bg-base-300 w-15"></div>
+                <div className="h-px w-[60px] bg-base-300" />
                 <p className="font-sans text-sm font-bold text-base-content">
                   {review.author}
                 </p>
@@ -161,36 +89,13 @@ export function MobileReviews() {
             </div>
           ))}
         </div>
-        <div className="hidden lg:flex lg:justify-center lg:gap-4 lg:mt-4">
-          <button className="btn btn-circle btn-sm bg-base-300 border-none">
-            <svg
-              className="w-5 h-5 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+
+        <div className="flex justify-center gap-3">
+          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-base-300">
+            <span className="text-primary-500 text-base leading-none">{"<"}</span>
           </button>
-          <button className="btn btn-circle btn-sm bg-base-300 border-none">
-            <svg
-              className="w-5 h-5 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-base-300">
+            <span className="text-primary-500 text-base leading-none">{">"}</span>
           </button>
         </div>
       </div>

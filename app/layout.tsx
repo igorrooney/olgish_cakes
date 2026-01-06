@@ -13,7 +13,7 @@ import { ConditionalHeader } from "./components/ConditionalHeader";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
-import { CriticalCSS, PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import "./globals.css";
@@ -214,48 +214,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ 
-  children 
-}: { 
-  children: React.ReactNode 
+export default function RootLayout({
+  children
+}: {
+  children: React.ReactNode
 }) {
   return (
     <html lang="en-GB" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
       <head>
-        {/* Critical CSS inlining */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              /* Critical CSS for above-the-fold content */
-              body { margin: 0; font-family: var(--font-alice), Georgia, serif; }
-              .critical-loading { opacity: 0; transition: opacity 0.3s; }
-              .critical-loaded { opacity: 1; }
-
-              /* Critical layout styles */
-              .flex { display: flex; }
-              .flex-col { flex-direction: column; }
-              .min-h-screen { min-height: 100vh; }
-              .flex-grow { flex-grow: 1; }
-
-              /* Critical typography */
-              h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-bottom: 0.5em; font-weight: 600; }
-              h1 { font-size: clamp(2rem, 5vw, 4rem); }
-              h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
-
-              /* Critical button styles */
-              .btn-primary { background: ${primary}; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-              .btn-primary:hover { background: ${primaryDark}; transform: translateY(-1px); }
-
-              /* Critical container styles */
-              .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-
-              /* Critical focus states */
-              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid ${primary}; outline-offset: 2px; }
-            `,
-          }}
-        />
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
-        <CriticalCSS />
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />
@@ -468,7 +435,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${alice.className} ${alice.variable} critical-loading`}>
+      <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe

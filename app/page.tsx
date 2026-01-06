@@ -65,7 +65,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <div className="min-h-screen bg-base-100">
+      <div className="min-h-screen bg-base-100 overflow-x-hidden">
         <main className="flex flex-col">
           <MobileHero />
           <MobileAbout />
