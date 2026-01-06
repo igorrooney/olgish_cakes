@@ -65,7 +65,7 @@ export function MobileForm() {
       }
 
       const validated = formSchema.parse({ ...formData, csrfToken });
-      
+
       const response = await fetch('/api/custom-cake-enquiry', {
         method: 'POST',
         headers: {
@@ -77,7 +77,7 @@ export function MobileForm() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         // Handle validation errors with field-specific details
         if (errorData.error === 'Validation failed' && errorData.details) {
           const fieldErrors: Record<string, string> = {}
@@ -89,7 +89,7 @@ export function MobileForm() {
           setErrors(fieldErrors)
           throw new Error('Validation failed. Please check the form fields.')
         }
-        
+
         throw new Error(errorData.error || 'Submission failed')
       }
 

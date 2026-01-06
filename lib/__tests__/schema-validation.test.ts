@@ -197,6 +197,10 @@ describe('schema-validation', () => {
       })
 
       it('should accept numeric price (preferred for Google Merchant Center)', () => {
+        const futureDate = new Date()
+        futureDate.setFullYear(futureDate.getFullYear() + 1)
+        const priceValidUntil = futureDate.toISOString().split('T')[0]
+        
         const valid = {
           ...validSchema,
           offers: {
@@ -204,7 +208,7 @@ describe('schema-validation', () => {
             price: 35, // Number is now the preferred type
             priceCurrency: 'GBP',
             availability: 'https://schema.org/InStock',
-            priceValidUntil: '2026-01-01'
+            priceValidUntil
           }
         }
         const result = validateProductSchema(valid as any)
