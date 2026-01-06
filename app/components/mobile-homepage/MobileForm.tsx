@@ -77,7 +77,20 @@ export function MobileForm() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Submission failed');
+        
+        // Handle validation errors with field-specific details
+        if (errorData.error === 'Validation failed' && errorData.details) {
+          const fieldErrors: Record<string, string> = {}
+          errorData.details.forEach((err: { path: (string | number)[]; message: string }) => {
+            if (err.path[0]) {
+              fieldErrors[err.path[0].toString()] = err.message
+            }
+          })
+          setErrors(fieldErrors)
+          throw new Error('Validation failed. Please check the form fields.')
+        }
+        
+        throw new Error(errorData.error || 'Submission failed')
       }
 
       setSubmitSuccess(true);
