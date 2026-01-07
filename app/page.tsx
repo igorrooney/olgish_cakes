@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
-  MobileHero,
   MobileAbout,
   MobileBestsellers,
-  MobileMarkets,
-  MobileReviews,
-  MobileOccasions,
-  MobileForm,
   MobileFooter,
+  MobileForm,
+  MobileHero,
+  MobileMarkets,
+  MobileOccasions,
+  MobileReviews,
 } from "./components/mobile-homepage";
 
 export const metadata: Metadata = {
@@ -68,6 +69,18 @@ export default async function Home() {
       <div className="min-h-screen bg-base-100 overflow-x-hidden">
         <main className="flex flex-col">
           <MobileHero />
+          <div className="w-full flex justify-center bg-base-100">
+            <div className="relative w-full max-w-[430px] h-auto">
+              <Image
+                src="/design/homepage_divider.png"
+                alt="Decorative divider with cupcake and floral elements"
+                width={430}
+                height={100}
+                className="w-full h-auto object-contain"
+                priority
+              />
+            </div>
+          </div>
           <MobileAbout />
           <MobileBestsellers />
           <MobileMarkets />

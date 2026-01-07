@@ -18,6 +18,7 @@
   --color-base-content: #2D2D2D;
   --color-primary: #2E3192;
   --color-primary-content: #FFFFFF;
+  --color-primary-50: #ECECF9;
   --color-primary-500: #2E3192;
   --color-primary-800: #181A4E;
   --color-secondary: #FEF102;
@@ -195,6 +196,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-navigation: #6467CE;
+  --color-primary-50: #ECECF9;
   --color-primary-500: #2E3192;
   --color-primary-700: #252774;
   --color-primary-800: #181A4E;

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export function MobileHero() {
   return (
-    <section className="bg-base-100 px-4 pt-6 pb-10 overflow-hidden">
+    <section className="bg-base-100 px-4 pt-6 pb-8 overflow-hidden">
       <div className="relative mx-auto flex max-w-[430px] flex-col items-center gap-6">
         <div className="relative flex w-full flex-col items-center justify-center">
           <h1 className="mt-2 font-moreSugar text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] leading-[40px]">
