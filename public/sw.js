@@ -1,7 +1,7 @@
 // Service Worker for Olgish Cakes - Enhanced Performance
-const CACHE_NAME = 'olgish-cakes-v1';
-const STATIC_CACHE_NAME = 'olgish-cakes-static-v1';
-const DYNAMIC_CACHE_NAME = 'olgish-cakes-dynamic-v1';
+const CACHE_NAME = 'olgish-cakes-v2';
+const STATIC_CACHE_NAME = 'olgish-cakes-static-v2';
+const DYNAMIC_CACHE_NAME = 'olgish-cakes-dynamic-v2';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [

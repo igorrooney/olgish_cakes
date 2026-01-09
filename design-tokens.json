@@ -24,7 +24,7 @@
     },
     "background": {
       "amber-50": "#FFF5E6",
-      "base-100": "#FFF5E6"
+      "base-100": "#FFFBEB"
     }
   },
   "typography": {
@@ -89,4 +89,3 @@
     "large-laptop": "1512px"
   }
 }
-

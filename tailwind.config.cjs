@@ -28,13 +28,6 @@ module.exports = {
           50: "#FFEBE5",
           200: "#FFAF99",
         },
-        // Base colors from Figma
-        base: {
-          100: "#FFF5E6", // amber-50 background
-          200: "#FFF5E6",
-          300: "#E5E6E6",
-          content: "#1F2937",
-        },
         // Ukrainian brand colors - kept for compatibility
         ukrainian: {
           blue: "#2E3192",

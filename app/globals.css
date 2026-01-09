@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: light --default;
+  themes: olgish-cakes --default;
   root: ":root";
   logs: false;
 }
@@ -11,8 +11,8 @@
   default: true;
   prefersdark: false;
   color-scheme: light;
-
-  --color-base-100: #FFF5E6;
+  --color-accent-50: #FFEBE5;
+  --color-base-100: #FFFBEB;
   --color-base-200: #FFF5E6;
   --color-base-300: #E5E6E6;
   --color-base-content: #2D2D2D;
@@ -48,6 +48,7 @@
   --depth: 1;
   --noise: 0;
 }
+
 
 /* WCAG Touch Target Utilities */
 @layer utilities {
@@ -200,6 +201,7 @@
   --color-primary-500: #2E3192;
   --color-primary-700: #252774;
   --color-primary-800: #181A4E;
+  --color-accent-50: #FFEBE5;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -406,6 +408,16 @@ img {
   }
 }
 
+/* Hide scrollbar for carousel */
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
@@ -416,4 +428,10 @@ img {
   a {
     text-decoration: underline;
   }
+}
+
+/* Force override for base-100 - must be at the end */
+:root,
+[data-theme="olgish-cakes"] {
+  --color-base-100: #FFFBEB !important;
 }
