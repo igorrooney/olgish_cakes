@@ -29,13 +29,6 @@ const markets: MarketEvent[] = [
 export function MobileMarkets() {
   return (
     <section className="relative bg-base-100 px-4 py-8 mt-8">
-      <div className="absolute left-0 right-0 top-0 h-[78px]">
-        <Image src="/design/mobile-home/wave-intersect.png" alt="" fill className="object-cover" />
-      </div>
-      <div className="absolute left-0 right-0 bottom-0 h-[78px] rotate-180">
-        <Image src="/design/mobile-home/wave-intersect.png" alt="" fill className="object-cover" />
-      </div>
-
       <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
         <h2 className="mt-10 font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
           Upcoming
