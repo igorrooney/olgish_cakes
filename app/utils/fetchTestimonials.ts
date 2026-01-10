@@ -8,6 +8,34 @@ import { Testimonial } from "../types/testimonial";
  * @example
  * const testimonials = await getFeaturedTestimonials(5);
  */
+/**
+ * Fetch all testimonials from Sanity CMS
+ * @returns Array of all testimonial objects sorted by date (newest first)
+ * @example
+ * const testimonials = await getAllTestimonials();
+ */
+export async function getAllTestimonials(): Promise<Testimonial[]> {
+  try {
+    const query = `
+      *[_type == "testimonial"] | order(date desc) {
+        _id,
+        customerName,
+        cakeType,
+        rating,
+        date,
+        text,
+        source
+      }
+    `;
+
+    const testimonials = await client.fetch(query);
+    return testimonials;
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
+    return [];
+  }
+}
+
 export async function getFeaturedTestimonials(limit: number = 3): Promise<Testimonial[]> {
   try {
     const query = `
@@ -43,7 +71,7 @@ const CACHE_DURATION_PRODUCTION = 24 * HOURS_IN_MS;  // 24 hours for production
 const CACHE_DURATION_DEVELOPMENT = 1 * HOURS_IN_MS;   // 1 hour for development
 
 // Environment-specific cache duration: testimonials don't change frequently
-const CACHE_DURATION = process.env.NODE_ENV === 'production' 
+const CACHE_DURATION = process.env.NODE_ENV === 'production'
   ? CACHE_DURATION_PRODUCTION
   : CACHE_DURATION_DEVELOPMENT;
 
@@ -73,7 +101,7 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
 
     const testimonials = await client.fetch(query);
     const count = testimonials.length;
-    const averageRating = count > 0 
+    const averageRating = count > 0
       ? testimonials.reduce((sum: number, t: { rating: number }) => sum + (t.rating || 0), 0) / count
       : 5.0;
 
@@ -91,7 +119,7 @@ export async function getAllTestimonialsStats(): Promise<{ count: number; averag
       console.error("Error fetching testimonial stats:", error);
     }
     // Return cached data if available, otherwise return defaults
-    return cachedStats 
+    return cachedStats
       ? { count: cachedStats.count, averageRating: cachedStats.averageRating }
       : { count: 0, averageRating: 5.0 };
   }
