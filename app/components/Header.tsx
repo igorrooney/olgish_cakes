@@ -310,30 +310,30 @@ const MobileSubmenuItem = memo(
       <ListItem disablePadding sx={{ mb: isFeatured ? 1 : 0.5 }}>
         <Link href={item.href} style={{ textDecoration: 'none', display: 'block' }}>
           <ListItemButton onClick={onNavigate} sx={buttonStyles}>
-          <ListItemText
-            primary={
-              <Typography
-                sx={{ fontSize: isFeatured ? typography.fontSize.base : typography.fontSize.sm }}
-              >
-                {item.name}
-              </Typography>
-            }
-            secondary={
-              isFeatured &&
-              item.description && (
+            <ListItemText
+              primary={
                 <Typography
-                  sx={{
-                    fontSize: typography.fontSize.sm,
-                    color: pathname === item.href ? colors.primary.contrast : colors.text.secondary,
-                    mt: 0.5,
-                  }}
+                  sx={{ fontSize: isFeatured ? typography.fontSize.base : typography.fontSize.sm }}
                 >
-                  {item.description}
+                  {item.name}
                 </Typography>
-              )
-            }
-          />
-        </ListItemButton>
+              }
+              secondary={
+                isFeatured &&
+                item.description && (
+                  <Typography
+                    sx={{
+                      fontSize: typography.fontSize.sm,
+                      color: pathname === item.href ? colors.primary.contrast : colors.text.secondary,
+                      mt: 0.5,
+                    }}
+                  >
+                    {item.description}
+                  </Typography>
+                )
+              }
+            />
+          </ListItemButton>
         </Link>
       </ListItem>
     );
@@ -574,7 +574,7 @@ export function Header() {
                   }}
                 >
                   <Image
-                    src="/images/olgish-cakes-logo-bakery-brand-xmas.png"
+                    src="/images/olgish-cakes-logo-bakery-brand.png"
                     alt="Olgish Cakes - #1 Ukrainian Bakery Leeds | Traditional Honey Cake (Medovik), Kyiv Cake, Wedding Cakes, Birthday Cakes, Custom Cakes | Real Ukrainian Desserts Yorkshire"
                     width={120}
                     height={85}
@@ -632,30 +632,30 @@ export function Header() {
                           },
                           "&::after": isActive
                             ? {
-                                content: '""',
-                                position: "absolute",
-                                left: 8,
-                                right: 8,
-                                bottom: 2,
-                                height: "2px",
-                                backgroundColor: colors.primary.main,
-                                borderRadius: 1,
-                                boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                                transform: "scaleX(1)",
-                                transition: "transform 0.2s ease-in-out",
-                              }
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                              transform: "scaleX(1)",
+                              transition: "transform 0.2s ease-in-out",
+                            }
                             : {
-                                content: '""',
-                                position: "absolute",
-                                left: 8,
-                                right: 8,
-                                bottom: 2,
-                                height: "2px",
-                                backgroundColor: colors.primary.main,
-                                borderRadius: 1,
-                                transform: "scaleX(0)",
-                                transition: "transform 0.2s ease-in-out",
-                              },
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              transform: "scaleX(0)",
+                              transition: "transform 0.2s ease-in-out",
+                            },
                           "&:hover::after": {
                             transform: "scaleX(1)",
                           },
@@ -704,42 +704,42 @@ export function Header() {
                               Featured
                             </Typography>
                             {item.megaMenu.featured.map(featuredItem => (
-                              <Link 
+                              <Link
                                 key={featuredItem.name}
                                 href={featuredItem.href}
                                 style={{ textDecoration: 'none', display: 'block' }}
                               >
-                              <Box
-                                onClick={handleCakesMenuClose}
-                                sx={{
-                                  display: "block",
-                                  p: 1.5,
-                                  borderRadius: 1,
-                                  textDecoration: "none",
-                                  color:
-                                    pathname === featuredItem.href
-                                      ? colors.primary.main
-                                      : colors.text.primary,
-                                  fontWeight:
-                                    pathname === featuredItem.href
-                                      ? typography.fontWeight.semibold
-                                      : typography.fontWeight.normal,
-                                  "&:hover": {
-                                    backgroundColor: colors.background.subtle,
-                                    color: colors.primary.main,
-                                  },
-                                }}
-                              >
-                                <Typography variant="subtitle1" sx={{ fontWeight: "inherit" }}>
-                                  {featuredItem.name}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  sx={{ color: colors.text.secondary, mt: 0.5 }}
+                                <Box
+                                  onClick={handleCakesMenuClose}
+                                  sx={{
+                                    display: "block",
+                                    p: 1.5,
+                                    borderRadius: 1,
+                                    textDecoration: "none",
+                                    color:
+                                      pathname === featuredItem.href
+                                        ? colors.primary.main
+                                        : colors.text.primary,
+                                    fontWeight:
+                                      pathname === featuredItem.href
+                                        ? typography.fontWeight.semibold
+                                        : typography.fontWeight.normal,
+                                    "&:hover": {
+                                      backgroundColor: colors.background.subtle,
+                                      color: colors.primary.main,
+                                    },
+                                  }}
                                 >
-                                  {featuredItem.description}
-                                </Typography>
-                              </Box>
+                                  <Typography variant="subtitle1" sx={{ fontWeight: "inherit" }}>
+                                    {featuredItem.name}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ color: colors.text.secondary, mt: 0.5 }}
+                                  >
+                                    {featuredItem.description}
+                                  </Typography>
+                                </Box>
                               </Link>
                             ))}
                           </Box>
@@ -767,29 +767,29 @@ export function Header() {
                                     href={categoryItem.href}
                                     style={{ textDecoration: 'none', display: 'block' }}
                                   >
-                                  <Box
-                                    onClick={handleCakesMenuClose}
-                                    sx={{
-                                      display: "block",
-                                      p: 1,
-                                      borderRadius: 1,
-                                      textDecoration: "none",
-                                      color:
-                                        pathname === categoryItem.href
-                                          ? colors.primary.main
-                                          : colors.text.primary,
-                                      fontWeight:
-                                        pathname === categoryItem.href
-                                          ? typography.fontWeight.semibold
-                                          : typography.fontWeight.normal,
-                                      "&:hover": {
-                                        backgroundColor: colors.background.subtle,
-                                        color: colors.primary.main,
-                                      },
-                                    }}
-                                  >
-                                    {categoryItem.name}
-                                  </Box>
+                                    <Box
+                                      onClick={handleCakesMenuClose}
+                                      sx={{
+                                        display: "block",
+                                        p: 1,
+                                        borderRadius: 1,
+                                        textDecoration: "none",
+                                        color:
+                                          pathname === categoryItem.href
+                                            ? colors.primary.main
+                                            : colors.text.primary,
+                                        fontWeight:
+                                          pathname === categoryItem.href
+                                            ? typography.fontWeight.semibold
+                                            : typography.fontWeight.normal,
+                                        "&:hover": {
+                                          backgroundColor: colors.background.subtle,
+                                          color: colors.primary.main,
+                                        },
+                                      }}
+                                    >
+                                      {categoryItem.name}
+                                    </Box>
                                   </Link>
                                 ))}
                               </Box>
@@ -809,8 +809,8 @@ export function Header() {
 
                   let menuAnchor: null | HTMLElement = null;
                   let isMenuOpen = false;
-                  let handleMenuOpen: (event: React.MouseEvent<HTMLElement>) => void = () => {};
-                  let handleMenuClose: () => void = () => {};
+                  let handleMenuOpen: (event: React.MouseEvent<HTMLElement>) => void = () => { };
+                  let handleMenuClose: () => void = () => { };
 
                   if (isServicesMenu) {
                     menuAnchor = servicesMenuAnchor;
@@ -862,30 +862,30 @@ export function Header() {
                           },
                           "&::after": isActive
                             ? {
-                                content: '""',
-                                position: "absolute",
-                                left: 8,
-                                right: 8,
-                                bottom: 2,
-                                height: "2px",
-                                backgroundColor: colors.primary.main,
-                                borderRadius: 1,
-                                boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                                transform: "scaleX(1)",
-                                transition: "transform 0.2s ease-in-out",
-                              }
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                              transform: "scaleX(1)",
+                              transition: "transform 0.2s ease-in-out",
+                            }
                             : {
-                                content: '""',
-                                position: "absolute",
-                                left: 8,
-                                right: 8,
-                                bottom: 2,
-                                height: "2px",
-                                backgroundColor: colors.primary.main,
-                                borderRadius: 1,
-                                transform: "scaleX(0)",
-                                transition: "transform 0.2s ease-in-out",
-                              },
+                              content: '""',
+                              position: "absolute",
+                              left: 8,
+                              right: 8,
+                              bottom: 2,
+                              height: "2px",
+                              backgroundColor: colors.primary.main,
+                              borderRadius: 1,
+                              transform: "scaleX(0)",
+                              transition: "transform 0.2s ease-in-out",
+                            },
                           "&:hover::after": {
                             transform: "scaleX(1)",
                           },
@@ -922,25 +922,25 @@ export function Header() {
                             href={dropdownItem.href}
                             style={{ textDecoration: 'none', display: 'block' }}
                           >
-                          <MenuItem
-                            onClick={handleMenuClose}
-                            sx={{
-                              color:
-                                pathname === dropdownItem.href
-                                  ? colors.primary.main
-                                  : colors.text.primary,
-                              fontWeight:
-                                pathname === dropdownItem.href
-                                  ? typography.fontWeight.semibold
-                                  : typography.fontWeight.normal,
-                              "&:hover": {
-                                backgroundColor: colors.background.subtle,
-                                color: colors.primary.main,
-                              },
-                            }}
-                          >
-                            {dropdownItem.name}
-                          </MenuItem>
+                            <MenuItem
+                              onClick={handleMenuClose}
+                              sx={{
+                                color:
+                                  pathname === dropdownItem.href
+                                    ? colors.primary.main
+                                    : colors.text.primary,
+                                fontWeight:
+                                  pathname === dropdownItem.href
+                                    ? typography.fontWeight.semibold
+                                    : typography.fontWeight.normal,
+                                "&:hover": {
+                                  backgroundColor: colors.background.subtle,
+                                  color: colors.primary.main,
+                                },
+                              }}
+                            >
+                              {dropdownItem.name}
+                            </MenuItem>
                           </Link>
                         ))}
                       </Menu>
@@ -980,30 +980,30 @@ export function Header() {
                         },
                         "&::after": isActive
                           ? {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
-                              transform: "scaleX(1)",
-                              transition: "transform 0.2s ease-in-out",
-                            }
+                            content: '""',
+                            position: "absolute",
+                            left: 8,
+                            right: 8,
+                            bottom: 2,
+                            height: "2px",
+                            backgroundColor: colors.primary.main,
+                            borderRadius: 1,
+                            boxShadow: `0 1px 4px 0 ${colors.primary.main}22`,
+                            transform: "scaleX(1)",
+                            transition: "transform 0.2s ease-in-out",
+                          }
                           : {
-                              content: '""',
-                              position: "absolute",
-                              left: 8,
-                              right: 8,
-                              bottom: 2,
-                              height: "2px",
-                              backgroundColor: colors.primary.main,
-                              borderRadius: 1,
-                              transform: "scaleX(0)",
-                              transition: "transform 0.2s ease-in-out",
-                            },
+                            content: '""',
+                            position: "absolute",
+                            left: 8,
+                            right: 8,
+                            bottom: 2,
+                            height: "2px",
+                            backgroundColor: colors.primary.main,
+                            borderRadius: 1,
+                            transform: "scaleX(0)",
+                            transition: "transform 0.2s ease-in-out",
+                          },
                         "&:hover::after": {
                           transform: "scaleX(1)",
                         },
@@ -1415,7 +1415,7 @@ export function Header() {
                     item={item}
                     isActive={isActive}
                     pathname={pathname}
-                    onToggle={() => {}}
+                    onToggle={() => { }}
                     isOpen={false}
                     onNavigate={handleMobileNavigation}
                     hasSubmenu={false}
