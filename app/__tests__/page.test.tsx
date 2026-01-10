@@ -81,6 +81,23 @@ jest.mock('../components/MarketSchedule', () => ({
   default: () => <div data-testid="market-schedule">Market Schedule</div>
 }))
 
+// Mock mobile homepage components
+// Note: MobileMarkets is async in real code but mocked as sync for tests
+jest.mock('../components/mobile-homepage', () => ({
+  MobileHero: () => <div data-testid="mobile-hero">Mobile Hero</div>,
+  MobileAbout: () => <div data-testid="mobile-about">Mobile About</div>,
+  MobileBestsellers: () => <div data-testid="mobile-bestsellers">Mobile Bestsellers</div>,
+  MobileMarkets: () => {
+    // Mock as regular component - returns JSX for test rendering
+    // In real code, this is async and might return null, but for tests we need content
+    return <div data-testid="mobile-markets">Mobile Markets</div>
+  },
+  MobileReviews: () => <div data-testid="mobile-reviews">Mobile Reviews</div>,
+  MobileOccasions: () => <div data-testid="mobile-occasions">Mobile Occasions</div>,
+  MobileForm: () => <div data-testid="mobile-form">Mobile Form</div>,
+  MobileFooter: () => <div data-testid="mobile-footer">Mobile Footer</div>
+}))
+
 // Mock Next.js components
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -89,7 +106,10 @@ jest.mock('next/link', () => ({
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: ImageProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, priority, ...props }: ImageProps & { priority?: boolean }) => {
+    // Remove priority from props as it's not a valid HTML attribute
+    return <img alt={alt} src={src} data-testid="next-image" data-priority={priority} {...props} />
+  }
 }))
 
 // Mock MUI

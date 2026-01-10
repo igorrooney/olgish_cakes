@@ -15,7 +15,7 @@
   --color-base-100: #FFFBEB;
   --color-base-200: #FFF5E6;
   --color-base-300: #E5E6E6;
-  --color-base-content: #2D2D2D;
+  --color-base-content: #1F2937;
   --color-primary: #2E3192;
   --color-primary-content: #FFFFFF;
   --color-primary-50: #ECECF9;
@@ -197,6 +197,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-navigation: #6467CE;
+  --color-base-content: #1F2937;
   --color-primary-50: #ECECF9;
   --color-primary-500: #2E3192;
   --color-primary-700: #252774;
@@ -332,14 +333,6 @@ select:focus {
 
 /* Mobile-specific optimizations */
 @media (max-width: 768px) {
-
-  /* Ensure touch targets are at least 44px */
-  button,
-  a,
-  [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
 
   /* Improve text readability on mobile */
   body {

@@ -1,32 +1,46 @@
-"use client";
+import Link from 'next/link'
+import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
+import type { MarketSchedule } from '@/app/types/marketSchedule'
 
-import Image from "next/image";
-import Link from "next/link";
-
-interface MarketEvent {
-  name: string;
-  date: string;
-  time: string;
-  location: string;
-  website?: string;
+function formatMarketDate(date: string): string {
+  const eventDate = new Date(date)
+  return eventDate.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  })
 }
 
-const markets: MarketEvent[] = [
-  {
-    name: "Rothwell Farmers Market",
-    date: "Sunday 30 November",
-    time: "10:00-14:00",
-    location: "The White Swan, Church St, Rothwell, Leeds LS26 0QL",
-  },
-  {
-    name: "Jacobs Local Market",
-    date: "Friday 5 December",
-    time: "9:00-14:00",
-    location: "The Black Swan, Portland St, City Centre, Leeds LS01 2LP",
-  },
-];
+function formatMarketTime(startTime: string, endTime: string): string {
+  return `${startTime}-${endTime}`
+}
 
-export function MobileMarkets() {
+function getUpcomingMarkets(markets: MarketSchedule[]): MarketSchedule[] {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return markets
+    .filter((market) => {
+      const marketDate = new Date(market.date)
+      marketDate.setHours(0, 0, 0, 0)
+      return marketDate >= today
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.date).getTime()
+      const dateB = new Date(b.date).getTime()
+      return dateA - dateB
+    })
+    .slice(0, 10)
+}
+
+export async function MobileMarkets() {
+  const allMarkets = await getMarketSchedule()
+  const upcomingMarkets = getUpcomingMarkets(allMarkets)
+
+  if (!upcomingMarkets || upcomingMarkets.length === 0) {
+    return null
+  }
+
   return (
     <section className="relative bg-base-100 px-4 py-8 mt-8">
       <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
@@ -36,25 +50,38 @@ export function MobileMarkets() {
           Farmers markets
         </h2>
 
-        <div className="flex flex-col gap-5 rounded-[16px] bg-accent-50 px-4 py-6 shadow-sm">
-          {markets.map((market, index) => (
+        <div className="flex flex-col gap-5 rounded-[16px] px-4 py-6 pb-0">
+          {upcomingMarkets.map((market) => (
             <div
-              key={index}
-              className="rounded-[16px] border border-[rgba(0,0,0,0.2)] bg-amber-50 px-5 py-6 shadow-xl"
+              key={market._id}
+              className="card items-start gap-0 self-stretch p-8 bg-base-100 border border-black/20 shadow-xl rounded-box"
+              style={{ borderWidth: '0.5px' }}
             >
-              <div className="flex flex-col gap-2">
-                <h3 className="font-moreSugar text-[20px] text-base-content leading-[28px]">
-                  {market.name}
+              <div className="card-body p-0 gap-2">
+                <h3 className="card-title !font-thin font-moreSugar text-xl text-base-content leading-7">
+                  {market.title}
                 </h3>
                 <div className="flex flex-col gap-1 font-sans text-sm text-base-content">
-                  <p>{market.date}</p>
-                  <p>{market.time}</p>
+                  <p>{formatMarketDate(market.date)}</p>
+                  <p>{formatMarketTime(market.startTime, market.endTime)}</p>
                   <p>{market.location}</p>
                 </div>
-                <div className="mt-4 flex justify-end">
+                <div className={`card-actions ${market.website ? 'justify-between' : 'justify-end'} items-baseline mt-4`}>
+                  {market.website && (
+                    <Link
+                      href={market.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm underline text-primary-500"
+                    >
+                      Visit website
+                    </Link>
+                  )}
                   <Link
-                    href="#"
-                    className="btn h-8 rounded-full border border-primary-500 px-3 text-sm text-primary-500"
+                    href={market.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-sm rounded-full border border-primary-500 px-3 text-sm text-primary-500"
                   >
                     Get directions -&gt;
                   </Link>
@@ -62,14 +89,18 @@ export function MobileMarkets() {
               </div>
             </div>
           ))}
-          <div className="flex justify-center">
-            <Link href="/farmers-markets" className="text-sm underline text-primary-500">
-              Visit website
-            </Link>
-          </div>
+        </div>
+        <div className="relative flex justify-center z-1 mr-5">
+          <Link
+            href="/market-schedule"
+            className="flex items-center gap-2 text-black"
+          >
+            <span className="font-oldenburg">See all markets</span>
+            <span className="font-oldenburg text-primary-500 text-lg mt-1">{">"}</span>
+          </Link>
         </div>
       </div>
     </section>
-  );
+  )
 }
 
