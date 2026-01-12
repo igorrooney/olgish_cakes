@@ -1,6 +1,27 @@
-import { client } from "@/sanity/lib/client";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { MetadataRoute } from "next";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
+
+interface SitemapCake {
+  slug: { current: string }
+  _updatedAt: string
+  seo?: { priority?: number; changefreq?: string }
+}
+
+interface SitemapBlogPost {
+  slug: { current: string }
+  _updatedAt: string
+  publishDate?: string
+  featured?: boolean
+  category?: string
+  seo?: { priority?: number; changefreq?: string }
+}
+
+interface SitemapGiftHamper {
+  slug: { current: string }
+  _updatedAt: string
+  seo?: { priority?: number; changefreq?: string }
+}
 
 async function getCakes() {
   const query = `*[_type == "cake" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
@@ -11,7 +32,8 @@ async function getCakes() {
       changefreq
     }
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<SitemapCake[]>(query, {}, config)
 }
 
 async function getBlogPosts() {
@@ -26,7 +48,8 @@ async function getBlogPosts() {
       changefreq
     }
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<SitemapBlogPost[]>(query, {}, config)
 }
 
 async function getGiftHampers() {
@@ -38,7 +61,8 @@ async function getGiftHampers() {
       changefreq
     }
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<SitemapGiftHamper[]>(query, {}, config)
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -50,13 +74,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const cakeRoutes = cakes
-    .filter((cake: { slug: { current: string } | null }) => cake.slug?.current)
-    .map(
-      (cake: {
-        slug: { current: string };
-        _updatedAt: string;
-        seo?: { priority?: number; changefreq?: string };
-      }) => ({
+    .filter((cake) => cake.slug?.current)
+    .map((cake) => ({
         url: `${baseUrl}/cakes/${cake.slug.current}`,
         lastModified: new Date(cake._updatedAt),
         changeFrequency:
@@ -73,16 +92,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
 
   const blogRoutes = blogPosts
-    .filter((post: { slug: { current: string } | null }) => post.slug?.current)
-    .map(
-      (post: {
-        slug: { current: string };
-        _updatedAt: string;
-        publishDate?: string;
-        featured?: boolean;
-        category?: string;
-        seo?: { priority?: number; changefreq?: string };
-      }) => {
+    .filter((post) => post.slug?.current)
+    .map((post) => {
       // Higher priority for featured posts and recent content
       const isRecent = post.publishDate &&
         new Date(post.publishDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days
@@ -110,15 +121,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   const giftHamperRoutes = giftHampers
-    .filter((hamper: { slug: { current: string } | null; _id?: string }) => hamper.slug?.current || hamper._id)
-    .map(
-      (hamper: {
-        _id: string;
-        slug: { current: string };
-        _updatedAt: string;
-        seo?: { priority?: number; changefreq?: string };
-      }) => ({
-        url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
+    .filter((hamper) => hamper.slug?.current)
+    .map((hamper) => ({
+        url: `${baseUrl}/gift-hampers/${hamper.slug.current}`,
         lastModified: new Date(hamper._updatedAt),
         changeFrequency:
           (hamper.seo?.changefreq as

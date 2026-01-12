@@ -1,10 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { serverClient } from '@/sanity/lib/client';
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache';
+
+interface CakeQueryResult {
+  _id: string
+  name: string
+  size?: string
+  pricing?: { standard?: number; individual?: number }
+  category?: string
+  slug?: { current: string }
+  order?: number
+}
+
+interface GiftHamperQueryResult {
+  _id: string
+  name: string
+  price?: number
+  category?: string
+  slug?: { current: string }
+  order?: number
+}
 
 export async function GET(request: NextRequest) {
   try {
+    const config = getCacheConfig('cakes')
+    
     // Fetch cakes
-    const cakes = await serverClient.fetch(`
+    const cakes = await cachedSanityFetch<CakeQueryResult[]>(`
       *[_type == "cake"] {
         _id,
         name,
@@ -14,10 +35,10 @@ export async function GET(request: NextRequest) {
         slug,
         order
       } | order(order asc, _createdAt desc)
-    `);
+    `, {}, config);
 
     // Fetch gift hampers
-    const giftHampers = await serverClient.fetch(`
+    const giftHampers = await cachedSanityFetch<GiftHamperQueryResult[]>(`
       *[_type == "giftHamper"] {
         _id,
         name,
@@ -26,11 +47,11 @@ export async function GET(request: NextRequest) {
         slug,
         order
       } | order(order asc, _createdAt desc)
-    `);
+    `, {}, config);
 
     // Transform data for easier use in the frontend
     const products = [
-      ...cakes.map((cake: any) => ({
+      ...cakes.map((cake) => ({
         id: cake._id,
         name: cake.name,
         type: 'cake',
@@ -42,7 +63,7 @@ export async function GET(request: NextRequest) {
         standardPrice: cake.pricing?.standard || 0,
         individualPrice: cake.pricing?.individual || 0,
       })),
-      ...giftHampers.map((hamper: any) => ({
+      ...giftHampers.map((hamper) => ({
         id: hamper._id,
         name: hamper.name,
         type: 'gift-hamper',
@@ -55,7 +76,14 @@ export async function GET(request: NextRequest) {
       })),
     ];
 
-    return NextResponse.json({ products });
+    return NextResponse.json(
+      { products },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+        }
+      }
+    );
   } catch (error) {
     console.error('Failed to fetch products:', error);
     return NextResponse.json(

@@ -1,10 +1,10 @@
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
+import { getGiftHamperBySlug, getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { BRAND_ID } from "@/lib/schema-constants";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
-import { getClient } from "@/sanity/lib/client";
 import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
 import type { GiftHamper, GiftHamperFAQItem, RichTextBlock, RichTextChild } from "@/types/giftHamper";
@@ -18,43 +18,18 @@ export const revalidate = 300; // 5 minutes
 
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
-  const query = `*[_type == "giftHamper" && defined(slug.current)] {
-    "slug": slug.current
-  }`;
-
   try {
-    const sanityClient = getClient(false); // Use production client
-    const hampers = await sanityClient.fetch(query);
+    const hampers = await getAllGiftHampers(false);
 
-    return hampers.map((hamper: { slug: string }) => ({
-      slug: hamper.slug,
-    }));
+    return hampers
+      .filter((hamper: GiftHamper) => hamper.slug?.current)
+      .map((hamper: GiftHamper) => ({
+        slug: hamper.slug.current,
+      }));
   } catch (error) {
     console.error("Error generating static params for gift hampers:", error);
     return [];
   }
-}
-
-async function getGiftHamper(slug: string, preview = false): Promise<GiftHamper | null> {
-  const query = `*[_type == "giftHamper" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    price,
-    order,
-    category,
-    ingredients,
-    allergens,
-    mainImage,
-    images,
-    seo
-  }`;
-
-  const sanityClient = getClient(preview);
-  return sanityClient.fetch(query, { slug });
 }
 
 interface PageProps {
@@ -63,7 +38,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const hamper = await getGiftHamper(slug);
+  const hamper = await getGiftHamperBySlug(slug);
   if (!hamper) {
     return {
       title: "Gift Hamper Not Found | Olgish Cakes",
@@ -143,7 +118,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function GiftHamperPage({ params }: PageProps) {
   const { slug } = await params;
   const [hamper, testimonialStats] = await Promise.all([
-    getGiftHamper(slug),
+    getGiftHamperBySlug(slug),
     getAllTestimonialsStats()
   ]);
   if (!hamper) notFound();

@@ -1,10 +1,13 @@
 import { createClient } from '@sanity/client'
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
 
-const client = createClient({
+// Client for write operations (create, update, delete) - should not be cached
+const writeClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-  useCdn: true,
+  useCdn: false,
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
+  token: process.env.SANITY_API_TOKEN,
 })
 
 export interface BlogPost {
@@ -119,7 +122,14 @@ export async function getBlogPosts(options: {
     query += `[${start}...${start + limit}]`
   }
 
-  return await client.fetch(query, params)
+  // Don't cache draft or scheduled posts - they need real-time updates
+  if (status === 'draft' || status === 'scheduled') {
+    return await writeClient.fetch(query, params)
+  }
+
+  // Cache published posts
+  const config = getCacheConfig('blogPosts')
+  return await cachedSanityFetch<BlogPost[]>(query, params, config)
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
@@ -160,7 +170,10 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
       image
     }
   }`
-  return await client.fetch(query, { slug })
+  
+  // Cache individual blog posts
+  const config = getCacheConfig('blogPost')
+  return await cachedSanityFetch<BlogPost | null>(query, { slug }, config)
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -172,7 +185,9 @@ export async function getBlogCategories(): Promise<{ name: string; count: number
     category
   }`
   
-  const posts = await client.fetch(query)
+  const config = getCacheConfig('blogPosts')
+  const posts = await cachedSanityFetch<Array<{ category: string }>>(query, {}, config)
+  
   const categoryCounts = posts.reduce((acc: any, post: any) => {
     acc[post.category] = (acc[post.category] || 0) + 1
     return acc
@@ -214,7 +229,8 @@ export async function getRelatedPosts(
     featured
   } | order(featured desc, publishDate desc) [0...$limit]`
   
-  return await client.fetch(query, { currentPostId, category, limit })
+  const config = getCacheConfig('blogPosts')
+  return await cachedSanityFetch<BlogPost[]>(query, { currentPostId, category, limit }, config)
 }
 
 export async function getScheduledPosts(): Promise<BlogPost[]> {
@@ -225,7 +241,8 @@ export async function getScheduledPosts(): Promise<BlogPost[]> {
     status == "scheduled" && 
     publishDate >= $today] | order(publishDate asc)`
   
-  return await client.fetch(query, { today: `${today}T00:00:00.000Z` })
+  // Don't cache scheduled posts - they need real-time checks
+  return await writeClient.fetch(query, { today: `${today}T00:00:00.000Z` })
 }
 
 export async function createBlogPost(post: Partial<BlogPost>): Promise<string> {
@@ -238,17 +255,17 @@ export async function createBlogPost(post: Partial<BlogPost>): Promise<string> {
     }
   }
 
-  const result = await client.create(doc)
+  const result = await writeClient.create(doc)
   return result._id
 }
 
 export async function updateBlogPost(id: string, updates: Partial<BlogPost>): Promise<void> {
-  await client
+  await writeClient
     .patch(id)
     .set(updates)
     .commit()
 }
 
 export async function deleteBlogPost(id: string): Promise<void> {
-  await client.delete(id)
+  await writeClient.delete(id)
 }

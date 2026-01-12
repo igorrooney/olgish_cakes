@@ -1,5 +1,27 @@
-import { client } from "@/sanity/lib/client";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { MetadataRoute } from "next";
+
+interface BlogImageResult {
+  slug: { current: string }
+  featuredImage?: { asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }
+  cardImage?: { asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }
+  title: string
+  publishDate?: string
+}
+
+interface CakeImageResult {
+  slug: { current: string }
+  images?: Array<{ asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }>
+  name: string
+  _updatedAt: string
+}
+
+interface GiftHamperImageResult {
+  slug?: { current: string }
+  images?: Array<{ asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }>
+  name: string
+  _updatedAt: string
+}
 
 async function getBlogImages() {
   const query = `*[_type == "blogPost" && status == "published"] {
@@ -27,7 +49,8 @@ async function getBlogImages() {
     title,
     publishDate
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<BlogImageResult[]>(query, {}, config)
 }
 
 async function getCakeImages() {
@@ -46,7 +69,8 @@ async function getCakeImages() {
     name,
     _updatedAt
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<CakeImageResult[]>(query, {}, config)
 }
 
 async function getGiftHamperImages() {
@@ -65,7 +89,8 @@ async function getGiftHamperImages() {
     name,
     _updatedAt
   }`;
-  return client.fetch(query);
+  const config = getCacheConfig('sitemaps')
+  return cachedSanityFetch<GiftHamperImageResult[]>(query, {}, config)
 }
 
 export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {

@@ -1,6 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
 import { render } from '@testing-library/react'
 import { notFound } from 'next/navigation'
 import HamperDetailPage, { generateMetadata, generateStaticParams } from '../page'
@@ -21,7 +26,13 @@ jest.mock('@/sanity/lib/client', () => {
   }
 })
 
+jest.mock('@/app/utils/fetchGiftHampers', () => ({
+  getAllGiftHampers: jest.fn(),
+  getGiftHamperBySlug: jest.fn()
+}))
+
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
+const { getAllGiftHampers: mockGetAllGiftHampers, getGiftHamperBySlug: mockGetGiftHamperBySlug } = jest.requireMock('@/app/utils/fetchGiftHampers')
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
@@ -61,19 +72,24 @@ describe('HamperDetailPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+    mockGetAllGiftHampers.mockResolvedValue([])
   })
 
   describe('generateStaticParams', () => {
     it('should generate params', async () => {
-      mockFetch.mockResolvedValue([{ slug: 'deluxe-hamper' }])
+      mockGetAllGiftHampers.mockResolvedValue([
+        { slug: { current: 'deluxe-hamper' } }
+      ])
 
       const params = await generateStaticParams()
 
       expect(params).toEqual([{ slug: 'deluxe-hamper' }])
+      expect(mockGetAllGiftHampers).toHaveBeenCalledWith(false)
     })
 
     it('should handle errors', async () => {
-      mockFetch.mockRejectedValue(new Error('Failed'))
+      mockGetAllGiftHampers.mockRejectedValue(new Error('Failed'))
 
       const params = await generateStaticParams()
 
@@ -83,7 +99,7 @@ describe('HamperDetailPage', () => {
 
   describe('generateMetadata', () => {
     it('should generate metadata with default fallback', async () => {
-      mockFetch.mockResolvedValue(mockHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -100,7 +116,7 @@ describe('HamperDetailPage', () => {
           keywords: ['custom', 'seo', 'keywords']
         }
       }
-      mockFetch.mockResolvedValue(hamperWithSEO)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -114,7 +130,7 @@ describe('HamperDetailPage', () => {
         ...mockHamper,
         slug: { current: 'cake-by-post' }
       }
-      mockFetch.mockResolvedValue(cakeByPostHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
@@ -133,7 +149,7 @@ describe('HamperDetailPage', () => {
           keywords: ['custom', 'keywords']
         }
       }
-      mockFetch.mockResolvedValue(cakeByPostWithSEO)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostWithSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
@@ -144,7 +160,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should return 404 metadata for missing hamper', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetGiftHamperBySlug.mockResolvedValue(null)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
@@ -154,7 +170,7 @@ describe('HamperDetailPage', () => {
 
   describe('Rendering', () => {
     it('should render hamper page', async () => {
-      mockFetch.mockResolvedValue(mockHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -162,7 +178,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should call notFound for missing hamper', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetGiftHamperBySlug.mockResolvedValue(null)
 
       await expect(async () => {
         await HamperDetailPage({ params: Promise.resolve({ slug: 'non-existent' }) })
@@ -179,7 +195,7 @@ describe('HamperDetailPage', () => {
         slug: { current: 'cake-by-post' },
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(cakeByPostHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
@@ -219,7 +235,7 @@ describe('HamperDetailPage', () => {
         ingredients: ['Flour', 'Honey', 'Eggs', 'Sugar'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(hamperWithIngredients)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithIngredients)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -249,7 +265,7 @@ describe('HamperDetailPage', () => {
         allergens: ['Gluten', 'Eggs', 'Dairy'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(hamperWithAllergens)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithAllergens)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -284,7 +300,7 @@ describe('HamperDetailPage', () => {
         allergens: ['Gluten', 'Eggs', 'Dairy'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(fullHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(fullHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
@@ -340,7 +356,7 @@ describe('HamperDetailPage', () => {
         // No cake-by-post, no ingredients, no allergens
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(basicHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(basicHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -366,7 +382,7 @@ describe('HamperDetailPage', () => {
 
   describe('Brand Field Duplication Prevention', () => {
     it('should use @graph format for Product structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -389,7 +405,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should have exactly one Brand entity in @graph', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -419,7 +435,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should reference brand by @id in product, not inline object', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -451,7 +467,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should NOT have duplicate brand fields in structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -479,7 +495,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should have consistent brand @id in product structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })

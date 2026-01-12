@@ -1,6 +1,7 @@
-import { client, getClient, USE_REAL_TIME_DATA } from "@/sanity/lib/client";
+import { getClient } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 
 // Helper function to validate Sanity environment variables at runtime
 function validateSanityConfig() {
@@ -18,42 +19,12 @@ function validateSanityConfig() {
   }
 }
 
-// Cache configuration based on real-time setting
-const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = USE_REAL_TIME_DATA
-  ? 0
-  : process.env.NODE_ENV === "development"
-    ? 10 * 1000 // Reduced to 10 seconds for development
-    : 60 * 1000; // Reduced to 1 minute for production
-
-// Revalidation settings - more aggressive for better data freshness
-const REVALIDATE_TIME = USE_REAL_TIME_DATA ? 0 : process.env.NODE_ENV === "development" ? 0 : 60;
-
-function getCachedData<T>(key: string): T | null {
-  if (USE_REAL_TIME_DATA) {
-    return null; // No caching for real-time data
-  }
-
-  const cached = cache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data as T;
-  }
-  return null;
-}
-
-function setCachedData<T>(key: string, data: T): void {
-  if (!USE_REAL_TIME_DATA) {
-    cache.set(key, { data, timestamp: Date.now() });
-  }
-}
+// Revalidation settings for backwards compatibility
+const REVALIDATE_TIME = 3600; // 1 hour in seconds
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `all-cakes-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached;
 
   const query = `*[_type == "cake"] | order(order asc, _createdAt desc) {
     _id,
@@ -86,13 +57,15 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
   }`;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query);
-
-    if (!preview) {
-      setCachedData(cacheKey, data);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      return await sanityClient.fetch(query);
     }
-    return data;
+
+    const config = getCacheConfig('cakes')
+    const data = await cachedSanityFetch<Cake[]>(query, {}, config)
+    return data
   } catch (error) {
     console.error("Error fetching all cakes:", error);
     return [];
@@ -102,10 +75,6 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
 export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `featured-cakes-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached;
 
   const query = groq`*[_type == "cake" && isFeatured == true] | order(order asc, _createdAt desc) {
     _id,
@@ -131,13 +100,15 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   }`;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query);
-
-    if (!preview) {
-      setCachedData(cacheKey, data);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      return await sanityClient.fetch(query);
     }
-    return data;
+
+    const config = getCacheConfig('cakes')
+    const data = await cachedSanityFetch<Cake[]>(query, {}, config)
+    return data
   } catch (error) {
     console.error("Error fetching featured cakes:", error);
     return [];
@@ -147,10 +118,6 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `cake-${slug}-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake>(cacheKey);
-  if (cached && !preview) return cached;
 
   const query = `*[_type == "cake" && slug.current == $slug][0] {
     _id,
@@ -190,54 +157,45 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
   }`;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query, { slug });
-
-    if (data && !preview) {
-      setCachedData(cacheKey, data);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      return await sanityClient.fetch(query, { slug });
     }
-    return data;
+
+    const config = getCacheConfig('individualPages')
+    const data = await cachedSanityFetch<Cake | null>(query, { slug }, config)
+    return data
   } catch (error) {
     console.error("Error fetching cake by slug:", error);
     return null;
   }
 }
 
-// Revalidation helper
+// Revalidation helper for backwards compatibility
 export function getRevalidateTime(): number {
   return REVALIDATE_TIME;
 }
 
-// Clear cache function
+// Cache invalidation - now handled by Next.js cache tags
+// These functions are kept for backwards compatibility but don't do anything
+// Cache invalidation should be done via revalidateTag() in API routes
 export function clearCache(): void {
-  cache.clear();
+  // No-op: cache is now managed by Next.js
 }
 
-// Cache invalidation
 export async function invalidateCache(pattern?: string): Promise<void> {
-  if (pattern) {
-    // Clear specific cache entries
-    for (const key of cache.keys()) {
-      if (key.includes(pattern)) {
-        cache.delete(key);
-      }
-    }
-  } else {
-    // Clear all cache
-    cache.clear();
-  }
+  // No-op: cache is now managed by Next.js via tags
+  // Use revalidateTag() from 'next/cache' in API routes instead
 }
 
-// Development cache busting - add timestamp to force fresh data
 export function getCacheBustingKey(baseKey: string): string {
-  if (process.env.NODE_ENV === "development") {
-    return `${baseKey}-${Date.now()}`;
-  }
+  // No-op: cache keys are managed automatically
   return baseKey;
 }
 
-// Force refresh data (bypass cache)
 export async function forceRefreshCakes(): Promise<Cake[]> {
-  cache.clear();
+  // Note: This will still use cache until revalidation period expires
+  // For immediate refresh, use revalidateTag('cakes') from an API route
   return getAllCakes();
 }

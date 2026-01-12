@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { client } from "@/sanity/lib/client";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { groq } from "next-sanity";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableText } from "@portabletext/react";
@@ -434,12 +434,13 @@ import { Breadcrumbs } from "../../components/Breadcrumbs";
 
 // Generate static params for all blog posts at build time
 export async function generateStaticParams() {
-  const query = groq`*[_type == "blogPost" && defined(slug.current)] {
+  const query = groq`*[_type == "blogPost" && status == "published" && defined(slug.current)] {
     "slug": slug.current
   }`;
 
   try {
-    const posts = await client.fetch(query);
+    const config = getCacheConfig('blogPosts')
+    const posts = await cachedSanityFetch<Array<{ slug: string }>>(query, {}, config)
     return posts.map((post: { slug: string }) => ({
       slug: post.slug,
     }));

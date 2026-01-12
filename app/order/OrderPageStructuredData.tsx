@@ -2,7 +2,7 @@ import { getAllTestimonialsStats, getFeaturedTestimonials } from "@/app/utils/fe
 import { perfLogger } from "@/lib/performance-logger";
 import { generateAllProductSchemas } from "@/lib/product-schemas";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "@/lib/schema-constants";
-import { client } from "@/sanity/lib/client";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import Script from "next/script";
 
 export async function OrderPageStructuredData() {
@@ -20,27 +20,37 @@ export async function OrderPageStructuredData() {
 
   // Fetch essential cake data for product schemas (optimized query)
   perfLogger.start('OrderPage:FetchCakes');
-  const allCakes = await client.fetch(`
-    *[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
-      _id,
-      name,
-      slug,
-      pricing,
-      allergens,
-      ingredients,
-      mainImage {
-        asset-> {
-          url
-        }
-      },
-      description
-    }
-  `);
+  const query = `*[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
+    _id,
+    name,
+    slug,
+    pricing,
+    allergens,
+    ingredients,
+    mainImage {
+      asset-> {
+        url
+      }
+    },
+    description
+  }`;
+  const config = getCacheConfig('cakes')
+  const allCakes = await cachedSanityFetch<Array<{
+    _id: string
+    name: string
+    slug: { current: string }
+    pricing: { standard?: number; individual?: number }
+    allergens: string[]
+    ingredients: string[]
+    mainImage?: { asset?: { url?: string } }
+    description: any
+  }>>(query, { limit: MAX_PRODUCTS_FOR_SCHEMA }, config)
   perfLogger.end('OrderPage:FetchCakes', { cakesCount: allCakes.length });
 
   // Generate all product schemas
   perfLogger.start('OrderPage:GenerateSchemas');
-  const productSchemas = generateAllProductSchemas(allCakes, {
+  // Cast to Cake[] type expected by generateAllProductSchemas (function handles missing fields)
+  const productSchemas = generateAllProductSchemas(allCakes as any, {
     count: totalTestimonialCount,
     averageRating: parseFloat(averageRating)
   });

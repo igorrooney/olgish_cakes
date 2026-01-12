@@ -1,3 +1,8 @@
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
+
 import sitemap from '../sitemap'
 
 // Mock Sanity client
@@ -107,7 +112,7 @@ describe('sitemap', () => {
       expect(deliveryUrl?.priority).toBe(0.9)
     })
 
-    it('should use _id as fallback for hampers without slug', async () => {
+    it('should filter out hampers without slug', async () => {
       mockFetch
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
@@ -115,8 +120,9 @@ describe('sitemap', () => {
 
       const result = await sitemap()
 
+      // Sitemap filters out hampers without slug.current, so this should not be included
       const hamperUrl = result.find(entry => entry.url.includes('/gift-hampers/hamper-123'))
-      expect(hamperUrl).toBeDefined()
+      expect(hamperUrl).toBeUndefined()
     })
   })
 

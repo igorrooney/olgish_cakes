@@ -1,9 +1,37 @@
-import { client } from "@/sanity/lib/client";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { MetadataRoute } from "next";
 
+interface SitemapCake {
+  _id: string
+  name: string
+  slug: { current: string }
+  _updatedAt: string
+  pricing?: any
+  mainImage?: any
+  designs?: any
+  category?: string
+  shortDescription?: any
+  description?: any
+  seo?: { priority?: number; changefreq?: string }
+}
+
+interface SitemapGiftHamper {
+  _id: string
+  name: string
+  slug?: { current: string }
+  _updatedAt: string
+  price?: number
+  images?: any
+  category?: string
+  shortDescription?: any
+  description?: any
+  seo?: { priority?: number; changefreq?: string }
+}
+
 async function getProducts() {
+  const config = getCacheConfig('sitemaps')
   const [cakes, giftHampers] = await Promise.all([
-    client.fetch(`*[_type == "cake"] {
+    cachedSanityFetch<SitemapCake[]>(`*[_type == "cake"] {
       _id,
       name,
       slug,
@@ -18,8 +46,8 @@ async function getProducts() {
         priority,
         changefreq
       }
-    }`),
-    client.fetch(`*[_type == "giftHamper"] {
+    }`, {}, config),
+    cachedSanityFetch<SitemapGiftHamper[]>(`*[_type == "giftHamper"] {
       _id,
       name,
       slug,
@@ -33,7 +61,7 @@ async function getProducts() {
         priority,
         changefreq
       }
-    }`)
+    }`, {}, config)
   ]);
 
   return { cakes, giftHampers };

@@ -25,12 +25,20 @@ jest.mock('@/sanity/lib/client', () => {
   }
 })
 
-const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
 
 // Mock utils
 jest.mock('@/app/utils/fetchCakes', () => ({
-  getRevalidateTime: jest.fn(() => 60)
+  getRevalidateTime: jest.fn(() => 60),
+  getAllCakes: jest.fn(),
+  getCakeBySlug: jest.fn()
 }))
+
+const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
+const { getAllCakes: mockGetAllCakes, getCakeBySlug: mockGetCakeBySlug } = jest.requireMock('@/app/utils/fetchCakes')
 
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
@@ -109,9 +117,9 @@ describe('CakeDetailPage', () => {
 
   describe('generateStaticParams', () => {
     it('should generate params for all cakes', async () => {
-      mockFetch.mockResolvedValue([
-        { slug: 'honey-cake' },
-        { slug: 'kyiv-cake' }
+      mockGetAllCakes.mockResolvedValue([
+        { slug: { current: 'honey-cake' } },
+        { slug: { current: 'kyiv-cake' } }
       ])
 
       const params = await generateStaticParams()
@@ -120,11 +128,12 @@ describe('CakeDetailPage', () => {
         { slug: 'honey-cake' },
         { slug: 'kyiv-cake' }
       ])
+      expect(mockGetAllCakes).toHaveBeenCalledWith(false)
     })
 
     it('should handle errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+      mockGetAllCakes.mockRejectedValue(new Error('Fetch failed'))
 
       const params = await generateStaticParams()
 
@@ -134,18 +143,18 @@ describe('CakeDetailPage', () => {
       consoleSpy.mockRestore()
     })
 
-    it('should use production client', async () => {
-      mockFetch.mockResolvedValue([])
+    it('should use getAllCakes with preview false', async () => {
+      mockGetAllCakes.mockResolvedValue([])
 
       await generateStaticParams()
 
-      expect(mockGetClient).toHaveBeenCalledWith(false)
+      expect(mockGetAllCakes).toHaveBeenCalledWith(false)
     })
   })
 
   describe('generateMetadata', () => {
     it('should generate metadata for existing cake', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
@@ -155,7 +164,7 @@ describe('CakeDetailPage', () => {
 
     it('should use default title when no SEO title', async () => {
       const cakeWithoutSEO = { ...mockCake, seo: undefined }
-      mockFetch.mockResolvedValue(cakeWithoutSEO)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
@@ -169,7 +178,7 @@ describe('CakeDetailPage', () => {
         seo: undefined,
         shortDescription: [{ children: [{ text: 'Test description' }] }]
       }
-      mockFetch.mockResolvedValue(cakeWithoutSEO)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
 
@@ -182,7 +191,7 @@ describe('CakeDetailPage', () => {
         name: 'Honey Cake (Medovik)',
         seo: undefined
       }
-      mockFetch.mockResolvedValue(honeyCake)
+      mockGetCakeBySlug.mockResolvedValue(honeyCake)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake-medovik' }) })
 
@@ -192,7 +201,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should return 404 metadata for missing cake', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetCakeBySlug.mockResolvedValue(null)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
@@ -200,7 +209,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include OpenGraph data', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
@@ -208,7 +217,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include keywords', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
@@ -218,7 +227,7 @@ describe('CakeDetailPage', () => {
 
   describe('Page Rendering', () => {
     it('should render cake page', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
@@ -226,7 +235,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should call notFound for missing cake', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetCakeBySlug.mockResolvedValue(null)
 
       await expect(async () => {
         await CakeDetailPage({ params: Promise.resolve({ slug: 'non-existent' }) })
@@ -236,7 +245,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include structured data', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -248,7 +257,7 @@ describe('CakeDetailPage', () => {
 
   describe('Structured Data - GSC Merchant Listings Compliance', () => {
     it('should include Product structured data with required fields', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -270,7 +279,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include image field in Offer (GSC Merchant listings fix)', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -290,7 +299,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include shippingDetails in Offer', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -307,7 +316,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include hasMerchantReturnPolicy in Offer', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -324,7 +333,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include aggregateRating', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -343,7 +352,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include review array', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -363,7 +372,7 @@ describe('CakeDetailPage', () => {
 
   describe('Image Field Validation - Google Merchant Center Compliance', () => {
     it('should always include image field in Product schema', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -382,7 +391,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should have image as a string (not array or object)', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -401,7 +410,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should have absolute image URL (starts with http:// or https://)', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -426,7 +435,7 @@ describe('CakeDetailPage', () => {
         designs: { standard: [], individual: [] },
         images: []
       }
-      mockFetch.mockResolvedValue(cakeWithoutImages)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutImages)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -459,7 +468,7 @@ describe('CakeDetailPage', () => {
           asset: { _ref: 'image-main', _type: 'reference' }
         }
       }
-      mockFetch.mockResolvedValue(cakeWithMainImage)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithMainImage)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -497,7 +506,7 @@ describe('CakeDetailPage', () => {
         },
         images: []
       }
-      mockFetch.mockResolvedValue(cakeWithDesignImage)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithDesignImage)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -531,7 +540,7 @@ describe('CakeDetailPage', () => {
           asset: { _ref: 'image-legacy', _type: 'reference' }
         }]
       }
-      mockFetch.mockResolvedValue(cakeWithLegacyImages)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithLegacyImages)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -564,7 +573,7 @@ describe('CakeDetailPage', () => {
           asset: { _ref: 'image-main', _type: 'reference' }
         }
       }
-      mockFetch.mockResolvedValue(cakeWithMainImage)
+      mockGetCakeBySlug.mockResolvedValue(cakeWithMainImage)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -582,7 +591,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should include image in Offer schema as well', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -602,7 +611,7 @@ describe('CakeDetailPage', () => {
     })
 
     it('should have same image URL in both Product and Offer', async () => {
-      mockFetch.mockResolvedValue(mockCake)
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)

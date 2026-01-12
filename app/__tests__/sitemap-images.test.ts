@@ -1,3 +1,8 @@
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
+
 import sitemapImages from '../sitemap-images'
 
 jest.mock('@/sanity/lib/client', () => {
