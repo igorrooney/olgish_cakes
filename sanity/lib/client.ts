@@ -3,8 +3,12 @@ import { createClient } from "next-sanity";
 import { apiVersion, dataset, projectId } from "../env";
 
 // Configuration: Set to true for real-time data, false for cached data
+// Respects NEXT_PUBLIC_USE_REAL_TIME_DATA environment variable
+// If not set, defaults to true in development, false in production
 const USE_REAL_TIME_DATA =
-  process.env.NEXT_PUBLIC_USE_REAL_TIME_DATA === "true" || process.env.NODE_ENV === "development";
+  process.env.NEXT_PUBLIC_USE_REAL_TIME_DATA !== undefined
+    ? process.env.NEXT_PUBLIC_USE_REAL_TIME_DATA === "true"
+    : process.env.NODE_ENV === "development";
 
 // Main client - configurable between cached and real-time
 export const client = createClient({
