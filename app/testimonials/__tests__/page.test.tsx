@@ -3,6 +3,7 @@
  */
 import { render, screen } from '@testing-library/react'
 import TestimonialsPage, { metadata, revalidate, dynamic } from '../page'
+import { SANITY_CACHE_CONFIG } from '@/lib/sanity-cache-config'
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -20,6 +21,10 @@ jest.mock('@/sanity/lib/queries', () => ({
   testimonialCountQuery: 'countQuery'
 }))
 
+jest.mock('next/cache', () => ({
+  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn
+}))
+
 // Mock components
 jest.mock('../TestimonialsList', () => ({
   TestimonialsList: () => <div data-testid="testimonials-list">Testimonials List</div>
@@ -31,10 +36,10 @@ jest.mock('../../components/Breadcrumbs', () => ({
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Paper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('TestimonialsPage', () => {
@@ -47,8 +52,9 @@ describe('TestimonialsPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should have 60 second revalidation', () => {
-      expect(revalidate).toBe(60)
+    it('should use configured revalidation', () => {
+      const expectedRevalidate = SANITY_CACHE_CONFIG.testimonials.revalidate ?? 60 * 60
+      expect(revalidate).toBe(expectedRevalidate)
     })
   })
 
@@ -141,4 +147,3 @@ describe('TestimonialsPage', () => {
     })
   })
 })
-

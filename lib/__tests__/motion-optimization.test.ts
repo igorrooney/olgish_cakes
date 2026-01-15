@@ -12,6 +12,9 @@ import {
   useReducedMotion
 } from '../motion-optimization'
 
+const globalWithWindow = global as typeof globalThis & { window?: Window }
+const windowWithMatchMedia = window as Window & { matchMedia?: typeof window.matchMedia }
+
 // Mock window.matchMedia for testing
 const mockMatchMedia = (matches: boolean) => {
   Object.defineProperty(window, 'matchMedia', {
@@ -97,18 +100,18 @@ describe('motion-optimization', () => {
 
   describe('useReducedMotion', () => {
     beforeEach(() => {
-      delete (window as any).matchMedia
+      delete windowWithMatchMedia.matchMedia
     })
 
     it('should return false in non-browser environment', () => {
-      const originalWindow = global.window
-      delete (global as any).window
+      const originalWindow = globalWithWindow.window
+      delete globalWithWindow.window
 
       const result = useReducedMotion()
 
       expect(result).toBe(false)
 
-      global.window = originalWindow
+      globalWithWindow.window = originalWindow
     })
 
     it('should return true when prefers-reduced-motion is set', () => {
@@ -207,7 +210,7 @@ describe('motion-optimization', () => {
 
   describe('useOptimizedAnimation', () => {
     beforeEach(() => {
-      delete (window as any).matchMedia
+      delete windowWithMatchMedia.matchMedia
     })
 
     it('should use useReducedMotion to determine motion preference', () => {
@@ -273,7 +276,7 @@ describe('motion-optimization', () => {
   describe('Edge Cases', () => {
     it('should handle undefined window', () => {
       const originalWindow = global.window
-      delete (global as any).window
+      delete globalWithWindow.window
 
       const result = useReducedMotion()
 
@@ -284,7 +287,7 @@ describe('motion-optimization', () => {
 
     it('should handle missing matchMedia', () => {
       const originalMatchMedia = window.matchMedia
-      delete (window as any).matchMedia
+      delete windowWithMatchMedia.matchMedia
 
       const result = useReducedMotion()
       

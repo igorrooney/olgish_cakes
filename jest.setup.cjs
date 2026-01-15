@@ -1,6 +1,23 @@
 /* eslint-disable no-undef */
 require('@testing-library/jest-dom');
 
+const { TextDecoder, TextEncoder } = require('util');
+
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = TextEncoder;
+}
+
+if (typeof global.TextDecoder === 'undefined') {
+  global.TextDecoder = TextDecoder;
+}
+
+// Guard against real network calls in tests.
+// Individual tests should mock global.fetch when needed.
+global.fetch = jest.fn(() => {
+  throw new Error('Unexpected fetch call in test. Mock global.fetch in the test.')
+})
+
+
 // Mock framer-motion for React 19 compatibility
 jest.mock('framer-motion', () => {
   const React = require('react');

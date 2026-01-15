@@ -23,15 +23,15 @@ jest.mock('../FAQItems', () => ({
 // Mock Next.js Link
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  default: ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 }))
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Button: ({ children, component, href, ...props }: any) => {
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Button: ({ children, component, href, ...props }: MockProps) => {
     const Component = component || 'button'
     return <Component href={href} {...props}>{children}</Component>
   }

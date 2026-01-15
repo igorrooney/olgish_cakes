@@ -5,14 +5,17 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { RelatedPosts } from '../RelatedPosts'
 
+type RelatedPostsProps = React.ComponentProps<typeof RelatedPosts>
+type RelatedPostsList = RelatedPostsProps['posts']
+
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} {...props} />
 }))
 
 // Mock Sanity
@@ -24,25 +27,25 @@ jest.mock('@/sanity/lib/image', () => ({
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Typography: ({ children, variant, className, sx, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Typography: ({ children, variant, className, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} className={className} {...props}>
       {children}
     </div>
   ),
-  Card: ({ children, component, sx, ...props }: any) => {
+  Card: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="card" {...props}>{children}</Component>
   },
-  CardContent: ({ children, sx, ...props }: any) => <div data-testid="card-content" {...props}>{children}</div>,
-  CardMedia: ({ children, ...props }: any) => <div data-testid="card-media" {...props}>{children}</div>,
-  Grid: ({ children, container, item, xs, md, spacing, ...props }: any) => (
+  CardContent: ({ children, sx, ...props }: MockProps) => <div data-testid="card-content" {...props}>{children}</div>,
+  CardMedia: ({ children, ...props }: MockProps) => <div data-testid="card-media" {...props}>{children}</div>,
+  Grid: ({ children, container, item, xs, md, spacing, ...props }: MockProps) => (
     <div data-testid="grid" data-item={item} {...props}>{children}</div>
   ),
-  Chip: ({ label, variant, size, sx, ...props }: any) => (
+  Chip: ({ label, variant, size, sx, ...props }: MockProps) => (
     <span data-testid="chip" data-variant={variant} data-size={size} {...props}>{label}</span>
   ),
-  Stack: ({ children, direction, spacing, flexWrap, ...props }: any) => (
+  Stack: ({ children, direction, spacing, flexWrap, ...props }: MockProps) => (
     <div data-testid="stack" {...props}>{children}</div>
   )
 }))
@@ -238,7 +241,7 @@ describe('RelatedPosts', () => {
         }
       ]
 
-      render(<RelatedPosts posts={postsWithImages as any} currentPostId="current" currentCategory="Recipes" />)
+      render(<RelatedPosts posts={postsWithImages as RelatedPostsList} currentPostId="current" currentCategory="Recipes" />)
 
       expect(screen.getByAltText('Card image')).toBeInTheDocument()
     })
@@ -251,7 +254,7 @@ describe('RelatedPosts', () => {
         }
       ]
 
-      render(<RelatedPosts posts={postsWithFeatured as any} currentPostId="current" currentCategory="Recipes" />)
+      render(<RelatedPosts posts={postsWithFeatured as RelatedPostsList} currentPostId="current" currentCategory="Recipes" />)
 
       expect(screen.getByAltText('Featured image')).toBeInTheDocument()
     })
@@ -263,4 +266,3 @@ describe('RelatedPosts', () => {
     })
   })
 })
-

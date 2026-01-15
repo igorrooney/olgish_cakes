@@ -18,6 +18,8 @@ class PerformanceMonitor {
       imageCount: 0,
       timestamp: new Date().toISOString(),
     };
+    this.reportDir = path.join(process.cwd(), 'reports', 'generated');
+    fs.mkdirSync(this.reportDir, { recursive: true });
   }
 
   async monitorBuild() {
@@ -104,7 +106,7 @@ class PerformanceMonitor {
   }
 
   async generateReport() {
-    const reportPath = path.join(process.cwd(), 'performance-report.json');
+    const reportPath = path.join(this.reportDir, 'performance-report.json');
     
     // Performance recommendations
     const recommendations = [];

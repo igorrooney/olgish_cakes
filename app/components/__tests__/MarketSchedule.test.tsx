@@ -7,12 +7,12 @@ import MarketSchedule from '../MarketSchedule'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Sanity
@@ -36,23 +36,23 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock animated components
 jest.mock('../AnimatedSection', () => ({
-  AnimatedSection: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-  AnimatedDiv: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  AnimatedSection: ({ children, ...props }: MockProps) => <section {...props}>{children}</section>,
+  AnimatedDiv: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Button: ({ children, component, href, endIcon, ...props }: any) => {
+  Box: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Button: ({ children, component, href, endIcon, ...props }: MockProps) => {
     const Component = component || 'button'
     return <Component href={href} {...props}>{children}{endIcon}</Component>
   },
-  Card: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  CardContent: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Chip: ({ label, className, ...props }: any) => <span className={className} {...props}>{label}</span>,
-  Container: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Grid: ({ children, item, ...props }: any) => <div data-grid-item={item} {...props}>{children}</div>,
-  Typography: ({ children, component, variant, id, className, ...props }: any) => {
+  Card: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  CardContent: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Chip: ({ label, className, ...props }: MockProps) => <span className={className} {...props}>{label}</span>,
+  Container: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Grid: ({ children, item, ...props }: MockProps) => <div data-grid-item={item} {...props}>{children}</div>,
+  Typography: ({ children, component, variant, id, className, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component id={id} className={className} data-variant={variant} {...props}>{children}</Component>
   },
@@ -312,7 +312,7 @@ describe('MarketSchedule', () => {
 
   describe('Special Badges', () => {
     it('should show "Today!" badge for today\'s events', () => {
-      const todayEvent: any = [{
+      const todayEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Today Event',
         date: today.toISOString().split('T')[0],
@@ -334,7 +334,7 @@ describe('MarketSchedule', () => {
       const twoDaysAway = new Date(today)
       twoDaysAway.setDate(twoDaysAway.getDate() + 2)
 
-      const soonEvent: any = [{
+      const soonEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Soon Event',
         date: twoDaysAway.toISOString().split('T')[0],
@@ -353,7 +353,7 @@ describe('MarketSchedule', () => {
     })
 
     it('should show "In 1 day" (singular) for tomorrow', () => {
-      const tomorrowEvent: any = [{
+      const tomorrowEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Tomorrow Event',
         date: tomorrow.toISOString().split('T')[0],
@@ -579,7 +579,7 @@ describe('MarketSchedule', () => {
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -597,7 +597,7 @@ describe('MarketSchedule', () => {
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -615,7 +615,7 @@ describe('MarketSchedule', () => {
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -680,4 +680,3 @@ describe('MarketSchedule', () => {
     })
   })
 })
-

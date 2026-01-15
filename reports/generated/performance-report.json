@@ -1,0 +1,14 @@
+{
+  "buildTime": 70,
+  "bundleSize": 0,
+  "pageCount": 103,
+  "imageCount": 2,
+  "timestamp": "2025-09-20T20:48:23.204Z",
+  "dependencies": {
+    "production": 32,
+    "development": 18,
+    "total": 50
+  },
+  "recommendations": [],
+  "score": 100
+}

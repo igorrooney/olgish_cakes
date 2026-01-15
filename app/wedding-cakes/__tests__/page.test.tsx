@@ -10,15 +10,15 @@ jest.mock('../../components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav>Bread
 jest.mock('../../components/AreasWeCover', () => ({ AreasWeCover: () => <div>Areas</div> }))
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 jest.mock('../../utils/seo', () => ({ getPriceValidUntil: jest.fn(() => '2026-01-01') }))
-jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: any) => <a href={href}>{children}</a> }))
+jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: MockProps) => <a href={href}>{children}</a> }))
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>,
-  Typography: ({ children }: any) => <div>{children}</div>,
-  Box: ({ children }: any) => <div>{children}</div>,
-  Grid: ({ children }: any) => <div>{children}</div>,
-  Paper: ({ children }: any) => <div>{children}</div>,
-  Chip: ({ label }: any) => <span>{label}</span>,
-  Button: ({ children }: any) => <button>{children}</button>
+  Container: ({ children }: MockProps) => <div>{children}</div>,
+  Typography: ({ children }: MockProps) => <div>{children}</div>,
+  Box: ({ children }: MockProps) => <div>{children}</div>,
+  Grid: ({ children }: MockProps) => <div>{children}</div>,
+  Paper: ({ children }: MockProps) => <div>{children}</div>,
+  Chip: ({ label }: MockProps) => <span>{label}</span>,
+  Button: ({ children }: MockProps) => <button>{children}</button>
 }))
 
 describe('WeddingCakesPage', () => {

@@ -56,7 +56,7 @@ jest.mock('../GiftHamperPageClient', () => ({
 }))
 
 jest.mock('@/app/components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav>Breadcrumbs</nav> }))
-jest.mock('@mui/material', () => ({ Container: ({ children }: any) => <div>{children}</div> }))
+jest.mock('@mui/material', () => ({ Container: ({ children }: MockProps) => <div>{children}</div> }))
 
 describe('HamperDetailPage', () => {
   const mockHamper = {
@@ -210,16 +210,16 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       // Verify cake-by-post specific properties exist
       expect(product.additionalProperty).toBeDefined()
       const properties = product.additionalProperty
       
-      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: any) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
       
       expect(deliveryMethod).toBeDefined()
       expect(deliveryMethod.value).toBe('Letterbox Post')
@@ -249,12 +249,12 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
       
-      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
       expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
     })
@@ -279,12 +279,12 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
       
-      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
     })
@@ -314,7 +314,7 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
@@ -323,9 +323,9 @@ describe('HamperDetailPage', () => {
       expect(properties).toHaveLength(5) // 3 from cake-by-post + 1 ingredients + 1 allergens
       
       // Verify cake-by-post properties
-      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: any) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
       
       expect(deliveryMethod).toBeDefined()
       expect(deliveryMethod.value).toBe('Letterbox Post')
@@ -335,17 +335,17 @@ describe('HamperDetailPage', () => {
       expect(shelfLife.value).toBe('7 days')
       
       // Verify ingredients property
-      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
       expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
       
       // Verify allergens property
-      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
       
       // Ensure no duplicates
-      const propertyNames = properties.map((p: any) => p.name)
+      const propertyNames = properties.map((p: UnknownRecord) => p.name)
       const uniqueNames = [...new Set(propertyNames)]
       expect(propertyNames.length).toBe(uniqueNames.length)
     })
@@ -370,7 +370,7 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty || []
@@ -424,7 +424,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Count Brand entities
-      const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+      const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
       
       // Should have exactly one Brand entity
       expect(brandEntities).toHaveLength(1)
@@ -454,7 +454,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Brand should be a reference by @id, not an inline object
@@ -486,7 +486,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Check if brand is an inline object (has @type) - should be false
@@ -514,12 +514,12 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Brand entity
-      const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+      const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
       expect(brandEntity).toBeDefined()
       const brandId = brandEntity['@id']
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Verify product references the same brand @id

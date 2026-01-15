@@ -7,7 +7,7 @@ import { ScrollToTop } from '../ScrollToTop'
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Fab: ({ children, onClick, size, sx, ...props }: any) => (
+  Fab: ({ children, onClick, size, sx, ...props }: MockProps) => (
     <button
       data-testid="fab"
       data-size={size}
@@ -17,7 +17,7 @@ jest.mock('@mui/material', () => ({
       {children}
     </button>
   ),
-  Zoom: ({ children, in: isIn, ...props }: any) => (
+  Zoom: ({ children, in: isIn, ...props }: MockProps) => (
     <div data-testid="zoom" data-in={isIn} {...props}>
       {children}
     </div>

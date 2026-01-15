@@ -5,15 +5,17 @@ import { usePerformanceMonitor } from '../PerformanceMonitor'
 import { renderHook, act } from '@testing-library/react'
 
 describe('usePerformanceMonitor', () => {
+  const windowWithGtag = window as Window & { gtag?: jest.Mock }
+
   beforeEach(() => {
     jest.clearAllMocks()
     jest.spyOn(console, 'warn').mockImplementation(() => {})
-    window.gtag = jest.fn()
+    windowWithGtag.gtag = jest.fn()
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
-    delete (window as any).gtag
+    delete windowWithGtag.gtag
   })
 
   it('should return startTimer and getMetrics functions', () => {
@@ -100,7 +102,7 @@ describe('usePerformanceMonitor', () => {
   })
 
   it('should not crash when gtag is undefined', () => {
-    delete (window as any).gtag
+    delete windowWithGtag.gtag
 
     const { result } = renderHook(() => usePerformanceMonitor())
 
@@ -134,4 +136,3 @@ describe('usePerformanceMonitor', () => {
     expect(metrics.navigationTime).toBe(0)
   })
 })
-

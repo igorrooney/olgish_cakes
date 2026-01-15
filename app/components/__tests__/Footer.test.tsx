@@ -7,28 +7,28 @@ import Footer from '../Footer'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
   Divider: () => <hr data-testid="divider" />,
-  Chip: ({ label, ...props }: any) => <span data-testid="chip" {...props}>{label}</span>
+  Chip: ({ label, ...props }: MockProps) => <span data-testid="chip" {...props}>{label}</span>
 }))
 
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, component, ...props }: any) => {
+  Box: ({ children, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  Grid: ({ children, item, ...props }: any) => <div data-grid-item={item} {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div data-testid="stack" {...props}>{children}</div>,
-  Typography: ({ children, component, variant, ...props }: any) => {
+  Grid: ({ children, item, ...props }: MockProps) => <div data-grid-item={item} {...props}>{children}</div>,
+  Stack: ({ children, ...props }: MockProps) => <div data-testid="stack" {...props}>{children}</div>,
+  Typography: ({ children, component, variant, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>
   },
@@ -97,15 +97,15 @@ jest.mock('@/lib/constants', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  BodyText: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-  Container: ({ children, ...props }: any) => <div data-testid="container" {...props}>{children}</div>,
-  ContactInfo: ({ icon, text, href, ...props }: any) => (
+  BodyText: ({ children, ...props }: MockProps) => <p {...props}>{children}</p>,
+  Container: ({ children, ...props }: MockProps) => <div data-testid="container" {...props}>{children}</div>,
+  ContactInfo: ({ icon, text, href, ...props }: MockProps) => (
     <a href={href} data-testid="contact-info" {...props}>{icon} {text}</a>
   ),
-  AccessibleIconButton: ({ children, ariaLabel, href, ...props }: any) => (
+  AccessibleIconButton: ({ children, ariaLabel, href, ...props }: MockProps) => (
     <a href={href} aria-label={ariaLabel} data-testid="accessible-icon-button" {...props}>{children}</a>
   ),
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('Footer', () => {

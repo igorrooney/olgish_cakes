@@ -22,7 +22,8 @@ interface GiftHamperQueryResult {
 
 export async function GET(request: NextRequest) {
   try {
-    const config = getCacheConfig('cakes')
+    const cakesConfig = getCacheConfig('cakes')
+    const giftHampersConfig = getCacheConfig('giftHampers')
     
     // Fetch cakes
     const cakes = await cachedSanityFetch<CakeQueryResult[]>(`
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
         slug,
         order
       } | order(order asc, _createdAt desc)
-    `, {}, config);
+    `, {}, cakesConfig);
 
     // Fetch gift hampers
     const giftHampers = await cachedSanityFetch<GiftHamperQueryResult[]>(`
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
         slug,
         order
       } | order(order asc, _createdAt desc)
-    `, {}, config);
+    `, {}, giftHampersConfig);
 
     // Transform data for easier use in the frontend
     const products = [
@@ -80,7 +81,10 @@ export async function GET(request: NextRequest) {
       { products },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+          'Cache-Control': `public, s-maxage=${Math.min(
+            cakesConfig.revalidate ?? 0,
+            giftHampersConfig.revalidate ?? 0
+          )}, stale-while-revalidate=86400`
         }
       }
     );

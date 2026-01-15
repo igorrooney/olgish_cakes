@@ -2,13 +2,21 @@
  * Cache configuration for Sanity queries
  * All times are in seconds
  */
+const blogCacheConfig = {
+  revalidate: 60 * 60, // 1 hour
+  tags: ['blog-posts']
+} as const
+
+export const TESTIMONIALS_REVALIDATE = 43200
+export const TESTIMONIAL_STATS_REVALIDATE = 43200
+
 export const SANITY_CACHE_CONFIG = {
     testimonials: {
-        revalidate: 12 * 60 * 60, // 12 hours
+        revalidate: TESTIMONIALS_REVALIDATE,
         tags: ['testimonials']
     },
     testimonialStats: {
-        revalidate: 12 * 60 * 60, // 12 hours
+        revalidate: TESTIMONIAL_STATS_REVALIDATE,
         tags: ['testimonials', 'stats']
     },
     cakes: {
@@ -27,14 +35,8 @@ export const SANITY_CACHE_CONFIG = {
         revalidate: 24 * 60 * 60, // 24 hours
         tags: ['faqs']
     },
-    blogPosts: {
-        revalidate: 60 * 60, // 1 hour
-        tags: ['blog']
-    },
-    blogPost: {
-        revalidate: 60 * 60, // 1 hour
-        tags: ['blog']
-    },
+    blogPosts: blogCacheConfig,
+    blogPost: blogCacheConfig,
     sitemaps: {
         revalidate: 6 * 60 * 60, // 6 hours
         tags: ['sitemaps']

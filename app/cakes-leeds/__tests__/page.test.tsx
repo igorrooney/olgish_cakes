@@ -30,18 +30,18 @@ interface LinkProps { children: React.ReactNode; href: string }
 jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> }))
 jest.mock('next/script', () => ({ 
   __esModule: true, 
-  default: ({ children, id, type, ...props }: any) => (
+  default: ({ children, id, type, ...props }: MockProps) => (
     <script data-testid={id} type={type} {...props}>{children}</script>
   )
 }))
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>,
-  Typography: ({ children }: any) => <div>{children}</div>,
-  Box: ({ children }: any) => <div>{children}</div>,
-  Grid: ({ children }: any) => <div>{children}</div>,
-  Paper: ({ children }: any) => <div>{children}</div>,
-  Chip: ({ label }: any) => <span>{label}</span>,
-  Button: ({ children }: any) => <button>{children}</button>
+  Container: ({ children }: MockProps) => <div>{children}</div>,
+  Typography: ({ children }: MockProps) => <div>{children}</div>,
+  Box: ({ children }: MockProps) => <div>{children}</div>,
+  Grid: ({ children }: MockProps) => <div>{children}</div>,
+  Paper: ({ children }: MockProps) => <div>{children}</div>,
+  Chip: ({ label }: MockProps) => <span>{label}</span>,
+  Button: ({ children }: MockProps) => <button>{children}</button>
 }))
 
 describe('CakesLeedsPage', () => {

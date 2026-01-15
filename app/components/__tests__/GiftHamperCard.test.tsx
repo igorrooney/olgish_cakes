@@ -5,14 +5,16 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 import GiftHamperCard from '../GiftHamperCard'
 
+type HamperProp = React.ComponentProps<typeof GiftHamperCard>['hamper']
+
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Sanity
@@ -66,7 +68,7 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  ProductCard: ({ children, onMouseEnter, onMouseLeave, role, ...props }: any) => (
+  ProductCard: ({ children, onMouseEnter, onMouseLeave, role, ...props }: MockProps) => (
     <div
       data-testid="product-card"
       onMouseEnter={onMouseEnter}
@@ -77,10 +79,10 @@ jest.mock('@/lib/ui-components', () => ({
       {children}
     </div>
   ),
-  PriceDisplay: ({ price, size, label, ...props }: any) => (
+  PriceDisplay: ({ price, size, label, ...props }: MockProps) => (
     <div data-testid="price-display" data-price={price} {...props}>£{price}</div>
   ),
-  OutlineButton: ({ children, component, href, ...props }: any) => {
+  OutlineButton: ({ children, component, href, ...props }: MockProps) => {
     const Component = component || 'button'
     return <Component data-testid="outline-button" href={href} {...props}>{children}</Component>
   }
@@ -88,8 +90,8 @@ jest.mock('@/lib/ui-components', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Typography: ({ children, variant, component, sx, ...props }: any) => {
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Typography: ({ children, variant, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>
   }
@@ -152,7 +154,7 @@ describe('GiftHamperCard', () => {
         images: [{ asset: { _ref: 'ref-1' }, isMain: false }]
       }
 
-      render(<GiftHamperCard hamper={hamperWithoutMain as any} />)
+      render(<GiftHamperCard hamper={hamperWithoutMain as HamperProp} />)
 
       expect(screen.getByTestId('next-image')).toBeInTheDocument()
     })
@@ -215,7 +217,7 @@ describe('GiftHamperCard', () => {
     it('should use 0 when no price', () => {
       const hamperWithoutPrice = { ...mockHamper, price: undefined }
 
-      render(<GiftHamperCard hamper={hamperWithoutPrice as any} />)
+      render(<GiftHamperCard hamper={hamperWithoutPrice as HamperProp} />)
 
       const priceDisplay = screen.getByTestId('price-display')
       expect(priceDisplay.getAttribute('data-price')).toBe('0')
@@ -259,7 +261,7 @@ describe('GiftHamperCard', () => {
       expect(Array.isArray(json['@graph'])).toBe(true)
       
       // Should have Product in @graph
-      const product = json['@graph'].find((entity: any) => entity['@type'] === 'Product')
+      const product = json['@graph'].find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
     })
 
@@ -268,7 +270,7 @@ describe('GiftHamperCard', () => {
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
-      const product = json['@graph']?.find((entity: any) => entity['@type'] === 'Product')
+      const product = json['@graph']?.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product?.containsAllergens).toEqual(['Nuts'])
     })
 
@@ -279,7 +281,7 @@ describe('GiftHamperCard', () => {
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
-      const product = json['@graph']?.find((entity: any) => entity['@type'] === 'Product')
+      const product = json['@graph']?.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product?.containsAllergens).toBeUndefined()
     })
 
@@ -305,7 +307,7 @@ describe('GiftHamperCard', () => {
         const graph = json['@graph'] || []
         
         // Count Brand entities
-        const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+        const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
         
         // Should have exactly one Brand entity
         expect(brandEntities).toHaveLength(1)
@@ -323,7 +325,7 @@ describe('GiftHamperCard', () => {
         const graph = json['@graph'] || []
         
         // Find Product
-        const product = graph.find((entity: any) => entity['@type'] === 'Product')
+        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
         expect(product).toBeDefined()
         
         // Brand should be a reference by @id, not an inline object
@@ -343,7 +345,7 @@ describe('GiftHamperCard', () => {
         const graph = json['@graph'] || []
         
         // Find Product
-        const product = graph.find((entity: any) => entity['@type'] === 'Product')
+        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
         expect(product).toBeDefined()
         
         // Check if brand is an inline object (has @type) - should be false
@@ -359,12 +361,12 @@ describe('GiftHamperCard', () => {
         const graph = json['@graph'] || []
         
         // Find Brand entity
-        const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+        const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
         expect(brandEntity).toBeDefined()
         const brandId = brandEntity['@id']
         
         // Find Product
-        const product = graph.find((entity: any) => entity['@type'] === 'Product')
+        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
         expect(product).toBeDefined()
         
         // Verify product references the same brand @id
@@ -415,4 +417,3 @@ describe('GiftHamperCard', () => {
     })
   })
 })
-

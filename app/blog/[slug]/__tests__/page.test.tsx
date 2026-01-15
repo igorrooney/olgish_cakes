@@ -41,10 +41,10 @@ jest.mock('@/app/components/RichTextRenderer', () => ({ RichTextRenderer: () => 
 jest.mock('@/app/components/ViewTracker', () => ({ __esModule: true, default: () => null }))
 jest.mock('@/app/components/RelatedPosts', () => ({ RelatedPosts: () => <div>Related</div> }))
 jest.mock('@mui/material', () => ({
-  Container: ({ children }: any) => <div>{children}</div>,
-  Typography: ({ children }: any) => <div>{children}</div>,
-  Box: ({ children }: any) => <div>{children}</div>,
-  Chip: ({ label }: any) => <span>{label}</span>
+  Container: ({ children }: MockProps) => <div>{children}</div>,
+  Typography: ({ children }: MockProps) => <div>{children}</div>,
+  Box: ({ children }: MockProps) => <div>{children}</div>,
+  Chip: ({ label }: MockProps) => <span>{label}</span>
 }))
 jest.mock('next/image', () => ({ __esModule: true, default: () => <img alt="blog" /> }))
 jest.mock('@/sanity/lib/image', () => ({ urlFor: jest.fn(() => ({ width: () => ({ height: () => ({ url: () => 'url' }) }) })) }))

@@ -185,7 +185,7 @@ describe('TraditionalUkrainianCakesPage', () => {
             const script = container.querySelector('script[type="application/ld+json"]')
             const structuredData = JSON.parse(script?.textContent || '{}')
 
-            structuredData.itemListElement.forEach((listItem: any) => {
+            structuredData.itemListElement.forEach((listItem: UnknownRecord) => {
                 const offer = listItem.item.offers
 
                 expect(offer['@type']).toBe('Offer')

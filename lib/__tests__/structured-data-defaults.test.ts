@@ -29,25 +29,25 @@ describe('structured-data-defaults', () => {
     it('should have itemReviewed with @id reference', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.itemReviewed).toBeDefined()
-        expect((review.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/#product')
+        expect((review.itemReviewed as UnknownRecord)['@id']).toBe('https://olgishcakes.co.uk/#product')
       })
     })
 
     it('should have author information', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.author).toBeDefined()
-        expect((review.author as any)['@type']).toBe('Person')
-        expect((review.author as any).name).toBeDefined()
+        expect((review.author as UnknownRecord)['@type']).toBe('Person')
+        expect((review.author as UnknownRecord).name).toBeDefined()
       })
     })
 
     it('should have rating values', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.reviewRating).toBeDefined()
-        expect((review.reviewRating as any)['@type']).toBe('Rating')
-        expect((review.reviewRating as any).ratingValue).toBe('5')
-        expect((review.reviewRating as any).bestRating).toBe('5')
-        expect((review.reviewRating as any).worstRating).toBe('1')
+        expect((review.reviewRating as UnknownRecord)['@type']).toBe('Rating')
+        expect((review.reviewRating as UnknownRecord).ratingValue).toBe('5')
+        expect((review.reviewRating as UnknownRecord).bestRating).toBe('5')
+        expect((review.reviewRating as UnknownRecord).worstRating).toBe('1')
       })
     })
 
@@ -55,7 +55,7 @@ describe('structured-data-defaults', () => {
       DEFAULT_REVIEWS.forEach(review => {
         expect(review.reviewBody).toBeDefined()
         expect(typeof review.reviewBody).toBe('string')
-        expect((review.reviewBody as any).length).toBeGreaterThan(0)
+        expect(review.reviewBody.length).toBeGreaterThan(0)
       })
     })
 
@@ -77,13 +77,13 @@ describe('structured-data-defaults', () => {
 
     it('should reference main product by @id', () => {
       DEFAULT_REVIEWS.forEach(review => {
-        expect((review.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/#product')
+        expect((review.itemReviewed as UnknownRecord)['@id']).toBe('https://olgishcakes.co.uk/#product')
       })
     })
 
     it('should have valid date format', () => {
       DEFAULT_REVIEWS.forEach(review => {
-        const date = new Date(review.datePublished as any)
+        const date = new Date(String(review.datePublished))
         expect(date).toBeInstanceOf(Date)
         expect(isNaN(date.getTime())).toBe(false)
       })
@@ -106,7 +106,7 @@ describe('structured-data-defaults', () => {
     })
 
     it('should reference Kyiv Cake product by @id', () => {
-      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as any)['@id']).toBe('https://olgishcakes.co.uk/cakes/kyiv-cake#product')
+      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as UnknownRecord)['@id']).toBe('https://olgishcakes.co.uk/cakes/kyiv-cake#product')
     })
 
     it('should have author', () => {
@@ -239,11 +239,11 @@ describe('structured-data-defaults', () => {
   describe('Schema.org Compliance', () => {
     it('should use correct schema.org types', () => {
       expect(DEFAULT_REVIEWS[0]['@type']).toBe('Review')
-      expect((DEFAULT_REVIEWS[0].itemReviewed as any)['@id']).toBeDefined()
+      expect((DEFAULT_REVIEWS[0].itemReviewed as UnknownRecord)['@id']).toBeDefined()
       expect(DEFAULT_REVIEWS[0].author['@type']).toBe('Person')
       expect(DEFAULT_REVIEWS[0].reviewRating['@type']).toBe('Rating')
       expect(DEFAULT_KYIV_CAKE_REVIEW['@type']).toBe('Review')
-      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as any)['@id']).toBeDefined()
+      expect((DEFAULT_KYIV_CAKE_REVIEW.itemReviewed as UnknownRecord)['@id']).toBeDefined()
       expect(DEFAULT_AGGREGATE_RATING['@type']).toBe('AggregateRating')
     })
 
@@ -253,4 +253,3 @@ describe('structured-data-defaults', () => {
     })
   })
 })
-

@@ -18,21 +18,21 @@ jest.mock('../../components/Breadcrumbs', () => ({
 // Mock Next.js Link
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  default: ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 }))
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, component, ...props }: any) => {
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component {...props}>{children}</Component>
   },
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Link: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Stack: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Link: ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>,
+  Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Paper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
   Divider: () => <hr />,
   PhoneIcon: () => <span>📞</span>,
   EmailIcon: () => <span>📧</span>,
@@ -43,7 +43,7 @@ jest.mock('@/lib/mui-optimization', () => ({
 
 // Mock SEO utilities
 jest.mock('../../utils/seo', () => ({
-  generateProductSchema: jest.fn((product: any) => ({
+  generateProductSchema: jest.fn((product: UnknownRecord) => ({
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${product.url}#product`,

@@ -13,7 +13,8 @@ if (typeof window !== 'undefined') {
 
 // Mock HTMLIFrameElement if not defined
 if (typeof HTMLIFrameElement === 'undefined') {
-  (global as any).HTMLIFrameElement = class HTMLIFrameElement {}
+  const globalWithIFrame = global as typeof globalThis & { HTMLIFrameElement?: typeof HTMLIFrameElement }
+  globalWithIFrame.HTMLIFrameElement = class HTMLIFrameElement {}
 }
 
 import { renderHook, waitFor } from '@testing-library/react'
@@ -143,7 +144,7 @@ describe('useViewTracking', () => {
     })
 
     it('should not track when postId is missing', () => {
-      renderHook(() => useViewTracking({ postId: null as any }))
+      renderHook(() => useViewTracking({ postId: '' }))
 
       jest.advanceTimersByTime(2000)
 
@@ -223,4 +224,3 @@ describe('useViewTracking', () => {
     })
   })
 })
-

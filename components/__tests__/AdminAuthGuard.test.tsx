@@ -15,16 +15,16 @@ jest.mock('next/navigation', () => ({
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => (
+  return ({ children, href, ...props }: MockProps) => (
     <a href={href} {...props}>{children}</a>
   )
 })
 
 // Mock MUI components
 jest.mock('@mui/material', () => ({
-  Box: ({ children, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
-  Typography: ({ children, variant, color, ...props }: any) => (
+  Typography: ({ children, variant, color, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} data-color={color} {...props}>
       {children}
     </div>
@@ -33,7 +33,7 @@ jest.mock('@mui/material', () => ({
 
 // Mock ErrorBoundary
 jest.mock('../ErrorBoundary', () => ({
-  ErrorBoundary: ({ children }: any) => <div data-testid="error-boundary">{children}</div>
+  ErrorBoundary: ({ children }: MockProps) => <div data-testid="error-boundary">{children}</div>
 }))
 
 // Mock fetch

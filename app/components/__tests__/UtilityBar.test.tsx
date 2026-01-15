@@ -7,7 +7,7 @@ import { UtilityBar } from '../UtilityBar'
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 // Mock dependencies
@@ -42,28 +42,28 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, component, role, sx, ...props }: any) => {
+  Box: ({ children, component, role, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" role={role} {...props}>{children}</Component>
   },
-  Typography: ({ children, variant, sx, ...props }: any) => (
+  Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Tooltip: ({ children, title, ...props }: any) => (
+  Tooltip: ({ children, title, ...props }: MockProps) => (
     <div data-testid="tooltip" title={title} {...props}>{children}</div>
   ),
-  PhoneIcon: (props: any) => <span data-testid="phone-icon" {...props}>📞</span>,
-  EmailIcon: (props: any) => <span data-testid="email-icon" {...props}>📧</span>,
-  StarIcon: (props: any) => <span data-testid="star-icon" {...props}>⭐</span>,
-  InstagramIcon: (props: any) => <span data-testid="instagram-icon" {...props}>📷</span>,
-  FacebookIcon: (props: any) => <span data-testid="facebook-icon" {...props}>👍</span>,
-  YouTubeIcon: (props: any) => <span data-testid="youtube-icon" {...props}>📺</span>,
-  WhatsAppIcon: (props: any) => <span data-testid="whatsapp-icon" {...props}>💬</span>
+  PhoneIcon: (props: MockProps) => <span data-testid="phone-icon" {...props}>📞</span>,
+  EmailIcon: (props: MockProps) => <span data-testid="email-icon" {...props}>📧</span>,
+  StarIcon: (props: MockProps) => <span data-testid="star-icon" {...props}>⭐</span>,
+  InstagramIcon: (props: MockProps) => <span data-testid="instagram-icon" {...props}>📷</span>,
+  FacebookIcon: (props: MockProps) => <span data-testid="facebook-icon" {...props}>👍</span>,
+  YouTubeIcon: (props: MockProps) => <span data-testid="youtube-icon" {...props}>📺</span>,
+  WhatsAppIcon: (props: MockProps) => <span data-testid="whatsapp-icon" {...props}>💬</span>
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  Container: ({ children, sx, ...props }: any) => <div data-testid="design-container" {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, component, href, ariaLabel, title, sx, ...props }: any) => {
+  Container: ({ children, sx, ...props }: MockProps) => <div data-testid="design-container" {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, component, href, ariaLabel, title, sx, ...props }: MockProps) => {
     const Component = component || 'button'
     return (
       <Component

@@ -20,7 +20,7 @@ const { __mockFetch: mockFetch } = jest.requireMock('@/sanity/lib/client')
 // Mock performance
 global.performance = {
   now: jest.fn(() => 1000)
-} as any
+} as unknown as Performance
 
 // Mock Date.now to control cache expiration
 let mockDateNow = 0
@@ -206,4 +206,3 @@ describe('fetchTestimonials', () => {
     })
   })
 })
-

@@ -7,14 +7,14 @@ import { DesignSelector } from '../DesignSelector'
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  FormControl: ({ children, fullWidth, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  FormControl: ({ children, fullWidth, ...props }: MockProps) => (
     <div data-testid="form-control" data-full-width={fullWidth} {...props}>{children}</div>
   ),
-  MenuItem: ({ children, value, ...props }: any) => (
+  MenuItem: ({ children, value, ...props }: MockProps) => (
     <option value={value} {...props}>{children}</option>
   ),
-  Select: ({ children, value, onChange, sx, ...props }: any) => (
+  Select: ({ children, value, onChange, sx, ...props }: MockProps) => (
     <select
       data-testid="select"
       value={value}
@@ -24,7 +24,7 @@ jest.mock('@/lib/mui-optimization', () => ({
       {children}
     </select>
   ),
-  Typography: ({ children, variant, sx, ...props }: any) => (
+  Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   )
 }))

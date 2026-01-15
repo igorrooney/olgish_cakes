@@ -8,7 +8,7 @@ import { ContactForm } from '../ContactForm'
 // Mock dayjs
 jest.mock('dayjs', () => {
   const originalDayjs = jest.requireActual('dayjs')
-  const mockDayjs = (date?: any) => originalDayjs(date)
+  const mockDayjs = (date?: unknown) => originalDayjs(date)
   mockDayjs.locale = jest.fn()
   return mockDayjs
 })
@@ -16,26 +16,26 @@ jest.mock('dayjs', () => {
 // Mock Next.js Image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Framer Motion
 jest.mock('framer-motion', () => ({
   motion: {
-    create: (component: any) => component
+    create: (component: unknown) => component
   },
-  AnimatePresence: ({ children }: any) => children
+  AnimatePresence: ({ children }: MockProps) => children
 }))
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  BodyText: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-  PrimaryButton: ({ children, onClick, disabled, ...props }: any) => (
+  BodyText: ({ children, ...props }: MockProps) => <p {...props}>{children}</p>,
+  PrimaryButton: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button onClick={onClick} disabled={disabled} data-testid="primary-button" {...props}>
       {children}
     </button>
   ),
-  StyledTextField: ({ label, value, onChange, error, helperText, required, name, ...props }: any) => {
+  StyledTextField: ({ label, value, onChange, error, helperText, required, name, ...props }: MockProps) => {
     const id = `textfield-${label?.toLowerCase().replace(/\s+/g, '-') || name}`
     return (
       <div>
@@ -53,8 +53,8 @@ jest.mock('@/lib/ui-components', () => ({
       </div>
     )
   },
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: any) => (
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: MockProps) => (
     <button onClick={onClick} aria-label={ariaLabel} data-testid="accessible-icon-button" {...props}>
       {children}
     </button>
@@ -65,22 +65,22 @@ jest.mock('@/lib/ui-components', () => ({
 jest.mock('@/lib/mui-optimization', () => ({
   CloudUploadIcon: () => <span>☁️</span>,
   DeleteIcon: () => <span>🗑️</span>,
-  Alert: ({ children, severity, ...props }: any) => (
+  Alert: ({ children, severity, ...props }: MockProps) => (
     <div data-testid="alert" data-severity={severity} {...props}>{children}</div>
   ),
-  AlertTitle: ({ children, ...props }: any) => <div data-testid="alert-title" {...props}>{children}</div>,
-  Box: ({ children, component, ...props }: any) => {
+  AlertTitle: ({ children, ...props }: MockProps) => <div data-testid="alert-title" {...props}>{children}</div>,
+  Box: ({ children, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
   CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
-  IconButton: ({ children, onClick, ...props }: any) => (
+  IconButton: ({ children, onClick, ...props }: MockProps) => (
     <button data-testid="icon-button" onClick={onClick} {...props}>{children}</button>
   ),
-  Paper: ({ children, ...props }: any) => <div data-testid="paper" {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div data-testid="stack" {...props}>{children}</div>,
-  AdapterDayjs: ({ children }: any) => children,
-  DatePicker: ({ label, value, onChange, ...props }: any) => (
+  Paper: ({ children, ...props }: MockProps) => <div data-testid="paper" {...props}>{children}</div>,
+  Stack: ({ children, ...props }: MockProps) => <div data-testid="stack" {...props}>{children}</div>,
+  AdapterDayjs: ({ children }: MockProps) => children,
+  DatePicker: ({ label, value, onChange, ...props }: MockProps) => (
     <div>
       <label>{label}</label>
       <input
@@ -95,7 +95,7 @@ jest.mock('@/lib/mui-optimization', () => ({
       />
     </div>
   ),
-  LocalizationProvider: ({ children }: any) => children
+  LocalizationProvider: ({ children }: MockProps) => children
 }))
 
 // Mock design system
@@ -453,4 +453,3 @@ describe('ContactForm', () => {
     })
   })
 })
-

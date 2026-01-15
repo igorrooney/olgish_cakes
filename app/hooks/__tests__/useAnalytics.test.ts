@@ -13,7 +13,8 @@ if (typeof window !== 'undefined') {
 
 // Mock HTMLIFrameElement if not defined
 if (typeof HTMLIFrameElement === 'undefined') {
-  (global as any).HTMLIFrameElement = class HTMLIFrameElement {}
+  const globalWithIFrame = global as typeof globalThis & { HTMLIFrameElement?: typeof HTMLIFrameElement }
+  globalWithIFrame.HTMLIFrameElement = class HTMLIFrameElement {}
 }
 
 import { renderHook, act } from '@testing-library/react'
@@ -22,6 +23,7 @@ import { useAnalytics } from '../useAnalytics'
 describe('useAnalytics', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    const globalWithIFrame = global as typeof globalThis & { HTMLIFrameElement?: typeof HTMLIFrameElement }
     
     // Ensure window exists
     if (typeof window !== 'undefined') {
@@ -42,13 +44,14 @@ describe('useAnalytics', () => {
     
     // Mock HTMLIFrameElement if not defined
     if (typeof HTMLIFrameElement === 'undefined') {
-      (global as any).HTMLIFrameElement = class HTMLIFrameElement {}
+      globalWithIFrame.HTMLIFrameElement = class HTMLIFrameElement {}
     }
   })
 
   afterEach(() => {
     if (typeof window !== 'undefined') {
-      delete (window as any).gtag
+      const windowWithGtag = window as Window & { gtag?: jest.Mock }
+      delete windowWithGtag.gtag
     }
   })
 
@@ -111,7 +114,8 @@ describe('useAnalytics', () => {
     })
 
     it('should not throw when gtag is not available', () => {
-      delete (window as any).gtag
+      const windowWithGtag = window as Window & { gtag?: jest.Mock }
+      delete windowWithGtag.gtag
       const { result } = renderHook(() => useAnalytics())
 
       expect(() => {
@@ -128,7 +132,8 @@ describe('useAnalytics', () => {
     it('should not throw in non-browser environment', () => {
       // Delete gtag to simulate non-browser environment
       const originalGtag = window.gtag
-      delete (window as any).gtag
+      const windowWithGtag = window as Window & { gtag?: jest.Mock }
+      delete windowWithGtag.gtag
 
       const { result } = renderHook(() => useAnalytics())
 
@@ -244,4 +249,3 @@ describe('useAnalytics', () => {
     })
   })
 })
-

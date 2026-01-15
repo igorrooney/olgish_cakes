@@ -33,25 +33,25 @@ import {
 
 // Mock MUI and design system
 jest.mock('@mui/material', () => ({
-  Button: ({ children, variant, sx, startIcon, ...props }: any) => (
+  Button: ({ children, variant, sx, startIcon, ...props }: MockProps) => (
     <button data-variant={variant} data-sx={JSON.stringify(sx)} {...props}>
       {startIcon}
       {children}
     </button>
   ),
-  Card: ({ children, sx, ...props }: any) => (
+  Card: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="card" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),
-  CardContent: ({ children, sx, ...props }: any) => (
+  CardContent: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="card-content" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),
-  TextField: ({ sx, ...props }: any) => (
+  TextField: ({ sx, ...props }: MockProps) => (
     <input data-testid="text-field" data-sx={JSON.stringify(sx)} {...props} />
   ),
-  Chip: ({ label, sx, ...props }: any) => (
+  Chip: ({ label, sx, ...props }: MockProps) => (
     <div data-testid="chip" data-sx={JSON.stringify(sx)} {...props}>{label}</div>
   ),
-  Typography: ({ children, variant, component, sx, itemProp, content, ...props }: any) => {
+  Typography: ({ children, variant, component, sx, itemProp, content, ...props }: MockProps) => {
     const Tag = component || 'div'
     return (
       <Tag
@@ -66,26 +66,26 @@ jest.mock('@mui/material', () => ({
       </Tag>
     )
   },
-  Box: ({ children, component, sx, ...props }: any) => {
+  Box: ({ children, component, sx, ...props }: MockProps) => {
     const Tag = component || 'div'
     return (
       <Tag data-testid="box" data-sx={JSON.stringify(sx)} {...props}>{children}</Tag>
     )
   },
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Accordion: ({ children, sx, ...props }: any) => (
+  Paper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Accordion: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="accordion" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),
-  AccordionSummary: ({ children, expandIcon, sx, ...props }: any) => (
+  AccordionSummary: ({ children, expandIcon, sx, ...props }: MockProps) => (
     <div data-testid="accordion-summary" data-sx={JSON.stringify(sx)} {...props}>
       {children}
       {expandIcon}
     </div>
   ),
-  AccordionDetails: ({ children, sx, ...props }: any) => (
+  AccordionDetails: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="accordion-details" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),
-  IconButton: ({ children, 'aria-label': ariaLabel, sx, component, href, ...props }: any) => {
+  IconButton: ({ children, 'aria-label': ariaLabel, sx, component, href, ...props }: MockProps) => {
     const Tag = component || 'button'
     return (
       <Tag
@@ -99,12 +99,12 @@ jest.mock('@mui/material', () => ({
       </Tag>
     )
   },
-  Badge: ({ children, badgeContent, sx, ...props }: any) => (
+  Badge: ({ children, badgeContent, sx, ...props }: MockProps) => (
     <div data-testid="badge" data-badge-content={badgeContent} data-sx={JSON.stringify(sx)} {...props}>
       {children}
     </div>
   ),
-  Divider: ({ sx, ...props }: any) => (
+  Divider: ({ sx, ...props }: MockProps) => (
     <hr data-testid="divider" data-sx={JSON.stringify(sx)} {...props} />
   )
 }))

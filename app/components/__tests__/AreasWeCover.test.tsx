@@ -7,17 +7,17 @@ import { AreasWeCover } from '../AreasWeCover'
 
 // Mock MUI components
 jest.mock('@mui/material', () => ({
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Grid: ({ children, container, item, spacing, justifyContent, ...props }: any) => (
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Grid: ({ children, container, item, spacing, justifyContent, ...props }: MockProps) => (
     <div data-container={container} data-item={item} {...props}>{children}</div>
   ),
-  Paper: ({ children, elevation, sx, ...props }: any) => (
+  Paper: ({ children, elevation, sx, ...props }: MockProps) => (
     <div data-testid="paper" data-elevation={elevation} {...props}>{children}</div>
   ),
-  Typography: ({ children, variant, color, sx, ...props }: any) => (
+  Typography: ({ children, variant, color, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Chip: ({ label, component, href, clickable, color, sx, ...props }: any) => {
+  Chip: ({ label, component, href, clickable, color, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component href={href} data-testid="chip" data-clickable={clickable} {...props}>{label}</Component>
   }
@@ -25,7 +25,7 @@ jest.mock('@mui/material', () => ({
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => (
+  return ({ children, href, ...props }: MockProps) => (
     <a href={href} {...props}>{children}</a>
   )
 })

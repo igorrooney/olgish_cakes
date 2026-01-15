@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       { posts },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400'
+          'Cache-Control': `public, s-maxage=${config.revalidate ?? 0}, stale-while-revalidate=86400`
         }
       }
     )

@@ -54,7 +54,7 @@ jest.mock('@/lib/constants', () => ({
 
 // Mock SEO utilities
 jest.mock('../../utils/seo', () => ({
-  generateProductSchema: jest.fn((product: any) => ({
+  generateProductSchema: jest.fn((product: UnknownRecord) => ({
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${product.url}#product`,

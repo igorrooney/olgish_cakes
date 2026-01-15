@@ -5,6 +5,10 @@ import {
   ensureUniqueKeys
 } from '../rich-text-utils'
 
+type RichTextInput = Parameters<typeof richTextToText>[0]
+type RichTextKeysInput = Parameters<typeof validateRichTextKeys>[0]
+type RichTextUniqueInput = Parameters<typeof ensureUniqueKeys>[0]
+
 describe('rich-text-utils', () => {
   describe('stringToRichText', () => {
     it('should convert plain string to portable text', () => {
@@ -146,19 +150,19 @@ describe('rich-text-utils', () => {
     })
 
     it('should return empty string for null input', () => {
-      const result = richTextToText(null as any)
+      const result = richTextToText(null as unknown as RichTextInput)
 
       expect(result).toBe('')
     })
 
     it('should return empty string for undefined input', () => {
-      const result = richTextToText(undefined as any)
+      const result = richTextToText(undefined as unknown as RichTextInput)
 
       expect(result).toBe('')
     })
 
     it('should return empty string for non-array input', () => {
-      const result = richTextToText({} as any)
+      const result = richTextToText({} as unknown as RichTextInput)
 
       expect(result).toBe('')
     })
@@ -284,19 +288,19 @@ describe('rich-text-utils', () => {
     })
 
     it('should return true for null input', () => {
-      const result = validateRichTextKeys(null as any)
+      const result = validateRichTextKeys(null as unknown as RichTextKeysInput)
 
       expect(result).toBe(true)
     })
 
     it('should return true for undefined input', () => {
-      const result = validateRichTextKeys(undefined as any)
+      const result = validateRichTextKeys(undefined as unknown as RichTextKeysInput)
 
       expect(result).toBe(true)
     })
 
     it('should return true for non-array input', () => {
-      const result = validateRichTextKeys({} as any)
+      const result = validateRichTextKeys({} as unknown as RichTextKeysInput)
 
       expect(result).toBe(true)
     })
@@ -384,19 +388,19 @@ describe('rich-text-utils', () => {
     })
 
     it('should return empty array for null input', () => {
-      const result = ensureUniqueKeys(null as any)
+      const result = ensureUniqueKeys(null as unknown as RichTextUniqueInput)
 
       expect(result).toEqual([])
     })
 
     it('should return empty array for undefined input', () => {
-      const result = ensureUniqueKeys(undefined as any)
+      const result = ensureUniqueKeys(undefined as unknown as RichTextUniqueInput)
 
       expect(result).toEqual([])
     })
 
     it('should return empty array for non-array input', () => {
-      const result = ensureUniqueKeys({} as any)
+      const result = ensureUniqueKeys({} as unknown as RichTextUniqueInput)
 
       expect(result).toEqual([])
     })
@@ -487,4 +491,3 @@ describe('rich-text-utils', () => {
     })
   })
 })
-

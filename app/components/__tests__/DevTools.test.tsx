@@ -25,48 +25,48 @@ jest.mock('@/app/utils/cacheManager', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Button: ({ children, onClick, disabled, variant, color, startIcon, fullWidth, size, sx, ...props }: any) => (
+  Button: ({ children, onClick, disabled, variant, color, startIcon, fullWidth, size, sx, ...props }: MockProps) => (
     <button data-testid="button" onClick={onClick} disabled={disabled} {...props}>
       {startIcon}
       {children}
     </button>
   ),
-  Box: ({ children, component, sx, ...props }: any) => {
+  Box: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  Typography: ({ children, variant, color, sx, ...props }: any) => (
+  Typography: ({ children, variant, color, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Alert: ({ children, severity, sx, onClose, ...props }: any) => (
+  Alert: ({ children, severity, sx, onClose, ...props }: MockProps) => (
     <div data-testid="alert" data-severity={severity} {...props}>
       {children}
       {onClose && <button onClick={onClose}>Close</button>}
     </div>
   ),
-  IconButton: ({ children, onClick, sx, ...props }: any) => (
+  IconButton: ({ children, onClick, sx, ...props }: MockProps) => (
     <button data-testid="icon-button" onClick={onClick} {...props}>{children}</button>
   ),
-  Tooltip: ({ children, title, placement, ...props }: any) => (
+  Tooltip: ({ children, title, placement, ...props }: MockProps) => (
     <div data-testid="tooltip" title={title} {...props}>{children}</div>
   ),
-  SettingsIcon: (props: any) => <span {...props}>⚙️</span>,
-  CloseIcon: (props: any) => <span {...props}>×</span>,
-  RefreshIcon: (props: any) => <span {...props}>🔄</span>,
-  ClearIcon: (props: any) => <span {...props}>🗑️</span>,
-  Chip: ({ label, color, size, sx, ...props }: any) => (
+  SettingsIcon: (props: MockProps) => <span {...props}>⚙️</span>,
+  CloseIcon: (props: MockProps) => <span {...props}>×</span>,
+  RefreshIcon: (props: MockProps) => <span {...props}>🔄</span>,
+  ClearIcon: (props: MockProps) => <span {...props}>🗑️</span>,
+  Chip: ({ label, color, size, sx, ...props }: MockProps) => (
     <span data-testid="chip" {...props}>{label}</span>
   ),
-  Divider: (props: any) => <hr data-testid="divider" {...props} />
+  Divider: (props: MockProps) => <hr data-testid="divider" {...props} />
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  AccessibleIconButton: ({ children, onClick, ariaLabel, sx, ...props }: any) => (
+  AccessibleIconButton: ({ children, onClick, ariaLabel, sx, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={ariaLabel} {...props}>
       {children}
     </button>
   ),
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('DevTools', () => {
@@ -275,8 +275,8 @@ describe('DevTools', () => {
   describe('Force Refresh', () => {
     beforeEach(() => {
       process.env.NODE_ENV = 'development'
-      delete (window as any).location
-      window.location = { href: 'https://test.com/page' } as any
+      const locationMock = { href: 'https://test.com/page' } as unknown as Location
+      Object.defineProperty(window, 'location', { value: locationMock, writable: true })
     })
 
     it('should show Force Refresh button', () => {
@@ -359,4 +359,3 @@ describe('DevTools', () => {
     })
   })
 })
-

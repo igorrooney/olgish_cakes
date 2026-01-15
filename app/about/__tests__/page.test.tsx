@@ -22,7 +22,7 @@ jest.mock('../AboutContent', () => ({
 // Mock Next.js Script
 jest.mock('next/script', () => ({
   __esModule: true,
-  default: ({ children, id, strategy, ...props }: any) => (
+  default: ({ children, id, strategy, ...props }: MockProps) => (
     <script data-testid={id} data-strategy={strategy} {...props}>{children}</script>
   )
 }))

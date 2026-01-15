@@ -7,43 +7,43 @@ import CookieConsent from '../CookieConsent'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 // Mock MUI and UI components
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Button: ({ children, onClick, disabled, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Button: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  Typography: ({ children, variant, sx, ...props }: any) => (
+  Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Paper: ({ children, elevation, sx, ...props }: any) => (
+  Paper: ({ children, elevation, sx, ...props }: MockProps) => (
     <div data-testid="paper" {...props}>{children}</div>
   ),
-  Link: ({ children, component, href, sx, ...props }: any) => {
+  Link: ({ children, component, href, sx, ...props }: MockProps) => {
     const Component = component || 'a'
     return <Component href={href} data-testid="mui-link" {...props}>{children}</Component>
   },
-  Stack: ({ children, direction, spacing, sx, ...props }: any) => (
+  Stack: ({ children, direction, spacing, sx, ...props }: MockProps) => (
     <div data-testid="stack" {...props}>{children}</div>
   ),
-  IconButton: ({ children, ...props }: any) => <button data-testid="icon-button" {...props}>{children}</button>,
+  IconButton: ({ children, ...props }: MockProps) => <button data-testid="icon-button" {...props}>{children}</button>,
   CloseIcon: () => <span>×</span>
 }))
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  PrimaryButton: ({ children, onClick, disabled, ...props }: any) => (
+  PrimaryButton: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button data-testid="primary-button" onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  OutlineButton: ({ children, onClick, disabled, ...props }: any) => (
+  OutlineButton: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button data-testid="outline-button" onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  BodyText: ({ children, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  TouchTargetWrapper: ({ children, ...props }: any) => <div data-testid="touch-target" {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, label, onClick, ...props }: any) => (
+  BodyText: ({ children, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div data-testid="touch-target" {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, label, onClick, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={label} {...props}>{children}</button>
   )
 }))
@@ -67,19 +67,19 @@ jest.mock('@/lib/design-system', () => ({
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  PrimaryButton: ({ children, onClick, disabled, sx, ...props }: any) => (
+  PrimaryButton: ({ children, onClick, disabled, sx, ...props }: MockProps) => (
     <button data-testid="primary-button" onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   ),
-  OutlineButton: ({ children, onClick, disabled, sx, ...props }: any) => (
+  OutlineButton: ({ children, onClick, disabled, sx, ...props }: MockProps) => (
     <button data-testid="outline-button" onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   ),
-  BodyText: ({ children, sx, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, onClick, ariaLabel, title, sx, ...props }: any) => (
+  BodyText: ({ children, sx, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, onClick, ariaLabel, title, sx, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={ariaLabel} title={title} {...props}>
       {children}
     </button>

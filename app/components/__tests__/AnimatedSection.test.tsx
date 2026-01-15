@@ -8,10 +8,10 @@ import { AnimatedSection, AnimatedDiv } from '../AnimatedSection'
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    section: React.forwardRef(({ children, ...props }: any, ref: any) => (
+    section: React.forwardRef(({ children, ...props }: MockProps, ref: React.ForwardedRef<HTMLElement>) => (
       <section ref={ref} {...props}>{children}</section>
     )),
-    div: React.forwardRef(({ children, ...props }: any, ref: any) => (
+    div: React.forwardRef(({ children, ...props }: MockProps, ref: React.ForwardedRef<HTMLDivElement>) => (
       <div ref={ref} {...props}>{children}</div>
     ))
   }
@@ -141,4 +141,3 @@ describe('AnimatedDiv', () => {
     expect(div).toHaveClass('test-class')
   })
 })
-

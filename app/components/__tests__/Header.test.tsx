@@ -7,12 +7,12 @@ import { Header } from '../Header'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, priority, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" data-priority={priority} {...props} />
+  default: ({ alt, src, priority, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" data-priority={priority} {...props} />
 }))
 
 jest.mock('next/navigation', () => ({
@@ -84,13 +84,13 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  Container: ({ children, ...props }: any) => <div data-testid="container" {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: any) => (
+  Container: ({ children, ...props }: MockProps) => <div data-testid="container" {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: MockProps) => (
     <button onClick={onClick} aria-label={ariaLabel} data-testid="accessible-icon-button" {...props}>
       {children}
     </button>
   ),
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 // Mock MUI
@@ -98,30 +98,30 @@ jest.mock('@/lib/mui-optimization', () => ({
   CloseIcon: () => <span>×</span>,
   KeyboardArrowDownIcon: () => <span>▼</span>,
   MenuIcon: () => <span>☰</span>,
-  Box: ({ children, component, ...props }: any) => {
+  Box: ({ children, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  Button: ({ children, onClick, href, ...props }: any) => {
+  Button: ({ children, onClick, href, ...props }: MockProps) => {
     if (href) {
       return <a href={href} data-testid="button-link" {...props}>{children}</a>
     }
     return <button onClick={onClick} data-testid="button" {...props}>{children}</button>
   },
-  IconButton: ({ children, onClick, ...props }: any) => (
+  IconButton: ({ children, onClick, ...props }: MockProps) => (
     <button onClick={onClick} data-testid="icon-button" {...props}>{children}</button>
   ),
-  Typography: ({ children, variant, component, ...props }: any) => {
+  Typography: ({ children, variant, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>
   },
-  AppBar: ({ children, position, ...props }: any) => (
+  AppBar: ({ children, position, ...props }: MockProps) => (
     <header data-testid="app-bar" data-position={position} {...props}>{children}</header>
   ),
-  Collapse: ({ children, in: inProp, ...props }: any) => (
+  Collapse: ({ children, in: inProp, ...props }: MockProps) => (
     inProp ? <div data-testid="collapse" {...props}>{children}</div> : null
   ),
-  Drawer: ({ children, open, onClose, anchor, ...props }: any) => (
+  Drawer: ({ children, open, onClose, anchor, ...props }: MockProps) => (
     open ? (
       <div data-testid="drawer" data-anchor={anchor} {...props}>
         {children}
@@ -129,18 +129,18 @@ jest.mock('@/lib/mui-optimization', () => ({
       </div>
     ) : null
   ),
-  List: ({ children, ...props }: any) => <ul data-testid="list" {...props}>{children}</ul>,
-  ListItem: ({ children, ...props }: any) => <li data-testid="list-item" {...props}>{children}</li>,
-  ListItemButton: ({ children, onClick, ...props }: any) => (
+  List: ({ children, ...props }: MockProps) => <ul data-testid="list" {...props}>{children}</ul>,
+  ListItem: ({ children, ...props }: MockProps) => <li data-testid="list-item" {...props}>{children}</li>,
+  ListItemButton: ({ children, onClick, ...props }: MockProps) => (
     <button onClick={onClick} data-testid="list-item-button" {...props}>{children}</button>
   ),
-  ListItemText: ({ primary, secondary, ...props }: any) => (
+  ListItemText: ({ primary, secondary, ...props }: MockProps) => (
     <div data-testid="list-item-text" {...props}>
       <span>{primary}</span>
       {secondary && <span>{secondary}</span>}
     </div>
   ),
-  Menu: ({ children, open, onClose, anchorEl, ...props }: any) => (
+  Menu: ({ children, open, onClose, anchorEl, ...props }: MockProps) => (
     open ? (
       <div data-testid="menu" {...props}>
         {children}
@@ -148,18 +148,18 @@ jest.mock('@/lib/mui-optimization', () => ({
       </div>
     ) : null
   ),
-  MenuItem: ({ children, onClick, ...props }: any) => (
+  MenuItem: ({ children, onClick, ...props }: MockProps) => (
     <div onClick={onClick} data-testid="menu-item" {...props}>{children}</div>
   ),
-  Toolbar: ({ children, ...props }: any) => <div data-testid="toolbar" {...props}>{children}</div>,
-  Skeleton: ({ variant, width, height, ...props }: any) => (
+  Toolbar: ({ children, ...props }: MockProps) => <div data-testid="toolbar" {...props}>{children}</div>,
+  Skeleton: ({ variant, width, height, ...props }: MockProps) => (
     <div data-testid="skeleton" data-variant={variant} {...props}></div>
   )
 }))
 
 jest.mock('@mui/material/TextField', () => ({
   __esModule: true,
-  default: function TextField({ label, value, onChange, placeholder, ...props }: any) {
+  default: function TextField({ label, value, onChange, placeholder, ...props }: MockProps) {
     return (
       <input
         data-testid="search-input"
@@ -175,7 +175,7 @@ jest.mock('@mui/material/TextField', () => ({
 
 jest.mock('@mui/material/InputAdornment', () => ({
   __esModule: true,
-  default: function InputAdornment({ children, ...props }: any) {
+  default: function InputAdornment({ children, ...props }: MockProps) {
     return <div data-testid="input-adornment" {...props}>{children}</div>
   }
 }))

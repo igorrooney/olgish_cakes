@@ -16,6 +16,7 @@ describe('CacheManager', () => {
     jest.clearAllMocks()
     jest.useFakeTimers()
     cacheManager.stopAutoCacheClear()
+    const globalWithStorage = global as typeof globalThis & { localStorage?: Storage; sessionStorage?: Storage }
     
     // Mock localStorage and sessionStorage
     const localStorageMock = {
@@ -28,8 +29,8 @@ describe('CacheManager', () => {
     }
     const sessionStorageMock = { ...localStorageMock }
     
-    global.localStorage = localStorageMock as any
-    global.sessionStorage = sessionStorageMock as any
+    globalWithStorage.localStorage = localStorageMock as unknown as Storage
+    globalWithStorage.sessionStorage = sessionStorageMock as unknown as Storage
     
     // Mock Object.keys for storage
     const originalKeys = Object.keys
@@ -139,7 +140,7 @@ describe('CacheManager', () => {
 
     it('should handle browser environment check', async () => {
       const windowSpy = jest.spyOn(global, 'window', 'get')
-      windowSpy.mockImplementation(() => undefined as any)
+      windowSpy.mockImplementation(() => undefined as unknown as Window)
 
       await expect(cacheManager.clearAllCache()).resolves.not.toThrow()
 
@@ -191,4 +192,3 @@ describe('CacheManager', () => {
     })
   })
 })
-

@@ -237,7 +237,7 @@ describe('generateEventStructuredData', () => {
     })
 
     it('should filter out events with missing required fields', () => {
-      const invalidEvent = { ...mockEvent, _id: '2', title: undefined } as any
+      const invalidEvent = { ...mockEvent, _id: '2', title: undefined } as unknown as MarketSchedule
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = generateEventsListStructuredData([mockEvent, invalidEvent])
@@ -364,4 +364,3 @@ describe('generateEventStructuredData', () => {
     })
   })
 })
-

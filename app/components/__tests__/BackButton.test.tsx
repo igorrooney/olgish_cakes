@@ -15,7 +15,7 @@ jest.mock('next/navigation', () => ({
 
 // Mock MUI components
 jest.mock('@/lib/mui-optimization', () => ({
-  Button: ({ children, variant, startIcon, onClick, disabled, sx, ...props }: any) => (
+  Button: ({ children, variant, startIcon, onClick, disabled, sx, ...props }: MockProps) => (
     <button
       data-testid="button"
       data-variant={variant}

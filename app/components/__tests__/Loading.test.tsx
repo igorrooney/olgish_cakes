@@ -8,7 +8,7 @@ import Loading from '../Loading'
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, animate, transition, initial, component, ...props }: any) => {
+    div: ({ children, animate, transition, initial, component, ...props }: MockProps) => {
       const Component = component || 'div'
       return <Component {...props}>{children}</Component>
     }
@@ -17,13 +17,13 @@ jest.mock('framer-motion', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  CircularProgress: ({ size, thickness, sx, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  CircularProgress: ({ size, thickness, sx, ...props }: MockProps) => (
     <div data-testid="circular-progress" data-size={size} data-thickness={thickness} {...props}>
       Loading...
     </div>
   ),
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 // Mock design system
@@ -42,7 +42,7 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  BodyText: ({ children, component, initial, animate, transition, sx, ...props }: any) => {
+  BodyText: ({ children, component, initial, animate, transition, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="body-text" {...props}>{children}</Component>
   }

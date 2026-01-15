@@ -71,6 +71,11 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== location.origin) {
     return;
   }
+
+  // Skip API requests to avoid serving stale data
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
   
   // Handle different types of requests
   if (request.destination === 'image') {

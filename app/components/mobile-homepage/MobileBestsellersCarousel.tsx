@@ -26,10 +26,7 @@ interface MobileBestsellersCarouselProps {
 export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselProps) {
     const carouselRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
-
-    if (cakes.length === 0) {
-        return null
-    }
+    const hasCakes = cakes.length > 0
 
     const itemWidth = 342 + 8 // width (342px) + gap (8px between items)
     const firstItemOffset = 24 // First item starts 24px from left
@@ -57,7 +54,7 @@ export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselPr
     // Update current index based on scroll position
     useEffect(() => {
         const carousel = carouselRef.current
-        if (!carousel) return
+        if (!carousel || !hasCakes) return
 
         const handleScroll = () => {
             const scrollLeft = carousel.scrollLeft
@@ -70,7 +67,11 @@ export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselPr
         return () => {
             carousel.removeEventListener('scroll', handleScroll)
         }
-    }, [itemWidth, cakes.length])
+    }, [hasCakes, itemWidth, cakes.length])
+
+    if (!hasCakes) {
+        return null
+    }
 
     return (
         <div className="relative w-full -mx-4 max-w-[390px] mx-auto">
@@ -211,4 +212,3 @@ export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselPr
         </div>
     )
 }
-

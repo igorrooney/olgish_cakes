@@ -13,7 +13,8 @@ if (typeof window !== 'undefined') {
 
 // Mock HTMLIFrameElement if not defined
 if (typeof HTMLIFrameElement === 'undefined') {
-  (global as any).HTMLIFrameElement = class HTMLIFrameElement {}
+  const globalWithIFrame = global as typeof globalThis & { HTMLIFrameElement?: typeof HTMLIFrameElement }
+  globalWithIFrame.HTMLIFrameElement = class HTMLIFrameElement {}
 }
 
 import { renderHook, act } from '@testing-library/react'
@@ -23,6 +24,7 @@ describe('useMobileGestures', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     navigator.vibrate = jest.fn()
+    const globalWithIFrame = global as typeof globalThis & { HTMLIFrameElement?: typeof HTMLIFrameElement }
     
     // Mock window.event for React 18
     if (typeof window !== 'undefined') {
@@ -35,7 +37,7 @@ describe('useMobileGestures', () => {
     
     // Mock HTMLIFrameElement if not defined
     if (typeof HTMLIFrameElement === 'undefined') {
-      (global as any).HTMLIFrameElement = class HTMLIFrameElement {}
+      globalWithIFrame.HTMLIFrameElement = class HTMLIFrameElement {}
     }
   })
 
@@ -69,7 +71,8 @@ describe('useMobileGestures', () => {
     })
 
     it('should handle missing vibrate API', () => {
-      delete (navigator as any).vibrate
+      const navigatorWithVibrate = navigator as Navigator & { vibrate?: jest.Mock }
+      delete navigatorWithVibrate.vibrate
 
       const { result } = renderHook(() => useMobileGestures({ onSwipeClose: jest.fn() }))
 
@@ -83,7 +86,8 @@ describe('useMobileGestures', () => {
     it('should handle non-browser environment', () => {
       // Delete vibrate to simulate non-browser environment
       const originalVibrate = navigator.vibrate
-      delete (navigator as any).vibrate
+      const navigatorWithVibrate = navigator as Navigator & { vibrate?: jest.Mock }
+      delete navigatorWithVibrate.vibrate
 
       const { result } = renderHook(() => useMobileGestures({ onSwipeClose: jest.fn() }))
 
@@ -278,4 +282,3 @@ describe('useMobileGestures', () => {
     })
   })
 })
-

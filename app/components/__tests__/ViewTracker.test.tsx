@@ -8,7 +8,7 @@ import { ViewTracker } from '../ViewTracker'
 // Mock useViewTracking hook
 const mockUseViewTracking = jest.fn()
 jest.mock('@/app/hooks/useViewTracking', () => ({
-  useViewTracking: (props: any) => {
+  useViewTracking: (props: MockProps) => {
     mockUseViewTracking(props)
     return null
   }
