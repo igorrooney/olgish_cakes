@@ -7,23 +7,11 @@ import { useAnalytics } from "@/app/hooks/useAnalytics";
 import { usePerformanceMonitor } from "./PerformanceMonitor";
 
 interface MobileNavbarProps {
-  navigation: Array<{
-    name: string;
-    href: string;
-    megaMenu?: {
-      featured: Array<{ name: string; href: string; description?: string }>;
-      categories: Array<{
-        title: string;
-        items: Array<{ name: string; href: string }>;
-      }>;
-    };
-    dropdown?: Array<{ name: string; href: string }>;
-  }>;
   onDrawerToggle: () => void;
   drawerOpen: boolean;
 }
 
-export function MobileNavbar({ navigation, onDrawerToggle, drawerOpen }: MobileNavbarProps) {
+export function MobileNavbar({ onDrawerToggle, drawerOpen }: MobileNavbarProps) {
   const { trackMobileMenuInteraction } = useAnalytics();
   const { startTimer } = usePerformanceMonitor();
 
@@ -111,4 +99,3 @@ export function MobileNavbar({ navigation, onDrawerToggle, drawerOpen }: MobileN
     </div>
   );
 }
-

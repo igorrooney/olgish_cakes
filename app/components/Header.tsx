@@ -532,7 +532,6 @@ export function Header() {
       {/* Mobile Navbar - shown only on mobile */}
       <div className="md:hidden">
         <MobileNavbar
-          navigation={navigation}
           onDrawerToggle={handleDrawerToggle}
           drawerOpen={mobileOpen}
         />
