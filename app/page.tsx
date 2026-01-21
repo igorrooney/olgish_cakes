@@ -6,6 +6,7 @@ import {
   MobileFooter,
   MobileForm,
   MobileHero,
+  MobileInstagram,
   MobileMarkets,
   MobileOccasions,
   MobileReviews,
@@ -99,6 +100,7 @@ export default async function Home() {
             </div>
           </div>
           <MobileForm />
+          <MobileInstagram />
         </main>
         <MobileFooter />
       </div>

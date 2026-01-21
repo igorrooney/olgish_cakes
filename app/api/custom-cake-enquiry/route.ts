@@ -7,8 +7,6 @@ import { PHONE_UTILS } from '@/lib/constants'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
 
-type SupabaseAdminClient = ReturnType<typeof createClient>
-
 const getSupabaseAdminClient = () => {
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -24,6 +22,8 @@ const getSupabaseAdminClient = () => {
     }
   })
 }
+
+type SupabaseAdminClient = ReturnType<typeof getSupabaseAdminClient>
 
 const getReferenceImageBucket = () =>
   process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
@@ -75,7 +75,7 @@ const uploadReferenceImage = async (supabase: SupabaseAdminClient, file: File) =
   }
 
   return {
-    bucket: data.bucketId || bucket,
+    bucket,
     path: data.path
   }
 }
