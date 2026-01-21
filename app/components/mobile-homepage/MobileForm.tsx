@@ -1,429 +1,352 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { z } from "zod";
+import { useState, useRef } from "react";
+import { EmailIcon } from "../icons/EmailIcon";
+import { PhoneIcon } from "../icons/PhoneIcon";
+import { AddressIcon } from "../icons/AddressIcon";
+import { OCCASION_OPTIONS } from "./formOptions";
+import { useCustomCakeEnquiry } from "@/app/hooks/useCustomCakeEnquiry";
+import { buildCustomCakeEnquiryFormData, isSubmissionError } from "@/app/services/customCakeEnquiry";
+import { ValidatorInput } from "./ValidatorInput";
+import {
+  formSchema,
+  formFieldOrder,
+  getReferenceImageError,
+  getTodayDateInputValue,
+  referenceImageAccept,
+  type FormValues,
+} from "./mobileForm.utils";
 
-const formSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().regex(/^\+44\s?\(?0\)?\s?\d{4}\s?\d{3}\s?\d{3}$/, "Invalid UK phone number"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  city: z.string().min(2, "City must be at least 2 characters"),
-  postcode: z.string().regex(/^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i, "Invalid UK postcode"),
-  occasion: z.string().optional(),
-  date: z.string().min(1, "Please select a date"),
-  requirements: z.string().optional(),
-  csrfToken: z.string().min(1, "CSRF token is required"),
-});
-
-type FormData = z.infer<typeof formSchema>;
+const formInitialState: FormValues = {
+  fullName: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  postcode: "",
+  occasion: "",
+  date: "",
+  requirements: "",
+};
 
 export function MobileForm() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    postcode: "",
-    occasion: "",
-    date: "",
-    requirements: "",
-  });
+  const [formData, setFormData] = useState<FormValues>(formInitialState);
+  const [referenceImage, setReferenceImage] = useState<File | null>(null);
+  const referenceImageInputRef = useRef<HTMLInputElement | null>(null);
+  const minDate = getTodayDateInputValue();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [csrfToken, setCsrfToken] = useState<string>("");
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [hasSubmittedSuccessfully, setHasSubmittedSuccessfully] = useState(false);
 
-  // Fetch CSRF token on component mount
-  useEffect(() => {
-    async function fetchCsrfToken() {
-      try {
-        const response = await fetch('/api/csrf-token');
-        if (response.ok) {
-          const data = await response.json();
-          setCsrfToken(data.token);
-        }
-      } catch (error) {
-        console.error('Failed to fetch CSRF token:', error);
-      }
+  const focusFirstErrorField = (fieldErrors: Record<string, string>) => {
+    const firstErrorField = formFieldOrder.find((field) => fieldErrors[field]);
+    if (!firstErrorField) {
+      return;
     }
-    fetchCsrfToken();
-  }, []);
+    const fieldElement = document.getElementById(firstErrorField);
+    if (!fieldElement) {
+      return;
+    }
+    fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    fieldElement.focus();
+  };
+
+  const { csrfToken, isCsrfLoading, submitMutation, submit } = useCustomCakeEnquiry({
+    onSuccess: () => {
+      setErrors({});
+      setHasAttemptedSubmit(false);
+      setHasSubmittedSuccessfully(true);
+      setFormData(formInitialState);
+      setReferenceImage(null);
+      if (referenceImageInputRef.current) {
+        referenceImageInputRef.current.value = "";
+      }
+    },
+    onError: (error) => {
+      if (isSubmissionError(error) && error.fieldErrors) {
+        setErrors(error.fieldErrors);
+        focusFirstErrorField(error.fieldErrors);
+        return;
+      }
+      setErrors({
+        submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.',
+      });
+    },
+  });
+
+  const isSubmitting = submitMutation.isPending;
+  const buttonLabel = hasSubmittedSuccessfully ? "Enquiry sent" : "Send enquiry";
+  const buttonClassName = hasSubmittedSuccessfully
+    ? "bg-[var(--d-color-status-success-bg)] hover:bg-[var(--d-color-status-success-bg)]"
+    : "bg-primary-500 hover:bg-primary-700";
+  const resetSuccessState = () => {
+    if (hasSubmittedSuccessfully) {
+      setHasSubmittedSuccessfully(false);
+      submitMutation.reset();
+    }
+  };
+  const updateField = (
+    field: keyof FormValues,
+    value: string,
+    shouldClearError = false
+  ) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+    resetSuccessState();
+    if (shouldClearError) {
+      clearFieldError(field);
+    }
+  };
+  const clearFieldError = (field: string) => {
+    setErrors((current) => {
+      if (!current[field]) {
+        return current;
+      }
+      return { ...current, [field]: "" };
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setHasAttemptedSubmit(true);
     setErrors({});
-    setSubmitSuccess(false);
+    submitMutation.reset();
 
     try {
       // Include CSRF token in submission
-      if (!csrfToken) {
-        throw new Error('CSRF token not loaded. Please refresh the page and try again.');
+      if (isCsrfLoading || !csrfToken) {
+        throw new Error("CSRF token not loaded. Please refresh the page and try again.");
       }
 
-      const validated = formSchema.parse({ ...formData, csrfToken });
+      const parsed = formSchema.safeParse({ ...formData, csrfToken });
+      const fieldErrors: Record<string, string> = {};
 
-      const response = await fetch('/api/custom-cake-enquiry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(validated),
-        credentials: 'same-origin', // Include cookies for CSRF validation
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Handle validation errors with field-specific details
-        if (errorData.error === 'Validation failed' && errorData.details) {
-          const fieldErrors: Record<string, string> = {}
-          errorData.details.forEach((err: { path: (string | number)[]; message: string }) => {
-            if (err.path[0]) {
-              fieldErrors[err.path[0].toString()] = err.message
-            }
-          })
-          setErrors(fieldErrors)
-          throw new Error('Validation failed. Please check the form fields.')
-        }
-
-        throw new Error(errorData.error || 'Submission failed')
-      }
-
-      setSubmitSuccess(true);
-      // Reset form
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        address: "",
-        city: "",
-        postcode: "",
-        occasion: "",
-        date: "",
-        requirements: "",
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach((err) => {
+      if (!parsed.success) {
+        parsed.error.errors.forEach((err) => {
           if (err.path[0]) {
             fieldErrors[err.path[0].toString()] = err.message;
           }
         });
-        setErrors(fieldErrors);
-      } else {
-        setErrors({ submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.' });
       }
-    } finally {
-      setIsSubmitting(false);
+
+      const referenceImageError = getReferenceImageError(referenceImage);
+      if (referenceImageError) {
+        fieldErrors.referenceImage = referenceImageError;
+      }
+
+      if (!parsed.success || Object.keys(fieldErrors).length > 0) {
+        setErrors(fieldErrors);
+        focusFirstErrorField(fieldErrors);
+        return;
+      }
+
+      const validated = parsed.data;
+      const submissionData = buildCustomCakeEnquiryFormData(validated, referenceImage);
+
+      submit(submissionData);
+    } catch (error) {
+      setErrors({
+        submit: error instanceof Error ? error.message : "Failed to submit form. Please try again.",
+      });
     }
   };
 
   return (
     <section className="bg-base-100 px-4 py-8">
-      <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+      <div className="mx-auto flex max-w-[390px] flex-col items-center gap-6">
         <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[32px] text-center">
           Custom cake enquiry form
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div className="form-control">
-            <label className="label" htmlFor="fullName">
-              <span className="label-text font-sans text-sm text-base-content">
-                Full Name:
-              </span>
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              placeholder="Enter name"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.fullName ? 'input-error' : ''}`}
-              value={formData.fullName}
-              onChange={(e) => {
-                setFormData({ ...formData, fullName: e.target.value });
-                if (errors.fullName) {
-                  setErrors({ ...errors, fullName: '' });
-                }
-              }}
-              aria-invalid={!!errors.fullName}
-              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
-            />
-            {errors.fullName && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="fullName-error" role="alert">
-                  {errors.fullName}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="email">
-              <span className="label-text font-sans text-sm text-base-content">
-                Email address:
-              </span>
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.email ? 'input-error' : ''}`}
-              value={formData.email}
-              onChange={(e) => {
-                setFormData({ ...formData, email: e.target.value });
-                if (errors.email) {
-                  setErrors({ ...errors, email: '' });
-                }
-              }}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? 'email-error' : undefined}
-            />
-            {errors.email && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="email-error" role="alert">
-                  {errors.email}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="phone">
-              <span className="label-text font-sans text-sm text-base-content">
-                Phone number:
-              </span>
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              placeholder="+44 (0) 7XXX XXX XXX"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.phone ? 'input-error' : ''}`}
-              value={formData.phone}
-              onChange={(e) => {
-                setFormData({ ...formData, phone: e.target.value });
-                if (errors.phone) {
-                  setErrors({ ...errors, phone: '' });
-                }
-              }}
-              aria-invalid={!!errors.phone}
-              aria-describedby={errors.phone ? 'phone-error' : undefined}
-            />
-            {errors.phone && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="phone-error" role="alert">
-                  {errors.phone}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="address">
-              <span className="label-text font-sans text-sm text-base-content">
-                Address:
-              </span>
-            </label>
-            <input
-              id="address"
-              type="text"
-              placeholder="Enter address line 1"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.address ? 'input-error' : ''}`}
-              value={formData.address}
-              onChange={(e) => {
-                setFormData({ ...formData, address: e.target.value });
-                if (errors.address) {
-                  setErrors({ ...errors, address: '' });
-                }
-              }}
-              aria-invalid={!!errors.address}
-              aria-describedby={errors.address ? 'address-error' : undefined}
-            />
-            {errors.address && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="address-error" role="alert">
-                  {errors.address}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="city">
-              <span className="label-text font-sans text-sm text-base-content">
-                City:
-              </span>
-            </label>
-            <input
-              id="city"
-              type="text"
-              placeholder="Enter city"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.city ? 'input-error' : ''}`}
-              value={formData.city}
-              onChange={(e) => {
-                setFormData({ ...formData, city: e.target.value });
-                if (errors.city) {
-                  setErrors({ ...errors, city: '' });
-                }
-              }}
-              aria-invalid={!!errors.city}
-              aria-describedby={errors.city ? 'city-error' : undefined}
-            />
-            {errors.city && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="city-error" role="alert">
-                  {errors.city}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="postcode">
-              <span className="label-text font-sans text-sm text-base-content">
-                Postcode:
-              </span>
-            </label>
-            <input
-              id="postcode"
-              type="text"
-              placeholder="Enter postcode"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.postcode ? 'input-error' : ''}`}
-              value={formData.postcode}
-              onChange={(e) => {
-                setFormData({ ...formData, postcode: e.target.value });
-                if (errors.postcode) {
-                  setErrors({ ...errors, postcode: '' });
-                }
-              }}
-              aria-invalid={!!errors.postcode}
-              aria-describedby={errors.postcode ? 'postcode-error' : undefined}
-            />
-            {errors.postcode && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="postcode-error" role="alert">
-                  {errors.postcode}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-sans text-sm text-base-content">
-                What's the occasion?
-              </span>
-              <span className="label-text-alt text-xs text-base-content">
-                (Optional)
-              </span>
-            </label>
-            <select
-              className="select bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)]"
-              value={formData.occasion}
-              onChange={(e) =>
-                setFormData({ ...formData, occasion: e.target.value })
+        <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col items-center gap-5">
+          <ValidatorInput
+            id="fullName"
+            type="text"
+            placeholder="Enter name"
+            value={formData.fullName}
+            label="Full Name:"
+            showValidation={hasAttemptedSubmit}
+            error={errors.fullName}
+            required
+            hintText="Enter your full name"
+            onValueChange={(value) => {
+              updateField("fullName", value, true);
+            }}
+          />
+          <ValidatorInput
+            id="email"
+            type="email"
+            placeholder="your@email.com"
+            value={formData.email}
+            label="Email address:"
+            icon={<EmailIcon />}
+            showValidation={hasAttemptedSubmit}
+            error={errors.email}
+            required
+            hintText="Enter valid email address"
+            onValueChange={(value) => {
+              updateField("email", value, true);
+            }}
+          />
+          <ValidatorInput
+            id="phone"
+            type="tel"
+            placeholder="+44 7123 456 789"
+            value={formData.phone}
+            label="Phone number:"
+            icon={<PhoneIcon />}
+            showValidation={hasAttemptedSubmit}
+            error={errors.phone}
+            required
+            hintText="Enter valid phone number"
+            onValueChange={(value) => {
+              updateField("phone", value, true);
+            }}
+          />
+          <ValidatorInput
+            id="address"
+            type="text"
+            placeholder="Enter address line 1"
+            value={formData.address}
+            label="Address:"
+            icon={<AddressIcon />}
+            showValidation={hasAttemptedSubmit}
+            error={errors.address}
+            required
+            hintText="Enter your address"
+            onValueChange={(value) => {
+              updateField("address", value, true);
+            }}
+          />
+          <ValidatorInput
+            id="city"
+            type="text"
+            placeholder="Enter city"
+            value={formData.city}
+            label="City:"
+            icon={<AddressIcon />}
+            showValidation={hasAttemptedSubmit}
+            error={errors.city}
+            required
+            hintText="Enter your city"
+            onValueChange={(value) => {
+              updateField("city", value, true);
+            }}
+          />
+          <ValidatorInput
+            id="postcode"
+            type="text"
+            placeholder="Enter postcode"
+            value={formData.postcode}
+            label="Postcode:"
+            icon={<AddressIcon />}
+            showValidation={hasAttemptedSubmit}
+            error={errors.postcode}
+            required
+            hintText="Enter your postcode"
+            onValueChange={(value) => {
+              updateField("postcode", value, true);
+            }}
+          />
+          <ValidatorInput
+            fieldType="select"
+            id="occasion"
+            value={formData.occasion ?? ""}
+            label="What's the occasion?"
+            labelAlt="(Optional)"
+            options={OCCASION_OPTIONS}
+            hintText="Select an occasion"
+            onValueChange={(value) => {
+              updateField("occasion", value);
+            }}
+          />
+          <ValidatorInput
+            id="date"
+            type="date"
+            placeholder="Select a date"
+            value={formData.date}
+            label="When do you need it?"
+            showValidation={hasAttemptedSubmit}
+            error={errors.date}
+            required
+            hintText="Select a date"
+            labelPlacement="outside"
+            inputClassName="placeholder:text-base-content placeholder:opacity-100"
+            min={minDate}
+            onValueChange={(value) => {
+              updateField("date", value, true);
+            }}
+          />
+          <ValidatorInput
+            fieldType="textarea"
+            id="requirements"
+            value={formData.requirements ?? ""}
+            label="Requirements"
+            labelAlt="(Size, shape, flavour, icing, filling etc.)"
+            labelLayout="stacked"
+            placeholder="Enter requirements"
+            hintText="Enter requirements"
+            onValueChange={(value) => {
+              updateField("requirements", value);
+            }}
+          />
+          <ValidatorInput
+            fieldType="upload"
+            id="referenceImage"
+            label="Upload a reference image"
+            labelAlt="(Optional)"
+            accept={referenceImageAccept}
+            infoLeft="JPEG, PNG, HEIC"
+            infoRight="5MB max"
+            selectedFileName={referenceImage?.name}
+            inputRef={referenceImageInputRef}
+            error={errors.referenceImage}
+            hintText="Upload a reference image"
+            onFileChange={(files) => {
+              const selectedFile = files?.[0] ?? null;
+              const nextError = getReferenceImageError(selectedFile);
+              setReferenceImage(selectedFile);
+              resetSuccessState();
+              if (nextError) {
+                setErrors((current) => ({ ...current, referenceImage: nextError }));
+                return;
               }
-            >
-              <option>Select from list</option>
-              <option>Birthday</option>
-              <option>Wedding</option>
-              <option>Anniversary</option>
-              <option>Christmas</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="date">
-              <span className="label-text font-sans text-sm text-base-content">
-                When do you need it?
-              </span>
-            </label>
-            <input
-              id="date"
-              type="date"
-              className={`input bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] ${errors.date ? 'input-error' : ''}`}
-              value={formData.date}
-              onChange={(e) => {
-                setFormData({ ...formData, date: e.target.value });
-                if (errors.date) {
-                  setErrors({ ...errors, date: '' });
-                }
-              }}
-              aria-invalid={!!errors.date}
-              aria-describedby={errors.date ? 'date-error' : undefined}
-            />
-            {errors.date && (
-              <div className="label">
-                <span className="label-text-alt text-error" id="date-error" role="alert">
-                  {errors.date}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-sans text-sm text-base-content">
-                Requirements
-              </span>
-              <span className="label-text-alt text-xs text-base-content">
-                (Size, shape, flavour, icing, filling etc.)
-              </span>
-            </label>
-            <textarea
-              className="textarea bg-white rounded-[16px] border border-[rgba(31,41,55,0.2)] min-h-32"
-              placeholder="Enter requirements"
-              value={formData.requirements}
-              onChange={(e) =>
-                setFormData({ ...formData, requirements: e.target.value })
-              }
-            />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-sans text-sm text-base-content">
-                Upload a reference image
-              </span>
-              <span className="label-text-alt text-xs text-base-content">
-                (Optional)
-              </span>
-            </label>
-            <div className="join w-full">
-              <button
-                type="button"
-                className="btn join-item h-8 min-h-0 rounded-l-[16px] bg-primary-100 text-primary-400"
-              >
-                CHOOSE A FILE
-              </button>
-              <input
-                type="text"
-                className="input join-item h-8 min-h-0 flex-1 rounded-r-[16px] border border-[rgba(31,41,55,0.2)] bg-white"
-                placeholder="cake.png"
-                readOnly
-              />
-            </div>
-            <div className="label">
-              <span className="label-text-alt text-xs text-base-content">
-                JPEG, PNG, HEIC
-              </span>
-              <span className="label-text-alt text-xs text-base-content">
-                5MB max
-              </span>
-            </div>
-          </div>
+              clearFieldError("referenceImage");
+            }}
+          />
           {errors.submit && (
-            <div className="alert alert-error" role="alert">
+            <div className="alert alert-error w-full" role="alert">
               <span>{errors.submit}</span>
-            </div>
-          )}
-          {submitSuccess && (
-            <div className="alert alert-success" role="alert">
-              <span>Thank you! Your enquiry has been submitted successfully.</span>
             </div>
           )}
           <button
             type="submit"
-            className="btn h-8 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700"
-            disabled={isSubmitting}
+            className={`btn h-8 w-full rounded-full text-white shadow-btn ${buttonClassName}`}
+            disabled={isSubmitting || isCsrfLoading}
             aria-busy={isSubmitting}
           >
-            <span className="font-sans text-sm font-semibold">
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+            <span className="flex items-center justify-center gap-2 font-sans text-sm font-semibold">
+              {buttonLabel}
+              {isSubmitting ? (
+                <span className="loading loading-spinner" aria-hidden="true"></span>
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  width="11"
+                  height="10"
+                  viewBox="0 0 11 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-primary-100"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M10.7774 0.084028C11.0071 0.237204 11.0692 0.547639 10.916 0.777403L4.91603 9.7774C4.83293 9.90204 4.69834 9.98286 4.54927 9.99762C4.4002 10.0124 4.25237 9.95953 4.14645 9.85361L0.146447 5.85361C-0.0488155 5.65834 -0.0488155 5.34176 0.146447 5.1465C0.341709 4.95124 0.658291 4.95124 0.853553 5.1465L4.42229 8.71523L10.084 0.222703C10.2372 -0.0070613 10.5476 -0.0691482 10.7774 0.084028Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              )}
             </span>
           </button>
         </form>
@@ -431,4 +354,3 @@ export function MobileForm() {
     </section>
   );
 }
-

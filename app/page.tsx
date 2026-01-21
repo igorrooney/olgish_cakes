@@ -86,6 +86,18 @@ export default async function Home() {
           <MobileMarkets />
           <MobileReviews />
           <MobileOccasions />
+          <div className="w-full flex justify-center bg-base-100">
+            <div className="relative w-full max-w-[430px] h-auto">
+              <Image
+                src="/design/homepage_divider_2.png"
+                alt="Decorative divider with cupcake and floral elements"
+                width={430}
+                height={100}
+                className="w-full h-auto object-contain"
+                priority
+              />
+            </div>
+          </div>
           <MobileForm />
         </main>
         <MobileFooter />

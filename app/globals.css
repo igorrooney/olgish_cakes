@@ -19,6 +19,7 @@
   --color-primary: #2E3192;
   --color-primary-content: #FFFFFF;
   --color-primary-50: #ECECF9;
+  --color-primary-400: #6467CE;
   --color-primary-500: #2E3192;
   --color-primary-800: #181A4E;
   --color-secondary: #FEF102;
@@ -31,6 +32,7 @@
   --color-info-content: #FFFFFF;
   --color-success: #219653;
   --color-success-content: #FFFFFF;
+  --d-color-status-success-bg: #00A96E;
   --color-warning: #F39C12;
   --color-warning-content: #2D2D2D;
   --color-error: #D04436;
@@ -44,6 +46,17 @@
   --size-field: 0.25rem;
 
   --border: 1px;
+
+  --d-borderRadius-box: var(--radius-box);
+  --d-borderWidth-btn: var(--border);
+  --d-color-base-content: var(--color-base-content);
+  --u-opacity-stroke-20: 0.2;
+  --Primary-50: var(--color-primary-50);
+  --Primary-400: var(--color-primary-400);
+  --t-font-family-theme-primary: var(--font-inter);
+  --t-font-size-sm: 0.875rem;
+  --t-font-weight-semibold: 600;
+  --t-font-lineHeight-leading-5: 1.25rem;
 
   --depth: 1;
   --noise: 0;
@@ -73,6 +86,17 @@
   /* Touch-friendly padding for buttons */
   .touch-padding {
     padding: 12px 16px;
+  }
+
+  .file-input-theme::file-selector-button {
+    background: var(--Primary-50);
+    color: var(--Primary-400);
+    text-align: center;
+    font-family: var(--t-font-family-theme-primary);
+    font-size: var(--t-font-size-sm);
+    font-style: normal;
+    font-weight: var(--t-font-weight-semibold);
+    line-height: var(--t-font-lineHeight-leading-5);
   }
 
   /* Focus indicators for accessibility */
