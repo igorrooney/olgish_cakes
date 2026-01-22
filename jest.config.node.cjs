@@ -8,12 +8,11 @@ const createJestConfig = nextJest({
 
 const customJestConfig = {
   ...baseConfig,
-  testEnvironment: 'jest-environment-jsdom',
+  testEnvironment: 'node',
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)'
-  ],
-  testPathIgnorePatterns: [...baseConfig.testPathIgnorePatterns, '/app/api/']
+    'app/api/**/__tests__/**/*.[jt]s?(x)',
+    'app/api/**/?(*.)+(spec|test).[jt]s?(x)'
+  ]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
