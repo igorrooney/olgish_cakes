@@ -9,10 +9,12 @@ import { useCustomCakeEnquiry } from "@/app/hooks/useCustomCakeEnquiry";
 import { buildCustomCakeEnquiryFormData, isSubmissionError } from "@/app/services/customCakeEnquiry";
 import { ValidatorInput } from "./ValidatorInput";
 import {
+  dateMinErrorMessage,
   formSchema,
   formFieldOrder,
   getReferenceImageError,
   getTodayDateInputValue,
+  isDateOnOrAfterToday,
   referenceImageAccept,
   type FormValues,
 } from "./mobileForm.utils";
@@ -104,6 +106,14 @@ export function MobileForm() {
       }
       return { ...current, [field]: "" };
     });
+  };
+  const handleDateChange = (value: string) => {
+    if (value && !isDateOnOrAfterToday(value)) {
+      setErrors((current) => ({ ...current, date: dateMinErrorMessage }));
+      updateField('date', '', false);
+      return;
+    }
+    updateField('date', value, true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -272,9 +282,7 @@ export function MobileForm() {
             labelPlacement="outside"
             inputClassName="placeholder:text-base-content placeholder:opacity-100"
             min={minDate}
-            onValueChange={(value) => {
-              updateField("date", value, true);
-            }}
+            onValueChange={handleDateChange}
           />
           <ValidatorInput
             fieldType="textarea"

@@ -103,6 +103,22 @@ describe('MobileForm', () => {
     expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
   })
 
+  it('shows a placeholder overlay for the date input when empty', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByTestId('date-placeholder')).toHaveTextContent('Select a date')
+  })
+
+  it('clears past dates and shows an error message', async () => {
+    await renderWithCsrf()
+
+    const dateInput = screen.getByLabelText(/when do you need it/i)
+    fireEvent.change(dateInput, { target: { value: getDateInputValue(-1) } })
+
+    expect(dateInput).toHaveValue('')
+    expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
+  })
+
   it('shows validation errors for invalid input', async () => {
     // Mock CSRF token fetch (already mocked in beforeEach, but ensure it's available)
     ;(global.fetch as jest.Mock).mockImplementation((url: string) => {

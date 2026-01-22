@@ -1,5 +1,22 @@
 import { z } from 'zod'
 
+export const getTodayDateInputValue = () => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export const dateMinErrorMessage = 'Please select today or a future date'
+
+export const isDateOnOrAfterToday = (value: string) => {
+  if (!value) {
+    return true
+  }
+  return value >= getTodayDateInputValue()
+}
+
 export const formSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
@@ -10,7 +27,12 @@ export const formSchema = z.object({
     .string()
     .regex(/^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i, 'Invalid UK postcode'),
   occasion: z.string().optional(),
-  date: z.string().min(1, 'Please select a date'),
+  date: z
+    .string()
+    .min(1, 'Please select a date')
+    .refine((value) => isDateOnOrAfterToday(value), {
+      message: dateMinErrorMessage
+    }),
   requirements: z.string().optional(),
   csrfToken: z.string().min(1, 'CSRF token is required')
 })
@@ -23,14 +45,6 @@ const referenceImageConfig = {
 }
 
 export const referenceImageAccept = referenceImageConfig.acceptedTypes.join(',')
-
-export const getTodayDateInputValue = () => {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 export const formFieldOrder = [
   'fullName',
