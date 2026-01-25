@@ -88,7 +88,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["'Comic Sans MS'", "'Chalkboard SE'", "'Comic Neue'", "cursive", "system-ui", "sans-serif"],
+        display: ["var(--font-more-sugar)", "cursive", "fantasy"],
         body: ["var(--font-alice)", "Georgia", "serif"],
         moreSugar: ["var(--font-more-sugar)", "cursive", "fantasy"],
       },

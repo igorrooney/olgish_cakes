@@ -15,6 +15,7 @@ import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -454,12 +455,11 @@ export default function RootLayout({
               <div className="flex flex-col min-h-screen">
                 <ConditionalHeader />
                 <main className="flex-grow">{children}</main>
-                {/* <Footer /> */}
+                <SiteFooter />
                 <ScrollToTop />
                 <WebVitalsMonitor />
                 <PerformanceOptimizer />
                 <DynamicCookieConsent />
-                <DynamicDevTools />
               </div>
             </Providers>
           </ThemeProvider>

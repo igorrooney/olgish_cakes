@@ -1,4 +1,13 @@
+@config "../tailwind.config.cjs";
 @import "tailwindcss";
+
+@theme {
+  --breakpoint-mobile: 24.375rem;
+  --breakpoint-tablet: 64rem;
+  --breakpoint-lg: 80rem;
+  --breakpoint-small-laptop: 80rem;
+  --breakpoint-large-laptop: 94.5rem;
+}
 
 @plugin "daisyui" {
   themes: olgish-cakes --default;
@@ -258,7 +267,7 @@ html {
 }
 
 .font-display {
-  font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive, system-ui, sans-serif;
+  font-family: var(--font-more-sugar), cursive, fantasy;
 }
 
 .font-body {

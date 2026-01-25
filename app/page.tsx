@@ -3,7 +3,6 @@ import Image from "next/image";
 import {
   MobileAbout,
   MobileBestsellers,
-  MobileFooter,
   MobileForm,
   MobileHero,
   MobileInstagram,
@@ -102,7 +101,6 @@ export default async function Home() {
           <MobileForm />
           <MobileInstagram />
         </main>
-        <MobileFooter />
       </div>
     </>
   );

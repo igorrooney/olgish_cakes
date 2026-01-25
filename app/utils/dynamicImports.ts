@@ -54,7 +54,6 @@ export function preloadComponents() {
   if (typeof window !== "undefined") {
     // Preload components that are likely to be needed
     // import("@/app/components/Header");
-    // import("@/app/components/Footer");
     // import("@/app/components/CakeCard");
   }
 }
