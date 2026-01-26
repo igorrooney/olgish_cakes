@@ -70,7 +70,7 @@ export default async function Home() {
         <main className="flex flex-col">
           <HomeHero />
           <div className="w-full flex justify-center bg-base-100">
-            <div className="homepage-container relative h-auto">
+            <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider.png"
                 alt="Decorative divider with cupcake and floral elements"
@@ -87,7 +87,7 @@ export default async function Home() {
           <MobileReviews />
           <MobileOccasions />
           <div className="w-full flex justify-center bg-base-100">
-            <div className="homepage-container relative h-auto">
+            <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider_2.png"
                 alt="Decorative divider with cupcake and floral elements"
