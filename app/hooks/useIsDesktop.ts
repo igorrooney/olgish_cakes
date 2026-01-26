@@ -19,8 +19,8 @@ export function useIsDesktop() {
     // Check initial size
     const checkIsDesktop = () => {
       // Use small-laptop breakpoint as the cutoff
-      // Desktop: >= small-laptop (use Header)
-      // Mobile/Tablet: < small-laptop (use MobileHeader)
+      // Desktop: >= small-laptop
+      // Mobile/Tablet: < small-laptop
       setIsDesktop(window.innerWidth >= breakpoints["small-laptop"]);
     };
 
@@ -38,4 +38,3 @@ export function useIsDesktop() {
 
   return isDesktop;
 }
-

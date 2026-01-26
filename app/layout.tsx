@@ -9,7 +9,7 @@ import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
-import { ConditionalHeader } from "./components/ConditionalHeader";
+import { SiteHeader } from "./components/mobile-homepage/SiteHeader";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
@@ -453,7 +453,7 @@ export default function RootLayout({
             <CssBaseline />
             <Providers>
               <div className="flex flex-col min-h-screen">
-                <ConditionalHeader />
+                <SiteHeader />
                 <main className="flex-grow">{children}</main>
                 <SiteFooter />
                 <ScrollToTop />
@@ -476,21 +476,26 @@ export default function RootLayout({
         </Script>
 
         {/* Service Worker Registration */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                  .then((registration) => {
-                    // Service worker registered successfully
+        {process.env.NODE_ENV === "production" && (
+          <Script id="sw-register" strategy="afterInteractive">
+            {`
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js', {
+                    scope: '/',
+                    updateViaCache: 'none'
                   })
-                  .catch((registrationError) => {
-                    // Service worker registration failed
-                  });
-              });
-            }
-          `}
-        </Script>
+                    .then((registration) => {
+                      // Service worker registered successfully
+                    })
+                    .catch((registrationError) => {
+                      // Service worker registration failed
+                    });
+                });
+              }
+            `}
+          </Script>
+        )}
 
         {/* Suppress MetaMask extension errors */}
         <Script id="suppress-extension-errors" strategy="afterInteractive">

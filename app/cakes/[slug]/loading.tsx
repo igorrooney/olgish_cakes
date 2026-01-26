@@ -1,5 +1,4 @@
 import { Container, Grid, Box, Skeleton, Paper } from "@mui/material";
-import { Header } from "@/app/components/Header";
 
 export default function Loading() {
   return (

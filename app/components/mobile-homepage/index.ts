@@ -1,4 +1,4 @@
-export { MobileHeader } from './MobileHeader'
+export { SiteHeader } from './SiteHeader'
 export { MobileHero } from './MobileHero'
 export { MobileAbout } from './MobileAbout'
 export { MobileBestsellers } from './MobileBestsellers'

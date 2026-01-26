@@ -333,8 +333,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
     : baseInputClassName
   const shouldShowTrailingIcon = Boolean(trailingIcon)
   const shouldShowValidation = props.showValidation ?? true
-  const shouldShowDatePlaceholder = type === 'date' && !value && labelPlacement === 'outside'
-  const placeholderOffsetClassName = icon ? 'left-9' : 'left-3'
 
   return (
     <div className="form-control w-full">
@@ -355,15 +353,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
         style={tokenizedInputStyle(hasError)}
       >
         {icon ? icon : null}
-        {shouldShowDatePlaceholder ? (
-          <span
-            className={`pointer-events-none absolute ${placeholderOffsetClassName} top-1/2 -translate-y-1/2 text-sm font-sans text-base-content opacity-60`}
-            aria-hidden="true"
-            data-testid="date-placeholder"
-          >
-            {placeholder}
-          </span>
-        ) : null}
         {labelPlacement === 'inside' ? (
           <span className={icon ? 'ml-2' : ''}>{label}</span>
         ) : null}

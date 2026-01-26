@@ -103,10 +103,12 @@ describe('MobileForm', () => {
     expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
   })
 
-  it('shows a placeholder overlay for the date input when empty', async () => {
+  it('shows the date input label and empty value when untouched', async () => {
     await renderWithCsrf()
 
-    expect(screen.getByTestId('date-placeholder')).toHaveTextContent('Select a date')
+    const dateInput = screen.getByLabelText(/when do you need it/i)
+    expect(dateInput).toBeInTheDocument()
+    expect(dateInput).toHaveValue('')
   })
 
   it('clears past dates and shows an error message', async () => {

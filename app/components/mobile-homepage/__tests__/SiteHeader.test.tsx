@@ -2,19 +2,19 @@
  * @jest-environment jsdom
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { MobileHeader } from '../MobileHeader'
+import { SiteHeader } from '../SiteHeader'
 import React from 'react'
 
-describe('MobileHeader', () => {
+describe('SiteHeader', () => {
   it('renders logo and menu button', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     expect(screen.getByLabelText(/open menu/i)).toBeInTheDocument()
     expect(screen.getByAltText(/olgish cakes logo/i)).toBeInTheDocument()
   })
 
   it('opens and closes menu on button click', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
 
@@ -29,7 +29,7 @@ describe('MobileHeader', () => {
   })
 
   it('closes menu when clicking outside', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
@@ -43,7 +43,7 @@ describe('MobileHeader', () => {
   })
 
   it('closes menu on Escape key', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
@@ -56,7 +56,7 @@ describe('MobileHeader', () => {
   })
 
   it('has proper ARIA attributes', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
 
@@ -66,7 +66,7 @@ describe('MobileHeader', () => {
   })
 
   it('updates aria-expanded when menu opens', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
 
@@ -76,7 +76,7 @@ describe('MobileHeader', () => {
   })
 
   it('closes menu when clicking on a link', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
@@ -88,12 +88,20 @@ describe('MobileHeader', () => {
   })
 
   it('menu items have proper role', () => {
-    render(<MobileHeader />)
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
 
     const menuItems = screen.getAllByRole('menuitem')
     expect(menuItems.length).toBeGreaterThan(0)
+  })
+
+  it('renders tablet navigation dropdowns', () => {
+    render(<SiteHeader />)
+
+    expect(screen.getByText(/custom cakes/i)).toBeInTheDocument()
+    expect(screen.getByText(/learn hub/i)).toBeInTheDocument()
+    expect(screen.getByText(/order form/i)).toBeInTheDocument()
   })
 })
