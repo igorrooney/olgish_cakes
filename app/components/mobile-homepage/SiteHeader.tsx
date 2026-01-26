@@ -13,6 +13,7 @@ export function SiteHeader() {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const customCakesDropdownRef = useRef<HTMLDetailsElement>(null)
   const learnHubDropdownRef = useRef<HTMLDetailsElement>(null)
+  const lastTouchToggleRef = useRef<number | null>(null)
 
   const topNavItemClassName =
     'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation transition-colors whitespace-nowrap'
@@ -29,7 +30,28 @@ export function SiteHeader() {
     event: React.MouseEvent<HTMLElement>,
     dropdownId: DropdownId
   ) => {
+    const lastTouchToggle = lastTouchToggleRef.current
+
+    if (lastTouchToggle && Date.now() - lastTouchToggle < 500) {
+      lastTouchToggleRef.current = null
+      event.preventDefault()
+      return
+    }
+
     event.preventDefault()
+    toggleDropdown(dropdownId)
+  }
+
+  const handleSummaryPointerDown = (
+    event: React.PointerEvent<HTMLElement>,
+    dropdownId: DropdownId
+  ) => {
+    if (event.pointerType !== 'touch') {
+      return
+    }
+
+    event.preventDefault()
+    lastTouchToggleRef.current = Date.now()
     toggleDropdown(dropdownId)
   }
 
@@ -46,6 +68,18 @@ export function SiteHeader() {
     event.preventDefault()
     toggleDropdown(dropdownId)
   }
+
+  const handleDropdownToggle =
+    (dropdownId: DropdownId) => (event: React.SyntheticEvent<HTMLDetailsElement>) => {
+      const { open } = event.currentTarget
+
+      if (open) {
+        setOpenDropdownId(dropdownId)
+        return
+      }
+
+      setOpenDropdownId((current) => (current === dropdownId ? null : current))
+    }
 
   // Close desktop dropdowns when clicking outside
   useEffect(() => {
@@ -146,8 +180,17 @@ export function SiteHeader() {
   }, [isMenuOpen])
 
   return (
-    <header className='sticky top-0 z-50'>
-      <div className='navbar relative bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
+    <header className='sticky top-0 z-50 relative'>
+      {openDropdownId !== null && (
+        <div
+          data-nav-overlay
+          aria-hidden='true'
+          className='hidden tablet:block absolute top-full left-0 right-0 h-screen z-0 bg-transparent'
+          onPointerDown={() => setOpenDropdownId(null)}
+          onClick={() => setOpenDropdownId(null)}
+        />
+      )}
+      <div className='navbar relative z-10 bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
         <div className='navbar-start'>
           <Link href='/' className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'>
             <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
@@ -175,9 +218,11 @@ export function SiteHeader() {
                   data-nav-dropdown
                   ref={customCakesDropdownRef}
                   open={openDropdownId === 'custom-cakes'}
+                  onToggle={handleDropdownToggle('custom-cakes')}
                 >
                   <summary
                     className={topNavSummaryClassName}
+                    onPointerDown={(event) => handleSummaryPointerDown(event, 'custom-cakes')}
                     onClick={(event) => handleSummaryClick(event, 'custom-cakes')}
                     onKeyDown={(event) => handleSummaryKeyDown(event, 'custom-cakes')}
                     aria-expanded={openDropdownId === 'custom-cakes'}
@@ -252,9 +297,11 @@ export function SiteHeader() {
                   data-nav-dropdown
                   ref={learnHubDropdownRef}
                   open={openDropdownId === 'learn-hub'}
+                  onToggle={handleDropdownToggle('learn-hub')}
                 >
                   <summary
                     className={topNavSummaryClassName}
+                    onPointerDown={(event) => handleSummaryPointerDown(event, 'learn-hub')}
                     onClick={(event) => handleSummaryClick(event, 'learn-hub')}
                     onKeyDown={(event) => handleSummaryKeyDown(event, 'learn-hub')}
                     aria-expanded={openDropdownId === 'learn-hub'}

@@ -3,7 +3,7 @@
  */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SiteHeader } from '../SiteHeader'
-import React from 'react'
+import React, { act } from 'react'
 
 describe('SiteHeader', () => {
   it('renders logo and menu button', () => {
@@ -134,6 +134,100 @@ describe('SiteHeader', () => {
     fireEvent.click(document.body)
 
     expect(learnDetails.open).toBe(false)
+  })
+
+  it('toggles dropdown on touch pointerdown without double toggling', async () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    act(() => {
+      const pointerEvent = new Event('pointerdown', { bubbles: true, cancelable: true })
+      Object.defineProperty(pointerEvent, 'pointerType', { value: 'touch' })
+      customSummary.dispatchEvent(pointerEvent)
+    })
+
+    await waitFor(() => {
+      expect(customDetails.open).toBe(true)
+    })
+
+    act(() => {
+      fireEvent.click(customSummary)
+    })
+
+    expect(customDetails.open).toBe(true)
+  })
+
+  it('closes dropdown when tapping the overlay', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
+
+    expect(customDetails.open).toBe(true)
+
+    const overlay = document.querySelector('[data-nav-overlay]')
+
+    if (!overlay) {
+      throw new Error('Dropdown overlay not found')
+    }
+
+    fireEvent.pointerDown(overlay)
+
+    expect(customDetails.open).toBe(false)
+  })
+
+  it('syncs dropdown state with native toggle events', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const learnSummaryText = screen.getByText(/learn hub/i)
+
+    const customSummary = customSummaryText.closest('summary')
+    const learnSummary = learnSummaryText.closest('summary')
+
+    if (!customSummary || !learnSummary) {
+      throw new Error('Dropdown summaries not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+    const learnDetails = learnSummary.closest('details') as HTMLDetailsElement
+
+    customDetails.open = true
+    fireEvent(customDetails, new Event('toggle'))
+
+    expect(customSummary).toHaveAttribute('aria-expanded', 'true')
+
+    learnDetails.open = true
+    fireEvent(learnDetails, new Event('toggle'))
+
+    expect(learnSummary).toHaveAttribute('aria-expanded', 'true')
+    expect(customSummary).toHaveAttribute('aria-expanded', 'false')
+
+    customDetails.open = false
+    fireEvent(customDetails, new Event('toggle'))
+
+    expect(learnSummary).toHaveAttribute('aria-expanded', 'true')
+
+    learnDetails.open = false
+    fireEvent(learnDetails, new Event('toggle'))
+
+    expect(learnSummary).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('keeps desktop dropdown open when clicking inside dropdown content', () => {
