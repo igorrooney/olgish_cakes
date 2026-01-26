@@ -163,7 +163,7 @@ export function MobileForm() {
 
   return (
     <section className="bg-base-100 px-4 py-8">
-      <div className="mx-auto flex max-w-[390px] flex-col items-center gap-6">
+      <div className="homepage-container flex flex-col items-center gap-6">
         <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[32px] text-center">
           Custom cake enquiry form
         </h2>

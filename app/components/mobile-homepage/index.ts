@@ -1,5 +1,5 @@
 export { SiteHeader } from './SiteHeader'
-export { MobileHero } from './MobileHero'
+export { HomeHero } from './HomeHero'
 export { MobileAbout } from './MobileAbout'
 export { MobileBestsellers } from './MobileBestsellers'
 export { MobileMarkets } from './MobileMarkets'

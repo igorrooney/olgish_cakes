@@ -122,12 +122,12 @@ export function MobileReviewsCarousel({ testimonials }: ReviewProps) {
 
     return (
         <section className="bg-base-100 px-4 py-8">
-            <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+            <div className="homepage-container flex flex-col gap-6">
                 <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
                     Our reviews
                 </h2>
 
-                <div className="relative w-full -mx-4 max-w-[390px] mx-auto">
+                <div className="homepage-container relative -mx-4">
                     <div
                         ref={carouselRef}
                         className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory]"

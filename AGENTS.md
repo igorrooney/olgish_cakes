@@ -33,6 +33,7 @@
 - Use design tokens (no hardcoded colors/fonts)
 - All colors, fonts, spacing from design system
 - Tailwind for layout and utilities
+- Do not duplicate styles; extract shared class strings or utilities and reuse
 
 ## React Best Practices
 - Function components

@@ -74,7 +74,7 @@ export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselPr
     }
 
     return (
-        <div className="relative w-full -mx-4 max-w-[390px] mx-auto">
+        <div className="homepage-container relative -mx-4">
             <div
                 ref={carouselRef}
                 className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory]"

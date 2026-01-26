@@ -43,7 +43,7 @@ export async function MobileMarkets() {
 
   return (
     <section className="relative bg-base-100 px-4 py-8 mt-8">
-      <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
+      <div className="homepage-container relative flex flex-col gap-6">
         <h2 className="mt-10 font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
           Upcoming
           <br />
@@ -103,4 +103,3 @@ export async function MobileMarkets() {
     </section>
   )
 }
-

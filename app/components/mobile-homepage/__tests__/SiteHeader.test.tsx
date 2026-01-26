@@ -104,4 +104,57 @@ describe('SiteHeader', () => {
     expect(screen.getByText(/learn hub/i)).toBeInTheDocument()
     expect(screen.getByText(/order form/i)).toBeInTheDocument()
   })
+
+  it('toggles desktop dropdowns and closes when clicking outside', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const learnSummaryText = screen.getByText(/learn hub/i)
+
+    const customSummary = customSummaryText.closest('summary')
+    const learnSummary = learnSummaryText.closest('summary')
+
+    if (!customSummary || !learnSummary) {
+      throw new Error('Dropdown summaries not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+    const learnDetails = learnSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
+
+    expect(customDetails.open).toBe(true)
+    expect(learnDetails.open).toBe(false)
+
+    fireEvent.click(learnSummary)
+
+    expect(customDetails.open).toBe(false)
+    expect(learnDetails.open).toBe(true)
+
+    fireEvent.click(document.body)
+
+    expect(learnDetails.open).toBe(false)
+  })
+
+  it('toggles desktop dropdowns with keyboard', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.keyDown(customSummary, { key: 'Enter' })
+    expect(customDetails.open).toBe(true)
+
+    fireEvent.keyDown(customSummary, { key: ' ' })
+    expect(customDetails.open).toBe(false)
+
+    fireEvent.keyDown(customSummary, { key: 'ArrowDown' })
+    expect(customDetails.open).toBe(false)
+  })
 })

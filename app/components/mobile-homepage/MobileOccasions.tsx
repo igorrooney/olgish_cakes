@@ -14,7 +14,7 @@ const occasions = [
 export function MobileOccasions() {
   return (
     <section className="bg-base-100 px-4 py-8">
-      <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
+      <div className="homepage-container relative flex flex-col gap-6">
         <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
           Cakes for any occasion
         </h2>
@@ -51,4 +51,3 @@ export function MobileOccasions() {
     </section>
   );
 }
-

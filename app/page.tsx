@@ -4,7 +4,7 @@ import {
   MobileAbout,
   MobileBestsellers,
   MobileForm,
-  MobileHero,
+  HomeHero,
   MobileInstagram,
   MobileMarkets,
   MobileOccasions,
@@ -68,9 +68,9 @@ export default async function Home() {
       />
       <div className="min-h-screen bg-base-100 overflow-x-hidden">
         <main className="flex flex-col">
-          <MobileHero />
+          <HomeHero />
           <div className="w-full flex justify-center bg-base-100">
-            <div className="relative w-full max-w-[430px] h-auto">
+            <div className="homepage-container relative h-auto">
               <Image
                 src="/design/homepage_divider.png"
                 alt="Decorative divider with cupcake and floral elements"
@@ -87,7 +87,7 @@ export default async function Home() {
           <MobileReviews />
           <MobileOccasions />
           <div className="w-full flex justify-center bg-base-100">
-            <div className="relative w-full max-w-[430px] h-auto">
+            <div className="homepage-container relative h-auto">
               <Image
                 src="/design/homepage_divider_2.png"
                 alt="Decorative divider with cupcake and floral elements"

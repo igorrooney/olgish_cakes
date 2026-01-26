@@ -4,8 +4,11 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+type DropdownId = 'custom-cakes' | 'learn-hub'
+
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -16,27 +19,39 @@ export function SiteHeader() {
   const dropdownItemClassName =
     'flex items-center h-7 w-full px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 transition-colors whitespace-nowrap'
 
-  const handleDropdownToggle = (event: React.SyntheticEvent<HTMLDetailsElement>) => {
-    const currentDropdown = event.currentTarget
+  const toggleDropdown = (dropdownId: DropdownId) => {
+    setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
+  }
 
-    if (!currentDropdown.open) {
+  const handleSummaryClick = (
+    event: React.MouseEvent<HTMLElement>,
+    dropdownId: DropdownId
+  ) => {
+    event.preventDefault()
+    toggleDropdown(dropdownId)
+  }
+
+  const handleSummaryKeyDown = (
+    event: React.KeyboardEvent<HTMLElement>,
+    dropdownId: DropdownId
+  ) => {
+    const isToggleKey = event.key === 'Enter' || event.key === ' '
+
+    if (!isToggleKey) {
       return
     }
 
-    const dropdowns = document.querySelectorAll<HTMLDetailsElement>(
-      'details[data-nav-dropdown]'
-    )
-
-    dropdowns.forEach((dropdown) => {
-      if (dropdown !== currentDropdown) {
-        dropdown.open = false
-      }
-    })
+    event.preventDefault()
+    toggleDropdown(dropdownId)
   }
 
   // Close desktop dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutsideDropdown = (event: MouseEvent | TouchEvent) => {
+    const handleClickOutsideDropdown = (event: MouseEvent | PointerEvent) => {
+      if (openDropdownId === null) {
+        return
+      }
+
       const target = event.target
 
       if (!(target instanceof Node)) {
@@ -55,21 +70,17 @@ export function SiteHeader() {
         return
       }
 
-      dropdowns.forEach((dropdown) => {
-        if (dropdown.open) {
-          dropdown.open = false
-        }
-      })
+      setOpenDropdownId(null)
     }
 
-    document.addEventListener('mousedown', handleClickOutsideDropdown)
-    document.addEventListener('touchstart', handleClickOutsideDropdown)
+    document.addEventListener('pointerdown', handleClickOutsideDropdown)
+    document.addEventListener('click', handleClickOutsideDropdown)
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutsideDropdown)
-      document.removeEventListener('touchstart', handleClickOutsideDropdown)
+      document.removeEventListener('pointerdown', handleClickOutsideDropdown)
+      document.removeEventListener('click', handleClickOutsideDropdown)
     }
-  }, [])
+  }, [openDropdownId])
 
   // Handle click outside to close menu
   useEffect(() => {
@@ -123,7 +134,7 @@ export function SiteHeader() {
 
   return (
     <header className='sticky top-0 z-50'>
-      <div className='navbar relative bg-base-100 shadow-sm px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
+      <div className='navbar relative bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
         <div className='navbar-start'>
           <Link href='/' className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'>
             <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
@@ -149,9 +160,14 @@ export function SiteHeader() {
                 <details
                   className='dropdown dropdown-bottom group overflow-visible'
                   data-nav-dropdown
-                  onToggle={handleDropdownToggle}
+                  open={openDropdownId === 'custom-cakes'}
                 >
-                  <summary className={topNavSummaryClassName}>
+                  <summary
+                    className={topNavSummaryClassName}
+                    onClick={(event) => handleSummaryClick(event, 'custom-cakes')}
+                    onKeyDown={(event) => handleSummaryKeyDown(event, 'custom-cakes')}
+                    aria-expanded={openDropdownId === 'custom-cakes'}
+                  >
                     <span className='group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8'>
                       Custom cakes
                     </span>
@@ -220,9 +236,14 @@ export function SiteHeader() {
                 <details
                   className='dropdown dropdown-bottom dropdown-center group overflow-visible'
                   data-nav-dropdown
-                  onToggle={handleDropdownToggle}
+                  open={openDropdownId === 'learn-hub'}
                 >
-                  <summary className={topNavSummaryClassName}>
+                  <summary
+                    className={topNavSummaryClassName}
+                    onClick={(event) => handleSummaryClick(event, 'learn-hub')}
+                    onKeyDown={(event) => handleSummaryKeyDown(event, 'learn-hub')}
+                    aria-expanded={openDropdownId === 'learn-hub'}
+                  >
                     <span className='group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8'>
                       Learn hub
                     </span>

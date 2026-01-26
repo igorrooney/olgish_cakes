@@ -84,7 +84,7 @@ jest.mock('../components/MarketSchedule', () => ({
 // Mock mobile homepage components
 // Note: MobileMarkets is async in real code but mocked as sync for tests
 jest.mock('../components/mobile-homepage', () => ({
-  MobileHero: () => <div data-testid="mobile-hero">Mobile Hero</div>,
+  HomeHero: () => <div data-testid="home-hero">Home Hero</div>,
   MobileAbout: () => <div data-testid="mobile-about">Mobile About</div>,
   MobileBestsellers: () => <div data-testid="mobile-bestsellers">Mobile Bestsellers</div>,
   MobileMarkets: () => {

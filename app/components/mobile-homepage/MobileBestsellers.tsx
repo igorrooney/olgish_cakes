@@ -53,7 +53,7 @@ export async function MobileBestsellers() {
           backgroundSize: '390px 78px'
         }}
       />
-      <div className="relative mx-auto flex max-w-[390px] flex-col gap-6">
+      <div className="homepage-container relative flex flex-col gap-6">
         <div className="flex justify-center">
           <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
             our bestsellers
@@ -93,4 +93,3 @@ export async function MobileBestsellers() {
     </section>
   )
 }
-

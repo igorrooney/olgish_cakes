@@ -6,7 +6,7 @@ import Link from "next/link";
 export function MobileAbout() {
   return (
     <section className="bg-base-100 px-6 pb-8 pt-8">
-      <div className="mx-auto flex max-w-[390px] flex-col gap-6">
+      <div className="homepage-container flex flex-col gap-6">
         <div className="relative mx-auto h-[405px] w-[324px]">
           <Image
             src="/design/mobile-home/about-olga.png"
@@ -48,4 +48,3 @@ export function MobileAbout() {
     </section>
   );
 }
-
