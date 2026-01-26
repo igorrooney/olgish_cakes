@@ -136,6 +136,28 @@ describe('SiteHeader', () => {
     expect(learnDetails.open).toBe(false)
   })
 
+  it('keeps desktop dropdown open when clicking inside dropdown content', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
+
+    expect(customDetails.open).toBe(true)
+
+    const orderFormLink = screen.getByRole('link', { name: /order form/i })
+    fireEvent.click(orderFormLink)
+
+    expect(customDetails.open).toBe(true)
+  })
+
   it('toggles desktop dropdowns with keyboard', () => {
     render(<SiteHeader />)
 

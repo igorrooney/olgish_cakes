@@ -11,6 +11,8 @@ export function SiteHeader() {
   const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const customCakesDropdownRef = useRef<HTMLDetailsElement>(null)
+  const learnHubDropdownRef = useRef<HTMLDetailsElement>(null)
 
   const topNavItemClassName =
     'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation transition-colors whitespace-nowrap'
@@ -47,38 +49,49 @@ export function SiteHeader() {
 
   // Close desktop dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutsideDropdown = (event: MouseEvent | PointerEvent) => {
-      if (openDropdownId === null) {
-        return
-      }
+    if (openDropdownId === null) {
+      return
+    }
 
+    const handleClickOutsideDropdown = (event: Event) => {
       const target = event.target
 
       if (!(target instanceof Node)) {
         return
       }
 
-      const dropdowns = document.querySelectorAll<HTMLDetailsElement>(
-        'details[data-nav-dropdown]'
-      )
+      const openDropdown =
+        openDropdownId === 'custom-cakes'
+          ? customCakesDropdownRef.current
+          : openDropdownId === 'learn-hub'
+            ? learnHubDropdownRef.current
+            : null
 
-      const clickedInsideDropdown = Array.from(dropdowns).some((dropdown) =>
-        dropdown.contains(target)
-      )
+      if (!openDropdown) {
+        return
+      }
 
-      if (clickedInsideDropdown) {
+      const eventPath =
+        typeof event.composedPath === 'function' ? event.composedPath() : []
+
+      if (eventPath.includes(openDropdown) || openDropdown.contains(target)) {
         return
       }
 
       setOpenDropdownId(null)
     }
 
-    document.addEventListener('pointerdown', handleClickOutsideDropdown)
-    document.addEventListener('click', handleClickOutsideDropdown)
+    const captureOptions = { capture: true }
+    const passiveCaptureOptions = { capture: true, passive: true }
+
+    document.addEventListener('pointerdown', handleClickOutsideDropdown, passiveCaptureOptions)
+    document.addEventListener('touchstart', handleClickOutsideDropdown, passiveCaptureOptions)
+    document.addEventListener('click', handleClickOutsideDropdown, captureOptions)
 
     return () => {
-      document.removeEventListener('pointerdown', handleClickOutsideDropdown)
-      document.removeEventListener('click', handleClickOutsideDropdown)
+      document.removeEventListener('pointerdown', handleClickOutsideDropdown, passiveCaptureOptions)
+      document.removeEventListener('touchstart', handleClickOutsideDropdown, passiveCaptureOptions)
+      document.removeEventListener('click', handleClickOutsideDropdown, captureOptions)
     }
   }, [openDropdownId])
 
@@ -160,6 +173,7 @@ export function SiteHeader() {
                 <details
                   className='dropdown dropdown-bottom group overflow-visible'
                   data-nav-dropdown
+                  ref={customCakesDropdownRef}
                   open={openDropdownId === 'custom-cakes'}
                 >
                   <summary
@@ -236,6 +250,7 @@ export function SiteHeader() {
                 <details
                   className='dropdown dropdown-bottom dropdown-center group overflow-visible'
                   data-nav-dropdown
+                  ref={learnHubDropdownRef}
                   open={openDropdownId === 'learn-hub'}
                 >
                   <summary
