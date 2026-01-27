@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import {
-  MobileAbout,
+  OlgishCakesFounder,
   MobileBestsellers,
   MobileForm,
   HomeHero,
@@ -9,7 +9,7 @@ import {
   MobileMarkets,
   MobileOccasions,
   MobileReviews,
-} from "./components/mobile-homepage";
+} from "./components/homepage";
 
 export const metadata: Metadata = {
   title: "Olgish Cakes - Authentic Ukrainian Honey Cakes in Leeds",
@@ -81,7 +81,7 @@ export default async function Home() {
               />
             </div>
           </div>
-          <MobileAbout />
+          <OlgishCakesFounder />
           <MobileBestsellers />
           <MobileMarkets />
           <MobileReviews />

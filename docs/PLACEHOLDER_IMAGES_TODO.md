@@ -8,7 +8,7 @@ The mobile homepage implementation currently uses placeholder images from variou
 ## Critical Path Items
 
 ### MobileHero Component
-**File**: `app/components/mobile-homepage/MobileHero.tsx`
+**File**: `app/components/homepage/MobileHero.tsx`
 
 Replace the following placeholder images:
 - [ ] Hero image 1: Currently using `https://images.unsplash.com/photo-1464349095431-e9a21285b5f3`
@@ -22,7 +22,7 @@ Replace the following placeholder images:
 - Alt text: Descriptive, SEO-friendly text for each image
 
 ### MobileBestsellers Component
-**File**: `app/components/mobile-homepage/MobileBestsellers.tsx`
+**File**: `app/components/homepage/MobileBestsellers.tsx`
 
 Replace the following placeholder images:
 - [ ] Honey cake (Medovik): Currently using `https://images.unsplash.com/photo-1621303837174-89787a7d4729`
@@ -35,8 +35,8 @@ Replace the following placeholder images:
 - Optimization: Add `priority` for above-the-fold images
 - Alt text: Product name + descriptive details (e.g., "Honey cake (Medovik) with layers of honey sponge and cream")
 
-### MobileAbout Component
-**File**: `app/components/mobile-homepage/MobileAbout.tsx`
+### OlgishCakesFounder Component
+**File**: `app/components/homepage/OlgishCakesFounder.tsx`
 
 Replace the following placeholder images:
 - [ ] Background card image: Currently using `https://images.unsplash.com/photo-1464349095431-e9a21285b5f3`
@@ -48,7 +48,7 @@ Replace the following placeholder images:
 - Alt text: "Olgish Cakes bakery interior" or similar
 
 ### MobileOccasions Component
-**File**: `app/components/mobile-homepage/MobileOccasions.tsx`
+**File**: `app/components/homepage/MobileOccasions.tsx`
 
 Replace the following placeholder images:
 - [ ] Birthdays: Currently using `https://images.unsplash.com/photo-1558636508-e0db3814bd1d`

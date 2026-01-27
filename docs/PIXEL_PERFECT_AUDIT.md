@@ -14,7 +14,7 @@
    - Button dimensions and spacing
    - Image gallery layout for tablet
 
-2. **MobileAbout**
+2. **OlgishCakesFounder**
    - Image dimensions (440x550px for tablet)
    - Text styling and spacing
    - Navigation link styling

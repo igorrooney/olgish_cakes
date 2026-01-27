@@ -39,7 +39,7 @@ export async function MobileBestsellers() {
     .filter((cake): cake is NonNullable<typeof cake> => cake !== null) // Only include cakes with images
 
   return (
-    <section className="relative bg-accent-50 px-4 py-8 mt-8 pb-7 mb-7">
+    <section id="bestsellers" className="relative bg-accent-50 px-4 py-8 mt-8 pb-7 mb-7">
       {/* <div className="absolute left-0 right-0 top-[-30px]">
         <svg xmlns="http://www.w3.org/2000/svg" width="390" height="78" viewBox="0 0 390 78" fill="none">
           <path d="M0 0.00771332V32.5405C0.37791 32.5322 0.757092 32.5281 1.1375 32.5281C28.2284 32.5281 49.075 53.4907 49.075 78H81.575C81.575 53.4907 102.422 32.5281 129.512 32.5281C156.603 32.5281 177.45 53.4907 177.45 78H209.95C209.95 53.4907 230.797 32.5281 257.887 32.5281C284.978 32.5281 305.825 53.4907 305.825 78H338.325C338.325 53.4907 359.172 32.5281 386.262 32.5281C387.522 32.5281 388.769 32.5734 390 32.6623V0.0834961C388.76 0.0280228 387.514 0 386.262 0C360.303 0 336.865 12.0499 322.075 30.9579C307.285 12.0499 283.847 0 257.887 0C231.928 0 208.49 12.0499 193.7 30.9579C178.91 12.0499 155.472 0 129.512 0C103.553 0 80.1149 12.0499 65.325 30.9579C50.5351 12.0499 27.0968 0 1.1375 0C0.757791 0 0.378616 0.00257874 0 0.00771332Z" fill="#FFEBE5" />

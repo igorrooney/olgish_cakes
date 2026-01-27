@@ -9,7 +9,7 @@ import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
-import { SiteHeader } from "./components/mobile-homepage/SiteHeader";
+import { SiteHeader } from "./components/homepage/SiteHeader";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";

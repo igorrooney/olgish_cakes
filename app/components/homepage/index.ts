@@ -1,6 +1,6 @@
 export { SiteHeader } from './SiteHeader'
 export { HomeHero } from './HomeHero'
-export { MobileAbout } from './MobileAbout'
+export { OlgishCakesFounder } from './OlgishCakesFounder'
 export { MobileBestsellers } from './MobileBestsellers'
 export { MobileMarkets } from './MobileMarkets'
 export { MobileReviews } from './MobileReviews'

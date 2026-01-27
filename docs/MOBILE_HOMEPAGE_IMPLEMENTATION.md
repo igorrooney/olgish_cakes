@@ -100,7 +100,7 @@ Spacing scale extracted from Figma:
 
 ## Step 3: React Components
 
-All components are located in `app/components/mobile-homepage/`:
+All components are located in `app/components/homepage/`:
 
 ### MobileHeader
 - Sticky header with logo and hamburger menu
@@ -113,7 +113,7 @@ All components are located in `app/components/mobile-homepage/`:
 - Two CTA buttons (primary and outline)
 - Uses design tokens for all styling
 
-### MobileAbout
+### OlgishCakesFounder
 - About section with Olga's story
 - Background card with primary-50 color
 - Link to view all cakes
@@ -157,7 +157,7 @@ All components are located in `app/components/mobile-homepage/`:
 The homepage (`app/page.tsx`) assembles all components in the correct order:
 1. MobileHeader
 2. MobileHero
-3. MobileAbout
+3. OlgishCakesFounder
 4. MobileBestsellers
 5. MobileMarkets
 6. MobileReviews
@@ -195,16 +195,16 @@ The homepage (`app/page.tsx`) assembles all components in the correct order:
 
 ### Created Files
 1. `design-system/tokens/design-tokens.json` - Complete design token structure
-2. `app/components/mobile-homepage/MobileHeader.tsx`
-3. `app/components/mobile-homepage/MobileHero.tsx`
-4. `app/components/mobile-homepage/MobileAbout.tsx`
-5. `app/components/mobile-homepage/MobileBestsellers.tsx`
-6. `app/components/mobile-homepage/MobileMarkets.tsx`
-7. `app/components/mobile-homepage/MobileReviews.tsx`
-8. `app/components/mobile-homepage/MobileOccasions.tsx`
-9. `app/components/mobile-homepage/MobileForm.tsx`
-10. `app/components/mobile-homepage/MobileFooter.tsx`
-11. `app/components/mobile-homepage/index.ts` - Component exports
+2. `app/components/homepage/MobileHeader.tsx`
+3. `app/components/homepage/MobileHero.tsx`
+4. `app/components/homepage/OlgishCakesFounder.tsx`
+5. `app/components/homepage/MobileBestsellers.tsx`
+6. `app/components/homepage/MobileMarkets.tsx`
+7. `app/components/homepage/MobileReviews.tsx`
+8. `app/components/homepage/MobileOccasions.tsx`
+9. `app/components/homepage/MobileForm.tsx`
+10. `app/components/homepage/MobileFooter.tsx`
+11. `app/components/homepage/index.ts` - Component exports
 
 ### Updated Files
 1. `tailwind.config.cjs` - Added Figma design tokens
