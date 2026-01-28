@@ -43,8 +43,8 @@ export async function Bestsellers() {
   const tabletLinkClassName = 'flex items-center gap-2 font-oldenburg text-base text-base-content transition-colors hover:text-primary-500 tablet:text-[20px]'
   const tabletArrowClassName = 'font-oldenburg text-primary-500 text-lg mt-1'
   const tabletTextClassName = 'flex flex-col items-center text-center gap-3 tablet:max-w-[450px]'
-  const tabletImageClassName =
-    'relative w-full max-w-[342px] overflow-hidden rounded-[16px] border border-primary-50 bg-base-100 aspect-square shadow-bestseller border-none '
+  const imageClassName =
+    'relative w-full max-w-[342px] overflow-hidden rounded-[16px] border border-primary-50 bg-base-100 aspect-square shadow-bestseller border-none large-laptop:max-w-[378px]'
 
   return (
     <section id="bestsellers" className="relative bg-accent-50 px-4 py-8 mt-8 pb-7 mb-7 tablet:py-18 tablet:pb-18">
@@ -61,7 +61,7 @@ export async function Bestsellers() {
           backgroundSize: '390px 78px'
         }}
       />
-      <div className="homepage-container relative flex flex-col gap-6">
+      <div className="homepage-container relative flex flex-col gap-6 small-laptop:max-w-[864px]">
         <div className="flex justify-center">
           <h2 className="font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[40px]">
             our bestsellers
@@ -104,7 +104,7 @@ export async function Bestsellers() {
                     key={cake._id}
                     className={`flex flex-col items-center gap-6 tablet:flex-row tablet:items-center tablet:justify-between ${isReversed ? 'tablet:flex-row-reverse' : ''}`}
                   >
-                    <div className={tabletImageClassName}>
+                    <div className={imageClassName}>
                       <Link href={`/cakes/${cake.slug.current}`} className="block h-full w-full">
                         <Image
                           src={cake.imageUrl}
@@ -118,7 +118,7 @@ export async function Bestsellers() {
                     </div>
                     <div className={tabletTextClassName}>
                       <div className="space-y-3">
-                        <p className="font-oldenburg font-normal text-[20px] leading-[28px] text-primary-800 tablet:text-[24px] tablet:leading-[28px] tablet:text-center">
+                        <p className="font-oldenburg font-normal text-[20px] leading-[28px] text-primary-800 tablet:text-[24px] tablet:leading-[28px] tablet:text-center large-laptop:text-[32px] large-laptop:mb-6">
                           "{quoteText}"
                         </p>
                         <p className="font-oldenburg text-[14px] leading-[20px] tracking-[0.06em] text-base-content tablet:text-[16px]">

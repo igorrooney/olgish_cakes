@@ -192,7 +192,7 @@ export function SiteHeader() {
       )}
       <div className='navbar relative z-10 bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
         <div className='navbar-start'>
-          <Link href='/' className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'>
+          <Link href='/' className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:!outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'>
             <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
               <Image
                 src='/design/mobile-home/navbar-logo.png'

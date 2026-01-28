@@ -77,7 +77,7 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
         <div className="homepage-container relative -mx-4">
             <div
                 ref={carouselRef}
-                className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory]"
+                className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-[15px]"
             >
                 {cakes.map((cake, index) => {
                     const imageAlt = cake.mainImage?.alt || `${cake.name} - ${cake.category} honey cake by Olgish Cakes`
@@ -138,7 +138,7 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                                 height: '32px',
                                 minWidth: '32px',
                                 minHeight: '32px',
-                                left: '-10px',
+                                left: '5px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
                                 fill: 'rgba(255, 255, 255, 0.80)',
