@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import {
   OlgishCakesFounder,
-  MobileBestsellers,
+  Bestsellers,
   MobileForm,
   HomeHero,
   MobileInstagram,
@@ -82,7 +82,7 @@ export default async function Home() {
             </div>
           </div>
           <OlgishCakesFounder />
-          <MobileBestsellers />
+          <Bestsellers />
           <MobileMarkets />
           <MobileReviews />
           <MobileOccasions />

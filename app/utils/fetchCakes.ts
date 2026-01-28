@@ -33,9 +33,13 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
     slug,
     description,
     shortDescription,
+    bestsellerCustomerStory,
+    bestsellerStoryDetails,
+    bestsellerShortDescription,
     size,
     pricing,
     order,
+    isBestseller,
     mainImage {
       _type,
       asset

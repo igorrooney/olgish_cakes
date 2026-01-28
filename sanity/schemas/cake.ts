@@ -2,6 +2,7 @@ interface ValidationContext {
   document?: {
     _id?: string
     _type?: string
+    isBestseller?: boolean
   }
   getClient: (options?: { apiVersion?: string }) => {
     fetch: <T = unknown>(query: string, params?: Record<string, unknown>) => Promise<T>
@@ -26,6 +27,21 @@ interface ValidationRule {
   precision: (value: number) => ValidationRule
   warning: (message: string) => ValidationRule
   error: (message: string) => ValidationRule
+}
+
+const requiredWhenBestseller = (fieldLabel: string) => {
+  return (value: unknown, context: ValidationContext) => {
+    if (!context.document?.isBestseller) return true
+
+    const isEmptyString = typeof value === 'string' && value.trim() === ''
+    const isEmptyArray = Array.isArray(value) && value.length === 0
+
+    if (value === undefined || value === null || isEmptyString || isEmptyArray) {
+      return `${fieldLabel} is required when Bestseller is enabled.`
+    }
+
+    return true
+  }
 }
 
 export default {
@@ -79,6 +95,102 @@ export default {
             
             return true
           }),
+    },
+    {
+      name: 'isBestseller',
+      title: 'Bestseller',
+      type: 'boolean',
+      description: 'Show this cake in the bestsellers carousel (max 3)',
+      initialValue: false,
+      validation: (Rule: ValidationRule) =>
+        Rule.custom(async (value: unknown, context: ValidationContext) => {
+          if (value !== true) return true
+
+          const { document, getClient } = context
+          const client = getClient({ apiVersion: '2025-03-31' })
+          const currentId = document?._id || ''
+          const publishedId = currentId.replace(/^drafts\./, '')
+          const draftId = publishedId ? `drafts.${publishedId}` : ''
+
+          try {
+            const count = await client.fetch<number>(
+              'count(*[_type == "cake" && isBestseller == true && !(_id in path("drafts.**")) && !(_id in [$currentId, $draftId, $publishedId])])',
+              { currentId, draftId, publishedId }
+            )
+
+            if (count >= 3) {
+              return 'You can select at most 3 bestseller cakes. Uncheck another cake first.'
+            }
+          } catch (error: unknown) {
+            console.warn('Failed to validate bestseller limit:', error)
+          }
+
+          return true
+        })
+    },
+    {
+      name: 'bestsellerCustomerStory',
+      title: 'Bestseller Customer Story',
+      type: 'text',
+      description: 'Short quote shown in the Bestsellers section',
+      hidden: ({ document }: { document?: { isBestseller?: boolean } }) => !document?.isBestseller,
+      validation: (Rule: ValidationRule) => Rule.custom(requiredWhenBestseller('Customer story'))
+    },
+    {
+      name: 'bestsellerStoryDetails',
+      title: 'Bestseller Story Details',
+      type: 'string',
+      description: 'Who the cake was made for and the occasion',
+      hidden: ({ document }: { document?: { isBestseller?: boolean } }) => !document?.isBestseller,
+      validation: (Rule: ValidationRule) => Rule.custom(requiredWhenBestseller('Story details'))
+    },
+    {
+      name: 'bestsellerShortDescription',
+      title: 'Bestseller Short Description',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H1', value: 'h1' },
+            { title: 'H2', value: 'h2' },
+            { title: 'H3', value: 'h3' },
+            { title: 'H4', value: 'h4' },
+            { title: 'H5', value: 'h5' },
+            { title: 'H6', value: 'h6' },
+            { title: 'Quote', value: 'blockquote' }
+          ],
+          marks: {
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Code', value: 'code' }
+            ],
+            annotations: [
+              {
+                title: 'URL',
+                name: 'link',
+                type: 'object',
+                fields: [
+                  {
+                    title: 'URL',
+                    name: 'href',
+                    type: 'url'
+                  }
+                ]
+              }
+            ]
+          },
+          lists: [
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' }
+          ]
+        }
+      ],
+      description: 'Short description shown in the Bestsellers section',
+      hidden: ({ document }: { document?: { isBestseller?: boolean } }) => !document?.isBestseller,
+      validation: (Rule: ValidationRule) => Rule.custom(requiredWhenBestseller('Bestseller short description'))
     },
     {
       name: "slug",

@@ -110,6 +110,7 @@ module.exports = {
         8: "32px",
         10: "40px",
         12: "48px",
+        18: "72px",
       },
       borderRadius: {
         btn: "8px",
@@ -120,6 +121,7 @@ module.exports = {
         sm: "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
         btn: "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
         xl: "0px 8px 10px -6px rgba(0, 0, 0, 0.1), 0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+        bestseller: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
       },
       screens: {
         mobile: "390px",

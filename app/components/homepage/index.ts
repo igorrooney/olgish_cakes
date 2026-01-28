@@ -1,7 +1,7 @@
 export { SiteHeader } from './SiteHeader'
 export { HomeHero } from './HomeHero'
 export { OlgishCakesFounder } from './OlgishCakesFounder'
-export { MobileBestsellers } from './MobileBestsellers'
+export { Bestsellers } from './Bestsellers'
 export { MobileMarkets } from './MobileMarkets'
 export { MobileReviews } from './MobileReviews'
 export { MobileOccasions } from './MobileOccasions'

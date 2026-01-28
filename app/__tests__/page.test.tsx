@@ -86,7 +86,7 @@ jest.mock('../components/MarketSchedule', () => ({
 jest.mock('../components/homepage', () => ({
   HomeHero: () => <div data-testid="home-hero">Home Hero</div>,
   OlgishCakesFounder: () => <div data-testid="mobile-about">Mobile About</div>,
-  MobileBestsellers: () => <div data-testid="mobile-bestsellers">Mobile Bestsellers</div>,
+  Bestsellers: () => <div data-testid="bestsellers">Bestsellers</div>,
   MobileMarkets: () => {
     // Mock as regular component - returns JSX for test rendering
     // In real code, this is async and might return null, but for tests we need content

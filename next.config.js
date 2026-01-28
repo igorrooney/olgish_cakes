@@ -54,7 +54,8 @@ const nextConfig = {
     },
   },
   // Server external packages (moved from experimental in Next.js 16)
-  serverExternalPackages: ["@sanity/client"],
+  // Removed @sanity/client to avoid version mismatch warnings in Studio
+  serverExternalPackages: [],
   // Enhanced performance settings
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",

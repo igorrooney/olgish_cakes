@@ -19,11 +19,11 @@ interface CakeWithImage extends Cake {
     }
 }
 
-interface MobileBestsellersCarouselProps {
+interface BestsellersCarouselProps {
     cakes: CakeWithImage[]
 }
 
-export function MobileBestsellersCarousel({ cakes }: MobileBestsellersCarouselProps) {
+export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
     const carouselRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
     const hasCakes = cakes.length > 0
