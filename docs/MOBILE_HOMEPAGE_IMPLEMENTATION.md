@@ -138,7 +138,7 @@ All components are located in `app/components/homepage/`:
 - 6 occasion types with images
 - "+ many more!" text
 
-### MobileForm
+### EnquiryForm
 - Custom cake enquiry form
 - All form fields matching Figma design
 - File upload input
@@ -162,7 +162,7 @@ The homepage (`app/page.tsx`) assembles all components in the correct order:
 5. MobileMarkets
 6. Reviews
 7. MobileOccasions
-8. MobileForm
+8. EnquiryForm
 9. MobileFooter
 
 ## Step 5: Font Configuration
@@ -202,7 +202,7 @@ The homepage (`app/page.tsx`) assembles all components in the correct order:
 6. `app/components/homepage/MobileMarkets.tsx`
 7. `app/components/homepage/Reviews.tsx`
 8. `app/components/homepage/MobileOccasions.tsx`
-9. `app/components/homepage/MobileForm.tsx`
+9. `app/components/homepage/EnquiryForm.tsx`
 10. `app/components/homepage/MobileFooter.tsx`
 11. `app/components/homepage/index.ts` - Component exports
 

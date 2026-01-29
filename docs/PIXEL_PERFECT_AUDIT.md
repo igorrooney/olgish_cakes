@@ -39,7 +39,7 @@
    - Grid spacing
    - Text styling
 
-7. **MobileForm**
+7. **EnquiryForm**
    - Input field dimensions (48px height)
    - Button styling
    - Form spacing

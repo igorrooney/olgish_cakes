@@ -3,9 +3,9 @@
  */
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { MobileForm } from '../MobileForm'
+import { EnquiryForm } from '../EnquiryForm'
 
-describe('MobileForm', () => {
+describe('EnquiryForm', () => {
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
 
@@ -43,7 +43,7 @@ describe('MobileForm', () => {
     await act(async () => {
       render(
         <QueryClientProvider client={queryClient}>
-          <MobileForm />
+          <EnquiryForm />
         </QueryClientProvider>
       )
       await Promise.resolve()
@@ -101,6 +101,30 @@ describe('MobileForm', () => {
     await renderWithCsrf()
 
     expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
+  })
+
+  it('applies tablet layout classes to the container and heading', async () => {
+    await renderWithCsrf()
+
+    const heading = screen.getByRole('heading', { level: 2, name: /custom cake enquiry form/i })
+    const container = heading.closest('div')
+
+    if (!container) {
+      throw new Error('Expected heading container to be present')
+    }
+
+    expect(container).toHaveClass('tablet:max-w-[696px]')
+    expect(heading).toHaveClass('tablet:text-[36px]')
+    expect(heading).toHaveClass('tablet:leading-[52px]')
+    expect(heading).toHaveClass('tablet:max-w-[331px]')
+    expect(heading).toHaveClass('tablet:mx-auto')
+  })
+
+  it('applies tablet height class to the submit button', async () => {
+    await renderWithCsrf()
+
+    const submitButton = screen.getByRole('button', { name: /send enquiry/i })
+    expect(submitButton).toHaveClass('tablet:h-12')
   })
 
   it('shows the date input label and empty value when untouched', async () => {

@@ -31,7 +31,7 @@ const formInitialState: FormValues = {
   requirements: "",
 };
 
-export function MobileForm() {
+export function EnquiryForm() {
   const [formData, setFormData] = useState<FormValues>(formInitialState);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const referenceImageInputRef = useRef<HTMLInputElement | null>(null);
@@ -163,8 +163,8 @@ export function MobileForm() {
 
   return (
     <section className="bg-base-100 px-4 py-8">
-      <div className="homepage-container flex flex-col items-center gap-6">
-        <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[32px] text-center">
+      <div className="homepage-container flex flex-col items-center gap-6 tablet:max-w-[696px]">
+        <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px] tablet:max-w-[331px] tablet:mx-auto">
           Custom cake enquiry form
         </h2>
         <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col items-center gap-5">
@@ -328,7 +328,7 @@ export function MobileForm() {
           )}
           <button
             type="submit"
-            className={`btn h-8 w-full rounded-full text-white shadow-btn ${buttonClassName}`}
+            className={`btn h-8 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}
             disabled={isSubmitting || isCsrfLoading}
             aria-busy={isSubmitting}
           >

@@ -3,7 +3,7 @@ import Image from "next/image";
 import {
   OlgishCakesFounder,
   Bestsellers,
-  MobileForm,
+  EnquiryForm,
   HomeHero,
   MobileInstagram,
   Markets,
@@ -98,7 +98,7 @@ export default async function Home() {
               />
             </div>
           </div>
-          <MobileForm />
+          <EnquiryForm />
           <MobileInstagram />
         </main>
       </div>
