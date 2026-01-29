@@ -1,4 +1,4 @@
-import { getFeaturedTestimonials, getAllTestimonialsStats } from '../fetchTestimonials'
+import { getAllTestimonials, getFeaturedTestimonials, getAllTestimonialsStats } from '../fetchTestimonials'
 import { Testimonial } from '@/app/types/testimonial'
 
 // Mock unstable_cache to bypass Next.js context requirement
@@ -30,13 +30,16 @@ global.Date.now = jest.fn(() => mockDateNow)
 describe('fetchTestimonials', () => {
   const mockTestimonial: Testimonial = {
     _id: '1',
+    _type: 'testimonial',
+    _createdAt: '2025-01-01T00:00:00Z',
+    _updatedAt: '2025-01-01T00:00:00Z',
     customerName: 'John Doe',
     cakeType: 'Honey Cake',
     rating: 5,
     date: '2025-01-01',
+    title: 'Absolutely delicious',
     text: 'Amazing cake!',
-    cakeImage: null,
-    source: 'Google'
+    source: 'google'
   }
 
   beforeEach(() => {
@@ -44,6 +47,44 @@ describe('fetchTestimonials', () => {
     jest.useFakeTimers()
     // Advance time to expire cache between tests (2 hours to ensure expiration)
     mockDateNow += 2 * HOUR_IN_MS
+  })
+
+  describe('getAllTestimonials', () => {
+    it('should fetch all testimonials', async () => {
+      mockFetch.mockResolvedValue([mockTestimonial])
+
+      const result = await getAllTestimonials()
+
+      expect(result).toEqual([mockTestimonial])
+      expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should return empty array on error', async () => {
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      const result = await getAllTestimonials()
+
+      expect(result).toEqual([])
+    })
+
+    it('should log error on failure', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      await getAllTestimonials()
+
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching testimonials:', expect.any(Error))
+      consoleSpy.mockRestore()
+    })
+
+    it('should include title in the query', async () => {
+      mockFetch.mockResolvedValue([mockTestimonial])
+
+      await getAllTestimonials()
+
+      const query = mockFetch.mock.calls[0][0]
+      expect(query).toContain('title')
+    })
   })
 
   afterEach(() => {
@@ -94,6 +135,15 @@ describe('fetchTestimonials', () => {
 
       const query = mockFetch.mock.calls[0][0]
       expect(query).toContain('order(date desc)')
+    })
+
+    it('should include title in the query', async () => {
+      mockFetch.mockResolvedValue([mockTestimonial])
+
+      await getFeaturedTestimonials()
+
+      const query = mockFetch.mock.calls[0][0]
+      expect(query).toContain('title')
     })
   })
 

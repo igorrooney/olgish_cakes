@@ -16,6 +16,7 @@ export async function getAllTestimonials(): Promise<Testimonial[]> {
         cakeType,
         rating,
         date,
+        title,
         text,
         source
       }
@@ -47,6 +48,7 @@ export async function getFeaturedTestimonials(limit: number = 3): Promise<Testim
         cakeType,
         rating,
         date,
+        title,
         text,
         cakeImage {
           asset->,

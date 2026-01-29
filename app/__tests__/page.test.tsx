@@ -92,7 +92,7 @@ jest.mock('../components/homepage', () => ({
     // In real code, this is async and might return null, but for tests we need content
     return <div data-testid="mobile-markets">Mobile Markets</div>
   },
-  MobileReviews: () => <div data-testid="mobile-reviews">Mobile Reviews</div>,
+  Reviews: () => <div data-testid="reviews">Reviews</div>,
   MobileOccasions: () => <div data-testid="mobile-occasions">Mobile Occasions</div>,
   MobileForm: () => <div data-testid="mobile-form">Mobile Form</div>,
   MobileInstagram: () => <div data-testid="mobile-instagram">Mobile Instagram</div>

@@ -29,6 +29,12 @@ export default {
       description: "Date when the review was given",
     },
     {
+      name: "title",
+      title: "Review Title",
+      type: "string",
+      description: "Optional short headline for the testimonial",
+    },
+    {
       name: "text",
       title: "Review Text",
       type: "text",

@@ -128,7 +128,7 @@ All components are located in `app/components/homepage/`:
 - Market event cards with details
 - Links to get directions and visit website
 
-### MobileReviews
+### Reviews
 - Customer reviews section
 - Review cards with star ratings
 - Navigation dots for carousel
@@ -160,7 +160,7 @@ The homepage (`app/page.tsx`) assembles all components in the correct order:
 3. OlgishCakesFounder
 4. MobileBestsellers
 5. MobileMarkets
-6. MobileReviews
+6. Reviews
 7. MobileOccasions
 8. MobileForm
 9. MobileFooter
@@ -200,7 +200,7 @@ The homepage (`app/page.tsx`) assembles all components in the correct order:
 4. `app/components/homepage/OlgishCakesFounder.tsx`
 5. `app/components/homepage/MobileBestsellers.tsx`
 6. `app/components/homepage/MobileMarkets.tsx`
-7. `app/components/homepage/MobileReviews.tsx`
+7. `app/components/homepage/Reviews.tsx`
 8. `app/components/homepage/MobileOccasions.tsx`
 9. `app/components/homepage/MobileForm.tsx`
 10. `app/components/homepage/MobileFooter.tsx`

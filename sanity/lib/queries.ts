@@ -5,6 +5,7 @@ export const testimonialQuery = `
     cakeType,
     rating,
     date,
+    title,
     text,
     cakeImage {
       asset->,

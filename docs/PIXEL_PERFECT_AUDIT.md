@@ -29,7 +29,7 @@
    - Button dimensions
    - Text typography
 
-5. **MobileReviews**
+5. **Reviews**
    - Card styling
    - Rating display
    - Typography and spacing
@@ -58,4 +58,3 @@
 - [ ] All shadows use design tokens (shadow-btn, shadow-xl)
 - [ ] No hardcoded hex colors
 - [ ] No hardcoded pixel values (except where design tokens specify)
-

@@ -8,7 +8,7 @@ import {
   MobileInstagram,
   Markets,
   MobileOccasions,
-  MobileReviews,
+  Reviews,
 } from "./components/homepage";
 
 export const metadata: Metadata = {
@@ -84,7 +84,7 @@ export default async function Home() {
           <OlgishCakesFounder />
           <Bestsellers />
           <Markets />
-          <MobileReviews />
+          <Reviews />
           <MobileOccasions />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
