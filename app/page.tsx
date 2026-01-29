@@ -6,7 +6,7 @@ import {
   MobileForm,
   HomeHero,
   MobileInstagram,
-  MobileMarkets,
+  Markets,
   MobileOccasions,
   MobileReviews,
 } from "./components/homepage";
@@ -83,7 +83,7 @@ export default async function Home() {
           </div>
           <OlgishCakesFounder />
           <Bestsellers />
-          <MobileMarkets />
+          <Markets />
           <MobileReviews />
           <MobileOccasions />
           <div className="w-full flex justify-center bg-base-100">
