@@ -1,12 +1,17 @@
+import type { Testimonial } from '@/app/types/testimonial'
 import { getAllTestimonials } from '@/app/utils/fetchTestimonials'
 import { ReviewsCarousel } from './ReviewsCarousel'
 
-export async function Reviews() {
-  const testimonials = await getAllTestimonials()
+interface ReviewsProps {
+  testimonials?: Testimonial[]
+}
 
-  if (testimonials.length === 0) {
+export async function Reviews({ testimonials }: ReviewsProps = {}) {
+  const resolvedTestimonials = testimonials ?? await getAllTestimonials()
+
+  if (resolvedTestimonials.length === 0) {
     return null
   }
 
-  return <ReviewsCarousel testimonials={testimonials} />
+  return <ReviewsCarousel testimonials={resolvedTestimonials} />
 }

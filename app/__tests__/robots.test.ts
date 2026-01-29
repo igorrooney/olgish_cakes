@@ -27,6 +27,8 @@ describe('robots.txt', () => {
 
     expect(rules.disallow).toContain('/studio/')
     expect(rules.disallow).toContain('/api/')
+    expect(rules.disallow).toContain('/admin/')
+    expect(rules.disallow).toContain('/test-emails')
   })
 
   it('should include sitemap URL', () => {
@@ -42,4 +44,3 @@ describe('robots.txt', () => {
     expect(result).toHaveProperty('sitemap')
   })
 })
-

@@ -180,7 +180,7 @@ export function SiteHeader() {
   }, [isMenuOpen])
 
   return (
-    <header className='sticky top-0 z-50 relative'>
+    <header className='sticky top-0 z-[9999] relative'>
       {openDropdownId !== null && (
         <div
           data-nav-overlay
@@ -190,7 +190,7 @@ export function SiteHeader() {
           onClick={() => setOpenDropdownId(null)}
         />
       )}
-      <div className='navbar relative z-10 bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
+      <div className='navbar relative z-[9999] bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
         <div className='navbar-start'>
           <Link href='/' className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:!outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'>
             <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>

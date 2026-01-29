@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     template: "%s | Olgish Cakes",
   },
   description:
-    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
+    'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -149,7 +149,7 @@ export const metadata: Metadata = {
     title:
       "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
     type: "website",
     locale: "en_GB",
     url: "https://olgishcakes.co.uk",
@@ -262,8 +262,8 @@ export default function RootLayout({
               "@id": "https://olgishcakes.co.uk/#organization",
               name: "Olgish Cakes",
               alternateName: "Olgish Ukrainian Cakes",
-              description:
-                "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+    description:
+      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
               url: "https://olgishcakes.co.uk",
               logo: {
                 "@type": "ImageObject",

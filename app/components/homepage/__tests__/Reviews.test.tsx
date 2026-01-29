@@ -55,4 +55,16 @@ describe('Reviews', () => {
     expect(screen.getByTestId('reviews-carousel')).toBeInTheDocument()
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
   })
+
+  it('renders with provided testimonials without fetching', async () => {
+    const providedTestimonials = [
+      createTestimonial({ _id: 'testimonial-3', customerName: 'Katya' })
+    ]
+
+    const result = await Reviews({ testimonials: providedTestimonials })
+    render(result as ReactElement)
+
+    expect(mockGetAllTestimonials).not.toHaveBeenCalled()
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+  })
 })

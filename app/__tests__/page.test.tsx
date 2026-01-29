@@ -5,6 +5,7 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import React from 'react'
 import HomePage, { metadata } from '../page'
+import { getAllTestimonials } from '../utils/fetchTestimonials'
 
 // Type definitions for test mocks
 interface AnimatedComponentProps {
@@ -53,7 +54,8 @@ jest.mock('../utils/fetchGiftHampers', () => ({
 
 jest.mock('../utils/fetchTestimonials', () => ({
   getFeaturedTestimonials: jest.fn(() => Promise.resolve([])),
-  getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 }))
+  getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 })),
+  getAllTestimonials: jest.fn(() => Promise.resolve([]))
 }))
 
 jest.mock('../utils/fetchMarketSchedule', () => ({
@@ -196,15 +198,31 @@ jest.mock('@/lib/constants', () => ({
 
 // Mock structured data defaults
 jest.mock('@/lib/structured-data-defaults', () => ({
-  DEFAULT_REVIEWS: [],
+  DEFAULT_REVIEWS: [
+    {
+      '@type': 'Review',
+      author: { '@type': 'Person', name: 'Test Reviewer' },
+      reviewRating: { '@type': 'Rating', ratingValue: '5' },
+      reviewBody: 'Great cake and lovely service.',
+      datePublished: '2025-09-30'
+    }
+  ],
   DEFAULT_AGGREGATE_RATING: {
     '@type': 'AggregateRating',
-    ratingValue: '5',
-    reviewCount: '127'
+    ratingValue: '5.0',
+    reviewCount: '1',
+    bestRating: '5',
+    worstRating: '1'
   }
 }))
 
+const mockGetAllTestimonials = getAllTestimonials as jest.MockedFunction<typeof getAllTestimonials>
+
 describe('HomePage', () => {
+  beforeEach(() => {
+    mockGetAllTestimonials.mockResolvedValue([])
+  })
+
   describe('Metadata Generation', () => {
     it('should generate metadata', async () => {
       // metadata is now exported as a constant, not a function
@@ -246,6 +264,49 @@ describe('HomePage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
+    })
+
+    it('should render review schema from testimonials', async () => {
+      mockGetAllTestimonials.mockResolvedValue([
+        {
+          _id: 'testimonial-1',
+          _type: 'testimonial',
+          _createdAt: '2026-01-01T00:00:00Z',
+          _updatedAt: '2026-01-01T00:00:00Z',
+          customerName: 'Olha',
+          cakeType: 'Honey cake',
+          rating: 5,
+          date: '2026-01-10',
+          text: 'Absolutely delicious.',
+          source: 'google'
+        }
+      ])
+
+      const page = await HomePage()
+      const { container } = render(page)
+      const script = container.querySelector('script[type="application/ld+json"]')
+
+      expect(script).toBeTruthy()
+
+      const schema = JSON.parse(script?.textContent || '{}')
+      expect(schema['@type']).toBe('Bakery')
+      expect(schema.aggregateRating.reviewCount).toBe('1')
+      expect(Array.isArray(schema.review)).toBe(true)
+      expect(schema.review[0].author.name).toBe('Olha')
+    })
+
+    it('should fall back to default reviews when testimonials are empty', async () => {
+      mockGetAllTestimonials.mockResolvedValue([])
+
+      const page = await HomePage()
+      const { container } = render(page)
+      const script = container.querySelector('script[type="application/ld+json"]')
+
+      expect(script).toBeTruthy()
+
+      const schema = JSON.parse(script?.textContent || '{}')
+      expect(schema.aggregateRating.ratingValue).toBe('5.0')
+      expect(schema.review[0].author.name).toBe('Test Reviewer')
     })
 
     it('should render Areas We Serve section with location links', async () => {

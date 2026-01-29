@@ -201,6 +201,32 @@ describe('ReviewsCarousel', () => {
     expect(smallLaptopScrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' })
   })
 
+  it('falls back to scrollLeft when scrollTo is unavailable', () => {
+    const testimonials = Array.from({ length: 2 }, (_, index) =>
+      createTestimonial({
+        _id: `fallback-${index}`,
+        date: new Date(now.getTime() - index * days).toISOString(),
+        customerName: `Customer ${index + 1}`,
+        text: `Review ${index + 1}`
+      })
+    )
+
+    const { container } = render(<ReviewsCarousel testimonials={testimonials} />)
+    const [mobileCarousel] = Array.from(container.querySelectorAll<HTMLDivElement>('.carousel'))
+
+    Object.defineProperty(mobileCarousel, 'scrollTo', {
+      value: undefined,
+      configurable: true
+    })
+
+    mobileCarousel.scrollLeft = 0
+
+    const nextReview = screen.getByRole('button', { name: 'Next review' })
+    fireEvent.click(nextReview)
+
+    expect(mobileCarousel.scrollLeft).toBe(378)
+  })
+
   it('hides multi-review controls when only one slide is needed', () => {
     const testimonials = Array.from({ length: 4 }, (_, index) =>
       createTestimonial({

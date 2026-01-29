@@ -26,6 +26,18 @@ function formatTimeAgo(dateString: string): string {
   return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
 }
 
+const scrollCarouselTo = (element: HTMLDivElement, left: number) => {
+  if (typeof element.scrollTo === 'function') {
+    element.scrollTo({
+      left,
+      behavior: 'smooth'
+    })
+    return
+  }
+
+  element.scrollLeft = left
+}
+
 function StarRating() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="107" height="20" viewBox="0 0 107 20" fill="none">
@@ -100,10 +112,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
     if (!carouselRef.current) return
     // Item positions: index 0 at 0, index 1 at 378px (16+342+20), index 2 at 740px, etc.
     const scrollPosition = index === 0 ? 0 : firstItemOffset + index * itemWidth
-    carouselRef.current.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    })
+    scrollCarouselTo(carouselRef.current, scrollPosition)
     setCurrentIndex(index)
   }
 
@@ -137,10 +146,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
     if (!tabletCarouselRef.current) return
     const slideWidth = tabletCarouselRef.current.clientWidth
     const scrollPosition = slideWidth * index
-    tabletCarouselRef.current.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    })
+    scrollCarouselTo(tabletCarouselRef.current, scrollPosition)
     setTabletIndex(index)
   }
 
@@ -161,10 +167,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
     if (!smallLaptopCarouselRef.current) return
     const slideWidth = smallLaptopCarouselRef.current.clientWidth
     const scrollPosition = slideWidth * index
-    smallLaptopCarouselRef.current.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth'
-    })
+    scrollCarouselTo(smallLaptopCarouselRef.current, scrollPosition)
     setSmallLaptopIndex(index)
   }
 
