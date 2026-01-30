@@ -51,7 +51,7 @@ const scrollToIndex = (carouselRef: RefObject<HTMLDivElement | null>, index: num
   const paddingLeft = getCarouselPaddingLeft(carousel)
   const left = Math.max(target.offsetLeft - paddingLeft, 0)
 
-  carousel.scrollTo({ left, behavior: 'smooth' })
+  carousel.scrollTo(left, 0)
 }
 
 interface CarouselNavButtonProps {
@@ -300,7 +300,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
         <div className="relative -mx-4 tablet:mx-0">
           <div
             ref={mobileCarouselRef}
-            className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5 tablet:hidden"
+            className="carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5 tablet:hidden"
           >
             {testimonials.map((testimonial, index) => (
               <div
@@ -332,7 +332,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
             <div className="relative p-6">
               <div
                 ref={tabletCarouselRef}
-                className="carousel w-full overflow-x-auto [scroll-snap-type:x_mandatory]"
+                className="carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]"
               >
                 {tabletSlides.map((slide, slideIndex) => (
                   <div
@@ -367,7 +367,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
             <div className="relative p-6">
               <div
                 ref={smallLaptopCarouselRef}
-                className="carousel w-full overflow-x-auto [scroll-snap-type:x_mandatory]"
+                className="carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]"
               >
                 {smallLaptopSlides.map((slide, slideIndex) => (
                   <div

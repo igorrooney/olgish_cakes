@@ -145,17 +145,10 @@ describe('ReviewsCarousel', () => {
     expect(previousReviewsButtons[1]).toHaveAttribute('aria-disabled', 'true')
     expect(nextReviewsButtons[1]).toHaveAttribute('aria-disabled', 'false')
 
-    const scrollIntoView = jest.fn()
-    Object.defineProperty(mobileItems[1], 'scrollIntoView', {
-      value: scrollIntoView,
+    const scrollTo = jest.fn()
+    Object.defineProperty(mobileCarousel, 'scrollTo', {
+      value: scrollTo,
       configurable: true
-    })
-
-    fireEvent.click(nextReviewButton)
-    expect(scrollIntoView).toHaveBeenCalledWith({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start'
     })
 
     mobileItems.forEach((item, index) => {
@@ -164,6 +157,9 @@ describe('ReviewsCarousel', () => {
         configurable: true
       })
     })
+
+    fireEvent.click(nextReviewButton)
+    expect(scrollTo).toHaveBeenCalledWith(360, 0)
 
     Object.defineProperty(mobileCarousel, 'scrollLeft', {
       value: 360 * (mobileItems.length - 1),
