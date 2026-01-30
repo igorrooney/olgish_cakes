@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { Testimonial } from '@/app/types/testimonial'
 import { ReviewsCarousel } from '../ReviewsCarousel'
@@ -22,22 +21,6 @@ const createTestimonial = (overrides: Partial<Testimonial>): Testimonial => ({
   text: 'So tasty!',
   ...overrides
 })
-
-const setScrollToMock = (element: HTMLDivElement) => {
-  const scrollTo = jest.fn()
-  Object.defineProperty(element, 'scrollTo', {
-    value: scrollTo,
-    configurable: true
-  })
-  return scrollTo
-}
-
-const setClientWidth = (element: HTMLDivElement, width: number) => {
-  Object.defineProperty(element, 'clientWidth', {
-    value: width,
-    configurable: true
-  })
-}
 
 describe('ReviewsCarousel', () => {
   const now = new Date('2026-01-29T12:00:00Z')
@@ -120,7 +103,7 @@ describe('ReviewsCarousel', () => {
     expect(screen.getAllByText('Anonymous')).toHaveLength(3)
   })
 
-  it('handles navigation and scroll updates', () => {
+  it('renders fixed carousel navigation buttons with disabled edges', () => {
     const testimonials = Array.from({ length: 7 }, (_, index) =>
       createTestimonial({
         _id: `nav-${index}`,
@@ -131,100 +114,69 @@ describe('ReviewsCarousel', () => {
     )
 
     const { container } = render(<ReviewsCarousel testimonials={testimonials} />)
+
+    const previousReviewButton = screen.getByRole('button', { name: 'Previous review' })
+    const nextReviewButton = screen.getByRole('button', { name: 'Next review' })
+
     const carousels = Array.from(container.querySelectorAll<HTMLDivElement>('.carousel'))
     const [mobileCarousel, tabletCarousel, smallLaptopCarousel] = carousels
+    const mobileItems = Array.from(mobileCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
+    const tabletItems = Array.from(tabletCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
+    const smallLaptopItems = Array.from(smallLaptopCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
 
-    const mobileScrollTo = setScrollToMock(mobileCarousel)
-    const tabletScrollTo = setScrollToMock(tabletCarousel)
-    const smallLaptopScrollTo = setScrollToMock(smallLaptopCarousel)
+    expect(previousReviewButton).toHaveAttribute('aria-controls', mobileItems[0].id)
+    expect(nextReviewButton).toHaveAttribute('aria-controls', mobileItems[1].id)
+    expect(previousReviewButton).toBeDisabled()
+    expect(nextReviewButton).not.toBeDisabled()
+    expect(previousReviewButton).toHaveAttribute('aria-disabled', 'true')
+    expect(nextReviewButton).toHaveAttribute('aria-disabled', 'false')
 
-    setClientWidth(tabletCarousel, 900)
-    setClientWidth(smallLaptopCarousel, 1200)
-
-    const nextReview = screen.getByRole('button', { name: 'Next review' })
-    const previousReview = screen.getByRole('button', { name: 'Previous review' })
-
-    fireEvent.click(nextReview)
-    expect(mobileScrollTo).toHaveBeenCalledWith({ left: 378, behavior: 'smooth' })
-
-    const itemWidth = 342 + 20
-    const lastIndex = testimonials.length - 1
-    const lastLeft = 16 + lastIndex * itemWidth
-
-    mobileCarousel.scrollLeft = lastLeft
-    fireEvent.scroll(mobileCarousel)
-    expect(nextReview).toBeDisabled()
-
-    nextReview.removeAttribute('disabled')
-    mobileScrollTo.mockClear()
-    fireEvent.click(nextReview)
-    expect(mobileScrollTo).not.toHaveBeenCalled()
-
-    previousReview.removeAttribute('disabled')
-    fireEvent.click(previousReview)
-    expect(mobileScrollTo).toHaveBeenCalledWith({ left: lastLeft - itemWidth, behavior: 'smooth' })
-
-    const nextReviewsButtons = screen.getAllByRole('button', { name: 'Next reviews' })
     const previousReviewsButtons = screen.getAllByRole('button', { name: 'Previous reviews' })
-    const nextTablet = nextReviewsButtons[0]
-    const previousTablet = previousReviewsButtons[0]
+    const nextReviewsButtons = screen.getAllByRole('button', { name: 'Next reviews' })
 
-    fireEvent.click(nextTablet)
-    expect(tabletScrollTo).toHaveBeenCalledWith({ left: 900, behavior: 'smooth' })
+    expect(previousReviewsButtons).toHaveLength(2)
+    expect(nextReviewsButtons).toHaveLength(2)
+    expect(previousReviewsButtons[0]).toHaveAttribute('aria-controls', tabletItems[0].id)
+    expect(nextReviewsButtons[0]).toHaveAttribute('aria-controls', tabletItems[1].id)
+    expect(previousReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[0].id)
+    expect(nextReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[1].id)
+    expect(previousReviewsButtons[0]).toHaveAttribute('aria-disabled', 'true')
+    expect(nextReviewsButtons[0]).toHaveAttribute('aria-disabled', 'false')
+    expect(previousReviewsButtons[1]).toHaveAttribute('aria-disabled', 'true')
+    expect(nextReviewsButtons[1]).toHaveAttribute('aria-disabled', 'false')
 
-    tabletCarousel.scrollLeft = 900
-    fireEvent.scroll(tabletCarousel)
-
-    nextTablet.removeAttribute('disabled')
-    tabletScrollTo.mockClear()
-    fireEvent.click(nextTablet)
-    expect(tabletScrollTo).not.toHaveBeenCalled()
-
-    fireEvent.click(previousTablet)
-    expect(tabletScrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' })
-
-    const nextSmallLaptop = nextReviewsButtons[1]
-    const previousSmallLaptop = previousReviewsButtons[1]
-
-    fireEvent.click(nextSmallLaptop)
-    expect(smallLaptopScrollTo).toHaveBeenCalledWith({ left: 1200, behavior: 'smooth' })
-
-    smallLaptopCarousel.scrollLeft = 1200
-    fireEvent.scroll(smallLaptopCarousel)
-
-    nextSmallLaptop.removeAttribute('disabled')
-    smallLaptopScrollTo.mockClear()
-    fireEvent.click(nextSmallLaptop)
-    expect(smallLaptopScrollTo).not.toHaveBeenCalled()
-
-    fireEvent.click(previousSmallLaptop)
-    expect(smallLaptopScrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' })
-  })
-
-  it('falls back to scrollLeft when scrollTo is unavailable', () => {
-    const testimonials = Array.from({ length: 2 }, (_, index) =>
-      createTestimonial({
-        _id: `fallback-${index}`,
-        date: new Date(now.getTime() - index * days).toISOString(),
-        customerName: `Customer ${index + 1}`,
-        text: `Review ${index + 1}`
-      })
-    )
-
-    const { container } = render(<ReviewsCarousel testimonials={testimonials} />)
-    const [mobileCarousel] = Array.from(container.querySelectorAll<HTMLDivElement>('.carousel'))
-
-    Object.defineProperty(mobileCarousel, 'scrollTo', {
-      value: undefined,
+    const scrollIntoView = jest.fn()
+    Object.defineProperty(mobileItems[1], 'scrollIntoView', {
+      value: scrollIntoView,
       configurable: true
     })
 
-    mobileCarousel.scrollLeft = 0
+    fireEvent.click(nextReviewButton)
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start'
+    })
 
-    const nextReview = screen.getByRole('button', { name: 'Next review' })
-    fireEvent.click(nextReview)
+    mobileItems.forEach((item, index) => {
+      Object.defineProperty(item, 'offsetLeft', {
+        value: index * 360,
+        configurable: true
+      })
+    })
 
-    expect(mobileCarousel.scrollLeft).toBe(378)
+    Object.defineProperty(mobileCarousel, 'scrollLeft', {
+      value: 360 * (mobileItems.length - 1),
+      writable: true,
+      configurable: true
+    })
+
+    fireEvent.scroll(mobileCarousel)
+
+    expect(previousReviewButton).not.toBeDisabled()
+    expect(nextReviewButton).toBeDisabled()
+    expect(previousReviewButton).toHaveAttribute('aria-disabled', 'false')
+    expect(nextReviewButton).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('hides multi-review controls when only one slide is needed', () => {
@@ -239,7 +191,7 @@ describe('ReviewsCarousel', () => {
 
     render(<ReviewsCarousel testimonials={testimonials} />)
 
-    expect(screen.getByRole('button', { name: 'Next review' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Next review' })).toHaveLength(1)
     expect(screen.queryByRole('button', { name: 'Next reviews' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Previous reviews' })).toBeNull()
   })

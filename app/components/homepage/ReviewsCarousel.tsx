@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { Testimonial } from '@/app/types/testimonial'
+import { useEffect, useId, useRef, useState } from 'react'
+import type { RefObject } from 'react'
+import type { Testimonial } from '@/app/types/testimonial'
 
 interface ReviewProps {
   testimonials: Testimonial[]
@@ -26,16 +27,144 @@ function formatTimeAgo(dateString: string): string {
   return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
 }
 
-const scrollCarouselTo = (element: HTMLDivElement, left: number) => {
-  if (typeof element.scrollTo === 'function') {
-    element.scrollTo({
-      left,
-      behavior: 'smooth'
-    })
-    return
+const navButtonClassName = 'flex h-8 w-8 items-center justify-center cursor-pointer'
+
+const getPrevIndex = (index: number) => Math.max(index - 1, 0)
+const getNextIndex = (index: number, total: number) => Math.min(index + 1, total - 1)
+
+const scrollToTarget = (targetId: string) => {
+  const target = document.getElementById(targetId)
+  if (!target) return
+  target.scrollIntoView({
+    behavior: 'smooth',
+    block: 'nearest',
+    inline: 'start'
+  })
+}
+
+interface CarouselNavButtonProps {
+  targetId: string
+  ariaLabel: string
+  direction: 'previous' | 'next'
+  disabled?: boolean
+}
+
+function CarouselNavButton({ targetId, ariaLabel, direction, disabled = false }: CarouselNavButtonProps) {
+  const transform = direction === 'previous'
+    ? 'translate(16, 16) scale(-1, 1) translate(-10, -10)'
+    : 'translate(6, 6)'
+  const strokeColor = disabled ? '#9CA3AF' : '#2E3192'
+  const fillColor = disabled ? '#9CA3AF' : '#2E3192'
+  const disabledClasses = disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''
+  const handleClick = () => {
+    if (disabled) return
+    scrollToTarget(targetId)
   }
 
-  element.scrollLeft = left
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      aria-disabled={disabled}
+      aria-controls={targetId}
+      disabled={disabled}
+      className={`${navButtonClassName} ${disabledClasses}`.trim()}
+      onClick={handleClick}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="15.5" stroke={strokeColor} />
+        <g transform={transform}>
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
+            fill={fillColor}
+          />
+        </g>
+      </svg>
+    </button>
+  )
+}
+
+const useCarouselIndex = (carouselRef: RefObject<HTMLDivElement | null>, itemCount: number) => {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const carousel = carouselRef.current
+    if (!carousel) return
+
+    const items = Array.from(carousel.querySelectorAll<HTMLElement>('.carousel-item'))
+    if (items.length === 0) return
+
+    const updateIndex = () => {
+      const scrollLeft = carousel.scrollLeft
+      let closestIndex = 0
+      let minDistance = Math.abs(items[0].offsetLeft - scrollLeft)
+
+      for (let i = 1; i < items.length; i += 1) {
+        const distance = Math.abs(items[i].offsetLeft - scrollLeft)
+        if (distance < minDistance) {
+          minDistance = distance
+          closestIndex = i
+        }
+      }
+
+      setIndex(closestIndex)
+    }
+
+    updateIndex()
+    carousel.addEventListener('scroll', updateIndex, { passive: true })
+    window.addEventListener('resize', updateIndex)
+
+    return () => {
+      carousel.removeEventListener('scroll', updateIndex)
+      window.removeEventListener('resize', updateIndex)
+    }
+  }, [carouselRef, itemCount])
+
+  return index
+}
+
+interface CarouselControlsProps {
+  className: string
+  currentIndex: number
+  idPrefix: string
+  nextLabel: string
+  prevLabel: string
+  total: number
+}
+
+function CarouselControls({
+  className,
+  currentIndex,
+  idPrefix,
+  nextLabel,
+  prevLabel,
+  total
+}: CarouselControlsProps) {
+  if (total <= 1) return null
+
+  const isFirst = currentIndex <= 0
+  const isLast = currentIndex >= total - 1
+  const prevIndex = getPrevIndex(currentIndex)
+  const nextIndex = getNextIndex(currentIndex, total)
+
+  return (
+    <div className={className}>
+      <CarouselNavButton
+        targetId={`${idPrefix}-${prevIndex + 1}`}
+        ariaLabel={prevLabel}
+        direction="previous"
+        disabled={isFirst}
+      />
+      <CarouselNavButton
+        targetId={`${idPrefix}-${nextIndex + 1}`}
+        ariaLabel={nextLabel}
+        direction="next"
+        disabled={isLast}
+      />
+    </div>
+  )
 }
 
 function StarRating() {
@@ -98,38 +227,10 @@ function ReviewCard({ testimonial, className }: ReviewCardProps) {
 }
 
 export function ReviewsCarousel({ testimonials }: ReviewProps) {
-  const carouselRef = useRef<HTMLDivElement>(null)
+  const mobileCarouselRef = useRef<HTMLDivElement>(null)
   const tabletCarouselRef = useRef<HTMLDivElement>(null)
   const smallLaptopCarouselRef = useRef<HTMLDivElement>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [tabletIndex, setTabletIndex] = useState(0)
-  const [smallLaptopIndex, setSmallLaptopIndex] = useState(0)
-
-  const itemWidth = 342 + 20 // card width (342px) + gap (20px between items)
-  const firstItemOffset = 16 // First item starts 16px from left
-
-  const scrollToIndex = (index: number) => {
-    if (!carouselRef.current) return
-    // Item positions: index 0 at 0, index 1 at 378px (16+342+20), index 2 at 740px, etc.
-    const scrollPosition = index === 0 ? 0 : firstItemOffset + index * itemWidth
-    scrollCarouselTo(carouselRef.current, scrollPosition)
-    setCurrentIndex(index)
-  }
-
-  const handleNext = () => {
-    if (currentIndex >= testimonials.length - 1) return
-    const nextIndex = currentIndex + 1
-    scrollToIndex(nextIndex)
-  }
-
-  const handlePrevious = () => {
-    if (currentIndex <= 0) return
-    const prevIndex = currentIndex - 1
-    scrollToIndex(prevIndex)
-  }
-
-  const isFirstReview = currentIndex === 0
-  const isLastReview = currentIndex === testimonials.length - 1
+  const baseId = useId().replace(/:/g, '')
 
   const mobileSlideCount = testimonials.length
   const tabletSlideCount = Math.ceil(testimonials.length / 4)
@@ -142,113 +243,9 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
     testimonials.slice(slideIndex * 6, slideIndex * 6 + 6)
   )
 
-  const scrollToTabletIndex = (index: number) => {
-    if (!tabletCarouselRef.current) return
-    const slideWidth = tabletCarouselRef.current.clientWidth
-    const scrollPosition = slideWidth * index
-    scrollCarouselTo(tabletCarouselRef.current, scrollPosition)
-    setTabletIndex(index)
-  }
-
-  const handleTabletNext = () => {
-    if (tabletIndex >= tabletSlideCount - 1) return
-    scrollToTabletIndex(tabletIndex + 1)
-  }
-
-  const handleTabletPrevious = () => {
-    if (tabletIndex <= 0) return
-    scrollToTabletIndex(tabletIndex - 1)
-  }
-
-  const isFirstTabletSlide = tabletIndex === 0
-  const isLastTabletSlide = tabletIndex === tabletSlideCount - 1
-
-  const scrollToSmallLaptopIndex = (index: number) => {
-    if (!smallLaptopCarouselRef.current) return
-    const slideWidth = smallLaptopCarouselRef.current.clientWidth
-    const scrollPosition = slideWidth * index
-    scrollCarouselTo(smallLaptopCarouselRef.current, scrollPosition)
-    setSmallLaptopIndex(index)
-  }
-
-  const handleSmallLaptopNext = () => {
-    if (smallLaptopIndex >= smallLaptopSlideCount - 1) return
-    scrollToSmallLaptopIndex(smallLaptopIndex + 1)
-  }
-
-  const handleSmallLaptopPrevious = () => {
-    if (smallLaptopIndex <= 0) return
-    scrollToSmallLaptopIndex(smallLaptopIndex - 1)
-  }
-
-  const isFirstSmallLaptopSlide = smallLaptopIndex === 0
-  const isLastSmallLaptopSlide = smallLaptopIndex === smallLaptopSlideCount - 1
-
-  useEffect(() => {
-    const carousel = carouselRef.current
-    if (!carousel) return
-
-    // Pre-calculate expected scroll positions for each item
-    const expectedPositions = testimonials.map((_, idx) =>
-      idx === 0 ? 0 : firstItemOffset + idx * itemWidth
-    )
-
-    const handleScroll = () => {
-      const scrollLeft = carousel.scrollLeft
-      // Find which item we're closest to based on expected scroll positions
-      let closestIndex = 0
-      let minDistance = Math.abs(scrollLeft - expectedPositions[0])
-      for (let i = 1; i < expectedPositions.length; i++) {
-        const distance = Math.abs(scrollLeft - expectedPositions[i])
-        if (distance < minDistance) {
-          minDistance = distance
-          closestIndex = i
-        }
-      }
-      setCurrentIndex(closestIndex)
-    }
-
-    carousel.addEventListener('scroll', handleScroll)
-    return () => {
-      carousel.removeEventListener('scroll', handleScroll)
-    }
-  }, [itemWidth, firstItemOffset, testimonials])
-
-  useEffect(() => {
-    const carousel = tabletCarouselRef.current
-    if (!carousel) return
-
-    const handleScroll = () => {
-      const slideWidth = carousel.clientWidth
-      if (!slideWidth) return
-      const newIndex = Math.round(carousel.scrollLeft / slideWidth)
-      const clampedIndex = Math.max(0, Math.min(newIndex, tabletSlideCount - 1))
-      setTabletIndex(clampedIndex)
-    }
-
-    carousel.addEventListener('scroll', handleScroll)
-    return () => {
-      carousel.removeEventListener('scroll', handleScroll)
-    }
-  }, [tabletSlideCount])
-
-  useEffect(() => {
-    const carousel = smallLaptopCarouselRef.current
-    if (!carousel) return
-
-    const handleScroll = () => {
-      const slideWidth = carousel.clientWidth
-      if (!slideWidth) return
-      const newIndex = Math.round(carousel.scrollLeft / slideWidth)
-      const clampedIndex = Math.max(0, Math.min(newIndex, smallLaptopSlideCount - 1))
-      setSmallLaptopIndex(clampedIndex)
-    }
-
-    carousel.addEventListener('scroll', handleScroll)
-    return () => {
-      carousel.removeEventListener('scroll', handleScroll)
-    }
-  }, [smallLaptopSlideCount])
+  const mobileIndex = useCarouselIndex(mobileCarouselRef, mobileSlideCount)
+  const tabletIndex = useCarouselIndex(tabletCarouselRef, tabletSlideCount)
+  const smallLaptopIndex = useCarouselIndex(smallLaptopCarouselRef, smallLaptopSlideCount)
 
   if (testimonials.length === 0) {
     return null
@@ -263,12 +260,13 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
 
         <div className="relative -mx-4 tablet:mx-0">
           <div
-            ref={carouselRef}
+            ref={mobileCarouselRef}
             className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-6 tablet:hidden"
           >
             {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial._id}
+                id={`${baseId}-reviews-mobile-${index + 1}`}
                 className="carousel-item flex-shrink-0"
                 style={{
                   width: '342px',
@@ -283,49 +281,14 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
               </div>
             ))}
           </div>
-
-          {mobileSlideCount > 1 && (
-            <div className="flex justify-center gap-3 mt-5 tablet:hidden">
-              <button
-                onClick={handlePrevious}
-                disabled={isFirstReview}
-                className={`flex h-8 w-8 items-center justify-center ${isFirstReview ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                aria-label="Previous review"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                  <circle cx="16" cy="16" r="15.5" stroke={isFirstReview ? '#9CA3AF' : '#2E3192'} />
-                  <g transform="translate(16, 16) scale(-1, 1) translate(-10, -10)">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                      fill={isFirstReview ? '#9CA3AF' : '#2E3192'}
-                    />
-                  </g>
-                </svg>
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={isLastReview}
-                className={`flex h-8 w-8 items-center justify-center ${isLastReview ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                aria-label="Next review"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                  <circle cx="16" cy="16" r="15.5" stroke={isLastReview ? '#9CA3AF' : '#2E3192'} />
-                  <g transform="translate(6, 6)">
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                      fill={isLastReview ? '#9CA3AF' : '#2E3192'}
-                    />
-                  </g>
-                </svg>
-              </button>
-            </div>
-          )}
+          <CarouselControls
+            className="flex justify-center gap-3 mt-5 tablet:hidden"
+            currentIndex={mobileIndex}
+            idPrefix={`${baseId}-reviews-mobile`}
+            nextLabel="Next review"
+            prevLabel="Previous review"
+            total={mobileSlideCount}
+          />
 
           <div className="hidden tablet:block small-laptop:hidden relative">
             <div className="relative p-6">
@@ -336,6 +299,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
                 {tabletSlides.map((slide, slideIndex) => (
                   <div
                     key={`reviews-slide-${slideIndex}`}
+                    id={`${baseId}-reviews-tablet-${slideIndex + 1}`}
                     className="carousel-item w-full flex-shrink-0"
                     style={{ scrollSnapAlign: 'start' }}
                   >
@@ -350,49 +314,14 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
                 ))}
               </div>
             </div>
-
-            {tabletSlideCount > 1 && (
-              <div className="flex justify-center gap-3 mt-5">
-                <button
-                  onClick={handleTabletPrevious}
-                  disabled={isFirstTabletSlide}
-                  className={`flex h-8 w-8 items-center justify-center ${isFirstTabletSlide ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                  aria-label="Previous reviews"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="15.5" stroke={isFirstTabletSlide ? '#9CA3AF' : '#2E3192'} />
-                    <g transform="translate(16, 16) scale(-1, 1) translate(-10, -10)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                        fill={isFirstTabletSlide ? '#9CA3AF' : '#2E3192'}
-                      />
-                    </g>
-                  </svg>
-                </button>
-                <button
-                  onClick={handleTabletNext}
-                  disabled={isLastTabletSlide}
-                  className={`flex h-8 w-8 items-center justify-center ${isLastTabletSlide ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                  aria-label="Next reviews"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="15.5" stroke={isLastTabletSlide ? '#9CA3AF' : '#2E3192'} />
-                    <g transform="translate(6, 6)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                        fill={isLastTabletSlide ? '#9CA3AF' : '#2E3192'}
-                      />
-                    </g>
-                  </svg>
-                </button>
-              </div>
-            )}
+            <CarouselControls
+              className="flex justify-center gap-3 mt-5"
+              currentIndex={tabletIndex}
+              idPrefix={`${baseId}-reviews-tablet`}
+              nextLabel="Next reviews"
+              prevLabel="Previous reviews"
+              total={tabletSlideCount}
+            />
           </div>
 
           <div className="hidden small-laptop:block relative">
@@ -404,6 +333,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
                 {smallLaptopSlides.map((slide, slideIndex) => (
                   <div
                     key={`reviews-small-laptop-slide-${slideIndex}`}
+                    id={`${baseId}-reviews-small-laptop-${slideIndex + 1}`}
                     className="carousel-item w-full flex-shrink-0"
                     style={{ scrollSnapAlign: 'start' }}
                   >
@@ -418,49 +348,14 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
                 ))}
               </div>
             </div>
-
-            {smallLaptopSlideCount > 1 && (
-              <div className="flex justify-center gap-3 mt-5">
-                <button
-                  onClick={handleSmallLaptopPrevious}
-                  disabled={isFirstSmallLaptopSlide}
-                  className={`flex h-8 w-8 items-center justify-center ${isFirstSmallLaptopSlide ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                  aria-label="Previous reviews"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="15.5" stroke={isFirstSmallLaptopSlide ? '#9CA3AF' : '#2E3192'} />
-                    <g transform="translate(16, 16) scale(-1, 1) translate(-10, -10)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                        fill={isFirstSmallLaptopSlide ? '#9CA3AF' : '#2E3192'}
-                      />
-                    </g>
-                  </svg>
-                </button>
-                <button
-                  onClick={handleSmallLaptopNext}
-                  disabled={isLastSmallLaptopSlide}
-                  className={`flex h-8 w-8 items-center justify-center ${isLastSmallLaptopSlide ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
-                  aria-label="Next reviews"
-                  type="button"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="15.5" stroke={isLastSmallLaptopSlide ? '#9CA3AF' : '#2E3192'} />
-                    <g transform="translate(6, 6)">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M7.20938 14.7698C6.92228 14.4713 6.93159 13.9965 7.23017 13.7094L11.1679 10L7.23017 6.29062C6.93159 6.00353 6.92228 5.52875 7.20938 5.23017C7.49647 4.93159 7.97125 4.92228 8.26983 5.20937L12.7698 9.45937C12.9169 9.60078 13 9.79599 13 10C13 10.204 12.9169 10.3992 12.7698 10.5406L8.26983 14.7906C7.97125 15.0777 7.49647 15.0684 7.20938 14.7698Z"
-                        fill={isLastSmallLaptopSlide ? '#9CA3AF' : '#2E3192'}
-                      />
-                    </g>
-                  </svg>
-                </button>
-              </div>
-            )}
+            <CarouselControls
+              className="flex justify-center gap-3 mt-5"
+              currentIndex={smallLaptopIndex}
+              idPrefix={`${baseId}-reviews-small-laptop`}
+              nextLabel="Next reviews"
+              prevLabel="Previous reviews"
+              total={smallLaptopSlideCount}
+            />
           </div>
         </div>
       </div>
