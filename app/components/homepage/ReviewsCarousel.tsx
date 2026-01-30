@@ -32,24 +32,43 @@ const navButtonClassName = 'flex h-8 w-8 items-center justify-center cursor-poin
 const getPrevIndex = (index: number) => Math.max(index - 1, 0)
 const getNextIndex = (index: number, total: number) => Math.min(index + 1, total - 1)
 
-const scrollToTarget = (targetId: string) => {
-  const target = document.getElementById(targetId)
+const getCarouselItems = (carousel: HTMLDivElement) =>
+  Array.from(carousel.querySelectorAll<HTMLElement>('.carousel-item'))
+
+const getCarouselPaddingLeft = (carousel: HTMLDivElement) => {
+  const paddingLeft = Number.parseFloat(getComputedStyle(carousel).paddingLeft)
+  return Number.isNaN(paddingLeft) ? 0 : paddingLeft
+}
+
+const scrollToIndex = (carouselRef: RefObject<HTMLDivElement | null>, index: number) => {
+  const carousel = carouselRef.current
+  if (!carousel) return
+
+  const items = getCarouselItems(carousel)
+  const target = items[index]
   if (!target) return
-  target.scrollIntoView({
-    behavior: 'smooth',
-    block: 'nearest',
-    inline: 'start'
-  })
+
+  const paddingLeft = getCarouselPaddingLeft(carousel)
+  const left = Math.max(target.offsetLeft - paddingLeft, 0)
+
+  carousel.scrollTo({ left, behavior: 'smooth' })
 }
 
 interface CarouselNavButtonProps {
-  targetId: string
+  ariaControls: string
   ariaLabel: string
   direction: 'previous' | 'next'
   disabled?: boolean
+  onClick: () => void
 }
 
-function CarouselNavButton({ targetId, ariaLabel, direction, disabled = false }: CarouselNavButtonProps) {
+function CarouselNavButton({
+  ariaControls,
+  ariaLabel,
+  direction,
+  disabled = false,
+  onClick
+}: CarouselNavButtonProps) {
   const transform = direction === 'previous'
     ? 'translate(16, 16) scale(-1, 1) translate(-10, -10)'
     : 'translate(6, 6)'
@@ -58,7 +77,7 @@ function CarouselNavButton({ targetId, ariaLabel, direction, disabled = false }:
   const disabledClasses = disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''
   const handleClick = () => {
     if (disabled) return
-    scrollToTarget(targetId)
+    onClick()
   }
 
   return (
@@ -66,7 +85,7 @@ function CarouselNavButton({ targetId, ariaLabel, direction, disabled = false }:
       type="button"
       aria-label={ariaLabel}
       aria-disabled={disabled}
-      aria-controls={targetId}
+      aria-controls={ariaControls}
       disabled={disabled}
       className={`${navButtonClassName} ${disabledClasses}`.trim()}
       onClick={handleClick}
@@ -93,16 +112,30 @@ const useCarouselIndex = (carouselRef: RefObject<HTMLDivElement | null>, itemCou
     const carousel = carouselRef.current
     if (!carousel) return
 
-    const items = Array.from(carousel.querySelectorAll<HTMLElement>('.carousel-item'))
+    const items = getCarouselItems(carousel)
     if (items.length === 0) return
 
     const updateIndex = () => {
-      const scrollLeft = carousel.scrollLeft
+      const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth
+      const paddingLeft = getCarouselPaddingLeft(carousel)
+      const paddingRight = Number.parseFloat(getComputedStyle(carousel).paddingRight) || 0
+
+      if (carousel.scrollLeft <= paddingLeft + 1) {
+        setIndex(0)
+        return
+      }
+
+      if (carousel.scrollLeft >= maxScrollLeft - paddingRight - 1) {
+        setIndex(items.length - 1)
+        return
+      }
+
+      const anchor = carousel.scrollLeft + paddingLeft
       let closestIndex = 0
-      let minDistance = Math.abs(items[0].offsetLeft - scrollLeft)
+      let minDistance = Math.abs(items[0].offsetLeft - anchor)
 
       for (let i = 1; i < items.length; i += 1) {
-        const distance = Math.abs(items[i].offsetLeft - scrollLeft)
+        const distance = Math.abs(items[i].offsetLeft - anchor)
         if (distance < minDistance) {
           minDistance = distance
           closestIndex = i
@@ -127,6 +160,7 @@ const useCarouselIndex = (carouselRef: RefObject<HTMLDivElement | null>, itemCou
 
 interface CarouselControlsProps {
   className: string
+  carouselRef: RefObject<HTMLDivElement | null>
   currentIndex: number
   idPrefix: string
   nextLabel: string
@@ -136,6 +170,7 @@ interface CarouselControlsProps {
 
 function CarouselControls({
   className,
+  carouselRef,
   currentIndex,
   idPrefix,
   nextLabel,
@@ -148,20 +183,24 @@ function CarouselControls({
   const isLast = currentIndex >= total - 1
   const prevIndex = getPrevIndex(currentIndex)
   const nextIndex = getNextIndex(currentIndex, total)
+  const prevTargetId = `${idPrefix}-${prevIndex + 1}`
+  const nextTargetId = `${idPrefix}-${nextIndex + 1}`
 
   return (
     <div className={className}>
       <CarouselNavButton
-        targetId={`${idPrefix}-${prevIndex + 1}`}
+        ariaControls={prevTargetId}
         ariaLabel={prevLabel}
         direction="previous"
         disabled={isFirst}
+        onClick={() => scrollToIndex(carouselRef, prevIndex)}
       />
       <CarouselNavButton
-        targetId={`${idPrefix}-${nextIndex + 1}`}
+        ariaControls={nextTargetId}
         ariaLabel={nextLabel}
         direction="next"
         disabled={isLast}
+        onClick={() => scrollToIndex(carouselRef, nextIndex)}
       />
     </div>
   )
@@ -261,7 +300,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
         <div className="relative -mx-4 tablet:mx-0">
           <div
             ref={mobileCarouselRef}
-            className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-6 tablet:hidden"
+            className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5 tablet:hidden"
           >
             {testimonials.map((testimonial, index) => (
               <div
@@ -272,9 +311,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
                   width: '342px',
                   minWidth: '342px',
                   maxWidth: '342px',
-                  scrollSnapAlign: 'start',
-                  marginLeft: index === 0 ? '16px' : '20px',
-                  marginRight: index === testimonials.length - 1 ? '16px' : '0'
+                  scrollSnapAlign: 'start'
                 }}
               >
                 <ReviewCard testimonial={testimonial} />
@@ -283,6 +320,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
           </div>
           <CarouselControls
             className="flex justify-center gap-3 mt-5 tablet:hidden"
+            carouselRef={mobileCarouselRef}
             currentIndex={mobileIndex}
             idPrefix={`${baseId}-reviews-mobile`}
             nextLabel="Next review"
@@ -316,6 +354,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
             </div>
             <CarouselControls
               className="flex justify-center gap-3 mt-5"
+              carouselRef={tabletCarouselRef}
               currentIndex={tabletIndex}
               idPrefix={`${baseId}-reviews-tablet`}
               nextLabel="Next reviews"
@@ -350,6 +389,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
             </div>
             <CarouselControls
               className="flex justify-center gap-3 mt-5"
+              carouselRef={smallLaptopCarouselRef}
               currentIndex={smallLaptopIndex}
               idPrefix={`${baseId}-reviews-small-laptop`}
               nextLabel="Next reviews"
