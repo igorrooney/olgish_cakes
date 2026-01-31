@@ -239,7 +239,7 @@ export function InstagramCarousel({
                   href={post.permalink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative mt-3 block h-[180px] w-full overflow-hidden rounded-[12px] bg-base-200 md:h-[342px]"
+                  className="relative mt-3 block h-[342px] w-full overflow-hidden rounded-[12px] bg-base-200"
                 >
                   <Image
                     src={post.imageUrl}
