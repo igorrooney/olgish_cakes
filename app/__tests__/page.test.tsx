@@ -97,7 +97,7 @@ jest.mock('../components/homepage', () => ({
   Reviews: () => <div data-testid="reviews">Reviews</div>,
   MobileOccasions: () => <div data-testid="mobile-occasions">Mobile Occasions</div>,
   EnquiryForm: () => <div data-testid="enquiry-form">Enquiry Form</div>,
-  MobileInstagram: () => <div data-testid="mobile-instagram">Mobile Instagram</div>
+  Instagram: () => <div data-testid="instagram">Instagram</div>
 }))
 
 // Mock Next.js components

@@ -6,7 +6,7 @@ import {
   Bestsellers,
   EnquiryForm,
   HomeHero,
-  MobileInstagram,
+  Instagram,
   Markets,
   MobileOccasions,
   Reviews,
@@ -67,17 +67,17 @@ const buildReviewSchema = (data: {
 const mapDefaultReview = (review: typeof DEFAULT_REVIEWS[number]): ReviewSchema => {
   const authorName =
     review.author &&
-    typeof review.author === 'object' &&
-    'name' in review.author &&
-    typeof review.author.name === 'string'
+      typeof review.author === 'object' &&
+      'name' in review.author &&
+      typeof review.author.name === 'string'
       ? review.author.name
       : 'Anonymous'
 
   const ratingValue =
     review.reviewRating &&
-    typeof review.reviewRating === 'object' &&
-    'ratingValue' in review.reviewRating &&
-    (typeof review.reviewRating.ratingValue === 'string' || typeof review.reviewRating.ratingValue === 'number')
+      typeof review.reviewRating === 'object' &&
+      'ratingValue' in review.reviewRating &&
+      (typeof review.reviewRating.ratingValue === 'string' || typeof review.reviewRating.ratingValue === 'number')
       ? review.reviewRating.ratingValue
       : '5'
 
@@ -220,7 +220,18 @@ export default async function Home() {
             </div>
           </div>
           <EnquiryForm />
-          <MobileInstagram />
+          <div className="w-full flex justify-center bg-base-100">
+            <div className="homepage-divider relative h-auto">
+              <Image
+                src="/design/instagram-section-divider.png"
+                alt="Decorative divider with cupcake and floral elements"
+                width={430}
+                height={100}
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </div>
+          <Instagram />
         </main>
       </div>
     </>

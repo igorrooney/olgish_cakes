@@ -1,6 +1,6 @@
 import type { InstagramPost } from '@/app/types/instagram'
 import { getInstagramPostLimit, getLatestInstagramPosts } from '@/app/utils/fetchInstagramPosts'
-import { MobileInstagramCarousel } from './MobileInstagramCarousel'
+import { InstagramCarousel } from './InstagramCarousel'
 
 const instagramProfileUrl = 'https://www.instagram.com/olgish_cakes/'
 const instagramProfileName = 'Olgish Cakes'
@@ -14,11 +14,11 @@ const placeholderPost: InstagramPost = {
   mediaType: 'IMAGE'
 }
 
-interface MobileInstagramProps {
+interface InstagramProps {
   limit?: number
 }
 
-export async function MobileInstagram({ limit }: MobileInstagramProps = {}) {
+export async function Instagram({ limit }: InstagramProps = {}) {
   const resolvedLimit = getInstagramPostLimit(limit)
   let posts: InstagramPost[] = []
 
@@ -35,11 +35,12 @@ export async function MobileInstagram({ limit }: MobileInstagramProps = {}) {
     <section className="bg-base-100 px-4 py-8">
       <div className="homepage-container flex flex-col gap-6">
         <div className="flex justify-center">
-          <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center">
-            Follow us on Instagram
+          <h2 className="font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[40px]">
+            <span className="inline tablet:block">Follow us</span>{' '}
+            <span className="inline tablet:block">on Instagram</span>
           </h2>
         </div>
-        <MobileInstagramCarousel
+        <InstagramCarousel
           posts={displayPosts}
           profileUrl={instagramProfileUrl}
           profileName={instagramProfileName}

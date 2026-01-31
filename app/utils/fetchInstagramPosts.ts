@@ -15,11 +15,13 @@ interface InstagramApiResponse {
   data?: InstagramApiMediaItem[]
 }
 
-const DEFAULT_POST_LIMIT = 5
+const DEFAULT_POST_LIMIT = 3
 const MIN_POST_LIMIT = 3
-const MAX_POST_LIMIT = 5
+const MAX_POST_LIMIT = 3
 const DEFAULT_REVALIDATE_SECONDS = 1800
 const DEFAULT_GRAPH_API_VERSION = 'v19.0'
+const MAX_API_FETCH_LIMIT = 25
+const IMAGE_FETCH_MULTIPLIER = 3
 
 const isInstagramMediaType = (value?: string): value is InstagramMediaType =>
   value === 'IMAGE' || value === 'VIDEO' || value === 'CAROUSEL_ALBUM'
@@ -104,6 +106,10 @@ const resolveMediaUrl = (item: InstagramApiMediaItem): string | null => {
 }
 
 const mapInstagramPost = (item: InstagramApiMediaItem): InstagramPost | null => {
+  if (item.media_type === 'VIDEO') {
+    return null
+  }
+
   const mediaType = isInstagramMediaType(item.media_type) ? item.media_type : 'IMAGE'
   const imageUrl = resolveMediaUrl(item)
   const permalink = typeof item.permalink === 'string' ? item.permalink : null
@@ -132,6 +138,7 @@ export async function getLatestInstagramPosts(
 ): Promise<InstagramPost[]> {
   const { accessToken, userId } = getInstagramConfig()
   const resolvedLimit = getInstagramPostLimit(limit)
+  const fetchLimit = Math.min(MAX_API_FETCH_LIMIT, resolvedLimit * IMAGE_FETCH_MULTIPLIER)
   const baseUrl = getInstagramApiBaseUrl()
   const revalidateSeconds = getInstagramRevalidateSeconds()
 
@@ -149,7 +156,7 @@ export async function getLatestInstagramPosts(
   const searchParams = new URLSearchParams({
     fields,
     access_token: accessToken,
-    limit: resolvedLimit.toString()
+    limit: fetchLimit.toString()
   })
 
   const response = await fetch(`${baseUrl}/${userId}/media?${searchParams.toString()}`, {
@@ -166,7 +173,9 @@ export async function getLatestInstagramPosts(
   const payload = (await response.json()) as InstagramApiResponse
   const items = Array.isArray(payload.data) ? payload.data : []
 
-  return items
+  const posts = items
     .map(mapInstagramPost)
     .filter((post): post is InstagramPost => post !== null)
+
+  return posts.slice(0, resolvedLimit)
 }

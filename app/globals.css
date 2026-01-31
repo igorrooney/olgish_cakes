@@ -35,6 +35,9 @@
   --color-secondary-content: #2D2D2D;
   --color-accent: #FFAF99;
   --color-accent-content: #2D2D2D;
+  --color-instagram: #008AF5;
+  --color-instagram-content: #FFFFFF;
+  --color-instagram-card: #FFFFFF;
   --color-neutral: #2D2D2D;
   --color-neutral-content: #FFFFFF;
   --color-info: #2A7AAF;
@@ -135,6 +138,17 @@
 
   .touch-hover:active {
     transform: translateY(0px);
+  }
+
+  .btn-instagram {
+    background-color: var(--color-instagram);
+    border-color: var(--color-instagram);
+    color: var(--color-instagram-content);
+  }
+
+  .btn-instagram:hover {
+    background-color: var(--color-instagram);
+    border-color: var(--color-instagram);
   }
 }
 

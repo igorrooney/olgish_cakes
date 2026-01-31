@@ -49,6 +49,13 @@ describe('fetchInstagramPosts', () => {
           thumbnail_url: 'https://scontent.cdninstagram.com/thumb-1.jpg',
           permalink: 'https://instagram.com/p/post-2',
           timestamp: '2024-01-02T10:00:00+0000'
+        },
+        {
+          id: 'post-3',
+          media_type: 'CAROUSEL_ALBUM',
+          media_url: 'https://scontent.cdninstagram.com/media-3.jpg',
+          permalink: 'https://instagram.com/p/post-3',
+          timestamp: '2024-01-03T10:00:00+0000'
         }
       ]
     }
@@ -63,7 +70,7 @@ describe('fetchInstagramPosts', () => {
     const posts = await getLatestInstagramPosts({ limit: 4 })
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('limit=4'),
+      expect.stringContaining('limit=9'),
       expect.objectContaining({ next: { revalidate: 1800 } })
     )
 
@@ -77,13 +84,19 @@ describe('fetchInstagramPosts', () => {
       timestamp: '2024-01-01T10:00:00+0000',
       likeCount: 1200
     })
-    expect(posts[1].imageUrl).toBe('https://scontent.cdninstagram.com/thumb-1.jpg')
+    expect(posts[1]).toEqual<InstagramPost>({
+      id: 'post-3',
+      imageUrl: 'https://scontent.cdninstagram.com/media-3.jpg',
+      permalink: 'https://instagram.com/p/post-3',
+      mediaType: 'CAROUSEL_ALBUM',
+      timestamp: '2024-01-03T10:00:00+0000'
+    })
   })
 
   it('clamps the Instagram post limit from env', () => {
     process.env.INSTAGRAM_POST_LIMIT = '12'
 
-    expect(getInstagramPostLimit()).toBe(5)
+    expect(getInstagramPostLimit()).toBe(3)
   })
 
   it('uses a default revalidate time when env is missing', () => {
