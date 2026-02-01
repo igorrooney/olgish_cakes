@@ -1,5 +1,3 @@
-'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -34,8 +32,8 @@ export function OlgishCakesFounder() {
               src='/design/mobile-home/about-olga.png'
               alt='Olga, founder of Olgish Cakes'
               fill
+              sizes='(min-width: 768px) 440px, 324px'
               className='object-cover object-[50%_50%] rounded-[16px]'
-              priority
             />
             {/* Decorative top-left corner element */}
             <Image

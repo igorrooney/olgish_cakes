@@ -280,7 +280,6 @@ export function EnquiryForm() {
             required
             hintText="Select a date"
             labelPlacement="outside"
-            inputClassName="placeholder:text-base-content placeholder:opacity-100"
             min={minDate}
             onValueChange={handleDateChange}
           />

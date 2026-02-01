@@ -4,7 +4,7 @@ import Image from 'next/image'
 export function SiteFooter() {
   return (
     <>
-      <div className="relative w-full h-auto">
+      <div className="relative w-full h-auto bg-base-100">
         <Image
           src="/design/mobile-home/footer-image.png"
           alt="Decorative yellow wavy divider with dots"

@@ -1,4 +1,5 @@
 import type { StructureResolver } from "sanity/structure";
+import { apiVersion } from './env'
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = S =>
@@ -24,6 +25,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("order")
                     .title("All Orders")
+                    .apiVersion(apiVersion)
                     .filter('_type == "order"')
                     .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
                 ),
@@ -32,6 +34,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("order")
                     .title("New Orders")
+                    .apiVersion(apiVersion)
                     .filter('_type == "order" && status == "new"')
                     .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
                 ),
@@ -40,6 +43,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("order")
                     .title("Orders In Progress")
+                    .apiVersion(apiVersion)
                     .filter('_type == "order" && status in ["confirmed", "in-progress"]')
                     .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
                 ),
@@ -48,6 +52,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("order")
                     .title("Ready for Pickup")
+                    .apiVersion(apiVersion)
                     .filter('_type == "order" && status == "ready-pickup"')
                     .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
                 ),
@@ -56,6 +61,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("order")
                     .title("Completed Orders")
+                    .apiVersion(apiVersion)
                     .filter('_type == "order" && status in ["delivered", "completed"]')
                     .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
                 ),
@@ -74,6 +80,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("marketSchedule")
                     .title("All Market Events")
+                    .apiVersion(apiVersion)
                     .filter('_type == "marketSchedule"')
                     .defaultOrdering([{ field: "date", direction: "desc" }])
                 ),
@@ -82,6 +89,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("marketSchedule")
                     .title("Upcoming Events")
+                    .apiVersion(apiVersion)
                     .filter('_type == "marketSchedule" && date >= now() && active == true')
                     .defaultOrdering([{ field: "date", direction: "asc" }])
                 ),
@@ -90,6 +98,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("marketSchedule")
                     .title("Featured Events")
+                    .apiVersion(apiVersion)
                     .filter('_type == "marketSchedule" && featured == true && active == true')
                     .defaultOrdering([{ field: "date", direction: "asc" }])
                 ),
@@ -98,6 +107,7 @@ export const structure: StructureResolver = S =>
                 .child(
                   S.documentTypeList("marketSchedule")
                     .title("Past Events")
+                    .apiVersion(apiVersion)
                     .filter('_type == "marketSchedule" && date < now()')
                     .defaultOrdering([{ field: "date", direction: "desc" }])
                 ),

@@ -197,8 +197,8 @@ export default async function Home() {
                 alt="Decorative divider with cupcake and floral elements"
                 width={430}
                 height={100}
+                sizes="(min-width: 768px) 430px, 100vw"
                 className="w-full h-auto object-contain"
-                priority
               />
             </div>
           </div>
@@ -214,8 +214,8 @@ export default async function Home() {
                 alt="Decorative divider with cupcake and floral elements"
                 width={430}
                 height={100}
+                sizes="(min-width: 768px) 430px, 100vw"
                 className="w-full h-auto object-contain"
-                priority
               />
             </div>
           </div>
@@ -227,6 +227,7 @@ export default async function Home() {
                 alt="Decorative divider with cupcake and floral elements"
                 width={430}
                 height={100}
+                sizes="(min-width: 768px) 430px, 100vw"
                 className="w-full h-auto object-contain"
               />
             </div>

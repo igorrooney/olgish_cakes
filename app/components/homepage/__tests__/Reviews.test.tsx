@@ -12,6 +12,7 @@ jest.mock('@/app/utils/fetchTestimonials', () => ({
   getAllTestimonials: jest.fn()
 }))
 
+
 jest.mock('../ReviewsCarousel', () => ({
   ReviewsCarousel: ({ testimonials }: { testimonials: Testimonial[] }) => (
     <div data-testid="reviews-carousel" data-count={testimonials.length} />

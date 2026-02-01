@@ -76,7 +76,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live https://va.vercel-scripts.com",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io wss://*.sanity.io wss://*.api.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live https://va.vercel-scripts.com",
               "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",

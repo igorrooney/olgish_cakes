@@ -1,7 +1,5 @@
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { CssBaseline, ThemeProvider } from "@/lib/mui-optimization";
-import { theme } from "@/lib/theme";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
@@ -11,7 +9,7 @@ import Script from "next/script";
 import { Suspense } from "react";
 import { SiteHeader } from "./components/homepage/SiteHeader";
 import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
-import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
+import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -53,26 +51,16 @@ const oldenburg = Oldenburg({
 const moreSugar = localFont({
   src: [
     {
-      path: "./fonts/more_sugar/MoreSugar-Thin.ttf",
-      weight: "100",
-      style: "normal",
-    },
-    {
-      path: "./fonts/more_sugar/MoreSugar-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./fonts/more_sugar/MoreSugar-Extras.ttf",
-      weight: "800",
-      style: "normal",
-    },
+      path: './fonts/more_sugar/MoreSugar-Regular.ttf',
+      weight: '400',
+      style: 'normal'
+    }
   ],
-  variable: "--font-more-sugar",
-  display: "swap",
+  variable: '--font-more-sugar',
+  display: 'swap',
   preload: true,
-  fallback: ["cursive", "fantasy"],
-});
+  fallback: ['cursive', 'fantasy']
+})
 
 const primary = designTokens.colors.primary.main;
 const primaryDark = designTokens.colors.primary.dark;
@@ -448,22 +436,19 @@ export default function RootLayout({
           />
         </noscript>
 
-        <EmotionCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Providers>
-              <div className="flex flex-col min-h-screen">
-                <SiteHeader />
-                <main className="flex-grow">{children}</main>
-                <SiteFooter />
-                <ScrollToTop />
-                <WebVitalsMonitor />
-                <PerformanceOptimizer />
-                <DynamicCookieConsent />
-              </div>
-            </Providers>
-          </ThemeProvider>
-        </EmotionCacheProvider>
+        <ConditionalMuiProviders>
+          <Providers>
+            <div className="flex flex-col min-h-screen">
+              <SiteHeader />
+              <main className="flex-grow">{children}</main>
+              <SiteFooter />
+              <ScrollToTop />
+              <WebVitalsMonitor />
+              <PerformanceOptimizer />
+              <DynamicCookieConsent />
+            </div>
+          </Providers>
+        </ConditionalMuiProviders>
         <Analytics />
         <SpeedInsights />
 
