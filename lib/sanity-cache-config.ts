@@ -27,6 +27,10 @@ export const SANITY_CACHE_CONFIG = {
         revalidate: 60 * 60, // 1 hour
         tags: ['gift-hampers']
     },
+    collections: {
+        revalidate: 60 * 60, // 1 hour
+        tags: ['collections']
+    },
     marketSchedule: {
         revalidate: 60 * 60, // 1 hour
         tags: ['market-schedule']

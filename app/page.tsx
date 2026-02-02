@@ -8,7 +8,7 @@ import {
   HomeHero,
   Instagram,
   Markets,
-  MobileOccasions,
+  Occasions,
   Reviews,
 } from './components/homepage'
 import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
@@ -206,7 +206,18 @@ export default async function Home() {
           <Bestsellers />
           <Markets />
           <Reviews testimonials={testimonials} />
-          <MobileOccasions />
+          <div className="homepage-divider relative h-auto">
+            <Image
+              src="/design/occasions_divider.png"
+              alt=""
+              aria-hidden="true"
+              width={430}
+              height={100}
+              sizes="(min-width: 768px) 430px, 100vw"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+          <Occasions />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image

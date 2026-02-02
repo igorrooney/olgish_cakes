@@ -95,7 +95,7 @@ jest.mock('../components/homepage', () => ({
     return <div data-testid="mobile-markets">Mobile Markets</div>
   },
   Reviews: () => <div data-testid="reviews">Reviews</div>,
-  MobileOccasions: () => <div data-testid="mobile-occasions">Mobile Occasions</div>,
+  Occasions: () => <div data-testid='occasions'>Occasions</div>,
   EnquiryForm: () => <div data-testid="enquiry-form">Enquiry Form</div>,
   Instagram: () => <div data-testid="instagram">Instagram</div>
 }))
