@@ -162,7 +162,7 @@ export function EnquiryForm() {
   };
 
   return (
-    <section className="bg-base-100 px-4 py-8">
+    <section id="custom-cake-enquiry-form" className="bg-base-100 px-4 py-8">
       <div className="homepage-container flex flex-col items-center gap-6 tablet:max-w-[696px]">
         <h2 className="font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px] tablet:max-w-[331px] tablet:mx-auto">
           Custom cake enquiry form

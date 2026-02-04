@@ -121,7 +121,7 @@ export function HomeHero() {
             </svg>
           </Link>
           <Link
-            href='/get-custom-quote'
+            href='/#custom-cake-enquiry-form'
             className={`btn btn-outline ${ctaBaseClass} border-primary-500 bg-base-100 text-primary-500 shadow-btn leading-[14px] tablet:leading-[16px]`}
           >
             Custom cake enquiry form
