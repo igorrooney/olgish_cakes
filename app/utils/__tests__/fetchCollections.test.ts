@@ -53,12 +53,13 @@ describe('fetchCollections', () => {
     consoleSpy.mockRestore()
   })
 
-  it('queries collections marked for homepage', async () => {
+  it('queries all collections ordered for homepage', async () => {
     mockFetch.mockResolvedValue([mockCollection])
 
     await getHomepageCollections()
 
     const query = mockFetch.mock.calls[0][0]
-    expect(query).toContain('showOnHomepage')
+    expect(query).toContain('_type == \"collection\"')
+    expect(query).toContain('order(homepageOrder asc, name asc)')
   })
 })

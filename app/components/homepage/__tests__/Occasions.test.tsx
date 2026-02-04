@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Occasions } from '../Occasions'
 import { getHomepageCollections } from '@/app/utils/fetchCollections'
 import type { HomepageCollection } from '@/app/types/collection'
@@ -77,7 +77,7 @@ describe('Occasions', () => {
     expect(screen.queryByText('Missing Image')).not.toBeInTheDocument()
   })
 
-  it('toggles the grid when clicking the button', async () => {
+  it('shows a mobile toggle button to reveal all collections', async () => {
     const collections = Array.from({ length: 10 }, (_, index) => ({
       _id: `collection-${index + 1}`,
       name: `Collection ${index + 1}`,
@@ -88,15 +88,18 @@ describe('Occasions', () => {
       }
     }))
 
-    window.innerWidth = 1280
     mockGetHomepageCollections.mockResolvedValueOnce(collections)
 
     const element = await Occasions()
     render(element)
 
-    await waitFor(() => {
-      expect(screen.getByText('Collection 8')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Collection 6')).toBeInTheDocument()
+    const collection7Label = screen.getByText('Collection 7')
+    const collection7Card = collection7Label.closest('div')
+    expect(collection7Card).toBeTruthy()
+    expect(collection7Card).toHaveClass('hidden')
+    expect(collection7Card?.className).toContain('small-laptop:flex')
+
     const collection9Label = screen.getByText('Collection 9')
     const collection9Card = collection9Label.closest('div')
     expect(collection9Card).toBeTruthy()
@@ -106,11 +109,11 @@ describe('Occasions', () => {
     const moreButton = screen.getByRole('button', { name: '+ many more!' })
     fireEvent.click(moreButton)
 
-    expect(collection9Card).not.toHaveClass('hidden')
+    expect(collection7Card).not.toHaveClass('hidden')
     const showLessButton = screen.getByRole('button', { name: 'Show less' })
     fireEvent.click(showLessButton)
 
-    expect(collection9Card).toHaveClass('hidden')
+    expect(collection7Card).toHaveClass('hidden')
     expect(screen.getByRole('button', { name: '+ many more!' })).toBeInTheDocument()
   })
 })

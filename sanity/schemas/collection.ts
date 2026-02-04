@@ -2,7 +2,6 @@ interface ValidationContext {
   document?: {
     _id?: string
     _type?: string
-    showOnHomepage?: boolean
   }
   getClient: (options?: { apiVersion?: string }) => {
     fetch: <T = unknown>(query: string, params?: Record<string, unknown>) => Promise<T>
@@ -89,18 +88,10 @@ export default {
       ],
     },
     {
-      name: 'showOnHomepage',
-      title: 'Show on Homepage',
-      type: 'boolean',
-      description: 'Show this collection on the homepage',
-      initialValue: false,
-    },
-    {
       name: 'homepageOrder',
       title: 'Homepage Order',
       type: 'number',
       description: 'Lower numbers appear first on the homepage.',
-      hidden: ({ document }: { document?: { showOnHomepage?: boolean } }) => !document?.showOnHomepage,
       validation: (Rule: ValidationRule) =>
         Rule.min(0)
           .integer()
@@ -110,9 +101,6 @@ export default {
             }
 
             const { document, getClient } = context
-            if (!document?.showOnHomepage) {
-              return true
-            }
 
             const client = getClient({ apiVersion: '2025-03-31' })
             const currentId = document?._id

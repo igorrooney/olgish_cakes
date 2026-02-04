@@ -63,15 +63,45 @@ describe('SiteFooter', () => {
     const instagramLink = screen.getByLabelText('Instagram')
 
     expect(facebookLink).toHaveAttribute('target', '_blank')
-    expect(facebookLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('nofollow'))
     expect(youtubeLink).toHaveAttribute('target', '_blank')
-    expect(youtubeLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('nofollow'))
     expect(youtubeLink).toHaveAttribute(
       'href',
       'https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q?cbrd=1'
     )
     expect(instagramLink).toHaveAttribute('target', '_blank')
     expect(instagramLink).toHaveAttribute('rel', 'noreferrer noopener')
+  })
+
+  it('renders the copyright notice', () => {
+    render(<SiteFooter />)
+
+    const year = new Date().getFullYear()
+    expect(
+      screen.getByText(`© ${year} Olgish Cakes. All rights reserved.`)
+    ).toBeInTheDocument()
+  })
+
+  it('renders design and development credits with external links', () => {
+    render(<SiteFooter />)
+
+    const designLink = screen.getByRole('link', { name: 'Jamie Stanley' })
+    const developmentLink = screen.getByRole('link', { name: 'Igor Ieromenko' })
+
+    expect(designLink).toHaveAttribute('href', 'https://jamie-stanley.netlify.app/')
+    expect(designLink).toHaveAttribute('target', '_blank')
+    expect(designLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(developmentLink).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/igor-ieromenko-b57b1ba4/'
+    )
+    expect(developmentLink).toHaveAttribute('target', '_blank')
+    expect(developmentLink).toHaveAttribute('rel', 'noreferrer noopener')
   })
 
   it('renders a single contentinfo landmark', () => {
