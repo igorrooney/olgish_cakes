@@ -473,6 +473,301 @@ img {
   }
 }
 
+/* Klaro consent banner overrides */
+.klaro {
+  font-family: var(--font-inter), sans-serif;
+  color: var(--color-base-content);
+}
+
+.klaro .cn,
+.klaro .cn * ,
+.klaro .cm,
+.klaro .cm * {
+  color: var(--color-base-content) !important;
+}
+
+.klaro .cn,
+.klaro .cm,
+.klaro .cookie-notice,
+.klaro .cookie-modal {
+  background: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+  border: 1px solid var(--color-base-300) !important;
+  border-radius: var(--radius-box) !important;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--color-primary-800) 18%, transparent) !important;
+}
+
+.klaro .cookie-modal,
+.klaro .cm,
+.klaro .cm-body,
+.klaro .cm-content,
+.klaro .cm-services,
+.klaro .cm-service,
+.klaro .cm-list {
+  background: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+}
+
+.klaro .cm-service,
+.klaro .cm-list {
+  background: var(--color-base-200) !important;
+  border-color: var(--color-base-300) !important;
+}
+
+.klaro .cn-header,
+.klaro .cm-header {
+  color: var(--color-primary-800);
+}
+
+.klaro .cm-header,
+.klaro .cm-footer {
+  background: var(--color-base-100) !important;
+  border-color: var(--color-base-300) !important;
+}
+
+.klaro .cm-header {
+  border-bottom: 1px solid var(--color-base-300) !important;
+}
+
+.klaro .cm-footer {
+  border-top: 1px solid var(--color-base-300) !important;
+}
+
+.klaro .cn-title,
+.klaro .cm-title,
+.klaro .cm-header .title {
+  font-family: var(--font-more-sugar), var(--font-inter), serif;
+  letter-spacing: 0.02em;
+  color: var(--color-primary-800);
+}
+
+.klaro .cm-title,
+.klaro .cm-header .title,
+.klaro .cm-service-title,
+.klaro .cm-list-title {
+  color: var(--color-primary-800) !important;
+}
+
+.klaro .cm-header p,
+.klaro .cm-header p span,
+.klaro .cm-header p a {
+  color: var(--color-base-content) !important;
+  font-size: var(--t-font-size-sm);
+  line-height: var(--t-font-lineHeight-leading-5);
+  opacity: 1 !important;
+  background: transparent !important;
+  display: inline;
+  margin: 0;
+}
+
+.klaro .cn-body,
+.klaro .cm-body,
+.klaro .cn-text,
+.klaro .cm-text,
+.klaro .cn-description,
+.klaro .cm-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-base-content) !important;
+  opacity: 1 !important;
+}
+
+.klaro .cookie-notice,
+.klaro .cookie-notice * ,
+.klaro #id-cookie-notice,
+.klaro #id-cookie-notice span {
+  color: var(--color-base-content) !important;
+}
+
+.klaro .cn-text,
+.klaro .cm-text,
+.klaro .cm-description,
+.klaro .cn-description {
+  color: var(--color-base-content);
+  opacity: 0.9;
+}
+
+.klaro .cm-btn,
+.klaro .cn-btn,
+.klaro .cookie-notice button,
+.klaro .cookie-modal button {
+  border-radius: var(--radius-field) !important;
+  border: 1px solid var(--color-primary-500) !important;
+  background: transparent !important;
+  color: var(--color-primary-500) !important;
+  font-family: var(--font-inter), sans-serif !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 1.1rem !important;
+}
+
+.klaro .cm-btn:hover,
+.klaro .cm-btn:focus-visible,
+.klaro .cn-btn:hover,
+.klaro .cn-btn:focus-visible,
+.klaro .cookie-notice button:hover,
+.klaro .cookie-notice button:focus-visible,
+.klaro .cookie-modal button:hover,
+.klaro .cookie-modal button:focus-visible {
+  background: var(--color-primary-50) !important;
+}
+
+.klaro .cm-btn.cm-btn-accept,
+.klaro .cm-btn.cm-btn-accept-all,
+.klaro .cn-btn-accept,
+.klaro .cn-btn-accept-all {
+  background: var(--color-primary-500) !important;
+  color: var(--color-primary-content) !important;
+  border-color: var(--color-primary-500) !important;
+}
+
+.klaro .cookie-notice .cn-buttons button:last-of-type {
+  background: var(--color-primary-500) !important;
+  color: var(--color-primary-content) !important;
+  border-color: var(--color-primary-500) !important;
+}
+
+.klaro .cm-btn.cm-btn-accept:hover,
+.klaro .cm-btn.cm-btn-accept-all:hover,
+.klaro .cm-btn.cm-btn-accept:focus-visible,
+.klaro .cm-btn.cm-btn-accept-all:focus-visible,
+.klaro .cn-btn-accept:hover,
+.klaro .cn-btn-accept-all:hover,
+.klaro .cn-btn-accept:focus-visible,
+.klaro .cn-btn-accept-all:focus-visible {
+  background: var(--color-primary-800) !important;
+  border-color: var(--color-primary-800) !important;
+}
+
+.klaro .cookie-notice .cn-buttons button:last-of-type:hover,
+.klaro .cookie-notice .cn-buttons button:last-of-type:focus-visible {
+  background: var(--color-primary-800) !important;
+  border-color: var(--color-primary-800) !important;
+}
+
+.klaro .cm-btn.cm-btn-decline,
+.klaro .cn-btn-decline {
+  border-color: var(--color-base-300) !important;
+  color: var(--color-base-content) !important;
+}
+
+.klaro .cm-btn.cm-btn-decline:hover,
+.klaro .cm-btn.cm-btn-decline:focus-visible,
+.klaro .cn-btn-decline:hover,
+.klaro .cn-btn-decline:focus-visible {
+  background: var(--color-base-200) !important;
+}
+
+.klaro .cm-close,
+.klaro .cm-btn-close,
+.klaro .cm-header .cm-btn-close {
+  background: var(--color-base-100) !important;
+  border: 1px solid var(--color-primary-400) !important;
+  color: var(--color-primary-800) !important;
+  position: relative;
+}
+
+.klaro .cm-close:hover,
+.klaro .cm-close:focus-visible,
+.klaro .cm-btn-close:hover,
+.klaro .cm-btn-close:focus-visible {
+  background: var(--color-primary-50) !important;
+  border-color: var(--color-primary-500) !important;
+}
+
+.klaro .cm-header button[aria-label="Close"] {
+  display: inline-grid !important;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-primary-800) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.klaro .cm-header button[aria-label="Close"]::before {
+  content: '×';
+  font-size: 1.35rem;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--color-primary-800);
+}
+
+.klaro .cm-header button[aria-label="Close"]:hover,
+.klaro .cm-header button[aria-label="Close"]:active,
+.klaro .cm-header button[aria-label="Close"]:focus,
+.klaro .cm-header button[aria-label="Close"]:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.klaro .cm-close::before,
+.klaro .cm-btn-close::before,
+.klaro .cm-header .cm-btn-close::before {
+  content: '×';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-primary-800);
+}
+
+.klaro .cm-link,
+.klaro .cn-link,
+.klaro a {
+  color: var(--color-primary-500) !important;
+}
+
+.klaro .cm-link:hover,
+.klaro .cn-link:hover,
+.klaro a:hover {
+  color: var(--color-primary-800) !important;
+}
+
+.klaro .cm-toggle,
+.klaro .cm-toggle-all {
+  background: var(--color-base-300);
+  border-radius: 999px;
+}
+
+.klaro .cm-toggle .cm-toggle-switch,
+.klaro .cm-toggle-all .cm-toggle-switch {
+  background: var(--color-base-100);
+}
+
+.klaro .cm-toggle.cm-active,
+.klaro .cm-toggle-all.cm-active {
+  background: var(--color-primary-500);
+}
+
+.klaro .cm-toggle .cm-toggle-switch,
+.klaro .cm-toggle-all .cm-toggle-switch {
+  background: var(--color-base-100) !important;
+  border: 1px solid var(--color-base-300) !important;
+}
+
+.klaro .cm-toggle.cm-active .cm-toggle-switch,
+.klaro .cm-toggle-all.cm-active .cm-toggle-switch {
+  border-color: var(--color-primary-500) !important;
+}
+
+.klaro .cm-bg {
+  background: color-mix(in srgb, var(--color-primary-800) 35%, transparent);
+}
+
+@media (max-width: 640px) {
+  .klaro .cn,
+  .klaro .cm {
+    margin: 1rem;
+    width: auto;
+  }
+}
+
 /* Force override for base-100 - must be at the end */
 :root,
 [data-theme="olgish-cakes"] {

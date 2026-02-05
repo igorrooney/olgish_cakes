@@ -182,6 +182,23 @@ describe('CookieConsent', () => {
       })
     })
 
+    it('should dispatch consent accepted event', async () => {
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(<CookieConsent />)
+
+      const acceptButton = screen.getByText('Accept All')
+      fireEvent.click(acceptButton)
+
+      await waitFor(() => {
+        expect(dispatchSpy).toHaveBeenCalled()
+      })
+
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent<{ status: string }>
+      expect(event.type).toBe('cookie-consent')
+      expect(event.detail.status).toBe('accepted')
+    })
+
     it('should hide banner after accepting', async () => {
       render(<CookieConsent />)
 
@@ -247,6 +264,23 @@ describe('CookieConsent', () => {
       })
     })
 
+    it('should dispatch consent declined event', async () => {
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(<CookieConsent />)
+
+      const declineButton = screen.getByText('Decline')
+      fireEvent.click(declineButton)
+
+      await waitFor(() => {
+        expect(dispatchSpy).toHaveBeenCalled()
+      })
+
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent<{ status: string }>
+      expect(event.type).toBe('cookie-consent')
+      expect(event.detail.status).toBe('declined')
+    })
+
     it('should handle localStorage error on decline', async () => {
       const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
         .mockImplementation(() => { throw new Error('Error') })
@@ -299,4 +333,3 @@ describe('CookieConsent', () => {
     })
   })
 })
-

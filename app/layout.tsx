@@ -6,11 +6,8 @@ import type { Metadata, Viewport } from "next";
 import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
-import { Suspense } from "react";
 import { SiteHeader } from "./components/homepage/SiteHeader";
-import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
-import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
@@ -65,6 +62,177 @@ const moreSugar = localFont({
 const primary = designTokens.colors.primary.main;
 const primaryDark = designTokens.colors.primary.dark;
 const secondary = designTokens.colors.secondary.main;
+const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+const isConsentEnabled = Boolean(gtmId)
+const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
+const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
+const klaroStyleInitScript = `
+  (function () {
+    var link = document.querySelector('link[data-klaro-style]')
+    if (link) {
+      link.media = 'all'
+    }
+  })()
+`
+const consentDefaultsScript = `
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){dataLayer.push(arguments)}
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'analytics_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied'
+  })
+  gtag('set', 'ads_data_redaction', true)
+`
+
+const klaroServices = isConsentEnabled ? [
+  {
+    name: 'google-tag-manager',
+    default: true,
+    required: true,
+    purposes: ['necessary'],
+    onlyOnce: true,
+    translations: {
+      zz: {
+        title: 'Google Tag Manager'
+      },
+      en: {
+        description: 'Loads the tag manager to apply your consent choices.'
+      }
+    },
+    onAccept: `
+      for (let k of Object.keys(opts.consents)) {
+        if (opts.consents[k]) {
+          dataLayer.push({ event: 'klaro-' + k + '-accepted' })
+        }
+      }
+    `
+  },
+  {
+    name: 'google-analytics',
+    purposes: ['analytics'],
+    cookies: ['_ga', '_gid', '_gat'],
+    translations: {
+      zz: {
+        title: 'Google Analytics'
+      },
+      en: {
+        description: 'Helps us understand how people use the site.'
+      }
+    },
+    onAccept: `
+      gtag('consent', 'update', {
+        'analytics_storage': 'granted'
+      })
+    `,
+    onDecline: `
+      gtag('consent', 'update', {
+        'analytics_storage': 'denied'
+      })
+    `
+  },
+  {
+    name: 'google-ads',
+    purposes: ['marketing'],
+    cookies: ['_gcl_au', '_gcl_aw', '_gcl_dc'],
+    translations: {
+      zz: {
+        title: 'Google Ads'
+      },
+      en: {
+        description: 'Shows personalised ads and measures ad performance.'
+      }
+    },
+    onAccept: `
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      })
+    `,
+    onDecline: `
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      })
+    `
+  }
+] : []
+
+const klaroConfig = {
+  elementID: 'klaro',
+  storageMethod: 'cookie',
+  storageName: 'klaro',
+  default: false,
+  mustConsent: false,
+  acceptAll: true,
+  hideDeclineAll: false,
+  hideLearnMore: false,
+  translations: {
+    zz: {
+      privacyPolicyUrl: '/privacy'
+    },
+    en: {
+      consentNotice: {
+        title: 'Cookie preferences',
+        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        learnMore: 'Choose cookies'
+      },
+      consentModal: {
+        title: 'Cookie preferences',
+        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
+      },
+      purposes: {
+        analytics: {
+          title: 'Analytics'
+        },
+        necessary: {
+          title: 'Necessary',
+          description: 'Required to store your cookie choices and keep the site secure.'
+        },
+        marketing: {
+          title: 'Marketing'
+        }
+      }
+    },
+    'en-GB': {
+      consentNotice: {
+        title: 'Cookie preferences',
+        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        learnMore: 'Choose cookies'
+      },
+      consentModal: {
+        title: 'Cookie preferences',
+        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
+      },
+      purposes: {
+        analytics: {
+          title: 'Analytics'
+        },
+        necessary: {
+          title: 'Necessary',
+          description: 'Required to store your cookie choices and keep the site secure.'
+        },
+        marketing: {
+          title: 'Marketing'
+        }
+      }
+    }
+  },
+  services: klaroServices
+}
+
+const klaroConfigScript = `var klaroConfig = ${JSON.stringify(klaroConfig)}`
+
+const gtmSnippet = gtmId
+  ? `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${gtmId}');`
+  : ''
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -78,8 +246,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: {
     default:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
-    template: "%s | Olgish Cakes",
+      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
+    template: '%s | Olgish Cakes',
   },
   description:
     'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
@@ -135,7 +303,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
+      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
     description:
       'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
     type: "website",
@@ -153,9 +321,9 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
+      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
     description:
       "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
@@ -215,30 +383,51 @@ export default function RootLayout({
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />
-        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        {isConsentEnabled ? (
+          <link rel="dns-prefetch" href="//cdn.kiprotect.com" />
+        ) : null}
 
         {/* Preconnect for critical domains */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        {isConsentEnabled ? (
+          <link rel="preconnect" href="https://cdn.kiprotect.com" crossOrigin="anonymous" />
+        ) : null}
 
         {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
-        {/* Google Analytics 4 - Tracks route changes and excludes admin pages */}
-        <Suspense fallback={null}>
-          <GoogleAnalytics gaId="G-QGQC58H2LD" />
-        </Suspense>
-
-        {/* Google Tag Manager - Load with lower priority */}
-        <Script id="google-tag-manager" strategy="lazyOnload">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-XXXXXXX');
-          `}
-        </Script>
+        {isConsentEnabled ? (
+          <>
+            <link rel="preload" as="style" href={klaroStyleHref} />
+            <link rel="stylesheet" href={klaroStyleHref} media="print" data-klaro-style="true" />
+            <Script
+              id="klaro-style-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{ __html: klaroStyleInitScript }}
+            />
+            <Script
+              id="gtag-consent-default"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{ __html: consentDefaultsScript }}
+            />
+            <Script
+              id="klaro-config"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{ __html: klaroConfigScript }}
+            />
+            <Script
+              id="klaro-script"
+              strategy="afterInteractive"
+              data-config="klaroConfig"
+              src={klaroScriptSrc}
+            />
+            <script
+              type="text/plain"
+              data-type="application/javascript"
+              data-name="google-tag-manager"
+              dangerouslySetInnerHTML={{ __html: gtmSnippet }}
+            />
+          </>
+        ) : null}
 
         {/* Enhanced Organization Schema */}
         <script
@@ -425,17 +614,6 @@ export default function RootLayout({
         />
       </head>
       <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-            title="Google Tag Manager"
-          />
-        </noscript>
-
         <ConditionalMuiProviders>
           <Providers>
             <div className="flex flex-col min-h-screen">
@@ -445,7 +623,6 @@ export default function RootLayout({
               <ScrollToTop />
               <WebVitalsMonitor />
               <PerformanceOptimizer />
-              <DynamicCookieConsent />
             </div>
           </Providers>
         </ConditionalMuiProviders>

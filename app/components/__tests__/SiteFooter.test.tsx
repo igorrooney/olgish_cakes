@@ -15,6 +15,8 @@ interface ImageProps {
   [key: string]: unknown
 }
 
+const originalGtmId = process.env.NEXT_PUBLIC_GTM_ID
+
 jest.mock('next/link', () => ({
   __esModule: true,
   default: ({ href, children, ...props }: LinkProps) => (
@@ -31,6 +33,18 @@ jest.mock('next/image', () => ({
 }))
 
 describe('SiteFooter', () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST123'
+  })
+
+  afterAll(() => {
+    if (typeof originalGtmId === 'string') {
+      process.env.NEXT_PUBLIC_GTM_ID = originalGtmId
+      return
+    }
+
+    delete process.env.NEXT_PUBLIC_GTM_ID
+  })
   it('renders the divider image', () => {
     render(<SiteFooter />)
 
@@ -102,6 +116,20 @@ describe('SiteFooter', () => {
     )
     expect(developmentLink).toHaveAttribute('target', '_blank')
     expect(developmentLink).toHaveAttribute('rel', 'noreferrer noopener')
+  })
+
+  it('renders manage cookies button when GTM is enabled', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getByRole('button', { name: 'Manage cookie preferences' })).toBeInTheDocument()
+  })
+
+  it('does not render manage cookies button when GTM is disabled', () => {
+    delete process.env.NEXT_PUBLIC_GTM_ID
+
+    render(<SiteFooter />)
+
+    expect(screen.queryByRole('button', { name: 'Manage cookie preferences' })).not.toBeInTheDocument()
   })
 
   it('renders a single contentinfo landmark', () => {

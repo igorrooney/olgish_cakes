@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { ManageCookiesLink } from './ManageCookiesLink'
 
 export function SiteFooter() {
+  const isConsentEnabled = Boolean(process.env.NEXT_PUBLIC_GTM_ID)
+
   return (
     <>
       <div className="relative w-full h-auto bg-base-100">
@@ -82,6 +85,9 @@ export function SiteFooter() {
               <Link href="/privacy" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
                 Privacy policy
               </Link>
+              {isConsentEnabled ? (
+                <ManageCookiesLink className="link link-hover font-sans text-sm tablet:text-base text-base-content text-left" />
+              ) : null}
               <Link href="/sitemap" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
                 Sitemap
               </Link>
