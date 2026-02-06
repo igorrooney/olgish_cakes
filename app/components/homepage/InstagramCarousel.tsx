@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { InstagramPost } from '@/app/types/instagram'
 import { CarouselNavButton } from './CarouselNavButton'
 
@@ -67,7 +67,7 @@ export function InstagramCarousel({
   const [isAtEnd, setIsAtEnd] = useState(false)
   const [canScroll, setCanScroll] = useState(false)
   const hasPosts = posts.length > 0
-  const carouselId = useId().replace(/:/g, '')
+  const carouselId = 'instagram-carousel'
 
   const itemWidth = 342 + 24
 

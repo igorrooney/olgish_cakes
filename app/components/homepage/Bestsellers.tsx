@@ -105,7 +105,7 @@ export async function Bestsellers() {
                     className={`flex flex-col items-center gap-6 tablet:flex-row tablet:items-center tablet:justify-between ${isReversed ? 'tablet:flex-row-reverse' : ''}`}
                   >
                     <div className={imageClassName}>
-                      <Link href={`/cakes/${cake.slug.current}`} className="block h-full w-full">
+                      <Link href={`/cakes/${cake.slug.current}`} className="block h-full w-full relative">
                         <Image
                           src={cake.imageUrl}
                           alt={imageAlt}

@@ -433,7 +433,7 @@ select:focus {
 }
 
 /* Performance optimizations */
-img {
+img:not([data-nimg]) {
   max-width: 100%;
   height: auto;
 }

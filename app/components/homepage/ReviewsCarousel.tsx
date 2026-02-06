@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import type { Testimonial } from '@/app/types/testimonial'
 import { CarouselNavButton } from './CarouselNavButton'
@@ -217,7 +217,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
   const mobileCarouselRef = useRef<HTMLDivElement>(null)
   const tabletCarouselRef = useRef<HTMLDivElement>(null)
   const smallLaptopCarouselRef = useRef<HTMLDivElement>(null)
-  const baseId = useId().replace(/:/g, '')
+  const baseId = 'reviews-carousel'
 
   const mobileSlideCount = testimonials.length
   const tabletSlideCount = Math.ceil(testimonials.length / 4)

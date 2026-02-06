@@ -41,7 +41,8 @@ export function OlgishCakesFounder() {
               alt=''
               width={79}
               height={59}
-              className='absolute top-[-10px] left-[-7px] z-10 pointer-events-none tablet:top-[-14px] tablet:left-[-12px]'
+              style={{ width: '79px', height: '59px' }}
+              className='absolute left-[-7px] top-[-10px] z-10 pointer-events-none tablet:left-[-12px] tablet:top-[-14px]'
             />
             {/* Decorative bottom-right corner element */}
             <Image
@@ -49,7 +50,8 @@ export function OlgishCakesFounder() {
               alt=''
               width={79}
               height={59}
-              className='absolute top-[352px] right-[-9px] z-10 pointer-events-none tablet:top-auto tablet:bottom-[-12px] tablet:right-[-12px]'
+              style={{ width: '79px', height: '59px' }}
+              className='absolute right-[-9px] top-[352px] z-10 pointer-events-none tablet:bottom-[-12px] tablet:right-[-12px] tablet:top-auto'
             />
           </div>
 

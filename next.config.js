@@ -71,12 +71,12 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://cdn.kiprotect.com https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://cdn.kiprotect.com https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms",
               // unsafe-inline required for Google Fonts and Sanity Studio styles
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.kiprotect.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io wss://*.sanity.io wss://*.api.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live https://va.vercel-scripts.com",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io wss://*.sanity.io wss://*.api.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live https://va.vercel-scripts.com https://*.clarity.ms https://c.bing.com",
               "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
