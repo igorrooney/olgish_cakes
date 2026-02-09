@@ -241,7 +241,7 @@ export function generatePageMetadata({
 
   const allKeywords = [...PRIMARY_KEYWORDS, ...keywords];
   const normalizedReviewStats = normalizeReviewStats(reviewStats);
-  const reviewMeta = reviewStats && normalizedReviewStats.count > 0
+  const reviewMeta: Record<string, string> = reviewStats && normalizedReviewStats.count > 0
     ? {
         rating: formatRatingValue(normalizedReviewStats.averageRating),
         rating_count: formatReviewCount(normalizedReviewStats.count),

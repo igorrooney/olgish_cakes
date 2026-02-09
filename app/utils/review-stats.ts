@@ -3,6 +3,14 @@ export type ReviewStats = {
   averageRating: number
 }
 
+type AggregateRatingSchema = {
+  '@type': 'AggregateRating'
+  ratingValue: string
+  reviewCount: string
+  bestRating?: string
+  worstRating?: string
+}
+
 export const DEFAULT_REVIEW_STATS: ReviewStats = {
   count: 0,
   averageRating: 5
@@ -30,7 +38,7 @@ export function formatReviewCount(count: number): string {
   return safeCount.toString()
 }
 
-export function buildAggregateRating(stats?: ReviewStats) {
+export function buildAggregateRating(stats?: ReviewStats): AggregateRatingSchema | null {
   const normalized = normalizeReviewStats(stats)
 
   if (normalized.count <= 0) {

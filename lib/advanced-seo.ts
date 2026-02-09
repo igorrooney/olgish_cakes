@@ -169,13 +169,17 @@ export function generateAdvancedStructuredData(data: {
     : data.imageUrl
     ? `${baseUrl}${data.imageUrl}`
     : `${baseUrl}/images/placeholder-cake.jpg`;
-  const hasRating = typeof data.rating === 'number' && Number.isFinite(data.rating) && data.rating > 0
-  const hasReviewCount = typeof data.reviewCount === 'number' && Number.isFinite(data.reviewCount) && data.reviewCount > 0
-  const aggregateRating = hasRating && hasReviewCount
+  const rating = typeof data.rating === 'number' && Number.isFinite(data.rating) && data.rating > 0
+    ? data.rating
+    : null
+  const reviewCount = typeof data.reviewCount === 'number' && Number.isFinite(data.reviewCount) && data.reviewCount > 0
+    ? data.reviewCount
+    : null
+  const aggregateRating = rating !== null && reviewCount !== null
     ? {
         '@type': 'AggregateRating',
-        ratingValue: formatRatingValue(data.rating),
-        reviewCount: formatReviewCount(data.reviewCount),
+        ratingValue: formatRatingValue(rating),
+        reviewCount: formatReviewCount(reviewCount),
         bestRating: '5',
         worstRating: '1',
       }
