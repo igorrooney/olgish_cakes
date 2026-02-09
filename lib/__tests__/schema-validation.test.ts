@@ -205,7 +205,6 @@ describe('schema-validation', () => {
         const futureDate = new Date()
         futureDate.setFullYear(futureDate.getFullYear() + 1)
         const priceValidUntil = futureDate.toISOString().split('T')[0]
-        
         const valid = {
           ...validSchema,
           offers: {

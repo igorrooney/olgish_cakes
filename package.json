@@ -59,6 +59,7 @@
     "backup:setup": "node scripts/quick-setup.js",
     "backup:manager": "node scripts/backup-manager.js",
     "backup:sanity:drive": "tsx scripts/backup-sanity-to-drive.ts",
+    "setup:gdrive": "tsx scripts/setup-google-drive-oauth.ts",
     "setup:gdrive-oauth": "tsx scripts/setup-google-drive-oauth.ts",
     "seo:ranking": "node scripts/advanced-seo-ranking.js",
     "seo:linking": "node scripts/internal-linking-optimizer.js",
@@ -86,7 +87,7 @@
     "@mui/material": "^6.3.1",
     "@mui/x-date-pickers": "^7.28.3",
     "@portabletext/react": "^3.2.1",
-    "@sanity/client": "6.29.1",
+    "@sanity/client": "7.12.1",
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "3.88.1",
     "@supabase/supabase-js": "^2.58.0",
@@ -100,13 +101,13 @@
     "framer-motion": "^11.0.3",
     "googleapis": "^144.0.0",
     "jose": "^6.1.0",
-    "next": "^16.0.1",
-    "next-sanity": "7.1.4",
+    "next": "16.0.7",
+    "next-sanity": "^7.1.4",
     "next-themes": "^0.2.1",
     "node-cron": "^3.0.3",
     "nuqs": "^1.16.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
     "resend": "^4.2.0",
     "sanity": "3.88.1",
     "schema-dts": "^1.1.5",
@@ -117,7 +118,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@next/bundle-analyzer": "16.0.1",
+    "@next/bundle-analyzer": "16.0.7",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@types/jest": "^29.5.11",
@@ -157,6 +158,7 @@
   },
   "overrides": {
     "@types/react": "19.2.3",
-    "@types/react-dom": "19.2.2"
+    "@types/react-dom": "19.2.2",
+    "@sanity/client": "7.12.1"
   }
 }

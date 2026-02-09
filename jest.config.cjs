@@ -9,11 +9,19 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   ...baseConfig,
   testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    ...baseConfig.moduleNameMapper,
+    '^nanoid$': '<rootDir>/test/mocks/nanoid.cjs'
+  },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)'
   ],
-  testPathIgnorePatterns: [...baseConfig.testPathIgnorePatterns, '/app/api/']
+  testPathIgnorePatterns: [...baseConfig.testPathIgnorePatterns, '/app/api/'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion|@sanity|next-sanity|nanoid)(?:/|$))',
+    '^.+\\.module\\.(css|sass|scss)$'
+  ]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
