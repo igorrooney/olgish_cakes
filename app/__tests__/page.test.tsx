@@ -4,7 +4,7 @@
 import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import React from 'react'
-import HomePage, { metadata } from '../page'
+import HomePage, { generateMetadata } from '../page'
 import { getAllTestimonials } from '../utils/fetchTestimonials'
 
 // Type definitions for test mocks
@@ -208,7 +208,7 @@ describe('HomePage', () => {
 
   describe('Metadata Generation', () => {
     it('should generate metadata', async () => {
-      // metadata is now exported as a constant, not a function
+      const metadata = await generateMetadata()
 
       expect(metadata).toBeDefined()
       expect(metadata.title).toBeDefined()
@@ -216,21 +216,29 @@ describe('HomePage', () => {
     })
 
     it('should include OpenGraph data', () => {
-      expect(metadata.openGraph).toBeDefined()
-      expect(metadata.openGraph?.title).toBeDefined()
-      expect(metadata.openGraph?.description).toBeDefined()
+      return generateMetadata().then((metadata) => {
+        expect(metadata.openGraph).toBeDefined()
+        expect(metadata.openGraph?.title).toBeDefined()
+        expect(metadata.openGraph?.description).toBeDefined()
+      })
     })
 
     it('should include Twitter card data', () => {
-      expect(metadata.twitter).toBeDefined()
+      return generateMetadata().then((metadata) => {
+        expect(metadata.twitter).toBeDefined()
+      })
     })
 
     it('should include keywords', () => {
-      expect(metadata.keywords).toBeDefined()
+      return generateMetadata().then((metadata) => {
+        expect(metadata.keywords).toBeDefined()
+      })
     })
 
     it('should include canonical URL', () => {
-      expect(metadata.alternates?.canonical).toBeDefined()
+      return generateMetadata().then((metadata) => {
+        expect(metadata.alternates?.canonical).toBeDefined()
+      })
     })
   })
 
