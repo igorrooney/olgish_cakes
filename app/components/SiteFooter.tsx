@@ -14,7 +14,6 @@ export function SiteFooter() {
           width={430}
           height={100}
           className="w-full h-auto object-contain"
-          priority
         />
       </div>
       <footer className="bg-base-100 text-base-content">

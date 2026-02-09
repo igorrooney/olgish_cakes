@@ -74,9 +74,12 @@ const normalizeReviewDate = (dateValue?: string | null) => {
 const hasVisibleReviewText = (testimonial: Testimonial) =>
   Boolean(testimonial.text && testimonial.text.trim().length > 0)
 
+const hasValidReviewRating = (testimonial: Testimonial) =>
+  Number.isFinite(testimonial.rating) && testimonial.rating > 0
+
 const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
   const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
-  const ratingValue = Number.isFinite(testimonial.rating) && testimonial.rating > 0 ? testimonial.rating : 5
+  const ratingValue = testimonial.rating
   const reviewBody = testimonial.text?.trim() ?? ''
   const datePublished = normalizeReviewDate(testimonial.date) ?? undefined
 
@@ -145,7 +148,7 @@ export default async function Home() {
   const hasTestimonials = testimonials.length > 0
   const reviewSchemas = hasTestimonials
     ? testimonials
-        .filter(hasVisibleReviewText)
+        .filter((testimonial) => hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial))
         .slice(0, maxReviewSchemas)
         .map(mapTestimonialReview)
     : []
