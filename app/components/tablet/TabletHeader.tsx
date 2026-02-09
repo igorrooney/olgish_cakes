@@ -1,0 +1,342 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import Image from "next/image"
+import Link from "next/link"
+
+export function TabletHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (!isMenuOpen) return
+
+      const target = event.target
+
+      // Type guard instead of assertion
+      if (!(target instanceof Node)) {
+        return
+      }
+
+      // Don't close if clicking on the menu button
+      if (buttonRef.current?.contains(target)) {
+        return
+      }
+
+      // Close if clicking outside the menu
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    // Add event listeners
+    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("touchstart", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("touchstart", handleClickOutside)
+    }
+  }, [isMenuOpen])
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    if (!isMenuOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false)
+        buttonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isMenuOpen])
+
+  return (
+    <header className="bg-base-100 sticky top-0 z-50 relative">
+      <div className="navbar px-4 py-4 lg:px-10 lg:py-4">
+        <div className="navbar-start">
+          <Link href="/" className="flex items-center gap-2 p-2">
+            <div className="w-12 h-12 lg:w-16 lg:h-16 relative">
+              <Image
+                src="/images/olgish-cakes-logo-bakery-brand.png"
+                alt="Olgish Cakes Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link>
+        </div>
+        <div className="navbar-end">
+          <button
+            ref={buttonRef}
+            type="button"
+            className="h-12 w-12 rounded-btn shadow-btn bg-base-100 hover:bg-base-200 flex items-center justify-center p-0"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="tablet-menu"
+            aria-haspopup="true"
+            style={{ minWidth: "48px", minHeight: "48px" }}
+          >
+            {isMenuOpen ? (
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ display: "block", flexShrink: 0, width: "24px", height: "24px" }}
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 18L18 6M6 6l12 12"
+                  className="stroke-base-content"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ display: "block", flexShrink: 0, width: "24px", height: "24px" }}
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 6h16M4 12h16M4 18h16"
+                  className="stroke-base-content"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+      {isMenuOpen && (
+        <div
+          ref={menuRef}
+          id="tablet-menu"
+          role="menu"
+          className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible max-w-[1024px] mx-auto"
+          aria-label="Main navigation"
+        >
+          {/* Three Column Menu Layout with grouped Custom Cakes */}
+          <div className="grid grid-cols-3 gap-8 p-8">
+            {/* MENU Column */}
+            <div className="flex flex-col items-start">
+              <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
+                  MENU
+                </p>
+              </div>
+              <nav className="flex flex-col w-full" aria-label="Main menu">
+                <Link
+                  href="/cakes"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Cakes by post
+                </Link>
+                <Link
+                  href="/custom-cakes"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Custom cakes
+                </Link>
+                <Link
+                  href="/farmers-markets"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Farmers markets
+                </Link>
+                <Link
+                  href="/faqs"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  FAQs
+                </Link>
+                <Link
+                  href="/contact"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </nav>
+            </div>
+
+            {/* CUSTOM CAKES Group - Two columns close together */}
+            <div className="grid grid-cols-2 gap-8">
+              {/* CUSTOM CAKES Column 1 */}
+              <div className="flex flex-col items-start">
+                <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                  <p className="font-moreSugar text-sm leading-none whitespace-nowrap text-[color:var(--color-navigation)]">
+                    CUSTOM CAKES
+                  </p>
+                </div>
+                <nav className="flex flex-col w-full" aria-label="Custom cakes menu">
+                  <Link
+                    href="/custom-cake-enquiry"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Order form
+                  </Link>
+                  <Link
+                    href="/wedding-cakes"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Wedding cakes
+                  </Link>
+                  <Link
+                    href="/birthday-cakes"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Birthday cakes
+                  </Link>
+                  <Link
+                    href="/anniversary-cakes-leeds"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Anniversary cakes
+                  </Link>
+                  <Link
+                    href="/baby-shower-cakes"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Baby shower cakes
+                  </Link>
+                </nav>
+              </div>
+
+              {/* CUSTOM CAKES Column 2 */}
+              <div className="flex flex-col items-start">
+                <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                </div>
+                <nav className="flex flex-col w-full" aria-label="Custom cakes menu">
+                  <Link
+                    href="/christening-cakes"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Christening cakes
+                  </Link>
+                  <Link
+                    href="/corporate-cakes-leeds"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Corporate cakes
+                  </Link>
+                  <Link
+                    href="/traditional-ukrainian-cakes"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Ukrainian cakes
+                  </Link>
+                  <Link
+                    href="/honey-cake-near-me"
+                    role="menuitem"
+                    className="h-9 min-h-0 max-h-9 px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap"
+                    style={{ minHeight: '36px', fontFamily: 'Inter' }}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Honey cake
+                  </Link>
+                </nav>
+              </div>
+            </div>
+
+            {/* LEARN HUB Column */}
+            <div className="flex flex-col items-start pl-8">
+              <div className="w-full min-h-[36px] px-4 mb-2 flex items-center">
+                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
+                  LEARN HUB
+                </p>
+              </div>
+              <nav className="flex flex-col w-full" aria-label="Learn hub menu">
+                <Link
+                  href="/learn/articles"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Articles
+                </Link>
+                <Link
+                  href="/learn/guides"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Guides
+                </Link>
+                <Link
+                  href="/learn/workshops"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Workshops
+                </Link>
+                <Link
+                  href="/learn/customer-stories"
+                  role="menuitem"
+                  className="min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none hover:bg-base-200 transition-colors whitespace-nowrap font-sans"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Customer stories
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  )
+}
+

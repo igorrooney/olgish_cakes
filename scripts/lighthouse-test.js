@@ -17,18 +17,21 @@ class LighthouseTester {
       'https://olgishcakes.co.uk/about',
       'https://olgishcakes.co.uk/contact',
     ];
+    this.reportDir = path.join(process.cwd(), 'reports', 'generated');
+    fs.mkdirSync(this.reportDir, { recursive: true });
   }
 
   async runLighthouseTest(url) {
     console.log(`🔍 Testing ${url}...`);
     
     try {
-      const output = execSync(`lighthouse ${url} --output=json --output-path=./lighthouse-${this.sanitizeUrl(url)}.json --quiet`, {
+      const reportPath = path.join(this.reportDir, `lighthouse-${this.sanitizeUrl(url)}.json`);
+      const output = execSync(`lighthouse ${url} --output=json --output-path="${reportPath}" --quiet`, {
         encoding: 'utf8',
         timeout: 120000, // 2 minutes timeout
       });
       
-      return this.parseResults(`./lighthouse-${this.sanitizeUrl(url)}.json`);
+      return this.parseResults(reportPath);
     } catch (error) {
       console.error(`❌ Lighthouse test failed for ${url}:`, error.message);
       return null;
@@ -157,8 +160,9 @@ class LighthouseTester {
       }
     };
     
-    fs.writeFileSync('./lighthouse-summary.json', JSON.stringify(summary, null, 2));
-    console.log('\n📄 Summary report saved to: ./lighthouse-summary.json');
+    const summaryPath = path.join(this.reportDir, 'lighthouse-summary.json');
+    fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
+    console.log(`\n📄 Summary report saved to: ${summaryPath}`);
   }
 }
 

@@ -5,10 +5,13 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { HamperImageGallery } from '../HamperImageGallery'
 
+type HamperImageGalleryProps = React.ComponentProps<typeof HamperImageGallery>
+type HamperImages = HamperImageGalleryProps['images']
+
 // Mock Next.js Image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, fill, priority, blurDataURL, placeholder, sizes, loading, quality, ...props }: any) => (
+  default: ({ alt, src, fill, priority, blurDataURL, placeholder, sizes, loading, quality, ...props }: MockProps) => (
     <img alt={alt} src={src} data-testid="next-image" {...props} />
   )
 }))
@@ -22,7 +25,7 @@ jest.mock('@/sanity/lib/image', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, role, sx, ...props }: any) => (
+  Box: ({ children, role, sx, ...props }: MockProps) => (
     <div data-testid="box" role={role} {...props}>{children}</div>
   ),
 }))
@@ -40,7 +43,7 @@ jest.mock('@mui/icons-material/ArrowForward', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  AccessibleIconButton: ({ children, ariaLabel, onClick, ...props }: any) => (
+  AccessibleIconButton: ({ children, ariaLabel, onClick, ...props }: MockProps) => (
     <button data-testid="icon-button" aria-label={ariaLabel} onClick={onClick} {...props}>
       {children}
     </button>
@@ -194,7 +197,7 @@ describe('HamperImageGallery', () => {
     })
 
     it('should return null when no valid images', () => {
-      const invalidImages = [{ asset: { _ref: null } }] as any
+      const invalidImages = [{ asset: { _ref: null } }] as unknown as HamperImages
 
       const { container } = render(<HamperImageGallery name="Test" images={invalidImages} />)
 
@@ -214,7 +217,7 @@ describe('HamperImageGallery', () => {
     it('should fallback to product name', () => {
       const imagesWithoutAlt = [{ ...mockImages[0], alt: undefined }]
 
-      render(<HamperImageGallery name="Deluxe Hamper" images={imagesWithoutAlt as any} />)
+      render(<HamperImageGallery name="Deluxe Hamper" images={imagesWithoutAlt as HamperImages} />)
 
       expect(screen.getByAltText('Deluxe Hamper product image')).toBeInTheDocument()
     })
@@ -241,4 +244,3 @@ describe('HamperImageGallery', () => {
     })
   })
 })
-

@@ -1,7 +1,11 @@
+"use client";
+
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { Cake } from "@/types/cake";
+import { useReviewStats } from "@/app/components/ReviewStatsProvider";
+import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -14,6 +18,9 @@ export function OrderModalStructuredData({
   designType,
   currentPrice,
 }: OrderModalStructuredDataProps) {
+  const reviewStats = useReviewStats();
+  const aggregateRating = buildAggregateRating(reviewStats);
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -126,13 +133,7 @@ export function OrderModalStructuredData({
         : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
     })(),
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     review: [
       {
         "@type": "Review",

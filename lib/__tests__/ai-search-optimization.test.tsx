@@ -247,7 +247,7 @@ describe('ai-search-optimization', () => {
 
     it('should include Bakery schema', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const bakery = result['@graph'].find((item: any) => item['@type'] === 'Bakery')
+      const bakery = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Bakery')
 
       expect(bakery).toBeDefined()
       expect(bakery.name).toBe('Olgish Cakes')
@@ -255,7 +255,7 @@ describe('ai-search-optimization', () => {
 
     it('should include FAQPage schema', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const faq = result['@graph'].find((item: any) => item['@type'] === 'FAQPage')
+      const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
 
       expect(faq).toBeDefined()
       expect(faq.mainEntity).toBeInstanceOf(Array)
@@ -263,7 +263,7 @@ describe('ai-search-optimization', () => {
 
     it('should include HowTo schema', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const howTo = result['@graph'].find((item: any) => item['@type'] === 'HowTo')
+      const howTo = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'HowTo')
 
       expect(howTo).toBeDefined()
       expect(howTo.step).toBeInstanceOf(Array)
@@ -271,7 +271,7 @@ describe('ai-search-optimization', () => {
 
     it('should map AI_CONTENT_OPTIMIZATION QA pairs to FAQ', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const faq = result['@graph'].find((item: any) => item['@type'] === 'FAQPage')
+      const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
 
       expect(faq.mainEntity.length).toBe(AI_CONTENT_OPTIMIZATION.qaPairs.length)
     })
@@ -512,7 +512,7 @@ describe('ai-search-optimization', () => {
 
     it('should include all schema types', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const types = result['@graph'].map((item: any) => item['@type'])
+      const types = result['@graph'].map((item: UnknownRecord) => item['@type'])
 
       expect(types).toContain('Bakery')
       expect(types).toContain('FAQPage')
@@ -521,7 +521,7 @@ describe('ai-search-optimization', () => {
 
     it('should map business info to bakery schema', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
-      const bakery = result['@graph'].find((item: any) => item['@type'] === 'Bakery')
+      const bakery = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Bakery')
 
       expect(bakery.name).toBe('Test Bakery')
       expect(bakery.description).toBe('Test description')

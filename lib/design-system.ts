@@ -16,6 +16,7 @@ export const colors = {
     main: "#2E3192",
     light: "#4A4DB0", // Adjusted tone for WCAG AA compliance
     dark: "#1F2368",
+    800: "#181A4E",
     contrast: "#FFFFFF",
   },
   secondary: {
@@ -83,12 +84,18 @@ export const colors = {
     medium: "#BDBDBD",
     dark: "#757575",
   },
+
+  // Navigation Colors
+  navigation: {
+    main: "#6467CE", // Menu color
+  },
 } as const;
 
 export const typography = {
   fontFamily: {
     primary: "var(--font-alice), Georgia, serif",
     display: "var(--font-alice), Georgia, serif",
+    moreSugar: "var(--font-more-sugar), cursive, fantasy",
     mono: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
   },
 

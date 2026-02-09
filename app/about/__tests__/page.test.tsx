@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render } from '@testing-library/react'
-import AboutPage, { metadata, revalidate, dynamic } from '../page'
+import AboutPage, { metadata, dynamic } from '../page'
 
 // Mock utils
 jest.mock('@/app/utils/seo', () => ({
@@ -11,6 +11,10 @@ jest.mock('@/app/utils/seo', () => ({
   generatePageMetadata: jest.fn((data) => data),
   generateWebPageSchema: jest.fn(() => ({ '@type': 'WebPage' })),
   generatePersonSchema: jest.fn(() => ({ '@type': 'Person' }))
+}))
+
+jest.mock('@/app/utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
 }))
 
 // Mock components
@@ -22,10 +26,12 @@ jest.mock('../AboutContent', () => ({
 // Mock Next.js Script
 jest.mock('next/script', () => ({
   __esModule: true,
-  default: ({ children, id, strategy, ...props }: any) => (
+  default: ({ children, id, strategy, ...props }: MockProps) => (
     <script data-testid={id} data-strategy={strategy} {...props}>{children}</script>
   )
 }))
+
+const renderAboutPage = async () => render(await AboutPage())
 
 describe('AboutPage', () => {
   describe('Static Configuration', () => {
@@ -33,9 +39,6 @@ describe('AboutPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should have 60 second revalidation', () => {
-      expect(revalidate).toBe(60)
-    })
   })
 
   describe('Metadata', () => {
@@ -87,37 +90,37 @@ describe('AboutPage', () => {
   })
 
   describe('Structured Data', () => {
-    it('should include organization schema', () => {
-      const { container } = render(<AboutPage />)
+    it('should include organization schema', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[id="organization-schema"]')
       expect(script).toBeTruthy()
       expect(script?.getAttribute('type')).toBe('application/ld+json')
     })
 
-    it('should include local business schema', () => {
-      const { container } = render(<AboutPage />)
+    it('should include local business schema', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[id="local-business-schema"]')
       expect(script).toBeTruthy()
     })
 
-    it('should include webpage schema', () => {
-      const { container } = render(<AboutPage />)
+    it('should include webpage schema', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[id="webpage-schema"]')
       expect(script).toBeTruthy()
     })
 
-    it('should include person schema', () => {
-      const { container } = render(<AboutPage />)
+    it('should include person schema', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[id="person-schema"]')
       expect(script).toBeTruthy()
     })
 
-    it('should include FAQ schema', () => {
-      const { container } = render(<AboutPage />)
+    it('should include FAQ schema', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[id="about-faq-schema"]')
       expect(script).toBeTruthy()
@@ -130,8 +133,8 @@ describe('AboutPage', () => {
   })
 
   describe('Performance Optimization', () => {
-    it('should include performance optimization script', () => {
-      const { container } = render(<AboutPage />)
+    it('should include performance optimization script', async () => {
+      const { container } = await renderAboutPage()
 
       const script = container.querySelector('script[data-testid="performance-optimization"]')
       expect(script).toBeTruthy()
@@ -140,28 +143,28 @@ describe('AboutPage', () => {
   })
 
   describe('Rendering', () => {
-    it('should render AboutContent component', () => {
-      const { getByTestId } = render(<AboutPage />)
+    it('should render AboutContent component', async () => {
+      const { getByTestId } = await renderAboutPage()
 
       expect(getByTestId('about-content')).toBeInTheDocument()
     })
   })
 
   describe('Schema Generation', () => {
-    it('should call schema generators', () => {
+    it('should call schema generators', async () => {
       const { generateLocalBusinessSchema, generateOrganizationSchema, generateWebPageSchema } = require('@/app/utils/seo')
 
-      render(<AboutPage />)
+      await renderAboutPage()
 
       expect(generateLocalBusinessSchema).toHaveBeenCalled()
       expect(generateOrganizationSchema).toHaveBeenCalled()
       expect(generateWebPageSchema).toHaveBeenCalled()
     })
 
-    it('should pass correct data to generateWebPageSchema', () => {
+    it('should pass correct data to generateWebPageSchema', async () => {
       const { generateWebPageSchema } = require('@/app/utils/seo')
 
-      render(<AboutPage />)
+      await renderAboutPage()
 
       expect(generateWebPageSchema).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -172,4 +175,3 @@ describe('AboutPage', () => {
     })
   })
 })
-

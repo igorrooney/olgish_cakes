@@ -1,3 +1,8 @@
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
+
 import sitemapImages from '../sitemap-images'
 
 jest.mock('@/sanity/lib/client', () => {
@@ -40,7 +45,8 @@ describe('sitemap-images', () => {
       const blogEntry = result.find(entry => entry.url.includes('/blog/test-post'))
       expect(blogEntry).toBeDefined()
       if ('images' in blogEntry!) {
-        expect((blogEntry as any).images?.[0].url).toContain('test.jpg')
+        const blogImages = (blogEntry as UnknownRecord).images as UnknownRecord[] | undefined
+        expect(blogImages?.[0]?.url).toContain('test.jpg')
       }
     })
 
@@ -85,7 +91,8 @@ describe('sitemap-images', () => {
 
       const logoEntry = result.find(entry => {
         if ('images' in entry) {
-          return (entry as any).images?.some((img: any) => img.url.includes('logo'))
+          const entryImages = (entry as UnknownRecord).images as UnknownRecord[] | undefined
+          return entryImages?.some((img: UnknownRecord) => img.url.includes('logo'))
         }
         return false
       })
@@ -107,7 +114,8 @@ describe('sitemap-images', () => {
 
       const entry = result.find(entry => entry.url.includes('/cakes/test'))
       if (entry && 'images' in entry) {
-        expect((entry as any).images?.[0]?.geoLocation || '').toContain('Leeds')
+        const entryImages = (entry as UnknownRecord).images as UnknownRecord[] | undefined
+        expect(entryImages?.[0]?.geoLocation || '').toContain('Leeds')
       }
     })
 
@@ -122,4 +130,3 @@ describe('sitemap-images', () => {
     })
   })
 })
-

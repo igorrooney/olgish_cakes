@@ -1,5 +1,5 @@
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { getClient } from "@/sanity/lib/client";
+import { getCakeBySlug } from "@/app/utils/fetchCakes";
 import { Cake, blocksToText } from "@/types/cake";
 import { Container } from "@mui/material";
 import { Metadata } from "next";
@@ -10,51 +10,24 @@ import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } 
 import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
-
-// Enable revalidation for this page with optimization
-export const revalidate = 60; // 1 minute for better data freshness
+import { buildAggregateRating } from '@/app/utils/review-stats'
+import { getReviewStats } from '@/app/utils/review-stats.server'
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
-  const query = `*[_type == "cake" && defined(slug.current)] {
-    "slug": slug.current
-  }`;
-
   try {
-    const sanityClient = getClient(false); // Use production client
-    const cakes = await sanityClient.fetch(query);
+    const { getAllCakes } = require('@/app/utils/fetchCakes');
+    const cakes = await getAllCakes(false);
 
-    return cakes.map((cake: { slug: string }) => ({
-      slug: cake.slug,
-    }));
+    return cakes
+      .filter((cake: Cake) => cake.slug?.current)
+      .map((cake: Cake) => ({
+        slug: cake.slug.current,
+      }));
   } catch (error) {
     console.error("Error generating static params for cakes:", error);
     return [];
   }
-}
-
-async function getCake(slug: string, preview = false): Promise<Cake | null> {
-  const query = `*[_type == "cake" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    designs,
-    category,
-    ingredients,
-    allergens,
-    mainImage,
-    images,
-    seo,
-    structuredData
-  }`;
-
-  const sanityClient = getClient(preview);
-  return sanityClient.fetch(query, { slug });
 }
 
 interface PageProps {
@@ -65,7 +38,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cake = await getCake(slug);
+  const cake = await getCakeBySlug(slug);
 
   if (!cake) {
     return {
@@ -76,12 +49,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   // Special optimization for honey cake "buy honey cake online" keyword
   const isHoneyCake = slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
-  
+
   // Use SEO fields if available, otherwise generate from content
   const metaTitle = isHoneyCake
     ? (cake.seo?.metaTitle || `Buy Honey Cake Online | Authentic Ukrainian Medovik`)
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
-    
+
   const metaDescription = isHoneyCake
     ? (cake.seo?.metaDescription || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
     : (cake.seo?.metaDescription ||
@@ -138,7 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: metaDescription,
       images: [
         cake.mainImage?.asset?.url ||
-          `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+        `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
       ],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
@@ -171,7 +144,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CakePage({ params }: PageProps) {
   const { slug } = await params;
-  const cake = await getCake(slug);
+  const cake = await getCakeBySlug(slug);
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
 
   if (!cake) {
     notFound();
@@ -183,21 +158,21 @@ export default async function CakePage({ params }: PageProps) {
     const mainImage = cake.mainImage?.asset?._ref
       ? cake.mainImage
       : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
-        cake.designs?.standard?.find((img) => img.asset?._ref) ||
-        cake.designs?.standard?.[0] ||
-        cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
-        cake.designs?.individual?.find((img) => img.asset?._ref) ||
-        cake.designs?.individual?.[0] ||
-        // Fallback to images array (for legacy data like Honey Cake)
-        cake.images?.find((img) => img.asset?._ref) ||
-        cake.images?.[0];
+      cake.designs?.standard?.find((img) => img.asset?._ref) ||
+      cake.designs?.standard?.[0] ||
+      cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img) => img.asset?._ref) ||
+      cake.designs?.individual?.[0] ||
+      // Fallback to images array (for legacy data like Honey Cake)
+      cake.images?.find((img) => img.asset?._ref) ||
+      cake.images?.[0];
 
     if (mainImage?.asset?._ref) {
       const imageUrl = urlFor(mainImage).width(800).height(800).url()
       // Ensure URL is absolute (Sanity should return absolute, but double-check)
       return ensureAbsoluteImageUrl(imageUrl)
     }
-    
+
     return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
   })()
 
@@ -266,13 +241,7 @@ export default async function CakePage({ params }: PageProps) {
                 "https://schema.org/PaymentByBankTransfer",
               ],
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "4.9",
-              reviewCount: "120",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
             review: [
               {
                 "@type": "Review",
@@ -349,11 +318,7 @@ export default async function CakePage({ params }: PageProps) {
                       shippingDetails: getOfferShippingDetails(),
                       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                     },
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: "5",
-                      reviewCount: "120",
-                    },
+                    ...(aggregateRating ? { aggregateRating } : {}),
                   },
                 },
               ],

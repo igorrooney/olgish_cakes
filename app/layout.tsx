@@ -1,25 +1,22 @@
-import type { Metadata, Viewport } from "next";
-import { Alice } from "next/font/google";
-import { Providers } from "./providers";
-import "./globals.css";
-import { ThemeProvider, CssBaseline } from "@/lib/mui-optimization";
-import { theme } from "@/lib/theme";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { EmotionCacheProvider } from "./components/EmotionCacheProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Header } from "./components/Header";
-import UtilityBar from "./components/UtilityBar";
-import Footer from "./components/Footer";
-import { ScrollToTop } from "./components/ScrollToTop";
-import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
-import { DynamicCookieConsent, DynamicDevTools } from "./components/DynamicImports";
-import { PerformanceOptimizer, CriticalCSS } from "./components/PerformanceOptimizer";
-import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import type { Metadata, Viewport } from "next";
+import { Alice, Inter, Oldenburg } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
-import { Suspense } from "react";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { TechnicalIssueNotification } from "./components/TechnicalIssueNotification";
+import { SiteHeader } from "./components/homepage/SiteHeader";
+import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
+import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
+import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { ScrollToTop } from "./components/ScrollToTop";
+import { SiteFooter } from "./components/SiteFooter";
+import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
+import "./globals.css";
+import { Providers } from "./providers";
+import { buildAggregateRating, formatRatingValue, formatReviewCount } from "./utils/review-stats";
+import { getReviewStats } from "./utils/review-stats.server";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -31,9 +28,226 @@ const alice = Alice({
   adjustFontFallback: true,
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
+  adjustFontFallback: true,
+});
+
+const oldenburg = Oldenburg({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-oldenburg",
+  display: "swap",
+  preload: true,
+  fallback: ["Georgia", "serif"],
+  adjustFontFallback: true,
+});
+
+const moreSugar = localFont({
+  src: [
+    {
+      path: './fonts/more_sugar/MoreSugar-Regular.ttf',
+      weight: '400',
+      style: 'normal'
+    }
+  ],
+  variable: '--font-more-sugar',
+  display: 'swap',
+  preload: true,
+  fallback: ['cursive', 'fantasy']
+})
+
 const primary = designTokens.colors.primary.main;
 const primaryDark = designTokens.colors.primary.dark;
 const secondary = designTokens.colors.secondary.main;
+const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+const isConsentEnabled = Boolean(gtmId)
+const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
+const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
+const klaroStyleInitScript = `
+  (function () {
+    var link = document.querySelector('link[data-klaro-style]')
+    if (link) {
+      link.media = 'all'
+    }
+  })()
+`
+const consentDefaultsScript = `
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){dataLayer.push(arguments)}
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'analytics_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied'
+  })
+  gtag('set', 'ads_data_redaction', true)
+`
+
+const klaroServices = isConsentEnabled ? [
+  {
+    name: 'google-tag-manager',
+    default: true,
+    required: true,
+    purposes: ['necessary'],
+    onlyOnce: true,
+    translations: {
+      zz: {
+        title: 'Google Tag Manager'
+      },
+      en: {
+        description: 'Loads the tag manager to apply your consent choices.'
+      }
+    },
+    onAccept: `
+      for (let k of Object.keys(opts.consents)) {
+        if (opts.consents[k]) {
+          dataLayer.push({ event: 'klaro-' + k + '-accepted' })
+        }
+      }
+    `
+  },
+  {
+    name: 'google-analytics',
+    purposes: ['analytics'],
+    cookies: ['_ga', '_gid', '_gat'],
+    translations: {
+      zz: {
+        title: 'Google Analytics'
+      },
+      en: {
+        description: 'Helps us understand how people use the site.'
+      }
+    },
+    onAccept: `
+      gtag('consent', 'update', {
+        'analytics_storage': 'granted'
+      })
+    `,
+    onDecline: `
+      gtag('consent', 'update', {
+        'analytics_storage': 'denied'
+      })
+    `
+  },
+  {
+    name: 'microsoft-clarity',
+    purposes: ['analytics'],
+    translations: {
+      zz: {
+        title: 'Microsoft Clarity'
+      },
+      en: {
+        description: 'Helps us understand how people use the site with session insights.'
+      }
+    }
+  },
+  {
+    name: 'google-ads',
+    purposes: ['marketing'],
+    cookies: ['_gcl_au', '_gcl_aw', '_gcl_dc'],
+    translations: {
+      zz: {
+        title: 'Google Ads'
+      },
+      en: {
+        description: 'Shows personalised ads and measures ad performance.'
+      }
+    },
+    onAccept: `
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted'
+      })
+    `,
+    onDecline: `
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      })
+    `
+  }
+] : []
+
+const klaroConfig = {
+  elementID: 'klaro',
+  storageMethod: 'cookie',
+  storageName: 'klaro',
+  default: false,
+  mustConsent: false,
+  acceptAll: true,
+  hideDeclineAll: false,
+  hideLearnMore: false,
+  translations: {
+    zz: {
+      privacyPolicyUrl: '/privacy'
+    },
+    en: {
+      consentNotice: {
+        title: 'Cookie preferences',
+        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        learnMore: 'Choose cookies'
+      },
+      consentModal: {
+        title: 'Cookie preferences',
+        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
+      },
+      purposes: {
+        analytics: {
+          title: 'Analytics'
+        },
+        necessary: {
+          title: 'Necessary',
+          description: 'Required to store your cookie choices and keep the site secure.'
+        },
+        marketing: {
+          title: 'Marketing'
+        }
+      }
+    },
+    'en-GB': {
+      consentNotice: {
+        title: 'Cookie preferences',
+        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        learnMore: 'Choose cookies'
+      },
+      consentModal: {
+        title: 'Cookie preferences',
+        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
+      },
+      purposes: {
+        analytics: {
+          title: 'Analytics'
+        },
+        necessary: {
+          title: 'Necessary',
+          description: 'Required to store your cookie choices and keep the site secure.'
+        },
+        marketing: {
+          title: 'Marketing'
+        }
+      }
+    }
+  },
+  services: klaroServices
+}
+
+const klaroConfigScript = `var klaroConfig = ${JSON.stringify(klaroConfig)}`
+
+const gtmSnippet = gtmId
+  ? `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${gtmId}');`
+  : ''
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -44,14 +258,34 @@ export const viewport: Viewport = {
   viewportFit: "cover"
 };
 
-export const metadata: Metadata = {
+type OtherMetadata = Record<string, string | number | (string | number)[]>
+
+const baseOther: OtherMetadata = {
+  "geo.region": "GB-ENG",
+  "geo.placename": "Leeds",
+  "geo.position": "53.8008;-1.5491",
+  ICBM: "53.8008, -1.5491",
+  price_range: "££",
+  cuisine: "Ukrainian",
+  payment: "cash, credit card, bank transfer",
+  delivery: "yes",
+  takeout: "yes",
+  "business:contact_data:street_address": "Allerton Grange",
+  "business:contact_data:locality": "Leeds",
+  "business:contact_data:postal_code": "LS17",
+  "business:contact_data:country_name": "United Kingdom",
+  "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
+  "business:contact_data:email": "hello@olgishcakes.co.uk",
+}
+
+const baseMetadata: Metadata = {
   title: {
     default:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
-    template: "%s | Olgish Cakes",
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
+    template: '%s | Olgish Cakes',
   },
   description:
-    "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire. Premium ingredients, custom designs. Order now!",
+    'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
   keywords: [
     "Ukrainian cakes Leeds",
     "honey cake",
@@ -104,9 +338,9 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
     description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
     type: "website",
     locale: "en_GB",
     url: "https://olgishcakes.co.uk",
@@ -122,9 +356,9 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title:
-      "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake",
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
     description:
       "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
@@ -145,25 +379,7 @@ export const metadata: Metadata = {
   verification: {
     google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
   },
-  other: {
-    "geo.region": "GB-ENG",
-    "geo.placename": "Leeds",
-    "geo.position": "53.8008;-1.5491",
-    ICBM: "53.8008, -1.5491",
-    rating: "5",
-    rating_count: "127",
-    price_range: "££",
-    cuisine: "Ukrainian",
-    payment: "cash, credit card, bank transfer",
-    delivery: "yes",
-    takeout: "yes",
-    "business:contact_data:street_address": "Allerton Grange",
-    "business:contact_data:locality": "Leeds",
-    "business:contact_data:postal_code": "LS17",
-    "business:contact_data:country_name": "United Kingdom",
-    "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
-    "business:contact_data:email": "hello@olgishcakes.co.uk",
-  },
+  other: baseOther,
   alternates: {
     canonical: "https://olgishcakes.co.uk",
     languages: {
@@ -172,71 +388,81 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+  const reviewStats = await getReviewStats()
+  const other: OtherMetadata = { ...baseOther }
+
+  if (reviewStats.count > 0) {
+    other.rating = formatRatingValue(reviewStats.averageRating)
+    other.rating_count = formatReviewCount(reviewStats.count)
+  }
+
+  return {
+    ...baseMetadata,
+    other
+  }
+}
+
+export default async function RootLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
+
   return (
-    <html lang="en-GB" className={`${alice.variable}`}>
+    <html lang="en-GB" data-theme="olgish-cakes" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
       <head>
-        {/* Critical CSS inlining */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              /* Critical CSS for above-the-fold content */
-              body { margin: 0; font-family: var(--font-alice), Georgia, serif; }
-              .critical-loading { opacity: 0; transition: opacity 0.3s; }
-              .critical-loaded { opacity: 1; }
-
-              /* Critical layout styles */
-              .flex { display: flex; }
-              .flex-col { flex-direction: column; }
-              .min-h-screen { min-height: 100vh; }
-              .flex-grow { flex-grow: 1; }
-
-              /* Critical typography */
-              h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-bottom: 0.5em; font-weight: 600; }
-              h1 { font-size: clamp(2rem, 5vw, 4rem); }
-              h2 { font-size: clamp(1.5rem, 4vw, 3rem); }
-
-              /* Critical button styles */
-              .btn-primary { background: ${primary}; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-              .btn-primary:hover { background: ${primaryDark}; transform: translateY(-1px); }
-
-              /* Critical container styles */
-              .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-
-              /* Critical focus states */
-              a:focus, button:focus, input:focus, textarea:focus, select:focus { outline: 2px solid ${primary}; outline-offset: 2px; }
-            `,
-          }}
-        />
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
-        <CriticalCSS />
 
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//cdn.sanity.io" />
-        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        {isConsentEnabled ? (
+          <link rel="dns-prefetch" href="//cdn.kiprotect.com" />
+        ) : null}
 
         {/* Preconnect for critical domains */}
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        {isConsentEnabled ? (
+          <link rel="preconnect" href="https://cdn.kiprotect.com" crossOrigin="anonymous" />
+        ) : null}
 
         {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
 
-        {/* Google Analytics 4 - Tracks route changes and excludes admin pages */}
-        <Suspense fallback={null}>
-          <GoogleAnalytics gaId="G-QGQC58H2LD" />
-        </Suspense>
-
-        {/* Google Tag Manager - Load with lower priority */}
-        <Script id="google-tag-manager" strategy="lazyOnload">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-XXXXXXX');
-          `}
-        </Script>
+        {isConsentEnabled ? (
+          <>
+            <link rel="preload" as="style" href={klaroStyleHref} />
+            <link rel="stylesheet" href={klaroStyleHref} media="print" data-klaro-style="true" />
+            <Script
+              id="klaro-style-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{ __html: klaroStyleInitScript }}
+            />
+            <Script
+              id="gtag-consent-default"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{ __html: consentDefaultsScript }}
+            />
+            <Script
+              id="klaro-config"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{ __html: klaroConfigScript }}
+            />
+            <Script
+              id="klaro-script"
+              strategy="afterInteractive"
+              data-config="klaroConfig"
+              src={klaroScriptSrc}
+            />
+            <script
+              type="text/plain"
+              data-type="application/javascript"
+              data-name="google-tag-manager"
+              dangerouslySetInnerHTML={{ __html: gtmSnippet }}
+            />
+          </>
+        ) : null}
 
         {/* Enhanced Organization Schema */}
         <script
@@ -248,8 +474,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@id": "https://olgishcakes.co.uk/#organization",
               name: "Olgish Cakes",
               alternateName: "Olgish Ukrainian Cakes",
-              description:
-                "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating, same-day delivery across Yorkshire.",
+    description:
+      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
               url: "https://olgishcakes.co.uk",
               logo: {
                 "@type": "ImageObject",
@@ -308,7 +534,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
                 "https://www.instagram.com/olgish_cakes/",
               ],
-              // Aggregate ratings are provided on Product and review pages to avoid duplication
+              ...(aggregateRating ? { aggregateRating } : {}),
               hasOfferCatalog: {
                 "@type": "OfferCatalog",
                 name: "Ukrainian Cakes Menu",
@@ -422,36 +648,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${alice.className} ${alice.variable} critical-loading`}>
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-            title="Google Tag Manager"
-          />
-        </noscript>
-
-        <EmotionCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+      <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
+        <ConditionalMuiProviders>
+          <ReviewStatsProvider stats={reviewStats}>
             <Providers>
               <div className="flex flex-col min-h-screen">
-                <UtilityBar />
-                <Header />
+                <SiteHeader />
                 <main className="flex-grow">{children}</main>
-                <Footer />
-                      <ScrollToTop />
-                      <WebVitalsMonitor />
-                      <PerformanceOptimizer />
-                      <DynamicCookieConsent />
-                      <DynamicDevTools />
+                <SiteFooter />
+                <ScrollToTop />
+                <WebVitalsMonitor />
+                <PerformanceOptimizer />
               </div>
             </Providers>
-          </ThemeProvider>
-        </EmotionCacheProvider>
+          </ReviewStatsProvider>
+        </ConditionalMuiProviders>
         <Analytics />
         <SpeedInsights />
 
@@ -464,21 +675,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
 
         {/* Service Worker Registration */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                  .then((registration) => {
-                    // Service worker registered successfully
+        {process.env.NODE_ENV === "production" && (
+          <Script id="sw-register" strategy="afterInteractive">
+            {`
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js', {
+                    scope: '/',
+                    updateViaCache: 'none'
                   })
-                  .catch((registrationError) => {
-                    // Service worker registration failed
-                  });
-              });
-            }
-          `}
-        </Script>
+                    .then((registration) => {
+                      // Service worker registered successfully
+                    })
+                    .catch((registrationError) => {
+                      // Service worker registration failed
+                    });
+                });
+              }
+            `}
+          </Script>
+        )}
 
         {/* Suppress MetaMask extension errors */}
         <Script id="suppress-extension-errors" strategy="afterInteractive">

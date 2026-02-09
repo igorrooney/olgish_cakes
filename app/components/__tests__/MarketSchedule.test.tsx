@@ -4,15 +4,16 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import MarketSchedule from '../MarketSchedule'
+import { ReviewStatsProvider } from '../ReviewStatsProvider'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Sanity
@@ -36,23 +37,23 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock animated components
 jest.mock('../AnimatedSection', () => ({
-  AnimatedSection: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-  AnimatedDiv: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  AnimatedSection: ({ children, ...props }: MockProps) => <section {...props}>{children}</section>,
+  AnimatedDiv: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Button: ({ children, component, href, endIcon, ...props }: any) => {
+  Box: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Button: ({ children, component, href, endIcon, ...props }: MockProps) => {
     const Component = component || 'button'
     return <Component href={href} {...props}>{children}{endIcon}</Component>
   },
-  Card: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  CardContent: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Chip: ({ label, className, ...props }: any) => <span className={className} {...props}>{label}</span>,
-  Container: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-  Grid: ({ children, item, ...props }: any) => <div data-grid-item={item} {...props}>{children}</div>,
-  Typography: ({ children, component, variant, id, className, ...props }: any) => {
+  Card: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  CardContent: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Chip: ({ label, className, ...props }: MockProps) => <span className={className} {...props}>{label}</span>,
+  Container: ({ children, className, ...props }: MockProps) => <div className={className} {...props}>{children}</div>,
+  Grid: ({ children, item, ...props }: MockProps) => <div data-grid-item={item} {...props}>{children}</div>,
+  Typography: ({ children, component, variant, id, className, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component id={id} className={className} data-variant={variant} {...props}>{children}</Component>
   },
@@ -67,6 +68,13 @@ jest.mock('@/lib/mui-optimization', () => ({
 }))
 
 describe('MarketSchedule', () => {
+  const renderWithStats = (ui: React.ReactElement) =>
+    render(
+      <ReviewStatsProvider stats={{ count: 13, averageRating: 5 }}>
+        {ui}
+      </ReviewStatsProvider>
+    )
+
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
@@ -126,31 +134,31 @@ describe('MarketSchedule', () => {
 
   describe('Rendering', () => {
     it('should render section with proper heading', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Find Us at Local Markets!')).toBeInTheDocument()
     })
 
     it('should render subtitle', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText(/Meet us in person and taste our authentic Ukrainian cakes/)).toBeInTheDocument()
     })
 
     it('should render EventIcon', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('📆')).toBeInTheDocument()
     })
 
     it('should use custom title', () => {
-      render(<MarketSchedule events={mockEvents} title="Custom Title" />)
+      renderWithStats(<MarketSchedule events={mockEvents} title="Custom Title" />)
 
       expect(screen.getByText('Custom Title')).toBeInTheDocument()
     })
 
     it('should use custom subtitle', () => {
-      render(<MarketSchedule events={mockEvents} subtitle="Custom Subtitle" />)
+      renderWithStats(<MarketSchedule events={mockEvents} subtitle="Custom Subtitle" />)
 
       expect(screen.getByText('Custom Subtitle')).toBeInTheDocument()
     })
@@ -158,19 +166,19 @@ describe('MarketSchedule', () => {
 
   describe('Event Filtering', () => {
     it('should filter out past events', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.queryByText('Past Event')).not.toBeInTheDocument()
     })
 
     it('should filter out inactive events', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.queryByText('Inactive Event')).not.toBeInTheDocument()
     })
 
     it('should show active future events', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Leeds Market')).toBeInTheDocument()
       expect(screen.getByText('York Farmers Market')).toBeInTheDocument()
@@ -190,7 +198,7 @@ describe('MarketSchedule', () => {
         }
       ]
 
-      const { container } = render(<MarketSchedule events={pastEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={pastEvents} />)
 
       expect(container.firstChild).toBeNull()
     })
@@ -207,7 +215,7 @@ describe('MarketSchedule', () => {
         active: true
       }))
 
-      render(<MarketSchedule events={manyEvents} maxEvents={3} />)
+      renderWithStats(<MarketSchedule events={manyEvents} maxEvents={3} />)
 
       expect(screen.getByText('Event 0')).toBeInTheDocument()
       expect(screen.getByText('Event 1')).toBeInTheDocument()
@@ -241,7 +249,7 @@ describe('MarketSchedule', () => {
         }
       ]
 
-      render(<MarketSchedule events={unsortedEvents} />)
+      renderWithStats(<MarketSchedule events={unsortedEvents} />)
 
       const events = screen.getAllByText(/Event/)
       expect(events[0]).toHaveTextContent('Earlier Event')
@@ -250,27 +258,27 @@ describe('MarketSchedule', () => {
 
   describe('Event Display', () => {
     it('should display event title', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Leeds Market')).toBeInTheDocument()
     })
 
     it('should display event date', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       // Should include calendar icon
       expect(screen.getAllByText('📅').length).toBeGreaterThan(0)
     })
 
     it('should display event time', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('09:00 - 17:00')).toBeInTheDocument()
       expect(screen.getAllByText('🕒').length).toBeGreaterThan(0)
     })
 
     it('should display event location with link', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const link = screen.getByRole('link', { name: /View Leeds City Center on Google Maps/i })
       expect(link).toHaveAttribute('href', 'https://maps.google.com/leeds')
@@ -279,19 +287,19 @@ describe('MarketSchedule', () => {
     })
 
     it('should display location icon', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getAllByText('📍').length).toBeGreaterThan(0)
     })
 
     it('should display event description', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Come visit our stall')).toBeInTheDocument()
     })
 
     it('should display event image', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const images = screen.getAllByTestId('next-image')
       expect(images.length).toBeGreaterThan(0)
@@ -303,7 +311,7 @@ describe('MarketSchedule', () => {
         image: undefined
       }]
 
-      render(<MarketSchedule events={eventWithoutImage} />)
+      renderWithStats(<MarketSchedule events={eventWithoutImage} />)
 
       const images = screen.getAllByTestId('next-image')
       expect(images[0]).toHaveAttribute('src', '/images/pattern.svg')
@@ -312,7 +320,7 @@ describe('MarketSchedule', () => {
 
   describe('Special Badges', () => {
     it('should show "Today!" badge for today\'s events', () => {
-      const todayEvent: any = [{
+      const todayEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Today Event',
         date: today.toISOString().split('T')[0],
@@ -325,7 +333,7 @@ describe('MarketSchedule', () => {
         weatherDependent: false
       }]
 
-      render(<MarketSchedule events={todayEvent} />)
+      renderWithStats(<MarketSchedule events={todayEvent} />)
 
       expect(screen.getByText('Today!')).toBeInTheDocument()
     })
@@ -334,7 +342,7 @@ describe('MarketSchedule', () => {
       const twoDaysAway = new Date(today)
       twoDaysAway.setDate(twoDaysAway.getDate() + 2)
 
-      const soonEvent: any = [{
+      const soonEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Soon Event',
         date: twoDaysAway.toISOString().split('T')[0],
@@ -347,13 +355,13 @@ describe('MarketSchedule', () => {
         weatherDependent: false
       }]
 
-      render(<MarketSchedule events={soonEvent} />)
+      renderWithStats(<MarketSchedule events={soonEvent} />)
 
       expect(screen.getByText('In 2 days')).toBeInTheDocument()
     })
 
     it('should show "In 1 day" (singular) for tomorrow', () => {
-      const tomorrowEvent: any = [{
+      const tomorrowEvent: UnknownRecord[] = [{
         _id: '1',
         title: 'Tomorrow Event',
         date: tomorrow.toISOString().split('T')[0],
@@ -364,19 +372,19 @@ describe('MarketSchedule', () => {
         active: true
       }]
 
-      render(<MarketSchedule events={tomorrowEvent} />)
+      renderWithStats(<MarketSchedule events={tomorrowEvent} />)
 
       expect(screen.getByText('In 1 day')).toBeInTheDocument()
     })
 
     it('should show "Weather Dependent" badge', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Weather Dependent')).toBeInTheDocument()
     })
 
     it('should not show "Today!" badge for future events', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       // Only the York event (nextWeek) shouldn't have "Today!" badge
       const todayBadges = screen.queryAllByText('Today!')
@@ -386,13 +394,13 @@ describe('MarketSchedule', () => {
 
   describe('Special Offers', () => {
     it('should display special offers section', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Special Offers')).toBeInTheDocument()
     })
 
     it('should display first 2 special offers', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Buy 2 Get 1 Free')).toBeInTheDocument()
       expect(screen.getByText('10% off hampers')).toBeInTheDocument()
@@ -404,7 +412,7 @@ describe('MarketSchedule', () => {
         specialOffers: ['Offer 1', 'Offer 2', 'Offer 3', 'Offer 4']
       }]
 
-      render(<MarketSchedule events={eventWithManyOffers} />)
+      renderWithStats(<MarketSchedule events={eventWithManyOffers} />)
 
       expect(screen.getByText('+2 more')).toBeInTheDocument()
     })
@@ -414,13 +422,13 @@ describe('MarketSchedule', () => {
         ...mockEvents[1]
       }]
 
-      render(<MarketSchedule events={eventWithoutOffers} />)
+      renderWithStats(<MarketSchedule events={eventWithoutOffers} />)
 
       expect(screen.queryByText('Special Offers')).not.toBeInTheDocument()
     })
 
     it('should show offer icon', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getAllByText('🏷️').length).toBeGreaterThan(0)
     })
@@ -428,14 +436,14 @@ describe('MarketSchedule', () => {
 
   describe('Contact Information', () => {
     it('should display phone number link', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const phoneLink = screen.getByRole('link', { name: /Call 07123456789 for Leeds Market/i })
       expect(phoneLink).toHaveAttribute('href', 'tel:07123456789')
     })
 
     it('should display WhatsApp link', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const whatsappLink = screen.getByRole('link', { name: /Message Leeds Market on WhatsApp/i })
       expect(whatsappLink).toHaveAttribute('href', 'https://wa.me/447123456789')
@@ -447,7 +455,7 @@ describe('MarketSchedule', () => {
         ...mockEvents[1]
       }]
 
-      render(<MarketSchedule events={eventWithoutContact} />)
+      renderWithStats(<MarketSchedule events={eventWithoutContact} />)
 
       expect(screen.queryByText('Contact for this event:')).not.toBeInTheDocument()
     })
@@ -458,7 +466,7 @@ describe('MarketSchedule', () => {
         contactInfo: { phone: '07123456789' }
       }]
 
-      render(<MarketSchedule events={eventWithOnlyPhone} />)
+      renderWithStats(<MarketSchedule events={eventWithOnlyPhone} />)
 
       expect(screen.getByText('📞 07123456789')).toBeInTheDocument()
       expect(screen.queryByText('💬 WhatsApp')).not.toBeInTheDocument()
@@ -470,7 +478,7 @@ describe('MarketSchedule', () => {
         contactInfo: { whatsapp: '447123456789' }
       }]
 
-      render(<MarketSchedule events={eventWithOnlyWhatsapp} />)
+      renderWithStats(<MarketSchedule events={eventWithOnlyWhatsapp} />)
 
       expect(screen.getByText('💬 WhatsApp')).toBeInTheDocument()
       expect(screen.queryByText(/📞/)).not.toBeInTheDocument()
@@ -479,33 +487,33 @@ describe('MarketSchedule', () => {
 
   describe('Call to Action', () => {
     it('should show CTA section by default', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText(/Don't Miss Out|Don't Miss Out/)).toBeInTheDocument()
     })
 
     it('should hide CTA when showAllLink is false', () => {
-      render(<MarketSchedule events={mockEvents} showAllLink={false} />)
+      renderWithStats(<MarketSchedule events={mockEvents} showAllLink={false} />)
 
       expect(screen.queryByText('Don\'t Miss Out!')).not.toBeInTheDocument()
     })
 
     it('should show Get in Touch button', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const link = screen.getByText('Get in Touch').closest('a')
       expect(link).toHaveAttribute('href', '/contact')
     })
 
     it('should show View Full Market Schedule button', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const link = screen.getByText('View Full Market Schedule').closest('a')
       expect(link).toHaveAttribute('href', '/market-schedule')
     })
 
     it('should show Instagram Follow button', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       // Changed to Button with onClick in Next.js 16/React 19 for better compatibility
       const button = screen.getByText('Follow @olgish_cakes')
@@ -516,14 +524,14 @@ describe('MarketSchedule', () => {
 
   describe('Structured Data', () => {
     it('should include JSON-LD script', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script[type="application/ld+json"]')
       expect(script).toBeTruthy()
     })
 
     it('should generate valid ItemList schema', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -532,7 +540,7 @@ describe('MarketSchedule', () => {
     })
 
     it('should include numberOfItems', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -540,7 +548,7 @@ describe('MarketSchedule', () => {
     })
 
     it('should generate Event schema for each event', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -549,16 +557,16 @@ describe('MarketSchedule', () => {
     })
 
     it('should include aggregateRating in events', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
       expect(json.itemListElement[0].item.aggregateRating['@type']).toBe('AggregateRating')
-      expect(json.itemListElement[0].item.aggregateRating.ratingValue).toBe('5')
+      expect(json.itemListElement[0].item.aggregateRating.ratingValue).toBe('5.0')
     })
 
     it('should include organizer information', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -566,7 +574,7 @@ describe('MarketSchedule', () => {
     })
 
     it('should include LocalBusiness context', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
@@ -574,12 +582,12 @@ describe('MarketSchedule', () => {
     })
 
     it('should have numeric price in offers (not string)', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -592,12 +600,12 @@ describe('MarketSchedule', () => {
     })
 
     it('should have price as 0 (number) for free events', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -610,12 +618,12 @@ describe('MarketSchedule', () => {
     })
 
     it('should not have string prices in structured data', () => {
-      const { container } = render(<MarketSchedule events={mockEvents} />)
+      const { container } = renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const script = container.querySelector('script')
       const json = JSON.parse(script?.textContent || '{}')
 
-      json.itemListElement.forEach((listItem: any) => {
+      json.itemListElement.forEach((listItem: UnknownRecord) => {
         if (listItem.item.offers) {
           const price = listItem.item.offers.price
 
@@ -630,20 +638,20 @@ describe('MarketSchedule', () => {
 
   describe('Accessibility', () => {
     it('should have proper region role', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByRole('region')).toBeInTheDocument()
     })
 
     it('should have aria-labelledby for heading', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       const region = screen.getByRole('region')
       expect(region).toHaveAttribute('aria-labelledby', 'market-schedule-heading')
     })
 
     it('should have proper heading ID', () => {
-      render(<MarketSchedule events={mockEvents} />)
+      renderWithStats(<MarketSchedule events={mockEvents} />)
 
       expect(screen.getByText('Find Us at Local Markets!').closest('[id="market-schedule-heading"]')).toBeInTheDocument()
     })
@@ -651,7 +659,7 @@ describe('MarketSchedule', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty events array', () => {
-      const { container } = render(<MarketSchedule events={[]} />)
+      const { container } = renderWithStats(<MarketSchedule events={[]} />)
 
       expect(container.firstChild).toBeNull()
     })
@@ -663,7 +671,7 @@ describe('MarketSchedule', () => {
       }]
 
       expect(() => {
-        render(<MarketSchedule events={eventWithoutDescription} />)
+        renderWithStats(<MarketSchedule events={eventWithoutDescription} />)
       }).not.toThrow()
     })
 
@@ -673,11 +681,10 @@ describe('MarketSchedule', () => {
         image: { asset: { url: 'https://image.com/test.jpg' } }
       }]
 
-      render(<MarketSchedule events={eventWithoutAlt} />)
+      renderWithStats(<MarketSchedule events={eventWithoutAlt} />)
 
       const img = screen.getAllByTestId('next-image')[0]
       expect(img).toHaveAttribute('alt', expect.stringContaining('Leeds Market market event'))
     })
   })
 })
-

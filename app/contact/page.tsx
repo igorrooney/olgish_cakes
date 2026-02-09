@@ -20,6 +20,8 @@ import {
   WhatsAppIcon,
 } from "@/lib/mui-optimization";
 import { generatePageProductSchemaScripts } from "@/lib/schema-helpers";
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { getReviewStats } from '../utils/review-stats.server'
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -100,7 +102,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const reviewStats = await getReviewStats()
   const contactEmail = "hello@olgishcakes.co.uk"; // Updated email
   const contactPhone = "+44 786 721 8194"; // Updated phone number
   const whatsappLink = `https://wa.me/${contactPhone.replace(/\D/g, "")}`;
@@ -164,7 +167,9 @@ export default function ContactPage() {
         category: "Ukrainian Honey Cake",
       },
     ],
-    "contact"
+    "contact",
+    BUSINESS_CONSTANTS.BASE_URL,
+    reviewStats
   );
 
   return (

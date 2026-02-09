@@ -22,7 +22,7 @@ jest.mock('@emotion/cache', () => {
 
 // Mock @emotion/react
 jest.mock('@emotion/react', () => ({
-  CacheProvider: ({ children, value }: any) => (
+  CacheProvider: ({ children, value }: MockProps) => (
     <div data-testid="cache-provider" data-cache-key={value?.key}>
       {children}
     </div>

@@ -18,6 +18,7 @@ import {
   generateHowToSchema,
   generateRecipeSchema,
 } from "@/app/utils/seo";
+import { useReviewStats } from "./ReviewStatsProvider";
 
 interface StructuredDataProps {
   type:
@@ -41,15 +42,17 @@ interface StructuredDataProps {
 }
 
 export function StructuredData({ type, data, id }: StructuredDataProps) {
+  const reviewStats = useReviewStats()
+
   useEffect(() => {
     let structuredData: any;
 
     switch (type) {
       case "organization":
-        structuredData = generateOrganizationSchema();
+        structuredData = generateOrganizationSchema(reviewStats);
         break;
       case "localBusiness":
-        structuredData = generateLocalBusinessSchema();
+        structuredData = generateLocalBusinessSchema(reviewStats);
         break;
       case "website":
         structuredData = generateWebSiteSchema();
@@ -116,7 +119,7 @@ export function StructuredData({ type, data, id }: StructuredDataProps) {
         scriptToRemove.remove();
       }
     };
-  }, [type, data, id]);
+  }, [type, data, id, reviewStats]);
 
   return null;
 }

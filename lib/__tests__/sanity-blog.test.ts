@@ -1,3 +1,8 @@
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
+
 // Mock Sanity client BEFORE importing anything else
 const mockFetch = jest.fn()
 const mockCreate = jest.fn()

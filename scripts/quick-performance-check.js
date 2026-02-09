@@ -167,8 +167,11 @@ class QuickPerformanceCheck {
       status: this.issues.length === 0 ? 'optimal' : 'needs_attention',
     };
     
-    fs.writeFileSync('./performance-check-report.json', JSON.stringify(report, null, 2));
-    console.log('\n📄 Report saved to: ./performance-check-report.json');
+    const reportDir = path.join(process.cwd(), 'reports', 'generated');
+    fs.mkdirSync(reportDir, { recursive: true });
+    const reportPath = path.join(reportDir, 'performance-check-report.json');
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+    console.log(`\n📄 Report saved to: ${reportPath}`);
   }
 }
 

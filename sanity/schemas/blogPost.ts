@@ -146,8 +146,7 @@ export default defineType({
           { title: 'Customer Stories', value: 'Customer Stories' },
           { title: 'Behind the Scenes', value: 'Behind the Scenes' },
           { title: 'Seasonal', value: 'Seasonal' },
-        ],
-        layout: 'tags'
+        ]
       },
       validation: Rule => Rule.required().min(1)
     }),

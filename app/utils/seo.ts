@@ -2,6 +2,7 @@ import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { REVIEW_DATES } from "@/lib/structured-data-defaults";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { Metadata } from "next";
+import { buildAggregateRating, formatRatingValue, formatReviewCount, normalizeReviewStats, type ReviewStats } from "./review-stats";
 
 // SEO Configuration
 export const SEO_CONFIG = {
@@ -206,6 +207,7 @@ export function generatePageMetadata({
   author,
   section,
   tags,
+  reviewStats,
 }: {
   title: string;
   description: string;
@@ -230,6 +232,7 @@ export function generatePageMetadata({
   author?: string;
   section?: string;
   tags?: string[];
+  reviewStats?: ReviewStats;
 }): Metadata {
   const canonicalUrl = url ? generateCanonicalUrl(url) : SEO_CONFIG.siteUrl;
   const ogImage = image
@@ -237,6 +240,13 @@ export function generatePageMetadata({
     : generateOpenGraphImage(SEO_CONFIG.defaultImage, title);
 
   const allKeywords = [...PRIMARY_KEYWORDS, ...keywords];
+  const normalizedReviewStats = normalizeReviewStats(reviewStats);
+  const reviewMeta: Record<string, string> = reviewStats && normalizedReviewStats.count > 0
+    ? {
+        rating: formatRatingValue(normalizedReviewStats.averageRating),
+        rating_count: formatReviewCount(normalizedReviewStats.count),
+      }
+    : {};
 
   return {
     title: generateMetaTitle(title),
@@ -298,8 +308,6 @@ export function generatePageMetadata({
       "geo.placename": "Leeds",
       "geo.position": "53.8008;-1.5491",
       ICBM: "53.8008, -1.5491",
-      rating: "5",
-      rating_count: "127",
       price_range: "££",
       cuisine: "Ukrainian",
       payment: "cash, credit card, bank transfer",
@@ -311,12 +319,15 @@ export function generatePageMetadata({
       "business:contact_data:country_name": "United Kingdom",
       "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
       "business:contact_data:email": "hello@olgishcakes.co.uk",
+      ...reviewMeta,
     },
   };
 }
 
 // Enhanced Structured Data Functions
-export function generateOrganizationSchema() {
+export function generateOrganizationSchema(reviewStats?: ReviewStats) {
+  const aggregateRating = buildAggregateRating(reviewStats);
+
   return {
     "@context": "https://schema.org",
     "@type": "Bakery",
@@ -374,13 +385,7 @@ export function generateOrganizationSchema() {
       "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
       "https://www.instagram.com/olgish_cakes/",
     ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
     deliveryAvailable: true,
     takeoutAvailable: true,
@@ -389,7 +394,9 @@ export function generateOrganizationSchema() {
   };
 }
 
-export function generateLocalBusinessSchema() {
+export function generateLocalBusinessSchema(reviewStats?: ReviewStats) {
+  const aggregateRating = buildAggregateRating(reviewStats);
+
   return {
     "@context": "https://schema.org",
     "@type": "Bakery",
@@ -434,13 +441,7 @@ export function generateLocalBusinessSchema() {
       { "@type": "City", name: "Skipton" },
       { "@type": "City", name: "Ilkley" },
     ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 }
 

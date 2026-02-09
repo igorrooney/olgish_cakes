@@ -23,12 +23,12 @@ const mockCake = (partial: Partial<Cake> & { _id: string; name: string }): Cake 
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Sanity
@@ -51,7 +51,7 @@ jest.mock('@/app/utils/seo', () => ({
 
 // Mock components
 jest.mock('@/app/components/RichTextRenderer', () => ({
-  RichTextRenderer: ({ value }: any) => <div data-testid="rich-text-renderer">{value}</div>
+  RichTextRenderer: ({ value }: MockProps) => <div data-testid="rich-text-renderer">{value}</div>
 }))
 
 // Mock design system
@@ -76,7 +76,7 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  ProductCard: ({ children, onMouseEnter, onMouseLeave, role, sx, onKeyDown, ...props }: any) => (
+  ProductCard: ({ children, onMouseEnter, onMouseLeave, role, sx, onKeyDown, ...props }: MockProps) => (
     <div
       data-testid="product-card"
       onMouseEnter={onMouseEnter}
@@ -88,13 +88,13 @@ jest.mock('@/lib/ui-components', () => ({
       {children}
     </div>
   ),
-  CategoryChip: ({ label, ...props }: any) => <span data-testid="category-chip" {...props}>{label}</span>,
-  PriceDisplay: ({ price, size, label, ...props }: any) => (
+  CategoryChip: ({ label, ...props }: MockProps) => <span data-testid="category-chip" {...props}>{label}</span>,
+  PriceDisplay: ({ price, size, label, ...props }: MockProps) => (
     <div data-testid="price-display" data-price={price} data-size={size} {...props}>
       {label && `${label} `}£{price}
     </div>
   ),
-  OutlineButton: ({ children, component, href, sx, ...props }: any) => {
+  OutlineButton: ({ children, component, href, sx, ...props }: MockProps) => {
     const Component = component || 'button'
     return <Component data-testid="outline-button" href={href} {...props}>{children}</Component>
   }
@@ -102,29 +102,34 @@ jest.mock('@/lib/ui-components', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Card: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  CardContent: ({ children, sx, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, variant, component, sx, ...props }: any) => {
+  Card: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  CardContent: ({ children, sx, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, variant, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>
   },
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-  Box: ({ children, role, sx, ...props }: any) => <div data-testid="box" role={role} {...props}>{children}</div>,
-  Chip: ({ children, ...props }: any) => <span {...props}>{children}</span>
+  Button: ({ children, ...props }: MockProps) => <button {...props}>{children}</button>,
+  Box: ({ children, role, sx, ...props }: MockProps) => <div data-testid="box" role={role} {...props}>{children}</div>,
+  Chip: ({ children, ...props }: MockProps) => <span {...props}>{children}</span>
 }))
 
+const setLocationHref = (href: string) => {
+  const locationMock = { href } as unknown as Location
+  Object.defineProperty(window, 'location', { value: locationMock, writable: true })
+}
+
 describe('CakeCard', () => {
-  const testCake: any = {
+  const testCake = mockCake({
     _id: 'cake-1',
     name: 'Honey Cake',
-    slug: { current: 'honey-cake' },
+    slug: { _type: 'slug', current: 'honey-cake' },
     category: 'Traditional',
     pricing: { standard: 30 },
     shortDescription: [{ children: [{ text: 'Delicious honey cake' }] }],
     mainImage: { asset: { _ref: 'image-ref-1' } },
     ingredients: ['Honey', 'Flour'],
     allergens: ['Gluten', 'Eggs']
-  }
+  })
 
   describe('Rendering', () => {
     it('should render ProductCard', () => {
@@ -166,11 +171,11 @@ describe('CakeCard', () => {
     })
 
     it('should fallback to designs.standard', () => {
-      const cakeWithDesigns: any = {
+      const cakeWithDesigns = {
         ...testCake,
         mainImage: undefined,
         designs: { standard: [{ asset: { _ref: 'ref-1' }, isMain: true }] }
-      }
+      } as Cake
 
       render(<CakeCard cake={cakeWithDesigns} />)
 
@@ -178,11 +183,11 @@ describe('CakeCard', () => {
     })
 
     it('should use placeholder when no images', () => {
-      const cakeWithoutImages: any = {
+      const cakeWithoutImages = {
         ...testCake,
         mainImage: undefined,
         designs: undefined
-      }
+      } as Cake
 
       render(<CakeCard cake={cakeWithoutImages} />)
 
@@ -255,8 +260,7 @@ describe('CakeCard', () => {
 
   describe('Keyboard Navigation', () => {
     it('should navigate on Enter key', () => {
-      delete (window as any).location
-      window.location = { href: '' } as any
+      setLocationHref('')
 
       render(<CakeCard cake={testCake} />)
 
@@ -267,8 +271,7 @@ describe('CakeCard', () => {
     })
 
     it('should navigate on Space key', () => {
-      delete (window as any).location
-      window.location = { href: '' } as any
+      setLocationHref('')
 
       render(<CakeCard cake={testCake} />)
 
@@ -334,7 +337,7 @@ describe('CakeCard', () => {
     })
 
     it('should use 0 when no pricing', () => {
-      const cakeWithoutPricing: any = { ...testCake, pricing: undefined }
+      const cakeWithoutPricing = { ...testCake, pricing: undefined } as Cake
 
       render(<CakeCard cake={cakeWithoutPricing} />)
 
@@ -384,4 +387,3 @@ describe('CakeCard', () => {
     })
   })
 })
-

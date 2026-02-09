@@ -57,6 +57,20 @@ jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
 }))
 
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  }))
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
+
 jest.mock('next/link', () => ({ 
   __esModule: true, 
   default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> 
@@ -97,7 +111,7 @@ describe('CakesWakefieldPage', () => {
     it('should have description with pricing and social proof', () => {
       expect(metadata.description).toContain('Wakefield')
       expect(metadata.description).toContain('£25')
-      expect(metadata.description).toContain('127+ 5-star reviews')
+      expect(metadata.description).toContain('5★ rated')
       expect(metadata.description).toContain('Same-day delivery')
     })
 
@@ -176,7 +190,7 @@ describe('CakesWakefieldPage', () => {
         
         expect(schema.aggregateRating).toBeDefined()
         expect(schema.aggregateRating['@type']).toBe('AggregateRating')
-        expect(schema.aggregateRating.ratingValue).toBe('5')
+        expect(schema.aggregateRating.ratingValue).toBe('5.0')
       }
     })
   })
@@ -195,5 +209,3 @@ describe('CakesWakefieldPage', () => {
     })
   })
 })
-
-

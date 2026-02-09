@@ -32,13 +32,13 @@ export const BUSINESS_CONSTANTS = {
   
   // Business Hours (if needed in the future)
   HOURS: {
-    monday: '9:00 AM - 8:00 PM',
-    tuesday: '9:00 AM - 8:00 PM',
-    wednesday: '9:00 AM - 8:00 PM',
-    thursday: '9:00 AM - 8:00 PM',
-    friday: '9:00 AM - 8:00 PM',
-    saturday: '9:00 AM - 8:00 PM',
-    sunday: '9:00 AM - 8:00 PM'
+    monday: 'Online orders: 24/7',
+    tuesday: 'Online orders: 24/7',
+    wednesday: 'Online orders: 24/7',
+    thursday: 'Online orders: 24/7',
+    friday: 'Online orders: 24/7',
+    saturday: 'Online orders: 24/7',
+    sunday: 'Online orders: 24/7'
   }
 } as const;
 

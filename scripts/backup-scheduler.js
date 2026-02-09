@@ -12,10 +12,11 @@
  * npm run backup:schedule -- --config=./custom-config.json
  */
 
-const cron = require('node-cron');
-const fs = require('fs').promises;
-const path = require('path');
-const SanityBackup = require('./backup-sanity');
+import cron from 'node-cron'
+import { promises as fs, realpathSync } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import SanityBackup from './backup-sanity.js'
 
 class BackupScheduler {
   constructor(configPath = './scripts/backup-config.json') {
@@ -344,9 +345,23 @@ async function main() {
   }
 }
 
-// Run if called directly
-if (require.main === module) {
-  main().catch(console.error);
+function isDirectExecution() {
+  if (!process.argv[1]) {
+    return false
+  }
+
+  const currentFilePath = fileURLToPath(import.meta.url)
+
+  try {
+    return realpathSync(currentFilePath) === realpathSync(process.argv[1])
+  } catch {
+    return path.resolve(currentFilePath) === path.resolve(process.argv[1])
+  }
 }
 
-module.exports = BackupScheduler;
+// Run if called directly
+if (isDirectExecution()) {
+  main().catch(console.error)
+}
+
+export default BackupScheduler

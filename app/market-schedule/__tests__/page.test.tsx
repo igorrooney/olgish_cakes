@@ -26,7 +26,7 @@ jest.mock('@/app/utils/fetchMarketSchedule', () => ({
 // Mock components
 jest.mock('@/app/components/MarketSchedule', () => ({
   __esModule: true,
-  default: ({ events }: any) => <div data-testid="market-schedule">Market Schedule ({events.length} events)</div>
+  default: ({ events }: MockProps) => <div data-testid="market-schedule">Market Schedule ({events.length} events)</div>
 }))
 
 jest.mock('@/app/components/Breadcrumbs', () => ({
@@ -35,9 +35,9 @@ jest.mock('@/app/components/Breadcrumbs', () => ({
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('MarketSchedulePage', () => {

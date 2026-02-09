@@ -29,7 +29,7 @@ jest.mock('@mui/material', () => {
   const actual = jest.requireActual('@mui/material')
   return {
     ...actual,
-    Dialog: ({ children, open, onClose, ...props }: any) => {
+    Dialog: ({ children, open, onClose, ...props }: MockProps) => {
       // Always render dialog element AND children in DOM
       // This allows React to properly track state changes
       // We'll check for open state via data attributes
@@ -57,15 +57,15 @@ jest.mock('@mui/material', () => {
         </div>
       )
     },
-    DialogTitle: ({ children, ...props }: any) => <h2 data-testid="dialog-title" {...props}>{children}</h2>,
-    DialogContent: ({ children, ...props }: any) => <div data-testid="dialog-content" {...props}>{children}</div>,
-    DialogActions: ({ children, ...props }: any) => <div data-testid="dialog-actions" {...props}>{children}</div>,
-    Snackbar: ({ children, open, ...props }: any) =>
+    DialogTitle: ({ children, ...props }: MockProps) => <h2 data-testid="dialog-title" {...props}>{children}</h2>,
+    DialogContent: ({ children, ...props }: MockProps) => <div data-testid="dialog-content" {...props}>{children}</div>,
+    DialogActions: ({ children, ...props }: MockProps) => <div data-testid="dialog-actions" {...props}>{children}</div>,
+    Snackbar: ({ children, open, ...props }: MockProps) =>
       open ? <div data-testid="snackbar" {...props}>{children}</div> : null,
-    Tooltip: ({ children, title, ...props }: any) => (
+    Tooltip: ({ children, title, ...props }: MockProps) => (
       <div data-testid="tooltip" title={title} {...props}>{children}</div>
     ),
-    IconButton: ({ children, onClick, ...props }: any) => {
+    IconButton: ({ children, onClick, ...props }: MockProps) => {
       // Ensure onClick is called when button is clicked
       // Don't wrap in extra handler - let React handle it naturally
       return (
@@ -80,30 +80,30 @@ jest.mock('@mui/material', () => {
         </button>
       )
     },
-    Table: ({ children, ...props }: any) => <table role="table" {...props}>{children}</table>,
-    TableBody: ({ children, ...props }: any) => <tbody {...props}>{children}</tbody>,
-    TableCell: ({ children, ...props }: any) => <td {...props}>{children}</td>,
-    TableContainer: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    TableHead: ({ children, ...props }: any) => <thead {...props}>{children}</thead>,
-    TableRow: ({ children, ...props }: any) => <tr {...props}>{children}</tr>,
-    TableSortLabel: ({ children, onClick, ...props }: any) => (
+    Table: ({ children, ...props }: MockProps) => <table role="table" {...props}>{children}</table>,
+    TableBody: ({ children, ...props }: MockProps) => <tbody {...props}>{children}</tbody>,
+    TableCell: ({ children, ...props }: MockProps) => <td {...props}>{children}</td>,
+    TableContainer: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    TableHead: ({ children, ...props }: MockProps) => <thead {...props}>{children}</thead>,
+    TableRow: ({ children, ...props }: MockProps) => <tr {...props}>{children}</tr>,
+    TableSortLabel: ({ children, onClick, ...props }: MockProps) => (
       <button onClick={onClick} {...props}>{children}</button>
     ),
-    Typography: ({ children, variant, component, ...props }: any) => {
+    Typography: ({ children, variant, component, ...props }: MockProps) => {
       const Tag = component || 'div'
       return <Tag data-variant={variant} {...props}>{children}</Tag>
     },
     CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
-    Chip: ({ label, children, ...props }: any) => <span {...props}>{label || children}</span>,
-    Box: ({ children, component, ...props }: any) => {
+    Chip: ({ label, children, ...props }: MockProps) => <span {...props}>{label || children}</span>,
+    Box: ({ children, component, ...props }: MockProps) => {
       const Tag = component || 'div'
       return <Tag {...props}>{children}</Tag>
     },
-    Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Card: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    CardContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Button: ({ children, onClick, ...props }: any) => (
+    Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Stack: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Card: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    CardContent: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Button: ({ children, onClick, ...props }: MockProps) => (
       <button onClick={onClick} {...props}>{children}</button>
     ),
   }
@@ -111,7 +111,7 @@ jest.mock('@mui/material', () => {
 
 // Mock MUI Date Pickers
 jest.mock('@mui/x-date-pickers/DatePicker', () => ({
-  DatePicker: ({ label, value, onChange, ...props }: any) => (
+  DatePicker: ({ label, value, onChange, ...props }: MockProps) => (
     <div data-testid="date-picker">
       <label htmlFor="date-picker-input">{label}</label>
       <input
@@ -132,11 +132,11 @@ jest.mock('@mui/x-date-pickers/DatePicker', () => ({
 }))
 
 jest.mock('@mui/x-date-pickers/LocalizationProvider', () => ({
-  LocalizationProvider: ({ children }: any) => children,
+  LocalizationProvider: ({ children }: MockProps) => children,
 }))
 
 jest.mock('@mui/x-date-pickers/AdapterDayjs', () => ({
-  AdapterDayjs: ({ children }: any) => children,
+  AdapterDayjs: ({ children }: MockProps) => children,
 }))
 
 // Mock dayjs
@@ -179,7 +179,7 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock AddOrderModal
 jest.mock('../AddOrderModal', () => ({
-  AddOrderModal: ({ open, onClose, onOrderCreated }: any) =>
+  AddOrderModal: ({ open, onClose, onOrderCreated }: MockProps) =>
     open ? (
       <div data-testid="add-order-modal">
         <button onClick={onClose}>Close Modal</button>
@@ -295,7 +295,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
     jest.spyOn(console, 'warn').mockImplementation(() => { })
   })
 
-  const setupFetchMocks = (orders: any[] = []) => {
+  const setupFetchMocks = (orders: UnknownRecord[] = []) => {
     // Mock fetch orders - must be first
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -550,4 +550,3 @@ describe('OrderManagementDashboard - Integration Tests', () => {
   })
 
 })
-

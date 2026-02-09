@@ -7,10 +7,10 @@ import { ErrorBoundary } from '../ErrorBoundary'
 
 // Mock MUI components
 jest.mock('@mui/material', () => ({
-  Box: ({ children, sx, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="box" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),
-  Typography: ({ children, variant, color, gutterBottom, sx, ...props }: any) => (
+  Typography: ({ children, variant, color, gutterBottom, sx, ...props }: MockProps) => (
     <div
       data-testid="typography"
       data-variant={variant}
@@ -21,12 +21,12 @@ jest.mock('@mui/material', () => ({
       {children}
     </div>
   ),
-  Alert: ({ children, severity, sx, ...props }: any) => (
+  Alert: ({ children, severity, sx, ...props }: MockProps) => (
     <div data-testid="alert" data-severity={severity} data-sx={JSON.stringify(sx)} {...props}>
       {children}
     </div>
   ),
-  Button: ({ children, variant, onClick, sx, ...props }: any) => (
+  Button: ({ children, variant, onClick, sx, ...props }: MockProps) => (
     <button
       data-testid="button"
       data-variant={variant}

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Button, Typography, Card, CardContent, Chip } from "@mui/material";
 import { Box } from "@mui/material";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { formatRatingValue, formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: "Best Cakes Leeds | Ukrainian Cakes",
@@ -94,7 +96,13 @@ const bestCakes = [
   },
 ];
 
-export default function BestCakesLeedsPage() {
+export default async function BestCakesLeedsPage() {
+  const reviewStats = await getReviewStats()
+  const ratingValue = formatRatingValue(reviewStats.averageRating)
+  const ratingDisplay = ratingValue.endsWith('.0') ? ratingValue.slice(0, -2) : ratingValue
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const reviewCountLabel = reviewStats.count > 0 ? `${reviewCount} Reviews` : '5★ Rated'
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-yellow-50">
       <script
@@ -128,11 +136,11 @@ export default function BestCakesLeedsPage() {
           </Typography>
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold">5</span>
+              <span className="text-2xl font-bold">{ratingDisplay}</span>
               <span className="text-gray-600">/5</span>
             </div>
             <span className="text-gray-600">•</span>
-            <span className="text-gray-600">127+ Reviews</span>
+            <span className="text-gray-600">{reviewCountLabel}</span>
             <span className="text-gray-600">•</span>
             <span className="text-gray-600">Award Winning</span>
           </div>

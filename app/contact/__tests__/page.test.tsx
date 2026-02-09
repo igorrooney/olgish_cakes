@@ -18,21 +18,21 @@ jest.mock('../../components/Breadcrumbs', () => ({
 // Mock Next.js Link
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  default: ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 }))
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, component, ...props }: any) => {
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, component, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component {...props}>{children}</Component>
   },
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Link: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Stack: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Link: ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>,
+  Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Paper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
   Divider: () => <hr />,
   PhoneIcon: () => <span>📞</span>,
   EmailIcon: () => <span>📧</span>,
@@ -43,7 +43,7 @@ jest.mock('@/lib/mui-optimization', () => ({
 
 // Mock SEO utilities
 jest.mock('../../utils/seo', () => ({
-  generateProductSchema: jest.fn((product: any) => ({
+  generateProductSchema: jest.fn((product: UnknownRecord) => ({
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${product.url}#product`,
@@ -82,6 +82,20 @@ jest.mock('../../utils/seo', () => ({
   }))
 }))
 
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  }))
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
+
 jest.mock('@/lib/structured-data-defaults', () => ({
   DEFAULT_AGGREGATE_RATING: {
     '@type': 'AggregateRating',
@@ -94,57 +108,58 @@ jest.mock('@/lib/structured-data-defaults', () => ({
 
 describe('ContactPage', () => {
   describe('Metadata', () => {
-    it('should have title', () => {
+    it('should have title', async () => {
       expect(metadata.title).toContain('Contact')
       expect(metadata.title).toContain('Olgish Cakes')
     })
 
-    it('should have description', () => {
+    it('should have description', async () => {
       expect(metadata.description).toBeDefined()
       expect(metadata.description).toContain('touch')
     })
 
-    it('should have OpenGraph data', () => {
+    it('should have OpenGraph data', async () => {
       expect(metadata.openGraph).toBeDefined()
       expect(metadata.openGraph?.title).toBeDefined()
       expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/contact')
     })
 
-    it('should have Twitter card data', () => {
+    it('should have Twitter card data', async () => {
       expect(metadata.twitter).toBeDefined()
       expect(metadata.twitter?.card).toBe('summary_large_image')
     })
 
-    it('should have canonical URL', () => {
+    it('should have canonical URL', async () => {
       expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/contact')
     })
 
-    it('should have keywords', () => {
+    it('should have keywords', async () => {
       expect(metadata.keywords).toBeDefined()
     })
   })
 
   describe('Rendering', () => {
-    it('should render without crashing', () => {
-      expect(() => render(<ContactPage />)).not.toThrow()
+    it('should render without crashing', async () => {
+      const page = await ContactPage()
+      expect(() => render(page)).not.toThrow()
     })
 
-    it('should render ContactForm', () => {
-      render(<ContactPage />)
+    it('should render ContactForm', async () => {
+      render(await ContactPage())
 
       expect(screen.getByTestId('contact-form')).toBeInTheDocument()
     })
 
-    it('should render Breadcrumbs', () => {
-      render(<ContactPage />)
+    it('should render Breadcrumbs', async () => {
+      render(await ContactPage())
 
       expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
     })
   })
 
   describe('Product Structured Data - Google Search Console Compliance', () => {
-    it('should have Product schemas for Custom Wedding Cakes and Ukrainian Honey Cake', () => {
-      const { container } = render(<ContactPage />)
+    it('should have Product schemas for Custom Wedding Cakes and Ukrainian Honey Cake', async () => {
+      const { container } = render(await ContactPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       const productSchemas: WithContext<Product>[] = []
@@ -171,8 +186,8 @@ describe('ContactPage', () => {
       expect(ukrainianHoneyCake).toBeDefined()
     })
 
-    it('should have Custom Wedding Cakes Product schema with required fields', () => {
-      const { container } = render(<ContactPage />)
+    it('should have Custom Wedding Cakes Product schema with required fields', async () => {
+      const { container } = render(await ContactPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       let customWeddingCakesSchema: WithContext<Product> | null = null
@@ -210,8 +225,8 @@ describe('ContactPage', () => {
       }
     })
 
-    it('should have Ukrainian Honey Cake Product schema with required fields', () => {
-      const { container } = render(<ContactPage />)
+    it('should have Ukrainian Honey Cake Product schema with required fields', async () => {
+      const { container } = render(await ContactPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       let ukrainianHoneyCakeSchema: WithContext<Product> | null = null
@@ -249,7 +264,7 @@ describe('ContactPage', () => {
       }
     })
 
-    it('should reject Product schemas without offers, review, or aggregateRating', () => {
+    it('should reject Product schemas without offers, review, or aggregateRating', async () => {
       const invalidSchema: WithContext<Product> = {
         '@context': 'https://schema.org',
         '@type': 'Product',
@@ -267,4 +282,3 @@ describe('ContactPage', () => {
     })
   })
 })
-

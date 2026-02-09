@@ -27,12 +27,17 @@ describe('robots.txt', () => {
 
     expect(rules.disallow).toContain('/studio/')
     expect(rules.disallow).toContain('/api/')
+    expect(rules.disallow).toContain('/admin/')
+    expect(rules.disallow).toContain('/test-emails')
   })
 
   it('should include sitemap URL', () => {
     const result = robots()
 
-    expect(result.sitemap).toBe('https://olgishcakes.co.uk/sitemap.xml')
+    expect(Array.isArray(result.sitemap)).toBe(true)
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap.xml')
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap-images.xml')
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap-products.xml')
   })
 
   it('should have correct type', () => {
@@ -42,4 +47,3 @@ describe('robots.txt', () => {
     expect(result).toHaveProperty('sitemap')
   })
 })
-

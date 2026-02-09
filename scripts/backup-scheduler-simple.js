@@ -14,7 +14,7 @@
  * npm run backup:schedule -- --run weekly
  */
 
-import { promises as fs } from 'fs';
+import { promises as fs, realpathSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
@@ -262,25 +262,27 @@ class BackupScheduler {
           console.log(`📁 ${dir}: ${backupFiles.length} backups, ${reportFiles.length} reports`);
           
           if (backupFiles.length > 0) {
-            // Get latest backup
-            const latestBackup = backupFiles
-              .map(f => ({ name: f, path: path.join(dirPath, f) }))
-              .map(f => ({ ...f, stats: null }))
-              .sort((a, b) => {
+            // Get latest backup with async fs APIs (ESM-safe under type:module)
+            const backupsWithStats = await Promise.all(
+              backupFiles.map(async (fileName) => {
+                const filePath = path.join(dirPath, fileName)
                 try {
-                  const aStats = require('fs').statSync(a.path);
-                  const bStats = require('fs').statSync(b.path);
-                  return bStats.mtime - aStats.mtime;
+                  const stats = await fs.stat(filePath)
+                  return { name: fileName, path: filePath, stats }
                 } catch {
-                  return 0;
+                  return null
                 }
-              })[0];
-            
+              })
+            )
+
+            const latestBackup = backupsWithStats
+              .filter(Boolean)
+              .sort((a, b) => b.stats.mtime.getTime() - a.stats.mtime.getTime())[0]
+
             if (latestBackup) {
               try {
-                const stats = require('fs').statSync(latestBackup.path);
-                const size = Math.round(stats.size / 1024);
-                const date = stats.mtime.toISOString().slice(0, 19);
+                const size = Math.round(latestBackup.stats.size / 1024)
+                const date = latestBackup.stats.mtime.toISOString().slice(0, 19)
                 console.log(`   Latest: ${latestBackup.name} (${size} KB, ${date})`);
               } catch (error) {
                 console.log(`   Latest: ${latestBackup.name}`);
@@ -348,8 +350,18 @@ Times (Europe/London):
   }
 }
 
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+
+  try {
+    return realpathSync(__filename) === realpathSync(process.argv[1]);
+  } catch {
+    return path.resolve(__filename) === path.resolve(process.argv[1]);
+  }
+}
+
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isDirectExecution()) {
   main().catch(console.error);
 }
 

@@ -184,8 +184,8 @@ const GiftHamperCard = memo(function GiftHamperCard({
 
       {/* AggregateRating microdata for Product list cards */}
       <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-        <meta itemProp="ratingValue" content="5" />
-        <meta itemProp="reviewCount" content="127" />
+        <meta itemProp="ratingValue" content={testimonialStats.averageRating.toFixed(1)} />
+        <meta itemProp="reviewCount" content={testimonialStats.count.toString()} />
         <meta itemProp="bestRating" content="5" />
         <meta itemProp="worstRating" content="1" />
       </Box>

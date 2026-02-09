@@ -5,17 +5,19 @@ import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { buildAggregateRating } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: "Birthday Cakes Bradford from £25 | 5★ Rated",
   description:
-    "Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+    "Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Bradford, birthday cakes in Bradford, custom birthday cakes Bradford, children's birthday cakes Bradford, cakes Bradford, Ukrainian cakes Bradford, cake delivery Bradford, bakery Bradford, same-day cake delivery Bradford",
   openGraph: {
     title: "Birthday Cakes Bradford from £25 | 5★ Rated",
     description:
-      "Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Bradford from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-bradford",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
     type: "website",
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Birthday Cakes Bradford from £25 | Same-Day Delivery",
     description:
-      "Custom birthday cakes delivered same-day in Bradford from £25. Ukrainian honey cake, children's themes, adult celebrations. 127+ 5-star reviews. Order today!",
+      "Custom birthday cakes delivered same-day in Bradford from £25. Ukrainian honey cake, children's themes, adult celebrations. 5★ rated. Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-bradford.jpg"],
   },
   alternates: {
@@ -34,6 +36,8 @@ export const metadata: Metadata = {
 
 export default async function CakesBradfordPage() {
   const allCakes = await getAllCakes();
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
 
   return (
     <>
@@ -70,13 +74,7 @@ export default async function CakesBradfordPage() {
               "@type": "City",
               name: "Bradford",
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "5",
-              reviewCount: "127",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
           }),
         }}
       />

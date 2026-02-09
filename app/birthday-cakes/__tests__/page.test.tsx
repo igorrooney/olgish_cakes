@@ -84,6 +84,19 @@ jest.mock('../../utils/seo', () => ({
     returnFees: "https://schema.org/FreeReturn"
   }))
 }))
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  }))
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
 jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> }))
 jest.mock('@mui/material', () => ({
   Container: ({ children }: MUIComponentProps) => <div>{children}</div>,
@@ -112,7 +125,7 @@ describe('BirthdayCakesPage', () => {
 
     it('should have optimized description with pricing and reviews', () => {
       expect(metadata.description).toContain('£25')
-      expect(metadata.description).toContain('127+ reviews')
+      expect(metadata.description).toContain('5★ rated')
       expect(metadata.description).toContain('Same-day delivery')
     })
 
@@ -273,4 +286,3 @@ describe('BirthdayCakesPage', () => {
     })
   })
 })
-

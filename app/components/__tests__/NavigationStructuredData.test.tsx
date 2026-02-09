@@ -56,7 +56,7 @@ describe('NavigationStructuredData', () => {
 
     const script = container.querySelector('script')
     const json = JSON.parse(script?.textContent || '{}')
-    json.mainEntity.forEach((entity: any) => {
+    json.mainEntity.forEach((entity: UnknownRecord) => {
       expect(entity['@type']).toBe('WebPage')
     })
   })
@@ -107,7 +107,7 @@ describe('NavigationStructuredData', () => {
 
     const script = container.querySelector('script')
     const json = JSON.parse(script?.textContent || '{}')
-    json.mainEntity.forEach((entity: any) => {
+    json.mainEntity.forEach((entity: UnknownRecord) => {
       expect(entity.breadcrumb['@type']).toBe('BreadcrumbList')
       expect(entity.breadcrumb.itemListElement.length).toBe(2)
     })

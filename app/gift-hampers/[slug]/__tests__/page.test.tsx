@@ -1,6 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
 import { render } from '@testing-library/react'
 import { notFound } from 'next/navigation'
 import HamperDetailPage, { generateMetadata, generateStaticParams } from '../page'
@@ -21,7 +26,13 @@ jest.mock('@/sanity/lib/client', () => {
   }
 })
 
+jest.mock('@/app/utils/fetchGiftHampers', () => ({
+  getAllGiftHampers: jest.fn(),
+  getGiftHamperBySlug: jest.fn()
+}))
+
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
+const { getAllGiftHampers: mockGetAllGiftHampers, getGiftHamperBySlug: mockGetGiftHamperBySlug } = jest.requireMock('@/app/utils/fetchGiftHampers')
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
@@ -45,7 +56,7 @@ jest.mock('../GiftHamperPageClient', () => ({
 }))
 
 jest.mock('@/app/components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav>Breadcrumbs</nav> }))
-jest.mock('@mui/material', () => ({ Container: ({ children }: any) => <div>{children}</div> }))
+jest.mock('@mui/material', () => ({ Container: ({ children }: MockProps) => <div>{children}</div> }))
 
 describe('HamperDetailPage', () => {
   const mockHamper = {
@@ -61,19 +72,24 @@ describe('HamperDetailPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+    mockGetAllGiftHampers.mockResolvedValue([])
   })
 
   describe('generateStaticParams', () => {
     it('should generate params', async () => {
-      mockFetch.mockResolvedValue([{ slug: 'deluxe-hamper' }])
+      mockGetAllGiftHampers.mockResolvedValue([
+        { slug: { current: 'deluxe-hamper' } }
+      ])
 
       const params = await generateStaticParams()
 
       expect(params).toEqual([{ slug: 'deluxe-hamper' }])
+      expect(mockGetAllGiftHampers).toHaveBeenCalledWith(false)
     })
 
     it('should handle errors', async () => {
-      mockFetch.mockRejectedValue(new Error('Failed'))
+      mockGetAllGiftHampers.mockRejectedValue(new Error('Failed'))
 
       const params = await generateStaticParams()
 
@@ -83,7 +99,7 @@ describe('HamperDetailPage', () => {
 
   describe('generateMetadata', () => {
     it('should generate metadata with default fallback', async () => {
-      mockFetch.mockResolvedValue(mockHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -100,7 +116,7 @@ describe('HamperDetailPage', () => {
           keywords: ['custom', 'seo', 'keywords']
         }
       }
-      mockFetch.mockResolvedValue(hamperWithSEO)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -114,7 +130,7 @@ describe('HamperDetailPage', () => {
         ...mockHamper,
         slug: { current: 'cake-by-post' }
       }
-      mockFetch.mockResolvedValue(cakeByPostHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
@@ -133,7 +149,7 @@ describe('HamperDetailPage', () => {
           keywords: ['custom', 'keywords']
         }
       }
-      mockFetch.mockResolvedValue(cakeByPostWithSEO)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostWithSEO)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'cake-by-post' }) })
 
@@ -144,7 +160,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should return 404 metadata for missing hamper', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetGiftHamperBySlug.mockResolvedValue(null)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
@@ -154,7 +170,7 @@ describe('HamperDetailPage', () => {
 
   describe('Rendering', () => {
     it('should render hamper page', async () => {
-      mockFetch.mockResolvedValue(mockHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
@@ -162,7 +178,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should call notFound for missing hamper', async () => {
-      mockFetch.mockResolvedValue(null)
+      mockGetGiftHamperBySlug.mockResolvedValue(null)
 
       await expect(async () => {
         await HamperDetailPage({ params: Promise.resolve({ slug: 'non-existent' }) })
@@ -179,7 +195,7 @@ describe('HamperDetailPage', () => {
         slug: { current: 'cake-by-post' },
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(cakeByPostHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
@@ -194,16 +210,16 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       // Verify cake-by-post specific properties exist
       expect(product.additionalProperty).toBeDefined()
       const properties = product.additionalProperty
       
-      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: any) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
       
       expect(deliveryMethod).toBeDefined()
       expect(deliveryMethod.value).toBe('Letterbox Post')
@@ -219,7 +235,7 @@ describe('HamperDetailPage', () => {
         ingredients: ['Flour', 'Honey', 'Eggs', 'Sugar'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(hamperWithIngredients)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithIngredients)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -233,12 +249,12 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
       
-      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
       expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
     })
@@ -249,7 +265,7 @@ describe('HamperDetailPage', () => {
         allergens: ['Gluten', 'Eggs', 'Dairy'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(hamperWithAllergens)
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithAllergens)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -263,12 +279,12 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
       
-      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
     })
@@ -284,7 +300,7 @@ describe('HamperDetailPage', () => {
         allergens: ['Gluten', 'Eggs', 'Dairy'],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(fullHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(fullHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
@@ -298,7 +314,7 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty
@@ -307,9 +323,9 @@ describe('HamperDetailPage', () => {
       expect(properties).toHaveLength(5) // 3 from cake-by-post + 1 ingredients + 1 allergens
       
       // Verify cake-by-post properties
-      const deliveryMethod = properties.find((p: any) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: any) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: any) => p.name === 'Shelf Life')
+      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
       
       expect(deliveryMethod).toBeDefined()
       expect(deliveryMethod.value).toBe('Letterbox Post')
@@ -319,17 +335,17 @@ describe('HamperDetailPage', () => {
       expect(shelfLife.value).toBe('7 days')
       
       // Verify ingredients property
-      const ingredients = properties.find((p: any) => p.name === 'Ingredients')
+      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
       expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
       
       // Verify allergens property
-      const allergens = properties.find((p: any) => p.name === 'Allergens')
+      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
       
       // Ensure no duplicates
-      const propertyNames = properties.map((p: any) => p.name)
+      const propertyNames = properties.map((p: UnknownRecord) => p.name)
       const uniqueNames = [...new Set(propertyNames)]
       expect(propertyNames.length).toBe(uniqueNames.length)
     })
@@ -340,7 +356,7 @@ describe('HamperDetailPage', () => {
         // No cake-by-post, no ingredients, no allergens
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
-      mockFetch.mockResolvedValue(basicHamper)
+      mockGetGiftHamperBySlug.mockResolvedValue(basicHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -354,7 +370,7 @@ describe('HamperDetailPage', () => {
       
       // Extract Product from @graph if present
       const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'Product')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
       
       const properties = product.additionalProperty || []
@@ -366,7 +382,7 @@ describe('HamperDetailPage', () => {
 
   describe('Brand Field Duplication Prevention', () => {
     it('should use @graph format for Product structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -389,7 +405,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should have exactly one Brand entity in @graph', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -408,7 +424,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Count Brand entities
-      const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+      const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
       
       // Should have exactly one Brand entity
       expect(brandEntities).toHaveLength(1)
@@ -419,7 +435,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should reference brand by @id in product, not inline object', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -438,7 +454,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Brand should be a reference by @id, not an inline object
@@ -451,7 +467,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should NOT have duplicate brand fields in structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -470,7 +486,7 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Check if brand is an inline object (has @type) - should be false
@@ -479,7 +495,7 @@ describe('HamperDetailPage', () => {
     })
 
     it('should have consistent brand @id in product structured data', async () => {
-      mockFetch.mockResolvedValue({
+      mockGetGiftHamperBySlug.mockResolvedValue({
         ...mockHamper,
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       })
@@ -498,12 +514,12 @@ describe('HamperDetailPage', () => {
       const graph = jsonLd['@graph'] || []
       
       // Find Brand entity
-      const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+      const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
       expect(brandEntity).toBeDefined()
       const brandId = brandEntity['@id']
       
       // Find Product
-      const product = graph.find((entity: any) => entity['@type'] === 'Product')
+      const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
       expect(product).toBeDefined()
       
       // Verify product references the same brand @id

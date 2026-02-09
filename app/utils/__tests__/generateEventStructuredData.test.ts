@@ -32,6 +32,8 @@ describe('generateEventStructuredData', () => {
   }
 
   describe('generateEventStructuredData', () => {
+    const reviewStats = { count: 13, averageRating: 5 }
+
     it('should generate valid Event schema', () => {
       const result = generateEventStructuredData(mockEvent)
 
@@ -88,10 +90,10 @@ describe('generateEventStructuredData', () => {
     })
 
     it('should include aggregateRating', () => {
-      const result = generateEventStructuredData(mockEvent)
+      const result = generateEventStructuredData(mockEvent, reviewStats)
 
       expect(result.aggregateRating['@type']).toBe('AggregateRating')
-      expect(result.aggregateRating.ratingValue).toBe('5')
+      expect(result.aggregateRating.ratingValue).toBe('5.0')
     })
 
     it('should use custom description', () => {
@@ -237,7 +239,7 @@ describe('generateEventStructuredData', () => {
     })
 
     it('should filter out events with missing required fields', () => {
-      const invalidEvent = { ...mockEvent, _id: '2', title: undefined } as any
+      const invalidEvent = { ...mockEvent, _id: '2', title: undefined } as unknown as MarketSchedule
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = generateEventsListStructuredData([mockEvent, invalidEvent])
@@ -364,4 +366,3 @@ describe('generateEventStructuredData', () => {
     })
   })
 })
-

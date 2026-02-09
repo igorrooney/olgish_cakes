@@ -1,5 +1,5 @@
-import { createClient } from "@sanity/client";
 import { groq } from "next-sanity";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 
 export interface FAQ {
   _id: string;
@@ -8,16 +8,8 @@ export interface FAQ {
   order: number;
 }
 
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2025-03-31",
-  useCdn: false,
-});
-
 export async function getFaqs(): Promise<FAQ[]> {
   try {
-
     const query = groq`*[_type == "faq"] | order(order asc) {
       _id,
       question,
@@ -25,7 +17,8 @@ export async function getFaqs(): Promise<FAQ[]> {
       order
     }`;
 
-    const result = await client.fetch(query);
+    const config = getCacheConfig('faqs')
+    const result = await cachedSanityFetch<FAQ[]>(query, {}, config);
 
     if (!Array.isArray(result)) {
       console.error("Unexpected result format:", result);

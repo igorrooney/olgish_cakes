@@ -74,6 +74,9 @@ export interface Cake {
   seo?: CakeSEO;
   description: RichTextBlock[]; // Rich text blocks
   shortDescription?: RichTextBlock[]; // Rich text blocks for short description
+  bestsellerShortDescription?: RichTextBlock[]; // Rich text blocks for bestseller section
+  bestsellerCustomerStory?: string; // Customer story quote for bestseller section
+  bestsellerStoryDetails?: string; // Who the cake was made for, occasion, etc.
   size: string;
   pricing: CakePricing;
   mainImage?: {
@@ -92,6 +95,7 @@ export interface Cake {
   allergens?: string[];
   structuredData?: CakeStructuredData;
   order?: number;
+  isBestseller?: boolean;
 }
 
 export const sizeLabels: Record<CakeSize["name"], string> = {

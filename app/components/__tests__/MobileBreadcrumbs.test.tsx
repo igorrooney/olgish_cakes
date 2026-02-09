@@ -7,18 +7,18 @@ import { MobileBreadcrumbs } from '../MobileBreadcrumbs'
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, component, sx, ...props }: any) => {
+  Box: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  Typography: ({ children, sx, ...props }: any) => <span data-testid="typography" {...props}>{children}</span>,
-  Breadcrumbs: ({ children, separator, ...props }: any) => (
+  Typography: ({ children, sx, ...props }: MockProps) => <span data-testid="typography" {...props}>{children}</span>,
+  Breadcrumbs: ({ children, separator, ...props }: MockProps) => (
     <nav data-testid="breadcrumbs" {...props}>
       {children}
       {separator && <span data-testid="separator">{separator}</span>}
     </nav>
   ),
-  Link: ({ children, href, onClick, sx, ...props }: any) => (
+  Link: ({ children, href, onClick, sx, ...props }: MockProps) => (
     <a data-testid="link" href={href} onClick={onClick} {...props}>{children}</a>
   )
 }))

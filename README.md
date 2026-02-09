@@ -41,7 +41,13 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
    RESEND_API_KEY=your_resend_api_key
    NEXTAUTH_URL=http://localhost:3000
    CONTACT_EMAIL_TO=hello@olgishcakes.co.uk
+   
+   # CSRF Protection (Required for form submissions)
+   CSRF_SECRET=your_csrf_secret_here
    ```
+   
+   **Note:** For development, you can use the template values from `env.development.template`.
+   For production, use `env.production.template` and ensure `CSRF_SECRET` is set to a secure random value.
    
    See [Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md) for detailed email configuration.
 4. Run the development server:

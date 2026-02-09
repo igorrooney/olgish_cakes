@@ -67,33 +67,3 @@ export function PerformanceOptimizer() {
 
   return null;
 }
-
-// Critical CSS inlining component
-export function CriticalCSS() {
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: `
-          /* Critical above-the-fold styles */
-          body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
-          .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-          .hero { min-height: 60vh; display: flex; align-items: center; }
-          .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; }
-          .btn-primary { background: #2E3192; color: white; }
-
-          /* Prevent layout shift */
-          img { max-width: 100%; height: auto; }
-          .lazy { opacity: 0; transition: opacity 0.3s; }
-          .lazy.loaded { opacity: 1; }
-
-          /* Smooth scrolling */
-          html { scroll-behavior: smooth; }
-
-          /* Performance optimizations */
-          * { box-sizing: border-box; }
-          .gpu-accelerated { transform: translateZ(0); will-change: transform; }
-        `,
-      }}
-    />
-  );
-}

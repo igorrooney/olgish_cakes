@@ -162,6 +162,12 @@ describe('design-system', () => {
         expect(colors.border.dark).toBe('#757575')
       })
     })
+
+    describe('navigation', () => {
+      it('should have menu color', () => {
+        expect(colors.navigation.main).toBe('#6467CE')
+      })
+    })
   })
 
   describe('typography', () => {

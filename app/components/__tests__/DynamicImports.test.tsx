@@ -15,8 +15,8 @@ import {
 
 // Mock next/dynamic
 jest.mock('next/dynamic', () => {
-  return (loader: any, options?: any) => {
-    const Component = (props: any) => {
+  return (loader: () => Promise<unknown>, options?: { loading?: React.ComponentType<MockProps> }) => {
+    const Component = (props: MockProps) => {
       if (options?.loading && typeof options.loading === 'function') {
         return React.createElement(options.loading, props)
       }
@@ -29,10 +29,10 @@ jest.mock('next/dynamic', () => {
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, display, justifyContent, alignItems, p, ...props }: any) => (
+  Box: ({ children, display, justifyContent, alignItems, p, ...props }: MockProps) => (
     <div data-testid="box" {...props}>{children}</div>
   ),
-  CircularProgress: ({ size, ...props }: any) => (
+  CircularProgress: ({ size, ...props }: MockProps) => (
     <div data-testid="circular-progress" data-size={size} {...props}>Loading...</div>
   )
 }))
@@ -145,4 +145,3 @@ describe('DynamicImports', () => {
     })
   })
 })
-

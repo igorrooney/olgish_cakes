@@ -18,6 +18,8 @@ import {
   SchoolIcon,
   StarIcon,
 } from "@/lib/mui-optimization";
+import { useReviewStats } from '../components/ReviewStatsProvider'
+import { formatReviewCount } from '../utils/review-stats'
 import {
   Box,
   Button,
@@ -240,6 +242,8 @@ const LoadingSkeleton = () => (
 );
 
 export default function AboutContent() {
+  const reviewStats = useReviewStats()
+  const reviewCount = formatReviewCount(reviewStats.count)
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const qualifications = [
@@ -288,7 +292,7 @@ export default function AboutContent() {
 
   const achievements = [
     "5★ Customer Rating",
-    "127+ Happy Customers",
+    reviewStats.count > 0 ? `${reviewCount} Happy Customers` : "Happy Customers",
     "Same-Day Delivery Service",
     "Traditional Ukrainian Recipes",
     "Professional Qualifications",

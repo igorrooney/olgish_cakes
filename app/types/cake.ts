@@ -36,4 +36,5 @@ export interface Cake {
   category: string;
   ingredients: string[];
   allergens?: string[];
+  isBestseller?: boolean;
 }

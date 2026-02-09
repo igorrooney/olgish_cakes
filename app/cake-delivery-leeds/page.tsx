@@ -12,17 +12,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { buildAggregateRating, formatRatingValue, formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
   description:
-    "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
+    "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 5★ rated | Serving all Leeds postcodes | Order today!",
   keywords:
     "cake delivery Leeds, same day cake delivery Leeds, cake delivery service Leeds, next day cake delivery Leeds, Ukrainian cake delivery Leeds, birthday cake delivery Leeds, wedding cake delivery Leeds",
   openGraph: {
     title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
     description:
-      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Serving all Leeds postcodes | Order today!",
+      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 5★ rated | Serving all Leeds postcodes | Order today!",
     url: "https://olgishcakes.co.uk/cake-delivery-leeds",
     siteName: "Olgish Cakes",
     images: [
@@ -40,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cake Delivery Leeds | Same-Day Delivery | 5★ Rated",
     description:
-      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 127+ 5-star reviews | Order today!",
+      "Same-day cake delivery Leeds from £5 | Order before 10am | Fresh Ukrainian cakes | 5★ rated | Order today!",
     images: ["https://olgishcakes.co.uk/images/cake-delivery.jpg"],
   },
   alternates: {
@@ -77,7 +79,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CakeDeliveryLeedsPage() {
+export default async function CakeDeliveryLeedsPage() {
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
+  const ratingValue = formatRatingValue(reviewStats.averageRating)
+  const ratingDisplay = ratingValue.endsWith('.0') ? ratingValue.slice(0, -2) : ratingValue
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const ratingLabel = reviewStats.count > 0
+    ? `${ratingDisplay}★ Rated Delivery Service | ${reviewCount} Reviews`
+    : `${ratingDisplay}★ Rated Delivery Service`
+
   return (
     <>
       <Script
@@ -106,13 +117,7 @@ export default function CakeDeliveryLeedsPage() {
                 addressRegion: "West Yorkshire",
                 addressCountry: "GB",
               },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "5",
-                reviewCount: "127",
-                bestRating: "5",
-                worstRating: "1",
-              },
+              ...(aggregateRating ? { aggregateRating } : {}),
             },
             serviceType: "Cake Delivery Service",
             areaServed: {
@@ -252,7 +257,7 @@ export default function CakeDeliveryLeedsPage() {
               Fresh Ukrainian cakes delivered straight to your door across Leeds. Same-day delivery available when ordered before 10am. Professional delivery service with careful handling to ensure your cake arrives in perfect condition.
             </Typography>
             <Chip
-              label="5★ Rated Delivery Service | 127+ Reviews"
+              label={ratingLabel}
               sx={{
                 backgroundColor: "primary.main",
                 color: "white",
@@ -648,5 +653,3 @@ export default function CakeDeliveryLeedsPage() {
     </>
   );
 }
-
-

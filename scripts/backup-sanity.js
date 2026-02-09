@@ -17,7 +17,7 @@
  */
 
 import { createClient } from '@sanity/client';
-import { promises as fs } from 'fs';
+import { promises as fs, realpathSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
@@ -176,15 +176,19 @@ class SanityBackup {
   }
 
   async createBackupReport(files) {
+    const fileEntries = await Promise.all(
+      files.map(async (filePath) => ({
+        name: path.basename(filePath),
+        size: await this.getFileSize(filePath),
+        created: new Date().toISOString()
+      }))
+    )
+
     const report = {
       ...this.backupInfo,
-      files: files.map(f => ({
-        name: path.basename(f),
-        size: await this.getFileSize(f),
-        created: new Date().toISOString()
-      })),
+      files: fileEntries,
       totalSize: await this.getTotalSize(files)
-    };
+    }
 
     const reportPath = path.join(this.options.outputDir, `backup-report-${this.options.timestamp}.json`);
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
@@ -319,8 +323,18 @@ async function main() {
   process.exit(result.success ? 0 : 1);
 }
 
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+
+  try {
+    return realpathSync(__filename) === realpathSync(process.argv[1]);
+  } catch {
+    return path.resolve(__filename) === path.resolve(process.argv[1]);
+  }
+}
+
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isDirectExecution()) {
   main().catch(console.error);
 }
 

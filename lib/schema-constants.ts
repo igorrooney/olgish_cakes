@@ -30,6 +30,8 @@ export const BUSINESS_INFO = {
   name: "Olgish Cakes",
   url: "https://olgishcakes.co.uk",
   logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+  streetAddress: '15 Allerton Grange Avenue',
+  postalCode: 'LS17 6PR',
   addressLocality: "Leeds",
   addressRegion: "West Yorkshire",
   addressCountry: "GB"
@@ -82,4 +84,3 @@ export const DEFAULT_RATING = {
 export const FALLBACK_PRICE = 25;
 export const FALLBACK_IMAGE = "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
 export const MIN_REVIEW_COUNT_FOR_DISPLAY = 2;
-

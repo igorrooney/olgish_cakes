@@ -52,9 +52,25 @@ jest.mock('@/lib/constants', () => ({
   }
 }))
 
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn((stats: { count: number; averageRating: number }) => ({
+    '@type': 'AggregateRating',
+    ratingValue: stats.averageRating.toFixed(1),
+    reviewCount: stats.count.toString(),
+    bestRating: '5',
+    worstRating: '1'
+  })),
+  formatRatingValue: jest.fn((value: number) => value.toFixed(1)),
+  formatReviewCount: jest.fn((count: number) => count.toString())
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
+
 // Mock SEO utilities
 jest.mock('../../utils/seo', () => ({
-  generateProductSchema: jest.fn((product: any) => ({
+  generateProductSchema: jest.fn((product: UnknownRecord) => ({
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${product.url}#product`,
@@ -105,7 +121,7 @@ jest.mock('@/lib/structured-data-defaults', () => ({
 
 describe('CakeInLeedsPage', () => {
   let metadata: Metadata
-  let CakeInLeedsPage: () => JSX.Element
+  let CakeInLeedsPage: () => Promise<JSX.Element>
 
   beforeAll(async () => {
     const module = await import('../page')
@@ -114,18 +130,18 @@ describe('CakeInLeedsPage', () => {
   })
 
   describe('Metadata Structure', () => {
-    it('should have correct title', () => {
+    it('should have correct title', async () => {
       expect(metadata.title).toBe('Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire')
     })
 
-    it('should have correct description', () => {
+    it('should have correct description', async () => {
       const description = metadata.description as string
       expect(description).toContain('cake in Leeds')
       expect(description).toContain('Ukrainian cakes')
       expect(description).toContain('same-day delivery')
     })
 
-    it('should have correct keywords', () => {
+    it('should have correct keywords', async () => {
       const keywords = metadata.keywords as string
       expect(keywords).toContain('cake in leeds')
       expect(keywords).toContain('cakes leeds')
@@ -133,39 +149,39 @@ describe('CakeInLeedsPage', () => {
       expect(keywords).toContain('ukrainian bakery leeds')
     })
 
-    it('should have Open Graph metadata', () => {
+    it('should have Open Graph metadata', async () => {
       expect(metadata.openGraph).toBeDefined()
       expect(metadata.openGraph.url).toBe('https://olgishcakes.co.uk/cake-in-leeds')
       expect(metadata.openGraph.type).toBe('website')
     })
 
-    it('should have Twitter metadata', () => {
+    it('should have Twitter metadata', async () => {
       expect(metadata.twitter).toBeDefined()
       expect(metadata.twitter.card).toBe('summary_large_image')
     })
 
-    it('should have geo metadata', () => {
+    it('should have geo metadata', async () => {
       expect(metadata.other).toBeDefined()
       expect(metadata.other['geo.region']).toBe('GB-ENG')
       expect(metadata.other['geo.placename']).toBe('Leeds')
       expect(metadata.other['geo.position']).toContain('53.8008')
     })
 
-    it('should have canonical URL', () => {
+    it('should have canonical URL', async () => {
       expect(metadata.alternates.canonical).toBe('https://olgishcakes.co.uk/cake-in-leeds')
     })
 
-    it('should have proper authors', () => {
+    it('should have proper authors', async () => {
       expect(metadata.authors).toBeDefined()
       expect(Array.isArray(metadata.authors)).toBe(true)
     })
 
-    it('should have creator and publisher', () => {
+    it('should have creator and publisher', async () => {
       expect(metadata.creator).toBe('Olgish Cakes')
       expect(metadata.publisher).toBe('Olgish Cakes')
     })
 
-    it('should have robots configuration', () => {
+    it('should have robots configuration', async () => {
       expect(metadata.robots).toBeDefined()
       expect(metadata.robots.index).toBe(true)
       expect(metadata.robots.follow).toBe(true)
@@ -173,85 +189,85 @@ describe('CakeInLeedsPage', () => {
   })
 
   describe('SEO Compliance', () => {
-    it('should have meta description within acceptable length', () => {
+    it('should have meta description within acceptable length', async () => {
       const description = metadata.description as string
       expect(description.length).toBeGreaterThanOrEqual(135)
       expect(description.length).toBeLessThanOrEqual(165)
     })
 
-    it('should have title within acceptable length', () => {
+    it('should have title within acceptable length', async () => {
       const title = metadata.title as string
       expect(title.length).toBeGreaterThanOrEqual(40)
       expect(title.length).toBeLessThanOrEqual(70)
     })
 
-    it('should have keywords targeting cake in Leeds', () => {
+    it('should have keywords targeting cake in Leeds', async () => {
       const keywords = metadata.keywords as string
       expect(keywords.toLowerCase()).toContain('cake in leeds')
       expect(keywords.toLowerCase()).toContain('leeds bakery')
     })
 
-    it('should have Open Graph images with proper dimensions', () => {
+    it('should have Open Graph images with proper dimensions', async () => {
       expect(metadata.openGraph.images).toBeDefined()
       expect(metadata.openGraph.images.length).toBeGreaterThan(0)
       expect(metadata.openGraph.images[0].width).toBe(1200)
       expect(metadata.openGraph.images[0].height).toBe(630)
     })
 
-    it('should have proper locale', () => {
+    it('should have proper locale', async () => {
       expect(metadata.openGraph.locale).toBe('en_GB')
     })
 
-    it('should have siteName', () => {
+    it('should have siteName', async () => {
       expect(metadata.openGraph.siteName).toBe('Olgish Cakes')
     })
   })
 
   describe('Local SEO', () => {
-    it('should include Leeds location in metadata', () => {
+    it('should include Leeds location in metadata', async () => {
       expect(metadata.other['geo.placename']).toBe('Leeds')
       expect(metadata.other['geo.position']).toContain('53.8008')
       expect(metadata.other.ICBM).toContain('53.8008')
     })
 
-    it('should have Leeds-specific keywords', () => {
+    it('should have Leeds-specific keywords', async () => {
       const keywords = metadata.keywords as string
       expect(keywords).toContain('cake in leeds')
       expect(keywords).toContain('birthday cake leeds')
       expect(keywords).toContain('wedding cake leeds')
     })
 
-    it('should have Leeds in description', () => {
+    it('should have Leeds in description', async () => {
       const description = metadata.description as string
       expect(description.toLowerCase()).toContain('leeds')
     })
 
-    it('should have Leeds coordinates', () => {
+    it('should have Leeds coordinates', async () => {
       expect(metadata.other['geo.position']).toBe('53.8008;-1.5491')
       expect(metadata.other.ICBM).toBe('53.8008, -1.5491')
     })
   })
 
   describe('Content Requirements', () => {
-    it('should have keywords for SEO', () => {
+    it('should have keywords for SEO', async () => {
       expect(metadata.keywords).toBeDefined()
       expect(typeof metadata.keywords).toBe('string')
       expect((metadata.keywords as string).length).toBeGreaterThan(50)
     })
 
-    it('should have metadataBase set', () => {
+    it('should have metadataBase set', async () => {
       expect(metadata.metadataBase).toBeDefined()
       expect(metadata.metadataBase.toString()).toContain('olgishcakes.co.uk')
     })
 
-    it('should have formatDetection disabled', () => {
+    it('should have formatDetection disabled', async () => {
       expect(metadata.formatDetection).toBeDefined()
       expect(metadata.formatDetection.email).toBe(false)
       expect(metadata.formatDetection.address).toBe(false)
       expect(metadata.formatDetection.telephone).toBe(false)
     })
 
-    it('should have googleBot configuration', () => {
+    it('should have googleBot configuration', async () => {
       expect(metadata.robots.googleBot).toBeDefined()
       expect(metadata.robots.googleBot['max-image-preview']).toBe('large')
       expect(metadata.robots.googleBot['max-snippet']).toBe(-1)
@@ -259,43 +275,43 @@ describe('CakeInLeedsPage', () => {
   })
 
   describe('Images and Media', () => {
-    it('should have Open Graph images', () => {
+    it('should have Open Graph images', async () => {
       expect(metadata.openGraph.images).toBeDefined()
       expect(metadata.openGraph.images[0].url).toContain('olgishcakes.co.uk')
       expect(metadata.openGraph.images[0].url).toContain('cakes-leeds-delivery.jpg')
     })
 
-    it('should have Twitter images', () => {
+    it('should have Twitter images', async () => {
       expect(metadata.twitter.images).toBeDefined()
       expect(metadata.twitter.images[0]).toContain('olgishcakes.co.uk')
       expect(metadata.twitter.images[0]).toContain('cakes-leeds-delivery.jpg')
     })
 
-    it('should have proper image alt text', () => {
+    it('should have proper image alt text', async () => {
       expect(metadata.openGraph.images[0].alt).toContain('Leeds')
       expect(metadata.openGraph.images[0].alt).toContain('Ukrainian')
     })
 
-    it('should have correct image type', () => {
+    it('should have correct image type', async () => {
       expect(metadata.openGraph.images[0].type).toBe('image/jpeg')
     })
   })
 
   describe('Component Rendering', () => {
-    it('should render without errors', () => {
-      expect(() => CakeInLeedsPage()).not.toThrow()
+    it('should render without errors', async () => {
+      await expect(CakeInLeedsPage()).resolves.toBeDefined()
     })
 
-    it('should return JSX element', () => {
-      const result = CakeInLeedsPage()
+    it('should return JSX element', async () => {
+      const result = await CakeInLeedsPage()
       expect(result).toBeDefined()
       expect(typeof result).toBe('object')
     })
   })
 
   describe('Product Structured Data - Google Search Console Compliance', () => {
-    it('should have Product schemas for Birthday Cake Leeds, Ukrainian Honey Cake, and Wedding Cake Leeds', () => {
-      const { container } = render(<CakeInLeedsPage />)
+    it('should have Product schemas for Birthday Cake Leeds, Ukrainian Honey Cake, and Wedding Cake Leeds', async () => {
+      const { container } = render(await CakeInLeedsPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       const productSchemas: WithContext<Product>[] = []
@@ -324,8 +340,8 @@ describe('CakeInLeedsPage', () => {
       expect(weddingCake).toBeDefined()
     })
 
-    it('should have Birthday Cake Leeds Product schema with required fields', () => {
-      const { container } = render(<CakeInLeedsPage />)
+    it('should have Birthday Cake Leeds Product schema with required fields', async () => {
+      const { container } = render(await CakeInLeedsPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       let birthdayCakeSchema: WithContext<Product> | null = null
@@ -363,8 +379,8 @@ describe('CakeInLeedsPage', () => {
       }
     })
 
-    it('should have Ukrainian Honey Cake Product schema with required fields', () => {
-      const { container } = render(<CakeInLeedsPage />)
+    it('should have Ukrainian Honey Cake Product schema with required fields', async () => {
+      const { container } = render(await CakeInLeedsPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       let ukrainianHoneyCakeSchema: WithContext<Product> | null = null
@@ -402,8 +418,8 @@ describe('CakeInLeedsPage', () => {
       }
     })
 
-    it('should have Wedding Cake Leeds Product schema with required fields', () => {
-      const { container } = render(<CakeInLeedsPage />)
+    it('should have Wedding Cake Leeds Product schema with required fields', async () => {
+      const { container } = render(await CakeInLeedsPage())
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
       let weddingCakeSchema: WithContext<Product> | null = null

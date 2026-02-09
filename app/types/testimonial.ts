@@ -9,6 +9,7 @@ export interface Testimonial {
   cakeType: string;
   rating: number;
   date: string;
+  title?: string;
   text: string;
   cakeImage?: {
     asset?: SanityAsset;

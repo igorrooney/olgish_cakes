@@ -10,6 +10,8 @@ import { Cake, blocksToText } from "@/types/cake";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -21,6 +23,18 @@ interface CakeCardProps {
 const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
+  const reviewStats = useReviewStats();
+  const ratingValue = formatRatingValue(reviewStats.averageRating);
+  const reviewCount = formatReviewCount(reviewStats.count);
+  const aggregateRating = reviewStats.count > 0
+    ? {
+        "@type": "AggregateRating",
+        ratingValue,
+        reviewCount,
+        bestRating: "5",
+        worstRating: "1",
+      }
+    : null;
 
   // Memoize expensive computations
   const mainImage = useMemo(() => {
@@ -135,13 +149,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           value: cake.allergens?.join(", ") || "Contains gluten, dairy, eggs",
         },
       ],
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "5.0",
-        reviewCount: "127",
-        bestRating: "5",
-        worstRating: "1",
-      },
+      ...(aggregateRating ? { aggregateRating } : {}),
       review: [
         {
           "@type": "Review",
@@ -179,7 +187,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         },
       },
     }),
-    [cake, price, imageUrl, imageAltText]
+    [aggregateRating, cake, price, imageUrl, imageAltText]
   );
 
   // Memoize event handlers
@@ -218,12 +226,14 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       />
 
       {/* AggregateRating microdata for Product list cards */}
-      <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-        <meta itemProp="ratingValue" content="5" />
-        <meta itemProp="reviewCount" content="127" />
-        <meta itemProp="bestRating" content="5" />
-        <meta itemProp="worstRating" content="1" />
-      </Box>
+      {aggregateRating && (
+        <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
+          <meta itemProp="ratingValue" content={ratingValue} />
+          <meta itemProp="reviewCount" content={reviewCount} />
+          <meta itemProp="bestRating" content="5" />
+          <meta itemProp="worstRating" content="1" />
+        </Box>
+      )}
 
       {/* Image Container with Overlay */}
       <Link

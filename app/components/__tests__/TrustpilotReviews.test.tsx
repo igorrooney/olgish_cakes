@@ -14,7 +14,7 @@ jest.mock('@/app/lib/trustpilot', () => ({
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, initial, animate, transition, ...props }: any) => (
+    div: ({ children, initial, animate, transition, ...props }: MockProps) => (
       <div {...props}>{children}</div>
     )
   }
@@ -22,23 +22,23 @@ jest.mock('framer-motion', () => ({
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Box: ({ children, component, src, alt, sx, ...props }: any) => {
+  Box: ({ children, component, src, alt, sx, ...props }: MockProps) => {
     if (component === 'img') {
       return <img src={src} alt={alt} {...props} />
     }
     return <div data-testid="box" {...props}>{children}</div>
   },
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, variant, sx, ...props }: any) => (
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Paper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Rating: ({ value, readOnly, sx, ...props }: any) => (
+  Rating: ({ value, readOnly, sx, ...props }: MockProps) => (
     <div data-testid="rating" data-value={value} {...props}>Rating: {value}</div>
   ),
-  Avatar: ({ children, sx, ...props }: any) => <div data-testid="avatar" {...props}>{children}</div>,
+  Avatar: ({ children, sx, ...props }: MockProps) => <div data-testid="avatar" {...props}>{children}</div>,
   CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
-  Alert: ({ children, ...props }: any) => <div data-testid="alert" {...props}>{children}</div>
+  Alert: ({ children, ...props }: MockProps) => <div data-testid="alert" {...props}>{children}</div>
 }))
 
 // Mock dependencies
@@ -62,11 +62,11 @@ jest.mock('@/lib/design-system', () => ({
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  Container: ({ children, sx, ...props }: any) => <div data-testid="design-container" {...props}>{children}</div>,
-  BodyText: ({ children, sx, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  SectionHeading: ({ children, sx, ...props }: any) => <h2 data-testid="section-heading" {...props}>{children}</h2>,
-  ProductCard: ({ children, sx, ...props }: any) => <div data-testid="product-card" {...props}>{children}</div>,
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Container: ({ children, sx, ...props }: MockProps) => <div data-testid="design-container" {...props}>{children}</div>,
+  BodyText: ({ children, sx, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  SectionHeading: ({ children, sx, ...props }: MockProps) => <h2 data-testid="section-heading" {...props}>{children}</h2>,
+  ProductCard: ({ children, sx, ...props }: MockProps) => <div data-testid="product-card" {...props}>{children}</div>,
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('TrustpilotReviews', () => {

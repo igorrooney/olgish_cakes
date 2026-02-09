@@ -7,23 +7,23 @@ import { CategoryLinks } from '../CategoryLinks'
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Typography: ({ children, variant, className, sx, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Typography: ({ children, variant, className, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} className={className} {...props}>
       {children}
     </div>
   ),
-  Chip: ({ label, size, className, sx, title, ...props }: any) => (
+  Chip: ({ label, size, className, sx, title, ...props }: MockProps) => (
     <span data-testid="chip" data-size={size} className={className} title={title} {...props}>
       {label}
     </span>
   ),
-  Stack: ({ children, direction, spacing, flexWrap, useFlexGap, ...props }: any) => (
+  Stack: ({ children, direction, spacing, flexWrap, useFlexGap, ...props }: MockProps) => (
     <div data-testid="stack" data-direction={direction} {...props}>{children}</div>
   )
 }))

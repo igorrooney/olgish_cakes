@@ -1,5 +1,6 @@
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import type {
   MarketSchedule,
   MarketSchedulePreview,
@@ -19,6 +20,7 @@ const MARKET_SCHEDULE_QUERY = groq`
     endTime,
     description,
     specialOffers,
+    website,
     contactInfo,
     featured,
     active,
@@ -48,6 +50,7 @@ const FEATURED_SCHEDULE_QUERY = groq`
     endTime,
     description,
     specialOffers,
+    website,
     contactInfo,
     featured,
     active,
@@ -86,12 +89,11 @@ const UPCOMING_SCHEDULE_QUERY = groq`
  */
 export async function getMarketSchedule(): Promise<MarketSchedule[]> {
   try {
-    const schedule = await client.fetch<MarketSchedule[]>(
+    const config = getCacheConfig('marketSchedule')
+    const schedule = await cachedSanityFetch<MarketSchedule[]>(
       MARKET_SCHEDULE_QUERY,
       {},
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-      }
+      config
     );
     return schedule || [];
   } catch (error) {
@@ -105,12 +107,11 @@ export async function getMarketSchedule(): Promise<MarketSchedule[]> {
  */
 export async function getFeaturedMarketEvents(limit: number = 3): Promise<MarketSchedule[]> {
   try {
-    const events = await client.fetch<MarketSchedule[]>(
+    const config = getCacheConfig('marketSchedule')
+    const events = await cachedSanityFetch<MarketSchedule[]>(
       `${FEATURED_SCHEDULE_QUERY}[0...${limit}]`,
-      {},
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-      }
+      { limit },
+      config
     );
     return events || [];
   } catch (error) {
@@ -127,12 +128,11 @@ export async function getUpcomingEvents(limit: number = 5): Promise<UpcomingEven
     const today = new Date().toISOString().split("T")[0];
     const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
-    const events = await client.fetch<MarketSchedulePreview[]>(
+    const config = getCacheConfig('marketSchedule')
+    const events = await cachedSanityFetch<MarketSchedulePreview[]>(
       `${UPCOMING_SCHEDULE_QUERY}[0...${limit}]`,
-      { today, futureDate },
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-      }
+      { today, futureDate, limit },
+      config
     );
 
     return (events || []).map(event => enhanceEventWithDateInfo(event));
@@ -180,9 +180,8 @@ export async function searchMarketEvents(
     query += "] | order(date asc) {";
     query += MARKET_SCHEDULE_QUERY.split("] {")[1];
 
-    const events = await client.fetch<MarketSchedule[]>(query, params, {
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-    });
+    const config = getCacheConfig('marketSchedule')
+    const events = await cachedSanityFetch<MarketSchedule[]>(query, params, config);
 
     return events || [];
   } catch (error) {

@@ -1,6 +1,11 @@
 /**
  * @jest-environment jsdom
  */
+
+// Mock unstable_cache to bypass Next.js context requirement
+jest.mock('next/cache', () => ({
+  unstable_cache: jest.fn((fn) => fn)
+}))
 import { render } from '@testing-library/react'
 import React from 'react'
 import { OrderPageStructuredData } from '../OrderPageStructuredData'

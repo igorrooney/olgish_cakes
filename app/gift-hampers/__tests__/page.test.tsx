@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import GiftHampersPage, { dynamic, metadata, revalidate } from '../page'
+import GiftHampersPage, { dynamic, metadata } from '../page'
 
 // Mock utils
 jest.mock('../../utils/fetchGiftHampers', () => ({
@@ -48,7 +48,7 @@ jest.mock('../../components/Breadcrumbs', () => ({
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  StyledAccordion: ({ children, ...props }: any) => <div data-testid="styled-accordion" {...props}>{children}</div>
+  StyledAccordion: ({ children, ...props }: MockProps) => <div data-testid="styled-accordion" {...props}>{children}</div>
 }))
 
 // Mock MUI
@@ -64,10 +64,10 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 describe('GiftHampersPage', () => {
@@ -76,10 +76,6 @@ describe('GiftHampersPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use static revalidation time of 300 seconds', () => {
-      // Changed to static revalidation as part of Next.js 16 upgrade
-      expect(revalidate).toBe(300)
-    })
   })
 
   describe('Metadata', () => {
@@ -192,7 +188,7 @@ describe('GiftHampersPage', () => {
       
       // Extract ItemList from @graph if present
       const itemList = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: any) => item['@type'] === 'ItemList')
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'ItemList')
         : jsonLd
       
       // Verify ItemList exists
@@ -200,7 +196,7 @@ describe('GiftHampersPage', () => {
       
       // Verify products don't have aggregateRating (GSC fix for "multiple aggregate ratings" error)
       if (itemList.itemListElement && itemList.itemListElement.length > 0) {
-        itemList.itemListElement.forEach((listItem: any) => {
+        itemList.itemListElement.forEach((listItem: UnknownRecord) => {
           expect(listItem.item.aggregateRating).toBeUndefined()
         })
       }
@@ -316,7 +312,7 @@ describe('GiftHampersPage', () => {
         const graph = jsonLd['@graph'] || []
         
         // Count Brand entities
-        const brandEntities = graph.filter((entity: any) => entity['@type'] === 'Brand')
+        const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
         
         // Should have exactly one Brand entity
         expect(brandEntities).toHaveLength(1)
@@ -341,12 +337,12 @@ describe('GiftHampersPage', () => {
         const graph = jsonLd['@graph'] || []
         
         // Find ItemList
-        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
         expect(itemList).toBeDefined()
         
         // Check all products in ItemList
         if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: any) => {
+          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
             const product = listItem.item
             
             // Brand should be a reference by @id, not an inline object
@@ -375,14 +371,14 @@ describe('GiftHampersPage', () => {
         const graph = jsonLd['@graph'] || []
         
         // Find ItemList
-        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
         expect(itemList).toBeDefined()
         
         // Count inline brand objects (should be 0)
         let inlineBrandCount = 0
         
         if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: any) => {
+          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
             const product = listItem.item
             
             // Check if brand is an inline object (has @type)
@@ -411,17 +407,17 @@ describe('GiftHampersPage', () => {
         const graph = jsonLd['@graph'] || []
         
         // Find Brand entity
-        const brandEntity = graph.find((entity: any) => entity['@type'] === 'Brand')
+        const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
         expect(brandEntity).toBeDefined()
         const brandId = brandEntity['@id']
         
         // Find ItemList
-        const itemList = graph.find((entity: any) => entity['@type'] === 'ItemList')
+        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
         expect(itemList).toBeDefined()
         
         // Verify all products reference the same brand @id
         if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: any) => {
+          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
             const product = listItem.item
             
             expect(product.brand['@id']).toBe(brandId)
@@ -431,4 +427,3 @@ describe('GiftHampersPage', () => {
     })
   })
 })
-

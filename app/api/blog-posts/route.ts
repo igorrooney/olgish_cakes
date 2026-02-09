@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
 
 // Validate Sanity configuration before client initialization
 if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
@@ -12,22 +13,14 @@ if (!process.env.SANITY_API_TOKEN) {
   throw new Error('Missing environment variable: SANITY_API_TOKEN')
 }
 
-const client = createClient({
+// Client for write operations only (create, update, delete)
+const writeClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
   useCdn: false,
   token: process.env.SANITY_API_TOKEN,
 })
-
-// Additional validation logging for debugging
-if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.NEXT_PUBLIC_SANITY_DATASET || !process.env.SANITY_API_TOKEN) {
-  console.error('Missing Sanity configuration:', {
-    projectId: !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: !!process.env.NEXT_PUBLIC_SANITY_DATASET,
-    token: !!process.env.SANITY_API_TOKEN
-  })
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -91,9 +84,25 @@ export async function GET(request: NextRequest) {
       query += `[${offset || 0}...${(parseInt(offset || '0') + parseInt(limit))}]`
     }
 
-    const posts = await client.fetch(query, params)
+    // Don't cache draft or scheduled posts - they need real-time updates
+    if (status === 'draft' || status === 'scheduled') {
+      const posts = await writeClient.fetch(query, params)
+      return NextResponse.json({ posts })
+    }
 
-    return NextResponse.json({ posts })
+    // Cache published posts
+    const config = getCacheConfig('blogPosts')
+    const posts = await cachedSanityFetch(query, params, config)
+    const revalidateSeconds = typeof config.revalidate === 'number' ? config.revalidate : 0
+
+    return NextResponse.json(
+      { posts },
+      {
+        headers: {
+          'Cache-Control': `public, s-maxage=${revalidateSeconds}, stale-while-revalidate=86400`
+        }
+      }
+    )
   } catch (error) {
     console.error('Error fetching blog posts:', error)
     return NextResponse.json(
@@ -145,7 +154,7 @@ export async function POST(request: NextRequest) {
         console.warn('Uploading image to Sanity...')
         // Upload image to Sanity
         const imageBuffer = await featuredImage.arrayBuffer()
-        const imageAsset = await client.assets.upload('image', Buffer.from(imageBuffer), {
+        const imageAsset = await writeClient.assets.upload('image', Buffer.from(imageBuffer), {
           filename: featuredImage.name,
           contentType: featuredImage.type,
         })
@@ -174,7 +183,7 @@ export async function POST(request: NextRequest) {
         console.warn('Uploading card image to Sanity...')
         // Upload image to Sanity
         const imageBuffer = await cardImage.arrayBuffer()
-        const imageAsset = await client.assets.upload('image', Buffer.from(imageBuffer), {
+        const imageAsset = await writeClient.assets.upload('image', Buffer.from(imageBuffer), {
           filename: cardImage.name,
           contentType: cardImage.type,
         })
@@ -224,7 +233,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.warn('Creating document in Sanity...')
-    const result = await client.create(doc)
+    const result = await writeClient.create(doc)
     console.warn('Blog post created successfully:', result._id)
 
     return NextResponse.json({ success: true, id: result._id })

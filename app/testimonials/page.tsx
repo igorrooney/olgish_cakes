@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { Container, Typography, Box, Paper } from "@mui/material";
+import type { Testimonial } from "../types/testimonial";
 import { TestimonialsList } from "./TestimonialsList";
 import { Breadcrumbs } from "../components/Breadcrumbs";
-import { client } from "@/sanity/lib/client";
 import { testimonialQuery, testimonialCountQuery } from "@/sanity/lib/queries";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 
-// Force static generation with shorter revalidation
+// Force static generation
 export const dynamic = "force-static";
-export const revalidate = 60; // Revalidate every minute for better data freshness
+const testimonialsCacheConfig = getCacheConfig("testimonials");
+const testimonialStatsCacheConfig = getCacheConfig("testimonialStats");
 
 export const metadata: Metadata = {
   title: "Customer Testimonials | Olgish Cakes",
@@ -99,8 +101,8 @@ export default async function TestimonialsPage({
   const end = start + pageSize;
 
   const [testimonials, totalCount] = await Promise.all([
-    client.fetch(testimonialQuery, { start, end }),
-    client.fetch(testimonialCountQuery),
+    cachedSanityFetch<Testimonial[]>(testimonialQuery, { start, end }, testimonialsCacheConfig),
+    cachedSanityFetch<number>(testimonialCountQuery, {}, testimonialStatsCacheConfig),
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);

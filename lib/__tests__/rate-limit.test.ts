@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import { NextRequest, NextResponse } from 'next/server'
 
 // Mock setInterval before any imports to prevent it from running in tests

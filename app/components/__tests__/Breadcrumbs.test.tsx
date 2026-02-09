@@ -12,19 +12,19 @@ jest.mock('next/navigation', () => ({
 }))
 
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 // Mock MUI
 jest.mock('@/lib/mui-optimization', () => ({
-  Breadcrumbs: ({ children, ...props }: any) => (
+  Breadcrumbs: ({ children, ...props }: MockProps) => (
     <nav data-testid="breadcrumbs" {...props}>{children}</nav>
   ),
-  Link: ({ children, component, href, color, underline, sx, ...props }: any) => {
+  Link: ({ children, component, href, color, underline, sx, ...props }: MockProps) => {
     const Component = component || 'a'
     return <Component href={href} data-testid="mui-link" {...props}>{children}</Component>
   },
-  Typography: ({ children, color, sx, ...props }: any) => (
+  Typography: ({ children, color, sx, ...props }: MockProps) => (
     <span data-testid="typography" {...props}>{children}</span>
   )
 }))

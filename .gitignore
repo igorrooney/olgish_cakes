@@ -4,14 +4,18 @@
 /node_modules
 /.pnp
 .pnp.js
+/.pnpm-store/
+package-lock.json
 
 # testing
 /coverage
 /.jest-cache
+/test-results
 
 # next.js
 /.next/
 /out/
+/.swc/
 
 # reports
 /reports/
@@ -29,6 +33,7 @@ lighthouse-*.html
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store

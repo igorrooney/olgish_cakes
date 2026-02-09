@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { motion } from "framer-motion";
+import { useReviewStats } from '../components/ReviewStatsProvider'
+import { formatReviewCount } from '../utils/review-stats'
 import {
   Box,
   Container,
@@ -123,6 +125,8 @@ interface OrderPageClientProps {
 }
 
 export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
+  const reviewStats = useReviewStats()
+  const reviewCount = formatReviewCount(reviewStats.count)
   const [selectedOption, setSelectedOption] = useState<string>("browse-catalog");
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -430,7 +434,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                       variant="h2"
                       sx={{ fontWeight: 700, mb: 1, color: colors.primary.main }}
                     >
-                      127+
+                      {reviewCount}
                     </Typography>
                     <Typography variant="body2" sx={{ opacity: 0.8 }}>
                       Happy Customers

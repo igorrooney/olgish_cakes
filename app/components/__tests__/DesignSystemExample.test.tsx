@@ -7,7 +7,7 @@ import { DesignSystemExample } from '../DesignSystemExample'
 
 // Mock all dependencies
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 jest.mock('@/lib/business-info', () => ({
@@ -18,18 +18,18 @@ jest.mock('@/lib/business-info', () => ({
 }))
 
 jest.mock('@/lib/mui-optimization', () => ({
-  Grid: ({ children, container, item, xs, md, spacing, ...props }: any) => (
+  Grid: ({ children, container, item, xs, md, spacing, ...props }: MockProps) => (
     <div data-container={container} data-item={item} {...props}>{children}</div>
   ),
-  Box: ({ children, component, sx, ...props }: any) => {
+  Box: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  CakeOutlinedIcon: (props: any) => <span {...props}>🎂</span>,
+  CakeOutlinedIcon: (props: MockProps) => <span {...props}>🎂</span>,
   LocalShippingIcon: () => <span>🚚</span>,
-  StarIcon: (props: any) => <span {...props}>⭐</span>,
+  StarIcon: (props: MockProps) => <span {...props}>⭐</span>,
   EmailIcon: () => <span>📧</span>,
-  PhoneIcon: (props: any) => <span {...props}>📞</span>,
+  PhoneIcon: (props: MockProps) => <span {...props}>📞</span>,
   FavoriteIcon: () => <span>❤️</span>
 }))
 
@@ -46,38 +46,38 @@ jest.mock('@/lib/design-system', () => ({
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  DisplayHeading: ({ children, sx, ...props }: any) => <h1 data-testid="display-heading" {...props}>{children}</h1>,
-  SectionHeading: ({ children, sx, ...props }: any) => <h2 data-testid="section-heading" {...props}>{children}</h2>,
-  BodyText: ({ children, sx, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  PrimaryButton: ({ children, ...props }: any) => <button data-testid="primary-button" {...props}>{children}</button>,
-  SecondaryButton: ({ children, ...props }: any) => <button data-testid="secondary-button" {...props}>{children}</button>,
-  OutlineButton: ({ children, ...props }: any) => <button data-testid="outline-button" {...props}>{children}</button>,
-  ProductCard: ({ children, ...props }: any) => <div data-testid="product-card" {...props}>{children}</div>,
-  FeatureCard: ({ icon, title, description, ...props }: any) => (
+  DisplayHeading: ({ children, sx, ...props }: MockProps) => <h1 data-testid="display-heading" {...props}>{children}</h1>,
+  SectionHeading: ({ children, sx, ...props }: MockProps) => <h2 data-testid="section-heading" {...props}>{children}</h2>,
+  BodyText: ({ children, sx, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  PrimaryButton: ({ children, ...props }: MockProps) => <button data-testid="primary-button" {...props}>{children}</button>,
+  SecondaryButton: ({ children, ...props }: MockProps) => <button data-testid="secondary-button" {...props}>{children}</button>,
+  OutlineButton: ({ children, ...props }: MockProps) => <button data-testid="outline-button" {...props}>{children}</button>,
+  ProductCard: ({ children, ...props }: MockProps) => <div data-testid="product-card" {...props}>{children}</div>,
+  FeatureCard: ({ icon, title, description, ...props }: MockProps) => (
     <div data-testid="feature-card" {...props}>
       {icon}
       <div>{title}</div>
       <div>{description}</div>
     </div>
   ),
-  StyledTextField: (props: any) => <input data-testid="styled-textfield" {...props} />,
-  IngredientChip: ({ label, ...props }: any) => <span data-testid="ingredient-chip" {...props}>{label}</span>,
-  AllergenChip: ({ label, ...props }: any) => <span data-testid="allergen-chip" {...props}>{label}</span>,
-  CategoryChip: ({ label, ...props }: any) => <span data-testid="category-chip" {...props}>{label}</span>,
-  PriceDisplay: ({ price, size, ...props }: any) => <span data-testid="price-display" data-size={size} {...props}>£{price}</span>,
-  Container: ({ children, sx, ...props }: any) => <div data-testid="container" {...props}>{children}</div>,
-  Section: ({ children, ...props }: any) => <section data-testid="section" {...props}>{children}</section>,
-  StyledAccordion: ({ title, children, sx, ...props }: any) => (
+  StyledTextField: (props: MockProps) => <input data-testid="styled-textfield" {...props} />,
+  IngredientChip: ({ label, ...props }: MockProps) => <span data-testid="ingredient-chip" {...props}>{label}</span>,
+  AllergenChip: ({ label, ...props }: MockProps) => <span data-testid="allergen-chip" {...props}>{label}</span>,
+  CategoryChip: ({ label, ...props }: MockProps) => <span data-testid="category-chip" {...props}>{label}</span>,
+  PriceDisplay: ({ price, size, ...props }: MockProps) => <span data-testid="price-display" data-size={size} {...props}>£{price}</span>,
+  Container: ({ children, sx, ...props }: MockProps) => <div data-testid="container" {...props}>{children}</div>,
+  Section: ({ children, ...props }: MockProps) => <section data-testid="section" {...props}>{children}</section>,
+  StyledAccordion: ({ title, children, sx, ...props }: MockProps) => (
     <div data-testid="styled-accordion" {...props}>
       <div>{title}</div>
       <div>{children}</div>
     </div>
   ),
-  RatingBadge: ({ rating, ...props }: any) => <div data-testid="rating-badge" {...props}>{rating}</div>,
-  ContactInfo: ({ icon, text, ...props }: any) => (
+  RatingBadge: ({ rating, ...props }: MockProps) => <div data-testid="rating-badge" {...props}>{rating}</div>,
+  ContactInfo: ({ icon, text, ...props }: MockProps) => (
     <div data-testid="contact-info" {...props}>{icon} {text}</div>
   ),
-  StyledDivider: (props: any) => <hr data-testid="styled-divider" {...props} />
+  StyledDivider: (props: MockProps) => <hr data-testid="styled-divider" {...props} />
 }))
 
 describe('DesignSystemExample', () => {

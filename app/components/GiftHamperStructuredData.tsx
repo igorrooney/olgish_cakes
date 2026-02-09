@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { generateHamperMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface GiftHamperStructuredDataProps {
   hamper: {
@@ -35,11 +37,18 @@ interface GiftHamperStructuredDataProps {
 }
 
 export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataProps) {
+  const reviewStats = useReviewStats();
+
   useEffect(() => {
     if (!hamper.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
     const structuredData = generateHamperMerchantCenterSchema(hamper);
+    const aggregateRating = buildAggregateRating(reviewStats);
+
+    if (aggregateRating) {
+      structuredData.aggregateRating = aggregateRating;
+    }
 
     // Add keywords if available
     if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {
@@ -68,7 +77,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
         scriptToRemove.remove();
       }
     };
-  }, [hamper]);
+  }, [hamper, reviewStats]);
 
   return null;
 }

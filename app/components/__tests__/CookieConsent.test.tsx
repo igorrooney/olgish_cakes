@@ -7,43 +7,43 @@ import CookieConsent from '../CookieConsent'
 
 // Mock Next.js
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
 })
 
 // Mock MUI and UI components
 jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, sx, ...props }: any) => <div data-testid="box" {...props}>{children}</div>,
-  Button: ({ children, onClick, disabled, ...props }: any) => (
+  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Button: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  Typography: ({ children, variant, sx, ...props }: any) => (
+  Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
   ),
-  Paper: ({ children, elevation, sx, ...props }: any) => (
+  Paper: ({ children, elevation, sx, ...props }: MockProps) => (
     <div data-testid="paper" {...props}>{children}</div>
   ),
-  Link: ({ children, component, href, sx, ...props }: any) => {
+  Link: ({ children, component, href, sx, ...props }: MockProps) => {
     const Component = component || 'a'
     return <Component href={href} data-testid="mui-link" {...props}>{children}</Component>
   },
-  Stack: ({ children, direction, spacing, sx, ...props }: any) => (
+  Stack: ({ children, direction, spacing, sx, ...props }: MockProps) => (
     <div data-testid="stack" {...props}>{children}</div>
   ),
-  IconButton: ({ children, ...props }: any) => <button data-testid="icon-button" {...props}>{children}</button>,
+  IconButton: ({ children, ...props }: MockProps) => <button data-testid="icon-button" {...props}>{children}</button>,
   CloseIcon: () => <span>×</span>
 }))
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  PrimaryButton: ({ children, onClick, disabled, ...props }: any) => (
+  PrimaryButton: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button data-testid="primary-button" onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  OutlineButton: ({ children, onClick, disabled, ...props }: any) => (
+  OutlineButton: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button data-testid="outline-button" onClick={onClick} disabled={disabled} {...props}>{children}</button>
   ),
-  BodyText: ({ children, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  TouchTargetWrapper: ({ children, ...props }: any) => <div data-testid="touch-target" {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, label, onClick, ...props }: any) => (
+  BodyText: ({ children, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div data-testid="touch-target" {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, label, onClick, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={label} {...props}>{children}</button>
   )
 }))
@@ -67,19 +67,19 @@ jest.mock('@/lib/design-system', () => ({
 }))
 
 jest.mock('@/lib/ui-components', () => ({
-  PrimaryButton: ({ children, onClick, disabled, sx, ...props }: any) => (
+  PrimaryButton: ({ children, onClick, disabled, sx, ...props }: MockProps) => (
     <button data-testid="primary-button" onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   ),
-  OutlineButton: ({ children, onClick, disabled, sx, ...props }: any) => (
+  OutlineButton: ({ children, onClick, disabled, sx, ...props }: MockProps) => (
     <button data-testid="outline-button" onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   ),
-  BodyText: ({ children, sx, ...props }: any) => <p data-testid="body-text" {...props}>{children}</p>,
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  AccessibleIconButton: ({ children, onClick, ariaLabel, title, sx, ...props }: any) => (
+  BodyText: ({ children, sx, ...props }: MockProps) => <p data-testid="body-text" {...props}>{children}</p>,
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+  AccessibleIconButton: ({ children, onClick, ariaLabel, title, sx, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={ariaLabel} title={title} {...props}>
       {children}
     </button>
@@ -182,6 +182,23 @@ describe('CookieConsent', () => {
       })
     })
 
+    it('should dispatch consent accepted event', async () => {
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(<CookieConsent />)
+
+      const acceptButton = screen.getByText('Accept All')
+      fireEvent.click(acceptButton)
+
+      await waitFor(() => {
+        expect(dispatchSpy).toHaveBeenCalled()
+      })
+
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent<{ status: string }>
+      expect(event.type).toBe('cookie-consent')
+      expect(event.detail.status).toBe('accepted')
+    })
+
     it('should hide banner after accepting', async () => {
       render(<CookieConsent />)
 
@@ -247,6 +264,23 @@ describe('CookieConsent', () => {
       })
     })
 
+    it('should dispatch consent declined event', async () => {
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent')
+
+      render(<CookieConsent />)
+
+      const declineButton = screen.getByText('Decline')
+      fireEvent.click(declineButton)
+
+      await waitFor(() => {
+        expect(dispatchSpy).toHaveBeenCalled()
+      })
+
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent<{ status: string }>
+      expect(event.type).toBe('cookie-consent')
+      expect(event.detail.status).toBe('declined')
+    })
+
     it('should handle localStorage error on decline', async () => {
       const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
         .mockImplementation(() => { throw new Error('Error') })
@@ -299,4 +333,3 @@ describe('CookieConsent', () => {
     })
   })
 })
-

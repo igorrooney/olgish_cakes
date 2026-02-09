@@ -5,19 +5,21 @@ import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { buildAggregateRating } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title:
     "Birthday Cakes Wakefield from £25 | 5★ Rated",
   description:
-    "Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+    "Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Wakefield, birthday cakes in Wakefield, custom birthday cakes Wakefield, children's birthday cakes Wakefield, cakes Wakefield, Ukrainian cakes Wakefield, cake delivery Wakefield, bakery Wakefield, same-day cake delivery Wakefield",
   openGraph: {
     title:
       "Birthday Cakes Wakefield from £25 | 5★ Rated",
     description:
-      "Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Wakefield from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-wakefield",
     siteName: "Olgish Cakes",
     images: [
@@ -46,6 +48,8 @@ export const metadata: Metadata = {
 
 export default async function CakesWakefieldPage() {
   const allCakes = await getAllCakes();
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
 
   return (
     <>
@@ -82,13 +86,7 @@ export default async function CakesWakefieldPage() {
               "@type": "City",
               name: "Wakefield",
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "5",
-              reviewCount: "127",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
           }),
         }}
       />
