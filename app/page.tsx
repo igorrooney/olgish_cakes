@@ -17,6 +17,8 @@ import { getAllTestimonials } from './utils/fetchTestimonials'
 
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const maxReviewSchemas = 6
+const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
+const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'
 
 type ReviewSchema = {
   '@type': 'Review'
@@ -92,8 +94,8 @@ const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
 }
 
 export const metadata: Metadata = {
-  title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
-  description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
+  title: pageTitle,
+  description: pageDescription,
   keywords: [
     'Olgish Cakes',
     'Ukrainian bakery',
@@ -117,8 +119,8 @@ export const metadata: Metadata = {
     'dessert takeaway'
   ],
   openGraph: {
-    title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
-    description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
+    title: pageTitle,
+    description: pageDescription,
     url: 'https://olgishcakes.co.uk',
     siteName: 'Olgish Cakes',
     images: [
@@ -134,8 +136,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
-    description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
+    title: pageTitle,
+    description: pageDescription,
     images: ['https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'],
   },
   alternates: {
@@ -172,6 +174,21 @@ export default async function Home() {
     }))
   }
   const hasFaqStructuredData = faqItems.length > 0
+  const webPageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://olgishcakes.co.uk/#homepage',
+    url: 'https://olgishcakes.co.uk',
+    name: pageTitle,
+    description: pageDescription,
+    inLanguage: 'en-GB',
+    isPartOf: {
+      '@id': 'https://olgishcakes.co.uk/#website'
+    },
+    about: {
+      '@id': organizationId
+    }
+  }
 
   return (
     <>
@@ -187,6 +204,10 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
+      />
       <div className="min-h-screen bg-base-100 overflow-x-hidden">
         <div className="flex flex-col">
           <HomeHero />
