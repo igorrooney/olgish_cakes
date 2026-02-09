@@ -66,6 +66,11 @@ type EventSEOMetadata = {
   totalUpcomingEvents?: number
 }
 
+type HomePageProps = {
+  params?: Promise<Record<string, string | string[] | undefined>>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}
+
 type OtherMetadata = Record<string, string | number | (string | number)[]>
 
 type ReviewSchema = {
@@ -218,8 +223,8 @@ const mapProductReview = (testimonial: Testimonial): ReviewSchema => {
 }
 
 export async function generateMetadata(
-  _props: Record<string, never> = {},
-  parent?: ResolvingMetadata
+  _props: HomePageProps,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const marketEvents = await getMarketSchedule()
   const eventSEO = generateEventSEOMetadata(marketEvents)
