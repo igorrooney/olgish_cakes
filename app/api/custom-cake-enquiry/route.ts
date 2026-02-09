@@ -116,22 +116,70 @@ const formSchema = z.object({
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 5; // 5 requests
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_CLEANUP_INTERVAL = 5 * 60 * 1000 // 5 minutes
+const RATE_LIMIT_MAX_ENTRIES = 10000
+let lastRateLimitCleanup = 0
+
+const cleanupRateLimitMap = (now: number) => {
+  const shouldRunScheduledCleanup =
+    now - lastRateLimitCleanup >= RATE_LIMIT_CLEANUP_INTERVAL
+  const shouldRunSizeCleanup = rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES
+
+  if (!shouldRunScheduledCleanup && !shouldRunSizeCleanup) {
+    return
+  }
+
+  for (const [storedIp, record] of rateLimitMap.entries()) {
+    if (now > record.resetTime) {
+      rateLimitMap.delete(storedIp)
+    }
+  }
+
+  // Hard cap to keep memory bounded if the process receives massive unique-IP traffic.
+  if (rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES) {
+    const overflowCount = rateLimitMap.size - RATE_LIMIT_MAX_ENTRIES
+    let removed = 0
+    for (const storedIp of rateLimitMap.keys()) {
+      rateLimitMap.delete(storedIp)
+      removed += 1
+      if (removed >= overflowCount) {
+        break
+      }
+    }
+  }
+
+  lastRateLimitCleanup = now
+}
 
 function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
+  const now = Date.now()
+  cleanupRateLimitMap(now)
+  const record = rateLimitMap.get(ip)
 
   if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
+    return true
   }
 
   if (record.count >= RATE_LIMIT) {
-    return false;
+    return false
   }
 
-  record.count++;
-  return true;
+  record.count++
+  return true
+}
+
+const getClientIp = (request: NextRequest) => {
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  if (forwardedFor) {
+    const firstIp = forwardedFor.split(',')[0]?.trim()
+    if (firstIp) {
+      return firstIp
+    }
+  }
+
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  return realIp || 'unknown'
 }
 
 const occasionLabels: Record<string, string> = {
@@ -156,7 +204,7 @@ function escapeHtml(value: string): string {
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(request)
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },

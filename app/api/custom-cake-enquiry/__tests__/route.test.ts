@@ -416,4 +416,40 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSend).not.toHaveBeenCalled()
   })
+
+  it('rate limits by client IP even when proxy chain changes', async () => {
+    (validateCsrfToken as jest.Mock).mockReturnValue(true)
+    const clientIp = '10.0.0.250'
+
+    for (let index = 0; index < 5; index += 1) {
+      const formData = buildFormData({ csrfToken: 'valid-token' })
+      const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Cookie: 'csrf-token=valid-token',
+          'x-forwarded-for': `${clientIp}, 192.168.0.${index}`
+        }
+      })
+
+      const response = await POST(request)
+      expect(response.status).toBe(200)
+    }
+
+    const blockedFormData = buildFormData({ csrfToken: 'valid-token' })
+    const blockedRequest = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: blockedFormData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': `${clientIp}, 172.16.0.1`
+      }
+    })
+
+    const blockedResponse = await POST(blockedRequest)
+    const blockedData = await blockedResponse.json()
+
+    expect(blockedResponse.status).toBe(429)
+    expect(blockedData.error).toBe('Too many requests. Please try again later.')
+  })
 })
