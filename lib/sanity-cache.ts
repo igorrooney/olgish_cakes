@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache'
 import { client, USE_REAL_TIME_DATA } from '@/sanity/lib/client'
 
 interface CacheOptions {
-  revalidate?: number
+  revalidate?: number | false
   tags?: string[]
 }
 
@@ -12,7 +12,7 @@ interface CacheOptions {
  * 
  * @param query - GROQ query string
  * @param params - Query parameters
- * @param options - Cache options (revalidate time in seconds, tags)
+ * @param options - Cache options (revalidate time in seconds or false, tags)
  * @returns Cached fetch result
  */
 export async function cachedSanityFetch<T>(
@@ -25,21 +25,23 @@ export async function cachedSanityFetch<T>(
     return client.fetch<T>(query, params)
   }
 
-  const { revalidate = 3600, tags = [] } = options
+  const { revalidate = false, tags = [] } = options
 
   // Create cache key from query and params
   const cacheKey = JSON.stringify({ query, params })
 
   // Use unstable_cache for request-level memoization
+  const cacheOptions: { tags?: string[]; revalidate?: number | false } = { tags }
+  if (revalidate !== false) {
+    cacheOptions.revalidate = revalidate
+  }
+
   const cachedFetch = unstable_cache(
     async () => {
       return client.fetch<T>(query, params)
     },
     [cacheKey],
-    {
-      revalidate,
-      tags
-    }
+    cacheOptions
   )
 
   return cachedFetch()
@@ -51,5 +53,5 @@ export async function cachedSanityFetch<T>(
 export function getCacheConfig(type: keyof typeof import('./sanity-cache-config').SANITY_CACHE_CONFIG) {
   // Dynamic import to avoid circular dependencies
   const { SANITY_CACHE_CONFIG } = require('./sanity-cache-config')
-  return SANITY_CACHE_CONFIG[type] || { revalidate: 3600, tags: [] }
+  return SANITY_CACHE_CONFIG[type] || { revalidate: false, tags: [] }
 }

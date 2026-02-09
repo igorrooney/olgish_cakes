@@ -1,15 +1,18 @@
 import { Cake } from "@/types/cake";
 import Head from "next/head";
 import { urlFor } from "@/sanity/lib/image";
+import { buildAggregateRating, type ReviewStats } from '@/app/utils/review-stats'
 
 interface CakePageSEOProps {
   cake: Cake;
   designType: "standard" | "individual";
   currentPrice: number;
+  reviewStats?: ReviewStats;
 }
 
-export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps) {
+export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: CakePageSEOProps) {
   const cakeName = `${cake.name} - ${designType === "standard" ? "Standard Design" : "Individual Design"}`;
+  const aggregateRating = buildAggregateRating(reviewStats)
   const description = cake.shortDescription
     ? typeof cake.shortDescription === "string"
       ? cake.shortDescription
@@ -146,13 +149,7 @@ export function CakePageSEO({ cake, designType, currentPrice }: CakePageSEOProps
         : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
     })(),
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     review: [
       {
         "@type": "Review",

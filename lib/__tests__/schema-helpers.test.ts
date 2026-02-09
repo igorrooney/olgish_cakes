@@ -43,7 +43,12 @@ describe('schema-helpers', () => {
     })
 
     it('should include required fields (offers, review, aggregateRating)', () => {
-      const schemas = generatePageProductSchemas(mockProducts, 'test-page')
+      const schemas = generatePageProductSchemas(
+        mockProducts,
+        'test-page',
+        'https://olgishcakes.co.uk',
+        { count: 13, averageRating: 5 }
+      )
 
       schemas.forEach((schema) => {
         const validation = validateProductHasRequiredFields(schema)
@@ -180,4 +185,3 @@ describe('schema-helpers', () => {
     })
   })
 })
-

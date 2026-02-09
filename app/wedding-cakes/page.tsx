@@ -8,12 +8,14 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import CakeCard from "../components/CakeCard";
 import { getAllCakes } from "../utils/fetchCakes";
 import { getPriceValidUntil } from "../utils/seo";
+import { formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title:
     "Wedding Cakes Leeds | Custom Designs | From £150 | 5★ Rated",
   description:
-    "Wedding cakes Leeds from £150 | Custom Ukrainian honey cake designs | Free tasting & venue setup | 5★ rated (127+ reviews) | Book consultation!",
+    "Wedding cakes Leeds from £150 | Custom Ukrainian honey cake designs | Free tasting & venue setup | 5★ rated | Book consultation!",
   keywords:
     "wedding cakes Leeds, custom wedding cakes Leeds, wedding cake tasting Leeds, wedding cake consultation Leeds, venue setup wedding cake Leeds, honey cake wedding cake, Ukrainian wedding cakes, luxury wedding cakes",
   openGraph: {
@@ -76,6 +78,11 @@ export const metadata: Metadata = {
 
 export default async function WeddingCakesPage() {
   const allCakes = await getAllCakes();
+  const reviewStats = await getReviewStats()
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const reviewBenefit = reviewStats.count > 0
+    ? `${reviewCount} five-star reviews from happy couples`
+    : 'Five-star reviews from happy couples'
   const weddingCakes = allCakes.filter(
     cake =>
       cake.category === "custom" ||
@@ -724,7 +731,7 @@ export default async function WeddingCakesPage() {
                 "Professional venue delivery and setup",
                 "Flexible booking from 6 weeks to 12 months advance",
                 "Dietary accommodations available",
-                "127+ five-star reviews from happy couples",
+                reviewBenefit,
               ].map((benefit, index) => (
                 <Grid item xs={12} sm={6} key={index}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>

@@ -47,8 +47,7 @@ const generateProductFeed = unstable_cache(
   },
   ['merchant-center-feed'],
   {
-    tags: ['cakes', 'gift-hampers', 'merchant-center-feed'],
-    revalidate: 3600, // Cache for 1 hour
+    tags: ['cakes', 'gift-hampers', 'merchant-center-feed']
   }
 );
 
@@ -60,7 +59,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(xmlContent, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=0, s-maxage=0',
       },
     });
 

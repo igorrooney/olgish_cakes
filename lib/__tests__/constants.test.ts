@@ -63,31 +63,31 @@ describe('BUSINESS_CONSTANTS', () => {
 
   describe('Business Hours', () => {
     it('should have Monday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.monday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.monday).toBe('Online orders: 24/7')
     })
 
     it('should have Tuesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.tuesday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.tuesday).toBe('Online orders: 24/7')
     })
 
     it('should have Wednesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.wednesday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.wednesday).toBe('Online orders: 24/7')
     })
 
     it('should have Thursday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.thursday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.thursday).toBe('Online orders: 24/7')
     })
 
     it('should have Friday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.friday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.friday).toBe('Online orders: 24/7')
     })
 
     it('should have Saturday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.saturday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.saturday).toBe('Online orders: 24/7')
     })
 
     it('should have Sunday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.sunday).toBe('9:00 AM - 8:00 PM')
+      expect(BUSINESS_CONSTANTS.HOURS.sunday).toBe('Online orders: 24/7')
     })
   })
 
@@ -182,4 +182,3 @@ describe('EMAIL_UTILS', () => {
     })
   })
 })
-

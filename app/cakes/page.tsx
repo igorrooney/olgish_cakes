@@ -6,22 +6,19 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Metadata } from "next";
 import Link from "next/link";
 
-// Enable revalidation for this page
-export const revalidate = 300; // 5 minutes
-
 // Force static generation
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
   description:
-    "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews. Order now!",
+    "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 5★ rated. Order now!",
   keywords:
     "traditional Ukrainian cakes, ukrainian cakes Leeds, authentic ukrainian cakes, ukraine birthday cake, ukrainian birthday cakes, ukrainian bakery near me, honey cake, Medovik, Kyiv cake, Ukrainian wedding cakes, Ukrainian desserts Leeds, real Ukrainian cakes, Ukrainian baker Leeds, authentic Medovik, traditional medovik",
   openGraph: {
     title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
     description:
-      "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews. Order now!",
+      "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 5★ rated. Order now!",
     url: "https://olgishcakes.co.uk/cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -39,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Traditional Ukrainian Cakes Leeds | Birthday & Wedding Cakes",
     description:
-      "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 127+ 5-star reviews.",
+      "Authentic traditional Ukrainian cakes in Leeds from £25. Ukrainian birthday cakes, honey cake (Medovik), Kyiv cake. 5★ rated.",
     images: ["https://olgishcakes.co.uk/images/cakes-collection.jpg"],
   },
   alternates: {

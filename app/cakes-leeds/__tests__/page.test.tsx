@@ -25,6 +25,20 @@ jest.mock('../../utils/seo', () => ({
   getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' }))
 }))
 
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  }))
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
+
 // Typed mock for Next.js Link
 interface LinkProps { children: React.ReactNode; href: string }
 jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: LinkProps) => <a href={href}>{children}</a> }))
@@ -66,4 +80,3 @@ describe('CakesLeedsPage', () => {
     expect(scripts.length).toBeGreaterThan(0)
   })
 })
-

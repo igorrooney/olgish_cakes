@@ -93,12 +93,13 @@ export async function GET(request: NextRequest) {
     // Cache published posts
     const config = getCacheConfig('blogPosts')
     const posts = await cachedSanityFetch(query, params, config)
+    const revalidateSeconds = typeof config.revalidate === 'number' ? config.revalidate : 0
 
     return NextResponse.json(
       { posts },
       {
         headers: {
-          'Cache-Control': `public, s-maxage=${config.revalidate ?? 0}, stale-while-revalidate=86400`
+          'Cache-Control': `public, s-maxage=${revalidateSeconds}, stale-while-revalidate=86400`
         }
       }
     )

@@ -26,6 +26,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo } from "react";
 import { AnimatedDiv, AnimatedSection } from "./AnimatedSection";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
 
 interface MarketScheduleProps {
   events: MarketSchedule[];
@@ -44,6 +46,18 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const reviewStats = useReviewStats();
+  const ratingValue = formatRatingValue(reviewStats.averageRating);
+  const reviewCount = formatReviewCount(reviewStats.count);
+  const aggregateRating = reviewStats.count > 0
+    ? {
+        "@type": "AggregateRating",
+        ratingValue,
+        reviewCount,
+        bestRating: "5",
+        worstRating: "1",
+      }
+    : null;
 
   // Filter and sort events
   const upcomingEvents = events
@@ -98,13 +112,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
           },
           // Add required eventStatus field
           eventStatus: "https://schema.org/EventScheduled",
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5",
-            reviewCount: "127",
-            bestRating: "5",
-            worstRating: "1",
-          },
+          ...(aggregateRating ? { aggregateRating } : {}),
           organizer: {
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -153,13 +161,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                     "@type": "Product",
                     name: "Ukrainian Honey Cake",
                     description: "Traditional Ukrainian honey cake (Medovik)",
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: "5",
-                      reviewCount: "127",
-                      bestRating: "5",
-                      worstRating: "1",
-                    },
+                    ...(aggregateRating ? { aggregateRating } : {}),
                   },
                 },
                 {
@@ -168,13 +170,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
                     "@type": "Product",
                     name: "Kyiv Cake",
                     description: "Traditional Kyiv cake with chocolate and nuts",
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: "5",
-                      reviewCount: "127",
-                      bestRating: "5",
-                      worstRating: "1",
-                    },
+                    ...(aggregateRating ? { aggregateRating } : {}),
                   },
                 },
               ],
@@ -191,7 +187,7 @@ const MarketSchedule: React.FC<MarketScheduleProps> = ({
         description: "Authentic Ukrainian honey cakes made with love in Leeds",
       },
     }),
-    [upcomingEvents]
+    [aggregateRating, upcomingEvents]
   );
 
   if (upcomingEvents.length === 0) {

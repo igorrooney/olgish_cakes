@@ -17,6 +17,8 @@ import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { getPriceValidUntil } from "../utils/seo";
+import { buildAggregateRating } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: "Gift Cards | Ukrainian Cake Gift Cards",
@@ -80,7 +82,10 @@ const giftCardOptions = [
   },
 ];
 
-export default function GiftCardsPage() {
+export default async function GiftCardsPage() {
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
+
   return (
     <>
       <Script
@@ -97,13 +102,7 @@ export default function GiftCardsPage() {
               "@type": "Brand",
               name: "Olgish Cakes",
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "5",
-              reviewCount: "127",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
             offers: {
               "@type": "Offer",
               price: 25,

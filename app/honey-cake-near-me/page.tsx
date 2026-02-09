@@ -94,7 +94,7 @@ export default async function HoneyCakeNearMePage() {
       latitude: 53.8008,
       longitude: -1.5491
     },
-    openingHours: "Mo-Sa 08:00-18:00",
+    openingHours: "Mo-Su 00:00-23:59",
     priceRange: "££",
     servesCuisine: "Ukrainian",
     areaServed: [

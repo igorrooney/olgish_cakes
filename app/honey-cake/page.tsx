@@ -5,6 +5,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Conta
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: 'Honey Cake | Authentic Ukrainian Medovik Leeds',
@@ -62,7 +64,12 @@ export const metadata: Metadata = {
   }
 }
 
-export default function HoneyCakePage() {
+export default async function HoneyCakePage() {
+  const reviewStats = await getReviewStats()
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const reviewBenefit = reviewStats.count > 0
+    ? `${reviewCount} five-star reviews`
+    : 'Five-star reviews'
   const articleStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -83,7 +90,7 @@ export default function HoneyCakePage() {
     },
     datePublished: '2025-11-05',
     dateModified: '2025-11-05',
-    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-medovik.jpg`,
     url: `${BUSINESS_CONSTANTS.BASE_URL}/honey-cake`
   }
 
@@ -92,7 +99,7 @@ export default function HoneyCakePage() {
     '@type': 'Product',
     name: 'Ukrainian Honey Cake (Medovik)',
     description: 'Traditional Ukrainian honey cake with 8 delicate honey-soaked layers and rich cream filling. Handmade with real Yorkshire honey using authentic Ukrainian recipe.',
-    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/placeholder-cake.jpg`,
+    image: `${BUSINESS_CONSTANTS.BASE_URL}/images/honey-cake-medovik.jpg`,
     brand: {
       '@type': 'Brand',
       name: 'Olgish Cakes'
@@ -440,7 +447,7 @@ export default function HoneyCakePage() {
                 'Fresh ingredients - no preservatives',
                 'Made to order - never frozen',
                 'Same-day delivery available in Leeds',
-                '127+ five-star reviews'
+                reviewBenefit
               ].map((benefit, idx) => (
                 <Grid item xs={12} sm={6} key={idx}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
@@ -566,4 +573,3 @@ export default function HoneyCakePage() {
     </>
   )
 }
-

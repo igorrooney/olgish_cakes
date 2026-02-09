@@ -6,11 +6,10 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { testimonialQuery, testimonialCountQuery } from "@/sanity/lib/queries";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 
-// Force static generation with shorter revalidation
+// Force static generation
 export const dynamic = "force-static";
 const testimonialsCacheConfig = getCacheConfig("testimonials");
 const testimonialStatsCacheConfig = getCacheConfig("testimonialStats");
-export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: "Customer Testimonials | Olgish Cakes",

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { generateCakeMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface CakeStructuredDataProps {
   cake: {
@@ -38,11 +40,18 @@ interface CakeStructuredDataProps {
 }
 
 export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
+  const reviewStats = useReviewStats();
+
   useEffect(() => {
     if (!cake.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
     const structuredData = generateCakeMerchantCenterSchema(cake);
+    const aggregateRating = buildAggregateRating(reviewStats);
+
+    if (aggregateRating) {
+      structuredData.aggregateRating = aggregateRating;
+    }
 
     // Add keywords if available
     if (cake.seo?.keywords && cake.seo.keywords.length > 0) {
@@ -71,7 +80,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         scriptToRemove.remove();
       }
     };
-  }, [cake]);
+  }, [cake, reviewStats]);
 
   return null;
 }

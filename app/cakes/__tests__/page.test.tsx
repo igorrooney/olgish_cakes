@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import CakesPage, { metadata, revalidate, dynamic } from '../page'
+import CakesPage, { metadata, dynamic } from '../page'
 
 // Mock utils
 jest.mock('../../utils/fetchCakes', () => ({
@@ -59,10 +59,6 @@ describe('CakesPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use static revalidation time of 300 seconds', () => {
-      // Changed to static revalidation as part of Next.js 16 upgrade
-      expect(revalidate).toBe(300)
-    })
   })
 
   describe('Metadata', () => {
@@ -72,8 +68,7 @@ describe('CakesPage', () => {
     })
 
     it('should have description with reviews', () => {
-      expect(metadata.description).toContain('127+')
-      expect(metadata.description).toContain('5-star reviews')
+      expect(metadata.description).toContain('5★ rated')
     })
 
     it('should have keywords as string', () => {
@@ -178,4 +173,3 @@ describe('CakesPage', () => {
     })
   })
 })
-

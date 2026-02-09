@@ -111,6 +111,14 @@ describe('schema-constants', () => {
       expect(BUSINESS_INFO.addressRegion).toBe('West Yorkshire')
     })
 
+    it('should have street address', () => {
+      expect(BUSINESS_INFO.streetAddress).toBe('15 Allerton Grange Avenue')
+    })
+
+    it('should have postal code', () => {
+      expect(BUSINESS_INFO.postalCode).toBe('LS17 6PR')
+    })
+
     it('should have address country', () => {
       expect(BUSINESS_INFO.addressCountry).toBe('GB')
     })
@@ -304,4 +312,3 @@ describe('schema-constants', () => {
     })
   })
 })
-

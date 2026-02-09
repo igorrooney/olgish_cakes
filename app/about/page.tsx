@@ -7,11 +7,11 @@ import {
   generateWebPageSchema,
   generatePersonSchema,
 } from "../utils/seo";
+import { getReviewStats } from '../utils/review-stats.server'
 import AboutContent from "./AboutContent";
 
-// Preload critical resources with shorter revalidation
+// Preload critical resources as static content
 export const dynamic = "force-static";
-export const revalidate = 60; // Revalidate every minute for better data freshness
 
 // Enhanced SEO metadata for About page
 export const metadata: Metadata = generatePageMetadata({
@@ -54,10 +54,11 @@ export const metadata: Metadata = generatePageMetadata({
   ],
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const reviewStats = await getReviewStats()
   // Enhanced structured data for better SEO
-  const organizationSchema = generateOrganizationSchema();
-  const localBusinessSchema = generateLocalBusinessSchema();
+  const organizationSchema = generateOrganizationSchema(reviewStats);
+  const localBusinessSchema = generateLocalBusinessSchema(reviewStats);
   const webPageSchema = generateWebPageSchema({
     name: "About Olgish Cakes - Professional Ukrainian Baker in Leeds",
     description:

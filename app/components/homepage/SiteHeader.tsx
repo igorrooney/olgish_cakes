@@ -16,11 +16,15 @@ export function SiteHeader() {
   const lastTouchToggleRef = useRef<number | null>(null)
 
   const topNavItemClassName =
-    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation transition-colors whitespace-nowrap'
+    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent transition-colors whitespace-nowrap'
   const topNavSummaryClassName =
-    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[\"\"]'
+    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[\"\"]'
   const dropdownItemClassName =
-    'flex items-center h-7 w-full px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 transition-colors whitespace-nowrap'
+    'flex items-center h-7 px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 active:!bg-transparent transition-colors whitespace-nowrap shadow-none active:shadow-none focus:shadow-none focus-visible:shadow-none'
+  const dropdownMenuListClassName =
+    'menu menu-md [&::before]:hidden !m-0 !p-0 items-start [&>li]:w-full'
+  const mobileMenuItemClassName =
+    'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
 
   const toggleDropdown = (dropdownId: DropdownId) => {
     setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
@@ -252,35 +256,53 @@ export function SiteHeader() {
                     tabIndex={-1}
                     className='dropdown-content bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] rounded-box z-1 mt-3 p-4 shadow-[0px_4px_6px_-1px_#0000001A] flex gap-3 w-[378px]'
                   >
-                    <ul className='menu menu-md [&::before]:hidden !m-0 !p-0 flex-1'>
+                    <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/custom-cake-enquiry'>Order form</Link>
+                        <Link href='/custom-cake-enquiry' className={dropdownItemClassName}>
+                          Order form
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/wedding-cakes'>Wedding cakes</Link>
+                        <Link href='/wedding-cakes' className={dropdownItemClassName}>
+                          Wedding cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/birthday-cakes'>Birthday cakes</Link>
+                        <Link href='/birthday-cakes' className={dropdownItemClassName}>
+                          Birthday cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/anniversary-cakes-leeds'>Anniversary cakes</Link>
+                        <Link href='/anniversary-cakes-leeds' className={dropdownItemClassName}>
+                          Anniversary cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/baby-shower-cakes'>Baby shower cakes</Link>
+                        <Link href='/baby-shower-cakes' className={dropdownItemClassName}>
+                          Baby shower cakes
+                        </Link>
                       </li>
                     </ul>
-                    <ul className='menu menu-md [&::before]:hidden !m-0 !p-0 flex-1'>
+                    <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/christening-cakes'>Christening cakes</Link>
+                        <Link href='/christening-cakes' className={dropdownItemClassName}>
+                          Christening cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/corporate-cakes-leeds'>Corporate cakes</Link>
+                        <Link href='/corporate-cakes-leeds' className={dropdownItemClassName}>
+                          Corporate cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/traditional-ukrainian-cakes'>Ukrainian cakes</Link>
+                        <Link href='/traditional-ukrainian-cakes' className={dropdownItemClassName}>
+                          Ukrainian cakes
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/honey-cake-near-me'>Honey cake</Link>
+                        <Link href='/honey-cake-near-me' className={dropdownItemClassName}>
+                          Honey cake
+                        </Link>
                       </li>
                     </ul>
                   </div>
@@ -329,20 +351,28 @@ export function SiteHeader() {
                   </summary>
                   <div
                     tabIndex={-1}
-                    className='dropdown-content bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] rounded-box z-1 mt-3 p-4 shadow-[0px_4px_6px_-1px_#0000001A] w-[132px]'
+                    className='dropdown-content bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] rounded-box z-1 mt-3 p-4 shadow-[0px_4px_6px_-1px_#0000001A]'
                   >
-                    <ul className='menu menu-md [&::before]:hidden !m-0 !p-0'>
+                    <ul className={dropdownMenuListClassName}>
                       <li>
-                        <Link href='/learn/articles'>Articles</Link>
+                        <Link href='/learn/articles' className={dropdownItemClassName}>
+                          Articles
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/learn/guides'>Guides</Link>
+                        <Link href='/learn/guides' className={dropdownItemClassName}>
+                          Guides
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/learn/workshops'>Workshops</Link>
+                        <Link href='/learn/workshops' className={dropdownItemClassName}>
+                          Workshops
+                        </Link>
                       </li>
                       <li>
-                        <Link href='/learn/customer-stories'>Customer stories</Link>
+                        <Link href='/learn/customer-stories' className={dropdownItemClassName}>
+                          Customer stories
+                        </Link>
                       </li>
                     </ul>
                   </div>
@@ -426,7 +456,7 @@ export function SiteHeader() {
               <Link
                 href='/cakes'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cakes by post
@@ -434,7 +464,7 @@ export function SiteHeader() {
               <Link
                 href='/custom-cakes'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Custom cakes
@@ -442,7 +472,7 @@ export function SiteHeader() {
               <Link
                 href='/farmers-markets'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Farmers markets
@@ -450,7 +480,7 @@ export function SiteHeader() {
               <Link
                 href='/faqs'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 FAQs
@@ -458,7 +488,7 @@ export function SiteHeader() {
               <Link
                 href='/contact'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
@@ -473,7 +503,7 @@ export function SiteHeader() {
               <Link
                 href='/learn/articles'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Articles
@@ -481,7 +511,7 @@ export function SiteHeader() {
               <Link
                 href='/learn/guides'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Guides
@@ -489,7 +519,7 @@ export function SiteHeader() {
               <Link
                 href='/learn/workshops'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Workshops
@@ -497,7 +527,7 @@ export function SiteHeader() {
               <Link
                 href='/learn/customer-stories'
                 role='menuitem'
-                className='w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans'
+                className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Customer stories

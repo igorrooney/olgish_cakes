@@ -10,6 +10,13 @@ jest.mock('../../components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav>Bread
 jest.mock('../../components/AreasWeCover', () => ({ AreasWeCover: () => <div>Areas</div> }))
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 jest.mock('../../utils/seo', () => ({ getPriceValidUntil: jest.fn(() => '2026-01-01') }))
+jest.mock('../../utils/review-stats', () => ({
+  formatReviewCount: jest.fn((count: number) => count.toString())
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
 jest.mock('next/link', () => ({ __esModule: true, default: ({ children, href }: MockProps) => <a href={href}>{children}</a> }))
 jest.mock('@mui/material', () => ({
   Container: ({ children }: MockProps) => <div>{children}</div>,
@@ -32,4 +39,3 @@ describe('WeddingCakesPage', () => {
     expect(() => render(page)).not.toThrow()
   })
 })
-

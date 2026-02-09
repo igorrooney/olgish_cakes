@@ -17,6 +17,19 @@ global.fetch = jest.fn(() => {
   throw new Error('Unexpected fetch call in test. Mock global.fetch in the test.')
 })
 
+// Minimal Web API stubs for Next.js server modules in Jest
+if (typeof global.Request === 'undefined') {
+  global.Request = class Request {}
+}
+
+if (typeof global.Headers === 'undefined') {
+  global.Headers = class Headers {}
+}
+
+if (typeof global.Response === 'undefined') {
+  global.Response = class Response {}
+}
+
 
 // Mock framer-motion for React 19 compatibility
 jest.mock('framer-motion', () => {

@@ -282,17 +282,17 @@ describe('advanced-seo', () => {
       const result = generateAdvancedStructuredData(productData)
       const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
-      expect(product.aggregateRating.ratingValue).toBe(4.8)
-      expect(product.aggregateRating.reviewCount).toBe(50)
+      expect(product.aggregateRating.ratingValue).toBe('4.8')
+      expect(product.aggregateRating.reviewCount).toBe('50')
     })
 
-    it('should use default rating when not provided', () => {
-      const dataWithoutRating = { ...productData, rating: undefined, reviewCount: undefined }
+    it('should use review stats when rating not provided', () => {
+      const dataWithoutRating = { ...productData, rating: undefined, reviewCount: undefined, reviewStats: { count: 13, averageRating: 5 } }
       const result = generateAdvancedStructuredData(dataWithoutRating)
       const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.aggregateRating.ratingValue).toBe('5.0')
-      expect(product.aggregateRating.reviewCount).toBe('127')
+      expect(product.aggregateRating.reviewCount).toBe('13')
     })
 
     it('should include reviews array', () => {
@@ -482,4 +482,3 @@ describe('advanced-seo', () => {
     })
   })
 })
-

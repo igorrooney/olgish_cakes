@@ -200,7 +200,7 @@ describe('Markets', () => {
     expect(screen.queryByRole('link', { name: 'Visit website' })).not.toBeInTheDocument()
   })
 
-  it('returns null when there are no upcoming markets', async () => {
+  it('renders fallback CTA when there are no upcoming markets', async () => {
     const past = createMarket({
       _id: 'market-9',
       title: 'Old Market',
@@ -210,7 +210,18 @@ describe('Markets', () => {
     mockGetMarketSchedule.mockResolvedValueOnce([past])
 
     const component = await Markets()
+    if (!component) {
+      throw new Error('Expected fallback content when no markets are available')
+    }
 
-    expect(component).toBeNull()
+    render(component as ReactElement)
+    expect(
+      screen.getByRole('heading', { level: 2, name: /Upcoming\s+Farmers markets/i })
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Market dates are announced soon/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /See market schedule/i })).toHaveAttribute(
+      'href',
+      '/market-schedule'
+    )
   })
 })

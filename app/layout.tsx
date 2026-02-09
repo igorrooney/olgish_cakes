@@ -7,6 +7,7 @@ import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { SiteHeader } from "./components/homepage/SiteHeader";
+import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -14,6 +15,8 @@ import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import "./globals.css";
 import { Providers } from "./providers";
+import { buildAggregateRating, formatRatingValue, formatReviewCount } from "./utils/review-stats";
+import { getReviewStats } from "./utils/review-stats.server";
 
 const alice = Alice({
   subsets: ["latin"],
@@ -133,6 +136,18 @@ const klaroServices = isConsentEnabled ? [
     `
   },
   {
+    name: 'microsoft-clarity',
+    purposes: ['analytics'],
+    translations: {
+      zz: {
+        title: 'Microsoft Clarity'
+      },
+      en: {
+        description: 'Helps us understand how people use the site with session insights.'
+      }
+    }
+  },
+  {
     name: 'google-ads',
     purposes: ['marketing'],
     cookies: ['_gcl_au', '_gcl_aw', '_gcl_dc'],
@@ -243,10 +258,30 @@ export const viewport: Viewport = {
   viewportFit: "cover"
 };
 
-export const metadata: Metadata = {
+type OtherMetadata = Record<string, string | number | (string | number)[]>
+
+const baseOther: OtherMetadata = {
+  "geo.region": "GB-ENG",
+  "geo.placename": "Leeds",
+  "geo.position": "53.8008;-1.5491",
+  ICBM: "53.8008, -1.5491",
+  price_range: "££",
+  cuisine: "Ukrainian",
+  payment: "cash, credit card, bank transfer",
+  delivery: "yes",
+  takeout: "yes",
+  "business:contact_data:street_address": "Allerton Grange",
+  "business:contact_data:locality": "Leeds",
+  "business:contact_data:postal_code": "LS17",
+  "business:contact_data:country_name": "United Kingdom",
+  "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
+  "business:contact_data:email": "hello@olgishcakes.co.uk",
+}
+
+const baseMetadata: Metadata = {
   title: {
     default:
-      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
     template: '%s | Olgish Cakes',
   },
   description:
@@ -303,7 +338,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title:
-      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
     description:
       'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
     type: "website",
@@ -323,7 +358,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title:
-      'Olgish Cakes - #1 Ukrainian Cakes Leeds | Honey Cake',
+      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
     description:
       "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
@@ -344,25 +379,7 @@ export const metadata: Metadata = {
   verification: {
     google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
   },
-  other: {
-    "geo.region": "GB-ENG",
-    "geo.placename": "Leeds",
-    "geo.position": "53.8008;-1.5491",
-    ICBM: "53.8008, -1.5491",
-    rating: "5",
-    rating_count: "127",
-    price_range: "££",
-    cuisine: "Ukrainian",
-    payment: "cash, credit card, bank transfer",
-    delivery: "yes",
-    takeout: "yes",
-    "business:contact_data:street_address": "Allerton Grange",
-    "business:contact_data:locality": "Leeds",
-    "business:contact_data:postal_code": "LS17",
-    "business:contact_data:country_name": "United Kingdom",
-    "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
-    "business:contact_data:email": "hello@olgishcakes.co.uk",
-  },
+  other: baseOther,
   alternates: {
     canonical: "https://olgishcakes.co.uk",
     languages: {
@@ -371,11 +388,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const reviewStats = await getReviewStats()
+  const other: OtherMetadata = { ...baseOther }
+
+  if (reviewStats.count > 0) {
+    other.rating = formatRatingValue(reviewStats.averageRating)
+    other.rating_count = formatReviewCount(reviewStats.count)
+  }
+
+  return {
+    ...baseMetadata,
+    other
+  }
+}
+
+export default async function RootLayout({
   children
 }: {
   children: React.ReactNode
 }) {
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
+
   return (
     <html lang="en-GB" data-theme="olgish-cakes" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
       <head>
@@ -499,7 +534,7 @@ export default function RootLayout({
                 "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
                 "https://www.instagram.com/olgish_cakes/",
               ],
-              // Aggregate ratings are provided on Product and review pages to avoid duplication
+              ...(aggregateRating ? { aggregateRating } : {}),
               hasOfferCatalog: {
                 "@type": "OfferCatalog",
                 name: "Ukrainian Cakes Menu",
@@ -615,16 +650,18 @@ export default function RootLayout({
       </head>
       <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
         <ConditionalMuiProviders>
-          <Providers>
-            <div className="flex flex-col min-h-screen">
-              <SiteHeader />
-              <main className="flex-grow">{children}</main>
-              <SiteFooter />
-              <ScrollToTop />
-              <WebVitalsMonitor />
-              <PerformanceOptimizer />
-            </div>
-          </Providers>
+          <ReviewStatsProvider stats={reviewStats}>
+            <Providers>
+              <div className="flex flex-col min-h-screen">
+                <SiteHeader />
+                <main className="flex-grow">{children}</main>
+                <SiteFooter />
+                <ScrollToTop />
+                <WebVitalsMonitor />
+                <PerformanceOptimizer />
+              </div>
+            </Providers>
+          </ReviewStatsProvider>
         </ConditionalMuiProviders>
         <Analytics />
         <SpeedInsights />

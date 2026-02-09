@@ -7,7 +7,13 @@ export function OlgishCakesFounder() {
   const arrowClassName = 'font-oldenburg text-primary-500 text-lg'
 
   return (
-    <section className='bg-base-100 px-6 pb-8 pt-8 tablet:px-10 tablet:pt-10 tablet:pb-12'>
+    <section
+      className='bg-base-100 px-6 pb-8 pt-8 tablet:px-10 tablet:pt-10 tablet:pb-12'
+      aria-labelledby='founder-section-title'
+    >
+      <h2 id='founder-section-title' className='sr-only'>
+        About Olgish Cakes founder
+      </h2>
       <div className='homepage-container flex flex-col gap-6 tablet:gap-10 tablet:max-w-[863px] tablet:relative tablet: left-[-160px]'>
         <div className='flex flex-col gap-6 tablet:flex-row tablet:items-center tablet:justify-center tablet:gap-5'>
           <div className='order-2 relative rounded-[16px] bg-primary-50 px-4 py-5 text-center shadow-xl tablet:order-1 tablet:flex tablet:flex-col tablet:justify-center tablet:h-[306px] tablet:w-[269px] tablet:-mr-[134px] tablet:px-5 tablet:py-6 tablet:text-left tablet:shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] tablet:z-10'>
@@ -22,7 +28,7 @@ export function OlgishCakesFounder() {
             <div className='mt-4 flex justify-center tablet:hidden'>
               <Link href='/cakes' className={linkClassName}>
                 <span>See all cakes</span>
-                <span className={arrowClassName}>{'>'}</span>
+                <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
               </Link>
             </div>
           </div>
@@ -60,37 +66,37 @@ export function OlgishCakesFounder() {
               <li>
                 <Link href='/cakes' className={linkClassName}>
                   <span>See all cakes</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
                 <Link href='/#bestsellers' className={linkClassName}>
                   <span>View bestsellers</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
                 <Link href='/market-schedule' className={linkClassName}>
                   <span>Visit our market stall</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
                 <Link href='/reviews-awards' className={linkClassName}>
                   <span>Check our reviews</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
                 <Link href='/celebration-cakes' className={linkClassName}>
                   <span>Browse occasion cakes</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
                 <Link href='/get-custom-quote' className={linkClassName}>
                   <span>Custom cake enquiry</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
               <li>
@@ -101,7 +107,7 @@ export function OlgishCakesFounder() {
                   rel='noopener noreferrer'
                 >
                   <span>Follow our Instagram</span>
-                  <span className={arrowClassName}>{'>'}</span>
+                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </Link>
               </li>
             </ul>

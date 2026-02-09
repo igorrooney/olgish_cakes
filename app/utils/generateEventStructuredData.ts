@@ -1,12 +1,17 @@
 import type { MarketSchedule, MarketScheduleStructuredData } from "@/app/types/marketSchedule";
+import { buildAggregateRating, type ReviewStats } from "./review-stats";
 
 /**
  * Generate JSON-LD structured data for a market event
  */
-export function generateEventStructuredData(event: MarketSchedule): MarketScheduleStructuredData {
+export function generateEventStructuredData(
+  event: MarketSchedule,
+  reviewStats?: ReviewStats
+): MarketScheduleStructuredData {
   const eventDate = new Date(event.date);
   const startDateTime = new Date(`${event.date}T${event.startTime}:00`).toISOString();
   const endDateTime = new Date(`${event.date}T${event.endTime}:00`).toISOString();
+  const aggregateRating = buildAggregateRating(reviewStats);
 
   // Create a safe slug for the event URL from the title
   const eventSlug = event.title
@@ -54,13 +59,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     isAccessibleForFree: true,
     url: eventId,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 
   // Add Google Maps URL as location URL
@@ -107,7 +106,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
 /**
  * Generate JSON-LD structured data for multiple events (ItemList)
  */
-export function generateEventsListStructuredData(events: MarketSchedule[]) {
+export function generateEventsListStructuredData(events: MarketSchedule[], reviewStats?: ReviewStats) {
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location || !event.startTime || !event.endTime) {
@@ -137,7 +136,7 @@ export function generateEventsListStructuredData(events: MarketSchedule[]) {
     itemListElement: upcomingEvents.map((event, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      item: generateEventStructuredData(event),
+      item: generateEventStructuredData(event, reviewStats),
     })),
     mainEntity: {
       "@type": "Organization",

@@ -5,18 +5,20 @@ import CakeCard from "../components/CakeCard";
 import Link from "next/link";
 import Script from "next/script";
 import { Breadcrumbs } from "../components/Breadcrumbs";
+import { buildAggregateRating } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title:
     "Birthday Cakes Huddersfield from £25 | 5★ Rated",
   description:
-    "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+    "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
   keywords:
     "birthday cakes Huddersfield, birthday cakes in Huddersfield, custom birthday cakes Huddersfield, children's birthday cakes Huddersfield, cakes Huddersfield, Ukrainian cakes Huddersfield, honey cake Huddersfield, cake delivery Huddersfield, bakery Huddersfield",
   openGraph: {
     title: "Birthday Cakes Huddersfield from £25 | 5★ Rated",
     description:
-      "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Huddersfield from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/cakes-huddersfield",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
     type: "website",
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Birthday Cakes Huddersfield from £25 | Same-Day Delivery",
     description:
-      "Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 127+ 5-star reviews. Order today!",
+      "Custom birthday cakes delivered same-day in Huddersfield from £25. Ukrainian honey cake, children's themes, adult milestones. 5★ rated. Order today!",
     images: ["https://olgishcakes.co.uk/images/cakes-huddersfield.jpg"],
   },
   alternates: {
@@ -35,6 +37,8 @@ export const metadata: Metadata = {
 
 export default async function CakesHuddersfieldPage() {
   const allCakes = await getAllCakes();
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
 
   return (
     <>
@@ -71,13 +75,7 @@ export default async function CakesHuddersfieldPage() {
               "@type": "City",
               name: "Huddersfield",
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "5",
-              reviewCount: "127",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
           }),
         }}
       />

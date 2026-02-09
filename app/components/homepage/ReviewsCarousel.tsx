@@ -14,8 +14,15 @@ interface ReviewCardProps {
   className?: string
 }
 
-function formatTimeAgo(dateString: string): string {
+const getValidDate = (dateString: string) => {
   const date = new Date(dateString)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function formatTimeAgo(dateString: string): string {
+  const date = getValidDate(dateString)
+  if (!date) return 'recently'
+
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / 60000)
@@ -26,6 +33,36 @@ function formatTimeAgo(dateString: string): string {
   if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`
   if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
   return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+}
+
+type ReviewDateMeta = {
+  dateTime?: string
+  absoluteDate: string
+  isValid: boolean
+}
+
+const reviewDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'Europe/London'
+})
+
+function getReviewDateMeta(dateString: string): ReviewDateMeta {
+  const date = getValidDate(dateString)
+
+  if (!date) {
+    return {
+      absoluteDate: 'Recently',
+      isValid: false
+    }
+  }
+
+  return {
+    dateTime: date.toISOString(),
+    absoluteDate: reviewDateFormatter.format(date),
+    isValid: true
+  }
 }
 
 const getPrevIndex = (index: number) => Math.max(index - 1, 0)
@@ -180,21 +217,27 @@ function StarRating() {
 
 function ReviewCard({ testimonial, className }: ReviewCardProps) {
   const reviewTitle = testimonial.title?.trim()
-  const formattedDate = formatTimeAgo(testimonial.date)
+  const relativeDate = formatTimeAgo(testimonial.date)
+  const { dateTime, absoluteDate, isValid } = getReviewDateMeta(testimonial.date)
   const displayName = testimonial.customerName || 'Anonymous'
+  const visibleDate = isValid ? `${absoluteDate} - ${relativeDate}` : relativeDate
 
   return (
     <div
-      className={`flex h-full w-full flex-col rounded-[16px] border border-[rgba(0,0,0,0.2)] bg-amber-50 p-5 shadow-[0px_2px_4px_rgba(7,4,146,0.1),0px_24px_60px_rgba(6,47,125,0.05),0px_12px_24px_rgba(27,59,119,0.05)] ${className || ''}`}
+      className={`flex h-full w-full flex-col rounded-[16px] border border-[rgba(0,0,0,0.2)] bg-amber-50 p-5 ${className || ''}`}
     >
       <div className="flex h-full flex-col gap-3">
         <div className="flex items-center justify-between">
           <div>
             <StarRating />
           </div>
-          <span className="font-sans text-xs text-base-content">
-            {formattedDate}
-          </span>
+          <time
+            className="font-sans text-xs text-base-content"
+            dateTime={dateTime}
+            title={isValid ? `Reviewed on ${absoluteDate}` : 'Reviewed recently'}
+          >
+            {visibleDate}
+          </time>
         </div>
         {reviewTitle && (
           <h3 className="font-sans text-lg font-medium text-black">

@@ -2,8 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import TestimonialsPage, { metadata, revalidate, dynamic } from '../page'
-import { SANITY_CACHE_CONFIG } from '@/lib/sanity-cache-config'
+import TestimonialsPage, { metadata, dynamic } from '../page'
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -52,10 +51,6 @@ describe('TestimonialsPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use configured revalidation', () => {
-      const expectedRevalidate = SANITY_CACHE_CONFIG.testimonials.revalidate ?? 60 * 60
-      expect(revalidate).toBe(expectedRevalidate)
-    })
   })
 
   describe('Metadata', () => {

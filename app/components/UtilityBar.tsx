@@ -6,6 +6,8 @@ import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { Box, Typography, Tooltip } from "@/lib/mui-optimization";
 import { Container as DesignContainer, AccessibleIconButton } from "@/lib/ui-components";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
 import {
   PhoneIcon,
   EmailIcon,
@@ -19,6 +21,12 @@ import {
 const { colors, typography, spacing } = designTokens;
 
 export function UtilityBar() {
+  const reviewStats = useReviewStats();
+  const ratingValue = formatRatingValue(reviewStats.averageRating);
+  const reviewCount = formatReviewCount(reviewStats.count);
+  const ratingDisplay = ratingValue.endsWith(".0") ? ratingValue.slice(0, -2) : ratingValue;
+  const hasReviews = reviewStats.count > 0;
+
   return (
     <Box
       component="div"
@@ -103,7 +111,7 @@ export function UtilityBar() {
               variant="body2"
               sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
             >
-              5★ (127+)
+              {hasReviews ? `${ratingDisplay}★ (${reviewCount})` : "5★ rated"}
             </Typography>
           </Box>
         </Box>

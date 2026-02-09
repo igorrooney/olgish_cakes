@@ -19,8 +19,8 @@ function validateSanityConfig() {
   }
 }
 
-// Revalidation settings for backwards compatibility
-const REVALIDATE_TIME = 3600; // 1 hour in seconds
+// Revalidation settings for backwards compatibility (no time-based revalidation)
+const REVALIDATE_TIME = 0
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime

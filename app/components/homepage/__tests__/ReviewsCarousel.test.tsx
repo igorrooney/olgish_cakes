@@ -40,7 +40,7 @@ describe('ReviewsCarousel', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders reviews with relative dates and fallback names', () => {
+  it('renders reviews with absolute and relative dates plus fallback names', () => {
     const testimonials = [
       createTestimonial({
         _id: 't-1',
@@ -93,13 +93,14 @@ describe('ReviewsCarousel', () => {
     expect(screen.getByText('Our reviews')).toBeInTheDocument()
     expect(screen.getAllByText('Amazing cake')).toHaveLength(3)
     expect(screen.getAllByText('So tasty')).toHaveLength(3)
-    expect(screen.getAllByText('just now')).toHaveLength(3)
-    expect(screen.getAllByText('10 minutes ago')).toHaveLength(3)
-    expect(screen.getAllByText('2 hours ago')).toHaveLength(3)
-    expect(screen.getAllByText('3 days ago')).toHaveLength(3)
-    expect(screen.getAllByText('4 days ago')).toHaveLength(3)
-    expect(screen.getAllByText('5 days ago')).toHaveLength(3)
-    expect(screen.getAllByText('6 days ago')).toHaveLength(3)
+    expect(screen.getAllByText(/just now/i)).toHaveLength(3)
+    expect(screen.getAllByText(/10 minutes ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/2 hours ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/3 days ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/4 days ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/5 days ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/6 days ago/i)).toHaveLength(3)
+    expect(screen.getAllByText(/29 January 2026/i).length).toBeGreaterThanOrEqual(3)
     expect(screen.getAllByText('Anonymous')).toHaveLength(3)
   })
 

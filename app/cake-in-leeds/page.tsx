@@ -6,6 +6,8 @@ import { Box, Button, Card, CardContent, Chip, Container, Grid, Paper, Typograph
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { formatRatingValue, formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: 'Cake in Leeds | Best Ukrainian Bakery Leeds Yorkshire',
@@ -65,7 +67,20 @@ export const metadata: Metadata = {
   }
 }
 
-export default function CakeInLeedsPage() {
+export default async function CakeInLeedsPage() {
+  const reviewStats = await getReviewStats()
+  const ratingValue = formatRatingValue(reviewStats.averageRating)
+  const ratingDisplay = ratingValue.endsWith('.0') ? ratingValue.slice(0, -2) : ratingValue
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const reviewChipLabel = reviewStats.count > 0
+    ? `${ratingDisplay}★ Rated - ${reviewCount} Reviews`
+    : `${ratingDisplay}★ Rated`
+  const reviewTitle = reviewStats.count > 0
+    ? `${reviewCount} Five-Star Reviews`
+    : `${ratingDisplay}★ Rated`
+  const reviewDescription = reviewStats.count > 0
+    ? `Leeds people love my cakes! ${reviewCount} five-star reviews from happy customers. Read what people say about the best cake in Leeds on my testimonials page.`
+    : 'Leeds people love my cakes! Five-star reviews from happy customers. Read what people say about the best cake in Leeds on my testimonials page.'
   const orderDescription = (
     <>
       Order online, by phone <MuiLink href={`tel:${BUSINESS_CONSTANTS.PHONE}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.PHONE}</MuiLink>, or email <MuiLink href={`mailto:${BUSINESS_CONSTANTS.EMAIL}`} underline="always" sx={{ color: colors.primary.main }}>{BUSINESS_CONSTANTS.EMAIL}</MuiLink>. Tell me your delivery date and any special requirements.
@@ -103,7 +118,7 @@ export default function CakeInLeedsPage() {
       { '@type': 'City', name: 'Wakefield' },
       { '@type': 'City', name: 'Huddersfield' }
     ],
-    openingHours: 'Mo-Su 08:00-20:00'
+    openingHours: 'Mo-Su 00:00-23:59'
   }
 
   const serviceStructuredData = {
@@ -198,7 +213,9 @@ export default function CakeInLeedsPage() {
         category: 'Wedding Cakes',
       },
     ],
-    'cake-in-leeds'
+    'cake-in-leeds',
+    BUSINESS_CONSTANTS.BASE_URL,
+    reviewStats
   )
 
   const leedsAreas = [
@@ -281,7 +298,7 @@ export default function CakeInLeedsPage() {
               Authentic Ukrainian cakes made fresh daily in Leeds. Same-day delivery across Yorkshire.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', mb: 3 }}>
-              <Chip label="5★ Rated - 127+ Reviews" sx={{ bgcolor: 'secondary.main', color: 'primary.main', fontWeight: 'bold' }} />
+              <Chip label={reviewChipLabel} sx={{ bgcolor: 'secondary.main', color: 'primary.main', fontWeight: 'bold' }} />
               <Chip label="Same-Day Delivery" sx={{ bgcolor: 'white', color: 'primary.main' }} />
               <Chip label="From £25" sx={{ bgcolor: 'white', color: 'primary.main' }} />
             </Box>
@@ -326,8 +343,8 @@ export default function CakeInLeedsPage() {
               },
               {
                 icon: <StarIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
-                title: '127+ Five-Star Reviews',
-                description: 'Leeds people love my cakes! Over 127 five-star reviews from happy customers. Read what people say about the best cake in Leeds on my testimonials page.'
+                title: reviewTitle,
+                description: reviewDescription
               }
             ].map((item, idx) => (
               <Grid item xs={12} md={6} key={idx}>
@@ -605,4 +622,3 @@ export default function CakeInLeedsPage() {
     </>
   )
 }
-

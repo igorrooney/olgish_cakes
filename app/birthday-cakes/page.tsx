@@ -9,19 +9,21 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import CakeCard from "../components/CakeCard";
 import { getAllCakes } from "../utils/fetchCakes";
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "../utils/seo";
+import { buildAggregateRating } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title:
     "Birthday Cakes Leeds £25+ | Same-Day | 5★ | Custom Themes",
   description:
-    "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake & custom themes | Kids & adults | 5★ rated (127+ reviews) | Free consultation!",
+    "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake & custom themes | Kids & adults | 5★ rated | Free consultation!",
   keywords:
     "birthday cakes Leeds, themed birthday cakes Leeds, children birthday cakes Leeds, adult birthday cakes Leeds, Ukrainian honey cake birthday, Medovik birthday cake, birthday cake delivery Leeds",
   openGraph: {
     title:
       "Birthday Cakes Leeds from £25 | 5★ Rated | Same-Day Delivery",
     description:
-      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 127+ 5-star reviews | Children's & adult themes | Order today!",
+      "Birthday cakes Leeds from £25 | Same-day delivery | Ukrainian honey cake | 5★ rated | Children's & adult themes | Order today!",
     url: "https://olgishcakes.co.uk/birthday-cakes",
     siteName: "Olgish Cakes",
     images: [
@@ -77,6 +79,8 @@ export const metadata: Metadata = {
 
 export default async function BirthdayCakesPage() {
   const allCakes = await getAllCakes();
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
   const birthdayCakes = allCakes.filter(
     cake =>
       cake.category === "custom" ||
@@ -221,13 +225,7 @@ export default async function BirthdayCakesPage() {
         url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
         brand: { "@type": "Brand", name: "Olgish Cakes" },
         category: "Birthday Cake",
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: "5",
-          reviewCount: "127",
-          bestRating: "5",
-          worstRating: "1",
-        },
+        ...(aggregateRating ? { aggregateRating } : {}),
         offers: {
           "@type": "Offer",
           price: formatStructuredDataPrice(cake?.pricing?.standard ?? 0, 0),

@@ -34,7 +34,10 @@ describe('robots.txt', () => {
   it('should include sitemap URL', () => {
     const result = robots()
 
-    expect(result.sitemap).toBe('https://olgishcakes.co.uk/sitemap.xml')
+    expect(Array.isArray(result.sitemap)).toBe(true)
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap.xml')
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap-images.xml')
+    expect(result.sitemap).toContain('https://olgishcakes.co.uk/sitemap-products.xml')
   })
 
   it('should have correct type', () => {

@@ -3,6 +3,8 @@ import { Box, Button, Card, Container, Grid, List, ListItem, ListItemText, Typog
 import { Metadata } from "next";
 import Link from "next/link";
 import { TocLink } from "../cake-by-post-uk-complete-guide/TocLink";
+import { buildAggregateRating } from '../../utils/review-stats'
+import { getReviewStats } from '../../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: "Best Honey Cake You Can Send by Post UK 2025",
@@ -73,7 +75,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BestCakesByPostUKPage() {
+export default async function BestCakesByPostUKPage() {
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -148,13 +152,7 @@ export default function BestCakesByPostUKPage() {
         returnMethod: "https://schema.org/ReturnByMail",
       }
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1"
-    }
+    ...(aggregateRating ? { aggregateRating } : {})
   };
 
   return (

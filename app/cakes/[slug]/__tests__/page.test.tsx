@@ -3,7 +3,7 @@
  */
 import { render } from '@testing-library/react'
 import React from 'react'
-import CakeDetailPage, { generateMetadata, generateStaticParams, revalidate } from '../page'
+import CakeDetailPage, { generateMetadata, generateStaticParams } from '../page'
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -44,6 +44,20 @@ jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
   getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' })),
   getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
+}))
+
+jest.mock('@/app/utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  }))
+}))
+
+jest.mock('@/app/utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
 }))
 
 jest.mock('@/types/cake', () => ({
@@ -106,12 +120,6 @@ describe('CakeDetailPage', () => {
           url: jest.fn(() => 'https://cdn.sanity.io/images/test-project/test-dataset/test-image.jpg')
         }))
       }))
-    })
-  })
-
-  describe('Static Configuration', () => {
-    it('should have 60 second revalidation', () => {
-      expect(revalidate).toBe(60)
     })
   })
 
@@ -628,4 +636,3 @@ describe('CakeDetailPage', () => {
     })
   })
 })
-

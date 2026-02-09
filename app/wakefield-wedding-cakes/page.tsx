@@ -93,7 +93,7 @@ export default async function WakefieldWeddingCakesPage() {
       latitude: 53.6833,
       longitude: -1.4977
     },
-    openingHours: "Mo-Sa 08:00-18:00",
+    openingHours: "Mo-Su 00:00-23:59",
     priceRange: "£££",
     servesCuisine: "Ukrainian",
     hasMenu: {

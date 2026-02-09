@@ -24,6 +24,12 @@ export async function GET(request: NextRequest) {
   try {
     const cakesConfig = getCacheConfig('cakes')
     const giftHampersConfig = getCacheConfig('giftHampers')
+    const toRevalidateSeconds = (value?: number | false) =>
+      typeof value === 'number' && Number.isFinite(value) ? value : 0
+    const revalidateSeconds = Math.min(
+      toRevalidateSeconds(cakesConfig.revalidate),
+      toRevalidateSeconds(giftHampersConfig.revalidate)
+    )
     
     // Fetch cakes
     const cakes = await cachedSanityFetch<CakeQueryResult[]>(`
@@ -81,10 +87,7 @@ export async function GET(request: NextRequest) {
       { products },
       {
         headers: {
-          'Cache-Control': `public, s-maxage=${Math.min(
-            cakesConfig.revalidate ?? 0,
-            giftHampersConfig.revalidate ?? 0
-          )}, stale-while-revalidate=86400`
+          'Cache-Control': `public, s-maxage=${revalidateSeconds}, stale-while-revalidate=86400`
         }
       }
     );

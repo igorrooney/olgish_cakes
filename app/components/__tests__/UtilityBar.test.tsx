@@ -4,6 +4,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { UtilityBar } from '../UtilityBar'
+import { ReviewStatsProvider } from '../ReviewStatsProvider'
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
@@ -40,6 +41,14 @@ jest.mock('@/lib/constants', () => ({
     }
   }
 }))
+
+const renderWithStats = (stats = { count: 13, averageRating: 5 }) => {
+  return render(
+    <ReviewStatsProvider stats={stats}>
+      <UtilityBar />
+    </ReviewStatsProvider>
+  )
+}
 
 jest.mock('@/lib/mui-optimization', () => ({
   Box: ({ children, component, role, sx, ...props }: MockProps) => {
@@ -81,65 +90,65 @@ jest.mock('@/lib/ui-components', () => ({
 
 describe('UtilityBar', () => {
   it('should render without crashing', () => {
-    render(<UtilityBar />)
+    renderWithStats()
 
     expect(screen.getAllByTestId('box').length).toBeGreaterThan(0)
   })
 
   it('should have navigation role', () => {
-    const { container } = render(<UtilityBar />)
+    const { container } = renderWithStats()
 
     const nav = container.querySelector('[role="navigation"]')
     expect(nav).toBeInTheDocument()
   })
 
   it('should have aria-label for navigation', () => {
-    const { container } = render(<UtilityBar />)
+    const { container } = renderWithStats()
 
     const nav = container.querySelector('[aria-label="Utility navigation"]')
     expect(nav).toBeInTheDocument()
   })
 
   it('should render design container', () => {
-    render(<UtilityBar />)
+    renderWithStats()
 
     expect(screen.getByTestId('design-container')).toBeInTheDocument()
   })
 
   describe('Contact Information', () => {
     it('should render phone icon', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getAllByTestId('phone-icon').length).toBeGreaterThan(0)
     })
 
     it('should render email icon', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getAllByTestId('email-icon').length).toBeGreaterThan(0)
     })
 
     it('should display phone number', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getByText('+44 123 456 7890')).toBeInTheDocument()
     })
 
     it('should display email address', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getByText('hello@olgishcakes.co.uk')).toBeInTheDocument()
     })
 
     it('should link phone number', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const phoneLink = screen.getByText('+44 123 456 7890').closest('a')
       expect(phoneLink).toHaveAttribute('href', 'tel:+441234567890')
     })
 
     it('should link email address', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const emailLink = screen.getByText('hello@olgishcakes.co.uk').closest('a')
       expect(emailLink).toHaveAttribute('href', 'mailto:hello@olgishcakes.co.uk')
@@ -148,27 +157,27 @@ describe('UtilityBar', () => {
 
   describe('Hours and Rating', () => {
     it('should display "Order online 24/7" text', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getByText('Order online 24/7')).toBeInTheDocument()
     })
 
     it('should render star icon', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getByTestId('star-icon')).toBeInTheDocument()
     })
 
     it('should display rating', () => {
-      render(<UtilityBar />)
+      renderWithStats({ count: 13, averageRating: 5 })
 
-      expect(screen.getByText('5★ (127+)')).toBeInTheDocument()
+      expect(screen.getByText('5★ (13)')).toBeInTheDocument()
     })
   })
 
   describe('Social Media Links', () => {
     it('should render all social media icons', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       expect(screen.getByTestId('instagram-icon')).toBeInTheDocument()
       expect(screen.getByTestId('facebook-icon')).toBeInTheDocument()
@@ -177,35 +186,35 @@ describe('UtilityBar', () => {
     })
 
     it('should link to Instagram', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const instagramButton = screen.getByTestId('instagram-icon').closest('a')
       expect(instagramButton).toHaveAttribute('href', 'https://www.instagram.com/olgish_cakes/')
     })
 
     it('should link to Facebook', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const facebookButton = screen.getByTestId('facebook-icon').closest('a')
       expect(facebookButton).toHaveAttribute('href', expect.stringContaining('facebook.com'))
     })
 
     it('should link to YouTube', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const youtubeButton = screen.getByTestId('youtube-icon').closest('a')
       expect(youtubeButton).toHaveAttribute('href', 'https://youtube.com/test')
     })
 
     it('should link to WhatsApp', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const whatsappButton = screen.getByTestId('whatsapp-icon').closest('a')
       expect(whatsappButton).toHaveAttribute('href', 'https://wa.me/123')
     })
 
     it('should open social links in new tab', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const instagramButton = screen.getByTestId('instagram-icon').closest('a')
       expect(instagramButton).toHaveAttribute('target', '_blank')
@@ -215,7 +224,7 @@ describe('UtilityBar', () => {
 
   describe('Tooltips', () => {
     it('should have Instagram tooltip', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const tooltips = screen.getAllByTestId('tooltip')
       const instagramTooltip = tooltips.find(t => t.getAttribute('title') === 'Instagram')
@@ -223,7 +232,7 @@ describe('UtilityBar', () => {
     })
 
     it('should have Facebook tooltip', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const tooltips = screen.getAllByTestId('tooltip')
       const facebookTooltip = tooltips.find(t => t.getAttribute('title') === 'Facebook')
@@ -231,7 +240,7 @@ describe('UtilityBar', () => {
     })
 
     it('should have YouTube tooltip', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const tooltips = screen.getAllByTestId('tooltip')
       const youtubeTooltip = tooltips.find(t => t.getAttribute('title') === 'YouTube')
@@ -239,7 +248,7 @@ describe('UtilityBar', () => {
     })
 
     it('should have WhatsApp tooltip', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const tooltips = screen.getAllByTestId('tooltip')
       const whatsappTooltip = tooltips.find(t => t.getAttribute('title') === 'WhatsApp')
@@ -249,14 +258,14 @@ describe('UtilityBar', () => {
 
   describe('Accessibility', () => {
     it('should have accessible icon buttons', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const iconButtons = screen.getAllByTestId('accessible-icon-button')
       expect(iconButtons.length).toBeGreaterThan(0)
     })
 
     it('should have aria-labels on social buttons', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const iconButtons = screen.getAllByTestId('accessible-icon-button')
       
@@ -267,7 +276,7 @@ describe('UtilityBar', () => {
     })
 
     it('should have aria-label for phone', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const phoneLinks = screen.getAllByText('+44 123 456 7890')
       const phoneLink = phoneLinks[0].closest('a')
@@ -275,7 +284,7 @@ describe('UtilityBar', () => {
     })
 
     it('should have aria-label for email', () => {
-      render(<UtilityBar />)
+      renderWithStats()
 
       const emailLink = screen.getByText('hello@olgishcakes.co.uk').closest('a')
       expect(emailLink).toHaveAttribute('aria-label', 'Email hello@olgishcakes.co.uk')
@@ -289,4 +298,3 @@ describe('UtilityBar', () => {
     })
   })
 })
-

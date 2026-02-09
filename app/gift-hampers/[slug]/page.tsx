@@ -14,8 +14,6 @@ import { notFound } from "next/navigation";
 import type { Brand, Graph, Product } from "schema-dts";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
 
-export const revalidate = 300; // 5 minutes
-
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
   try {

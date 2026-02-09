@@ -5,6 +5,8 @@ import { Breadcrumbs } from '../components/Breadcrumbs'
 import { ArrowForwardIcon, CakeOutlinedIcon, CheckCircleIcon, VerifiedIcon, LocalOfferIcon, SchoolIcon, FavoriteIcon, Link as MuiLink } from '@/lib/mui-optimization'
 import { colors } from '@/lib/design-system'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { formatReviewCount } from '../utils/review-stats'
+import { getReviewStats } from '../utils/review-stats.server'
 
 export const metadata: Metadata = {
   title: 'Ukrainian Cake | Authentic Traditional Cakes Leeds',
@@ -62,7 +64,12 @@ export const metadata: Metadata = {
   }
 }
 
-export default function UkrainianCakePage() {
+export default async function UkrainianCakePage() {
+  const reviewStats = await getReviewStats()
+  const reviewCount = formatReviewCount(reviewStats.count)
+  const reviewBenefit = reviewStats.count > 0
+    ? `${reviewCount} five-star reviews from happy customers`
+    : 'Five-star reviews from happy customers'
   const articleStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -336,7 +343,7 @@ export default function UkrainianCakePage() {
                 'I use only premium natural ingredients',
                 'Each cake is made fresh to order',
                 'Same-day delivery available in Leeds',
-                '127+ five-star reviews from happy customers',
+                reviewBenefit,
                 "Authentic Ukrainian taste you won't find elsewhere",
                 'Prices from £25 - affordable luxury'
               ].map((benefit, idx) => (
@@ -418,4 +425,3 @@ export default function UkrainianCakePage() {
     </>
   )
 }
-

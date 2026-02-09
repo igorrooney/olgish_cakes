@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import GiftHampersPage, { dynamic, metadata, revalidate } from '../page'
+import GiftHampersPage, { dynamic, metadata } from '../page'
 
 // Mock utils
 jest.mock('../../utils/fetchGiftHampers', () => ({
@@ -76,10 +76,6 @@ describe('GiftHampersPage', () => {
       expect(dynamic).toBe('force-static')
     })
 
-    it('should use static revalidation time of 300 seconds', () => {
-      // Changed to static revalidation as part of Next.js 16 upgrade
-      expect(revalidate).toBe(300)
-    })
   })
 
   describe('Metadata', () => {
@@ -431,4 +427,3 @@ describe('GiftHampersPage', () => {
     })
   })
 })
-

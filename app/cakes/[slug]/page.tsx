@@ -10,9 +10,8 @@ import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } 
 import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
-
-// Enable revalidation for this page with optimization
-export const revalidate = 60; // 1 minute for better data freshness
+import { buildAggregateRating } from '@/app/utils/review-stats'
+import { getReviewStats } from '@/app/utils/review-stats.server'
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
@@ -146,6 +145,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CakePage({ params }: PageProps) {
   const { slug } = await params;
   const cake = await getCakeBySlug(slug);
+  const reviewStats = await getReviewStats()
+  const aggregateRating = buildAggregateRating(reviewStats)
 
   if (!cake) {
     notFound();
@@ -240,13 +241,7 @@ export default async function CakePage({ params }: PageProps) {
                 "https://schema.org/PaymentByBankTransfer",
               ],
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "4.9",
-              reviewCount: "120",
-              bestRating: "5",
-              worstRating: "1",
-            },
+            ...(aggregateRating ? { aggregateRating } : {}),
             review: [
               {
                 "@type": "Review",
@@ -323,11 +318,7 @@ export default async function CakePage({ params }: PageProps) {
                       shippingDetails: getOfferShippingDetails(),
                       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                     },
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: "5",
-                      reviewCount: "120",
-                    },
+                    ...(aggregateRating ? { aggregateRating } : {}),
                   },
                 },
               ],

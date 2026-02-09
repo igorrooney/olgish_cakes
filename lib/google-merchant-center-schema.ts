@@ -8,6 +8,7 @@
 import { getPriceValidUntil } from "@/app/utils/seo";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
+import { buildAggregateRating, type ReviewStats } from '@/app/utils/review-stats'
 
 export interface MerchantCenterProductData {
   id: string;
@@ -35,6 +36,7 @@ export interface MerchantCenterProductData {
   };
   additionalImages?: string[];
   customLabels?: string[];
+  reviewStats?: ReviewStats;
 }
 
 /**
@@ -42,6 +44,7 @@ export interface MerchantCenterProductData {
  */
 export function generateMerchantCenterProductSchema(data: MerchantCenterProductData) {
   const baseUrl = "https://olgishcakes.co.uk";
+  const aggregateRating = buildAggregateRating(data.reviewStats)
   
   return {
     "@context": "https://schema.org",
@@ -195,13 +198,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
     ],
     
     // Aggregate rating if available
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5.0",
-      reviewCount: "50",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     
     // Review information
     review: [

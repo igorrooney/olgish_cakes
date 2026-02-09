@@ -23,6 +23,18 @@ interface BestsellersCarouselProps {
     cakes: CakeWithImage[]
 }
 
+const formatCategoryLabel = (category?: string) => {
+    if (!category) {
+        return 'Signature'
+    }
+
+    return category
+        .split('-')
+        .map((word) => (word ? `${word[0].toUpperCase()}${word.slice(1)}` : ''))
+        .filter(Boolean)
+        .join(' ')
+}
+
 export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
     const carouselRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -80,7 +92,9 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                 className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-[15px]"
             >
                 {cakes.map((cake, index) => {
-                    const imageAlt = cake.mainImage?.alt || `${cake.name} - ${cake.category} honey cake by Olgish Cakes`
+                    const categoryLabel = formatCategoryLabel(cake.category)
+                    const safeCakeName = cake.name?.trim() || 'Olgish Cakes'
+                    const imageAlt = cake.mainImage?.alt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
                     const isFirst = index === 0
 
                     return (
@@ -116,7 +130,6 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                                         alt="Handcrafted cakes"
                                         fill
                                         className="object-contain"
-                                        priority
                                     />
                                 </div>
 

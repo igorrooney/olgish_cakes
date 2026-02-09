@@ -5,25 +5,18 @@ import {
   OlgishCakesFounder,
   Bestsellers,
   EnquiryForm,
+  faqItems,
+  HomeFaq,
   HomeHero,
   Instagram,
   Markets,
   Occasions,
   Reviews,
 } from './components/homepage'
-import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
 import { getAllTestimonials } from './utils/fetchTestimonials'
 
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const maxReviewSchemas = 6
-
-type AggregateRatingSchema = {
-  '@type': 'AggregateRating'
-  ratingValue: string
-  reviewCount: string
-  bestRating: string
-  worstRating: string
-}
 
 type ReviewSchema = {
   '@type': 'Review'
@@ -39,14 +32,14 @@ type ReviewSchema = {
     worstRating: string
   }
   reviewBody: string
-  datePublished: string
+  datePublished?: string
 }
 
 const buildReviewSchema = (data: {
   authorName: string
   reviewBody: string
   ratingValue: number | string
-  datePublished: string
+  datePublished?: string
 }): ReviewSchema => ({
   '@type': 'Review',
   itemReviewed: { '@id': organizationId },
@@ -61,49 +54,31 @@ const buildReviewSchema = (data: {
     worstRating: '1'
   },
   reviewBody: data.reviewBody,
-  datePublished: data.datePublished
+  ...(data.datePublished ? { datePublished: data.datePublished } : {})
 })
 
-const mapDefaultReview = (review: typeof DEFAULT_REVIEWS[number]): ReviewSchema => {
-  const authorName =
-    review.author &&
-      typeof review.author === 'object' &&
-      'name' in review.author &&
-      typeof review.author.name === 'string'
-      ? review.author.name
-      : 'Anonymous'
+const normalizeReviewDate = (dateValue?: string | null) => {
+  if (!dateValue) {
+    return null
+  }
 
-  const ratingValue =
-    review.reviewRating &&
-      typeof review.reviewRating === 'object' &&
-      'ratingValue' in review.reviewRating &&
-      (typeof review.reviewRating.ratingValue === 'string' || typeof review.reviewRating.ratingValue === 'number')
-      ? review.reviewRating.ratingValue
-      : '5'
+  const parsedDate = new Date(dateValue)
 
-  const reviewBody =
-    typeof review.reviewBody === 'string' && review.reviewBody.trim().length > 0
-      ? review.reviewBody
-      : 'Lovely cake and kind service.'
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null
+  }
 
-  const datePublished =
-    typeof review.datePublished === 'string' && review.datePublished.length > 0
-      ? review.datePublished
-      : '2025-09-30'
-
-  return buildReviewSchema({
-    authorName,
-    reviewBody,
-    ratingValue,
-    datePublished
-  })
+  return parsedDate.toISOString()
 }
+
+const hasVisibleReviewText = (testimonial: Testimonial) =>
+  Boolean(testimonial.text && testimonial.text.trim().length > 0)
 
 const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
   const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
   const ratingValue = Number.isFinite(testimonial.rating) && testimonial.rating > 0 ? testimonial.rating : 5
-  const reviewBody = testimonial.text?.trim() ? testimonial.text : 'Lovely cake and kind service.'
-  const datePublished = testimonial.date
+  const reviewBody = testimonial.text?.trim() ?? ''
+  const datePublished = normalizeReviewDate(testimonial.date) ?? undefined
 
   return buildReviewSchema({
     authorName,
@@ -113,34 +88,34 @@ const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
   })
 }
 
-const buildAggregateRating = (testimonials: Testimonial[]): AggregateRatingSchema => {
-  if (testimonials.length === 0) {
-    return { ...DEFAULT_AGGREGATE_RATING }
-  }
-
-  const totalRating = testimonials.reduce((sum, testimonial) => {
-    const ratingValue = Number.isFinite(testimonial.rating) && testimonial.rating > 0 ? testimonial.rating : 5
-    return sum + ratingValue
-  }, 0)
-
-  const averageRating = (totalRating / testimonials.length).toFixed(1)
-
-  return {
-    '@type': 'AggregateRating',
-    ratingValue: averageRating,
-    reviewCount: testimonials.length.toString(),
-    bestRating: '5',
-    worstRating: '1'
-  }
-}
-
 export const metadata: Metadata = {
-  title: 'Olgish Cakes - Authentic Ukrainian Honey Cakes in Leeds',
-  description: 'Order authentic Ukrainian honey cakes from Leeds. Handmade, small-batch bakes with 5★ reviews, UK-wide delivery by post, and custom designs for celebrations.',
-  keywords: ['Ukrainian cakes', 'honey cake', 'Medovik', 'Leeds bakery', 'cake delivery UK'],
+  title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
+  description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
+  keywords: [
+    'Olgish Cakes',
+    'Ukrainian bakery',
+    'Ukrainian cakes',
+    'honey cake',
+    'Medovik',
+    'Napoleon cake',
+    'Leeds bakery',
+    'cake delivery UK',
+    'bakery delivery',
+    'cakes near me',
+    'bakery near me',
+    'patisserie near me',
+    'cake shop near me',
+    'custom cakes',
+    'birthday cakes',
+    'wedding cakes',
+    'gluten free cake',
+    'family owned bakery',
+    'dessert near me',
+    'dessert takeaway'
+  ],
   openGraph: {
-    title: 'Olgish Cakes - Authentic Ukrainian Honey Cakes',
-    description: 'Order authentic Ukrainian honey cakes from Leeds. Handmade, small-batch bakes with 5★ reviews, UK-wide delivery by post, and custom designs for celebrations.',
+    title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
+    description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
     url: 'https://olgishcakes.co.uk',
     siteName: 'Olgish Cakes',
     images: [
@@ -156,8 +131,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Olgish Cakes - Authentic Ukrainian Honey Cakes',
-    description: 'Order authentic Ukrainian honey cakes from Leeds. Handmade, small-batch bakes with 5★ reviews, UK-wide delivery by post, and custom designs for celebrations.',
+    title: 'Ukrainian cakes in Leeds | Medovik & custom cakes by post',
+    description: 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.',
     images: ['https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'],
   },
   alternates: {
@@ -167,34 +142,57 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const testimonials = await getAllTestimonials()
-  const reviewSchemas = (testimonials.length > 0
-    ? testimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
-    : DEFAULT_REVIEWS.map(mapDefaultReview))
-    .filter((review) => review.reviewBody.trim().length > 0)
+  const hasTestimonials = testimonials.length > 0
+  const reviewSchemas = hasTestimonials
+    ? testimonials
+        .filter(hasVisibleReviewText)
+        .slice(0, maxReviewSchemas)
+        .map(mapTestimonialReview)
+    : []
 
-  const aggregateRatingSchema = buildAggregateRating(testimonials)
-  const reviewsStructuredData = {
+  const reviewsStructuredData = reviewSchemas.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': reviewSchemas
+      }
+    : null
+  const faqStructuredData = {
     '@context': 'https://schema.org',
-    '@type': 'Bakery',
-    '@id': organizationId,
-    aggregateRating: aggregateRatingSchema,
-    ...(reviewSchemas.length > 0 ? { review: reviewSchemas } : {})
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer
+      }
+    }))
   }
+  const hasFaqStructuredData = faqItems.length > 0
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
-      />
+      {reviewsStructuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
+        />
+      ) : null}
+      {hasFaqStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+        />
+      )}
       <div className="min-h-screen bg-base-100 overflow-x-hidden">
-        <main className="flex flex-col">
+        <div className="flex flex-col">
           <HomeHero />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider.png"
-                alt="Decorative divider with cupcake and floral elements"
+                alt=""
+                aria-hidden="true"
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
@@ -222,7 +220,8 @@ export default async function Home() {
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider_2.png"
-                alt="Decorative divider with cupcake and floral elements"
+                alt=""
+                aria-hidden="true"
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
@@ -235,7 +234,8 @@ export default async function Home() {
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/instagram-section-divider.png"
-                alt="Decorative divider with cupcake and floral elements"
+                alt=""
+                aria-hidden="true"
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
@@ -244,7 +244,8 @@ export default async function Home() {
             </div>
           </div>
           <Instagram />
-        </main>
+          <HomeFaq />
+        </div>
       </div>
     </>
   )

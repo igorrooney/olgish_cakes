@@ -5,6 +5,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { BestsellersCarousel } from './BestsellersCarousel'
 
+const formatCategoryLabel = (category?: string) => {
+  if (!category) {
+    return 'Signature'
+  }
+
+  return category
+    .split('-')
+    .map((word) => (word ? `${word[0].toUpperCase()}${word.slice(1)}` : ''))
+    .filter(Boolean)
+    .join(' ')
+}
+
 export async function Bestsellers() {
   const cakes = await getAllCakes()
 
@@ -86,17 +98,12 @@ export async function Bestsellers() {
                 const bodySource = bestsellerShortText || safeDescription
                 const quoteText = quoteSource.length > 110 ? `${quoteSource.slice(0, 107).trimEnd()}...` : quoteSource
                 const bodyText = bodySource.length > 220 ? `${bodySource.slice(0, 217).trimEnd()}...` : bodySource
-                const categoryLabel = cake.category
-                  ? cake.category
-                    .split('-')
-                    .map((word) => (word ? `${word[0].toUpperCase()}${word.slice(1)}` : ''))
-                    .filter(Boolean)
-                    .join(' ')
-                  : 'Bestseller'
+                const categoryLabel = formatCategoryLabel(cake.category)
+                const safeCakeName = cake.name?.trim() || 'Olgish Cakes'
                 const storyDetailsText = bestsellerDetails
                   ? `- ${bestsellerDetails.replace(/^-\s*/, '')}`
-                  : `- ${cake.name}, ${categoryLabel} cake`
-                const imageAlt = cake.mainImage?.alt || `${cake.name} - ${cake.category} honey cake by Olgish Cakes`
+                  : `- ${safeCakeName}, ${categoryLabel} cake`
+                const imageAlt = cake.mainImage?.alt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
                 const isReversed = index % 2 === 1
 
                 return (

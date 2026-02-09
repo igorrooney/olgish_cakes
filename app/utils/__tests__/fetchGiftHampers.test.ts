@@ -23,7 +23,7 @@ const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireM
 
 // Mock fetchCakes for getRevalidateTime
 jest.mock('../fetchCakes', () => ({
-  getRevalidateTime: jest.fn(() => 60)
+  getRevalidateTime: jest.fn(() => 0)
 }))
 
 describe('fetchGiftHampers', () => {
@@ -209,7 +209,7 @@ describe('fetchGiftHampers', () => {
     it('should return revalidate time', () => {
       const time = getRevalidateTime()
 
-      expect(time).toBe(60)
+      expect(time).toBe(0)
     })
   })
 
@@ -276,4 +276,3 @@ describe('fetchGiftHampers', () => {
     })
   })
 })
-

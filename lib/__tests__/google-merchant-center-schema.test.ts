@@ -36,7 +36,8 @@ describe('google-merchant-center-schema', () => {
       availability: 'InStock',
       brand: 'Olgish Cakes',
       category: 'Food & Drink > Bakery > Cakes',
-      condition: 'NewCondition'
+      condition: 'NewCondition',
+      reviewStats: { count: 13, averageRating: 5 }
     }
 
     it('should generate valid product schema', () => {

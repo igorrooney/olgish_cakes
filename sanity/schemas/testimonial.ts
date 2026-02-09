@@ -20,6 +20,7 @@ export default {
       title: "Rating",
       type: "number",
       description: "Rating from 1 to 5",
+      initialValue: 5,
       validation: (Rule: any) => Rule.min(1).max(5),
     },
     {

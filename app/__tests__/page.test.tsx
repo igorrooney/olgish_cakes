@@ -86,6 +86,7 @@ jest.mock('../components/MarketSchedule', () => ({
 // Mock mobile homepage components
 // Note: Markets is async in real code but mocked as sync for tests
 jest.mock('../components/homepage', () => ({
+  faqItems: [],
   HomeHero: () => <div data-testid="home-hero">Home Hero</div>,
   OlgishCakesFounder: () => <div data-testid="mobile-about">Mobile About</div>,
   Bestsellers: () => <div data-testid="bestsellers">Bestsellers</div>,
@@ -96,6 +97,7 @@ jest.mock('../components/homepage', () => ({
   },
   Reviews: () => <div data-testid="reviews">Reviews</div>,
   Occasions: () => <div data-testid='occasions'>Occasions</div>,
+  HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
   EnquiryForm: () => <div data-testid="enquiry-form">Enquiry Form</div>,
   Instagram: () => <div data-testid="instagram">Instagram</div>
 }))
@@ -190,29 +192,10 @@ jest.mock('@/lib/design-system', () => ({
 // Mock constants
 jest.mock('@/lib/constants', () => ({
   BUSINESS_CONSTANTS: {
-    businessName: 'Olgish Cakes',
-    phone: '07123456789',
-    email: 'info@olgishcakes.co.uk'
-  }
-}))
-
-// Mock structured data defaults
-jest.mock('@/lib/structured-data-defaults', () => ({
-  DEFAULT_REVIEWS: [
-    {
-      '@type': 'Review',
-      author: { '@type': 'Person', name: 'Test Reviewer' },
-      reviewRating: { '@type': 'Rating', ratingValue: '5' },
-      reviewBody: 'Great cake and lovely service.',
-      datePublished: '2025-09-30'
-    }
-  ],
-  DEFAULT_AGGREGATE_RATING: {
-    '@type': 'AggregateRating',
-    ratingValue: '5.0',
-    reviewCount: '1',
-    bestRating: '5',
-    worstRating: '1'
+    NAME: 'Olgish Cakes',
+    PHONE: '07123456789',
+    EMAIL: 'info@olgishcakes.co.uk',
+    BASE_URL: 'https://olgishcakes.co.uk'
   }
 }))
 
@@ -258,7 +241,22 @@ describe('HomePage', () => {
       expect(() => render(page)).not.toThrow()
     })
 
-    it('should include structured data scripts', async () => {
+    it('should include structured data scripts when testimonials exist', async () => {
+      mockGetAllTestimonials.mockResolvedValue([
+        {
+          _id: 'testimonial-1',
+          _type: 'testimonial',
+          _createdAt: '2026-01-01T00:00:00Z',
+          _updatedAt: '2026-01-01T00:00:00Z',
+          customerName: 'Olha',
+          cakeType: 'Honey cake',
+          rating: 5,
+          date: '2026-01-10',
+          text: 'Absolutely delicious.',
+          source: 'google'
+        }
+      ])
+
       const page = await HomePage()
       const { container } = render(page)
 
@@ -284,29 +282,57 @@ describe('HomePage', () => {
 
       const page = await HomePage()
       const { container } = render(page)
-      const script = container.querySelector('script[type="application/ld+json"]')
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
 
-      expect(script).toBeTruthy()
+      expect(scripts.length).toBeGreaterThan(0)
 
-      const schema = JSON.parse(script?.textContent || '{}')
-      expect(schema['@type']).toBe('Bakery')
-      expect(schema.aggregateRating.reviewCount).toBe('1')
-      expect(Array.isArray(schema.review)).toBe(true)
-      expect(schema.review[0].author.name).toBe('Olha')
+      let reviewSchema: {
+        '@context'?: string
+        '@graph'?: Array<{
+          '@type'?: string
+          author?: { name?: string }
+        }>
+      } | null = null
+
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@context'?: string
+            '@graph'?: unknown
+          }
+          if (data['@context'] === 'https://schema.org' && Array.isArray(data['@graph'])) {
+            reviewSchema = data as typeof reviewSchema
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
+
+      expect(reviewSchema).toBeTruthy()
+      const reviewGraph = reviewSchema?.['@graph'] || []
+      const reviewEntry = reviewGraph.find((entry) => entry['@type'] === 'Review')
+      expect(reviewEntry?.author?.name).toBe('Olha')
     })
 
-    it('should fall back to default reviews when testimonials are empty', async () => {
+    it('should not render review schema when testimonials are empty', async () => {
       mockGetAllTestimonials.mockResolvedValue([])
 
       const page = await HomePage()
       const { container } = render(page)
-      const script = container.querySelector('script[type="application/ld+json"]')
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const hasReviewSchema = Array.from(scripts).some((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@context'?: string
+            '@graph'?: unknown
+          }
+          return data['@context'] === 'https://schema.org' && Array.isArray(data['@graph'])
+        } catch {
+          return false
+        }
+      })
 
-      expect(script).toBeTruthy()
-
-      const schema = JSON.parse(script?.textContent || '{}')
-      expect(schema.aggregateRating.ratingValue).toBe('5.0')
-      expect(schema.review[0].author.name).toBe('Test Reviewer')
+      expect(hasReviewSchema).toBe(false)
     })
 
     it('should render Areas We Serve section with location links', async () => {
@@ -360,6 +386,21 @@ describe('HomePage', () => {
 
   describe('Structured Data - Price Validation', () => {
     it('should have numeric price in product schema offers', async () => {
+      mockGetAllTestimonials.mockResolvedValue([
+        {
+          _id: 'testimonial-1',
+          _type: 'testimonial',
+          _createdAt: '2026-01-01T00:00:00Z',
+          _updatedAt: '2026-01-01T00:00:00Z',
+          customerName: 'Olha',
+          cakeType: 'Honey cake',
+          rating: 5,
+          date: '2026-01-10',
+          text: 'Absolutely delicious.',
+          source: 'google'
+        }
+      ])
+
       const page = await HomePage()
       const { container } = render(page)
 
@@ -374,8 +415,9 @@ describe('HomePage', () => {
           const data = JSON.parse(script.textContent || '{}') as {
             '@type'?: string
             '@context'?: string
+            '@graph'?: unknown
           }
-          if (data['@context'] && data['@type']) {
+          if (data['@context'] && (data['@type'] || Array.isArray(data['@graph']))) {
             hasStructuredData = true
           }
         } catch {

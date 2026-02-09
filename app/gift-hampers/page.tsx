@@ -11,9 +11,8 @@ import GiftHamperCard from "../components/GiftHamperCard";
 import { getAllGiftHampers } from "../utils/fetchGiftHampers";
 import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "../utils/seo";
+import { buildAggregateRating } from '../utils/review-stats'
 import HeroSection from "./HeroSection";
-
-export const revalidate = 300; // 5 minutes
 
 // Force static generation
 export const dynamic = "force-static";
@@ -84,6 +83,7 @@ export default async function GiftHampersPage() {
     getAllGiftHampers(false),
     getAllTestimonialsStats()
   ]);
+  const aggregateRating = buildAggregateRating(testimonialStats)
 
   const localBusinessData = {
     "@context": "https://schema.org",
@@ -104,7 +104,7 @@ export default async function GiftHampersPage() {
       "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
       "https://www.instagram.com/olgish_cakes/",
     ],
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "5.0", reviewCount: "50" },
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 
   return (

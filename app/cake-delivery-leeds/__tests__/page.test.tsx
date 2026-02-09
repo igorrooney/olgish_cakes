@@ -110,63 +110,79 @@ jest.mock('@/lib/constants', () => ({
   }
 }))
 
+jest.mock('../../utils/review-stats', () => ({
+  buildAggregateRating: jest.fn(() => ({
+    '@type': 'AggregateRating',
+    ratingValue: '5.0',
+    reviewCount: '13',
+    bestRating: '5',
+    worstRating: '1'
+  })),
+  formatRatingValue: jest.fn((value: number) => value.toFixed(1)),
+  formatReviewCount: jest.fn((count: number) => count.toString())
+}))
+
+jest.mock('../../utils/review-stats.server', () => ({
+  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
+}))
+
 describe('CakeDeliveryLeedsPage', () => {
   describe('Metadata', () => {
-    it('should have correct title', () => {
+    it('should have correct title', async () => {
       expect(metadata.title).toBe('Cake Delivery Leeds | Same-Day Delivery | 5★ Rated')
     })
 
-    it('should have optimized description with pricing and social proof', () => {
+    it('should have optimized description with pricing and social proof', async () => {
       expect(metadata.description).toContain('cake delivery Leeds')
       expect(metadata.description).toContain('£5')
-      expect(metadata.description).toContain('127+ 5-star reviews')
+      expect(metadata.description).toContain('5★ rated')
       expect(metadata.description).toContain('Same-day')
     })
 
-    it('should have location-specific keywords', () => {
+    it('should have location-specific keywords', async () => {
       expect(metadata.keywords).toContain('cake delivery Leeds')
       expect(metadata.keywords).toContain('same day cake delivery Leeds')
     })
 
-    it('should have canonical URL', () => {
+    it('should have canonical URL', async () => {
       expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cake-delivery-leeds')
     })
 
-    it('should have OpenGraph data', () => {
+    it('should have OpenGraph data', async () => {
       expect(metadata.openGraph).toBeDefined()
       expect(metadata.openGraph?.title).toBe('Cake Delivery Leeds | Same-Day Delivery | 5★ Rated')
       expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cake-delivery-leeds')
     })
 
-    it('should have Twitter card', () => {
+    it('should have Twitter card', async () => {
       expect(metadata.twitter).toBeDefined()
       expect(metadata.twitter?.card).toBe('summary_large_image')
     })
 
-    it('should have geo-targeting metadata', () => {
+    it('should have geo-targeting metadata', async () => {
       expect(metadata.other?.['geo.region']).toBe('GB-ENG')
       expect(metadata.other?.['geo.placename']).toBe('Leeds')
     })
 
-    it('should have verification tag', () => {
+    it('should have verification tag', async () => {
       expect(metadata.verification?.google).toBeDefined()
     })
   })
 
   describe('Rendering', () => {
-    it('should render without crashing', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should render without crashing', async () => {
+      const page = await CakeDeliveryLeedsPage()
       expect(() => render(page)).not.toThrow()
     })
 
-    it('should render breadcrumbs', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should render breadcrumbs', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       expect(container.querySelector('[data-testid="breadcrumbs"]')).toBeInTheDocument()
     })
 
-    it('should render main heading', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should render main heading', async () => {
+      const page = await CakeDeliveryLeedsPage()
       render(page)
       const headings = screen.getAllByTestId('typography')
       const h1Heading = headings.find(el => 
@@ -175,15 +191,15 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(h1Heading).toBeInTheDocument()
     })
 
-    it('should render delivery zones section', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should render delivery zones section', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const papers = container.querySelectorAll('[data-testid="paper"]')
       expect(papers.length).toBeGreaterThan(0)
     })
 
-    it('should render call-to-action buttons', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should render call-to-action buttons', async () => {
+      const page = await CakeDeliveryLeedsPage()
       render(page)
       const links = screen.getAllByRole('link')
       const orderLink = links.find(link => 
@@ -194,8 +210,8 @@ describe('CakeDeliveryLeedsPage', () => {
   })
 
   describe('Structured Data', () => {
-    it('should include Service schema', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include Service schema', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
@@ -219,8 +235,8 @@ describe('CakeDeliveryLeedsPage', () => {
       }
     })
 
-    it('should include FAQ schema', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include FAQ schema', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
@@ -243,8 +259,8 @@ describe('CakeDeliveryLeedsPage', () => {
       }
     })
 
-    it('should have FAQ questions about Leeds delivery', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should have FAQ questions about Leeds delivery', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
@@ -267,8 +283,8 @@ describe('CakeDeliveryLeedsPage', () => {
       }
     })
 
-    it('should include aggregate rating in Service schema', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include aggregate rating in Service schema', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
@@ -285,12 +301,12 @@ describe('CakeDeliveryLeedsPage', () => {
         
         expect(schema.provider.aggregateRating).toBeDefined()
         expect(schema.provider.aggregateRating['@type']).toBe('AggregateRating')
-        expect(schema.provider.aggregateRating.ratingValue).toBe('5')
+        expect(schema.provider.aggregateRating.ratingValue).toBe('5.0')
       }
     })
 
-    it('should include delivery offers in Service schema', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include delivery offers in Service schema', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       
@@ -314,8 +330,8 @@ describe('CakeDeliveryLeedsPage', () => {
   })
 
   describe('SEO Elements', () => {
-    it('should have delivery zones with pricing information', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should have delivery zones with pricing information', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       
       // Check that zone pricing is present
@@ -323,8 +339,8 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(content).toMatch(/£5|£8|£12|£15/)
     })
 
-    it('should include same-day delivery information', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include same-day delivery information', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const content = container.textContent || ''
       
@@ -332,16 +348,16 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(content).toMatch(/10am|10 am/i)
     })
 
-    it('should include Leeds postcodes information', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should include Leeds postcodes information', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const content = container.textContent || ''
       
       expect(content).toMatch(/LS\d+/)
     })
 
-    it('should have internal links to related pages', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should have internal links to related pages', async () => {
+      const page = await CakeDeliveryLeedsPage()
       render(page)
       const links = screen.getAllByRole('link')
       
@@ -356,8 +372,8 @@ describe('CakeDeliveryLeedsPage', () => {
   })
 
   describe('Content Structure', () => {
-    it('should have delivery process steps', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should have delivery process steps', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const content = container.textContent || ''
       
@@ -366,8 +382,8 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(content).toMatch(/Delivery/i)
     })
 
-    it('should have delivery zones section', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should have delivery zones section', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const content = container.textContent || ''
       
@@ -375,8 +391,8 @@ describe('CakeDeliveryLeedsPage', () => {
       expect(content).toMatch(/City Centre|Leeds/i)
     })
 
-    it('should explain why choose our delivery service', () => {
-      const page = CakeDeliveryLeedsPage()
+    it('should explain why choose our delivery service', async () => {
+      const page = await CakeDeliveryLeedsPage()
       const { container } = render(page)
       const content = container.textContent || ''
       
@@ -385,4 +401,3 @@ describe('CakeDeliveryLeedsPage', () => {
     })
   })
 })
-
