@@ -40,8 +40,18 @@ This guide explains how content updates work in production and how to set up imm
    - **URL**: `https://your-domain.com/api/revalidate`
    - **HTTP Method**: `POST`
    - **Dataset**: `production`
-   - **Filter**: `_type in ["cake", "testimonial", "faq"]`
+   - **Filter**: `_type in ["cake", "cakesFeaturedOffer", "giftHamper", "collection", "giftHamperCollection", "testimonial", "faq", "blogPost", "marketSchedule"]`
    - **Events**: `create`, `update`, `delete`
+   - **HTTP headers**:
+     - `Authorization: Bearer YOUR_REVALIDATE_SECRET`
+   - **Projection**:
+     ```json
+     {
+       "_type": _type,
+       "_id": _id,
+       "slug": slug
+     }
+     ```
 
 4. **Save the webhook**
 
@@ -51,7 +61,7 @@ Add these to your production environment:
 
 ```bash
 # Required for webhook authentication
-SANITY_API_TOKEN=your_write_token_here
+REVALIDATE_SECRET=your_random_revalidate_secret_token_here
 
 # Optional: Custom revalidation time (in seconds)
 NEXT_PUBLIC_REVALIDATE_TIME=300
@@ -63,6 +73,7 @@ NEXT_PUBLIC_REVALIDATE_TIME=300
 
    ```bash
    curl -X POST http://localhost:3000/api/revalidate \
+     -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
      -H "Content-Type: application/json" \
      -d '{"_type":"cake","_id":"test","slug":{"current":"honey-cake-medovik"}}'
    ```
@@ -70,6 +81,7 @@ NEXT_PUBLIC_REVALIDATE_TIME=300
 2. **Test in production:**
    ```bash
    curl -X POST https://your-domain.com/api/revalidate \
+     -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
      -H "Content-Type: application/json" \
      -d '{"_type":"cake","_id":"test","slug":{"current":"honey-cake-medovik"}}'
    ```
@@ -158,9 +170,8 @@ console.log("🔄 Webhook received:", {
    - Verify HTTPS in production
 
 2. **Check authentication**
-
-   - Verify `SANITY_API_TOKEN` is set
-   - Ensure token has write permissions
+   - Verify `REVALIDATE_SECRET` is set in your app environment
+   - Verify Sanity webhook header matches exactly: `Authorization: Bearer <REVALIDATE_SECRET>`
 
 3. **Check logs**
    - Monitor Vercel/Netlify logs

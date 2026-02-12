@@ -24,8 +24,8 @@ interface ValidationRule {
 }
 
 export default {
-  name: 'collection',
-  title: 'Cakes Collections',
+  name: 'giftHamperCollection',
+  title: 'Gift Hampers Collections',
   type: 'document',
   fields: [
     {
@@ -39,7 +39,7 @@ export default {
       title: 'Featured Collection',
       type: 'boolean',
       initialValue: false,
-      description: 'Show this collection in the Featured filters on the cakes page (max 3).',
+      description: 'Show this collection in the Featured filters on the cakes page for Cakes by post (max 3).',
       validation: (Rule: ValidationRule) =>
         Rule.custom(async (value: unknown, context: ValidationContext) => {
           if (value !== true) return true
@@ -52,15 +52,15 @@ export default {
 
           try {
             const count = await client.fetch<number>(
-              'count(*[_type == "collection" && isFeatured == true && !(_id in path("drafts.**")) && !(_id in [$currentId, $draftId, $publishedId])])',
+              'count(*[_type == "giftHamperCollection" && isFeatured == true && !(_id in path("drafts.**")) && !(_id in [$currentId, $draftId, $publishedId])])',
               { currentId, draftId, publishedId }
             )
 
             if (count >= 3) {
-              return 'You can select at most 3 featured collections. Uncheck another collection first.'
+              return 'You can select at most 3 featured gift hamper collections. Uncheck another collection first.'
             }
           } catch (error: unknown) {
-            console.warn('Failed to validate featured collections limit:', error)
+            console.warn('Failed to validate featured gift hamper collections limit:', error)
           }
 
           return true
@@ -80,42 +80,6 @@ export default {
           type: 'string',
           description: 'Important for SEO and accessibility',
           validation: (Rule: ValidationRule) => Rule.required(),
-        },
-      ],
-    },
-    {
-      name: 'seo',
-      title: 'SEO Settings',
-      type: 'object',
-      fields: [
-        {
-          name: 'metaTitle',
-          title: 'Meta Title',
-          type: 'string',
-          description: 'Title for search engines (50-60 characters recommended)',
-          validation: (Rule: ValidationRule) =>
-            Rule.max(60).warning('Meta title should be under 60 characters'),
-        },
-        {
-          name: 'metaDescription',
-          title: 'Meta Description',
-          type: 'text',
-          description: 'Description for search engines (150-160 characters recommended)',
-          validation: (Rule: ValidationRule) =>
-            Rule.max(160).warning('Meta description should be under 160 characters'),
-        },
-        {
-          name: 'keywords',
-          title: 'Keywords',
-          type: 'array',
-          of: [{ type: 'string' }],
-          description: 'Relevant keywords for this collection',
-        },
-        {
-          name: 'canonicalUrl',
-          title: 'Canonical URL',
-          type: 'url',
-          description: 'Canonical URL if different from the page URL',
         },
       ],
     },
@@ -153,7 +117,7 @@ export default {
 
             try {
               const duplicates = await client.fetch<DuplicateDocument[]>(
-                `*[_type == "collection" && homepageOrder == $order && !(_id in $excludedIds)] {
+                `*[_type == "giftHamperCollection" && homepageOrder == $order && !(_id in $excludedIds)] {
                   _id,
                   name,
                   homepageOrder

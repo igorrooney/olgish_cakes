@@ -30,9 +30,13 @@ export const SANITY_CACHE_CONFIG = {
     revalidate: NO_REVALIDATE,
     tags: ['gift-hampers']
   },
-  collections: {
+  cakeCollections: {
     revalidate: NO_REVALIDATE,
-    tags: ['collections']
+    tags: ['cake-collections']
+  },
+  giftHamperCollections: {
+    revalidate: NO_REVALIDATE,
+    tags: ['gift-hamper-collections']
   },
   marketSchedule: {
     revalidate: NO_REVALIDATE,

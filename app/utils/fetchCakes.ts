@@ -110,7 +110,12 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
         isMain
       }
     },
-    category,
+    "category": coalesce(category, collections[0]->name, "Traditional"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     ingredients,
     allergens
   }`;
@@ -141,7 +146,12 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
     description,
     shortDescription,
     pricing,
-    category,
+    "category": coalesce(category, collections[0]->name, "Traditional"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     slug,
     order,
     mainImage {
@@ -234,7 +244,12 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
         alt
       }
     },
-    category,
+    "category": coalesce(category, collections[0]->name, "Traditional"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     ingredients,
     allergens
   }`;
@@ -267,7 +282,7 @@ export function clearCache(): void {
   // No-op: cache is now managed by Next.js
 }
 
-export async function invalidateCache(pattern?: string): Promise<void> {
+export async function invalidateCache(_pattern?: string): Promise<void> {
   // No-op: cache is now managed by Next.js via tags
   // Use revalidateTag() from 'next/cache' in API routes instead
 }

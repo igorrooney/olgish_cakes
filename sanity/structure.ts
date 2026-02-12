@@ -15,7 +15,8 @@ export const structure: StructureResolver = S =>
             .documentId('cakesFeaturedOffer')
         ),
       S.documentTypeListItem("giftHamper").title("Gift Hampers"),
-      S.documentTypeListItem('collection').title('Collections'),
+      S.documentTypeListItem('collection').title('Cakes Collections'),
+      S.documentTypeListItem('giftHamperCollection').title('Gift Hampers Collections'),
       S.documentTypeListItem("testimonial").title("Testimonials"),
       S.documentTypeListItem("faq").title("FAQs"),
       S.documentTypeListItem("blogPost").title("Blog Posts"),

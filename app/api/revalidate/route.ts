@@ -11,7 +11,7 @@ const revalidateSchema = z.object({
   _id: z.string().optional(),
   slug: z.object({
     current: z.string()
-  }).optional()
+  }).nullable().optional()
 });
 
 async function handlePOST(request: NextRequest) {
@@ -115,7 +115,12 @@ async function handlePOST(request: NextRequest) {
     } else if (_type === 'collection') {
       // Revalidate homepage collections
       addPath("/")
-      addTag('collections')
+      addPath('/cakes')
+      addTag('cake-collections')
+    } else if (_type === 'giftHamperCollection') {
+      // Revalidate gift hamper collections used on cakes filters
+      addPath('/cakes')
+      addTag('gift-hamper-collections')
     }
 
     for (const path of pathsToRevalidate) {

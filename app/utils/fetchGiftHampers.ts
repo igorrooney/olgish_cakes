@@ -15,7 +15,12 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
     order,
     images[] { _type, asset, alt, isMain, caption },
     isFeatured,
-    category,
+    "category": coalesce(category, collections[0]->name, "Gift Hampers"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     ingredients,
     allergens
   }`;
@@ -50,7 +55,12 @@ export async function getGiftHamperBySlug(slug: string, preview = false): Promis
     order,
     images[] { _type, asset, alt, isMain, caption },
     isFeatured,
-    category,
+    "category": coalesce(category, collections[0]->name, "Gift Hampers"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     ingredients,
     allergens,
     seo {
@@ -89,7 +99,12 @@ export async function getFeaturedGiftHampers(preview = false): Promise<GiftHampe
     price,
     order,
     images[] { _type, asset, alt, isMain },
-    category
+    "category": coalesce(category, collections[0]->name, "Gift Hampers"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    }
   }`;
   
   try {

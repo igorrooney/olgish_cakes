@@ -1,3 +1,5 @@
+import { CakeCollectionsInput } from '../components/CakeCollectionsInput'
+
 interface ValidationContext {
   document?: {
     _id?: string
@@ -439,17 +441,33 @@ export default {
       ],
     },
     {
-      name: "category",
-      title: "Category",
-      type: "string",
-      options: {
-        list: [
-          { title: "Traditional", value: "traditional" },
-          { title: "Seasonal", value: "seasonal" },
-          { title: "Custom", value: "custom" },
-        ],
+      name: 'collections',
+      title: 'Collection',
+      type: 'array',
+      description: 'Select one or more collections for this cake.',
+      components: {
+        input: CakeCollectionsInput
       },
-      validation: (Rule: ValidationRule) => Rule.required(),
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'collection' }],
+          options: {
+            disableNew: true
+          }
+        }
+      ],
+      validation: (Rule: ValidationRule) =>
+        Rule.required()
+          .min(1)
+          .error('Select at least one collection.')
+    },
+    {
+      name: 'category',
+      title: 'Category (Legacy)',
+      type: 'string',
+      hidden: true,
+      readOnly: true
     },
     {
       name: "ingredients",

@@ -1,3 +1,5 @@
+import { GiftHamperCollectionsInput } from '../components/GiftHamperCollectionsInput'
+
 interface ValidationContext {
   document?: {
     _id?: string
@@ -185,17 +187,33 @@ export default {
       validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
     },
     {
-      name: "category",
-      title: "Category",
-      type: "string",
-      options: {
-        list: [
-          { title: "Chocolate", value: "chocolate" },
-          { title: "Assorted", value: "assorted" },
-          { title: "Seasonal", value: "seasonal" },
-          { title: "Premium", value: "premium" },
-        ],
+      name: 'collections',
+      title: 'Collections',
+      type: 'array',
+      description: 'Select one or more gift hamper collections.',
+      components: {
+        input: GiftHamperCollectionsInput
       },
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'giftHamperCollection' }],
+          options: {
+            disableNew: true
+          }
+        }
+      ],
+      validation: (Rule: ValidationRule) =>
+        Rule.required()
+          .min(1)
+          .error('Select at least one gift hamper collection.')
+    },
+    {
+      name: 'category',
+      title: 'Category (Legacy)',
+      type: 'string',
+      hidden: true,
+      readOnly: true
     },
     {
       name: "ingredients",

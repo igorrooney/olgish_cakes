@@ -1,21 +1,24 @@
 import type { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
 
-export interface CakesFeatureFilters {
-  onlyFreeHoney: boolean
-  onlyChristmas: boolean
-  onlyBirthday: boolean
-}
-
 export interface CakesFilterState {
   showByPost: boolean
   showCustom: boolean
   maxPrice: number
-  features: CakesFeatureFilters
+  selectedCollectionIds: string[]
+}
+
+export interface CakesCollectionOption {
+  id: string
+  queryValue: string
+  label: string
+  isFeatured: boolean
+  productType: 'cake' | 'giftHamper'
 }
 
 export interface TabletCake {
   id: string
   slug: string
+  href: string
   name: string
   description: string
   price: number
@@ -24,11 +27,8 @@ export interface TabletCake {
   isByPost: boolean
   isCustom: boolean
   isPopular: boolean
-  tags: {
-    freeHoney: boolean
-    christmas: boolean
-    birthday: boolean
-  }
+  collectionIds: string[]
+  productType: 'cake' | 'giftHamper'
 }
 
 export type CakesFeaturedOfferData = CakesFeaturedOffer

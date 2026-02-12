@@ -6,6 +6,7 @@ import type { Metadata, Viewport } from "next";
 import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { SiteHeader } from "./components/homepage/SiteHeader";
 import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
@@ -649,22 +650,24 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
-        <ConditionalMuiProviders>
-          <ReviewStatsProvider stats={reviewStats}>
-            <Providers>
-              <div className="flex flex-col min-h-screen">
-                <SiteHeader />
-                <main className="flex-grow">{children}</main>
-                <SiteFooter />
-                <ScrollToTop />
-                <WebVitalsMonitor />
-                <PerformanceOptimizer />
-              </div>
-            </Providers>
-          </ReviewStatsProvider>
-        </ConditionalMuiProviders>
-        <Analytics />
-        <SpeedInsights />
+        <NuqsAdapter>
+          <ConditionalMuiProviders>
+            <ReviewStatsProvider stats={reviewStats}>
+              <Providers>
+                <div className="flex flex-col min-h-screen">
+                  <SiteHeader />
+                  <main className="flex-grow">{children}</main>
+                  <SiteFooter />
+                  <ScrollToTop />
+                  <WebVitalsMonitor />
+                  <PerformanceOptimizer />
+                </div>
+              </Providers>
+            </ReviewStatsProvider>
+          </ConditionalMuiProviders>
+          <Analytics />
+          <SpeedInsights />
+        </NuqsAdapter>
 
         {/* Critical CSS loading script */}
         <Script id="critical-css-loader" strategy="afterInteractive">

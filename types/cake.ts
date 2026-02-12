@@ -37,6 +37,12 @@ export interface CakeStructuredData {
   availability?: "InStock" | "OutOfStock" | "PreOrder" | "Discontinued";
 }
 
+export interface CakeCollection {
+  _id: string;
+  name: string;
+  isFeatured?: boolean;
+}
+
 interface RichTextChild {
   text: string;
   [key: string]: unknown;
@@ -91,6 +97,7 @@ export interface Cake {
   images?: CakeImage[];
   designs: CakeDesigns;
   category: string;
+  collections?: CakeCollection[];
   ingredients: string[];
   allergens?: string[];
   structuredData?: CakeStructuredData;

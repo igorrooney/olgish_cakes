@@ -2,8 +2,12 @@ import { Metadata } from 'next'
 import { urlFor } from '@/sanity/lib/image'
 import { Cake, blocksToText } from '@/types/cake'
 import { getAllCakes, getCakesFeaturedOffer } from '../utils/fetchCakes'
+import { getAllGiftHampers } from '../utils/fetchGiftHampers'
+import { getHomepageCollections, getHomepageGiftHamperCollections } from '../utils/fetchCollections'
+import type { HomepageCollection } from '../types/collection'
+import type { GiftHamper } from '@/types/giftHamper'
 import { CakesTabletCatalog } from './components/CakesTabletCatalog'
-import { TabletCake } from './components/types'
+import { CakesCollectionOption, TabletCake } from './components/types'
 
 export const dynamic = 'force-static'
 
@@ -45,24 +49,23 @@ export const metadata: Metadata = {
 const fallbackCakes: TabletCake[] = [
   {
     id: 'fallback-honey',
-    slug: 'honey-cake',
-    name: 'Honey Cake',
+    slug: 'cake-by-post',
+    href: '/gift-hampers/cake-by-post',
+    name: 'Cake by Post Gift Hamper',
     description: 'Traditional layered Medovik with delicate cream and light honey sweetness.',
     price: 35,
     imageUrl: '/images/honey-cake-medovik.jpg',
     imageAlt: 'Traditional Ukrainian honey cake',
     isByPost: true,
     isCustom: false,
-    isPopular: true,
-    tags: {
-      freeHoney: true,
-      christmas: false,
-      birthday: false
-    }
+    isPopular: false,
+    collectionIds: [],
+    productType: 'giftHamper'
   },
   {
     id: 'fallback-birthday',
     slug: 'birthday-cake',
+    href: '/cakes/birthday-cake',
     name: 'Birthday Celebration Cake',
     description: 'Custom birthday cake made to order with seasonal decoration and rich sponge.',
     price: 65,
@@ -71,53 +74,86 @@ const fallbackCakes: TabletCake[] = [
     isByPost: false,
     isCustom: true,
     isPopular: true,
-    tags: {
-      freeHoney: false,
-      christmas: false,
-      birthday: true
-    }
+    collectionIds: [],
+    productType: 'cake'
   },
   {
     id: 'fallback-christmas',
     slug: 'christmas-cake',
+    href: '/cakes/christmas-cake',
     name: 'Christmas Cake',
     description: 'Festive design with winter flavours, handcrafted for holiday celebrations.',
     price: 58,
     imageUrl: '/images/placeholder-cake.jpg',
     imageAlt: 'Christmas design cake',
-    isByPost: true,
+    isByPost: false,
     isCustom: true,
     isPopular: false,
-    tags: {
-      freeHoney: false,
-      christmas: true,
-      birthday: false
-    }
+    collectionIds: [],
+    productType: 'cake'
   },
   {
     id: 'fallback-kyiv',
     slug: 'kyiv-cake',
+    href: '/cakes/kyiv-cake',
     name: 'Kyiv Cake',
     description: 'Classic Kyiv cake with meringue layers, hazelnuts and chocolate cream.',
     price: 42,
     imageUrl: '/images/placeholder-cake.jpg',
     imageAlt: 'Classic Kyiv cake',
-    isByPost: true,
-    isCustom: false,
+    isByPost: false,
+    isCustom: true,
     isPopular: true,
-    tags: {
-      freeHoney: false,
-      christmas: false,
-      birthday: false
-    }
+    collectionIds: [],
+    productType: 'cake'
   }
 ]
 
 type UrlForImage = Parameters<typeof urlFor>[0]
+type RichTextBlockLike = {
+  _type?: string
+  children?: Array<{ text?: string }>
+}
 
-interface CakeImageSelection {
+interface ImageSelection {
   image: UrlForImage
   alt?: string
+}
+
+function normalizeDocumentId(documentId: string) {
+  return documentId.startsWith('drafts.')
+    ? documentId.slice('drafts.'.length)
+    : documentId
+}
+
+function slugifyCollectionLabel(label: string) {
+  return label
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function toShortDocumentId(documentId: string) {
+  return normalizeDocumentId(documentId)
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .slice(0, 8)
+    .toLowerCase()
+}
+
+function createCollectionQueryValue(
+  collectionId: string,
+  label: string,
+  productType: 'cake' | 'giftHamper'
+) {
+  const prefix = productType === 'cake' ? 'c' : 'p'
+  const slug = slugifyCollectionLabel(label).slice(0, 40)
+
+  if (slug.length > 0) {
+    return `${prefix}-${slug}`
+  }
+
+  return `${prefix}-${toShortDocumentId(collectionId)}`
 }
 
 function getDescription(cake: Cake) {
@@ -133,7 +169,41 @@ function getDescription(cake: Cake) {
     : 'Traditional Ukrainian cake made with premium ingredients and baked fresh to order.'
 }
 
-function getImage(cake: Cake): CakeImageSelection | null {
+function blocksToPlainText(blocks: RichTextBlockLike[] | undefined) {
+  if (!blocks || blocks.length === 0) {
+    return ''
+  }
+
+  return blocks
+    .map((block) => {
+      if (block._type !== 'block' || !block.children) {
+        return ''
+      }
+
+      return block.children
+        .map((child) => child.text?.trim() || '')
+        .filter((text) => text.length > 0)
+        .join('')
+    })
+    .filter((line) => line.length > 0)
+    .join('\n')
+    .trim()
+}
+
+function getGiftHamperDescription(hamper: GiftHamper) {
+  const source = hamper.shortDescription && hamper.shortDescription.length > 0
+    ? hamper.shortDescription
+    : hamper.description
+
+  const description = blocksToPlainText(source)
+  const trimmed = description.slice(0, 140).trim()
+
+  return trimmed.length > 0
+    ? trimmed
+    : 'Traditional Ukrainian gift hamper prepared fresh and packed carefully for UK delivery.'
+}
+
+function getCakeImage(cake: Cake): ImageSelection | null {
   if (cake.mainImage?.asset?._ref) {
     return {
       image: cake.mainImage as UrlForImage,
@@ -163,41 +233,130 @@ function getImage(cake: Cake): CakeImageSelection | null {
   return null
 }
 
+function getGiftHamperImage(hamper: GiftHamper): ImageSelection | null {
+  const mainImage = hamper.images?.find((image) => image.isMain && image.asset?._ref)
+
+  if (mainImage?.asset?._ref) {
+    return {
+      image: mainImage as UrlForImage,
+      alt: mainImage.alt
+    }
+  }
+
+  const firstImage = hamper.images?.find((image) => image.asset?._ref)
+
+  if (firstImage?.asset?._ref) {
+    return {
+      image: firstImage as UrlForImage,
+      alt: firstImage.alt
+    }
+  }
+
+  return null
+}
+
 function mapCakeToTabletCake(cake: Cake): TabletCake {
-  const searchable = `${cake.name} ${cake.category}`.toLowerCase()
-  const image = getImage(cake)
+  const image = getCakeImage(cake)
   const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
   const imageAlt = image?.alt?.trim() || `${cake.name} by Olgish Cakes`
-  const isCustom = /custom|birthday|wedding|anniversary|baby shower|corporate/.test(searchable)
-  const isByPost = !isCustom || /post|honey|medovik|ukrainian|kyiv/.test(searchable)
+  const collectionIds = (cake.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
 
   return {
     id: cake._id,
     slug: cake.slug.current,
+    href: `/cakes/${cake.slug.current}`,
     name: cake.name,
     description: getDescription(cake),
     price: cake.pricing?.standard ?? 0,
     imageUrl,
     imageAlt,
-    isByPost,
-    isCustom,
+    isByPost: false,
+    isCustom: true,
     isPopular: Boolean(cake.isBestseller),
-    tags: {
-      freeHoney: /honey|medovik/.test(searchable),
-      christmas: /christmas|xmas/.test(searchable),
-      birthday: /birthday/.test(searchable)
-    }
+    collectionIds,
+    productType: 'cake'
   }
 }
 
+function mapGiftHamperToTabletCake(hamper: GiftHamper): TabletCake {
+  const image = getGiftHamperImage(hamper)
+  const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
+  const imageAlt = image?.alt?.trim() || `${hamper.name} by Olgish Cakes`
+  const collectionIds = (hamper.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
+
+  return {
+    id: hamper._id,
+    slug: hamper.slug.current,
+    href: `/gift-hampers/${hamper.slug.current}`,
+    name: hamper.name,
+    description: getGiftHamperDescription(hamper),
+    price: hamper.price ?? 0,
+    imageUrl,
+    imageAlt,
+    isByPost: true,
+    isCustom: false,
+    isPopular: false,
+    collectionIds,
+    productType: 'giftHamper'
+  }
+}
+
+function mapCollectionsToOptions(
+  collections: HomepageCollection[],
+  productType: 'cake' | 'giftHamper'
+): CakesCollectionOption[] {
+  const usedQueryValues = new Set<string>()
+
+  return collections
+    .map((collection) => {
+      const label = collection.name.trim()
+
+      if (label.length === 0) {
+        return null
+      }
+
+      const normalizedId = normalizeDocumentId(collection._id)
+      const baseQueryValue = createCollectionQueryValue(normalizedId, label, productType)
+      const shortId = toShortDocumentId(normalizedId)
+      let queryValue = baseQueryValue
+      let suffix = 1
+
+      while (usedQueryValues.has(queryValue)) {
+        const duplicateSuffix = suffix === 1 ? shortId : `${shortId}-${suffix}`
+        queryValue = `${baseQueryValue}-${duplicateSuffix}`
+        suffix += 1
+      }
+
+      usedQueryValues.add(queryValue)
+
+      return {
+        id: normalizedId,
+        queryValue,
+        label,
+        isFeatured: Boolean(collection.isFeatured),
+        productType
+      }
+    })
+    .filter((collection): collection is CakesCollectionOption => collection !== null)
+}
+
 export default async function CakesPage() {
-  const [cakes, featuredOffer] = await Promise.all([
+  const [cakes, giftHampers, featuredOffer, cakeCollections, giftHamperCollections] = await Promise.all([
     getAllCakes(false),
-    getCakesFeaturedOffer(false)
+    getAllGiftHampers(false),
+    getCakesFeaturedOffer(false),
+    getHomepageCollections(),
+    getHomepageGiftHamperCollections()
   ])
 
   const mappedCakes = cakes.map((cake) => mapCakeToTabletCake(cake))
-  const cakesForUi = mappedCakes.length > 0 ? mappedCakes : fallbackCakes
+  const mappedGiftHampers = giftHampers.map((hamper) => mapGiftHamperToTabletCake(hamper))
+  const catalogItems = [...mappedCakes, ...mappedGiftHampers]
+  const cakesForUi = catalogItems.length > 0 ? catalogItems : fallbackCakes
+  const collectionOptions = [
+    ...mapCollectionsToOptions(cakeCollections, 'cake'),
+    ...mapCollectionsToOptions(giftHamperCollections, 'giftHamper')
+  ]
 
   const localBusinessData = {
     '@context': 'https://schema.org',
@@ -261,7 +420,7 @@ export default async function CakesPage() {
       />
       <main className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'>
         <section className='mx-auto w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0'>
-          <h1 className='text-4xl font-semibold leading-tight text-base-content tablet:text-5xl'>
+          <h1 className='mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'>
             Traditional Ukrainian cakes by post and custom cakes in Leeds
           </h1>
           <p className='mt-3 max-w-3xl text-base leading-7 text-base-content/80'>
@@ -269,7 +428,11 @@ export default async function CakesPage() {
             feel like home.
           </p>
         </section>
-        <CakesTabletCatalog cakes={cakesForUi} featuredOffer={featuredOffer} />
+        <CakesTabletCatalog
+          cakes={cakesForUi}
+          featuredOffer={featuredOffer}
+          collectionOptions={collectionOptions}
+        />
         <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-2 tablet:px-0'>
           <h2 className='text-3xl font-semibold leading-tight text-base-content tablet:text-4xl'>
             Authentic Ukrainian cakes in Leeds, baked fresh to order
@@ -284,7 +447,7 @@ export default async function CakesPage() {
           </p>
           <p className='mt-4 text-base leading-8 text-base-content/82'>
             Cakes by post are available for selected options, and custom cakes are available for local celebrations around
-            Leeds. You can filter the catalogue by price, style and seasonal features, then open each cake page to see more
+            Leeds. You can filter the catalogue by price, cake type and collection, then open each cake page to see more
             details. Each product card links to a dedicated page where search engines and customers can find focused
             information about flavour, texture and serving ideas. This helps you compare quickly and helps the site keep
             strong internal relevance for terms like Ukrainian honey cake, Kyiv cake and custom birthday cake in Leeds.

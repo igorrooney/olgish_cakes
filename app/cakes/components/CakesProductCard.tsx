@@ -31,7 +31,7 @@ export function CakesProductCard({ cake }: CakesProductCardProps) {
           <span className='text-[20px] font-semibold leading-7 text-base-content'>£{cake.price}</span>
         </div>
         <Link
-          href={`/cakes/${cake.slug}`}
+          href={cake.href}
           className='btn btn-outline btn-primary btn-sm mt-2 h-9 min-h-9 w-full rounded-field text-sm font-medium normal-case'
         >
           View {cake.name}

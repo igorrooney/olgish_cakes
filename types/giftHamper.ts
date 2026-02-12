@@ -63,6 +63,11 @@ export interface GiftHamper {
   price: number;
   images?: GiftHamperImage[]; // includes one with isMain = true
   designs?: GiftHamperDesigns; // deprecated; not used for hampers
+  collections?: Array<{
+    _id: string;
+    name: string;
+    isFeatured?: boolean;
+  }>;
   category?: string;
   ingredients?: string[];
   allergens?: string[];

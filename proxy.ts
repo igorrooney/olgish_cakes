@@ -59,6 +59,18 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "public, max-age=60, must-revalidate");
   }
 
+  // Prevent indexing of faceted/filter URLs on the cakes listing page.
+  // Keep clean /cakes indexable via page canonical and default robots directives.
+  if (
+    request.nextUrl.pathname === "/cakes" &&
+    request.nextUrl.searchParams.toString().length > 0
+  ) {
+    response.headers.set(
+      "X-Robots-Tag",
+      "noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    );
+  }
+
   return response;
 }
 
