@@ -15,6 +15,8 @@ const apiVersion = "2025-03-31";
 import { schema } from "./sanity/schema";
 import { structure } from "./sanity/structure";
 
+const singletonTypes = new Set(['cakesFeaturedOffer'])
+
 export default defineConfig({
   basePath: "/studio",
   projectId,
@@ -28,4 +30,20 @@ export default defineConfig({
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
   ],
+  document: {
+    newDocumentOptions: (previousOptions, context) => {
+      if (context.creationContext.type !== 'global') {
+        return previousOptions
+      }
+
+      return previousOptions.filter((option) => !singletonTypes.has(option.templateId))
+    },
+    actions: (previousActions, context) => {
+      if (!singletonTypes.has(context.schemaType)) {
+        return previousActions
+      }
+
+      return previousActions.filter((action) => action.action !== 'duplicate')
+    }
+  }
 });

@@ -7,7 +7,8 @@ import faq from './schemas/faq'
 import marketSchedule from './schemas/marketSchedule'
 import blogPost from './schemas/blogPost'
 import order from './schemas/order'
+import cakesFeaturedOffer from './schemas/cakesFeaturedOffer'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [cake, giftHamper, collection, testimonial, faq, marketSchedule, blogPost, order],
+  types: [cake, giftHamper, collection, testimonial, faq, marketSchedule, blogPost, order, cakesFeaturedOffer],
 }

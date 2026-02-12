@@ -69,6 +69,10 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes')
       addTag('pages')
       addTag('sitemaps')
+    } else if (_type === 'cakesFeaturedOffer') {
+      addPath('/cakes')
+      addTag('cakes')
+      addTag('cakes-featured-offer')
     } else if (_type === "testimonial") {
       // Revalidate testimonial pages
       addPath("/testimonials")

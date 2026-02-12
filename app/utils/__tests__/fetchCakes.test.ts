@@ -1,5 +1,6 @@
-import { getAllCakes, getFeaturedCakes, getCakeBySlug, getRevalidateTime, clearCache, invalidateCache, getCacheBustingKey, forceRefreshCakes } from '../fetchCakes'
+import { getAllCakes, getFeaturedCakes, getCakeBySlug, getCakesFeaturedOffer, getRevalidateTime, clearCache, invalidateCache, getCacheBustingKey, forceRefreshCakes } from '../fetchCakes'
 import { Cake } from '@/types/cake'
+import { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
 
 // Mock unstable_cache to bypass Next.js context requirement
 jest.mock('next/cache', () => ({
@@ -41,6 +42,16 @@ describe('fetchCakes', () => {
     category: 'Traditional',
     ingredients: ['Honey', 'Flour'],
     allergens: ['Gluten']
+  }
+
+  const expectedFeaturedOffer: CakesFeaturedOffer = {
+    eyebrow: 'Featured',
+    title: 'FREE Honey Cake Offer',
+    description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+    ctaLabel: 'Get free honey cake',
+    cakeSlug: 'honey-cake',
+    imageUrl: 'https://cdn.sanity.io/images/project/dataset/main.jpg',
+    imageAlt: 'Main image alt'
   }
 
   beforeEach(() => {
@@ -259,6 +270,121 @@ describe('fetchCakes', () => {
       await getCakeBySlug('non-existent')
 
       expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('getCakesFeaturedOffer', () => {
+    it('should fetch and map cakes featured offer', async () => {
+      mockFetch.mockResolvedValue({
+        eyebrow: 'Featured',
+        title: 'FREE Honey Cake Offer',
+        description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+        ctaLabel: 'Get free honey cake',
+        featuredCake: {
+          name: 'Honey Cake',
+          slug: { current: 'honey-cake' },
+          mainImage: {
+            alt: 'Main image alt',
+            asset: {
+              url: 'https://cdn.sanity.io/images/project/dataset/main.jpg'
+            }
+          }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toEqual(expectedFeaturedOffer)
+      expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should prioritize override image over cake image', async () => {
+      mockFetch.mockResolvedValue({
+        eyebrow: 'Featured',
+        title: 'FREE Honey Cake Offer',
+        description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+        ctaLabel: 'Get free honey cake',
+        overrideImage: {
+          alt: 'Override alt',
+          asset: {
+            url: 'https://cdn.sanity.io/images/project/dataset/override.jpg'
+          }
+        },
+        featuredCake: {
+          name: 'Honey Cake',
+          slug: { current: 'honey-cake' },
+          mainImage: {
+            alt: 'Main image alt',
+            asset: {
+              url: 'https://cdn.sanity.io/images/project/dataset/main.jpg'
+            }
+          }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result?.imageUrl).toBe('https://cdn.sanity.io/images/project/dataset/override.jpg')
+      expect(result?.imageAlt).toBe('Override alt')
+    })
+
+    it('should return null when featured offer is missing slug', async () => {
+      mockFetch.mockResolvedValue({
+        title: 'Missing slug offer',
+        featuredCake: {
+          name: 'Honey Cake'
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when featured offer is inactive', async () => {
+      mockFetch.mockResolvedValue({
+        isActive: false,
+        featuredCake: {
+          slug: { current: 'honey-cake' }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when featured offer is not found', async () => {
+      mockFetch.mockResolvedValue(null)
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should bypass cache for preview requests', async () => {
+      mockFetch.mockResolvedValue({
+        featuredCake: {
+          slug: { current: 'honey-cake' }
+        }
+      })
+
+      await getCakesFeaturedOffer(true)
+      await getCakesFeaturedOffer(true)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockGetClient).toHaveBeenCalledWith(true)
+    })
+
+    it('should return null and log on error', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching cakes featured offer:', expect.any(Error))
+      consoleSpy.mockRestore()
     })
   })
 

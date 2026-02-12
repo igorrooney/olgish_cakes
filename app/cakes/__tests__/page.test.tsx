@@ -1,175 +1,177 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react'
 import { render, screen } from '@testing-library/react'
-import CakesPage, { metadata, dynamic } from '../page'
+import CakesPage, { dynamic, metadata } from '../page'
+import { getAllCakes, getCakesFeaturedOffer } from '../../utils/fetchCakes'
+import { Cake } from '@/types/cake'
+import { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
 
-// Mock utils
 jest.mock('../../utils/fetchCakes', () => ({
-  getAllCakes: jest.fn(() => Promise.resolve([
+  getAllCakes: jest.fn(),
+  getCakesFeaturedOffer: jest.fn()
+}))
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ alt, ...props }: React.ComponentProps<'img'>) => <img alt={alt || ''} {...props} />
+}))
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ children, href }: { children: React.ReactNode, href: string }) => (
+    <a href={href}>{children}</a>
+  )
+}))
+
+const mockedGetAllCakes = getAllCakes as jest.MockedFunction<typeof getAllCakes>
+const mockedGetCakesFeaturedOffer = getCakesFeaturedOffer as jest.MockedFunction<typeof getCakesFeaturedOffer>
+
+const sampleFeaturedOffer: CakesFeaturedOffer = {
+  eyebrow: 'Featured',
+  title: 'FREE Honey Cake Offer',
+  description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+  ctaLabel: 'Get free honey cake',
+  cakeSlug: 'sample-honey-cake',
+  imageUrl: 'https://cdn.sanity.io/images/project/dataset/sample.jpg',
+  imageAlt: 'Featured honey cake offer from Olgish Cakes'
+}
+
+const sampleCake: Cake = {
+  _id: 'cake-1',
+  _createdAt: '2026-02-01T12:00:00.000Z',
+  name: 'Sample Honey Cake',
+  slug: { current: 'sample-honey-cake' },
+  description: [
     {
-      _id: '1',
-      name: 'Honey Cake',
-      slug: { current: 'honey-cake' },
-      category: 'Traditional',
-      pricing: { standard: 30 }
+      _type: 'block',
+      children: [{ text: 'A rich and soft Ukrainian honey cake.' }]
     }
-  ])),
-  getRevalidateTime: jest.fn(() => 60)
-}))
-
-// Mock components
-jest.mock('../../components/CakeCard', () => ({
-  __esModule: true,
-  default: () => <div data-testid="cake-card">Cake Card</div>
-}))
-
-jest.mock('../../components/Loading', () => ({
-  __esModule: true,
-  default: () => <div data-testid="loading">Loading</div>
-}))
-
-jest.mock('../HeroSection', () => ({
-  __esModule: true,
-  default: () => <div data-testid="hero-section">Hero Section</div>
-}))
-
-jest.mock('../../components/Breadcrumbs', () => ({
-  Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
-}))
-
-// Mock Next.js Link
-jest.mock('next/link', () => {
-  return ({ children }: { children: React.ReactNode }) => <div>{children}</div>
-})
-
-// Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
-  Grid: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>,
-  Button: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <button {...props}>{children}</button>,
-  Paper: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => <div {...props}>{children}</div>
-}))
+  ],
+  shortDescription: [
+    {
+      _type: 'block',
+      children: [{ text: 'A rich and soft Ukrainian honey cake.' }]
+    }
+  ],
+  size: '8inch',
+  pricing: {
+    standard: 35,
+    individual: 45
+  },
+  designs: {
+    standard: []
+  },
+  category: 'Traditional',
+  ingredients: ['Flour', 'Honey', 'Cream'],
+  allergens: ['Gluten', 'Dairy']
+}
 
 describe('CakesPage', () => {
-  describe('Static Configuration', () => {
-    it('should have force-static dynamic', () => {
-      expect(dynamic).toBe('force-static')
-    })
-
+  beforeEach(() => {
+    mockedGetAllCakes.mockResolvedValue([sampleCake])
+    mockedGetCakesFeaturedOffer.mockResolvedValue(sampleFeaturedOffer)
   })
 
-  describe('Metadata', () => {
-    it('should have title with traditional and birthday keywords', () => {
-      expect(metadata.title).toContain('Traditional Ukrainian Cakes')
-      expect(metadata.title).toContain('Leeds')
-    })
-
-    it('should have description with reviews', () => {
-      expect(metadata.description).toContain('5★ rated')
-    })
-
-    it('should have keywords as string', () => {
-      expect(typeof metadata.keywords).toBe('string')
-    })
-
-    it('should include Medovik keyword', () => {
-      expect(metadata.keywords).toContain('Medovik')
-    })
-
-    it('should have OpenGraph URL', () => {
-      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
-    })
-
-    it('should have canonical URL', () => {
-      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
-    })
+  it('uses static generation mode', () => {
+    expect(dynamic).toBe('force-static')
   })
 
-  describe('Structured Data', () => {
-    it('should include local business schema', async () => {
-      const page = await CakesPage()
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const localBusiness = Array.from(scripts).find(s =>
-        s.textContent?.includes('"@type":"Bakery"')
-      )
-
-      expect(localBusiness).toBeTruthy()
-    })
-
-    it('should include offer catalog', async () => {
-      const page = await CakesPage()
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const script = scripts[0]
-      const json = JSON.parse(script?.textContent || '{}')
-
-      // Check for offer catalog in various possible properties
-      expect(json.hasOfferCatalog || json.offers || json['@type']).toBeDefined()
-    })
+  it('keeps metadata with canonical url', () => {
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
   })
 
-  describe('Data Fetching', () => {
-    it('should fetch all cakes', async () => {
-      const { getAllCakes } = require('../../utils/fetchCakes')
+  it('keeps metadata title and description for SEO', () => {
+    expect(typeof metadata.title).toBe('string')
+    expect(typeof metadata.description).toBe('string')
 
-      await CakesPage()
+    const title = metadata.title as string
+    const description = metadata.description as string
 
-      expect(getAllCakes).toHaveBeenCalledWith(false)
-    })
-
-    it('should pass preview=false for static generation', async () => {
-      const { getAllCakes } = require('../../utils/fetchCakes')
-
-      await CakesPage()
-
-      expect(getAllCakes).toHaveBeenCalledWith(false)
-    })
+    expect(title.length).toBeGreaterThanOrEqual(50)
+    expect(title.length).toBeLessThanOrEqual(60)
+    expect(description.length).toBeGreaterThanOrEqual(150)
+    expect(description.length).toBeLessThanOrEqual(160)
   })
 
-  describe('Rendering', () => {
-    it('should render without crashing', async () => {
-      const page = await CakesPage()
+  it('fetches cakes with preview disabled', async () => {
+    await CakesPage()
+    expect(mockedGetAllCakes).toHaveBeenCalledWith(false)
+    expect(mockedGetCakesFeaturedOffer).toHaveBeenCalledWith(false)
+  })
 
-      expect(() => render(page)).not.toThrow()
-    })
+  it('renders featured offer, filters, sorting and cards', async () => {
+    const page = await CakesPage()
+    render(page)
 
-    it('should render Hero Section', async () => {
-      const page = await CakesPage()
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Traditional Ukrainian cakes by post and custom cakes in Leeds'
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Authentic Ukrainian cakes in Leeds, baked fresh to order')).toBeInTheDocument()
+    expect(screen.getByText('FREE Honey Cake Offer')).toBeInTheDocument()
+    expect(screen.getByText('Filter by')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Most popular' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
+    expect(screen.getByRole('link', { name: 'View Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
+    expect(screen.getByText('Sample Honey Cake')).toBeInTheDocument()
+  })
 
-      render(page)
+  it('shows cakes above one hundred pounds by default', async () => {
+    mockedGetAllCakes.mockResolvedValueOnce([
+      {
+        ...sampleCake,
+        _id: 'cake-2',
+        name: 'Luxury Cake',
+        slug: { current: 'luxury-cake' },
+        pricing: {
+          standard: 120,
+          individual: 130
+        }
+      }
+    ])
 
-      expect(screen.getByTestId('hero-section')).toBeInTheDocument()
-    })
+    const page = await CakesPage()
+    render(page)
 
-    it('should render Breadcrumbs', async () => {
-      const page = await CakesPage()
+    expect(screen.getByRole('link', { name: 'View Luxury Cake' })).toHaveAttribute('href', '/cakes/luxury-cake')
+  })
 
-      render(page)
+  it('hides featured offer when not configured in Sanity', async () => {
+    mockedGetCakesFeaturedOffer.mockResolvedValueOnce(null)
 
-      expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
-    })
+    const page = await CakesPage()
+    render(page)
 
-    it('should render cake cards', async () => {
-      const page = await CakesPage()
+    expect(screen.queryByText('FREE Honey Cake Offer')).not.toBeInTheDocument()
+  })
 
-      render(page)
+  it('falls back to placeholder cakes when no cakes are fetched', async () => {
+    mockedGetAllCakes.mockResolvedValueOnce([])
 
-      expect(screen.getByTestId('cake-card')).toBeInTheDocument()
-    })
+    const page = await CakesPage()
+    render(page)
 
-    it('should handle empty cakes array', async () => {
-      const { getAllCakes } = require('../../utils/fetchCakes')
-      getAllCakes.mockResolvedValue([])
+    expect(screen.getByText('Honey Cake')).toBeInTheDocument()
+  })
 
-      const page = await CakesPage()
+  it('renders bakery and breadcrumb structured data scripts', async () => {
+    const page = await CakesPage()
+    const { container } = render(page)
 
-      expect(() => render(page)).not.toThrow()
-    })
+    const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+    const bakeryScript = Array.from(scripts).find((script) =>
+      script.textContent?.includes('"@type":"Bakery"')
+    )
+    const breadcrumbScript = Array.from(scripts).find((script) =>
+      script.textContent?.includes('"@type":"BreadcrumbList"')
+    )
+
+    expect(bakeryScript).toBeTruthy()
+    expect(breadcrumbScript).toBeTruthy()
   })
 })

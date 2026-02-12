@@ -1,7 +1,32 @@
 import { getClient } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
+import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
+import { CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
+
+interface FeaturedOfferImageQueryResult {
+  alt?: string
+  asset?: {
+    url?: string
+  }
+}
+
+interface CakesFeaturedOfferQueryResult {
+  isActive?: boolean
+  eyebrow?: string
+  title?: string
+  description?: string
+  ctaLabel?: string
+  overrideImage?: FeaturedOfferImageQueryResult
+  featuredCake?: {
+    name?: string
+    slug?: {
+      current?: string
+    }
+    mainImage?: FeaturedOfferImageQueryResult
+  }
+}
 
 // Helper function to validate Sanity environment variables at runtime
 function validateSanityConfig() {
@@ -21,6 +46,36 @@ function validateSanityConfig() {
 
 // Revalidation settings for backwards compatibility (no time-based revalidation)
 const REVALIDATE_TIME = 0
+
+function mapCakesFeaturedOffer(data: CakesFeaturedOfferQueryResult | null): CakesFeaturedOffer | null {
+  if (data?.isActive === false) {
+    return null
+  }
+
+  const cakeSlug = data?.featuredCake?.slug?.current
+
+  if (!cakeSlug) {
+    return null
+  }
+
+  const imageUrl = data.overrideImage?.asset?.url
+    || data.featuredCake?.mainImage?.asset?.url
+    || '/images/placeholder-cake.jpg'
+
+  const imageAlt = data.overrideImage?.alt
+    || data.featuredCake?.mainImage?.alt
+    || `${data.featuredCake?.name || 'Featured cake'} by Olgish Cakes`
+
+  return {
+    eyebrow: data.eyebrow?.trim() || 'Featured',
+    title: data.title?.trim() || 'FREE Honey Cake Offer',
+    description: data.description?.trim() || 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+    ctaLabel: data.ctaLabel?.trim() || 'Get free honey cake',
+    cakeSlug,
+    imageUrl,
+    imageAlt
+  }
+}
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
@@ -116,6 +171,30 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   } catch (error) {
     console.error("Error fetching featured cakes:", error);
     return [];
+  }
+}
+
+export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeaturedOffer | null> {
+  validateSanityConfig();
+
+  try {
+    if (preview) {
+      const sanityClient = getClient(preview);
+      const data = await sanityClient.fetch<CakesFeaturedOfferQueryResult | null>(CAKES_FEATURED_OFFER_QUERY);
+      return mapCakesFeaturedOffer(data)
+    }
+
+    const config = getCacheConfig('cakesFeaturedOffer')
+    const data = await cachedSanityFetch<CakesFeaturedOfferQueryResult | null>(
+      CAKES_FEATURED_OFFER_QUERY,
+      {},
+      config
+    )
+
+    return mapCakesFeaturedOffer(data)
+  } catch (error) {
+    console.error("Error fetching cakes featured offer:", error);
+    return null
   }
 }
 

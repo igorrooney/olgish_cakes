@@ -22,6 +22,10 @@ export const SANITY_CACHE_CONFIG = {
     revalidate: NO_REVALIDATE,
     tags: ['cakes']
   },
+  cakesFeaturedOffer: {
+    revalidate: NO_REVALIDATE,
+    tags: ['cakes', 'cakes-featured-offer']
+  },
   giftHampers: {
     revalidate: NO_REVALIDATE,
     tags: ['gift-hampers']

@@ -23,6 +23,7 @@
   --color-accent-50: #FFEBE5;
   --color-base-100: #FFFBEB;
   --color-base-200: #FFF5E6;
+  --color-featured-offer: #FFF4CB;
   --color-base-300: #E5E6E6;
   --color-base-content: #1F2937;
   --color-primary: #2E3192;
@@ -66,9 +67,13 @@
   --Primary-50: var(--color-primary-50);
   --Primary-400: var(--color-primary-400);
   --t-font-family-theme-primary: var(--font-inter);
+  --t-font-weight-normal: 400;
   --t-font-size-sm: 0.875rem;
+  --t-font-size-xl: 1.25rem;
   --t-font-weight-semibold: 600;
   --t-font-lineHeight-leading-5: 1.25rem;
+  --t-font-lineHeight-leading-7: 1.75rem;
+  --d-lineHeight-14: 0.875rem;
 
   --depth: 1;
   --noise: 0;
