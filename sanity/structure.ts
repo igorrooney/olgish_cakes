@@ -1,124 +1,167 @@
-import type { StructureResolver } from "sanity/structure";
+import type { StructureResolver } from 'sanity/structure'
 import { apiVersion } from './env'
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 export const structure: StructureResolver = S =>
   S.list()
-    .title("Content")
+    .title('Content')
     .items([
-      S.documentTypeListItem("cake").title("Cakes"),
       S.listItem()
-        .title('Cakes Featured Offer')
-        .child(
-          S.document()
-            .schemaType('cakesFeaturedOffer')
-            .documentId('cakesFeaturedOffer')
-        ),
-      S.documentTypeListItem("giftHamper").title("Gift Hampers"),
-      S.documentTypeListItem('collection').title('Cakes Collections'),
-      S.documentTypeListItem('giftHamperCollection').title('Gift Hampers Collections'),
-      S.documentTypeListItem("testimonial").title("Testimonials"),
-      S.documentTypeListItem("faq").title("FAQs"),
-      S.documentTypeListItem("blogPost").title("Blog Posts"),
-      S.divider(),
-      // Orders section
-      S.listItem()
-        .title("Orders")
+        .title('Catalog')
         .child(
           S.list()
-            .title("Order Management")
+            .title('Catalog')
             .items([
-              S.listItem()
-                .title("All Orders")
-                .child(
-                  S.documentTypeList("order")
-                    .title("All Orders")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "order"')
-                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
-                ),
-              S.listItem()
-                .title("New Orders")
-                .child(
-                  S.documentTypeList("order")
-                    .title("New Orders")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "order" && status == "new"')
-                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
-                ),
-              S.listItem()
-                .title("In Progress")
-                .child(
-                  S.documentTypeList("order")
-                    .title("Orders In Progress")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "order" && status in ["confirmed", "in-progress"]')
-                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
-                ),
-              S.listItem()
-                .title("Ready for Pickup")
-                .child(
-                  S.documentTypeList("order")
-                    .title("Ready for Pickup")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "order" && status == "ready-pickup"')
-                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
-                ),
-              S.listItem()
-                .title("Completed")
-                .child(
-                  S.documentTypeList("order")
-                    .title("Completed Orders")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "order" && status in ["delivered", "completed"]')
-                    .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
-                ),
+              S.documentTypeListItem('cake').title('Cakes'),
+              S.documentTypeListItem('giftHamper').title('Gift Hampers'),
+              S.divider(),
+              S.documentTypeListItem('collection').title('Cakes Collections'),
+              S.documentTypeListItem('giftHamperCollection').title('Gift Hampers Collections')
             ])
         ),
-      S.divider(),
-      // Market Schedule section
       S.listItem()
-        .title("Market Schedule")
+        .title('Merchandising')
         .child(
           S.list()
-            .title("Market Events")
+            .title('Merchandising')
             .items([
               S.listItem()
-                .title("All Events")
+                .title('Cakes Featured Offer')
                 .child(
-                  S.documentTypeList("marketSchedule")
-                    .title("All Market Events")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "marketSchedule"')
-                    .defaultOrdering([{ field: "date", direction: "desc" }])
+                  S.document()
+                    .schemaType('cakesFeaturedOffer')
+                    .documentId('cakesFeaturedOffer')
                 ),
               S.listItem()
-                .title("Upcoming Events")
+                .title('Collections Display Order')
                 .child(
-                  S.documentTypeList("marketSchedule")
-                    .title("Upcoming Events")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "marketSchedule" && date >= now() && active == true')
-                    .defaultOrdering([{ field: "date", direction: "asc" }])
+                  S.document()
+                    .schemaType('collectionsDisplayOrder')
+                    .documentId('collectionsDisplayOrder')
                 ),
               S.listItem()
-                .title("Featured Events")
+                .title('Products Display Order')
                 .child(
-                  S.documentTypeList("marketSchedule")
-                    .title("Featured Events")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "marketSchedule" && featured == true && active == true')
-                    .defaultOrdering([{ field: "date", direction: "asc" }])
-                ),
-              S.listItem()
-                .title("Past Events")
-                .child(
-                  S.documentTypeList("marketSchedule")
-                    .title("Past Events")
-                    .apiVersion(apiVersion)
-                    .filter('_type == "marketSchedule" && date < now()')
-                    .defaultOrdering([{ field: "date", direction: "desc" }])
-                ),
+                  S.document()
+                    .schemaType('productsDisplayOrder')
+                    .documentId('productsDisplayOrder')
+                )
             ])
         ),
-    ]);
+      S.listItem()
+        .title('Content Marketing')
+        .child(
+          S.list()
+            .title('Content Marketing')
+            .items([
+              S.documentTypeListItem('testimonial').title('Testimonials'),
+              S.documentTypeListItem('faq').title('FAQs'),
+              S.documentTypeListItem('blogPost').title('Blog Posts')
+            ])
+        ),
+      S.listItem()
+        .title('Operations')
+        .child(
+          S.list()
+            .title('Operations')
+            .items([
+              S.listItem()
+                .title('Orders')
+                .child(
+                  S.list()
+                    .title('Order Management')
+                    .items([
+                      S.listItem()
+                        .title('All Orders')
+                        .child(
+                          S.documentTypeList('order')
+                            .title('All Orders')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "order"')
+                            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('New Orders')
+                        .child(
+                          S.documentTypeList('order')
+                            .title('New Orders')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "order" && status == "new"')
+                            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('In Progress')
+                        .child(
+                          S.documentTypeList('order')
+                            .title('Orders In Progress')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "order" && status in ["confirmed", "in-progress"]')
+                            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('Ready for Pickup')
+                        .child(
+                          S.documentTypeList('order')
+                            .title('Ready for Pickup')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "order" && status == "ready-pickup"')
+                            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('Completed')
+                        .child(
+                          S.documentTypeList('order')
+                            .title('Completed Orders')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "order" && status in ["delivered", "completed"]')
+                            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+                        )
+                    ])
+                ),
+              S.listItem()
+                .title('Market Schedule')
+                .child(
+                  S.list()
+                    .title('Market Events')
+                    .items([
+                      S.listItem()
+                        .title('All Events')
+                        .child(
+                          S.documentTypeList('marketSchedule')
+                            .title('All Market Events')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "marketSchedule"')
+                            .defaultOrdering([{ field: 'date', direction: 'desc' }])
+                        ),
+                      S.listItem()
+                        .title('Upcoming Events')
+                        .child(
+                          S.documentTypeList('marketSchedule')
+                            .title('Upcoming Events')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "marketSchedule" && date >= now() && active == true')
+                            .defaultOrdering([{ field: 'date', direction: 'asc' }])
+                        ),
+                      S.listItem()
+                        .title('Featured Events')
+                        .child(
+                          S.documentTypeList('marketSchedule')
+                            .title('Featured Events')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "marketSchedule" && featured == true && active == true')
+                            .defaultOrdering([{ field: 'date', direction: 'asc' }])
+                        ),
+                      S.listItem()
+                        .title('Past Events')
+                        .child(
+                          S.documentTypeList('marketSchedule')
+                            .title('Past Events')
+                            .apiVersion(apiVersion)
+                            .filter('_type == "marketSchedule" && date < now()')
+                            .defaultOrdering([{ field: 'date', direction: 'desc' }])
+                        )
+                    ])
+                )
+            ])
+        )
+    ])

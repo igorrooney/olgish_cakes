@@ -15,7 +15,7 @@ const apiVersion = "2025-03-31";
 import { schema } from "./sanity/schema";
 import { structure } from "./sanity/structure";
 
-const singletonTypes = new Set(['cakesFeaturedOffer'])
+const singletonTypes = new Set(['cakesFeaturedOffer', 'collectionsDisplayOrder', 'productsDisplayOrder'])
 
 export default defineConfig({
   basePath: "/studio",

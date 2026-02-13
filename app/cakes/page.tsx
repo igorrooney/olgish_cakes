@@ -6,6 +6,11 @@ import { getAllGiftHampers } from '../utils/fetchGiftHampers'
 import { getHomepageCollections, getHomepageGiftHamperCollections } from '../utils/fetchCollections'
 import type { HomepageCollection } from '../types/collection'
 import type { GiftHamper } from '@/types/giftHamper'
+import {
+  createCollectionIdByQueryValueMap,
+  createCollectionQueryValueMap,
+  normalizeDocumentId
+} from '../utils/collectionQueryValue'
 import { CakesTabletCatalog } from './components/CakesTabletCatalog'
 import { CakesCollectionOption, TabletCake } from './components/types'
 
@@ -118,42 +123,6 @@ type RichTextBlockLike = {
 interface ImageSelection {
   image: UrlForImage
   alt?: string
-}
-
-function normalizeDocumentId(documentId: string) {
-  return documentId.startsWith('drafts.')
-    ? documentId.slice('drafts.'.length)
-    : documentId
-}
-
-function slugifyCollectionLabel(label: string) {
-  return label
-    .toLowerCase()
-    .replace(/['’]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function toShortDocumentId(documentId: string) {
-  return normalizeDocumentId(documentId)
-    .replace(/[^a-zA-Z0-9]/g, '')
-    .slice(0, 8)
-    .toLowerCase()
-}
-
-function createCollectionQueryValue(
-  collectionId: string,
-  label: string,
-  productType: 'cake' | 'giftHamper'
-) {
-  const prefix = productType === 'cake' ? 'c' : 'p'
-  const slug = slugifyCollectionLabel(label).slice(0, 40)
-
-  if (slug.length > 0) {
-    return `${prefix}-${slug}`
-  }
-
-  return `${prefix}-${toShortDocumentId(collectionId)}`
 }
 
 function getDescription(cake: Cake) {
@@ -305,7 +274,18 @@ function mapCollectionsToOptions(
   collections: HomepageCollection[],
   productType: 'cake' | 'giftHamper'
 ): CakesCollectionOption[] {
-  const usedQueryValues = new Set<string>()
+  const queryValueById = createCollectionQueryValueMap(collections, productType)
+  const collectionIdByQueryValue = createCollectionIdByQueryValueMap(collections, productType)
+  const aliasesByCollectionId = new Map<string, string[]>()
+
+  collectionIdByQueryValue.forEach((collectionId, queryValue) => {
+    const existingAliases = aliasesByCollectionId.get(collectionId) ?? []
+    if (existingAliases.includes(queryValue)) {
+      return
+    }
+
+    aliasesByCollectionId.set(collectionId, [...existingAliases, queryValue])
+  })
 
   return collections
     .map((collection) => {
@@ -316,22 +296,19 @@ function mapCollectionsToOptions(
       }
 
       const normalizedId = normalizeDocumentId(collection._id)
-      const baseQueryValue = createCollectionQueryValue(normalizedId, label, productType)
-      const shortId = toShortDocumentId(normalizedId)
-      let queryValue = baseQueryValue
-      let suffix = 1
+      const queryValue = queryValueById.get(normalizedId)
 
-      while (usedQueryValues.has(queryValue)) {
-        const duplicateSuffix = suffix === 1 ? shortId : `${shortId}-${suffix}`
-        queryValue = `${baseQueryValue}-${duplicateSuffix}`
-        suffix += 1
+      if (!queryValue) {
+        return null
       }
 
-      usedQueryValues.add(queryValue)
+      const legacyQueryValues = (aliasesByCollectionId.get(normalizedId) ?? [])
+        .filter((value) => value !== queryValue)
 
       return {
         id: normalizedId,
         queryValue,
+        legacyQueryValues,
         label,
         isFeatured: Boolean(collection.isFeatured),
         productType
@@ -465,3 +442,4 @@ export default async function CakesPage() {
     </>
   )
 }
+

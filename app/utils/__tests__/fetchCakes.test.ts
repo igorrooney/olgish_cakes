@@ -103,6 +103,56 @@ describe('fetchCakes', () => {
       expect(mockFetch).toHaveBeenCalled()
     })
 
+    it('should prioritize products display order for cakes', async () => {
+      const firstCake: Cake = {
+        ...mockCake,
+        _id: 'cake-1',
+        name: 'Cake One',
+        order: 2
+      }
+      const secondCake: Cake = {
+        ...mockCake,
+        _id: 'cake-2',
+        name: 'Cake Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        cakes: [firstCake, secondCake],
+        displayOrder: {
+          cakesOrder: [{ _ref: 'cake-2' }, { _ref: 'cake-1' }]
+        }
+      })
+
+      const result = await getAllCakes()
+
+      expect(result.map((cake) => cake._id)).toEqual(['cake-2', 'cake-1'])
+    })
+
+    it('should fallback to legacy order when products display order is not configured', async () => {
+      const firstCake: Cake = {
+        ...mockCake,
+        _id: 'cake-1',
+        name: 'Cake One',
+        order: 2
+      }
+      const secondCake: Cake = {
+        ...mockCake,
+        _id: 'cake-2',
+        name: 'Cake Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        cakes: [firstCake, secondCake],
+        displayOrder: null
+      })
+
+      const result = await getAllCakes()
+
+      expect(result.map((cake) => cake._id)).toEqual(['cake-2', 'cake-1'])
+    })
+
     it('should use cache for non-preview requests', async () => {
       mockFetch.mockResolvedValue([mockCake])
 

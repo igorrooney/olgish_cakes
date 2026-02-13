@@ -6,7 +6,6 @@ interface RawCollectionOption {
   _id: string
   name: string
   isFeatured?: boolean
-  homepageOrder?: number
 }
 
 interface CollectionOption extends RawCollectionOption {
@@ -23,8 +22,7 @@ interface CollectionReferenceValue {
 const COLLECTION_OPTIONS_QUERY = `*[_type == "collection"] | order(_updatedAt desc) {
   _id,
   name,
-  isFeatured,
-  homepageOrder
+  isFeatured
 }`
 
 function getBaseId(documentId: string): string {
@@ -71,17 +69,6 @@ function normalizeCollectionOptions(rawOptions: RawCollectionOption[]): Collecti
   })
 
   return Array.from(dedupedByBaseId.values()).sort((firstOption, secondOption) => {
-    const firstOrder = typeof firstOption.homepageOrder === 'number'
-      ? firstOption.homepageOrder
-      : Number.MAX_SAFE_INTEGER
-    const secondOrder = typeof secondOption.homepageOrder === 'number'
-      ? secondOption.homepageOrder
-      : Number.MAX_SAFE_INTEGER
-
-    if (firstOrder !== secondOrder) {
-      return firstOrder - secondOrder
-    }
-
     return firstOption.name.localeCompare(secondOption.name)
   })
 }

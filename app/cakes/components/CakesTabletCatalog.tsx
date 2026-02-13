@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {
   parseAsArrayOf,
   parseAsBoolean,
@@ -45,15 +45,40 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
     history: 'replace'
   })
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+
+    if (!searchParams.has('collections')) {
+      return
+    }
+
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+
+    const isJSDOM = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent)
+
+    if (isJSDOM || typeof window.scrollTo !== 'function') {
+      return
+    }
+
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    } catch {
+      // Ignore environments that do not implement window scrolling (for example, JSDOM).
+    }
+  }, [])
+
   const collectionIdSet = useMemo(
     () => new Set(collectionOptions.map((option) => option.id)),
     [collectionOptions]
   )
   const collectionIdByQueryValue = useMemo(() => {
-    const mappedEntries = collectionOptions.map((option) => [option.queryValue, option.id] as const)
-    const legacyEntries = collectionOptions.map((option) => [option.id, option.id] as const)
+    const entries = collectionOptions.flatMap((option) => {
+      const aliasEntries = option.legacyQueryValues.map((value) => [value, option.id] as const)
+      return [[option.queryValue, option.id] as const, ...aliasEntries]
+    })
 
-    return new Map<string, string>([...mappedEntries, ...legacyEntries])
+    return new Map<string, string>(entries)
   }, [collectionOptions])
   const collectionQueryValueById = useMemo(() => {
     return new Map(

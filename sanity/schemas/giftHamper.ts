@@ -1,4 +1,5 @@
 import { GiftHamperCollectionsInput } from '../components/GiftHamperCollectionsInput'
+import type { ReactNode } from 'react'
 
 interface ValidationContext {
   document?: {
@@ -28,6 +29,12 @@ interface ValidationRule {
   precision: (value: number) => ValidationRule
   warning: (message: string) => ValidationRule
   error: (message: string) => ValidationRule
+}
+
+interface PreviewImageValue {
+  asset?: {
+    _ref?: string
+  }
 }
 
 export default {
@@ -248,8 +255,29 @@ export default {
   preview: {
     select: {
       title: "name",
-      media: "mainImage",
+      images: "images",
+      legacyMainImage: "mainImage",
       subtitle: "category",
+    },
+    prepare({
+      title,
+      subtitle,
+      images,
+      legacyMainImage
+    }: {
+      title?: string
+      subtitle?: string
+      images?: PreviewImageValue[]
+      legacyMainImage?: PreviewImageValue
+    }) {
+      const firstImageWithAsset = images?.find((image) => Boolean(image?.asset?._ref))
+      const media = firstImageWithAsset || (legacyMainImage?.asset?._ref ? legacyMainImage : undefined)
+
+      return {
+        title,
+        subtitle,
+        media: media as unknown as ReactNode
+      }
     },
   },
 };

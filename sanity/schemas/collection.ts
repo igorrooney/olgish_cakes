@@ -8,17 +8,9 @@ interface ValidationContext {
   }
 }
 
-interface DuplicateDocument {
-  _id: string
-  name: string
-  homepageOrder: number
-}
-
 interface ValidationRule {
   required: () => ValidationRule
-  min: (value: number) => ValidationRule & { integer: () => ValidationRule & { custom: (fn: (value: number | undefined, context: ValidationContext) => Promise<true | string>) => unknown } }
   max: (value: number) => ValidationRule
-  integer: () => ValidationRule
   custom: (fn: (value: unknown, context: ValidationContext) => Promise<true | string> | true | string) => unknown
   warning: (message: string) => ValidationRule
 }
@@ -118,59 +110,6 @@ export default {
           description: 'Canonical URL if different from the page URL',
         },
       ],
-    },
-    {
-      name: 'homepageOrder',
-      title: 'Homepage Order',
-      type: 'number',
-      description: 'Lower numbers appear first on the homepage.',
-      validation: (Rule: ValidationRule) =>
-        Rule.min(0)
-          .integer()
-          .custom(async (orderNumber: unknown, context: ValidationContext): Promise<true | string> => {
-            if (orderNumber === undefined || orderNumber === null || typeof orderNumber !== 'number') {
-              return true
-            }
-
-            const { document, getClient } = context
-
-            const client = getClient({ apiVersion: '2025-03-31' })
-            const currentId = document?._id
-            const isDraft = Boolean(currentId?.startsWith('drafts.'))
-            const publishedId = currentId
-              ? isDraft
-                ? currentId.replace(/^drafts\./, '')
-                : currentId
-              : ''
-            const draftId = currentId
-              ? isDraft
-                ? currentId
-                : `drafts.${currentId}`
-              : ''
-            const excludedIds = Array.from(
-              new Set([currentId, publishedId, draftId].filter(Boolean))
-            )
-
-            try {
-              const duplicates = await client.fetch<DuplicateDocument[]>(
-                `*[_type == "collection" && homepageOrder == $order && !(_id in $excludedIds)] {
-                  _id,
-                  name,
-                  homepageOrder
-                }`,
-                { order: orderNumber, excludedIds }
-              )
-
-              if (duplicates.length > 0) {
-                const duplicateNames = duplicates.map((duplicate: DuplicateDocument) => duplicate.name).join(', ')
-                return `Homepage order ${orderNumber} is already used by: ${duplicateNames}. Please use a unique order number.`
-              }
-            } catch (error: unknown) {
-              console.warn('Failed to check for duplicate homepage order numbers:', error)
-            }
-
-            return true
-          }),
     },
   ],
   preview: {

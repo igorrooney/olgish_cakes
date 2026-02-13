@@ -121,6 +121,19 @@ async function handlePOST(request: NextRequest) {
       // Revalidate gift hamper collections used on cakes filters
       addPath('/cakes')
       addTag('gift-hamper-collections')
+    } else if (_type === 'collectionsDisplayOrder') {
+      // Revalidate homepage and cakes filters that use collections order
+      addPath('/')
+      addPath('/cakes')
+      addTag('cake-collections')
+      addTag('gift-hamper-collections')
+    } else if (_type === 'productsDisplayOrder') {
+      // Revalidate product listing pages that use manual display order
+      addPath('/cakes')
+      addPath('/gift-hampers')
+      addTag('cakes')
+      addTag('gift-hampers')
+      addTag('sitemaps')
     }
 
     for (const path of pathsToRevalidate) {

@@ -23,7 +23,6 @@ describe('fetchCollections', () => {
     _id: 'collection-1',
     name: 'Kids Birthdays',
     isFeatured: true,
-    homepageOrder: 1,
     image: {
       asset: { _ref: 'image-1', _type: 'reference' },
       alt: 'Kids birthday cake'
@@ -35,12 +34,14 @@ describe('fetchCollections', () => {
   })
 
   it('fetches homepage collections', async () => {
-    mockFetch.mockResolvedValue([mockCollection])
+    mockFetch
+      .mockResolvedValueOnce([mockCollection])
+      .mockResolvedValueOnce(null)
 
     const result = await getHomepageCollections()
 
     expect(result).toEqual([mockCollection])
-    expect(mockFetch).toHaveBeenCalled()
+    expect(mockFetch).toHaveBeenCalledTimes(2)
   })
 
   it('returns empty array on error', async () => {
@@ -55,23 +56,100 @@ describe('fetchCollections', () => {
   })
 
   it('queries all collections ordered for homepage', async () => {
-    mockFetch.mockResolvedValue([mockCollection])
+    mockFetch
+      .mockResolvedValueOnce([mockCollection])
+      .mockResolvedValueOnce(null)
 
     await getHomepageCollections()
 
-    const query = mockFetch.mock.calls[0][0]
-    expect(query).toContain('_type == "collection"')
-    expect(query).toContain('isFeatured')
-    expect(query).toContain('order(homepageOrder asc, name asc)')
+    const collectionsQuery = mockFetch.mock.calls[0][0]
+    const orderSettingsQuery = mockFetch.mock.calls[1][0]
+
+    expect(collectionsQuery).toContain('_type == "collection"')
+    expect(collectionsQuery).toContain('isFeatured')
+    expect(collectionsQuery).toContain('order(name asc)')
+    expect(orderSettingsQuery).toContain('_type == "collectionsDisplayOrder"')
+  })
+
+  it('prioritizes drag and drop order for cake collections', async () => {
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-1',
+      name: 'Collection One'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-2',
+      name: 'Collection Two'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockResolvedValueOnce({
+        cakeCollectionsOrder: [{ _ref: 'collection-2' }, { _ref: 'collection-1' }]
+      })
+
+    const result = await getHomepageCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
+  })
+
+  it('falls back to alphabetical order when drag and drop order is empty', async () => {
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-1',
+      name: 'Collection Z'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-2',
+      name: 'Collection A'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockResolvedValueOnce({
+        cakeCollectionsOrder: []
+      })
+
+    const result = await getHomepageCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
+  })
+
+  it('keeps homepage collections visible when order settings request fails', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-1',
+      name: 'Collection Z'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-2',
+      name: 'Collection A'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockRejectedValueOnce(new Error('Display order request failed'))
+
+    const result = await getHomepageCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
+    expect(consoleSpy).toHaveBeenCalledWith('Error fetching collections display order settings:', expect.any(Error))
+    consoleSpy.mockRestore()
   })
 
   it('fetches gift hamper collections', async () => {
-    mockFetch.mockResolvedValue([mockCollection])
+    mockFetch
+      .mockResolvedValueOnce([mockCollection])
+      .mockResolvedValueOnce(null)
 
     const result = await getHomepageGiftHamperCollections()
 
     expect(result).toEqual([mockCollection])
-    expect(mockFetch).toHaveBeenCalled()
+    expect(mockFetch).toHaveBeenCalledTimes(2)
   })
 
   it('returns empty array when gift hamper collections fetch fails', async () => {
@@ -86,13 +164,65 @@ describe('fetchCollections', () => {
   })
 
   it('queries gift hamper collections ordered for homepage', async () => {
-    mockFetch.mockResolvedValue([mockCollection])
+    mockFetch
+      .mockResolvedValueOnce([mockCollection])
+      .mockResolvedValueOnce(null)
 
     await getHomepageGiftHamperCollections()
 
-    const query = mockFetch.mock.calls[0][0]
-    expect(query).toContain('_type == "giftHamperCollection"')
-    expect(query).toContain('isFeatured')
-    expect(query).toContain('order(homepageOrder asc, name asc)')
+    const collectionsQuery = mockFetch.mock.calls[0][0]
+    const orderSettingsQuery = mockFetch.mock.calls[1][0]
+
+    expect(collectionsQuery).toContain('_type == "giftHamperCollection"')
+    expect(collectionsQuery).toContain('isFeatured')
+    expect(collectionsQuery).toContain('order(name asc)')
+    expect(orderSettingsQuery).toContain('_type == "collectionsDisplayOrder"')
+  })
+
+  it('normalizes draft ids from drag and drop order for gift hamper collections', async () => {
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-1',
+      name: 'Gift One'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-2',
+      name: 'Gift Two'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockResolvedValueOnce({
+        giftHamperCollectionsOrder: [{ _ref: 'drafts.gift-2' }, { _ref: 'gift-1' }]
+      })
+
+    const result = await getHomepageGiftHamperCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['gift-2', 'gift-1'])
+  })
+
+  it('keeps gift hamper collections visible when order settings request fails', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-1',
+      name: 'Gift Z'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-2',
+      name: 'Gift A'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockRejectedValueOnce(new Error('Display order request failed'))
+
+    const result = await getHomepageGiftHamperCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['gift-2', 'gift-1'])
+    expect(consoleSpy).toHaveBeenCalledWith('Error fetching collections display order settings:', expect.any(Error))
+    consoleSpy.mockRestore()
   })
 })

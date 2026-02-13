@@ -10,6 +10,5 @@ export type HomepageCollection = {
   _id: string
   name: string
   isFeatured?: boolean
-  homepageOrder?: number
   image?: HomepageCollectionImage
 }

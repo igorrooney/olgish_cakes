@@ -10,6 +10,7 @@ export interface CakesFilterState {
 export interface CakesCollectionOption {
   id: string
   queryValue: string
+  legacyQueryValues: string[]
   label: string
   isFeatured: boolean
   productType: 'cake' | 'giftHamper'

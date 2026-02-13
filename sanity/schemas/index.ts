@@ -7,5 +7,7 @@ import order from './order'
 import collection from './collection'
 import giftHamperCollection from './giftHamperCollection'
 import cakesFeaturedOffer from './cakesFeaturedOffer'
+import collectionsDisplayOrder from './collectionsDisplayOrder'
+import productsDisplayOrder from './productsDisplayOrder'
 
-export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, cakesFeaturedOffer]
+export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer]

@@ -390,6 +390,17 @@ describe('CakesPage', () => {
     expect(window.location.search).not.toContain('collection-cake')
   })
 
+  it('scrolls to the top when opening with a preselected collection', async () => {
+    document.documentElement.scrollTop = 180
+    document.body.scrollTop = 120
+
+    const page = await CakesPage()
+    renderCakesPage(page, '?collections=c-wedding-cakes')
+
+    expect(document.documentElement.scrollTop).toBe(0)
+    expect(document.body.scrollTop).toBe(0)
+  })
+
   it('switches collection filters by selected category', async () => {
     mockedGetAllGiftHampers.mockResolvedValueOnce([sampleGiftHamper])
     mockedGetHomepageCollections.mockResolvedValueOnce([cakeCollection])
