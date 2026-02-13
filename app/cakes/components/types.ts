@@ -34,4 +34,4 @@ export interface TabletCake {
 
 export type CakesFeaturedOfferData = CakesFeaturedOffer
 
-export type CakesSortOption = 'new' | 'popular' | 'priceHighToLow' | 'priceLowToHigh'
+export type CakesSortOption = 'new' | 'priceHighToLow' | 'priceLowToHigh'

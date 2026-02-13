@@ -9,10 +9,36 @@ interface CakesSortBarProps {
 
 const sortOptions: Array<{ id: CakesSortOption, label: string }> = [
   { id: 'new', label: 'New' },
-  { id: 'popular', label: 'Most popular' },
   { id: 'priceHighToLow', label: 'Price: High to low' },
   { id: 'priceLowToHigh', label: 'Price: Low to high' }
 ]
+
+const baseButtonClassName = [
+  'btn',
+  'btn-sm',
+  'h-11',
+  'min-h-11',
+  'px-4',
+  'border',
+  'focus:outline-none',
+  'focus-visible:outline-none',
+  'focus-visible:ring-2',
+  'focus-visible:ring-primary',
+  'focus-visible:ring-offset-2',
+  'focus-visible:ring-offset-base-100',
+  'rounded-btn',
+  'normal-case',
+  'whitespace-nowrap',
+  'tablet:h-8',
+  'tablet:min-h-8',
+  'tablet:px-2',
+  'tablet:text-base',
+  'tablet:gap-2',
+  'tablet:rounded-btn'
+].join(' ')
+
+const activeButtonClassName = 'btn-primary border-primary bg-primary text-primary-content'
+const inactiveButtonClassName = 'border-transparent bg-primary-50 text-base-content/55'
 
 function isActive(option: CakesSortOption, selectedSort: CakesSortOption) {
   return option === selectedSort
@@ -29,10 +55,10 @@ export function CakesSortBar({ selectedSort, onSelectSort }: CakesSortBarProps) 
             key={option.id}
             type='button'
             onClick={() => onSelectSort(option.id)}
-            className={`btn btn-sm h-11 min-h-11 rounded-btn border px-4 normal-case whitespace-nowrap ${
+            className={`${baseButtonClassName} ${
               active
-                ? 'border-primary bg-primary text-primary-content'
-                : 'border-transparent bg-primary-50 text-base-content/55'
+                ? activeButtonClassName
+                : inactiveButtonClassName
             }`}
           >
             {active ? (

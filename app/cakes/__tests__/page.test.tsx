@@ -438,7 +438,7 @@ describe('CakesPage', () => {
     expect(screen.getByText('Authentic Ukrainian cakes in Leeds, baked fresh to order')).toBeInTheDocument()
     expect(screen.getByText('FREE Honey Cake Offer')).toBeInTheDocument()
     expect(screen.getByText('Filter by')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Most popular' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Most popular' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByRole('link', { name: 'View Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')

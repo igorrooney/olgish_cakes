@@ -29,7 +29,7 @@ function getPriceCeiling(cakes: TabletCake[]) {
   return Math.ceil(Math.max(...cakes.map((cake) => cake.price)))
 }
 
-const sortOptions = ['new', 'popular', 'priceHighToLow', 'priceLowToHigh'] as const
+const sortOptions = ['new', 'priceHighToLow', 'priceLowToHigh'] as const
 
 const queryParsers = {
   sort: parseAsStringLiteral(sortOptions).withDefault('new'),
@@ -200,12 +200,6 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
     })
 
     const cakesCopy = [...withCollections]
-
-    if (selectedSort === 'popular') {
-      return cakesCopy.sort((firstCake, secondCake) => {
-        return Number(secondCake.isPopular) - Number(firstCake.isPopular)
-      })
-    }
 
     if (selectedSort === 'priceHighToLow') {
       return cakesCopy.sort((firstCake, secondCake) => secondCake.price - firstCake.price)
