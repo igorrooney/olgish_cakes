@@ -6,6 +6,8 @@ interface CakesProductCardProps {
   cake: TabletCake
 }
 
+const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
+
 export function CakesProductCard({ cake }: CakesProductCardProps) {
   const isByPostCake = cake.productType === 'giftHamper'
 
@@ -18,7 +20,7 @@ export function CakesProductCard({ cake }: CakesProductCardProps) {
               src={cake.imageUrl}
               alt={cake.imageAlt}
               fill
-              sizes='(max-width: 1023px) 100vw, 50vw'
+              sizes={cardImageSizes}
               className='object-cover'
               loading='lazy'
             />

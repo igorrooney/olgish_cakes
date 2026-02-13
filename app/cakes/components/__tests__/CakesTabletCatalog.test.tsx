@@ -364,6 +364,28 @@ describe('CakesTabletCatalog', () => {
     expect(screen.queryByRole('link', { name: 'Go to page 2' })).not.toBeInTheDocument()
   })
 
+  it('shows a 3x3 page on small laptop without viewport-driven pagination state', async () => {
+    renderCatalog({ cakeCount: 19, viewportWidth: 1280 })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(19)
+    })
+
+    const cakeSevenWrapper = getCakeWrapper('Cake 7')
+    const cakeNineWrapper = getCakeWrapper('Cake 9')
+    const cakeTenWrapper = getCakeWrapper('Cake 10')
+
+    expect(cakeSevenWrapper).toHaveClass('tablet:hidden', 'small-laptop:block')
+    expect(cakeNineWrapper).toHaveClass('tablet:hidden', 'small-laptop:block')
+    expect(cakeTenWrapper).toHaveClass('tablet:hidden')
+    expect(cakeTenWrapper).not.toHaveClass('small-laptop:block')
+
+    expect(screen.getByRole('button', { name: 'Go to page 2' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go to small laptop page 2' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go to small laptop page 3' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Go to small laptop page 4' })).not.toBeInTheDocument()
+  })
+
   it('scrolls to top on initial render', async () => {
     document.documentElement.scrollTop = 180
     document.body.scrollTop = 120

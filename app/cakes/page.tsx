@@ -385,7 +385,7 @@ export default async function CakesPage() {
     ]
   }
   const detailsSectionTitleClassName =
-    'mx-auto max-w-[760px] text-center font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] tablet:text-[36px] tablet:leading-[52px]'
+    'mx-auto max-w-[760px] text-center font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] tablet:text-[36px] tablet:leading-[52px] small-laptop:max-w-[1000px]'
   const detailsSectionParagraphClassName =
     'font-oldenburg text-[15px] leading-[32px] tracking-[1.2px] text-base-content tablet:text-base tablet:leading-8 tablet:tracking-normal'
 
@@ -400,11 +400,11 @@ export default async function CakesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
       <main className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'>
-        <section className='mx-auto w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0'>
-          <h1 className='mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'>
+        <section className='mx-auto text-center w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
+          <h1 className='mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             Traditional Ukrainian cakes by post and custom cakes in Leeds
           </h1>
-          <p className='mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px]'>
+          <p className='mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that
             feel like home.
           </p>
@@ -414,7 +414,7 @@ export default async function CakesPage() {
           featuredOffer={featuredOffer}
           collectionOptions={collectionOptions}
         />
-        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0'>
+        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0 small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
           <h2 className={detailsSectionTitleClassName}>
             Authentic Ukrainian cakes in Leeds, baked fresh to order
           </h2>

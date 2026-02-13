@@ -31,6 +31,7 @@ function getPriceCeiling(cakes: TabletCake[]) {
 
 const sortOptions = ['new', 'priceHighToLow', 'priceLowToHigh'] as const
 const TABLET_PAGE_SIZE = 6
+const SMALL_LAPTOP_PAGE_SIZE = 9
 const TRUNCATED_PAGINATION_THRESHOLD = 7
 
 type PaginationToken = number | 'ellipsis-leading' | 'ellipsis-trailing'
@@ -294,31 +295,60 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
 
     return cakesCopy
   }, [cakes, filters, selectedSort])
-  const totalPages = useMemo(() => {
+  const tabletTotalPages = useMemo(() => {
     return Math.max(1, Math.ceil(filteredCakes.length / TABLET_PAGE_SIZE))
   }, [filteredCakes.length])
-  const currentPage = useMemo(() => {
-    return getClampedPage(queryState.page, totalPages)
-  }, [queryState.page, totalPages])
+  const smallLaptopTotalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredCakes.length / SMALL_LAPTOP_PAGE_SIZE))
+  }, [filteredCakes.length])
+  const tabletCurrentPage = useMemo(() => {
+    return getClampedPage(queryState.page, tabletTotalPages)
+  }, [queryState.page, tabletTotalPages])
+  const smallLaptopCurrentPage = useMemo(() => {
+    return getClampedPage(queryState.page, smallLaptopTotalPages)
+  }, [queryState.page, smallLaptopTotalPages])
   const tabletPageStartIndex = useMemo(() => {
-    return (currentPage - 1) * TABLET_PAGE_SIZE
-  }, [currentPage])
+    return (tabletCurrentPage - 1) * TABLET_PAGE_SIZE
+  }, [tabletCurrentPage])
   const tabletPageEndIndex = useMemo(() => {
     return tabletPageStartIndex + TABLET_PAGE_SIZE
   }, [tabletPageStartIndex])
+  const smallLaptopPageStartIndex = useMemo(() => {
+    return (smallLaptopCurrentPage - 1) * SMALL_LAPTOP_PAGE_SIZE
+  }, [smallLaptopCurrentPage])
+  const smallLaptopPageEndIndex = useMemo(() => {
+    return smallLaptopPageStartIndex + SMALL_LAPTOP_PAGE_SIZE
+  }, [smallLaptopPageStartIndex])
   const isOutsideTabletPage = useCallback((index: number) => {
     return index < tabletPageStartIndex || index >= tabletPageEndIndex
   }, [tabletPageEndIndex, tabletPageStartIndex])
+  const isOutsideSmallLaptopPage = useCallback((index: number) => {
+    return index < smallLaptopPageStartIndex || index >= smallLaptopPageEndIndex
+  }, [smallLaptopPageEndIndex, smallLaptopPageStartIndex])
   const getCakeItemClassName = useCallback((index: number) => {
-    if (isOutsideTabletPage(index)) {
+    const outsideTabletPage = isOutsideTabletPage(index)
+    const outsideSmallLaptopPage = isOutsideSmallLaptopPage(index)
+
+    if (outsideTabletPage && outsideSmallLaptopPage) {
       return 'h-full tablet:hidden'
     }
 
+    if (outsideTabletPage) {
+      return 'h-full tablet:hidden small-laptop:block'
+    }
+
+    if (outsideSmallLaptopPage) {
+      return 'h-full small-laptop:hidden'
+    }
+
     return 'h-full'
-  }, [isOutsideTabletPage])
-  const pageTokens = useMemo(() => {
-    return getPaginationTokens(currentPage, totalPages)
-  }, [currentPage, totalPages])
+  }, [isOutsideSmallLaptopPage, isOutsideTabletPage])
+  const tabletPageTokens = useMemo(() => {
+    return getPaginationTokens(tabletCurrentPage, tabletTotalPages)
+  }, [tabletCurrentPage, tabletTotalPages])
+  const smallLaptopPageTokens = useMemo(() => {
+    return getPaginationTokens(smallLaptopCurrentPage, smallLaptopTotalPages)
+  }, [smallLaptopCurrentPage, smallLaptopTotalPages])
 
   useEffect(() => {
     if (!pendingPaginationScrollRef.current) {
@@ -327,17 +357,17 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
 
     pendingPaginationScrollRef.current = false
     scrollWindowToTop()
-  }, [currentPage])
+  }, [smallLaptopCurrentPage, tabletCurrentPage])
 
   useEffect(() => {
-    if (queryState.page === currentPage) {
+    if (queryState.page === tabletCurrentPage) {
       return
     }
 
     void setQueryState({
-      page: currentPage === 1 ? null : currentPage
+      page: tabletCurrentPage === 1 ? null : tabletCurrentPage
     })
-  }, [currentPage, queryState.page, setQueryState])
+  }, [queryState.page, setQueryState, tabletCurrentPage])
 
   const paginationFocusClassName = 'focus:!outline-none focus-visible:!outline-none focus:!shadow-none focus-visible:!shadow-none'
   const paginationItemClassName = `join-item btn h-12 min-h-12 rounded-none border-0 bg-base-100 text-base-content ${paginationFocusClassName}`
@@ -346,7 +376,7 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
   const inactivePageItemClassName = 'hover:bg-base-200'
   const prevNextItemClassName = `${paginationItemClassName} min-w-24 px-4 normal-case`
   const ellipsisItemClassName = `${paginationItemClassName} btn-disabled min-w-10 px-2`
-  const handlePageChange = useCallback((targetPage: number) => {
+  const handlePageChange = useCallback((targetPage: number, currentPage: number, totalPages: number) => {
     const normalizedPage = getClampedPage(targetPage, totalPages)
 
     if (normalizedPage === currentPage) {
@@ -357,10 +387,124 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
     void setQueryState({
       page: normalizedPage === 1 ? null : normalizedPage
     })
-  }, [currentPage, setQueryState, totalPages])
+  }, [setQueryState])
+
+  const renderPaginationNav = useCallback(({
+    navAriaLabel,
+    navClassName,
+    currentPage,
+    totalPages,
+    pageTokens,
+    previousPageLabel,
+    nextPageLabel,
+    getPageLabel
+  }: {
+    navAriaLabel: string
+    navClassName: string
+    currentPage: number
+    totalPages: number
+    pageTokens: PaginationToken[]
+    previousPageLabel: string
+    nextPageLabel: string
+    getPageLabel: (pageNumber: number) => string
+  }) => {
+    return (
+      <nav aria-label={navAriaLabel} className={navClassName}>
+        <div className='join overflow-hidden rounded-btn border border-base-300'>
+          {currentPage === 1 ? (
+            <button
+              type='button'
+              aria-label={previousPageLabel}
+              disabled
+              className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
+            >
+              <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
+              <span>Previous</span>
+            </button>
+          ) : (
+            <button
+              type='button'
+              aria-label={previousPageLabel}
+              onClick={() => handlePageChange(currentPage - 1, currentPage, totalPages)}
+              className={prevNextItemClassName}
+            >
+              <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
+              <span>Previous</span>
+            </button>
+          )}
+          {pageTokens.map((token, index) => {
+            if (token === 'ellipsis-leading' || token === 'ellipsis-trailing') {
+              return (
+                <span
+                  key={`${token}-${index}`}
+                  aria-hidden='true'
+                  className={ellipsisItemClassName}
+                >
+                  ...
+                </span>
+              )
+            }
+
+            const pageNumber = token
+            const isActivePage = pageNumber === currentPage
+
+            return (
+              <button
+                type='button'
+                key={pageNumber}
+                aria-label={getPageLabel(pageNumber)}
+                aria-current={isActivePage ? 'page' : undefined}
+                onClick={() => handlePageChange(pageNumber, currentPage, totalPages)}
+                disabled={isActivePage}
+                style={isActivePage
+                  ? {
+                      backgroundColor: 'var(--color-primary-500)',
+                      color: 'var(--color-primary-50)'
+                    }
+                  : undefined}
+                className={`${pageItemClassName} ${
+                  isActivePage ? activePageItemClassName : inactivePageItemClassName
+                }`}
+              >
+                {pageNumber}
+              </button>
+            )
+          })}
+          {currentPage === totalPages ? (
+            <button
+              type='button'
+              aria-label={nextPageLabel}
+              disabled
+              className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
+            >
+              <span>Next</span>
+              <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
+            </button>
+          ) : (
+            <button
+              type='button'
+              aria-label={nextPageLabel}
+              onClick={() => handlePageChange(currentPage + 1, currentPage, totalPages)}
+              className={prevNextItemClassName}
+            >
+              <span>Next</span>
+              <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
+            </button>
+          )}
+        </div>
+      </nav>
+    )
+  }, [
+    activePageItemClassName,
+    ellipsisItemClassName,
+    handlePageChange,
+    inactivePageItemClassName,
+    pageItemClassName,
+    prevNextItemClassName
+  ])
 
   return (
-    <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-8 tablet:px-0'>
+    <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
       {featuredOffer && <CakesFeaturedOffer featuredOffer={featuredOffer} />}
 
       <div className='mt-10 flex flex-col gap-5 tablet:gap-6 tablet:flex-row tablet:items-start'>
@@ -380,7 +524,7 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
         <div className='min-w-0 tablet:flex-1'>
           <CakesSortBar selectedSort={selectedSort} onSelectSort={handleSortChange} />
           {filteredCakes.length > 0 ? (
-            <div className='mt-4 grid grid-cols-1 gap-4 tablet:grid-cols-2 tablet:auto-rows-fr'>
+            <div className='mt-4 grid grid-cols-1 gap-4 tablet:auto-rows-fr tablet:grid-cols-2 small-laptop:grid-cols-3'>
               {filteredCakes.map((cake, index) => (
                 <div key={cake.id} className={getCakeItemClassName(index)}>
                   <CakesProductCard cake={cake} />
@@ -392,92 +536,30 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
               <p className='text-base text-base-content/70'>No cakes match the selected filters yet.</p>
             </div>
           )}
-          {filteredCakes.length > 0 && totalPages > 1 ? (
-            <nav aria-label='Cake catalog pagination' className='mt-9 hidden w-full justify-center tablet:flex'>
-              <div className='join overflow-hidden rounded-btn border border-base-300'>
-                {currentPage === 1 ? (
-                  <button
-                    type='button'
-                    aria-label='Previous page'
-                    disabled
-                    className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
-                  >
-                    <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
-                    <span>Previous</span>
-                  </button>
-                ) : (
-                  <button
-                    type='button'
-                    aria-label='Previous page'
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={prevNextItemClassName}
-                  >
-                    <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
-                    <span>Previous</span>
-                  </button>
-                )}
-                {pageTokens.map((token, index) => {
-                  if (token === 'ellipsis-leading' || token === 'ellipsis-trailing') {
-                    return (
-                      <span
-                        key={`${token}-${index}`}
-                        aria-hidden='true'
-                        className={ellipsisItemClassName}
-                      >
-                        ...
-                      </span>
-                    )
-                  }
-
-                  const pageNumber = token
-                  const isActivePage = pageNumber === currentPage
-
-                  return (
-                    <button
-                      type='button'
-                      key={pageNumber}
-                      aria-label={`Go to page ${pageNumber}`}
-                      aria-current={isActivePage ? 'page' : undefined}
-                      onClick={() => handlePageChange(pageNumber)}
-                      disabled={isActivePage}
-                      style={isActivePage
-                        ? {
-                            backgroundColor: 'var(--color-primary-500)',
-                            color: 'var(--color-primary-50)'
-                          }
-                        : undefined}
-                      className={`${pageItemClassName} ${
-                        isActivePage ? activePageItemClassName : inactivePageItemClassName
-                      }`}
-                    >
-                      {pageNumber}
-                    </button>
-                  )
-                })}
-                {currentPage === totalPages ? (
-                  <button
-                    type='button'
-                    aria-label='Next page'
-                    disabled
-                    className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
-                  >
-                    <span>Next</span>
-                    <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
-                  </button>
-                ) : (
-                  <button
-                    type='button'
-                    aria-label='Next page'
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={prevNextItemClassName}
-                  >
-                    <span>Next</span>
-                    <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
-                  </button>
-                )}
-              </div>
-            </nav>
-          ) : null}
+          {filteredCakes.length > 0 && tabletTotalPages > 1
+            ? renderPaginationNav({
+              navAriaLabel: 'Cake catalog pagination',
+              navClassName: 'mt-9 hidden w-full justify-center tablet:flex small-laptop:hidden',
+              currentPage: tabletCurrentPage,
+              totalPages: tabletTotalPages,
+              pageTokens: tabletPageTokens,
+              previousPageLabel: 'Previous page',
+              nextPageLabel: 'Next page',
+              getPageLabel: (pageNumber) => `Go to page ${pageNumber}`
+            })
+            : null}
+          {filteredCakes.length > 0 && smallLaptopTotalPages > 1
+            ? renderPaginationNav({
+              navAriaLabel: 'Cake catalog pagination (small laptop)',
+              navClassName: 'mt-9 hidden w-full justify-center small-laptop:flex',
+              currentPage: smallLaptopCurrentPage,
+              totalPages: smallLaptopTotalPages,
+              pageTokens: smallLaptopPageTokens,
+              previousPageLabel: 'Previous page (small laptop)',
+              nextPageLabel: 'Next page (small laptop)',
+              getPageLabel: (pageNumber) => `Go to small laptop page ${pageNumber}`
+            })
+            : null}
         </div>
       </div>
     </section>
