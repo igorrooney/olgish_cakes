@@ -483,6 +483,16 @@ export default {
       of: [{ type: "string" }],
     },
     {
+      name: 'ingredientReference',
+      title: 'Ingredients Source (New Design)',
+      type: 'reference',
+      to: [{ type: 'ingredient' }],
+      description: 'New design only. Select an Ingredients entry to reuse its rich-text ingredients.',
+      options: {
+        disableNew: true
+      }
+    },
+    {
       name: "designs",
       title: "Designs",
       type: "object",

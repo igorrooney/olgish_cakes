@@ -9,5 +9,6 @@ import giftHamperCollection from './giftHamperCollection'
 import cakesFeaturedOffer from './cakesFeaturedOffer'
 import collectionsDisplayOrder from './collectionsDisplayOrder'
 import productsDisplayOrder from './productsDisplayOrder'
+import ingredient from './ingredient'
 
-export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer]
+export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer, ingredient]
