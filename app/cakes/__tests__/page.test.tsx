@@ -79,6 +79,30 @@ jest.mock('nuqs', () => {
     },
     (value) => value.map((item) => itemParser.serialize(item)).join(separator)
   )
+  const createSerializer = (parsers: Record<string, Parser<unknown>>) => (
+    base: string,
+    updates: Record<string, unknown>
+  ) => {
+    const [pathname, rawQueryString = ''] = base.split('?')
+    const nextSearchParams = new URLSearchParams(rawQueryString)
+
+    Object.entries(updates).forEach(([key, value]) => {
+      const parser = parsers[key]
+
+      if (!parser || value === null || value === undefined || value === parser.defaultValue) {
+        nextSearchParams.delete(key)
+        return
+      }
+
+      nextSearchParams.set(key, parser.serialize(value))
+    })
+
+    const queryString = nextSearchParams.toString()
+
+    return queryString.length > 0
+      ? `${pathname}?${queryString}`
+      : pathname
+  }
 
   function useQueryStates(parsers: Record<string, Parser<unknown>>) {
     const [state, setState] = React.useState(() => {
@@ -134,6 +158,7 @@ jest.mock('nuqs', () => {
   }
 
   return {
+    createSerializer,
     parseAsArrayOf,
     parseAsBoolean,
     parseAsInteger,
@@ -142,6 +167,11 @@ jest.mock('nuqs', () => {
     useQueryStates
   }
 })
+
+jest.mock('next/navigation', () => ({
+  usePathname: () => window.location.pathname,
+  useSearchParams: () => new URLSearchParams(window.location.search)
+}))
 
 jest.mock('../../utils/fetchCakes', () => ({
   getAllCakes: jest.fn(),
@@ -164,8 +194,12 @@ jest.mock('next/image', () => ({
 
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ children, href }: { children: React.ReactNode, href: string }) => (
-    <a href={href}>{children}</a>
+  default: ({
+    children,
+    href,
+    ...props
+  }: React.PropsWithChildren<{ href: string } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
+    <a href={href} {...props}>{children}</a>
   )
 }))
 
@@ -291,8 +325,8 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('link', { name: 'View Sample Honey Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View Postal Gift Hamper' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View details for Postal Gift Hamper' })).not.toBeInTheDocument()
 
     const byPostCheckbox = screen.getByRole('checkbox', { name: /Cakes by post/i })
     const customCheckbox = screen.getByRole('checkbox', { name: /Custom cakes/i })
@@ -302,13 +336,13 @@ describe('CakesPage', () => {
 
     fireEvent.click(byPostCheckbox)
 
-    expect(screen.getByRole('link', { name: 'View Sample Honey Cake' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View Postal Gift Hamper' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
 
     fireEvent.click(customCheckbox)
 
-    expect(screen.queryByRole('link', { name: 'View Sample Honey Cake' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View Postal Gift Hamper' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
   })
 
   it('restores filter state from URL params for shareable links', async () => {
@@ -322,8 +356,8 @@ describe('CakesPage', () => {
 
     expect(byPostCheckbox).toBeChecked()
     expect(customCheckbox).not.toBeChecked()
-    expect(screen.queryByRole('link', { name: 'View Sample Honey Cake' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View Postal Gift Hamper' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
   })
 
   it('uses short readable collection query values', async () => {
@@ -348,8 +382,8 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page, '?collections=c-wedding-cakes')
 
-    expect(screen.getByRole('link', { name: 'View Wedding Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View Kyiv Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Wedding Cake' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View details for Kyiv Cake' })).not.toBeInTheDocument()
   })
 
   it('keeps old collection id query values working', async () => {
@@ -374,8 +408,8 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page, '?collections=collection-cake')
 
-    expect(screen.getByRole('link', { name: 'View Legacy Collection Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View Unrelated Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'View details for Legacy Collection Cake' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View details for Unrelated Cake' })).not.toBeInTheDocument()
   })
 
   it('writes short collection query value when selecting collection', async () => {
@@ -441,7 +475,7 @@ describe('CakesPage', () => {
     expect(screen.queryByRole('button', { name: 'Most popular' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
-    expect(screen.getByRole('link', { name: 'View Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
+    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByText('Sample Honey Cake')).toBeInTheDocument()
   })
 
@@ -462,7 +496,7 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('link', { name: 'View Luxury Cake' })).toHaveAttribute('href', '/cakes/luxury-cake')
+    expect(screen.getByRole('link', { name: 'View details for Luxury Cake' })).toHaveAttribute('href', '/cakes/luxury-cake')
   })
 
   it('hides featured offer when not configured in Sanity', async () => {
@@ -498,5 +532,17 @@ describe('CakesPage', () => {
 
     expect(bakeryScript).toBeTruthy()
     expect(breadcrumbScript).toBeTruthy()
+
+    if (!bakeryScript?.textContent) {
+      throw new Error('Bakery structured data script is missing')
+    }
+
+    const parsedBakery = JSON.parse(bakeryScript.textContent) as {
+      '@type'?: string
+      priceRange?: string
+    }
+
+    expect(parsedBakery['@type']).toBe('Bakery')
+    expect(parsedBakery.priceRange).toBe('££')
   })
 })

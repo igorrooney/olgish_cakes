@@ -15,7 +15,7 @@ interface CakesFilterSidebarProps {
 }
 
 const sectionHeadingClassName = 'mb-1 text-base leading-[1.4] font-normal text-base-content'
-const seeMoreButtonClassName = 'btn btn-ghost btn-sm h-auto min-h-0 border-transparent px-0 py-0 text-base font-normal normal-case leading-none text-base-content shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:!outline-none focus-visible:!shadow-none'
+const seeMoreButtonClassName = 'btn btn-ghost btn-sm h-auto min-h-0 border-transparent bg-transparent px-0 py-0 text-base font-normal normal-case leading-none text-base-content shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:300] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:140%] tablet:[letter-spacing:0]'
 
 function FilterCheckbox({
   checked,

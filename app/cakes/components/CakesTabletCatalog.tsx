@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   parseAsArrayOf,
   parseAsBoolean,
@@ -30,42 +30,113 @@ function getPriceCeiling(cakes: TabletCake[]) {
 }
 
 const sortOptions = ['new', 'priceHighToLow', 'priceLowToHigh'] as const
+const TABLET_PAGE_SIZE = 6
+const TRUNCATED_PAGINATION_THRESHOLD = 7
+
+type PaginationToken = number | 'ellipsis-leading' | 'ellipsis-trailing'
+
+function getClampedPage(page: number, totalPages: number) {
+  if (page < 1) {
+    return 1
+  }
+
+  if (page > totalPages) {
+    return totalPages
+  }
+
+  return page
+}
+
+function getPaginationTokens(currentPage: number, totalPages: number): PaginationToken[] {
+  if (totalPages <= TRUNCATED_PAGINATION_THRESHOLD) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  const tokens: PaginationToken[] = [1]
+
+  let middleStart = Math.max(2, currentPage - 1)
+  let middleEnd = Math.min(totalPages - 1, currentPage + 1)
+
+  if (currentPage <= 3) {
+    middleStart = 2
+    middleEnd = 4
+  }
+
+  if (currentPage >= totalPages - 2) {
+    middleStart = totalPages - 3
+    middleEnd = totalPages - 1
+  }
+
+  if (middleStart > 2) {
+    tokens.push('ellipsis-leading')
+  }
+
+  for (let pageNumber = middleStart; pageNumber <= middleEnd; pageNumber += 1) {
+    tokens.push(pageNumber)
+  }
+
+  if (middleEnd < totalPages - 1) {
+    tokens.push('ellipsis-trailing')
+  }
+
+  tokens.push(totalPages)
+
+  return tokens
+}
+
+function scrollWindowToTop() {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const isJSDOM = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent)
+  const previousDocumentScrollBehavior = document.documentElement.style.scrollBehavior
+  const previousBodyScrollBehavior = document.body.style.scrollBehavior
+
+  // Force instant jump even though the global stylesheet enables smooth scrolling.
+  document.documentElement.style.scrollBehavior = 'auto'
+  document.body.style.scrollBehavior = 'auto'
+  document.documentElement.scrollTop = 0
+  document.body.scrollTop = 0
+
+  if (!isJSDOM && typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    } catch {
+      window.scrollTo(0, 0)
+    }
+  }
+
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = previousDocumentScrollBehavior
+      document.body.style.scrollBehavior = previousBodyScrollBehavior
+    })
+    return
+  }
+
+  document.documentElement.style.scrollBehavior = previousDocumentScrollBehavior
+  document.body.style.scrollBehavior = previousBodyScrollBehavior
+}
 
 const queryParsers = {
   sort: parseAsStringLiteral(sortOptions).withDefault('new'),
   byPost: parseAsBoolean.withDefault(false),
   custom: parseAsBoolean.withDefault(true),
   maxPrice: parseAsInteger,
-  collections: parseAsArrayOf(parseAsString).withDefault([])
+  collections: parseAsArrayOf(parseAsString).withDefault([]),
+  page: parseAsInteger.withDefault(1)
 }
 
 export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: CakesTabletCatalogProps) {
   const priceCeiling = useMemo(() => getPriceCeiling(cakes), [cakes])
+  const pendingPaginationScrollRef = useRef(false)
   const [queryState, setQueryState] = useQueryStates(queryParsers, {
     history: 'replace'
   })
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search)
-
-    if (!searchParams.has('collections')) {
-      return
-    }
-
-    document.documentElement.scrollTop = 0
-    document.body.scrollTop = 0
-
-    const isJSDOM = typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent)
-
-    if (isJSDOM || typeof window.scrollTo !== 'function') {
-      return
-    }
-
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-    } catch {
-      // Ignore environments that do not implement window scrolling (for example, JSDOM).
-    }
+    scrollWindowToTop()
   }, [])
 
   const collectionIdSet = useMemo(
@@ -124,20 +195,25 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
   const handleToggleByPost = useCallback((checked: boolean) => {
     void setQueryState({
       byPost: checked,
-      collections: []
+      collections: [],
+      page: null
     })
   }, [setQueryState])
 
   const handleToggleCustom = useCallback((checked: boolean) => {
     void setQueryState({
       custom: checked,
-      collections: []
+      collections: [],
+      page: null
     })
   }, [setQueryState])
 
   const handlePriceChange = useCallback((price: number) => {
     const clampedPrice = Math.min(Math.max(price, 0), priceCeiling)
-    void setQueryState({ maxPrice: clampedPrice })
+    void setQueryState({
+      maxPrice: clampedPrice,
+      page: null
+    })
   }, [priceCeiling, setQueryState])
 
   const handleToggleCollection = useCallback((collectionId: string, checked: boolean) => {
@@ -156,7 +232,10 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
       )
       : selectedCollectionValues.filter((value) => collectionIdByQueryValue.get(value) !== collectionId)
 
-    void setQueryState({ collections: nextCollectionValues })
+    void setQueryState({
+      collections: nextCollectionValues,
+      page: null
+    })
   }, [collectionIdByQueryValue, collectionQueryValueById, selectedCollectionValues, setQueryState])
 
   const handleReset = useCallback(() => {
@@ -165,12 +244,16 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
       byPost: null,
       custom: null,
       maxPrice: null,
-      collections: null
+      collections: null,
+      page: null
     })
   }, [setQueryState])
 
   const handleSortChange = useCallback((option: CakesSortOption) => {
-    void setQueryState({ sort: option })
+    void setQueryState({
+      sort: option,
+      page: null
+    })
   }, [setQueryState])
 
   const filteredCakes = useMemo(() => {
@@ -211,6 +294,70 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
 
     return cakesCopy
   }, [cakes, filters, selectedSort])
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredCakes.length / TABLET_PAGE_SIZE))
+  }, [filteredCakes.length])
+  const currentPage = useMemo(() => {
+    return getClampedPage(queryState.page, totalPages)
+  }, [queryState.page, totalPages])
+  const tabletPageStartIndex = useMemo(() => {
+    return (currentPage - 1) * TABLET_PAGE_SIZE
+  }, [currentPage])
+  const tabletPageEndIndex = useMemo(() => {
+    return tabletPageStartIndex + TABLET_PAGE_SIZE
+  }, [tabletPageStartIndex])
+  const isOutsideTabletPage = useCallback((index: number) => {
+    return index < tabletPageStartIndex || index >= tabletPageEndIndex
+  }, [tabletPageEndIndex, tabletPageStartIndex])
+  const getCakeItemClassName = useCallback((index: number) => {
+    if (isOutsideTabletPage(index)) {
+      return 'h-full tablet:hidden'
+    }
+
+    return 'h-full'
+  }, [isOutsideTabletPage])
+  const pageTokens = useMemo(() => {
+    return getPaginationTokens(currentPage, totalPages)
+  }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (!pendingPaginationScrollRef.current) {
+      return
+    }
+
+    pendingPaginationScrollRef.current = false
+    scrollWindowToTop()
+  }, [currentPage])
+
+  useEffect(() => {
+    if (queryState.page === currentPage) {
+      return
+    }
+
+    void setQueryState({
+      page: currentPage === 1 ? null : currentPage
+    })
+  }, [currentPage, queryState.page, setQueryState])
+
+  const paginationFocusClassName = 'focus:!outline-none focus-visible:!outline-none focus:!shadow-none focus-visible:!shadow-none'
+  const paginationItemClassName = `join-item btn h-12 min-h-12 rounded-none border-0 bg-base-100 text-base-content ${paginationFocusClassName}`
+  const pageItemClassName = `${paginationItemClassName} w-12 min-w-12 px-0`
+  const activePageItemClassName = 'border-x border-base-content font-semibold cursor-default pointer-events-none'
+  const inactivePageItemClassName = 'hover:bg-base-200'
+  const prevNextItemClassName = `${paginationItemClassName} min-w-24 px-4 normal-case`
+  const ellipsisItemClassName = `${paginationItemClassName} btn-disabled min-w-10 px-2`
+  const handlePageChange = useCallback((targetPage: number) => {
+    const normalizedPage = getClampedPage(targetPage, totalPages)
+
+    if (normalizedPage === currentPage) {
+      return
+    }
+
+    pendingPaginationScrollRef.current = true
+    void setQueryState({
+      page: normalizedPage === 1 ? null : normalizedPage
+    })
+  }, [currentPage, setQueryState, totalPages])
 
   return (
     <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-8 tablet:px-0'>
@@ -233,9 +380,11 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
         <div className='min-w-0 tablet:flex-1'>
           <CakesSortBar selectedSort={selectedSort} onSelectSort={handleSortChange} />
           {filteredCakes.length > 0 ? (
-            <div className='mt-4 grid grid-cols-1 gap-4 tablet:grid-cols-2'>
-              {filteredCakes.map((cake) => (
-                <CakesProductCard key={cake.id} cake={cake} />
+            <div className='mt-4 grid grid-cols-1 gap-4 tablet:grid-cols-2 tablet:auto-rows-fr'>
+              {filteredCakes.map((cake, index) => (
+                <div key={cake.id} className={getCakeItemClassName(index)}>
+                  <CakesProductCard cake={cake} />
+                </div>
               ))}
             </div>
           ) : (
@@ -243,6 +392,92 @@ export function CakesTabletCatalog({ cakes, featuredOffer, collectionOptions }: 
               <p className='text-base text-base-content/70'>No cakes match the selected filters yet.</p>
             </div>
           )}
+          {filteredCakes.length > 0 && totalPages > 1 ? (
+            <nav aria-label='Cake catalog pagination' className='mt-9 hidden w-full justify-center tablet:flex'>
+              <div className='join overflow-hidden rounded-btn border border-base-300'>
+                {currentPage === 1 ? (
+                  <button
+                    type='button'
+                    aria-label='Previous page'
+                    disabled
+                    className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
+                  >
+                    <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
+                    <span>Previous</span>
+                  </button>
+                ) : (
+                  <button
+                    type='button'
+                    aria-label='Previous page'
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={prevNextItemClassName}
+                  >
+                    <span aria-hidden='true' className='text-base leading-none'>&lsaquo;</span>
+                    <span>Previous</span>
+                  </button>
+                )}
+                {pageTokens.map((token, index) => {
+                  if (token === 'ellipsis-leading' || token === 'ellipsis-trailing') {
+                    return (
+                      <span
+                        key={`${token}-${index}`}
+                        aria-hidden='true'
+                        className={ellipsisItemClassName}
+                      >
+                        ...
+                      </span>
+                    )
+                  }
+
+                  const pageNumber = token
+                  const isActivePage = pageNumber === currentPage
+
+                  return (
+                    <button
+                      type='button'
+                      key={pageNumber}
+                      aria-label={`Go to page ${pageNumber}`}
+                      aria-current={isActivePage ? 'page' : undefined}
+                      onClick={() => handlePageChange(pageNumber)}
+                      disabled={isActivePage}
+                      style={isActivePage
+                        ? {
+                            backgroundColor: 'var(--color-primary-500)',
+                            color: 'var(--color-primary-50)'
+                          }
+                        : undefined}
+                      className={`${pageItemClassName} ${
+                        isActivePage ? activePageItemClassName : inactivePageItemClassName
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  )
+                })}
+                {currentPage === totalPages ? (
+                  <button
+                    type='button'
+                    aria-label='Next page'
+                    disabled
+                    className={`${prevNextItemClassName} opacity-45 cursor-not-allowed`}
+                  >
+                    <span>Next</span>
+                    <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
+                  </button>
+                ) : (
+                  <button
+                    type='button'
+                    aria-label='Next page'
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={prevNextItemClassName}
+                  >
+                    <span>Next</span>
+                    <span aria-hidden='true' className='text-base leading-none'>&rsaquo;</span>
+                  </button>
+                )}
+              </div>
+            </nav>
+          ) : null}
         </div>
       </div>
     </section>

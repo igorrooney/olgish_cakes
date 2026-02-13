@@ -37,6 +37,16 @@ describe('proxy SEO headers for cakes filters', () => {
     )
   })
 
+  it('sets noindex, follow for paginated cakes URLs', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/cakes?page=2')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('X-Robots-Tag')).toBe(
+      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    )
+  })
+
   it('does not override robots header for clean cakes URL', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/cakes')
 

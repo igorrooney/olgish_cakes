@@ -358,7 +358,7 @@ export default async function CakesPage() {
       longitude: '-1.5491'
     },
     openingHours: 'Mo-Su 00:00-23:59',
-    priceRange: '££',
+    priceRange: '\u00A3\u00A3',
     servesCuisine: 'Ukrainian',
     hasMenu: 'https://olgishcakes.co.uk/cakes',
     mainEntityOfPage: {
@@ -384,6 +384,10 @@ export default async function CakesPage() {
       }
     ]
   }
+  const detailsSectionTitleClassName =
+    'mx-auto max-w-[760px] text-center font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] tablet:text-[36px] tablet:leading-[52px]'
+  const detailsSectionParagraphClassName =
+    'font-oldenburg text-[15px] leading-[32px] tracking-[1.2px] text-base-content tablet:text-base tablet:leading-8 tablet:tracking-normal'
 
   return (
     <>
@@ -397,10 +401,10 @@ export default async function CakesPage() {
       />
       <main className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'>
         <section className='mx-auto w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0'>
-          <h1 className='mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'>
+          <h1 className='mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'>
             Traditional Ukrainian cakes by post and custom cakes in Leeds
           </h1>
-          <p className='mt-3 max-w-3xl text-base leading-7 text-base-content/80'>
+          <p className='mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px]'>
             Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that
             feel like home.
           </p>
@@ -410,36 +414,37 @@ export default async function CakesPage() {
           featuredOffer={featuredOffer}
           collectionOptions={collectionOptions}
         />
-        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-2 tablet:px-0'>
-          <h2 className='text-3xl font-semibold leading-tight text-base-content tablet:text-4xl'>
+        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0'>
+          <h2 className={detailsSectionTitleClassName}>
             Authentic Ukrainian cakes in Leeds, baked fresh to order
           </h2>
-          <p className='mt-4 text-base leading-8 text-base-content/82'>
-            I bake traditional Ukrainian cakes in Leeds for birthdays, weddings, anniversaries and family gatherings. Every
-            order is prepared in small batches, so each cake gets the time and attention it needs. If you are looking for
-            authentic Medovik, classic Kyiv cake or a custom design for a special day, you can choose from ready options in
-            the catalogue or request a bespoke decoration. I use quality ingredients, balanced sweetness and careful layering
-            so the flavour is rich but never heavy. Many customers tell me this style reminds them of cakes they grew up with
-            in Ukraine, while others discover these recipes for the first time and come back for the same taste again.
-          </p>
-          <p className='mt-4 text-base leading-8 text-base-content/82'>
-            Cakes by post are available for selected options, and custom cakes are available for local celebrations around
-            Leeds. You can filter the catalogue by price, cake type and collection, then open each cake page to see more
-            details. Each product card links to a dedicated page where search engines and customers can find focused
-            information about flavour, texture and serving ideas. This helps you compare quickly and helps the site keep
-            strong internal relevance for terms like Ukrainian honey cake, Kyiv cake and custom birthday cake in Leeds.
-            Where possible, I include clear photos and practical descriptions so you can order confidently for your date.
-          </p>
-          <p className='mt-4 text-base leading-8 text-base-content/82'>
-            If you need a custom celebration cake, share the occasion, number of servings and preferred design style, and I
-            will suggest options that match your event. For traditional cakes, I keep the flavour profile close to Ukrainian
-            classics while adapting decoration and delivery to what works best in England. This page is designed to help you
-            discover the right cake quickly, but the final result is always personal: fresh baking, careful finishing and a
-            cake that looks beautiful on the table and tastes even better when shared.
-          </p>
+          <div className='mx-auto mt-6 max-w-[860px] space-y-4'>
+            <p className={detailsSectionParagraphClassName}>
+              I bake traditional Ukrainian cakes in Leeds for birthdays, weddings, anniversaries and family gatherings. Every
+              order is prepared in small batches, so each cake gets the time and attention it needs. If you are looking for
+              authentic Medovik, classic Kyiv cake or a custom design for a special day, you can choose from ready options in
+              the catalogue or request a bespoke decoration. I use quality ingredients, balanced sweetness and careful layering
+              so the flavour is rich but never heavy. Many customers tell me this style reminds them of cakes they grew up with
+              in Ukraine, while others discover these recipes for the first time and come back for the same taste again.
+            </p>
+            <p className={detailsSectionParagraphClassName}>
+              Cakes by post are available for selected options, and custom cakes are available for local celebrations around
+              Leeds. You can filter the catalogue by price, cake type and collection, then open each cake page to see more
+              details. Each product card links to a dedicated page where search engines and customers can find focused
+              information about flavour, texture and serving ideas. This helps you compare quickly and helps the site keep
+              strong internal relevance for terms like Ukrainian honey cake, Kyiv cake and custom birthday cake in Leeds.
+              Where possible, I include clear photos and practical descriptions so you can order confidently for your date.
+            </p>
+            <p className={detailsSectionParagraphClassName}>
+              If you need a custom celebration cake, share the occasion, number of servings and preferred design style, and I
+              will suggest options that match your event. For traditional cakes, I keep the flavour profile close to Ukrainian
+              classics while adapting decoration and delivery to what works best in England. This page is designed to help you
+              discover the right cake quickly, but the final result is always personal: fresh baking, careful finishing and a
+              cake that looks beautiful on the table and tastes even better when shared.
+            </p>
+          </div>
         </section>
       </main>
     </>
   )
 }
-
