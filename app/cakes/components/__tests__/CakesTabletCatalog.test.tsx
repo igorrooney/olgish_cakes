@@ -3,8 +3,19 @@
  */
 import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CakesTabletCatalog } from '../CakesTabletCatalog'
-import type { CakesCollectionOption, TabletCake } from '../types'
+import type { CakesCollectionOption, CatalogFilterDefaults, TabletCake } from '../types'
+
+const renderedPriceValues: number[] = []
+
+function resetRenderedPriceValues() {
+  renderedPriceValues.length = 0
+}
+
+function getRenderedPriceValues() {
+  return [...renderedPriceValues]
+}
 
 jest.mock('nuqs', () => {
   const React = require('react') as typeof import('react')
@@ -201,6 +212,8 @@ jest.mock('../CakesFilterSidebar', () => ({
     filters,
     priceMax,
     collectionOptions,
+    isByPostLoading,
+    isCustomLoading,
     onToggleByPost,
     onToggleCustom,
     onPriceChange,
@@ -215,6 +228,8 @@ jest.mock('../CakesFilterSidebar', () => ({
     }
     priceMax: number
     collectionOptions: Array<{ id: string, label: string }>
+    isByPostLoading: boolean
+    isCustomLoading: boolean
     onToggleByPost: (checked: boolean) => void
     onToggleCustom: (checked: boolean) => void
     onPriceChange: (price: number) => void
@@ -222,9 +237,13 @@ jest.mock('../CakesFilterSidebar', () => ({
     onReset: () => void
   }) => {
     const firstCollection = collectionOptions[0]
+    const secondCollection = collectionOptions[1]
+    renderedPriceValues.push(filters.maxPrice)
 
     return (
       <div>
+        {isByPostLoading ? <span data-testid='by-post-inline-loader' /> : null}
+        {isCustomLoading ? <span data-testid='custom-inline-loader' /> : null}
         <button type='button' onClick={() => onToggleByPost(!filters.showByPost)}>
           Toggle by post
         </button>
@@ -254,6 +273,21 @@ jest.mock('../CakesFilterSidebar', () => ({
         >
           Toggle first collection
         </button>
+        <button
+          type='button'
+          onClick={() => {
+            if (!secondCollection) {
+              return
+            }
+
+            onToggleCollection(
+              secondCollection.id,
+              !filters.selectedCollectionIds.includes(secondCollection.id)
+            )
+          }}
+        >
+          Toggle second collection
+        </button>
         <button type='button' onClick={onReset}>
           Reset filters
         </button>
@@ -268,6 +302,14 @@ const collectionOptions: CakesCollectionOption[] = [
     queryValue: 'c-celebration',
     legacyQueryValues: ['collection-1'],
     label: 'Celebration',
+    isFeatured: false,
+    productType: 'cake'
+  },
+  {
+    id: 'collection-2',
+    queryValue: 'c-signature',
+    legacyQueryValues: ['collection-2'],
+    label: 'Signature',
     isFeatured: false,
     productType: 'cake'
   }
@@ -291,6 +333,24 @@ function createCake(index: number): TabletCake {
   }
 }
 
+function createGiftHamper(index: number): TabletCake {
+  return {
+    id: `hamper-${index}`,
+    slug: `hamper-${index}`,
+    href: `/gift-hampers/hamper-${index}`,
+    name: `Hamper ${index}`,
+    description: `Hamper description ${index}`,
+    price: 20 + index,
+    imageUrl: `/images/hamper-${index}.jpg`,
+    imageAlt: `Hamper ${index}`,
+    isByPost: true,
+    isCustom: false,
+    isPopular: false,
+    collectionIds: ['collection-1'],
+    productType: 'giftHamper'
+  }
+}
+
 function setViewportWidth(width: number) {
   Object.defineProperty(window, 'innerWidth', {
     configurable: true,
@@ -300,24 +360,58 @@ function setViewportWidth(width: number) {
 }
 
 function renderCatalog({
+  items,
   cakeCount = 10,
   search = '',
-  viewportWidth = 1200
+  viewportWidth = 1200,
+  initialFilterDefaults = { byPost: false, custom: true },
+  lazyCustomCakesEndpoint,
+  lazyCustomCakesPriceCeilingHint,
+  lazyByPostCakesEndpoint,
+  lazyByPostCakesPriceCeilingHint,
+  strictMode = false
 }: {
+  items?: TabletCake[]
   cakeCount?: number
   search?: string
   viewportWidth?: number
+  initialFilterDefaults?: CatalogFilterDefaults
+  lazyCustomCakesEndpoint?: string
+  lazyCustomCakesPriceCeilingHint?: number
+  lazyByPostCakesEndpoint?: string
+  lazyByPostCakesPriceCeilingHint?: number
+  strictMode?: boolean
 } = {}) {
-  const cakes = Array.from({ length: cakeCount }, (_, index) => createCake(index + 1))
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false
+      }
+    }
+  })
+  const cakes = items ?? Array.from({ length: cakeCount }, (_, index) => createCake(index + 1))
   window.history.replaceState({}, '', `/cakes${search}`)
   setViewportWidth(viewportWidth)
 
-  return render(
+  const catalog = (
     <CakesTabletCatalog
       cakes={cakes}
       featuredOffer={null}
       collectionOptions={collectionOptions}
+      initialFilterDefaults={initialFilterDefaults}
+      lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
+      lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
+      lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
+      lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
     />
+  )
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      {strictMode
+        ? <React.StrictMode>{catalog}</React.StrictMode>
+        : catalog}
+    </QueryClientProvider>
   )
 }
 
@@ -339,11 +433,16 @@ function expectCakeHiddenOnTablet(cakeName: string) {
 }
 
 describe('CakesTabletCatalog', () => {
+  const originalFetch = global.fetch
+
   beforeEach(() => {
     window.history.replaceState({}, '', '/cakes')
     setViewportWidth(1200)
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
+    resetRenderedPriceValues()
+    jest.restoreAllMocks()
+    global.fetch = originalFetch
   })
 
   it('shows six cards and numeric pagination on tablet', async () => {
@@ -384,6 +483,551 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByRole('button', { name: 'Go to small laptop page 2' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Go to small laptop page 3' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Go to small laptop page 4' })).not.toBeInTheDocument()
+  })
+
+  it('keeps URL clean when defaults are route presets', async () => {
+    renderCatalog({
+      items: [createCake(1), createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Hamper 1')).toBeInTheDocument()
+    })
+
+    expect(window.location.search).toBe('')
+    expect(screen.queryByText('Cake 1')).not.toBeInTheDocument()
+  })
+
+  it('respects cakes-route defaults and initially shows custom cakes', async () => {
+    renderCatalog({
+      items: [createCake(1), createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText('Hamper 1')).not.toBeInTheDocument()
+  })
+
+  it('loads custom cakes on demand when custom filter is enabled', async () => {
+    const lazyLoadedCake = createCake(99)
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    renderCatalog({
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Hamper 1')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 99')).toBeInTheDocument()
+    })
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/catalog/custom-cakes',
+      expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      })
+    )
+  })
+
+  it('exposes custom inline loader flag while custom cakes are loading', async () => {
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('custom-inline-loader')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('by-post-inline-loader')).not.toBeInTheDocument()
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [createCake(99)],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('custom-inline-loader')).not.toBeInTheDocument()
+    })
+  })
+
+  it('reuses the in-flight custom-cakes request across quick custom toggles', async () => {
+    const lazyLoadedCake = createCake(120)
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+    const fetchMock = jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled()
+    })
+
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      '/api/catalog/custom-cakes',
+      expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      })
+    )
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 120')).toBeInTheDocument()
+    })
+    expect(screen.queryByText('Loading custom cakes...')).not.toBeInTheDocument()
+  })
+
+  it('switches price ceiling immediately on custom toggle when hint is provided', async () => {
+    const hamperOnlyItem = {
+      ...createGiftHamper(1),
+      price: 13
+    }
+    const fetchPromise = new Promise<Response>(() => {})
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [hamperOnlyItem],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes',
+      lazyCustomCakesPriceCeilingHint: 80
+    })
+
+    expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '13')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '80')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '13')
+    })
+  })
+
+  it('switches price ceiling immediately on by-post toggle when hint is provided', async () => {
+    const customOnlyItem = {
+      ...createCake(40),
+      price: 40
+    }
+    const fetchPromise = new Promise<Response>(() => {})
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [customOnlyItem],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      },
+      lazyByPostCakesEndpoint: '/api/catalog/by-post-cakes',
+      lazyByPostCakesPriceCeilingHint: 70
+    })
+
+    expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '40')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '70')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '40')
+    })
+  })
+
+  it('recalculates price slider max when custom filter is turned off after lazy custom load', async () => {
+    const hamperOnlyItem = {
+      ...createGiftHamper(1),
+      price: 13
+    }
+    const lazyLoadedCake = {
+      ...createCake(80),
+      price: 80
+    }
+
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    renderCatalog({
+      items: [hamperOnlyItem],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '13')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '80')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '13')
+    })
+  })
+
+  it('loads cakes by post on demand when by-post filter is enabled', async () => {
+    const lazyLoadedHamper = createGiftHamper(99)
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedHamper],
+        collectionOptions: [
+          {
+            ...collectionOptions[0],
+            id: 'collection-hampers',
+            queryValue: 'h-postal-gifts',
+            label: 'Postal gifts',
+            productType: 'giftHamper'
+          }
+        ]
+      })
+    } as Response)
+
+    renderCatalog({
+      items: [createCake(1)],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      },
+      lazyByPostCakesEndpoint: '/api/catalog/by-post-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Hamper 99')).toBeInTheDocument()
+    })
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/catalog/by-post-cakes',
+      expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      })
+    )
+  })
+
+  it('exposes by-post inline loader flag while by-post cakes are loading', async () => {
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [createCake(1)],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      },
+      lazyByPostCakesEndpoint: '/api/catalog/by-post-cakes'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('by-post-inline-loader')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('custom-inline-loader')).not.toBeInTheDocument()
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [createGiftHamper(99)],
+        collectionOptions: [
+          {
+            ...collectionOptions[0],
+            id: 'collection-hampers',
+            queryValue: 'h-postal-gifts',
+            label: 'Postal gifts',
+            productType: 'giftHamper'
+          }
+        ]
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('by-post-inline-loader')).not.toBeInTheDocument()
+    })
+  })
+
+  it('loads custom cakes in strict mode and clears the loading state after completion', async () => {
+    const lazyLoadedCake = createCake(109)
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes',
+      strictMode: true
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Hamper 1')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Loading custom cakes...')).toBeInTheDocument()
+    })
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 109')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText('Loading custom cakes...')).not.toBeInTheDocument()
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/catalog/custom-cakes',
+      expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      })
+    )
+  })
+
+  it('loads cakes by post in strict mode and clears the loading state after completion', async () => {
+    const lazyLoadedHamper = createGiftHamper(109)
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [createCake(1)],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      },
+      lazyByPostCakesEndpoint: '/api/catalog/by-post-cakes',
+      strictMode: true
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Loading cakes by post...')).toBeInTheDocument()
+    })
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedHamper],
+        collectionOptions: [
+          {
+            ...collectionOptions[0],
+            id: 'collection-hampers',
+            queryValue: 'h-postal-gifts',
+            label: 'Postal gifts',
+            productType: 'giftHamper'
+          }
+        ]
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByText('Hamper 109')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByText('Loading cakes by post...')).not.toBeInTheDocument()
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/catalog/by-post-cakes',
+      expect.objectContaining({
+        signal: expect.any(AbortSignal)
+      })
+    )
+  })
+
+  it('recalculates price slider max when custom filter is turned off after lazy by-post load', async () => {
+    const customOnlyItem = {
+      ...createCake(40),
+      price: 40
+    }
+    const lazyLoadedHamper = {
+      ...createGiftHamper(10),
+      price: 10
+    }
+
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedHamper],
+        collectionOptions: [
+          {
+            ...collectionOptions[0],
+            id: 'collection-hampers',
+            queryValue: 'h-postal-gifts',
+            label: 'Postal gifts',
+            productType: 'giftHamper'
+          }
+        ]
+      })
+    } as Response)
+
+    renderCatalog({
+      items: [customOnlyItem],
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      },
+      lazyByPostCakesEndpoint: '/api/catalog/by-post-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '40')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '40')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '10')
+    })
+  })
+
+  it('prioritizes lazy-loaded custom cakes before hampers to match previous listing order', async () => {
+    const lazyLoadedCakes = Array.from({ length: 6 }, (_, index) => createCake(200 + index))
+    const manyHampers = Array.from({ length: 8 }, (_, index) => createGiftHamper(100 + index))
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: lazyLoadedCakes,
+        collectionOptions
+      })
+    } as Response)
+
+    renderCatalog({
+      items: manyHampers,
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 200')).toBeInTheDocument()
+      expect(screen.getByText('Cake 205')).toBeInTheDocument()
+    })
+
+    expectCakeHiddenOnTablet('Hamper 100')
   })
 
   it('scrolls to top on initial render', async () => {
@@ -499,6 +1143,251 @@ describe('CakesTabletCatalog', () => {
       expect(window.location.search).toContain('collections=c-celebration')
     })
     expect(window.location.search).not.toContain('page=')
+  })
+
+  it('resets maxPrice to loaded scope max when changing collection filter', async () => {
+    renderCatalog({ search: '?page=2&maxPrice=5' })
+
+    expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('5')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle first collection' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-celebration')
+      expect(window.location.search).toContain('maxPrice=10')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('10')
+    })
+  })
+
+  it('sets maxPrice to collection ceiling when collection change lowers the price ceiling', async () => {
+    const firstCollectionCake = {
+      ...createCake(1),
+      price: 30,
+      collectionIds: ['collection-1']
+    }
+    const secondCollectionCake = {
+      ...createCake(2),
+      price: 80,
+      collectionIds: ['collection-2']
+    }
+
+    renderCatalog({
+      items: [firstCollectionCake, secondCollectionCake],
+      search: '?maxPrice=50'
+    })
+
+    expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('50')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle first collection' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-celebration')
+      expect(window.location.search).toContain('maxPrice=30')
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '30')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('30')
+    })
+  })
+
+  it('with implicit maxPrice, collection change writes explicit loaded ceiling', async () => {
+    const firstCollectionCake = {
+      ...createCake(1),
+      price: 30,
+      collectionIds: ['collection-1']
+    }
+    const secondCollectionCake = {
+      ...createCake(2),
+      price: 80,
+      collectionIds: ['collection-2']
+    }
+
+    renderCatalog({
+      items: [firstCollectionCake, secondCollectionCake]
+    })
+
+    expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('80')
+    expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '80')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle first collection' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-celebration')
+      expect(window.location.search).not.toContain('c-signature')
+      expect(window.location.search).toContain('maxPrice=30')
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '30')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('30')
+    })
+  })
+
+  it('auto-syncs maxPrice after filter reset when lazy-loaded items increase loaded-scope max', async () => {
+    const byPostOnlyItem = {
+      ...createGiftHamper(1),
+      price: 13
+    }
+    const lazyLoadedCake = {
+      ...createCake(80),
+      price: 80
+    }
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [byPostOnlyItem],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes',
+      search: '?maxPrice=5'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('custom=true')
+      expect(window.location.search).toContain('maxPrice=13')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('13')
+    })
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 80')).toBeInTheDocument()
+      expect(window.location.search).toContain('maxPrice=80')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('80')
+    })
+  })
+
+  it('does not auto-sync maxPrice after manual slider override', async () => {
+    const byPostOnlyItem = {
+      ...createGiftHamper(1),
+      price: 13
+    }
+    const lazyLoadedCake = {
+      ...createCake(80),
+      price: 80
+    }
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      items: [byPostOnlyItem],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes',
+      search: '?maxPrice=5'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('maxPrice=13')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('13')
+    })
+
+    fireEvent.change(screen.getByLabelText('Price range'), {
+      target: { value: '7' }
+    })
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('maxPrice=7')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('7')
+    })
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '80')
+    })
+
+    expect(window.location.search).toContain('maxPrice=7')
+    expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('7')
+    expect(screen.getByLabelText('Price range')).toHaveAttribute('max', '80')
+  })
+
+  it('updates maxPrice without blink when filter reset applies a new loaded-scope max', async () => {
+    const byPostOnlyItem = {
+      ...createGiftHamper(1),
+      price: 13
+    }
+    const customItem = {
+      ...createCake(80),
+      price: 80
+    }
+
+    renderCatalog({
+      items: [byPostOnlyItem, customItem],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      search: '?maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('5')
+    })
+    resetRenderedPriceValues()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('maxPrice=80')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('80')
+    })
+
+    const valuesAfterToggle = getRenderedPriceValues()
+    expect(valuesAfterToggle.length).toBeGreaterThan(0)
+    expect(valuesAfterToggle[0]).toBe(80)
+    expect(valuesAfterToggle).not.toContain(5)
+    expect(valuesAfterToggle.every((value) => value === 80)).toBe(true)
+  })
+
+  it('does not blink maxPrice when unsetting a collection filter', async () => {
+    renderCatalog({ search: '?maxPrice=5' })
+
+    await waitFor(() => {
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('5')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle second collection' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-signature')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('0')
+    })
+
+    resetRenderedPriceValues()
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle second collection' }))
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('collections=')
+      expect((screen.getByLabelText('Price range') as HTMLInputElement).value).toBe('10')
+    })
+
+    const valuesAfterUnset = getRenderedPriceValues()
+    expect(valuesAfterUnset.length).toBeGreaterThan(0)
+    expect(valuesAfterUnset[0]).toBe(10)
+    expect(valuesAfterUnset.every((value) => value === 10)).toBe(true)
   })
 
   it('clears page and other query state on reset', async () => {

@@ -34,4 +34,20 @@ export interface TabletCake {
 
 export type CakesFeaturedOfferData = CakesFeaturedOffer
 
+export interface CatalogFilterDefaults {
+  byPost: boolean
+  custom: boolean
+}
+
+export interface CakesTabletCatalogProps {
+  cakes: TabletCake[]
+  featuredOffer: CakesFeaturedOfferData | null
+  collectionOptions: CakesCollectionOption[]
+  initialFilterDefaults: CatalogFilterDefaults
+  lazyCustomCakesEndpoint?: string
+  lazyCustomCakesPriceCeilingHint?: number
+  lazyByPostCakesEndpoint?: string
+  lazyByPostCakesPriceCeilingHint?: number
+}
+
 export type CakesSortOption = 'new' | 'priceHighToLow' | 'priceLowToHigh'

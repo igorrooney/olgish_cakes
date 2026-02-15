@@ -187,6 +187,13 @@ const nextConfig = {
           },
         ],
       },
+      // Catalog API payloads remain cacheable but should never be indexed
+      {
+        source: "/api/catalog/(.*)",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
       // Non-cacheable API routes
       {
         source: "/api/admin/(.*)",

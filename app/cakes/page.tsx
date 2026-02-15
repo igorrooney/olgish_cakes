@@ -1,20 +1,25 @@
-import { Metadata } from 'next'
-import { urlFor } from '@/sanity/lib/image'
-import { Cake, blocksToText } from '@/types/cake'
-import { getAllCakes, getCakesFeaturedOffer } from '../utils/fetchCakes'
-import { getAllGiftHampers } from '../utils/fetchGiftHampers'
-import { getHomepageCollections, getHomepageGiftHamperCollections } from '../utils/fetchCollections'
-import type { HomepageCollection } from '../types/collection'
-import type { GiftHamper } from '@/types/giftHamper'
+import type { Metadata } from 'next'
+import { CatalogPageTemplate } from './CatalogPageTemplate'
+import { CatalogFaqAccordion } from './components/CatalogFaqAccordion'
+import type { TabletCake } from './components/types'
+import { cakesCatalogFaqItems } from './catalogFaqItems'
 import {
-  createCollectionIdByQueryValueMap,
-  createCollectionQueryValueMap,
-  normalizeDocumentId
-} from '../utils/collectionQueryValue'
-import { CakesTabletCatalog } from './components/CakesTabletCatalog'
-import { CakesCollectionOption, TabletCake } from './components/types'
+  getCatalogByPostCakesPriceCeiling,
+  getCatalogPageData
+} from './catalogPageData'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import {
+  getMerchantReturnPolicy,
+  getOfferShippingDetails,
+  getPriceValidUntil
+} from '../utils/seo'
 
 export const dynamic = 'force-static'
+
+const baseUrl = 'https://olgishcakes.co.uk'
+const brandId = `${baseUrl}/#brand`
+
+type StructuredData = Record<string, unknown>
 
 const pageTitle = 'Traditional Ukrainian Cakes Leeds | Birthday & Wedding'
 const pageDescription = 'Authentic Ukrainian cakes in Leeds from GBP 25, including Medovik honey cake, Kyiv cake and custom birthday designs, baked fresh for delivery or collection.'
@@ -51,400 +56,106 @@ export const metadata: Metadata = {
   }
 }
 
-const fallbackCakes: TabletCake[] = [
-  {
-    id: 'fallback-honey',
-    slug: 'cake-by-post',
-    href: '/gift-hampers/cake-by-post',
-    name: 'Cake by Post Gift Hamper',
-    description: 'Traditional layered Medovik with delicate cream and light honey sweetness.',
-    price: 35,
-    imageUrl: '/images/honey-cake-medovik.jpg',
-    imageAlt: 'Traditional Ukrainian honey cake',
-    isByPost: true,
-    isCustom: false,
-    isPopular: false,
-    collectionIds: [],
-    productType: 'giftHamper'
-  },
-  {
-    id: 'fallback-birthday',
-    slug: 'birthday-cake',
-    href: '/cakes/birthday-cake',
-    name: 'Birthday Celebration Cake',
-    description: 'Custom birthday cake made to order with seasonal decoration and rich sponge.',
-    price: 65,
-    imageUrl: '/images/placeholder-cake.jpg',
-    imageAlt: 'Custom birthday cake',
-    isByPost: false,
-    isCustom: true,
-    isPopular: true,
-    collectionIds: [],
-    productType: 'cake'
-  },
-  {
-    id: 'fallback-christmas',
-    slug: 'christmas-cake',
-    href: '/cakes/christmas-cake',
-    name: 'Christmas Cake',
-    description: 'Festive design with winter flavours, handcrafted for holiday celebrations.',
-    price: 58,
-    imageUrl: '/images/placeholder-cake.jpg',
-    imageAlt: 'Christmas design cake',
-    isByPost: false,
-    isCustom: true,
-    isPopular: false,
-    collectionIds: [],
-    productType: 'cake'
-  },
-  {
-    id: 'fallback-kyiv',
-    slug: 'kyiv-cake',
-    href: '/cakes/kyiv-cake',
-    name: 'Kyiv Cake',
-    description: 'Classic Kyiv cake with meringue layers, hazelnuts and chocolate cream.',
-    price: 42,
-    imageUrl: '/images/placeholder-cake.jpg',
-    imageAlt: 'Classic Kyiv cake',
-    isByPost: false,
-    isCustom: true,
-    isPopular: true,
-    collectionIds: [],
-    productType: 'cake'
-  }
+const detailsParagraphs = [
+  'I bake traditional Ukrainian cakes in Leeds for birthdays, weddings, anniversaries and family celebrations, with every order made in small batches so flavour and finish stay consistent. You can browse ready designs in the catalogue or request a custom cake with your preferred size, style and decoration. Popular options include Medovik honey cake, Kyiv cake and bespoke birthday cakes, all made with quality ingredients, balanced sweetness and careful layering. Custom celebration cakes are prepared for collection or local delivery around Leeds, and if you specifically need postal options you can switch on the cakes-by-post filter to view available hamper products. Each product page includes clear photos, flavour notes, texture details and serving guidance, so it is easy to compare choices and order with confidence. If you share your occasion date and serving numbers, I can suggest the most suitable cake for your event.'
 ]
 
-type UrlForImage = Parameters<typeof urlFor>[0]
-type RichTextBlockLike = {
-  _type?: string
-  children?: Array<{ text?: string }>
+function toAbsoluteImageUrl(imageUrl: string) {
+  return imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
 }
 
-interface ImageSelection {
-  image: UrlForImage
-  alt?: string
+function toAbsoluteProductUrl(href: string) {
+  return href.startsWith('http') ? href : `${baseUrl}${href}`
 }
 
-function getDescription(cake: Cake) {
-  const source = cake.shortDescription && cake.shortDescription.length > 0
-    ? cake.shortDescription
-    : cake.description
-
-  const description = blocksToText(source)
-  const trimmed = description.slice(0, 140).trim()
-
-  return trimmed.length > 0
-    ? trimmed
-    : 'Traditional Ukrainian cake made with premium ingredients and baked fresh to order.'
-}
-
-function blocksToPlainText(blocks: RichTextBlockLike[] | undefined) {
-  if (!blocks || blocks.length === 0) {
-    return ''
-  }
-
-  return blocks
-    .map((block) => {
-      if (block._type !== 'block' || !block.children) {
-        return ''
-      }
-
-      return block.children
-        .map((child) => child.text?.trim() || '')
-        .filter((text) => text.length > 0)
-        .join('')
-    })
-    .filter((line) => line.length > 0)
-    .join('\n')
-    .trim()
-}
-
-function getGiftHamperDescription(hamper: GiftHamper) {
-  const source = hamper.shortDescription && hamper.shortDescription.length > 0
-    ? hamper.shortDescription
-    : hamper.description
-
-  const description = blocksToPlainText(source)
-  const trimmed = description.slice(0, 140).trim()
-
-  return trimmed.length > 0
-    ? trimmed
-    : 'Traditional Ukrainian gift hamper prepared fresh and packed carefully for UK delivery.'
-}
-
-function getCakeImage(cake: Cake): ImageSelection | null {
-  if (cake.mainImage?.asset?._ref) {
-    return {
-      image: cake.mainImage as UrlForImage,
-      alt: cake.mainImage.alt
-    }
-  }
-
-  const standardDesigns = cake.designs?.standard ?? []
-  const mainDesign = standardDesigns.find((image) => image.isMain && image.asset?._ref)
-
-  if (mainDesign?.asset?._ref) {
-    return {
-      image: mainDesign as UrlForImage,
-      alt: mainDesign.alt
-    }
-  }
-
-  const firstDesign = standardDesigns.find((image) => image.asset?._ref)
-
-  if (firstDesign?.asset?._ref) {
-    return {
-      image: firstDesign as UrlForImage,
-      alt: firstDesign.alt
-    }
-  }
-
-  return null
-}
-
-function getGiftHamperImage(hamper: GiftHamper): ImageSelection | null {
-  const mainImage = hamper.images?.find((image) => image.isMain && image.asset?._ref)
-
-  if (mainImage?.asset?._ref) {
-    return {
-      image: mainImage as UrlForImage,
-      alt: mainImage.alt
-    }
-  }
-
-  const firstImage = hamper.images?.find((image) => image.asset?._ref)
-
-  if (firstImage?.asset?._ref) {
-    return {
-      image: firstImage as UrlForImage,
-      alt: firstImage.alt
-    }
-  }
-
-  return null
-}
-
-function mapCakeToTabletCake(cake: Cake): TabletCake {
-  const image = getCakeImage(cake)
-  const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
-  const imageAlt = image?.alt?.trim() || `${cake.name} by Olgish Cakes`
-  const collectionIds = (cake.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
-
+function createCakesItemListStructuredData(cakes: TabletCake[]): StructuredData {
   return {
-    id: cake._id,
-    slug: cake.slug.current,
-    href: `/cakes/${cake.slug.current}`,
-    name: cake.name,
-    description: getDescription(cake),
-    price: cake.pricing?.standard ?? 0,
-    imageUrl,
-    imageAlt,
-    isByPost: false,
-    isCustom: true,
-    isPopular: Boolean(cake.isBestseller),
-    collectionIds,
-    productType: 'cake'
-  }
-}
-
-function mapGiftHamperToTabletCake(hamper: GiftHamper): TabletCake {
-  const image = getGiftHamperImage(hamper)
-  const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
-  const imageAlt = image?.alt?.trim() || `${hamper.name} by Olgish Cakes`
-  const collectionIds = (hamper.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
-
-  return {
-    id: hamper._id,
-    slug: hamper.slug.current,
-    href: `/gift-hampers/${hamper.slug.current}`,
-    name: hamper.name,
-    description: getGiftHamperDescription(hamper),
-    price: hamper.price ?? 0,
-    imageUrl,
-    imageAlt,
-    isByPost: true,
-    isCustom: false,
-    isPopular: false,
-    collectionIds,
-    productType: 'giftHamper'
-  }
-}
-
-function mapCollectionsToOptions(
-  collections: HomepageCollection[],
-  productType: 'cake' | 'giftHamper'
-): CakesCollectionOption[] {
-  const queryValueById = createCollectionQueryValueMap(collections, productType)
-  const collectionIdByQueryValue = createCollectionIdByQueryValueMap(collections, productType)
-  const aliasesByCollectionId = new Map<string, string[]>()
-
-  collectionIdByQueryValue.forEach((collectionId, queryValue) => {
-    const existingAliases = aliasesByCollectionId.get(collectionId) ?? []
-    if (existingAliases.includes(queryValue)) {
-      return
-    }
-
-    aliasesByCollectionId.set(collectionId, [...existingAliases, queryValue])
-  })
-
-  return collections
-    .map((collection) => {
-      const label = collection.name.trim()
-
-      if (label.length === 0) {
-        return null
-      }
-
-      const normalizedId = normalizeDocumentId(collection._id)
-      const queryValue = queryValueById.get(normalizedId)
-
-      if (!queryValue) {
-        return null
-      }
-
-      const legacyQueryValues = (aliasesByCollectionId.get(normalizedId) ?? [])
-        .filter((value) => value !== queryValue)
-
-      return {
-        id: normalizedId,
-        queryValue,
-        legacyQueryValues,
-        label,
-        isFeatured: Boolean(collection.isFeatured),
-        productType
-      }
-    })
-    .filter((collection): collection is CakesCollectionOption => collection !== null)
-}
-
-export default async function CakesPage() {
-  const [cakes, giftHampers, featuredOffer, cakeCollections, giftHamperCollections] = await Promise.all([
-    getAllCakes(false),
-    getAllGiftHampers(false),
-    getCakesFeaturedOffer(false),
-    getHomepageCollections(),
-    getHomepageGiftHamperCollections()
-  ])
-
-  const mappedCakes = cakes.map((cake) => mapCakeToTabletCake(cake))
-  const mappedGiftHampers = giftHampers.map((hamper) => mapGiftHamperToTabletCake(hamper))
-  const catalogItems = [...mappedCakes, ...mappedGiftHampers]
-  const cakesForUi = catalogItems.length > 0 ? catalogItems : fallbackCakes
-  const collectionOptions = [
-    ...mapCollectionsToOptions(cakeCollections, 'cake'),
-    ...mapCollectionsToOptions(giftHamperCollections, 'giftHamper')
-  ]
-
-  const localBusinessData = {
     '@context': 'https://schema.org',
-    '@type': 'Bakery',
-    name: 'Olgish Cakes',
-    description:
-      'Authentic traditional Ukrainian cakes made with love in Leeds. Specialising in Ukrainian birthday cakes, wedding cakes, and traditional honey cake (Medovik).',
-    image: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png',
-    url: 'https://olgishcakes.co.uk',
-    telephone: '+44 786 721 8194',
-    email: 'hello@olgishcakes.co.uk',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
-      addressLocality: 'Leeds',
-      postalCode: 'LS17',
-      addressCountry: 'GB'
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: '53.8008',
-      longitude: '-1.5491'
-    },
-    openingHours: 'Mo-Su 00:00-23:59',
-    priceRange: '\u00A3\u00A3',
-    servesCuisine: 'Ukrainian',
-    hasMenu: 'https://olgishcakes.co.uk/cakes',
-    mainEntityOfPage: {
-      '@id': 'https://olgishcakes.co.uk/#organization'
-    }
-  }
-
-  const breadcrumbData = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
+    '@graph': [
       {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://olgishcakes.co.uk/'
+        '@type': 'Brand',
+        '@id': brandId,
+        name: 'Olgish Cakes',
+        url: baseUrl,
+        logo: `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`
       },
       {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Cakes',
-        item: 'https://olgishcakes.co.uk/cakes'
+        '@type': 'ItemList',
+        name: 'Traditional Ukrainian Cakes in Leeds',
+        itemListElement: cakes.map((cake, index) => {
+          const cakeUrl = toAbsoluteProductUrl(cake.href)
+
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              '@id': `${cakeUrl}#product`,
+              name: cake.name,
+              description: cake.description,
+              image: toAbsoluteImageUrl(cake.imageUrl),
+              url: cakeUrl,
+              brand: {
+                '@id': brandId
+              },
+              offers: {
+                '@type': 'Offer',
+                price: formatStructuredDataPrice(cake.price, 0),
+                priceCurrency: 'GBP',
+                availability: 'https://schema.org/InStock',
+                priceValidUntil: getPriceValidUntil(30),
+                url: cakeUrl,
+                seller: {
+                  '@type': 'Organization',
+                  name: 'Olgish Cakes',
+                  url: baseUrl
+                },
+                shippingDetails: getOfferShippingDetails(),
+                hasMerchantReturnPolicy: getMerchantReturnPolicy()
+              }
+            }
+          }
+        })
       }
     ]
   }
-  const detailsSectionTitleClassName =
-    'mx-auto max-w-[760px] text-center font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] tablet:text-[36px] tablet:leading-[52px] small-laptop:max-w-[1000px]'
-  const detailsSectionParagraphClassName =
-    'font-oldenburg text-[15px] leading-[32px] tracking-[1.2px] text-base-content tablet:text-base tablet:leading-8 tablet:tracking-normal'
+}
+
+export default async function CakesPage() {
+  const [catalogData, byPostCakesPriceCeilingHint] = await Promise.all([
+    getCatalogPageData('cakes'),
+    getCatalogByPostCakesPriceCeiling().catch((error) => {
+      console.warn('Failed to fetch by-post cakes price ceiling hint for cakes page:', error)
+      return undefined
+    })
+  ])
+  const cakesForStructuredData = catalogData.cakesForUi.filter((cake) => cake.productType === 'cake')
 
   return (
-    <>
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessData) }}
-      />
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
-      />
-      <main className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'>
-        <section className='mx-auto text-center w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
-          <h1 className='mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
-            Traditional Ukrainian cakes by post and custom cakes in Leeds
-          </h1>
-          <p className='mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
-            Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that
-            feel like home.
-          </p>
-        </section>
-        <CakesTabletCatalog
-          cakes={cakesForUi}
-          featuredOffer={featuredOffer}
-          collectionOptions={collectionOptions}
+    <CatalogPageTemplate
+      variant='cakes'
+      heading='Traditional Ukrainian custom cakes in Leeds for celebrations'
+      intro='Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that feel like home.'
+      detailsSectionTitle='Authentic Ukrainian cakes in Leeds, baked fresh to order'
+      detailsParagraphs={detailsParagraphs}
+      breadcrumbLabel='Cakes'
+      canonicalPath='/cakes'
+      localBusinessDescription='Authentic traditional Ukrainian cakes made with love in Leeds. Specialising in Ukrainian birthday cakes, wedding cakes, and traditional honey cake (Medovik).'
+      catalogData={catalogData}
+      initialFilterDefaults={{ byPost: false, custom: true }}
+      lazyByPostCakesEndpoint='/api/catalog/by-post-cakes'
+      lazyByPostCakesPriceCeilingHint={byPostCakesPriceCeilingHint}
+      postCatalogContent={(
+        <CatalogFaqAccordion
+          sectionId='cakes-faq-title'
+          title='Cake ordering FAQs'
+          intro='Answers to common questions about custom cakes, delivery, and ordering in Leeds.'
+          items={cakesCatalogFaqItems}
         />
-        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0 small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
-          <h2 className={detailsSectionTitleClassName}>
-            Authentic Ukrainian cakes in Leeds, baked fresh to order
-          </h2>
-          <div className='mx-auto mt-6 max-w-[860px] space-y-4'>
-            <p className={detailsSectionParagraphClassName}>
-              I bake traditional Ukrainian cakes in Leeds for birthdays, weddings, anniversaries and family gatherings. Every
-              order is prepared in small batches, so each cake gets the time and attention it needs. If you are looking for
-              authentic Medovik, classic Kyiv cake or a custom design for a special day, you can choose from ready options in
-              the catalogue or request a bespoke decoration. I use quality ingredients, balanced sweetness and careful layering
-              so the flavour is rich but never heavy. Many customers tell me this style reminds them of cakes they grew up with
-              in Ukraine, while others discover these recipes for the first time and come back for the same taste again.
-            </p>
-            <p className={detailsSectionParagraphClassName}>
-              Cakes by post are available for selected options, and custom cakes are available for local celebrations around
-              Leeds. You can filter the catalogue by price, cake type and collection, then open each cake page to see more
-              details. Each product card links to a dedicated page where search engines and customers can find focused
-              information about flavour, texture and serving ideas. This helps you compare quickly and helps the site keep
-              strong internal relevance for terms like Ukrainian honey cake, Kyiv cake and custom birthday cake in Leeds.
-              Where possible, I include clear photos and practical descriptions so you can order confidently for your date.
-            </p>
-            <p className={detailsSectionParagraphClassName}>
-              If you need a custom celebration cake, share the occasion, number of servings and preferred design style, and I
-              will suggest options that match your event. For traditional cakes, I keep the flavour profile close to Ukrainian
-              classics while adapting decoration and delivery to what works best in England. This page is designed to help you
-              discover the right cake quickly, but the final result is always personal: fresh baking, careful finishing and a
-              cake that looks beautiful on the table and tastes even better when shared.
-            </p>
-          </div>
-        </section>
-      </main>
-    </>
+      )}
+      additionalStructuredData={[
+        createCakesItemListStructuredData(cakesForStructuredData)
+      ]}
+    />
   )
 }

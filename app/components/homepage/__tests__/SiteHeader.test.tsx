@@ -87,6 +87,71 @@ describe('SiteHeader', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
+  it('provides direct navigation to /cakes', () => {
+    render(<SiteHeader />)
+
+    const desktopAllCakesLinks = screen.getAllByRole('link', { name: /all cakes/i })
+    expect(desktopAllCakesLinks.some((link) => link.getAttribute('href') === '/cakes')).toBe(true)
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    const mobileAllCakesLink = screen.getByRole('menuitem', { name: /all cakes/i })
+    expect(mobileAllCakesLink).toHaveAttribute('href', '/cakes')
+  })
+
+  it('orders mobile menu with all cakes before cakes by post', () => {
+    render(<SiteHeader />)
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    const mobileMenuItems = screen.getAllByRole('menuitem')
+    const allCakesIndex = mobileMenuItems.findIndex((item) => /all cakes/i.test(item.textContent ?? ''))
+    const byPostIndex = mobileMenuItems.findIndex((item) => /cakes by post/i.test(item.textContent ?? ''))
+
+    expect(allCakesIndex).toBeGreaterThanOrEqual(0)
+    expect(byPostIndex).toBeGreaterThanOrEqual(0)
+    expect(allCakesIndex).toBeLessThan(byPostIndex)
+  })
+
+  it('keeps cakes by post navigation pointed to /gift-hampers', () => {
+    render(<SiteHeader />)
+
+    const desktopByPostLinks = screen.getAllByRole('link', { name: /cakes by post/i })
+    expect(desktopByPostLinks.some((link) => link.getAttribute('href') === '/gift-hampers')).toBe(true)
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    const mobileByPostLink = screen.getByRole('menuitem', { name: /cakes by post/i })
+    expect(mobileByPostLink).toHaveAttribute('href', '/gift-hampers')
+  })
+
+  it('moves farmers markets into Learn & visit links', () => {
+    render(<SiteHeader />)
+
+    expect(screen.queryByRole('link', { name: /^farmers markets$/i })).not.toBeInTheDocument()
+
+    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummary = learnSummaryText.closest('summary')
+
+    if (!learnSummary) {
+      throw new Error('Learn & visit summary not found')
+    }
+
+    fireEvent.click(learnSummary)
+
+    const desktopFarmersLink = screen.getByRole('link', { name: /find us at farmers markets/i })
+    expect(desktopFarmersLink).toHaveAttribute('href', '/farmers-markets')
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    const mobileFarmersLink = screen.getByRole('menuitem', { name: /find us at farmers markets/i })
+    expect(mobileFarmersLink).toHaveAttribute('href', '/farmers-markets')
+  })
+
   it('menu items have proper role', () => {
     render(<SiteHeader />)
 
@@ -101,7 +166,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     expect(screen.getByText(/custom cakes/i)).toBeInTheDocument()
-    expect(screen.getByText(/learn hub/i)).toBeInTheDocument()
+    expect(screen.getByText(/learn\s*&\s*visit/i)).toBeInTheDocument()
     expect(screen.getByText(/order form/i)).toBeInTheDocument()
   })
 
@@ -109,7 +174,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/learn hub/i)
+    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
 
     const customSummary = customSummaryText.closest('summary')
     const learnSummary = learnSummaryText.closest('summary')
@@ -196,7 +261,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/learn hub/i)
+    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
 
     const customSummary = customSummaryText.closest('summary')
     const learnSummary = learnSummaryText.closest('summary')

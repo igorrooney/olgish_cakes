@@ -3,12 +3,12 @@
  */
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import CakesPage, { dynamic, metadata } from '../page'
 import { getAllCakes, getCakesFeaturedOffer } from '../../utils/fetchCakes'
 import { getAllGiftHampers } from '../../utils/fetchGiftHampers'
 import { getHomepageCollections, getHomepageGiftHamperCollections } from '../../utils/fetchCollections'
 import { Cake } from '@/types/cake'
-import { GiftHamper } from '@/types/giftHamper'
 import { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
 
 jest.mock('nuqs', () => {
@@ -249,40 +249,69 @@ const sampleCake: Cake = {
   allergens: ['Gluten', 'Dairy']
 }
 
-const sampleGiftHamper: GiftHamper = {
-  _id: 'hamper-1',
-  _createdAt: '2026-02-01T12:00:00.000Z',
-  name: 'Postal Gift Hamper',
-  slug: { current: 'postal-gift-hamper' },
-  shortDescription: [
-    {
-      _type: 'block',
-      children: [{ text: 'A thoughtful by post gift hamper.' }]
-    }
-  ],
-  price: 32,
-  images: []
-}
-
 const cakeCollection = {
   _id: 'collection-cake',
   name: 'Wedding Cakes',
   isFeatured: false
 }
 
-const giftHamperCollection = {
-  _id: 'collection-hamper',
-  name: 'Postal Gifts',
-  isFeatured: false
+const sampleByPostCatalogCake = {
+  id: 'hamper-1',
+  slug: 'postal-gift-hamper',
+  href: '/gift-hampers/postal-gift-hamper',
+  name: 'Postal Gift Hamper',
+  description: 'A thoughtful by post gift hamper.',
+  price: 32,
+  imageUrl: '/images/placeholder-cake.jpg',
+  imageAlt: 'Postal Gift Hamper by Olgish Cakes',
+  isByPost: true,
+  isCustom: false,
+  isPopular: false,
+  collectionIds: ['collection-hamper'],
+  productType: 'giftHamper' as const
+}
+
+const sampleByPostCollectionOption = {
+  id: 'collection-hamper',
+  queryValue: 'h-postal-gifts',
+  legacyQueryValues: ['collection-hamper'],
+  label: 'Postal Gifts',
+  isFeatured: false,
+  productType: 'giftHamper' as const
+}
+
+function parseJsonLdScripts(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('script[type="application/ld+json"]'))
+    .map((script) => JSON.parse(script.textContent || '{}') as Record<string, unknown>)
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
 }
 
 function renderCakesPage(page: React.ReactElement, searchParams = '') {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false
+      }
+    }
+  })
+
   window.history.replaceState({}, '', `/cakes${searchParams}`)
-  return render(page)
+  return render(
+    <QueryClientProvider client={queryClient}>
+      {page}
+    </QueryClientProvider>
+  )
 }
 
 describe('CakesPage', () => {
+  const originalFetch = global.fetch
+
   beforeEach(() => {
+    jest.restoreAllMocks()
+    global.fetch = originalFetch
     mockedGetAllCakes.mockResolvedValue([sampleCake])
     mockedGetAllGiftHampers.mockResolvedValue([])
     mockedGetCakesFeaturedOffer.mockResolvedValue(sampleFeaturedOffer)
@@ -316,11 +345,41 @@ describe('CakesPage', () => {
     expect(mockedGetAllCakes).toHaveBeenCalledWith(false)
     expect(mockedGetAllGiftHampers).toHaveBeenCalledWith(false)
     expect(mockedGetCakesFeaturedOffer).toHaveBeenCalledWith(false)
-    expect(mockedGetHomepageGiftHamperCollections).toHaveBeenCalled()
+    expect(mockedGetHomepageGiftHamperCollections).not.toHaveBeenCalled()
+  })
+
+  it('renders page when optional by-post price hint fetch fails', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      mockedGetAllGiftHampers.mockRejectedValueOnce(new Error('By-post hint fetch failed'))
+
+      const page = await CakesPage()
+      renderCakesPage(page)
+
+      expect(
+        screen.getByRole('heading', {
+          level: 1,
+          name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
+        })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Failed to fetch by-post cakes price ceiling hint for cakes page:',
+        expect.any(Error)
+      )
+    } finally {
+      warnSpy.mockRestore()
+    }
   })
 
   it('defaults to custom cakes and only shows hampers after by post opt in', async () => {
-    mockedGetAllGiftHampers.mockResolvedValueOnce([sampleGiftHamper])
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [sampleByPostCatalogCake],
+        collectionOptions: [sampleByPostCollectionOption]
+      })
+    } as Response)
 
     const page = await CakesPage()
     renderCakesPage(page)
@@ -336,28 +395,37 @@ describe('CakesPage', () => {
 
     fireEvent.click(byPostCheckbox)
 
+    await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })
     expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
 
     fireEvent.click(customCheckbox)
 
+    await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })
     expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
   })
 
   it('restores filter state from URL params for shareable links', async () => {
-    mockedGetAllGiftHampers.mockResolvedValueOnce([sampleGiftHamper])
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [sampleByPostCatalogCake],
+        collectionOptions: [sampleByPostCollectionOption]
+      })
+    } as Response)
 
     const page = await CakesPage()
     renderCakesPage(page, '?byPost=true&custom=false')
 
-    const byPostCheckbox = screen.getByRole('checkbox', { name: /Cakes by post/i })
     const customCheckbox = screen.getByRole('checkbox', { name: /Custom cakes/i })
 
-    expect(byPostCheckbox).toBeChecked()
     expect(customCheckbox).not.toBeChecked()
     expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
+
+    const byPostCheckbox = await screen.findByRole('checkbox', { name: /Cakes by post/i })
+    expect(byPostCheckbox).toBeChecked()
   })
 
   it('uses short readable collection query values', async () => {
@@ -436,9 +504,14 @@ describe('CakesPage', () => {
   })
 
   it('switches collection filters by selected category', async () => {
-    mockedGetAllGiftHampers.mockResolvedValueOnce([sampleGiftHamper])
     mockedGetHomepageCollections.mockResolvedValueOnce([cakeCollection])
-    mockedGetHomepageGiftHamperCollections.mockResolvedValueOnce([giftHamperCollection])
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: [sampleByPostCatalogCake],
+        collectionOptions: [sampleByPostCollectionOption]
+      })
+    } as Response)
 
     const page = await CakesPage()
     renderCakesPage(page)
@@ -446,16 +519,18 @@ describe('CakesPage', () => {
     expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
     expect(screen.queryByText('Postal Gifts')).not.toBeInTheDocument()
 
-    const byPostCheckbox = screen.getByRole('checkbox', { name: /Cakes by post/i })
+    const byPostCheckbox = await screen.findByRole('checkbox', { name: /Cakes by post/i })
 
     fireEvent.click(byPostCheckbox)
 
+    expect(await screen.findByText('Postal Gifts')).toBeInTheDocument()
     expect(screen.getByText('Postal Gifts')).toBeInTheDocument()
     expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
 
-    fireEvent.click(byPostCheckbox)
+    const byPostCheckboxAfterLoad = await screen.findByRole('checkbox', { name: /Cakes by post/i })
+    fireEvent.click(byPostCheckboxAfterLoad)
 
-    expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
+    await screen.findByText('Wedding Cakes')
     expect(screen.queryByText('Postal Gifts')).not.toBeInTheDocument()
   })
 
@@ -466,7 +541,7 @@ describe('CakesPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Traditional Ukrainian cakes by post and custom cakes in Leeds'
+        name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Authentic Ukrainian cakes in Leeds, baked fresh to order')).toBeInTheDocument()
@@ -477,6 +552,12 @@ describe('CakesPage', () => {
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByText('Sample Honey Cake')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
+    expect(screen.getByText('Do you make custom birthday and wedding cakes in Leeds?')).toBeInTheDocument()
+    expect(screen.getByText('Can any cake be delivered across the UK?')).toBeInTheDocument()
+    expect(screen.getByText('Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so I can confirm the cake type, date, delivery details, and cost.')).toBeInTheDocument()
+    expect(screen.getByText('Do you work with corporate clients and events?')).toBeInTheDocument()
+    expect(screen.getByText('Yes. I work with corporate clients and can supply cakes for any event or corporate celebration. Share your date, headcount, and style, and I will suggest suitable options.')).toBeInTheDocument()
   })
 
   it('shows cakes above one hundred pounds by default', async () => {
@@ -518,31 +599,79 @@ describe('CakesPage', () => {
     expect(screen.queryByText('Cake by Post Gift Hamper')).not.toBeInTheDocument()
   })
 
-  it('renders bakery and breadcrumb structured data scripts', async () => {
+  it('renders bakery, breadcrumb and ItemList structured data scripts', async () => {
     const page = await CakesPage()
     const { container } = renderCakesPage(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
 
-    const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-    const bakeryScript = Array.from(scripts).find((script) =>
-      script.textContent?.includes('"@type":"Bakery"')
-    )
-    const breadcrumbScript = Array.from(scripts).find((script) =>
-      script.textContent?.includes('"@type":"BreadcrumbList"')
-    )
+    const bakeryBlock = jsonLdBlocks.find((block) => block['@type'] === 'Bakery')
+    const breadcrumbBlock = jsonLdBlocks.find((block) => block['@type'] === 'BreadcrumbList')
+    const faqBlock = jsonLdBlocks.find((block) => block['@type'] === 'FAQPage')
+    const itemListGraphBlock = jsonLdBlocks.find((block) => Array.isArray(block['@graph']))
 
-    expect(bakeryScript).toBeTruthy()
-    expect(breadcrumbScript).toBeTruthy()
+    expect(bakeryBlock).toBeDefined()
+    expect(breadcrumbBlock).toBeDefined()
+    expect(faqBlock).toBeUndefined()
+    expect(itemListGraphBlock).toBeDefined()
 
-    if (!bakeryScript?.textContent) {
-      throw new Error('Bakery structured data script is missing')
+    if (!isRecord(bakeryBlock)) {
+      throw new Error('Bakery structured data block is missing')
     }
 
-    const parsedBakery = JSON.parse(bakeryScript.textContent) as {
-      '@type'?: string
-      priceRange?: string
+    expect(bakeryBlock['@type']).toBe('Bakery')
+    expect(bakeryBlock.priceRange).toBe('\u00A3\u00A3')
+
+    if (!isRecord(itemListGraphBlock) || !Array.isArray(itemListGraphBlock['@graph'])) {
+      throw new Error('Expected @graph structured data block')
     }
 
-    expect(parsedBakery['@type']).toBe('Bakery')
-    expect(parsedBakery.priceRange).toBe('££')
+    const itemListEntry = itemListGraphBlock['@graph']
+      .find((entry) => isRecord(entry) && entry['@type'] === 'ItemList')
+
+    if (!isRecord(itemListEntry) || !Array.isArray(itemListEntry.itemListElement)) {
+      throw new Error('Expected ItemList entry in @graph')
+    }
+
+    const firstListItem = itemListEntry.itemListElement[0]
+
+    if (!isRecord(firstListItem) || !isRecord(firstListItem.item)) {
+      throw new Error('Expected first list item product data')
+    }
+
+    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes/sample-honey-cake')
+  })
+
+  it('keeps ItemList structured data aligned with fallback custom cakes', async () => {
+    mockedGetAllCakes.mockResolvedValueOnce([])
+
+    const page = await CakesPage()
+    const { container } = renderCakesPage(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
+    const itemListGraphBlock = jsonLdBlocks.find((block) => Array.isArray(block['@graph']))
+
+    if (!isRecord(itemListGraphBlock) || !Array.isArray(itemListGraphBlock['@graph'])) {
+      throw new Error('Expected @graph structured data block')
+    }
+
+    const itemListEntry = itemListGraphBlock['@graph']
+      .find((entry) => isRecord(entry) && entry['@type'] === 'ItemList')
+
+    if (!isRecord(itemListEntry) || !Array.isArray(itemListEntry.itemListElement)) {
+      throw new Error('Expected ItemList entry in @graph')
+    }
+
+    const urls = itemListEntry.itemListElement
+      .map((entry) => {
+        if (!isRecord(entry) || !isRecord(entry.item) || typeof entry.item.url !== 'string') {
+          return ''
+        }
+
+        return entry.item.url
+      })
+      .filter((url) => url.length > 0)
+
+    expect(urls.length).toBeGreaterThan(0)
+    expect(urls.every((url) => url.startsWith('https://olgishcakes.co.uk/cakes/'))).toBe(true)
+    expect(urls.some((url) => url.includes('/gift-hampers/'))).toBe(false)
   })
 })

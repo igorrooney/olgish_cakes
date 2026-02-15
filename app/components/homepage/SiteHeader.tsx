@@ -213,6 +213,11 @@ export function SiteHeader() {
             <ul className='menu menu-horizontal px-1 !list-none gap-6 large-laptop:gap-8 flex-nowrap whitespace-nowrap overflow-visible [&>li]:list-none [&>li]:marker:text-transparent [&>li]:before:hidden [&>li]:after:hidden'>
               <li>
                 <Link href='/cakes' className={topNavItemClassName}>
+                  All cakes
+                </Link>
+              </li>
+              <li>
+                <Link href='/gift-hampers' className={topNavItemClassName}>
                   Cakes by post
                 </Link>
               </li>
@@ -308,11 +313,6 @@ export function SiteHeader() {
                   </div>
                 </details>
               </li>
-              <li>
-                <Link href='/farmers-markets' className={topNavItemClassName}>
-                  Farmers markets
-                </Link>
-              </li>
               <li className='overflow-visible'>
                 <details
                   className='dropdown dropdown-bottom dropdown-center group overflow-visible'
@@ -329,7 +329,7 @@ export function SiteHeader() {
                     aria-expanded={openDropdownId === 'learn-hub'}
                   >
                     <span className='group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8'>
-                      Learn hub
+                      Learn & visit
                     </span>
                     <svg
                       width='16'
@@ -372,6 +372,11 @@ export function SiteHeader() {
                       <li>
                         <Link href='/learn/customer-stories' className={dropdownItemClassName}>
                           Customer stories
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href='/farmers-markets' className={dropdownItemClassName}>
+                          Find us at farmers markets
                         </Link>
                       </li>
                     </ul>
@@ -459,6 +464,14 @@ export function SiteHeader() {
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
+                All cakes
+              </Link>
+              <Link
+                href='/gift-hampers'
+                role='menuitem'
+                className={mobileMenuItemClassName}
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Cakes by post
               </Link>
               <Link
@@ -468,14 +481,6 @@ export function SiteHeader() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Custom cakes
-              </Link>
-              <Link
-                href='/farmers-markets'
-                role='menuitem'
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Farmers markets
               </Link>
               <Link
                 href='/faqs'
@@ -497,7 +502,7 @@ export function SiteHeader() {
             <div className='flex flex-col items-start'>
               <div className='w-full min-h-[36px] px-4 flex items-center rounded-btn'>
                 <p className='font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]'>
-                  LEARN HUB
+                  LEARN & VISIT
                 </p>
               </div>
               <Link
@@ -531,6 +536,14 @@ export function SiteHeader() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Customer stories
+              </Link>
+              <Link
+                href='/farmers-markets'
+                role='menuitem'
+                className={mobileMenuItemClassName}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Find us at farmers markets
               </Link>
             </div>
           </div>

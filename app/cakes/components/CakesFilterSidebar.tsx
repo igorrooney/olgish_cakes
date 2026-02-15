@@ -7,6 +7,8 @@ interface CakesFilterSidebarProps {
   filters: CakesFilterState
   priceMax: number
   collectionOptions: CakesCollectionOption[]
+  isByPostLoading: boolean
+  isCustomLoading: boolean
   onToggleByPost: (checked: boolean) => void
   onToggleCustom: (checked: boolean) => void
   onPriceChange: (price: number) => void
@@ -21,21 +23,46 @@ function FilterCheckbox({
   checked,
   label,
   helperText,
-  onChange
+  onChange,
+  isLoading = false,
+  loadingSrLabel,
+  controlSlotTestId,
+  spinnerTestId
 }: {
   checked: boolean
   label: string
   helperText?: string
   onChange: (checked: boolean) => void
+  isLoading?: boolean
+  loadingSrLabel?: string
+  controlSlotTestId?: string
+  spinnerTestId?: string
 }) {
   return (
-    <label className='label flex w-full cursor-pointer items-start justify-start gap-2 p-0 py-1'>
-      <input
-        type='checkbox'
-        checked={checked}
-        onChange={(event) => onChange(event.target.checked)}
-        className='m-0 mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border border-base-content/45 bg-base-100 accent-primary'
-      />
+    <label className={`label flex w-full items-start justify-start gap-2 p-0 py-1 ${isLoading ? 'cursor-default' : 'cursor-pointer'}`}>
+      <span
+        aria-live='polite'
+        className='m-0 mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
+        data-testid={controlSlotTestId}
+      >
+        {isLoading ? (
+          <span className='inline-flex h-4 w-4 items-center justify-center' role='status'>
+            <span
+              aria-hidden='true'
+              className='loading loading-spinner h-4 w-4'
+              data-testid={spinnerTestId}
+            />
+            <span className='sr-only'>{loadingSrLabel}</span>
+          </span>
+        ) : (
+          <input
+            type='checkbox'
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            className='m-0 h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border border-base-content/45 bg-base-100 accent-primary'
+          />
+        )}
+      </span>
       <span className='text-base leading-[1.4] text-base-content'>
         <span className='block font-normal'>
           {label}
@@ -54,6 +81,8 @@ export function CakesFilterSidebar({
   filters,
   priceMax,
   collectionOptions,
+  isByPostLoading,
+  isCustomLoading,
   onToggleByPost,
   onToggleCustom,
   onPriceChange,
@@ -97,7 +126,7 @@ export function CakesFilterSidebar({
   }
 
   return (
-    <aside className='card h-fit border border-[#D9D9D9] bg-[var(--color-featured-offer)] shadow-none tablet:w-60 tablet:max-w-60'>
+    <aside className='card h-fit border border-base-300 bg-[var(--color-featured-offer)] shadow-none tablet:w-60 tablet:max-w-60'>
       <div className='card-body gap-0 p-4'>
         <div className='mb-4 flex items-center justify-between'>
           <h2 className='m-0 text-base font-normal leading-[1.4] text-base-content'>Filter by</h2>
@@ -116,12 +145,20 @@ export function CakesFilterSidebar({
             label='Cakes by post'
             helperText='Delivered nationwide'
             onChange={onToggleByPost}
+            isLoading={isByPostLoading}
+            loadingSrLabel='Loading cakes by post'
+            controlSlotTestId='by-post-control-slot'
+            spinnerTestId='by-post-loader-spinner'
           />
           <FilterCheckbox
             checked={filters.showCustom}
             label='Custom cakes'
             helperText='Made to order'
             onChange={onToggleCustom}
+            isLoading={isCustomLoading}
+            loadingSrLabel='Loading custom cakes'
+            controlSlotTestId='custom-control-slot'
+            spinnerTestId='custom-loader-spinner'
           />
         </div>
 
