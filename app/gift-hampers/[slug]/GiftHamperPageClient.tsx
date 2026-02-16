@@ -223,7 +223,7 @@ export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
               Discover our curated range of luxury Ukrainian gift hampers, thoughtfully assembled
               for every occasion.
             </Typography>
-            <Link href="/gift-hampers" style={{ textDecoration: 'none' }}>
+            <Link href="/cakes-by-post" style={{ textDecoration: 'none' }}>
               <Button variant="outlined"
               size="large"
               sx={{
@@ -245,7 +245,7 @@ export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
                   boxShadow: shadows.lg,
                 },
               }}>
-              Browse All Gift Hampers
+              Browse All Cakes by Post
             </Button>
             </Link>
           </Box>

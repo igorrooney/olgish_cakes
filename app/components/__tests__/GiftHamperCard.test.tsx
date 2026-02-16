@@ -229,7 +229,7 @@ describe('GiftHamperCard', () => {
       render(<GiftHamperCard hamper={mockHamper} />)
 
       const link = screen.getAllByRole('link')[0]
-      expect(link).toHaveAttribute('href', '/gift-hampers/deluxe-hamper')
+      expect(link).toHaveAttribute('href', '/cakes-by-post/deluxe-hamper')
     })
 
     it('should use _id when slug not available', () => {
@@ -238,7 +238,7 @@ describe('GiftHamperCard', () => {
       render(<GiftHamperCard hamper={hamperWithoutSlug} />)
 
       const link = screen.getAllByRole('link')[0]
-      expect(link).toHaveAttribute('href', '/gift-hampers/hamper-1')
+      expect(link).toHaveAttribute('href', '/cakes-by-post/hamper-1')
     })
   })
 

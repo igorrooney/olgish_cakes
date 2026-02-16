@@ -447,6 +447,26 @@ const nextConfig = {
         destination: "/order",
         permanent: true,
       },
+      {
+        source: "/gift-hampers",
+        destination: "/cakes-by-post",
+        permanent: true,
+      },
+      {
+        source: "/gift-hampers/:slug",
+        destination: "/cakes-by-post/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cake-by-post-service",
+        destination: "/cakes-by-post",
+        permanent: true,
+      },
+      {
+        source: "/cake-postal-delivery",
+        destination: "/cakes-by-post",
+        permanent: true,
+      },
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml

@@ -104,7 +104,7 @@ describe('HamperDetailPage', () => {
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
       expect(metadata.title).toContain('Deluxe Hamper')
-      expect(metadata.title).toContain('Luxury Gift Hampers')
+      expect(metadata.title).toContain('Cakes by Post UK')
     })
 
     it('should prioritize custom SEO fields over defaults', async () => {

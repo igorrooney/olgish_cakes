@@ -126,15 +126,15 @@ describe('GoogleAnalytics', () => {
       )
     })
 
-    it('should track /gift-hampers page visits', () => {
-      mockUsePathname.mockReturnValue('/gift-hampers')
+    it('should track /cakes-by-post page visits', () => {
+      mockUsePathname.mockReturnValue('/cakes-by-post')
 
       render(<GoogleAnalytics gaId="G-TEST123" />)
 
       expect(mockGtag).toHaveBeenCalled()
       expect(mockGtag).toHaveBeenCalledWith('config', 'G-TEST123',
         expect.objectContaining({
-          page_path: '/gift-hampers'
+          page_path: '/cakes-by-post'
         })
       )
     })

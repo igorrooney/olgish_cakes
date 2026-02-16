@@ -337,7 +337,7 @@ function createGiftHamper(index: number): TabletCake {
   return {
     id: `hamper-${index}`,
     slug: `hamper-${index}`,
-    href: `/gift-hampers/hamper-${index}`,
+    href: `/cakes-by-post/hamper-${index}`,
     name: `Hamper ${index}`,
     description: `Hamper description ${index}`,
     price: 20 + index,

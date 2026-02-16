@@ -51,7 +51,7 @@ describe('sitemap-products', () => {
 
       const result = await sitemapProducts()
 
-      const hamperUrl = result.find(entry => entry.url.includes('/gift-hampers/deluxe'))
+      const hamperUrl = result.find(entry => entry.url.includes('/cakes-by-post/deluxe'))
       expect(hamperUrl).toBeDefined()
     })
 
@@ -61,7 +61,7 @@ describe('sitemap-products', () => {
       const result = await sitemapProducts()
 
       const cakesPage = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes')
-      const hampersPage = result.find(entry => entry.url === 'https://olgishcakes.co.uk/gift-hampers')
+      const hampersPage = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-by-post')
       const orderPage = result.find(entry => entry.url === 'https://olgishcakes.co.uk/order')
 
       expect(cakesPage).toBeDefined()
@@ -76,7 +76,7 @@ describe('sitemap-products', () => {
 
       const result = await sitemapProducts()
 
-      const hamperUrl = result.find(entry => entry.url.includes('/gift-hampers/hamper-123'))
+      const hamperUrl = result.find(entry => entry.url.includes('/cakes-by-post/hamper-123'))
       expect(hamperUrl).toBeDefined()
     })
   })

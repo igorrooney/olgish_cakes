@@ -79,7 +79,7 @@ async function handlePOST(request: NextRequest) {
       addPath("/") // Home page might show testimonials
       addPath("/about")
       addPath("/order")
-      addPath("/gift-hampers")
+      addPath("/cakes-by-post")
       await invalidateCache("testimonials");
       addTag('testimonials')
     } else if (_type === "faq") {
@@ -90,10 +90,11 @@ async function handlePOST(request: NextRequest) {
     } else if (_type === "giftHamper") {
       // Revalidate gift hamper pages
       if (slug?.current) {
-        addPath(`/gift-hampers/${slug.current}`)
-        addPath("/gift-hampers") // Revalidate gift hampers list
+        addPath(`/cakes-by-post/${slug.current}`)
+        addPath('/cakes-by-post') // Revalidate cakes-by-post list
       }
-      await invalidateCache("gift-hampers");
+      await invalidateCache('cakes-by-post');
+      addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('pages')
       addTag('sitemaps')
@@ -120,18 +121,21 @@ async function handlePOST(request: NextRequest) {
     } else if (_type === 'giftHamperCollection') {
       // Revalidate gift hamper collections used on cakes filters
       addPath('/cakes')
+      addPath('/cakes-by-post')
       addTag('gift-hamper-collections')
     } else if (_type === 'collectionsDisplayOrder') {
       // Revalidate homepage and cakes filters that use collections order
       addPath('/')
       addPath('/cakes')
+      addPath('/cakes-by-post')
       addTag('cake-collections')
       addTag('gift-hamper-collections')
     } else if (_type === 'productsDisplayOrder') {
       // Revalidate product listing pages that use manual display order
       addPath('/cakes')
-      addPath('/gift-hampers')
+      addPath('/cakes-by-post')
       addTag('cakes')
+      addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('sitemaps')
     }

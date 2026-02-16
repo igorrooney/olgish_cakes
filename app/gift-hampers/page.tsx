@@ -23,18 +23,18 @@ const brandId = `${baseUrl}/#brand`
 
 type StructuredData = Record<string, unknown>
 
-const pageTitle = 'Luxury Gift Hampers in Leeds | Ukrainian Cakes by Post'
-const pageDescription = 'Shop luxury Ukrainian gift hampers in Leeds with UK delivery. Browse cakes by post, curated treats, and handcrafted gifts made fresh by Olgish Cakes today.'
+const pageTitle = 'Cakes by Post UK | Ukrainian Letterbox Cake Delivery'
+const pageDescription = 'Order cakes by post across the UK from Olgish Cakes. Browse handmade Ukrainian cake hampers prepared in Leeds and packed fresh for reliable delivery.'
 
 export const metadata: Metadata = {
   title: pageTitle,
   description: pageDescription,
   keywords:
-    'gift hampers Leeds, Ukrainian gift hampers UK, cakes by post UK, luxury food hampers, honey cake by post, handcrafted hampers, Olgish Cakes Leeds, postal cake gifts',
+    'cakes by post UK, cake by post delivery, letterbox cakes UK, Ukrainian honey cake by post, postal cake gifts, Olgish Cakes Leeds',
   openGraph: {
     title: pageTitle,
     description: pageDescription,
-    url: `${baseUrl}/gift-hampers`,
+    url: `${baseUrl}/cakes-by-post`,
     siteName: 'Olgish Cakes',
     images: [
       {
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     images: [`${baseUrl}/images/gift-hampers-collection.jpg`]
   },
   alternates: {
-    canonical: `${baseUrl}/gift-hampers`
+    canonical: `${baseUrl}/cakes-by-post`
   },
   verification: {
     google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
@@ -86,7 +86,7 @@ function createGiftHamperItemListStructuredData(giftHampers: TabletCake[]): Stru
       },
       {
         '@type': 'ItemList',
-        name: 'Luxury Ukrainian Gift Hampers',
+        name: 'Cakes by Post UK Collection',
         itemListElement: giftHampers.map((hamper, index) => {
           const hamperUrl = toAbsoluteProductUrl(hamper.href)
 
@@ -138,7 +138,7 @@ function resolveGiftHampersForStructuredData(catalogData: {
 }
 
 const detailsParagraphs = [
-  'Our gift hampers are built for people who want reliable cakes by post without giving up handmade quality. Every hamper is prepared in Leeds and packed carefully for UK delivery, with an emphasis on flavour, freshness and presentation from unboxing to first slice. The catalogue preselects by-post options so you can compare quickly by budget, style and occasion, then open each product page for clear details on contents, flavours, serving notes and delivery expectations. This keeps the journey simple for birthday gifts, thank-you hampers, corporate sending and family surprises. Ukrainian-inspired favourites such as honey cake slices and caramel biscuits are made with balanced sweetness and practical packaging chosen for safe travel. If you are unsure what to choose, start with budget and recipient preference, and I can recommend the best hamper for your date and delivery needs.'
+  'Our cakes-by-post collection is designed for people who want reliable UK delivery without giving up handmade quality. Every order is prepared in Leeds and packed carefully for travel, with clear product pages covering flavours, contents, portion guidance and delivery expectations. You can compare by budget and occasion, then choose the best option for birthdays, thank-you gifts, corporate sending or family surprises. Ukrainian-inspired favourites such as honey cake slices and caramel biscuits are made with balanced sweetness and packaging selected for safe letterbox-friendly delivery. If you are unsure what to choose, start with recipient preferences and delivery date, and I can recommend the most suitable cake-by-post option.'
 ]
 
 export default async function GiftHampersPage() {
@@ -178,21 +178,21 @@ export default async function GiftHampersPage() {
   return (
     <CatalogPageTemplate
       variant='giftHampers'
-      heading='Luxury gift hampers and cakes by post across the UK'
-      intro='Browse our gift-hamper collection with cakes by post preselected, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
-      detailsSectionTitle='Gift hampers in Leeds with reliable UK-wide cake-by-post delivery'
+      heading='Cakes by post across the UK with handmade Ukrainian flavour'
+      intro='Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+      detailsSectionTitle='Cakes by post from Leeds with reliable UK-wide delivery'
       detailsParagraphs={detailsParagraphs}
-      breadcrumbLabel='Gift Hampers'
-      canonicalPath='/gift-hampers'
-      localBusinessDescription='Luxury Ukrainian gift hampers and cakes by post, handcrafted in Leeds and delivered across the UK.'
+      breadcrumbLabel='Cakes by post'
+      canonicalPath='/cakes-by-post'
+      localBusinessDescription='Handmade Ukrainian cakes by post, prepared in Leeds and delivered across the UK.'
       catalogData={catalogData}
       initialFilterDefaults={{ byPost: true, custom: false }}
       lazyCustomCakesEndpoint='/api/catalog/custom-cakes'
       lazyCustomCakesPriceCeilingHint={customCakesPriceCeilingHint}
       postCatalogContent={(
         <CatalogFaqAccordion
-          sectionId='gift-hampers-faq-title'
-          title='Gift hamper FAQs'
+          sectionId='cakes-by-post-faq-title'
+          title='Cakes by post FAQs'
           intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
           items={giftHampersCatalogFaqItems}
         />

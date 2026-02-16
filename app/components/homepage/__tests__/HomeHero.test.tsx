@@ -5,11 +5,11 @@ import { render, screen } from '@testing-library/react'
 import { HomeHero } from '../HomeHero'
 
 describe('HomeHero', () => {
-  it('links cakes by post CTA to /gift-hampers', () => {
+  it('links cakes by post CTA to /cakes-by-post', () => {
     render(<HomeHero />)
 
     const byPostLink = screen.getByRole('link', { name: /shop cakes by post/i })
-    expect(byPostLink).toHaveAttribute('href', '/gift-hampers')
+    expect(byPostLink).toHaveAttribute('href', '/cakes-by-post')
   })
 
   it('renders secondary browse CTA to /cakes', () => {

@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
 
     // Revalidate cache tags for product feeds
     revalidateTag('cakes', 'max');
+    revalidateTag('cakes-by-post', 'max');
     revalidateTag('gift-hampers', 'max');
     revalidateTag('merchant-center-feed', 'max');
 
@@ -58,6 +59,7 @@ export async function GET(request: NextRequest) {
 
     // Revalidate cache tags
     revalidateTag('cakes', 'max');
+    revalidateTag('cakes-by-post', 'max');
     revalidateTag('gift-hampers', 'max');
     revalidateTag('merchant-center-feed', 'max');
 

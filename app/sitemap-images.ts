@@ -1,26 +1,70 @@
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { MetadataRoute } from "next";
 
+type SitemapChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>
+
+interface SanityImageDimensions {
+  width?: number
+  height?: number
+  aspectRatio?: number
+  [key: string]: unknown
+}
+
+interface SanityImageAsset {
+  _id: string
+  url: string
+  metadata?: {
+    dimensions?: SanityImageDimensions
+  }
+}
+
+interface SanityImageRef {
+  asset?: SanityImageAsset
+  alt?: string
+}
+
+interface ImageSitemapImage {
+  url: string
+  title: string
+  caption: string
+  geoLocation: string
+  license: string
+  loc: string
+}
+
+interface ImageSitemapEntry {
+  url: string
+  lastModified: Date
+  changeFrequency: SitemapChangeFrequency
+  priority: number
+  images: ImageSitemapImage[]
+}
+
 interface BlogImageResult {
   slug: { current: string }
-  featuredImage?: { asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }
-  cardImage?: { asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }
+  featuredImage?: SanityImageRef
+  cardImage?: SanityImageRef
   title: string
   publishDate?: string
 }
 
 interface CakeImageResult {
   slug: { current: string }
-  images?: Array<{ asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }>
+  images?: SanityImageRef[]
   name: string
   _updatedAt: string
 }
 
 interface GiftHamperImageResult {
+  _id?: string
   slug?: { current: string }
-  images?: Array<{ asset?: { _id: string; url: string; metadata?: { dimensions?: any } }; alt?: string }>
+  images?: SanityImageRef[]
   name: string
   _updatedAt: string
+}
+
+function hasSanityImageUrl(image: SanityImageRef): image is SanityImageRef & { asset: SanityImageAsset } {
+  return Boolean(image.asset?.url)
 }
 
 async function getBlogImages() {
@@ -75,6 +119,7 @@ async function getCakeImages() {
 
 async function getGiftHamperImages() {
   const query = `*[_type == "giftHamper"] {
+    _id,
     slug,
     images[] {
       asset->{
@@ -101,10 +146,10 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
     getGiftHamperImages(),
   ]);
 
-  const imageEntries: any[] = [];
+  const imageEntries: ImageSitemapEntry[] = [];
 
   // Blog post images
-  blogImages.forEach((post: any) => {
+  blogImages.forEach((post) => {
     const postUrl = `${baseUrl}/blog/${post.slug.current}`;
 
     // Featured image
@@ -149,11 +194,11 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Cake images
-  cakeImages.forEach((cake: any) => {
+  cakeImages.forEach((cake) => {
     const cakeUrl = `${baseUrl}/cakes/${cake.slug.current}`;
 
     if (cake.images && cake.images.length > 0) {
-      const images = cake.images.map((img: any) => ({
+      const images = cake.images.filter(hasSanityImageUrl).map((img) => ({
         url: img.asset.url,
         title: cake.name,
         caption: img.alt || cake.name,
@@ -173,11 +218,11 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Gift hamper images
-  giftHamperImages.forEach((hamper: any) => {
-    const hamperUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
+  giftHamperImages.forEach((hamper) => {
+    const hamperUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
 
     if (hamper.images && hamper.images.length > 0) {
-      const images = hamper.images.map((img: any) => ({
+      const images = hamper.images.filter(hasSanityImageUrl).map((img) => ({
         url: img.asset.url,
         title: hamper.name,
         caption: img.alt || hamper.name,
@@ -197,7 +242,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Static page images
-  const staticPageImages = [
+  const staticPageImages: ImageSitemapEntry[] = [
     {
       url: `${baseUrl}`,
       lastModified: new Date(),
@@ -237,5 +282,5 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
     (a, b) => (b.priority || 0) - (a.priority || 0)
   );
 
-  return allEntries;
+  return allEntries as unknown as MetadataRoute.Sitemap;
 }

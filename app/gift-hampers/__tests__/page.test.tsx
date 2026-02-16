@@ -11,6 +11,8 @@ import { getAllTestimonialsStats } from '../../utils/fetchTestimonials'
 import type { CatalogPageData } from '../../cakes/catalogPageData'
 import type { TabletCake } from '../../cakes/components/types'
 
+let shouldSuspendCatalog = false
+
 jest.mock('../../cakes/catalogPageData', () => ({
   getCatalogPageData: jest.fn(),
   getCatalogCustomCakesPriceCeiling: jest.fn()
@@ -25,15 +27,21 @@ jest.mock('../../cakes/components/CakesTabletCatalog', () => ({
     initialFilterDefaults
   }: {
     initialFilterDefaults: { byPost: boolean; custom: boolean }
-  }) => (
-    <div
-      data-testid='cakes-catalog'
-      data-by-post={String(initialFilterDefaults.byPost)}
-      data-custom={String(initialFilterDefaults.custom)}
-    >
-      Shared catalog
-    </div>
-  )
+  }) => {
+    if (shouldSuspendCatalog) {
+      throw new Promise(() => {})
+    }
+
+    return (
+      <div
+        data-testid='cakes-catalog'
+        data-by-post={String(initialFilterDefaults.byPost)}
+        data-custom={String(initialFilterDefaults.custom)}
+      >
+        Shared catalog
+      </div>
+    )
+  }
 }))
 
 const mockedGetCatalogPageData = getCatalogPageData as jest.MockedFunction<typeof getCatalogPageData>
@@ -63,7 +71,7 @@ function createHamper(index: number): TabletCake {
   return {
     id: `hamper-${index}`,
     slug: `hamper-${index}`,
-    href: `/gift-hampers/hamper-${index}`,
+    href: `/cakes-by-post/hamper-${index}`,
     name: `Hamper ${index}`,
     description: 'Hamper description',
     price: 30 + index,
@@ -104,13 +112,17 @@ describe('GiftHampersPage', () => {
     })
   })
 
+  afterEach(() => {
+    shouldSuspendCatalog = false
+  })
+
   it('uses static generation mode', () => {
     expect(dynamic).toBe('force-static')
   })
 
-  it('keeps gift hampers canonical and OpenGraph URL', () => {
-    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/gift-hampers')
-    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/gift-hampers')
+  it('keeps cakes-by-post canonical and OpenGraph URL', () => {
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
   it('fetches shared catalog data, custom price ceiling hint and testimonial stats', async () => {
@@ -133,7 +145,7 @@ describe('GiftHampersPage', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: 'Luxury gift hampers and cakes by post across the UK'
+          name: 'Cakes by post across the UK with handmade Ukrainian flavour'
         })
       ).toBeInTheDocument()
       expect(screen.getByTestId('cakes-catalog')).toBeInTheDocument()
@@ -153,7 +165,7 @@ describe('GiftHampersPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Luxury gift hampers and cakes by post across the UK'
+        name: 'Cakes by post across the UK with handmade Ukrainian flavour'
       })
     ).toBeInTheDocument()
 
@@ -169,7 +181,7 @@ describe('GiftHampersPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 2,
-        name: 'Gift hamper FAQs'
+        name: 'Cakes by post FAQs'
       })
     ).toBeInTheDocument()
 
@@ -180,6 +192,19 @@ describe('GiftHampersPage', () => {
     expect(
       screen.getByText('Each product page lists exact hamper contents, sizes, and key details so you can choose with confidence.')
     ).toBeInTheDocument()
+  })
+
+  it('renders catalog suspense fallback during catalog suspension', async () => {
+    shouldSuspendCatalog = true
+
+    try {
+      const page = await GiftHampersPage()
+      render(page)
+
+      expect(screen.getByLabelText('Loading catalog products')).toBeInTheDocument()
+    } finally {
+      shouldSuspendCatalog = false
+    }
   })
 
   it('outputs breadcrumb, item list and local business structured data without faq page schema', async () => {
@@ -227,7 +252,7 @@ describe('GiftHampersPage', () => {
       throw new Error('Expected first list item product data')
     }
 
-    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/gift-hampers/hamper-1')
+    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes-by-post/hamper-1')
   })
 
   it('keeps ItemList structured data aligned with visible fallback hampers', async () => {
@@ -261,7 +286,7 @@ describe('GiftHampersPage', () => {
       throw new Error('Expected first list item product data')
     }
 
-    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/gift-hampers/hamper-99')
+    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes-by-post/hamper-99')
   })
 
   it('includes aggregate rating in local business data when reviews exist', async () => {

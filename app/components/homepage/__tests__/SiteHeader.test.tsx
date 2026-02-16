@@ -87,45 +87,88 @@ describe('SiteHeader', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('provides direct navigation to /cakes', () => {
+  it('orders desktop navigation with cakes by post first', () => {
     render(<SiteHeader />)
 
-    const desktopAllCakesLinks = screen.getAllByRole('link', { name: /all cakes/i })
-    expect(desktopAllCakesLinks.some((link) => link.getAttribute('href') === '/cakes')).toBe(true)
+    const mainNav = screen.getByRole('navigation', { name: /main navigation/i })
+    const topLevelList = mainNav.querySelector('ul.menu-horizontal')
+
+    if (!topLevelList) {
+      throw new Error('Desktop top-level navigation list not found')
+    }
+
+    const topLevelLabels = Array.from(topLevelList.children).map((item) => {
+      const firstChild = item.firstElementChild
+
+      if (!firstChild) {
+        return ''
+      }
+
+      if (firstChild.tagName === 'A') {
+        return firstChild.textContent?.trim() ?? ''
+      }
+
+      if (firstChild.tagName === 'DETAILS') {
+        const summaryLabel = firstChild.querySelector('summary span')
+        return summaryLabel?.textContent?.trim() ?? ''
+      }
+
+      return ''
+    })
+
+    expect(topLevelLabels[0]).toBe('Cakes by post')
+    expect(topLevelLabels[1]).toBe('Custom cakes')
+  })
+
+  it('orders custom cakes dropdown with all cakes first and order form last', () => {
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details')
+
+    if (!customDetails) {
+      throw new Error('Custom cakes details not found')
+    }
+
+    const dropdownLinks = Array.from(customDetails.querySelectorAll('.dropdown-content a'))
+      .map((link) => link.textContent?.trim() ?? '')
+
+    expect(dropdownLinks[0]).toBe('All cakes')
+    expect(dropdownLinks[dropdownLinks.length - 1]).toBe('Order form')
+    expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
+    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/custom-cake-enquiry')
+  })
+
+  it('removes all cakes from mobile menu and points custom cakes to /cakes', () => {
+    render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
 
-    const mobileAllCakesLink = screen.getByRole('menuitem', { name: /all cakes/i })
-    expect(mobileAllCakesLink).toHaveAttribute('href', '/cakes')
+    const mobileCustomCakesLink = screen.getByRole('menuitem', { name: /custom cakes/i })
+
+    expect(mobileCustomCakesLink).toHaveAttribute('href', '/cakes')
+    expect(screen.queryByRole('menuitem', { name: /all cakes/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /order form/i })).not.toBeInTheDocument()
   })
 
-  it('orders mobile menu with all cakes before cakes by post', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const mobileMenuItems = screen.getAllByRole('menuitem')
-    const allCakesIndex = mobileMenuItems.findIndex((item) => /all cakes/i.test(item.textContent ?? ''))
-    const byPostIndex = mobileMenuItems.findIndex((item) => /cakes by post/i.test(item.textContent ?? ''))
-
-    expect(allCakesIndex).toBeGreaterThanOrEqual(0)
-    expect(byPostIndex).toBeGreaterThanOrEqual(0)
-    expect(allCakesIndex).toBeLessThan(byPostIndex)
-  })
-
-  it('keeps cakes by post navigation pointed to /gift-hampers', () => {
+  it('keeps cakes by post navigation pointed to /cakes-by-post', () => {
     render(<SiteHeader />)
 
     const desktopByPostLinks = screen.getAllByRole('link', { name: /cakes by post/i })
-    expect(desktopByPostLinks.some((link) => link.getAttribute('href') === '/gift-hampers')).toBe(true)
+    expect(desktopByPostLinks.some((link) => link.getAttribute('href') === '/cakes-by-post')).toBe(true)
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
 
     const mobileByPostLink = screen.getByRole('menuitem', { name: /cakes by post/i })
-    expect(mobileByPostLink).toHaveAttribute('href', '/gift-hampers')
+    expect(mobileByPostLink).toHaveAttribute('href', '/cakes-by-post')
   })
 
   it('moves farmers markets into Learn & visit links', () => {

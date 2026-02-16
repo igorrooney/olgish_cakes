@@ -38,7 +38,7 @@ describe('/api/catalog/by-post-cakes', () => {
         {
           id: 'hamper-1',
           slug: 'sample-hamper',
-          href: '/gift-hampers/sample-hamper',
+          href: '/cakes-by-post/sample-hamper',
           name: 'Sample Hamper',
           description: 'Sample by post description',
           price: 32,

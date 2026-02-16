@@ -121,7 +121,7 @@ describe('sitemap', () => {
       const result = await sitemap()
 
       // Sitemap filters out hampers without slug.current, so this should not be included
-      const hamperUrl = result.find(entry => entry.url.includes('/gift-hampers/hamper-123'))
+      const hamperUrl = result.find(entry => entry.url.includes('/cakes-by-post/hamper-123'))
       expect(hamperUrl).toBeUndefined()
     })
   })

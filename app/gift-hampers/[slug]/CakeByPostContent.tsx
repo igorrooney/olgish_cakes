@@ -531,7 +531,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+            <Link href="/cakes-by-post/cake-by-post" style={{ textDecoration: 'none' }}>
               <Button variant="contained"
               size="large"
               sx={{

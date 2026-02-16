@@ -112,7 +112,7 @@ export function HomeHero() {
 
         <div className='flex w-full flex-col justify-center gap-3 tablet:flex-row tablet:gap-4'>
           <Link
-            href='/gift-hampers'
+            href='/cakes-by-post'
             className={`btn btn-primary ${ctaBaseClass} gap-2`}
           >
             Shop cakes by post

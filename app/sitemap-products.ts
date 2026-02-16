@@ -2,30 +2,14 @@ import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { MetadataRoute } from "next";
 
 interface SitemapCake {
-  _id: string
-  name: string
   slug: { current: string }
   _updatedAt: string
-  pricing?: any
-  mainImage?: any
-  designs?: any
-  category?: string
-  shortDescription?: any
-  description?: any
-  seo?: { priority?: number; changefreq?: string }
 }
 
 interface SitemapGiftHamper {
   _id: string
-  name: string
   slug?: { current: string }
   _updatedAt: string
-  price?: number
-  images?: any
-  category?: string
-  shortDescription?: any
-  description?: any
-  seo?: { priority?: number; changefreq?: string }
 }
 
 async function getProducts() {
@@ -72,7 +56,7 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
   const { cakes, giftHampers } = await getProducts();
 
   // Cake product pages with high priority for Google Merchant Center
-  const cakeRoutes = cakes.map((cake: any) => ({
+  const cakeRoutes = cakes.map((cake) => ({
     url: `${baseUrl}/cakes/${cake.slug.current}`,
     lastModified: new Date(cake._updatedAt),
     changeFrequency: "daily" as const, // High frequency for product pages
@@ -80,8 +64,8 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
   }));
 
   // Gift hamper product pages with high priority
-  const giftHamperRoutes = giftHampers.map((hamper: any) => ({
-    url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
+  const giftHamperRoutes = giftHampers.map((hamper) => ({
+    url: `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`,
     lastModified: new Date(hamper._updatedAt),
     changeFrequency: "daily" as const, // High frequency for product pages
     priority: 0.95, // Very high priority for products
@@ -96,7 +80,7 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/gift-hampers`,
+      url: `${baseUrl}/cakes-by-post`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,

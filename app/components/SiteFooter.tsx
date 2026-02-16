@@ -23,7 +23,7 @@ export function SiteFooter() {
               <h6 className="mb-2 font-moreSugar text-sm tablet:text-xl font-normal leading-5 tracking-normal text-left align-middle text-[color:var(--color-navigation)] uppercase">
                 Navigation
               </h6>
-              <Link href="/cakes" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
+              <Link href="/cakes-by-post" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
                 Cakes by post
               </Link>
               <Link href="/custom-cakes" className="link link-hover font-sans text-sm tablet:text-base text-base-content">

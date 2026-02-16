@@ -54,7 +54,7 @@ const fallbackCakes: TabletCake[] = [
   {
     id: 'fallback-honey',
     slug: 'cake-by-post',
-    href: '/gift-hampers/cake-by-post',
+    href: '/cakes-by-post/cake-by-post',
     name: 'Cake by Post Gift Hamper',
     description: 'Traditional layered Medovik with delicate cream and light honey sweetness.',
     price: 35,
@@ -246,7 +246,7 @@ function mapGiftHamperToTabletCake(hamper: GiftHamper): TabletCake {
   return {
     id: hamper._id,
     slug: hamper.slug.current,
-    href: `/gift-hampers/${hamper.slug.current}`,
+    href: `/cakes-by-post/${hamper.slug.current}`,
     name: hamper.name,
     description: getGiftHamperDescription(hamper),
     price: hamper.price ?? 0,

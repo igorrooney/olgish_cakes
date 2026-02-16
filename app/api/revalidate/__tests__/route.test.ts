@@ -41,6 +41,7 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
     expect(revalidateTag).toHaveBeenCalledWith('cake-collections', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('gift-hamper-collections', 'max')
   })
@@ -61,8 +62,9 @@ describe('/api/revalidate', () => {
 
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
-    expect(revalidatePath).toHaveBeenCalledWith('/gift-hampers')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
     expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })

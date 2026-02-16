@@ -80,7 +80,7 @@ describe('sitemap-images', () => {
 
       const result = await sitemapImages()
 
-      const hamperEntry = result.find(entry => entry.url.includes('/gift-hampers/deluxe'))
+      const hamperEntry = result.find(entry => entry.url.includes('/cakes-by-post/deluxe'))
       expect(hamperEntry).toBeDefined()
     })
 

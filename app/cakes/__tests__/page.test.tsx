@@ -258,7 +258,7 @@ const cakeCollection = {
 const sampleByPostCatalogCake = {
   id: 'hamper-1',
   slug: 'postal-gift-hamper',
-  href: '/gift-hampers/postal-gift-hamper',
+  href: '/cakes-by-post/postal-gift-hamper',
   name: 'Postal Gift Hamper',
   description: 'A thoughtful by post gift hamper.',
   price: 32,

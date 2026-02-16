@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 import { CakesTabletCatalog } from './components/CakesTabletCatalog'
 import type { CatalogFilterDefaults } from './components/types'
 import type { CatalogPageData } from './catalogPageData'
@@ -12,7 +13,7 @@ interface CatalogPageTemplateProps {
   detailsSectionTitle: string
   detailsParagraphs: string[]
   breadcrumbLabel: string
-  canonicalPath: '/cakes' | '/gift-hampers'
+  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
   localBusinessDescription: string
   catalogData: CatalogPageData
   initialFilterDefaults: CatalogFilterDefaults
@@ -28,6 +29,42 @@ interface CatalogPageTemplateProps {
 
 const baseUrl = 'https://olgishcakes.co.uk'
 
+function CatalogCatalogSkeletonFallback() {
+  return (
+    <section
+      aria-busy='true'
+      aria-live='polite'
+      aria-label='Loading catalog products'
+      className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'
+    >
+      <div className='mt-10 flex flex-col gap-5 tablet:gap-6 tablet:flex-row tablet:items-start'>
+        <div className='tablet:w-60 tablet:flex-none'>
+          <div className='rounded-box border border-base-300 bg-base-100 p-4'>
+            <div className='mb-4 h-6 w-24 animate-pulse rounded bg-base-200' />
+            <div className='space-y-3'>
+              <div className='h-5 w-full animate-pulse rounded bg-base-200' />
+              <div className='h-5 w-full animate-pulse rounded bg-base-200' />
+              <div className='h-5 w-4/5 animate-pulse rounded bg-base-200' />
+              <div className='h-5 w-3/5 animate-pulse rounded bg-base-200' />
+            </div>
+          </div>
+        </div>
+        <div className='min-w-0 tablet:flex-1'>
+          <div className='h-10 w-52 animate-pulse rounded-box bg-base-200' />
+          <div className='mt-4 grid grid-cols-1 gap-4 tablet:auto-rows-fr tablet:grid-cols-2 small-laptop:grid-cols-3'>
+            {[...Array(6).keys()].map((index) => (
+              <div
+                key={`catalog-loading-card-${index + 1}`}
+                className='h-[420px] animate-pulse rounded-box bg-base-200'
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function toJsonLdScript(data: StructuredData) {
   return JSON.stringify(data).replace(/</g, '\\u003c')
 }
@@ -36,7 +73,7 @@ function buildDefaultLocalBusinessData({
   canonicalPath,
   localBusinessDescription
 }: {
-  canonicalPath: '/cakes' | '/gift-hampers'
+  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
   localBusinessDescription: string
 }): StructuredData {
   return {
@@ -75,7 +112,7 @@ function buildBreadcrumbData({
   canonicalPath
 }: {
   breadcrumbLabel: string
-  canonicalPath: '/cakes' | '/gift-hampers'
+  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
 }): StructuredData {
   return {
     '@context': 'https://schema.org',
@@ -161,16 +198,18 @@ export function CatalogPageTemplate({
           </p>
         </section>
         {preCatalogContent}
-        <CakesTabletCatalog
-          cakes={catalogData.cakesForUi}
-          featuredOffer={catalogData.featuredOffer}
-          collectionOptions={catalogData.collectionOptions}
-          initialFilterDefaults={initialFilterDefaults}
-          lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
-          lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
-          lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
-          lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
-        />
+        <Suspense fallback={<CatalogCatalogSkeletonFallback />}>
+          <CakesTabletCatalog
+            cakes={catalogData.cakesForUi}
+            featuredOffer={catalogData.featuredOffer}
+            collectionOptions={catalogData.collectionOptions}
+            initialFilterDefaults={initialFilterDefaults}
+            lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
+            lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
+            lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
+            lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
+          />
+        </Suspense>
         <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0 small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
           <h2 className={detailsSectionTitleClassName}>
             {detailsSectionTitle}

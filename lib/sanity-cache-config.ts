@@ -28,7 +28,7 @@ export const SANITY_CACHE_CONFIG = {
   },
   giftHampers: {
     revalidate: NO_REVALIDATE,
-    tags: ['gift-hampers']
+    tags: ['cakes-by-post', 'gift-hampers']
   },
   cakeCollections: {
     revalidate: NO_REVALIDATE,

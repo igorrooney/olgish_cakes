@@ -123,7 +123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const giftHamperRoutes = giftHampers
     .filter((hamper) => hamper.slug?.current)
     .map((hamper) => ({
-        url: `${baseUrl}/gift-hampers/${hamper.slug.current}`,
+        url: `${baseUrl}/cakes-by-post/${hamper.slug.current}`,
         lastModified: new Date(hamper._updatedAt),
         changeFrequency:
           (hamper.seo?.changefreq as
@@ -189,7 +189,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.88,
     },
     {
-      url: `${baseUrl}/gift-hampers`,
+      url: `${baseUrl}/cakes-by-post`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.88,

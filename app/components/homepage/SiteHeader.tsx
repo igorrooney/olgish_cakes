@@ -18,7 +18,7 @@ export function SiteHeader() {
   const topNavItemClassName =
     'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent transition-colors whitespace-nowrap'
   const topNavSummaryClassName =
-    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[\"\"]'
+    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[""]'
   const dropdownItemClassName =
     'flex items-center h-7 px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 active:!bg-transparent transition-colors whitespace-nowrap shadow-none active:shadow-none focus:shadow-none focus-visible:shadow-none'
   const dropdownMenuListClassName =
@@ -212,12 +212,7 @@ export function SiteHeader() {
           <nav aria-label='Main navigation'>
             <ul className='menu menu-horizontal px-1 !list-none gap-6 large-laptop:gap-8 flex-nowrap whitespace-nowrap overflow-visible [&>li]:list-none [&>li]:marker:text-transparent [&>li]:before:hidden [&>li]:after:hidden'>
               <li>
-                <Link href='/cakes' className={topNavItemClassName}>
-                  All cakes
-                </Link>
-              </li>
-              <li>
-                <Link href='/gift-hampers' className={topNavItemClassName}>
+                <Link href='/cakes-by-post' className={topNavItemClassName}>
                   Cakes by post
                 </Link>
               </li>
@@ -263,8 +258,8 @@ export function SiteHeader() {
                   >
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/custom-cake-enquiry' className={dropdownItemClassName}>
-                          Order form
+                        <Link href='/cakes' className={dropdownItemClassName}>
+                          All cakes
                         </Link>
                       </li>
                       <li>
@@ -307,6 +302,11 @@ export function SiteHeader() {
                       <li>
                         <Link href='/honey-cake-near-me' className={dropdownItemClassName}>
                           Honey cake
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href='/custom-cake-enquiry' className={dropdownItemClassName}>
+                          Order form
                         </Link>
                       </li>
                     </ul>
@@ -459,15 +459,7 @@ export function SiteHeader() {
                 </p>
               </div>
               <Link
-                href='/cakes'
-                role='menuitem'
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                All cakes
-              </Link>
-              <Link
-                href='/gift-hampers'
+                href='/cakes-by-post'
                 role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
@@ -475,7 +467,7 @@ export function SiteHeader() {
                 Cakes by post
               </Link>
               <Link
-                href='/custom-cakes'
+                href='/cakes'
                 role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
