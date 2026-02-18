@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
-import GiftHampersPage, { dynamic, metadata } from '../page'
+import GiftHampersPage, { generateMetadata } from '../page'
 import {
   getCatalogCustomCakesPriceCeiling,
   getCatalogPageData
@@ -116,13 +116,31 @@ describe('GiftHampersPage', () => {
     shouldSuspendCatalog = false
   })
 
-  it('uses static generation mode', () => {
-    expect(dynamic).toBe('force-static')
+  it('uses base cakes-by-post canonical metadata when no query params are provided', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({})
+    })
+
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
-  it('keeps cakes-by-post canonical and OpenGraph URL', () => {
-    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+  it('uses base cakes-by-post canonical metadata for pure pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2' })
+    })
+
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+  })
+
+  it('falls back to base cakes-by-post canonical metadata for mixed pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2', collections: 'h-postal-gifts' })
+    })
+
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
   it('fetches shared catalog data, custom price ceiling hint and testimonial stats', async () => {
@@ -162,16 +180,33 @@ describe('GiftHampersPage', () => {
     const page = await GiftHampersPage()
     render(page)
 
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'Cakes by post across the UK with handmade Ukrainian flavour'
-      })
-    ).toBeInTheDocument()
+    const pageHeading = screen.getByRole('heading', {
+      level: 1,
+      name: 'Cakes by post across the UK with handmade Ukrainian flavour'
+    })
+    const pageIntro = screen.getByText(
+      'Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+    )
+
+    expect(pageHeading).toBeInTheDocument()
+    expect(pageHeading).toHaveClass('sr-only', 'tablet:not-sr-only')
+    expect(pageIntro).toBeInTheDocument()
+    expect(pageIntro).toHaveClass('sr-only', 'tablet:not-sr-only')
+    const headingSection = pageHeading.closest('section')
+    if (!headingSection) {
+      throw new Error('Expected heading section wrapper')
+    }
+    expect(headingSection).toHaveClass('pt-0', 'pb-0', 'tablet:pt-8', 'tablet:pb-2')
+    expect(screen.queryByText('Cakes by post from Leeds with reliable UK-wide delivery')).not.toBeInTheDocument()
+    expect(screen.queryByText(
+      'Our cakes-by-post collection is designed for people who want reliable UK delivery without giving up handmade quality. Every order is prepared in Leeds and packed carefully for travel, with clear product pages covering flavours, contents, portion guidance and delivery expectations. You can compare by budget and occasion, then choose the best option for birthdays, thank-you gifts, corporate sending or family surprises. Ukrainian-inspired favourites such as honey cake slices and caramel biscuits are made with balanced sweetness and packaging selected for safe letterbox-friendly delivery. If you are unsure what to choose, start with recipient preferences and delivery date, and I can recommend the most suitable cake-by-post option.'
+    )).not.toBeInTheDocument()
 
     const catalog = screen.getByTestId('cakes-catalog')
     expect(catalog).toHaveAttribute('data-by-post', 'true')
     expect(catalog).toHaveAttribute('data-custom', 'false')
+    expect(screen.queryByRole('navigation', { name: 'Catalog pagination crawl links' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Catalog product crawl links' })).not.toBeInTheDocument()
   })
 
   it('renders gift hamper faq accordion content', async () => {
@@ -183,6 +218,10 @@ describe('GiftHampersPage', () => {
         level: 2,
         name: 'Cakes by post FAQs'
       })
+    ).toBeInTheDocument()
+    expect(screen.getByText('UK delivery and gifting FAQs for cakes by post.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Quick answers about UK delivery, gifting options, and what to expect from cakes by post.')
     ).toBeInTheDocument()
 
     expect(screen.getByText('Do you deliver gift hampers across the UK?')).toBeInTheDocument()

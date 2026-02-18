@@ -4,7 +4,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import CakesPage, { dynamic, metadata } from '../page'
+import CakesPage, { generateMetadata } from '../page'
 import { getAllCakes, getCakesFeaturedOffer } from '../../utils/fetchCakes'
 import { getAllGiftHampers } from '../../utils/fetchGiftHampers'
 import { getHomepageCollections, getHomepageGiftHamperCollections } from '../../utils/fetchCollections'
@@ -319,15 +319,38 @@ describe('CakesPage', () => {
     mockedGetHomepageGiftHamperCollections.mockResolvedValue([])
   })
 
-  it('uses static generation mode', () => {
-    expect(dynamic).toBe('force-static')
-  })
+  it('uses base canonical metadata when no query params are provided', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({})
+    })
 
-  it('keeps metadata with canonical url', () => {
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
   })
 
-  it('keeps metadata title and description for SEO', () => {
+  it('uses base canonical metadata for pure pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2' })
+    })
+
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
+  })
+
+  it('falls back to base canonical metadata for mixed pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2', collections: 'c-wedding-cakes' })
+    })
+
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
+  })
+
+  it('keeps metadata title and description for SEO', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({})
+    })
+
     expect(typeof metadata.title).toBe('string')
     expect(typeof metadata.description).toBe('string')
 
@@ -538,26 +561,39 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
-      })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Authentic Ukrainian cakes in Leeds, baked fresh to order')).toBeInTheDocument()
+    const pageHeading = screen.getByRole('heading', {
+      level: 1,
+      name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
+    })
+    const pageIntro = screen.getByText(
+      'Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that feel like home.'
+    )
+
+    expect(pageHeading).toBeInTheDocument()
+    expect(pageHeading).toHaveClass('sr-only', 'tablet:not-sr-only')
+    expect(pageIntro).toBeInTheDocument()
+    expect(pageIntro).toHaveClass('sr-only', 'tablet:not-sr-only')
+    const headingSection = pageHeading.closest('section')
+    if (!headingSection) {
+      throw new Error('Expected heading section wrapper')
+    }
+    expect(headingSection).toHaveClass('pt-0', 'pb-0', 'tablet:pt-8', 'tablet:pb-2')
+    expect(screen.queryByText('Authentic Ukrainian cakes in Leeds, baked fresh to order')).not.toBeInTheDocument()
     expect(screen.getByText('FREE Honey Cake Offer')).toBeInTheDocument()
     expect(screen.getByText('Filter by')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Most popular' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
-    expect(screen.getByText('Sample Honey Cake')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
     expect(screen.getByText('Do you make custom birthday and wedding cakes in Leeds?')).toBeInTheDocument()
     expect(screen.getByText('Can any cake be delivered across the UK?')).toBeInTheDocument()
     expect(screen.getByText('Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so I can confirm the cake type, date, delivery details, and cost.')).toBeInTheDocument()
     expect(screen.getByText('Do you work with corporate clients and events?')).toBeInTheDocument()
     expect(screen.getByText('Yes. I work with corporate clients and can supply cakes for any event or corporate celebration. Share your date, headcount, and style, and I will suggest suitable options.')).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Catalog pagination crawl links' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Catalog product crawl links' })).not.toBeInTheDocument()
   })
 
   it('shows cakes above one hundred pounds by default', async () => {
@@ -595,7 +631,7 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByText('Birthday Celebration Cake')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'Birthday Celebration Cake' })).toBeInTheDocument()
     expect(screen.queryByText('Cake by Post Gift Hamper')).not.toBeInTheDocument()
   })
 

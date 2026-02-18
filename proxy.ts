@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isAdminAuthenticated } from "./lib/admin-auth";
+import {
+  classifyPageOnlyQueryFromUrlSearchParams
+} from "./lib/utils/catalog-listing-query-seo";
+
+function isCatalogListingPath(pathname: string) {
+  return pathname === "/cakes" || pathname === "/cakes-by-post" || pathname === "/gift-hampers";
+}
 
 export async function proxy(request: NextRequest) {
   // Force HTTPS redirect for all HTTP requests (except localhost in development)
@@ -28,6 +35,25 @@ export async function proxy(request: NextRequest) {
       );
     }
   }
+  const hasCatalogQuery = isCatalogListingPath(request.nextUrl.pathname) &&
+    request.nextUrl.searchParams.toString().length > 0;
+  let shouldApplyCatalogNoindex = false;
+
+  if (hasCatalogQuery) {
+    const pageOnlyQuery = classifyPageOnlyQueryFromUrlSearchParams(request.nextUrl.searchParams);
+
+    if (pageOnlyQuery.isPageOnly && pageOnlyQuery.pageNumber === 1) {
+      const redirectUrl = new URL(request.nextUrl.toString());
+      if (request.nextUrl.pathname === "/gift-hampers") {
+        redirectUrl.pathname = "/cakes-by-post";
+      }
+      redirectUrl.search = "";
+      return NextResponse.redirect(redirectUrl, 308);
+    }
+
+    shouldApplyCatalogNoindex = true;
+  }
+
   const response = NextResponse.next();
 
   // Add security headers (skip HSTS for localhost)
@@ -59,12 +85,9 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "public, max-age=60, must-revalidate");
   }
 
-  // Prevent indexing of faceted/filter URLs on the cakes listing page.
-  // Keep clean /cakes indexable via page canonical and default robots directives.
-  if (
-    request.nextUrl.pathname === "/cakes" &&
-    request.nextUrl.searchParams.toString().length > 0
-  ) {
+  // Prevent indexing of catalog listing query URLs.
+  // Keep clean listing URLs indexable and redirect ?page=1 to base URL.
+  if (shouldApplyCatalogNoindex) {
     response.headers.set(
       "X-Robots-Tag",
       "noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"

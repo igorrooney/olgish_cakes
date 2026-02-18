@@ -413,7 +413,12 @@ export default async function RootLayout({
   const aggregateRating = buildAggregateRating(reviewStats)
 
   return (
-    <html lang="en-GB" data-theme="olgish-cakes" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
+    <html
+      lang="en-GB"
+      data-theme="olgish-cakes"
+      data-scroll-behavior="smooth"
+      className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}
+    >
       <head>
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
 

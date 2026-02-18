@@ -5,15 +5,14 @@ import type { CatalogFilterDefaults } from './components/types'
 import type { CatalogPageData } from './catalogPageData'
 
 type StructuredData = Record<string, unknown>
+type CatalogCanonicalPath = '/cakes' | '/cakes-by-post'
 
 interface CatalogPageTemplateProps {
   variant: 'cakes' | 'giftHampers'
   heading: string
   intro: string
-  detailsSectionTitle: string
-  detailsParagraphs: string[]
   breadcrumbLabel: string
-  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
+  canonicalPath: CatalogCanonicalPath
   localBusinessDescription: string
   catalogData: CatalogPageData
   initialFilterDefaults: CatalogFilterDefaults
@@ -73,7 +72,7 @@ function buildDefaultLocalBusinessData({
   canonicalPath,
   localBusinessDescription
 }: {
-  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
+  canonicalPath: CatalogCanonicalPath
   localBusinessDescription: string
 }): StructuredData {
   return {
@@ -112,7 +111,7 @@ function buildBreadcrumbData({
   canonicalPath
 }: {
   breadcrumbLabel: string
-  canonicalPath: '/cakes' | '/gift-hampers' | '/cakes-by-post'
+  canonicalPath: CatalogCanonicalPath
 }): StructuredData {
   return {
     '@context': 'https://schema.org',
@@ -138,8 +137,6 @@ export function CatalogPageTemplate({
   variant,
   heading,
   intro,
-  detailsSectionTitle,
-  detailsParagraphs,
   breadcrumbLabel,
   canonicalPath,
   localBusinessDescription,
@@ -163,11 +160,6 @@ export function CatalogPageTemplate({
     canonicalPath
   })
 
-  const detailsSectionTitleClassName =
-    'mx-auto max-w-[760px] text-center font-moreSugar text-[24px] font-normal uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] tablet:text-[36px] tablet:leading-[52px] small-laptop:max-w-[1000px]'
-  const detailsSectionParagraphClassName =
-    'font-oldenburg text-[15px] leading-[32px] tracking-[1.2px] text-base-content tablet:text-base tablet:leading-8 tablet:tracking-normal'
-
   return (
     <>
       <script
@@ -189,11 +181,11 @@ export function CatalogPageTemplate({
         data-catalog-variant={variant}
         className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'
       >
-        <section className='mx-auto text-center w-full max-w-[952px] px-4 pb-2 pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
-          <h1 className='mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
+        <section className='mx-auto text-center w-full max-w-[952px] px-4 pb-0 pt-0 tablet:pb-2 tablet:pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
+          <h1 className='sr-only tablet:not-sr-only mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             {heading}
           </h1>
-          <p className='mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
+          <p className='sr-only tablet:not-sr-only mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             {intro}
           </p>
         </section>
@@ -210,18 +202,6 @@ export function CatalogPageTemplate({
             lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
           />
         </Suspense>
-        <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-4 tablet:px-0 small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
-          <h2 className={detailsSectionTitleClassName}>
-            {detailsSectionTitle}
-          </h2>
-          <div className='mx-auto mt-6 max-w-[860px] space-y-4'>
-            {detailsParagraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)} className={detailsSectionParagraphClassName}>
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        </section>
         {postCatalogContent}
       </main>
     </>

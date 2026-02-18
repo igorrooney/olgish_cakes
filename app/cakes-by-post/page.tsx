@@ -1,1 +1,1 @@
-export { metadata, default } from '../gift-hampers/page'
+export { generateMetadata, default } from '../gift-hampers/page'

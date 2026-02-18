@@ -2,12 +2,16 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderToString } from 'react-dom/server.node'
 import { CakesTabletCatalog } from '../CakesTabletCatalog'
 import type { CakesCollectionOption, CatalogFilterDefaults, TabletCake } from '../types'
 
 const renderedPriceValues: number[] = []
+const renderedCardVariants: Array<'desktop' | 'mobile'> = []
+const renderedMobileViewModes: Array<'grid' | 'single'> = []
+const mobileViewModeStorageKey = 'catalog-mobile-view-mode'
 
 function resetRenderedPriceValues() {
   renderedPriceValues.length = 0
@@ -15,6 +19,103 @@ function resetRenderedPriceValues() {
 
 function getRenderedPriceValues() {
   return [...renderedPriceValues]
+}
+
+function resetRenderedCardVariants() {
+  renderedCardVariants.length = 0
+}
+
+function getRenderedCardVariants() {
+  return [...renderedCardVariants]
+}
+
+function resetRenderedMobileViewModes() {
+  renderedMobileViewModes.length = 0
+}
+
+function getRenderedMobileViewModes() {
+  return [...renderedMobileViewModes]
+}
+
+interface MockObserverInstance {
+  callback: IntersectionObserverCallback
+  observedElements: Set<Element>
+  observer: IntersectionObserver
+}
+
+const mockObserverInstances: MockObserverInstance[] = []
+
+class MockIntersectionObserver implements IntersectionObserver {
+  root: Element | Document | null
+  rootMargin: string
+  thresholds: ReadonlyArray<number>
+  private readonly callback: IntersectionObserverCallback
+  private readonly observedElements = new Set<Element>()
+
+  constructor(callback: IntersectionObserverCallback, options: IntersectionObserverInit = {}) {
+    this.callback = callback
+    this.root = options.root ?? null
+    this.rootMargin = options.rootMargin ?? ''
+    const threshold = options.threshold
+    this.thresholds = Array.isArray(threshold)
+      ? [...threshold]
+      : [threshold ?? 0]
+
+    mockObserverInstances.push({
+      callback: this.callback,
+      observedElements: this.observedElements,
+      observer: this
+    })
+  }
+
+  disconnect() {
+    this.observedElements.clear()
+  }
+
+  observe(target: Element) {
+    this.observedElements.add(target)
+  }
+
+  takeRecords() {
+    return []
+  }
+
+  unobserve(target: Element) {
+    this.observedElements.delete(target)
+  }
+}
+
+function resetMockIntersectionObservers() {
+  mockObserverInstances.length = 0
+}
+
+function triggerMobileInfiniteSentinelIntersection() {
+  const sentinel = screen.queryByTestId('mobile-infinite-scroll-sentinel')
+
+  if (!sentinel) {
+    return
+  }
+
+  mockObserverInstances.forEach((instance) => {
+    if (!instance.observedElements.has(sentinel)) {
+      return
+    }
+
+    const boundingRect = sentinel.getBoundingClientRect()
+    const entry = {
+      time: Date.now(),
+      target: sentinel,
+      isIntersecting: true,
+      intersectionRatio: 1,
+      boundingClientRect: boundingRect,
+      intersectionRect: boundingRect,
+      rootBounds: null
+    } satisfies IntersectionObserverEntry
+
+    act(() => {
+      instance.callback([entry], instance.observer)
+    })
+  })
 }
 
 jest.mock('nuqs', () => {
@@ -177,14 +278,44 @@ jest.mock('nuqs', () => {
   }
 })
 
+jest.mock('next/navigation', () => ({
+  usePathname: () => window.location.pathname
+}))
+
 jest.mock('../CakesFeaturedOffer', () => ({
   CakesFeaturedOffer: () => <div data-testid='featured-offer'>Featured offer</div>
 }))
 
 jest.mock('../CakesProductCard', () => ({
-  CakesProductCard: ({ cake }: { cake: { name: string } }) => (
-    <article data-testid='cake-card'>{cake.name}</article>
-  )
+  CakesProductCard: ({
+    cake,
+    variant = 'desktop',
+    mobileViewMode = 'grid',
+    isLcpCandidate = false
+  }: {
+    cake: { name: string, href: string }
+    variant?: 'desktop' | 'mobile'
+    mobileViewMode?: 'grid' | 'single'
+    isLcpCandidate?: boolean
+  }) => {
+    renderedCardVariants.push(variant)
+    if (variant === 'mobile') {
+      renderedMobileViewModes.push(mobileViewMode)
+    }
+
+    return (
+      <a href={cake.href} aria-label={`View details for ${cake.name}`}>
+        <article
+          data-testid='cake-card'
+          data-variant={variant}
+          data-mobile-view-mode={mobileViewMode}
+          data-is-lcp-candidate={isLcpCandidate ? 'true' : 'false'}
+        >
+          {cake.name}
+        </article>
+      </a>
+    )
+  }
 }))
 
 jest.mock('../CakesSortBar', () => ({
@@ -296,6 +427,60 @@ jest.mock('../CakesFilterSidebar', () => ({
   }
 }))
 
+jest.mock('../CakesMobileFilterSortSheet', () => ({
+  CakesMobileFilterSortSheet: ({
+    open,
+    selectedSort,
+    selectedCollectionIds,
+    onSortChange,
+    onToggleCollection,
+    onApply,
+    onCancel
+  }: {
+    open: boolean
+    selectedSort: 'new' | 'priceHighToLow' | 'priceLowToHigh'
+    selectedCollectionIds: string[]
+    onSortChange: (option: 'new' | 'priceHighToLow' | 'priceLowToHigh') => void
+    onToggleCollection: (collectionId: string, checked: boolean) => void
+    onApply: () => void
+    onCancel: () => void
+  }) => {
+    if (!open) {
+      return null
+    }
+
+    return (
+      <div data-testid='mobile-filter-sort-sheet'>
+        <p data-testid='mobile-filter-sort-draft-sort'>{selectedSort}</p>
+        <button type='button' onClick={() => onSortChange('priceHighToLow')}>
+          Draft sort high to low
+        </button>
+        <button type='button' onClick={() => onSortChange('priceLowToHigh')}>
+          Draft sort low to high
+        </button>
+        <button
+          type='button'
+          onClick={() => onToggleCollection('collection-1', !selectedCollectionIds.includes('collection-1'))}
+        >
+          Draft first collection
+        </button>
+        <button type='button' onClick={onApply}>
+          Apply mobile filters
+        </button>
+        <button type='button' onClick={onCancel}>
+          Cancel mobile filters
+        </button>
+        <button type='button' onClick={onCancel}>
+          Dismiss mobile filters via backdrop
+        </button>
+        <button type='button' onClick={onCancel}>
+          Dismiss mobile filters via esc
+        </button>
+      </div>
+    )
+  }
+}))
+
 const collectionOptions: CakesCollectionOption[] = [
   {
     id: 'collection-1',
@@ -312,6 +497,17 @@ const collectionOptions: CakesCollectionOption[] = [
     label: 'Signature',
     isFeatured: false,
     productType: 'cake'
+  }
+]
+const mixedCollectionOptions: CakesCollectionOption[] = [
+  ...collectionOptions,
+  {
+    id: 'collection-h-postal',
+    queryValue: 'h-postal-gifts',
+    legacyQueryValues: ['collection-h-postal'],
+    label: 'Postal gifts',
+    isFeatured: false,
+    productType: 'giftHamper'
   }
 ]
 
@@ -351,6 +547,19 @@ function createGiftHamper(index: number): TabletCake {
   }
 }
 
+function createMixedCatalogItems({
+  customCount,
+  byPostCount
+}: {
+  customCount: number
+  byPostCount: number
+}) {
+  return [
+    ...Array.from({ length: customCount }, (_, index) => createCake(index + 1)),
+    ...Array.from({ length: byPostCount }, (_, index) => createGiftHamper(index + 1))
+  ]
+}
+
 function setViewportWidth(width: number) {
   Object.defineProperty(window, 'innerWidth', {
     configurable: true,
@@ -362,8 +571,10 @@ function setViewportWidth(width: number) {
 function renderCatalog({
   items,
   cakeCount = 10,
+  pathname = '/cakes',
   search = '',
   viewportWidth = 1200,
+  collectionOptionsOverride,
   initialFilterDefaults = { byPost: false, custom: true },
   lazyCustomCakesEndpoint,
   lazyCustomCakesPriceCeilingHint,
@@ -373,8 +584,10 @@ function renderCatalog({
 }: {
   items?: TabletCake[]
   cakeCount?: number
+  pathname?: '/cakes' | '/cakes-by-post' | '/gift-hampers'
   search?: string
   viewportWidth?: number
+  collectionOptionsOverride?: CakesCollectionOption[]
   initialFilterDefaults?: CatalogFilterDefaults
   lazyCustomCakesEndpoint?: string
   lazyCustomCakesPriceCeilingHint?: number
@@ -390,14 +603,14 @@ function renderCatalog({
     }
   })
   const cakes = items ?? Array.from({ length: cakeCount }, (_, index) => createCake(index + 1))
-  window.history.replaceState({}, '', `/cakes${search}`)
+  window.history.replaceState({}, '', `${pathname}${search}`)
   setViewportWidth(viewportWidth)
 
   const catalog = (
     <CakesTabletCatalog
       cakes={cakes}
       featuredOffer={null}
-      collectionOptions={collectionOptions}
+      collectionOptions={collectionOptionsOverride ?? collectionOptions}
       initialFilterDefaults={initialFilterDefaults}
       lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
       lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
@@ -415,9 +628,66 @@ function renderCatalog({
   )
 }
 
+function renderCatalogToMarkup({
+  items,
+  cakeCount = 10,
+  pathname = '/cakes',
+  search = '',
+  viewportWidth = 1200,
+  collectionOptionsOverride,
+  initialFilterDefaults = { byPost: false, custom: true },
+  lazyCustomCakesEndpoint,
+  lazyCustomCakesPriceCeilingHint,
+  lazyByPostCakesEndpoint,
+  lazyByPostCakesPriceCeilingHint
+}: {
+  items?: TabletCake[]
+  cakeCount?: number
+  pathname?: '/cakes' | '/cakes-by-post' | '/gift-hampers'
+  search?: string
+  viewportWidth?: number
+  collectionOptionsOverride?: CakesCollectionOption[]
+  initialFilterDefaults?: CatalogFilterDefaults
+  lazyCustomCakesEndpoint?: string
+  lazyCustomCakesPriceCeilingHint?: number
+  lazyByPostCakesEndpoint?: string
+  lazyByPostCakesPriceCeilingHint?: number
+} = {}) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false
+      }
+    }
+  })
+  const cakes = items ?? Array.from({ length: cakeCount }, (_, index) => createCake(index + 1))
+  window.history.replaceState({}, '', `${pathname}${search}`)
+  setViewportWidth(viewportWidth)
+
+  return renderToString(
+    <QueryClientProvider client={queryClient}>
+      <CakesTabletCatalog
+        cakes={cakes}
+        featuredOffer={null}
+        collectionOptions={collectionOptionsOverride ?? collectionOptions}
+        initialFilterDefaults={initialFilterDefaults}
+        lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
+        lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
+        lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
+        lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
+      />
+    </QueryClientProvider>
+  )
+}
+
 function getCakeWrapper(cakeName: string) {
-  const cakeLabel = screen.getByText(cakeName)
-  return cakeLabel.parentElement
+  const cakeCard = screen.getByText(cakeName).closest('[data-testid="cake-card"]')
+
+  if (!cakeCard) {
+    return null
+  }
+
+  return cakeCard.parentElement?.parentElement ?? null
 }
 
 function expectCakeVisibleOnTablet(cakeName: string) {
@@ -434,15 +704,28 @@ function expectCakeHiddenOnTablet(cakeName: string) {
 
 describe('CakesTabletCatalog', () => {
   const originalFetch = global.fetch
+  const originalIntersectionObserver = global.IntersectionObserver
+
+  beforeAll(() => {
+    global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver
+  })
 
   beforeEach(() => {
     window.history.replaceState({}, '', '/cakes')
     setViewportWidth(1200)
+    window.localStorage.clear()
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
     resetRenderedPriceValues()
+    resetRenderedCardVariants()
+    resetRenderedMobileViewModes()
+    resetMockIntersectionObservers()
     jest.restoreAllMocks()
     global.fetch = originalFetch
+  })
+
+  afterAll(() => {
+    global.IntersectionObserver = originalIntersectionObserver
   })
 
   it('shows six cards and numeric pagination on tablet', async () => {
@@ -459,8 +742,7 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByRole('navigation', { name: 'Cake catalog pagination' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Go to page 1' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('button', { name: 'Go to page 1' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Go to page 2' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Go to page 2' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 2' })).toHaveAttribute('href', '?page=2')
   })
 
   it('shows a 3x3 page on small laptop without viewport-driven pagination state', async () => {
@@ -479,10 +761,10 @@ describe('CakesTabletCatalog', () => {
     expect(cakeTenWrapper).toHaveClass('tablet:hidden')
     expect(cakeTenWrapper).not.toHaveClass('small-laptop:block')
 
-    expect(screen.getByRole('button', { name: 'Go to page 2' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to small laptop page 2' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to small laptop page 3' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Go to small laptop page 4' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 2' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to small laptop page 2' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to small laptop page 3' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Go to small laptop page 4' })).not.toBeInTheDocument()
   })
 
   it('keeps URL clean when defaults are route presets', async () => {
@@ -635,7 +917,7 @@ describe('CakesTabletCatalog', () => {
     await waitFor(() => {
       expect(screen.getByText('Cake 120')).toBeInTheDocument()
     })
-    expect(screen.queryByText('Loading custom cakes...')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('desktop-catalog-logo-loader')).not.toBeInTheDocument()
   })
 
   it('switches price ceiling immediately on custom toggle when hint is provided', async () => {
@@ -865,8 +1147,10 @@ describe('CakesTabletCatalog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Toggle by post' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Loading custom cakes...')).toBeInTheDocument()
+      expect(screen.getByTestId('desktop-catalog-logo-loader')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: 'Loading custom cakes...' })).toBeInTheDocument()
     })
+    expect(screen.queryByText('No cakes match the selected filters yet.')).not.toBeInTheDocument()
 
     resolveFetch?.({
       ok: true,
@@ -880,7 +1164,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByText('Cake 109')).toBeInTheDocument()
     })
 
-    expect(screen.queryByText('Loading custom cakes...')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('desktop-catalog-logo-loader')).not.toBeInTheDocument()
     expect(global.fetch).toHaveBeenCalledWith(
       '/api/catalog/custom-cakes',
       expect.objectContaining({
@@ -916,8 +1200,10 @@ describe('CakesTabletCatalog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Toggle custom' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Loading cakes by post...')).toBeInTheDocument()
+      expect(screen.getByTestId('desktop-catalog-logo-loader')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: 'Loading cakes by post...' })).toBeInTheDocument()
     })
+    expect(screen.queryByText('No cakes match the selected filters yet.')).not.toBeInTheDocument()
 
     resolveFetch?.({
       ok: true,
@@ -939,13 +1225,102 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByText('Hamper 109')).toBeInTheDocument()
     })
 
-    expect(screen.queryByText('Loading cakes by post...')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('desktop-catalog-logo-loader')).not.toBeInTheDocument()
     expect(global.fetch).toHaveBeenCalledWith(
       '/api/catalog/by-post-cakes',
       expect.objectContaining({
         signal: expect.any(AbortSignal)
       })
     )
+  })
+
+  it('renders branded loader in mobile full-list loading state and clears it after completion', async () => {
+    const lazyLoadedCake = createCake(112)
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Custom cakes' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-catalog-logo-loader')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: 'Loading custom cakes...' })).toBeInTheDocument()
+    })
+    expect(screen.queryByText('No cakes match the selected filters yet.')).not.toBeInTheDocument()
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [lazyLoadedCake],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.getByText('Cake 112')).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('mobile-catalog-logo-loader')).not.toBeInTheDocument()
+  })
+
+  it('keeps loader visible first and then shows empty state when lazy mobile payload has no cakes', async () => {
+    let resolveFetch: ((response: Response) => void) | undefined
+    const fetchPromise = new Promise<Response>((resolve) => {
+      resolveFetch = resolve
+    })
+
+    jest.spyOn(global, 'fetch').mockReturnValue(fetchPromise)
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: [createGiftHamper(1)],
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Custom cakes' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-catalog-logo-loader')).toBeInTheDocument()
+    })
+    expect(screen.queryByText('No cakes match the selected filters yet.')).not.toBeInTheDocument()
+
+    resolveFetch?.({
+      ok: true,
+      json: async () => ({
+        cakes: [],
+        collectionOptions
+      })
+    } as Response)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mobile-catalog-logo-loader')).not.toBeInTheDocument()
+    })
+    expect(screen.getByText('No cakes match the selected filters yet.')).toBeInTheDocument()
   })
 
   it('recalculates price slider max when custom filter is turned off after lazy by-post load', async () => {
@@ -1051,7 +1426,7 @@ describe('CakesTabletCatalog', () => {
 
     document.documentElement.scrollTop = 210
     document.body.scrollTop = 140
-    fireEvent.click(screen.getByRole('button', { name: 'Go to page 2' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Go to page 2' }))
 
     await waitFor(() => {
       expect(window.location.search).toContain('page=2')
@@ -1426,13 +1801,13 @@ describe('CakesTabletCatalog', () => {
     renderCatalog({ cakeCount: 60 })
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Go to page 10' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Go to page 10' })).toBeInTheDocument()
     })
 
     expect(screen.getByRole('button', { name: 'Go to page 1' })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('button', { name: 'Go to page 2' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 3' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 4' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 2' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 3' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 4' })).toBeInTheDocument()
     const ellipsis = screen.getByText('...').closest('span')
     expect(ellipsis).not.toBeNull()
     expect(ellipsis).toHaveAttribute('aria-hidden', 'true')
@@ -1445,10 +1820,10 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByRole('button', { name: 'Go to page 5' })).toHaveAttribute('aria-current', 'page')
     })
 
-    expect(screen.getByRole('button', { name: 'Go to page 1' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 4' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 6' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 10' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 1' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 4' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 6' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 10' })).toBeInTheDocument()
     const ellipsisItems = screen.getAllByText('...').map((node) => node.closest('span'))
     expect(ellipsisItems).toHaveLength(2)
     ellipsisItems.forEach((item) => {
@@ -1464,9 +1839,9 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByRole('button', { name: 'Go to page 10' })).toHaveAttribute('aria-current', 'page')
     })
 
-    expect(screen.getByRole('button', { name: 'Go to page 7' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 8' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go to page 9' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 7' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 8' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Go to page 9' })).toBeInTheDocument()
     const ellipsis = screen.getByText('...').closest('span')
     expect(ellipsis).not.toBeNull()
     expect(ellipsis).toHaveAttribute('aria-hidden', 'true')
@@ -1479,7 +1854,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByRole('button', { name: 'Previous page' })).toBeInTheDocument()
     })
     expect(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Next page' })).not.toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Next page' })).toBeInTheDocument()
     firstRender.unmount()
 
     renderCatalog({ cakeCount: 60, search: '?page=10' })
@@ -1488,20 +1863,76 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByRole('button', { name: 'Next page' })).toBeInTheDocument()
     })
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Previous page' })).not.toBeDisabled()
+    const previousPageLink = screen.getByRole('link', { name: 'Previous page' })
+    expect(previousPageLink).toBeInTheDocument()
+    expect(previousPageLink).toHaveAttribute('href', '?page=9')
+    expect(document.querySelector('a[href="."]')).toBeNull()
   })
 
-  it('moves to next and previous pages with pagination buttons', async () => {
+  it('uses route-stable page-1 href for cakes pagination', async () => {
+    renderCatalog({ cakeCount: 60, search: '?page=2' })
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Previous page' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/cakes')
+    expect(document.querySelector('a[href="."]')).toBeNull()
+  })
+
+  it('uses route-stable page-1 href for cakes-by-post pagination', async () => {
+    const byPostItems = Array.from({ length: 60 }, (_, index) => createGiftHamper(index + 1))
+
+    renderCatalog({
+      items: byPostItems,
+      pathname: '/cakes-by-post',
+      search: '?page=2',
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Previous page' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/cakes-by-post')
+    expect(document.querySelector('a[href="."]')).toBeNull()
+  })
+
+  it('uses route-stable page-1 href for gift-hampers pagination alias', async () => {
+    const byPostItems = Array.from({ length: 60 }, (_, index) => createGiftHamper(index + 1))
+
+    renderCatalog({
+      items: byPostItems,
+      pathname: '/gift-hampers',
+      search: '?page=2',
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Previous page' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/gift-hampers')
+    expect(document.querySelector('a[href="."]')).toBeNull()
+  })
+
+  it('moves to next and previous pages with pagination links', async () => {
     renderCatalog({ cakeCount: 60, search: '?page=5' })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Next page' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Next page' }))
 
     await waitFor(() => {
       expect(window.location.search).toContain('page=6')
     })
     expect(screen.getByRole('button', { name: 'Go to page 6' })).toHaveAttribute('aria-current', 'page')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Previous page' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Previous page' }))
 
     await waitFor(() => {
       expect(window.location.search).toContain('page=5')
@@ -1510,14 +1941,867 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByRole('button', { name: 'Go to page 5' })).toBeDisabled()
   })
 
-  it('shows all filtered cards and keeps pagination hidden via responsive classes on mobile', async () => {
-    renderCatalog({ viewportWidth: 390 })
+  it('uses desktop card variant outside mobile viewport', async () => {
+    renderCatalog({ cakeCount: 4, viewportWidth: 1200 })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(4)
+    })
+
+    screen.getAllByTestId('cake-card').forEach((card) => {
+      expect(card).toHaveAttribute('data-variant', 'desktop')
+    })
+  })
+
+  it('marks only first desktop card as LCP candidate', async () => {
+    renderCatalog({ cakeCount: 4, viewportWidth: 1200 })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(4)
+    })
+
+    const cards = screen.getAllByTestId('cake-card')
+    const [firstCard, ...remainingCards] = cards
+
+    expect(firstCard).toBeDefined()
+    if (!firstCard) {
+      return
+    }
+    expect(firstCard).toHaveAttribute('data-is-lcp-candidate', 'true')
+    remainingCards.forEach((card) => {
+      expect(card).toHaveAttribute('data-is-lcp-candidate', 'false')
+    })
+  })
+
+  it('marks tablet and small-laptop page starts as LCP candidates on desktop page 2', async () => {
+    renderCatalog({ cakeCount: 12, viewportWidth: 1200, search: '?page=2' })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    })
+
+    const cards = screen.getAllByTestId('cake-card')
+    const eagerCards = cards.filter((card) => card.getAttribute('data-is-lcp-candidate') === 'true')
+
+    expect(cards[0]).toHaveAttribute('data-is-lcp-candidate', 'false')
+    expect(cards[6]).toHaveAttribute('data-is-lcp-candidate', 'true')
+    expect(cards[9]).toHaveAttribute('data-is-lcp-candidate', 'true')
+    expect(eagerCards).toHaveLength(2)
+  })
+
+  it('applies responsive visibility gate classes to desktop catalog layout', async () => {
+    renderCatalog({ cakeCount: 4, viewportWidth: 1200 })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Sort new' })).toBeInTheDocument()
+    })
+
+    const desktopLayout = screen.getByTestId('desktop-catalog-layout')
+    expect(desktopLayout).toHaveClass('hidden', 'tablet:flex')
+  })
+
+  it('renders server mobile first-batch fallback content and removes it after hydration', async () => {
+    const serverMarkup = renderCatalogToMarkup({ cakeCount: 4, viewportWidth: 1200 })
+
+    expect(serverMarkup).toContain('data-testid="mobile-prehydration-shell"')
+    expect(serverMarkup).toContain('aria-label="Catalog category tabs"')
+    expect(serverMarkup).toContain('data-testid="mobile-catalog-grid"')
+    expect(serverMarkup).toContain('data-variant="mobile"')
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.queryByTestId('mobile-prehydration-shell')).not.toBeInTheDocument()
+  })
+
+  it('keeps server mobile pre-hydration cards non-LCP on desktop viewport', () => {
+    const serverMarkup = renderCatalogToMarkup({ cakeCount: 4, viewportWidth: 1200 })
+    const mobileCardTags = serverMarkup.match(/<article[^>]*data-variant="mobile"[^>]*>/g) ?? []
+
+    expect(serverMarkup).toContain('data-testid="mobile-prehydration-shell"')
+    expect(mobileCardTags.length).toBeGreaterThan(0)
+    mobileCardTags.forEach((mobileCardTag) => {
+      expect(mobileCardTag).toMatch(/data-is-lcp-candidate="false"/)
+      expect(mobileCardTag).not.toMatch(/data-is-lcp-candidate="true"/)
+    })
+  })
+
+  it('keeps product, pagination and no-js crawl links in server markup', () => {
+    const serverMarkup = renderCatalogToMarkup({ cakeCount: 10, viewportWidth: 1200 })
+
+    expect(serverMarkup).toContain('aria-label="Catalog product crawl links"')
+    expect(serverMarkup).toContain('href="/cakes/cake-1"')
+    expect(serverMarkup).toContain('href="/cakes/cake-10"')
+    expect(serverMarkup).toContain('href="?page=2"')
+    expect(serverMarkup).not.toContain('href="."')
+  })
+
+  it('limits no-js crawl links to active custom tab on cakes route', () => {
+    const serverMarkup = renderCatalogToMarkup({
+      items: createMixedCatalogItems({
+        customCount: 10,
+        byPostCount: 10
+      }),
+      pathname: '/cakes',
+      search: ''
+    })
+
+    expect(serverMarkup).toContain('aria-label="Catalog product crawl links"')
+    expect(serverMarkup).toContain('href="/cakes/cake-10"')
+    expect(serverMarkup).not.toContain('href="/cakes-by-post/hamper-1"')
+  })
+
+  it('limits no-js crawl links to active by-post tab on gift-hampers route', () => {
+    const serverMarkup = renderCatalogToMarkup({
+      items: createMixedCatalogItems({
+        customCount: 10,
+        byPostCount: 10
+      }),
+      pathname: '/gift-hampers',
+      search: '',
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    expect(serverMarkup).toContain('aria-label="Catalog product crawl links"')
+    expect(serverMarkup).toContain('href="/cakes-by-post/hamper-10"')
+    expect(serverMarkup).not.toContain('href="/cakes/cake-1"')
+  })
+
+  it('keeps page-1 pagination links route-stable in server markup', () => {
+    const serverMarkup = renderCatalogToMarkup({
+      cakeCount: 10,
+      viewportWidth: 1200,
+      search: '?page=2'
+    })
+
+    expect(serverMarkup).toContain('href="/cakes"')
+    expect(serverMarkup).not.toContain('href="."')
+  })
+
+  it('keeps gift-hampers page-1 pagination links route-stable in server markup', () => {
+    const byPostItems = Array.from({ length: 10 }, (_, index) => createGiftHamper(index + 1))
+    const serverMarkup = renderCatalogToMarkup({
+      items: byPostItems,
+      pathname: '/gift-hampers',
+      search: '?page=2',
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    expect(serverMarkup).toContain('href="/gift-hampers"')
+    expect(serverMarkup).not.toContain('href="."')
+  })
+
+  it('uses mobile card variant in mobile viewport', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(2)
+    })
+
+    screen.getAllByTestId('cake-card').forEach((card) => {
+      expect(card).toHaveAttribute('data-variant', 'mobile')
+    })
+    const variants = getRenderedCardVariants()
+    expect(variants.length).toBeGreaterThan(0)
+    expect(variants.every((variant) => variant === 'mobile')).toBe(true)
+    const mobileViewModes = getRenderedMobileViewModes()
+    expect(mobileViewModes.length).toBeGreaterThan(0)
+    expect(mobileViewModes.every((mode) => mode === 'grid')).toBe(true)
+  })
+
+  it('marks first mobile row cards as LCP candidates in grid view', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 3,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(3)
+    })
+
+    const cards = screen.getAllByTestId('cake-card')
+    const [firstCard, secondCard, thirdCard] = cards
+
+    expect(firstCard).toBeDefined()
+    expect(secondCard).toBeDefined()
+    expect(thirdCard).toBeDefined()
+    if (!firstCard || !secondCard || !thirdCard) {
+      return
+    }
+    expect(firstCard).toHaveAttribute('data-is-lcp-candidate', 'true')
+    expect(secondCard).toHaveAttribute('data-is-lcp-candidate', 'true')
+    expect(thirdCard).toHaveAttribute('data-is-lcp-candidate', 'false')
+  })
+
+  it('marks only first mobile card as LCP candidate in single-column view', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 3,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(3)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Single-column view' }))
+
+    const cards = screen.getAllByTestId('cake-card')
+    const [firstCard, secondCard, thirdCard] = cards
+
+    expect(firstCard).toBeDefined()
+    expect(secondCard).toBeDefined()
+    expect(thirdCard).toBeDefined()
+    if (!firstCard || !secondCard || !thirdCard) {
+      return
+    }
+    expect(firstCard).toHaveAttribute('data-is-lcp-candidate', 'true')
+    expect(secondCard).toHaveAttribute('data-is-lcp-candidate', 'false')
+    expect(thirdCard).toHaveAttribute('data-is-lcp-candidate', 'false')
+  })
+
+  it('does not show pre-hydration shell when mobile viewport branch is active', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.queryByTestId('mobile-prehydration-shell')).not.toBeInTheDocument()
+  })
+
+  it('applies mobile tab typography tokens and toggles mobile view-mode icon colors', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 2
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    const customTab = screen.getByRole('tab', { name: 'Custom cakes' })
+    const byPostTab = screen.getByRole('tab', { name: 'Cakes by post' })
+    const tablist = screen.getByRole('tablist', { name: 'Catalog category tabs' })
+    const filterSortLabel = screen.getByText('Filter & Sort')
+    const gridViewButton = screen.getByRole('button', { name: 'Grid view' })
+    const singleColumnViewButton = screen.getByRole('button', { name: 'Single-column view' })
+    const gridIcon = screen.getByTestId('mobile-filter-sort-grid-icon')
+    const outlineIcon = screen.getByTestId('mobile-filter-sort-outline-icon')
+    const mobileCatalogGrid = screen.getByTestId('mobile-catalog-grid')
+
+    expect(customTab).toHaveClass('font-moreSugar', 'text-sm', 'leading-5', 'tracking-normal')
+    expect(byPostTab).toHaveClass('font-moreSugar', 'text-sm', 'leading-5', 'tracking-normal')
+    expect(tablist).toHaveClass('gap-0')
+    expect(tablist).not.toHaveClass('gap-4')
+    expect(filterSortLabel).toHaveClass(
+      'font-sans',
+      'font-semibold',
+      'text-[15px]',
+      'leading-7',
+      'tracking-[0]',
+      'align-middle',
+      'text-(--color-filter-sort-mobile-text)'
+    )
+    expect(gridViewButton).toHaveAttribute('aria-pressed', 'true')
+    expect(singleColumnViewButton).toHaveAttribute('aria-pressed', 'false')
+    expect(gridIcon).toHaveClass('h-4', 'w-4', 'text-(--color-filter-sort-mobile-icon-active)')
+    expect(outlineIcon).toHaveClass('h-4', 'w-4', 'text-(--color-filter-sort-mobile-icon-inactive)')
+    expect(mobileCatalogGrid).toHaveClass('grid-cols-2', 'gap-4')
+    expect(mobileCatalogGrid).not.toHaveClass('grid-cols-1')
+    expect(window.location.search).not.toContain('view=')
+    const initialMobileViewModes = getRenderedMobileViewModes()
+    expect(initialMobileViewModes.length).toBeGreaterThan(0)
+    expect(initialMobileViewModes.every((mode) => mode === 'grid')).toBe(true)
+
+    expect(customTab).toHaveClass('border-primary-500', 'text-primary-500')
+    expect(byPostTab).toHaveClass('border-b-primary-500/20', 'text-primary-200')
+
+    resetRenderedMobileViewModes()
+    fireEvent.click(singleColumnViewButton)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Single-column view' })).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    expect(screen.getByRole('button', { name: 'Grid view' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByTestId('mobile-filter-sort-grid-icon')).toHaveClass('text-(--color-filter-sort-mobile-icon-inactive)')
+    expect(screen.getByTestId('mobile-filter-sort-outline-icon')).toHaveClass('text-(--color-filter-sort-mobile-icon-active)')
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1', 'gap-4')
+    expect(screen.getByTestId('mobile-catalog-grid')).not.toHaveClass('grid-cols-2')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('single')
+    const singleModeViewModes = getRenderedMobileViewModes()
+    expect(singleModeViewModes.length).toBeGreaterThan(0)
+    expect(singleModeViewModes.every((mode) => mode === 'single')).toBe(true)
+
+    resetRenderedMobileViewModes()
+    fireEvent.click(screen.getByRole('button', { name: 'Grid view' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Grid view' })).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    expect(screen.getByRole('button', { name: 'Single-column view' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-2', 'gap-4')
+    expect(screen.getByTestId('mobile-catalog-grid')).not.toHaveClass('grid-cols-1')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('grid')
+    const gridModeViewModes = getRenderedMobileViewModes()
+    expect(gridModeViewModes.length).toBeGreaterThan(0)
+    expect(gridModeViewModes.every((mode) => mode === 'grid')).toBe(true)
+
+    fireEvent.click(byPostTab)
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveClass('border-primary-500', 'text-primary-500')
+    expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveClass('border-b-primary-500/20', 'text-primary-200')
+  })
+
+  it('opens mobile filter and sort sheet from the mobile trigger', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 6,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('mobile-filter-sort-draft-sort')).toHaveTextContent('new')
+  })
+
+  it('keeps mobile URL and visible cards unchanged until mobile filters are applied', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 8,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    expect(window.location.search).toBe('')
+    expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
+
+    expect(window.location.search).toBe('')
+    expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.getByTestId('mobile-filter-sort-sheet')).toBeInTheDocument()
+  })
+
+  it('applies mobile sort and resets loaded depth to the first batch', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 12,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    triggerMobileInfiniteSentinelIntersection()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('sort=priceHighToLow')
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+    expect(screen.getByText('Cake 12')).toBeInTheDocument()
+    expect(screen.queryByText('Cake 6')).not.toBeInTheDocument()
+  })
+
+  it('applies mobile collection filters to cards and URL', async () => {
+    const customItems = Array.from({ length: 12 }, (_, index) => {
+      return {
+        ...createCake(index + 1),
+        collectionIds: index < 6 ? ['collection-1'] : ['collection-2']
+      }
+    })
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: customItems
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-celebration')
+      expect(window.location.search).not.toContain('maxPrice=')
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.queryByText('Cake 7')).not.toBeInTheDocument()
+  })
+
+  it('drops hidden cross-category collections when applying mobile filters', async () => {
+    const customItems = Array.from({ length: 8 }, (_, index) => {
+      return {
+        ...createCake(index + 1),
+        collectionIds: ['collection-1']
+      }
+    })
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: customItems,
+      search: '?collections=h-postal-gifts',
+      collectionOptionsOverride: mixedCollectionOptions
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(window.location.search).toContain('collections=h-postal-gifts')
+    expect(screen.getByText('No cakes match the selected filters yet.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('collections=')
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.queryByText('No cakes match the selected filters yet.')).not.toBeInTheDocument()
+  })
+
+  it('ignores maxPrice from URL when rendering mobile cards', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 8,
+        byPostCount: 0
+      }),
+      search: '?maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    expect(window.location.search).toContain('maxPrice=5')
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+  })
+
+  it('keeps existing maxPrice query value when applying mobile filters', async () => {
+    const customItems = Array.from({ length: 12 }, (_, index) => {
+      return {
+        ...createCake(index + 1),
+        collectionIds: index < 6 ? ['collection-1'] : ['collection-2']
+      }
+    })
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: customItems,
+      search: '?maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('collections=c-celebration')
+      expect(window.location.search).toContain('maxPrice=5')
+    })
+  })
+
+  it('discards staged mobile draft changes on cancel, backdrop and esc dismiss', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 10,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel mobile filters' }))
+    expect(window.location.search).toBe('')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss mobile filters via backdrop' }))
+    expect(window.location.search).toBe('')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss mobile filters via esc' }))
+    expect(window.location.search).toBe('')
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.queryByText('Cake 7')).not.toBeInTheDocument()
+  })
+
+  it('migrates legacy view query param to localStorage and strips it from URL', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 2
+      }),
+      search: '?view=single&maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Single-column view' })).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    expect(screen.getByRole('button', { name: 'Grid view' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByTestId('mobile-filter-sort-grid-icon')).toHaveClass('text-(--color-filter-sort-mobile-icon-inactive)')
+    expect(screen.getByTestId('mobile-filter-sort-outline-icon')).toHaveClass('text-(--color-filter-sort-mobile-icon-active)')
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1')
+    expect(screen.getByTestId('mobile-catalog-grid')).not.toHaveClass('grid-cols-2')
+    expect(window.location.search).toContain('maxPrice=5')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('single')
+  })
+
+  it('hydrates mobile view mode from localStorage', async () => {
+    window.localStorage.setItem(mobileViewModeStorageKey, 'single')
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 2
+      }),
+      search: '?maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Single-column view' })).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1')
+    expect(window.location.search).toContain('maxPrice=5')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('single')
+  })
+
+  it('keeps single-column mobile view mode while switching mobile tabs', async () => {
+    window.localStorage.setItem(mobileViewModeStorageKey, 'single')
+
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 2,
+        byPostCount: 2
+      }),
+      search: '?maxPrice=5'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1')
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Cakes by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1')
+    expect(window.location.search).toContain('maxPrice=5')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('single')
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Custom cakes' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(screen.getByTestId('mobile-catalog-grid')).toHaveClass('grid-cols-1')
+    expect(window.location.search).toContain('maxPrice=5')
+    expect(window.location.search).not.toContain('view=')
+    expect(window.localStorage.getItem(mobileViewModeStorageKey)).toBe('single')
+  })
+
+  it('switches catalog branch when viewport width crosses the tablet breakpoint', async () => {
+    renderCatalog({ cakeCount: 4, viewportWidth: 1200 })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Sort new' })).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('tab', { name: 'Custom cakes' })).not.toBeInTheDocument()
+
+    act(() => {
+      setViewportWidth(390)
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('button', { name: 'Sort new' })).not.toBeInTheDocument()
+
+    act(() => {
+      setViewportWidth(1200)
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Sort new' })).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('tab', { name: 'Custom cakes' })).not.toBeInTheDocument()
+  })
+
+  it('loads mobile catalog in batches using the infinite-scroll sentinel', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 10,
+        byPostCount: 0
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    expect(screen.queryByRole('navigation', { name: 'Cake catalog pagination' })).not.toBeInTheDocument()
+
+    triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(10)
     })
-    expectCakeHiddenOnTablet('Cake 7')
-    expect(screen.getByRole('navigation', { name: 'Cake catalog pagination' })).toHaveClass('hidden', 'tablet:flex')
+    expect(screen.getByText('Cake 10')).toBeInTheDocument()
+  })
+
+  it('falls back to manual load more when IntersectionObserver is unavailable', async () => {
+    const previousIntersectionObserver = global.IntersectionObserver
+    global.IntersectionObserver = undefined as unknown as typeof IntersectionObserver
+
+    try {
+      renderCatalog({
+        viewportWidth: 390,
+        items: createMixedCatalogItems({
+          customCount: 10,
+          byPostCount: 0
+        })
+      })
+
+      await waitFor(() => {
+        expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+      })
+
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+      expect(screen.queryByTestId('mobile-infinite-scroll-sentinel')).not.toBeInTheDocument()
+      const loadMoreButton = screen.getByRole('button', { name: 'Load more' })
+      expect(loadMoreButton).toBeInTheDocument()
+
+      fireEvent.click(loadMoreButton)
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('cake-card')).toHaveLength(10)
+      })
+      expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument()
+    } finally {
+      global.IntersectionObserver = previousIntersectionObserver
+    }
+  })
+
+  it('keeps mobile infinite-loading behavior for page query URLs', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 10,
+        byPostCount: 0
+      }),
+      search: '?page=2'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(window.location.search).toContain('page=2')
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.queryByText('Cake 7')).not.toBeInTheDocument()
+
+    triggerMobileInfiniteSentinelIntersection()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(10)
+    })
+
+    expect(window.location.search).toContain('page=2')
+    expect(screen.getByText('Cake 10')).toBeInTheDocument()
+  })
+
+  it('keeps previously loaded feed depth when switching mobile tabs', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 12,
+        byPostCount: 12
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+
+    triggerMobileInfiniteSentinelIntersection()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    })
+    expect(screen.getByText('Cake 12')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Cakes by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    expect(screen.getByText('Hamper 6')).toBeInTheDocument()
+
+    triggerMobileInfiniteSentinelIntersection()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    })
+    expect(screen.getByText('Hamper 12')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Custom cakes' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    expect(screen.getByText('Cake 12')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Cakes by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    expect(screen.getByText('Hamper 12')).toBeInTheDocument()
+  })
+
+  it('scrolls to top and clears legacy query params when switching mobile tabs', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 1,
+        byPostCount: 1
+      }),
+      search: '?sort=priceLowToHigh&maxPrice=5&collections=c-celebration&page=2'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    document.documentElement.scrollTop = 220
+    document.body.scrollTop = 120
+    fireEvent.click(screen.getByRole('tab', { name: 'Cakes by post' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'Cakes by post' })).toHaveAttribute('aria-selected', 'true')
+    })
+
+    expect(document.documentElement.scrollTop).toBe(0)
+    expect(document.body.scrollTop).toBe(0)
+
+    const urlSearchParams = new URLSearchParams(window.location.search)
+    const queryKeys = Array.from(urlSearchParams.keys()).sort()
+    expect(queryKeys).toEqual(['byPost', 'custom', 'maxPrice'])
+    expect(urlSearchParams.get('byPost')).toBe('true')
+    expect(urlSearchParams.get('custom')).toBe('false')
+    expect(urlSearchParams.get('maxPrice')).toBe('5')
   })
 
   it('keeps empty state and hides pagination when no cards match', () => {

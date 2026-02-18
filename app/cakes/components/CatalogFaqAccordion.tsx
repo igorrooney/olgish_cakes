@@ -4,6 +4,7 @@ interface CatalogFaqAccordionProps {
   title: string
   items: CatalogFaqItem[]
   intro?: string
+  mobileIntro?: string
   sectionId?: string
 }
 
@@ -20,6 +21,7 @@ export function CatalogFaqAccordion({
   title,
   items,
   intro,
+  mobileIntro,
   sectionId = 'catalog-faq-title'
 }: CatalogFaqAccordionProps) {
   if (items.length === 0) {
@@ -34,9 +36,22 @@ export function CatalogFaqAccordion({
       <h2 id={sectionId} className={sectionTitleClassName}>
         {title}
       </h2>
-      {intro ? (
+      {intro && mobileIntro ? (
+        <>
+          <p className={`${introClassName} tablet:hidden`}>
+            {mobileIntro}
+          </p>
+          <p className={`${introClassName} hidden tablet:block`}>
+            {intro}
+          </p>
+        </>
+      ) : intro ? (
         <p className={introClassName}>
           {intro}
+        </p>
+      ) : mobileIntro ? (
+        <p className={introClassName}>
+          {mobileIntro}
         </p>
       ) : null}
       <div className='mx-auto mt-6 max-w-[860px] space-y-4'>

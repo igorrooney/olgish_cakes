@@ -12,15 +12,32 @@ import {
   getHomepageGiftHamperCollections
 } from '../../utils/fetchCollections'
 import { getAllCakes, getCakesFeaturedOffer } from '../../utils/fetchCakes'
+import type { Cake } from '@/types/cake'
+import type { GiftHamper } from '@/types/giftHamper'
 
 jest.mock('@/sanity/lib/image', () => ({
-  urlFor: jest.fn(() => ({
-    width: () => ({
-      height: () => ({
-        url: () => 'https://example.com/image.jpg'
-      })
-    })
-  }))
+  ...(() => {
+    const mockImageUrl = jest.fn(() => 'https://example.com/image.jpg')
+    const mockHeight = jest.fn(() => ({
+      url: mockImageUrl
+    }))
+    const mockWidth = jest.fn(() => ({
+      height: mockHeight
+    }))
+    const mockUrlFor = jest.fn(() => ({
+      width: mockWidth
+    }))
+
+    return {
+      urlFor: mockUrlFor,
+      __mocks: {
+        mockImageUrl,
+        mockHeight,
+        mockWidth,
+        mockUrlFor
+      }
+    }
+  })()
 }))
 
 jest.mock('../../utils/fetchGiftHampers', () => ({
@@ -44,6 +61,74 @@ const mockedGetHomepageCollections =
   getHomepageCollections as jest.MockedFunction<typeof getHomepageCollections>
 const mockedGetAllCakes = getAllCakes as jest.MockedFunction<typeof getAllCakes>
 const mockedGetCakesFeaturedOffer = getCakesFeaturedOffer as jest.MockedFunction<typeof getCakesFeaturedOffer>
+const imageModule = jest.requireMock('@/sanity/lib/image') as {
+  __mocks: {
+    mockImageUrl: jest.Mock<string, []>
+    mockHeight: jest.Mock<{ url: jest.Mock<string, []> }, [number]>
+    mockWidth: jest.Mock<{ height: jest.Mock<{ url: jest.Mock<string, []> }, [number]> }, [number]>
+    mockUrlFor: jest.Mock<{ width: jest.Mock<{ height: jest.Mock<{ url: jest.Mock<string, []> }, [number]> }, [number]> }, [unknown]>
+  }
+}
+const {
+  mockHeight,
+  mockWidth,
+  mockUrlFor
+} = imageModule.__mocks
+const sampleCake: Cake = {
+  _id: 'cake-1',
+  _createdAt: '2025-01-01T00:00:00.000Z',
+  name: 'Honey Cake',
+  slug: {
+    current: 'honey-cake'
+  },
+  description: [
+    {
+      _type: 'block',
+      children: [{ text: 'Cake description' }]
+    }
+  ],
+  shortDescription: [],
+  size: '8inch',
+  pricing: {
+    standard: 25,
+    individual: 35
+  },
+  mainImage: {
+    _type: 'image',
+    asset: {
+      _ref: 'image-cake-main-1'
+    },
+    alt: 'Honey cake main image'
+  },
+  images: [],
+  designs: {
+    standard: []
+  },
+  category: 'Traditional',
+  collections: [],
+  ingredients: [],
+  allergens: []
+}
+const sampleGiftHamper: GiftHamper = {
+  _id: 'hamper-1',
+  _createdAt: '2025-01-01T00:00:00.000Z',
+  name: 'By-post hamper',
+  slug: {
+    current: 'by-post-hamper'
+  },
+  price: 38,
+  images: [
+    {
+      _type: 'image',
+      asset: {
+        _ref: 'image-hamper-main-1'
+      },
+      isMain: true,
+      alt: 'Gift hamper image'
+    }
+  ],
+  collections: []
+}
 
 describe('catalogPageData gift-hamper fallbacks', () => {
   beforeEach(() => {
@@ -75,5 +160,35 @@ describe('catalogPageData gift-hamper fallbacks', () => {
     expect(data.mappedGiftHampers).toEqual([])
     expect(data.collectionOptions).toEqual([])
     expect(data.featuredOffer).toBeNull()
+  })
+
+  it('requests 900x900 transformed image URLs for mapped cakes', async () => {
+    mockedGetAllCakes.mockResolvedValue([sampleCake])
+
+    const data = await getCatalogPageData('cakes')
+
+    expect(data.cakesForUi).toHaveLength(1)
+    expect(data.cakesForUi[0]).toMatchObject({
+      name: sampleCake.name,
+      imageUrl: 'https://example.com/image.jpg'
+    })
+    expect(mockUrlFor).toHaveBeenCalledWith(sampleCake.mainImage)
+    expect(mockWidth).toHaveBeenCalledWith(900)
+    expect(mockHeight).toHaveBeenCalledWith(900)
+  })
+
+  it('requests 900x900 transformed image URLs for mapped gift hampers', async () => {
+    mockedGetAllGiftHampers.mockResolvedValue([sampleGiftHamper])
+
+    const data = await getCatalogByPostCakesData()
+
+    expect(data.cakes).toHaveLength(1)
+    expect(data.cakes[0]).toMatchObject({
+      name: sampleGiftHamper.name,
+      imageUrl: 'https://example.com/image.jpg'
+    })
+    expect(mockUrlFor).toHaveBeenCalledWith(sampleGiftHamper.images?.[0])
+    expect(mockWidth).toHaveBeenCalledWith(900)
+    expect(mockHeight).toHaveBeenCalledWith(900)
   })
 })

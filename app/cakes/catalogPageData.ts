@@ -216,7 +216,7 @@ function getGiftHamperImage(hamper: GiftHamper): ImageSelection | null {
 
 function mapCakeToTabletCake(cake: Cake): TabletCake {
   const image = getCakeImage(cake)
-  const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
+  const imageUrl = image ? urlFor(image.image).width(900).height(900).url() : '/images/placeholder-cake.jpg'
   const imageAlt = image?.alt?.trim() || `${cake.name} by Olgish Cakes`
   const collectionIds = (cake.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
 
@@ -239,7 +239,7 @@ function mapCakeToTabletCake(cake: Cake): TabletCake {
 
 function mapGiftHamperToTabletCake(hamper: GiftHamper): TabletCake {
   const image = getGiftHamperImage(hamper)
-  const imageUrl = image ? urlFor(image.image).width(900).height(680).url() : '/images/placeholder-cake.jpg'
+  const imageUrl = image ? urlFor(image.image).width(900).height(900).url() : '/images/placeholder-cake.jpg'
   const imageAlt = image?.alt?.trim() || `${hamper.name} by Olgish Cakes`
   const collectionIds = (hamper.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
 
