@@ -242,18 +242,21 @@ describe('CakesProductCard', () => {
     expect(article).not.toHaveClass('border')
   })
 
-  it('uses fixed 163 square image with token radius in mobile grid mode', () => {
+  it('uses responsive square image with token radius in mobile grid mode', () => {
     renderMobileCard()
 
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
     const imageWrapper = image.parentElement
     const mobileLink = screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })
 
-    expect(image).toHaveAttribute('sizes', '163px')
+    expect(image).toHaveAttribute('sizes', '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)')
     expect(imageWrapper).not.toBeNull()
-    expect(imageWrapper).toHaveClass('aspect-square', 'max-w-[163px]', 'rounded-btn')
+    expect(imageWrapper).toHaveClass('aspect-square', 'rounded-btn')
     expect(imageWrapper).not.toHaveClass('aspect-[4/3]')
-    expect(mobileLink).toHaveClass('block', 'h-full', 'w-full', 'max-w-[163px]', 'mx-auto')
+    expect(imageWrapper).not.toHaveClass('max-w-[163px]')
+    expect(mobileLink).toHaveClass('block', 'h-full', 'w-full')
+    expect(mobileLink).not.toHaveClass('max-w-[163px]')
+    expect(mobileLink).not.toHaveClass('mx-auto')
   })
 
   it('uses square image in mobile single-column mode', () => {

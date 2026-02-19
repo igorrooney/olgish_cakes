@@ -13,6 +13,8 @@ interface CakesProductCardProps {
 }
 
 const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
+// Matches mobile catalog grid geometry: max-w-[952px], px-4, grid-cols-2 gap-4.
+const mobileGridImageSizes = '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)'
 
 export function CakesProductCard({
   cake,
@@ -23,12 +25,12 @@ export function CakesProductCard({
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const imageWrapperRef = useRef<HTMLDivElement | null>(null)
   const isByPostCake = cake.productType === 'giftHamper'
-  const mobileImageSizes = mobileViewMode === 'grid' ? '163px' : cardImageSizes
+  const mobileImageSizes = mobileViewMode === 'grid' ? mobileGridImageSizes : cardImageSizes
   const mobileImageWrapperClassName = mobileViewMode === 'grid'
-    ? 'relative aspect-square w-full max-w-[163px] overflow-hidden rounded-btn bg-base-200'
+    ? 'relative aspect-square w-full overflow-hidden rounded-btn bg-base-200'
     : 'relative aspect-square w-full overflow-hidden rounded-[10px] bg-base-200'
   const mobileCardLinkClassName = mobileViewMode === 'grid'
-    ? 'block h-full w-full max-w-[163px] mx-auto'
+    ? 'block h-full w-full'
     : 'block h-full'
   const imageClassName = `object-cover transition-opacity duration-300 ${
     isImageLoaded ? 'opacity-100' : 'opacity-0'
