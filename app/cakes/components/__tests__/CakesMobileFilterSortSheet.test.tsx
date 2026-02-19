@@ -219,6 +219,43 @@ function useImmediateRequestAnimationFrame() {
   }
 }
 
+function useDeferredRequestAnimationFrame() {
+  const originalRequestAnimationFrame = window.requestAnimationFrame
+  const queuedCallbacks: FrameRequestCallback[] = []
+  const requestAnimationFrameMock = jest.fn((callback: FrameRequestCallback) => {
+    queuedCallbacks.push(callback)
+    return queuedCallbacks.length
+  })
+
+  Object.defineProperty(window, 'requestAnimationFrame', {
+    configurable: true,
+    writable: true,
+    value: requestAnimationFrameMock
+  })
+
+  return {
+    requestAnimationFrameMock,
+    flush: () => {
+      while (queuedCallbacks.length > 0) {
+        const callback = queuedCallbacks.shift()
+
+        if (!callback) {
+          continue
+        }
+
+        callback(0)
+      }
+    },
+    restore: () => {
+      Object.defineProperty(window, 'requestAnimationFrame', {
+        configurable: true,
+        writable: true,
+        value: originalRequestAnimationFrame
+      })
+    }
+  }
+}
+
 function mockMatchMedia(matches: boolean) {
   const matchMediaMock = jest.fn((query: string) => ({
     matches: query === '(prefers-reduced-motion: reduce)' ? matches : false,
@@ -492,6 +529,65 @@ describe('CakesMobileFilterSortSheet', () => {
     expect(collectionsDetails).toHaveAttribute('open')
   })
 
+  it('recomputes section defaults when options load while sheet stays open', async () => {
+    const { rerender } = render(
+      <CakesMobileFilterSortSheet
+        open
+        selectedSort='new'
+        featuredCollectionOptions={[]}
+        collectionOptions={[]}
+        selectedCollectionIds={['collection-seasonal']}
+        onSortChange={() => {}}
+        onToggleCollection={() => {}}
+        onApply={() => {}}
+        onCancel={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    expect(screen.queryByText('Featured')).not.toBeInTheDocument()
+    expect(screen.queryByText('Collections')).not.toBeInTheDocument()
+
+    rerender(
+      <CakesMobileFilterSortSheet
+        open
+        selectedSort='new'
+        featuredCollectionOptions={[featuredOption]}
+        collectionOptions={collectionOptions}
+        selectedCollectionIds={['collection-seasonal']}
+        onSortChange={() => {}}
+        onToggleCollection={() => {}}
+        onApply={() => {}}
+        onCancel={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      const collectionsDetails = screen.getByText('Collections').closest('details')
+
+      if (collectionsDetails === null) {
+        throw new Error('Expected collections details to render')
+      }
+
+      expect(collectionsDetails).toHaveAttribute('open')
+    })
+
+    const featuredDetails = screen.getByText('Featured').closest('details')
+    const collectionsDetails = screen.getByText('Collections').closest('details')
+
+    if (featuredDetails === null || collectionsDetails === null) {
+      throw new Error('Expected featured and collections sections to render')
+    }
+
+    expect(collectionsDetails).toHaveAttribute('open')
+    expect(featuredDetails).not.toHaveAttribute('open')
+    expect(screen.getByRole('checkbox', { name: 'Seasonal cakes' })).toBeChecked()
+    expect(screen.getByRole('button', { name: 'See less' })).toBeInTheDocument()
+  })
+
   it('triggers sort, collection and apply handlers', async () => {
     const { onSortChange, onToggleCollection, onApply } = renderSheet()
 
@@ -546,6 +642,202 @@ describe('CakesMobileFilterSortSheet', () => {
     await waitFor(() => {
       expect(screen.getByTestId('mobile-filter-sort-sheet')).not.toHaveAttribute('open')
     })
+  })
+
+  it('reopens with collections expanded when a non-featured collection is selected', async () => {
+    const { rerender } = renderSheet({ open: false })
+
+    rerender(
+      <CakesMobileFilterSortSheet
+        open
+        selectedSort='new'
+        featuredCollectionOptions={[featuredOption]}
+        collectionOptions={collectionOptions}
+        selectedCollectionIds={['collection-birthday']}
+        onSortChange={() => {}}
+        onToggleCollection={() => {}}
+        onApply={() => {}}
+        onCancel={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const featuredDetails = screen.getByText('Featured').closest('details')
+    const collectionsDetails = screen.getByText('Collections').closest('details')
+
+    if (featuredDetails === null || collectionsDetails === null) {
+      throw new Error('Expected featured and collections sections to render')
+    }
+
+    expect(collectionsDetails).toHaveAttribute('open')
+    expect(featuredDetails).not.toHaveAttribute('open')
+    expect(screen.getByRole('checkbox', { name: 'Birthday cakes' })).toBeChecked()
+  })
+
+  it('reopens with featured expanded when only featured options are selected', async () => {
+    const { rerender } = renderSheet({ open: false })
+
+    rerender(
+      <CakesMobileFilterSortSheet
+        open
+        selectedSort='new'
+        featuredCollectionOptions={[featuredOption]}
+        collectionOptions={collectionOptions}
+        selectedCollectionIds={[featuredOption.id]}
+        onSortChange={() => {}}
+        onToggleCollection={() => {}}
+        onApply={() => {}}
+        onCancel={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const featuredDetails = screen.getByText('Featured').closest('details')
+    const collectionsDetails = screen.getByText('Collections').closest('details')
+
+    if (featuredDetails === null || collectionsDetails === null) {
+      throw new Error('Expected featured and collections sections to render')
+    }
+
+    expect(featuredDetails).toHaveAttribute('open')
+    expect(collectionsDetails).not.toHaveAttribute('open')
+    expect(screen.getByRole('checkbox', { name: 'Free honey cake offer' })).toBeChecked()
+  })
+
+  it('reveals selected collections beyond the default first three items on reopen', async () => {
+    const { rerender } = renderSheet({ open: false })
+
+    rerender(
+      <CakesMobileFilterSortSheet
+        open
+        selectedSort='new'
+        featuredCollectionOptions={[featuredOption]}
+        collectionOptions={collectionOptions}
+        selectedCollectionIds={['collection-seasonal']}
+        onSortChange={() => {}}
+        onToggleCollection={() => {}}
+        onApply={() => {}}
+        onCancel={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const collectionsDetails = screen.getByText('Collections').closest('details')
+
+    if (collectionsDetails === null) {
+      throw new Error('Expected collections details to render')
+    }
+
+    expect(collectionsDetails).toHaveAttribute('open')
+    expect(screen.getByRole('checkbox', { name: 'Seasonal cakes' })).toBeChecked()
+    expect(screen.getByRole('button', { name: 'See less' })).toBeInTheDocument()
+  })
+
+  it('scrolls to the first checked collection when reopening with applied collection filters', async () => {
+    const requestAnimationFrameControl = useDeferredRequestAnimationFrame()
+
+    try {
+      const { rerender } = renderSheet({ open: false })
+      const dialogElement = screen.getByTestId('mobile-filter-sort-sheet')
+      const modalBoxElement = dialogElement.querySelector('.modal-box')
+      const collectionsDetailsElement = screen.getByText('Collections').closest('details')
+
+      if (modalBoxElement === null || collectionsDetailsElement === null) {
+        throw new Error('Expected modal box and collections details elements to exist')
+      }
+
+      const modalBox = modalBoxElement as HTMLDivElement
+      const collectionsDetails = collectionsDetailsElement as HTMLDetailsElement
+      const scrollToMock = jest.fn((options: ScrollToOptions) => {
+        if (typeof options.top === 'number') {
+          modalBox.scrollTop = options.top
+        }
+      })
+
+      Object.defineProperty(modalBox, 'clientHeight', {
+        configurable: true,
+        value: 200
+      })
+      Object.defineProperty(modalBox, 'scrollHeight', {
+        configurable: true,
+        value: 1200
+      })
+      Object.defineProperty(modalBox, 'scrollTop', {
+        configurable: true,
+        writable: true,
+        value: 100
+      })
+      Object.defineProperty(modalBox, 'scrollTo', {
+        configurable: true,
+        value: scrollToMock
+      })
+      Object.defineProperty(modalBox, 'getBoundingClientRect', {
+        configurable: true,
+        value: jest.fn(() => createDomRect({
+          top: 0,
+          bottom: 200
+        }))
+      })
+      Object.defineProperty(collectionsDetails, 'getBoundingClientRect', {
+        configurable: true,
+        value: jest.fn(() => createDomRect({
+          top: 20,
+          bottom: 170
+        }))
+      })
+
+      rerender(
+        <CakesMobileFilterSortSheet
+          open
+          selectedSort='new'
+          featuredCollectionOptions={[featuredOption]}
+          collectionOptions={collectionOptions}
+          selectedCollectionIds={['collection-seasonal']}
+          onSortChange={() => {}}
+          onToggleCollection={() => {}}
+          onApply={() => {}}
+          onCancel={() => {}}
+        />
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+      })
+
+      const seasonalCheckbox = screen.getByRole('checkbox', { name: 'Seasonal cakes' })
+      const seasonalCheckboxRow = seasonalCheckbox.closest('label')
+
+      if (seasonalCheckboxRow === null) {
+        throw new Error('Expected seasonal collection checkbox row to render as a label')
+      }
+
+      Object.defineProperty(seasonalCheckboxRow, 'getBoundingClientRect', {
+        configurable: true,
+        value: jest.fn(() => createDomRect({
+          top: 260,
+          bottom: 320
+        }))
+      })
+
+      requestAnimationFrameControl.flush()
+
+      expect(scrollToMock).toHaveBeenCalledTimes(1)
+      expect(scrollToMock).toHaveBeenCalledWith(expect.objectContaining({
+        behavior: 'smooth'
+      }))
+      expect(requestAnimationFrameControl.requestAnimationFrameMock).toHaveBeenCalled()
+    } finally {
+      requestAnimationFrameControl.restore()
+    }
   })
 
   it('scrolls collections into view when the collections section is expanded', async () => {

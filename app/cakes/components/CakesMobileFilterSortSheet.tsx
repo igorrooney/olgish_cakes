@@ -72,6 +72,8 @@ export function CakesMobileFilterSortSheet({
   const dialogRef = useRef<HTMLDialogElement | null>(null)
   const modalBoxRef = useRef<HTMLDivElement | null>(null)
   const collectionsDetailsRef = useRef<HTMLDetailsElement | null>(null)
+  const wasOpenRef = useRef(false)
+  const previousOptionsSignatureRef = useRef<string | null>(null)
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(true)
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false)
   const [showAllCollections, setShowAllCollections] = useState(false)
@@ -79,6 +81,12 @@ export function CakesMobileFilterSortSheet({
     () => new Set(selectedCollectionIds),
     [selectedCollectionIds]
   )
+  const optionsSignature = useMemo(() => {
+    const featuredIds = featuredCollectionOptions.map((option) => option.id).join('|')
+    const collectionIds = collectionOptions.map((option) => option.id).join('|')
+
+    return `${featuredIds}::${collectionIds}`
+  }, [collectionOptions, featuredCollectionOptions])
   const visibleCollectionOptions = showAllCollections
     ? collectionOptions
     : collectionOptions.slice(0, 3)
@@ -121,18 +129,6 @@ export function CakesMobileFilterSortSheet({
     dialogElement.open = false
   }, [open])
 
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-
-    setShowAllCollections(false)
-    const hasFeaturedOptions = featuredCollectionOptions.length > 0
-    const hasCollectionsOptions = collectionOptions.length > 0
-    setIsFeaturedExpanded(hasFeaturedOptions)
-    setIsCollectionsExpanded(!hasFeaturedOptions && hasCollectionsOptions)
-  }, [collectionOptions.length, featuredCollectionOptions.length, open])
-
   function handleDialogCancel(event: SyntheticEvent<HTMLDialogElement, Event>) {
     event.preventDefault()
     onCancel()
@@ -153,35 +149,34 @@ export function CakesMobileFilterSortSheet({
       : 'smooth'
   }
 
-  function scrollCollectionsSectionIntoView() {
+  function scrollElementIntoViewWithinModal(element: Element | null) {
     const modalBox = modalBoxRef.current
-    const collectionsDetails = collectionsDetailsRef.current
 
-    if (!modalBox || !collectionsDetails) {
+    if (!modalBox || !element) {
       return
     }
 
     const containerRect = modalBox.getBoundingClientRect()
-    const sectionRect = collectionsDetails.getBoundingClientRect()
+    const targetRect = element.getBoundingClientRect()
     const topBuffer = 12
     const bottomBuffer = 12
     const currentScrollTop = modalBox.scrollTop
-    const sectionTop = sectionRect.top - containerRect.top + currentScrollTop
-    const sectionBottom = sectionRect.bottom - containerRect.top + currentScrollTop
+    const targetTop = targetRect.top - containerRect.top + currentScrollTop
+    const targetBottom = targetRect.bottom - containerRect.top + currentScrollTop
     const containerTop = currentScrollTop
     const containerBottom = currentScrollTop + modalBox.clientHeight
     const visibleTop = containerTop + topBuffer
     const visibleBottom = containerBottom - bottomBuffer
-    const sectionHeight = sectionBottom - sectionTop
+    const targetHeight = targetBottom - targetTop
     const maxScrollTop = Math.max(0, modalBox.scrollHeight - modalBox.clientHeight)
     let nextScrollTop = currentScrollTop
 
-    if (sectionHeight > modalBox.clientHeight - topBuffer - bottomBuffer) {
-      nextScrollTop = sectionTop - topBuffer
-    } else if (sectionTop < visibleTop) {
-      nextScrollTop = sectionTop - topBuffer
-    } else if (sectionBottom > visibleBottom) {
-      nextScrollTop = sectionBottom - modalBox.clientHeight + bottomBuffer
+    if (targetHeight > modalBox.clientHeight - topBuffer - bottomBuffer) {
+      nextScrollTop = targetTop - topBuffer
+    } else if (targetTop < visibleTop) {
+      nextScrollTop = targetTop - topBuffer
+    } else if (targetBottom > visibleBottom) {
+      nextScrollTop = targetBottom - modalBox.clientHeight + bottomBuffer
     } else {
       return
     }
@@ -209,13 +204,43 @@ export function CakesMobileFilterSortSheet({
     modalBox.scrollTop = clampedScrollTop
   }
 
-  function scheduleCollectionsVisibilityScroll() {
+  function scrollCollectionsSectionIntoView() {
+    scrollElementIntoViewWithinModal(collectionsDetailsRef.current)
+  }
+
+  function scrollFirstCheckedCollectionIntoView() {
+    const collectionsDetails = collectionsDetailsRef.current
+
+    if (!collectionsDetails) {
+      return
+    }
+
+    const checkedCollectionInput =
+      collectionsDetails.querySelector<HTMLInputElement>('input[type="checkbox"]:checked')
+
+    if (!checkedCollectionInput) {
+      return
+    }
+
+    const checkedCollectionRow = checkedCollectionInput.closest('label')
+    scrollElementIntoViewWithinModal(checkedCollectionRow ?? checkedCollectionInput)
+  }
+
+  function scheduleCollectionsVisibilityScroll({
+    includeCheckedCollection = false
+  }: {
+    includeCheckedCollection?: boolean
+  } = {}) {
     if (typeof window === 'undefined') {
       return
     }
 
     const runScroll = () => {
       scrollCollectionsSectionIntoView()
+
+      if (includeCheckedCollection) {
+        scrollFirstCheckedCollectionIntoView()
+      }
     }
 
     if (typeof window.requestAnimationFrame !== 'function') {
@@ -227,6 +252,52 @@ export function CakesMobileFilterSortSheet({
       window.requestAnimationFrame(runScroll)
     })
   }
+
+  useEffect(() => {
+    const wasOpen = wasOpenRef.current
+    const previousOptionsSignature = previousOptionsSignatureRef.current
+    wasOpenRef.current = open
+    previousOptionsSignatureRef.current = optionsSignature
+    const didOpen = open && !wasOpen
+    const didOptionsChange = open &&
+      wasOpen &&
+      previousOptionsSignature !== null &&
+      previousOptionsSignature !== optionsSignature
+
+    if (!open || (!didOpen && !didOptionsChange)) {
+      return
+    }
+
+    const hasFeaturedOptions = featuredCollectionOptions.length > 0
+    const hasCollectionsOptions = collectionOptions.length > 0
+    const featuredCollectionIdSet = new Set(featuredCollectionOptions.map((option) => option.id))
+    const regularCollectionIdSet = new Set(collectionOptions.map((option) => option.id))
+    const selectedInCollections = selectedCollectionIds.filter((collectionId) => {
+      return regularCollectionIdSet.has(collectionId)
+    })
+    const selectedInFeatured = selectedCollectionIds.filter((collectionId) => {
+      return featuredCollectionIdSet.has(collectionId)
+    })
+    const hasSelectedCollections = selectedInCollections.length > 0
+    const hasSelectedFeatured = selectedInFeatured.length > 0
+    const shouldExpandCollections = hasSelectedCollections || (!hasFeaturedOptions && hasCollectionsOptions)
+    const shouldExpandFeatured = hasSelectedCollections
+      ? false
+      : hasSelectedFeatured || (hasFeaturedOptions && !shouldExpandCollections)
+    const shouldShowAllForSelectedCollections = hasSelectedCollections && selectedInCollections.some((collectionId) => {
+      return collectionOptions.findIndex((option) => option.id === collectionId) >= 3
+    })
+
+    setShowAllCollections(shouldShowAllForSelectedCollections)
+    setIsFeaturedExpanded(shouldExpandFeatured)
+    setIsCollectionsExpanded(shouldExpandCollections)
+
+    if (shouldExpandCollections && hasSelectedCollections) {
+      scheduleCollectionsVisibilityScroll({
+        includeCheckedCollection: true
+      })
+    }
+  }, [collectionOptions, featuredCollectionOptions, open, optionsSignature, selectedCollectionIds])
 
   function handleFeaturedToggle(event: SyntheticEvent<HTMLDetailsElement, Event>) {
     const nextOpenState = event.currentTarget.open
