@@ -290,6 +290,87 @@ function mockMatchMedia(matches: boolean) {
   }
 }
 
+function getModalBoxElement() {
+  const dialogElement = screen.getByTestId('mobile-filter-sort-sheet')
+  const modalBoxElement = dialogElement.querySelector('.modal-box')
+
+  if (modalBoxElement === null) {
+    throw new Error('Expected modal box element to exist')
+  }
+
+  return modalBoxElement as HTMLDivElement
+}
+
+function setModalBoxScrollTop(modalBox: HTMLDivElement, scrollTop: number) {
+  Object.defineProperty(modalBox, 'scrollTop', {
+    configurable: true,
+    writable: true,
+    value: scrollTop
+  })
+}
+
+function createTouchPoint({
+  clientX,
+  clientY
+}: {
+  clientX: number
+  clientY: number
+}): Touch {
+  return {
+    identifier: 1,
+    target: document.body,
+    clientX,
+    clientY,
+    pageX: clientX,
+    pageY: clientY,
+    screenX: clientX,
+    screenY: clientY,
+    radiusX: 1,
+    radiusY: 1,
+    rotationAngle: 0,
+    force: 1
+  } as Touch
+}
+
+function fireSwipeGesture({
+  element,
+  startX,
+  startY,
+  endX,
+  endY
+}: {
+  element: HTMLDivElement
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+}) {
+  const startTouchPoint = createTouchPoint({
+    clientX: startX,
+    clientY: startY
+  })
+  const endTouchPoint = createTouchPoint({
+    clientX: endX,
+    clientY: endY
+  })
+
+  fireEvent.touchStart(element, {
+    touches: [startTouchPoint],
+    changedTouches: [startTouchPoint],
+    targetTouches: [startTouchPoint]
+  })
+  fireEvent.touchMove(element, {
+    touches: [endTouchPoint],
+    changedTouches: [endTouchPoint],
+    targetTouches: [endTouchPoint]
+  })
+  fireEvent.touchEnd(element, {
+    touches: [],
+    changedTouches: [endTouchPoint],
+    targetTouches: []
+  })
+}
+
 describe('CakesMobileFilterSortSheet', () => {
   beforeAll(() => {
     if (typeof HTMLDialogElement === 'undefined') {
@@ -609,6 +690,97 @@ describe('CakesMobileFilterSortSheet', () => {
     fireEvent(screen.getByTestId('mobile-filter-sort-sheet'), new Event('cancel', { cancelable: true }))
 
     expect(onCancel).toHaveBeenCalledTimes(3)
+  })
+
+  it('closes on downward swipe past threshold when sheet is at the top', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+
+    fireSwipeGesture({
+      element: modalBox,
+      startX: 24,
+      startY: 120,
+      endX: 30,
+      endY: 220
+    })
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not close on short downward swipe', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+
+    fireSwipeGesture({
+      element: modalBox,
+      startX: 28,
+      startY: 110,
+      endX: 31,
+      endY: 160
+    })
+
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('does not close on downward swipe when sheet is scrolled', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 32)
+
+    fireSwipeGesture({
+      element: modalBox,
+      startX: 24,
+      startY: 100,
+      endX: 27,
+      endY: 220
+    })
+
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('does not close on upward or horizontal swipe', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+
+    fireSwipeGesture({
+      element: modalBox,
+      startX: 32,
+      startY: 220,
+      endX: 34,
+      endY: 140
+    })
+    fireSwipeGesture({
+      element: modalBox,
+      startX: 20,
+      startY: 100,
+      endX: 150,
+      endY: 170
+    })
+
+    expect(onCancel).not.toHaveBeenCalled()
   })
 
   it('shows see more for longer collection lists', () => {

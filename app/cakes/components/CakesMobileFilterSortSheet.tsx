@@ -1,6 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type FormEvent, type SyntheticEvent } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type SyntheticEvent,
+  type TouchEvent as ReactTouchEvent
+} from 'react'
 import { CakesCollectionOption, CakesSortOption } from './types'
 
 interface CakesMobileFilterSortSheetProps {
@@ -29,6 +37,8 @@ const mobileFilterGroupTitleClassName =
 const mobileFilterCollapseIconClassName = 'mobile-filter-collapse-icon'
 const mobileFilterCollapseIndicatorClassName =
   'pointer-events-none absolute right-[22px] top-1/2 -translate-y-1/2 [font-family:var(--t-font-family-theme-primary)] [font-style:normal] [font-size:var(--t-font-size-xl)] [font-weight:var(--t-font-weight-semibold)] leading-none text-(--color-primary-400)'
+const swipeCloseMinDistancePx = 72
+const swipeCloseScrollTopTolerancePx = 4
 
 function CollectionCheckbox({
   checked,
@@ -74,6 +84,12 @@ export function CakesMobileFilterSortSheet({
   const collectionsDetailsRef = useRef<HTMLDetailsElement | null>(null)
   const wasOpenRef = useRef(false)
   const previousOptionsSignatureRef = useRef<string | null>(null)
+  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
+  const touchCurrentXRef = useRef<number | null>(null)
+  const touchCurrentYRef = useRef<number | null>(null)
+  const touchStartScrollTopRef = useRef(0)
+  const isSwipeTrackingRef = useRef(false)
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(true)
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false)
   const [showAllCollections, setShowAllCollections] = useState(false)
@@ -129,6 +145,14 @@ export function CakesMobileFilterSortSheet({
     dialogElement.open = false
   }, [open])
 
+  useEffect(() => {
+    if (open) {
+      return
+    }
+
+    resetSwipeTrackingState()
+  }, [open])
+
   function handleDialogCancel(event: SyntheticEvent<HTMLDialogElement, Event>) {
     event.preventDefault()
     onCancel()
@@ -137,6 +161,113 @@ export function CakesMobileFilterSortSheet({
   function handleBackdropSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     onCancel()
+  }
+
+  function resetSwipeTrackingState() {
+    touchStartXRef.current = null
+    touchStartYRef.current = null
+    touchCurrentXRef.current = null
+    touchCurrentYRef.current = null
+    touchStartScrollTopRef.current = 0
+    isSwipeTrackingRef.current = false
+  }
+
+  function isTopScrollPosition(scrollTop: number) {
+    return scrollTop <= swipeCloseScrollTopTolerancePx
+  }
+
+  function handleSheetTouchStart(event: ReactTouchEvent<HTMLDivElement>) {
+    if (event.touches.length !== 1) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const modalBox = modalBoxRef.current
+
+    if (!modalBox || !isTopScrollPosition(modalBox.scrollTop)) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchPoint = event.touches[0]
+    touchStartXRef.current = touchPoint.clientX
+    touchStartYRef.current = touchPoint.clientY
+    touchCurrentXRef.current = touchPoint.clientX
+    touchCurrentYRef.current = touchPoint.clientY
+    touchStartScrollTopRef.current = modalBox.scrollTop
+    isSwipeTrackingRef.current = true
+  }
+
+  function handleSheetTouchMove(event: ReactTouchEvent<HTMLDivElement>) {
+    if (!isSwipeTrackingRef.current) {
+      return
+    }
+
+    if (event.touches.length !== 1) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const modalBox = modalBoxRef.current
+
+    if (!modalBox || !isTopScrollPosition(modalBox.scrollTop)) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchPoint = event.touches[0]
+    touchCurrentXRef.current = touchPoint.clientX
+    touchCurrentYRef.current = touchPoint.clientY
+  }
+
+  function handleSheetTouchEnd(event: ReactTouchEvent<HTMLDivElement>) {
+    if (!isSwipeTrackingRef.current) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchStartX = touchStartXRef.current
+    const touchStartY = touchStartYRef.current
+
+    if (touchStartX === null || touchStartY === null) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const changedTouchPoint = event.changedTouches.length > 0
+      ? event.changedTouches[0]
+      : null
+    const touchEndX = changedTouchPoint?.clientX ?? touchCurrentXRef.current
+    const touchEndY = changedTouchPoint?.clientY ?? touchCurrentYRef.current
+
+    if (touchEndX === null || touchEndY === null) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const modalBox = modalBoxRef.current
+    const startedAtTop = isTopScrollPosition(touchStartScrollTopRef.current)
+    const endedAtTop = modalBox !== null && isTopScrollPosition(modalBox.scrollTop)
+    const deltaX = touchEndX - touchStartX
+    const deltaY = touchEndY - touchStartY
+    const isVerticalDownwardSwipe = deltaY > 0 && Math.abs(deltaY) > Math.abs(deltaX)
+    const hasSufficientSwipeDistance = deltaY >= swipeCloseMinDistancePx
+
+    resetSwipeTrackingState()
+
+    if (!startedAtTop || !endedAtTop) {
+      return
+    }
+
+    if (!isVerticalDownwardSwipe || !hasSufficientSwipeDistance) {
+      return
+    }
+
+    onCancel()
+  }
+
+  function handleSheetTouchCancel() {
+    resetSwipeTrackingState()
   }
 
   function resolveCollectionsScrollBehavior(): ScrollBehavior {
@@ -336,6 +467,10 @@ export function CakesMobileFilterSortSheet({
     >
       <div
         ref={modalBoxRef}
+        onTouchStart={handleSheetTouchStart}
+        onTouchMove={handleSheetTouchMove}
+        onTouchEnd={handleSheetTouchEnd}
+        onTouchCancel={handleSheetTouchCancel}
         className='modal-box m-0 w-full max-w-none rounded-t-[36px] rounded-b-none border border-base-300 bg-(--color-filter-sort-mobile-sheet-bg) px-6 pb-6 pt-3 shadow-none'
       >
         <div className='mx-auto h-[5px] w-[40px] rounded-[8px] bg-(--color-filter-sort-mobile-handle)' aria-hidden='true' />
