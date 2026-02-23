@@ -261,7 +261,6 @@ export function GiftHamperPageClient({
         categoryLabel='Cakes by post'
         title={hamper.name}
         priceText={`\u00A3${formatPrice(hamper.price)}`}
-        priceSuffix='+ free shipping'
         keyPoints={keyPoints}
         ctaLabel='Order now +'
         onCtaClick={() => setIsOrderModalOpen(true)}

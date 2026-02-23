@@ -33,7 +33,7 @@ jest.mock('@/app/cakes/components/CatalogProductDetailLayout', () => ({
         <a href={String(props.backHref)} data-testid='layout-back-link'>{backLabel}</a>
         <p data-testid='layout-title'>{String(props.title)}</p>
         <p data-testid='layout-price'>{String(props.priceText)}</p>
-        <p data-testid='layout-price-suffix'>{String(props.priceSuffix)}</p>
+        <p data-testid='layout-price-suffix'>{typeof props.priceSuffix === 'string' ? props.priceSuffix : ''}</p>
         <p data-testid='layout-category'>{String(props.categoryLabel)}</p>
         <ul>
           {(props.keyPoints as string[]).map((point) => (
@@ -146,9 +146,10 @@ describe('GiftHamperPageClient', () => {
     expect(screen.getByTestId('layout-back-link')).toHaveTextContent('Back to cakes by post')
     expect(screen.getByTestId('layout-title')).toHaveTextContent('Christmas Gift Box & Card')
     expect(screen.getByTestId('layout-price')).toHaveTextContent('\u00A38.50')
-    expect(screen.getByTestId('layout-price-suffix')).toHaveTextContent('+ free shipping')
+    expect(screen.getByTestId('layout-price-suffix')).toBeEmptyDOMElement()
     expect(screen.getByTestId('layout-category')).toHaveTextContent('Cakes by post')
     expect(getLatestLayoutProps().backLabel).toBe('Back to cakes by post')
+    expect(getLatestLayoutProps().priceSuffix).toBeUndefined()
   })
 
   it('opens the existing gift hamper order modal when Add to cart is triggered', () => {
