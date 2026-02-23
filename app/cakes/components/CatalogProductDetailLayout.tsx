@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 
 export interface CatalogProductDetailImage {
@@ -37,6 +37,7 @@ const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
   alt: 'Product image placeholder'
 }
+const swipeNavigationMinDistancePx = 48
 
 const pricePrefixClass = '[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-bold)] [font-style:normal] [font-size:12px] tablet:[font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:100%] [letter-spacing:-0.02em] align-top text-primary-500'
 const tabletPriceSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
@@ -100,6 +101,11 @@ export function CatalogProductDetailLayout({
   sections
 }: CatalogProductDetailLayoutProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
+  const touchCurrentXRef = useRef<number | null>(null)
+  const touchCurrentYRef = useRef<number | null>(null)
+  const isSwipeTrackingRef = useRef(false)
   const resolvedImages = useMemo(() => {
     return images.length > 0 ? images : [fallbackImage]
   }, [images])
@@ -111,6 +117,14 @@ export function CatalogProductDetailLayout({
     ? activeImageIndex
     : 0
   const activeImage = resolvedImages[normalizedActiveImageIndex] ?? resolvedImages[0]
+
+  const resetSwipeTrackingState = useCallback(() => {
+    touchStartXRef.current = null
+    touchStartYRef.current = null
+    touchCurrentXRef.current = null
+    touchCurrentYRef.current = null
+    isSwipeTrackingRef.current = false
+  }, [])
 
   const handlePreviousImage = useCallback(() => {
     if (!isMultiImageGallery) {
@@ -149,6 +163,90 @@ export function CatalogProductDetailLayout({
     }
   }, [handleNextImage, handlePreviousImage, isMultiImageGallery])
 
+  const handleGalleryTouchStart = useCallback((event: ReactTouchEvent<HTMLElement>) => {
+    if (!isMultiImageGallery || event.touches.length !== 1) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchPoint = event.touches[0]
+    touchStartXRef.current = touchPoint.clientX
+    touchStartYRef.current = touchPoint.clientY
+    touchCurrentXRef.current = touchPoint.clientX
+    touchCurrentYRef.current = touchPoint.clientY
+    isSwipeTrackingRef.current = true
+  }, [isMultiImageGallery, resetSwipeTrackingState])
+
+  const handleGalleryTouchMove = useCallback((event: ReactTouchEvent<HTMLElement>) => {
+    if (!isSwipeTrackingRef.current) {
+      return
+    }
+
+    if (event.touches.length !== 1) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchPoint = event.touches[0]
+    touchCurrentXRef.current = touchPoint.clientX
+    touchCurrentYRef.current = touchPoint.clientY
+  }, [resetSwipeTrackingState])
+
+  const handleGalleryTouchEnd = useCallback((event: ReactTouchEvent<HTMLElement>) => {
+    if (!isMultiImageGallery || !isSwipeTrackingRef.current) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const touchStartX = touchStartXRef.current
+    const touchStartY = touchStartYRef.current
+
+    if (touchStartX === null || touchStartY === null) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const changedTouchPoint = event.changedTouches.length > 0
+      ? event.changedTouches[0]
+      : null
+    const touchEndX = changedTouchPoint?.clientX ?? touchCurrentXRef.current
+    const touchEndY = changedTouchPoint?.clientY ?? touchCurrentYRef.current
+
+    if (touchEndX === null || touchEndY === null) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    const deltaX = touchEndX - touchStartX
+    const deltaY = touchEndY - touchStartY
+    const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY)
+    const hasSufficientSwipeDistance = Math.abs(deltaX) >= swipeNavigationMinDistancePx
+
+    resetSwipeTrackingState()
+
+    if (!isHorizontalSwipe || !hasSufficientSwipeDistance) {
+      return
+    }
+
+    if (deltaX < 0) {
+      handleNextImage()
+      return
+    }
+
+    if (deltaX > 0) {
+      handlePreviousImage()
+    }
+  }, [
+    handleNextImage,
+    handlePreviousImage,
+    isMultiImageGallery,
+    resetSwipeTrackingState
+  ])
+
+  const handleGalleryTouchCancel = useCallback(() => {
+    resetSwipeTrackingState()
+  }, [resetSwipeTrackingState])
+
   useEffect(() => {
     if (activeImageIndex <= resolvedImages.length - 1) {
       return
@@ -156,6 +254,14 @@ export function CatalogProductDetailLayout({
 
     setActiveImageIndex(0)
   }, [activeImageIndex, resolvedImages.length])
+
+  useEffect(() => {
+    if (isMultiImageGallery) {
+      return
+    }
+
+    resetSwipeTrackingState()
+  }, [isMultiImageGallery, resetSwipeTrackingState])
 
   const handleBackLinkClick = useCallback((event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (!isPlainLeftClick(event)) {
@@ -206,7 +312,14 @@ export function CatalogProductDetailLayout({
           <span className='sr-only'>
             Image {normalizedActiveImageIndex + 1} of {resolvedImages.length}
           </span>
-          <div className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
+          <div
+            onTouchStart={handleGalleryTouchStart}
+            onTouchMove={handleGalleryTouchMove}
+            onTouchEnd={handleGalleryTouchEnd}
+            onTouchCancel={handleGalleryTouchCancel}
+            className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'
+            style={{ touchAction: 'pan-y' }}
+          >
             <Image
               src={activeImage.src}
               alt={activeImage.alt}

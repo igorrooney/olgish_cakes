@@ -123,6 +123,68 @@ function setHistoryStateWithPreviousPathname(pathname?: string | null) {
   window.history.replaceState(nextHistoryState, '', window.location.href)
 }
 
+function createTouchPoint({
+  clientX,
+  clientY
+}: {
+  clientX: number
+  clientY: number
+}): Touch {
+  return {
+    identifier: 1,
+    target: document.body,
+    clientX,
+    clientY,
+    pageX: clientX,
+    pageY: clientY,
+    screenX: clientX,
+    screenY: clientY,
+    radiusX: 1,
+    radiusY: 1,
+    rotationAngle: 0,
+    force: 1
+  } as Touch
+}
+
+function fireGallerySwipeGesture({
+  element,
+  startX,
+  startY,
+  endX,
+  endY
+}: {
+  element: HTMLElement
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+}) {
+  const startTouchPoint = createTouchPoint({
+    clientX: startX,
+    clientY: startY
+  })
+  const endTouchPoint = createTouchPoint({
+    clientX: endX,
+    clientY: endY
+  })
+
+  fireEvent.touchStart(element, {
+    touches: [startTouchPoint],
+    changedTouches: [startTouchPoint],
+    targetTouches: [startTouchPoint]
+  })
+  fireEvent.touchMove(element, {
+    touches: [endTouchPoint],
+    changedTouches: [endTouchPoint],
+    targetTouches: [endTouchPoint]
+  })
+  fireEvent.touchEnd(element, {
+    touches: [],
+    changedTouches: [endTouchPoint],
+    targetTouches: []
+  })
+}
+
 describe('CatalogProductDetailLayout', () => {
   beforeEach(() => {
     setHistoryStateWithPreviousPathname()
@@ -507,6 +569,22 @@ describe('CatalogProductDetailLayout', () => {
       ]
     )
 
+    const onlyImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = onlyImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected single gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 120,
+      endY: 122
+    })
+
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'View previous image' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'View next image' })).not.toBeInTheDocument()
     expect(screen.queryByRole('tablist', { name: 'Product image slides' })).not.toBeInTheDocument()
@@ -537,6 +615,137 @@ describe('CatalogProductDetailLayout', () => {
     fireEvent.keyDown(galleryRegion, { key: 'ArrowRight' })
     expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
     fireEvent.keyDown(galleryRegion, { key: 'ArrowLeft' })
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+  })
+
+  it('supports swipe left image navigation', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 120,
+      endY: 126
+    })
+
+    expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
+  })
+
+  it('supports swipe right image navigation and loops from first to last image', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 120,
+      startY: 120,
+      endX: 220,
+      endY: 124
+    })
+
+    expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
+  })
+
+  it('does not navigate images on short horizontal swipe', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 190,
+      endY: 122
+    })
+
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+  })
+
+  it('does not navigate images on vertical-dominant swipe', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 160,
+      endY: 220
+    })
+
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+  })
+
+  it('does not navigate images after touch cancel', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    const startTouchPoint = createTouchPoint({
+      clientX: 220,
+      clientY: 120
+    })
+    const moveTouchPoint = createTouchPoint({
+      clientX: 180,
+      clientY: 124
+    })
+    const endTouchPoint = createTouchPoint({
+      clientX: 80,
+      clientY: 126
+    })
+
+    fireEvent.touchStart(imageWrapper, {
+      touches: [startTouchPoint],
+      changedTouches: [startTouchPoint],
+      targetTouches: [startTouchPoint]
+    })
+    fireEvent.touchMove(imageWrapper, {
+      touches: [moveTouchPoint],
+      changedTouches: [moveTouchPoint],
+      targetTouches: [moveTouchPoint]
+    })
+    fireEvent.touchCancel(imageWrapper, {
+      touches: [],
+      changedTouches: [moveTouchPoint],
+      targetTouches: []
+    })
+    fireEvent.touchEnd(imageWrapper, {
+      touches: [],
+      changedTouches: [endTouchPoint],
+      targetTouches: []
+    })
+
     expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
   })
 
