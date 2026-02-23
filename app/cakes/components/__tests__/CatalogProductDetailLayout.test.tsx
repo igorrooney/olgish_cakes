@@ -52,7 +52,20 @@ const sections: CatalogProductDetailSection[] = [
   }
 ]
 
-const tabletPricePrefixAndSignClasses = [
+const pricePrefixClasses = [
+  '[font-family:var(--font-more-sugar),cursive,fantasy]',
+  '[font-weight:var(--t-font-weight-bold)]',
+  '[font-style:normal]',
+  '[font-size:12px]',
+  'tablet:[font-size:var(--t-font-size-subtitle-small)]',
+  '[leading-trim:none]',
+  '[line-height:100%]',
+  '[letter-spacing:-0.02em]',
+  'align-top',
+  'text-primary-500'
+] as const
+
+const tabletPriceSignClasses = [
   'tablet:[font-family:var(--font-more-sugar),cursive,fantasy]',
   'tablet:[font-weight:var(--t-font-weight-bold)]',
   'tablet:[font-style:normal]',
@@ -138,33 +151,58 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).not.toHaveClass('rounded-box')
   })
 
-  it('applies tokenized tablet typography to category label', () => {
+  it('applies tokenized mobile and tablet typography to category label', () => {
     renderLayout()
 
     const categoryLabel = screen.getByText('Cakes by post')
 
     expect(categoryLabel).toHaveClass(
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-normal)]',
+      '[font-style:normal]',
+      'text-[12px]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
       'tablet:[font-size:var(--t-font-size-sm)]',
-      'tablet:[line-height:var(--t-font-lineHeight-leading-7)]',
       'tablet:text-(--color-catalog-detail-muted)'
     )
-    expect(categoryLabel).not.toHaveClass('tablet:text-[38px]', 'tablet:leading-[52px]')
+    expect(categoryLabel).not.toHaveClass(
+      'font-sans',
+      'text-[16px]',
+      'leading-6',
+      'tablet:text-[38px]',
+      'tablet:leading-[52px]'
+    )
   })
 
-  it('applies tokenized tablet typography to product title', () => {
+  it('applies tokenized mobile and tablet typography to product title', () => {
     renderLayout()
 
     const title = screen.getByRole('heading', { level: 1, name: 'Christmas Gift Box & Card' })
 
     expect(title).toHaveClass(
+      'font-oldenburg',
+      '[font-weight:var(--t-font-weight-normal)]',
+      '[font-style:normal]',
+      '[font-size:var(--t-font-size-xl)]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-(--color-filter-sort-mobile-text)',
       'tablet:text-[24px]',
-      'tablet:[line-height:var(--t-font-lineHeight-leading-7)]',
-      'tablet:text-(--color-filter-sort-mobile-text)'
     )
-    expect(title).not.toHaveClass('tablet:text-[64px]', 'tablet:leading-[72px]')
+    expect(title).not.toHaveClass(
+      'text-[36px]',
+      'leading-[42px]',
+      'tablet:text-[64px]',
+      'tablet:leading-[72px]'
+    )
   })
 
-  it('applies tokenized tablet typography to price text and currency sign', () => {
+  it('applies tokenized mobile and tablet typography to price text and tablet-only sign styles to currency sign', () => {
     renderLayout()
 
     const priceText = screen.getByText((_, element) => {
@@ -173,14 +211,27 @@ describe('CatalogProductDetailLayout', () => {
     const currencySign = screen.getByText('\u00A3')
 
     expect(priceText).toHaveClass(
+      '[font-family:var(--font-more-sugar),cursive,fantasy]',
+      '[font-weight:var(--t-font-weight-normal)]',
+      '[font-style:normal]',
+      '[font-size:var(--t-font-size-subtitle-small)]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-primary-500',
       'tablet:[font-size:var(--t-font-size-title-page-base)]',
       'tablet:[line-height:100%]',
       'tablet:[letter-spacing:-0.02em]',
       'tablet:text-primary-500'
     )
     expect(priceText).not.toHaveClass('tablet:text-[112px]', 'tablet:leading-[100px]')
-    expect(currencySign).toHaveClass(...tabletPricePrefixAndSignClasses)
-    expect(currencySign).not.toHaveClass('tablet:align-middle')
+    expect(currencySign).toHaveClass(...tabletPriceSignClasses)
+    expect(currencySign).not.toHaveClass(
+      '[font-weight:var(--t-font-weight-bold)]',
+      '[font-size:var(--t-font-size-subtitle-small)]',
+      'align-top'
+    )
   })
 
   it('applies tokenized tablet sign styles to any non-empty price prefix and keeps composed text', () => {
@@ -198,12 +249,18 @@ describe('CatalogProductDetailLayout', () => {
       return element.textContent?.replace(/\s+/g, ' ').trim() === 'from \u00A38.50'
     })
 
-    expect(prefixText).toHaveClass(...tabletPricePrefixAndSignClasses)
-    expect(currencySign).toHaveClass(...tabletPricePrefixAndSignClasses)
+    expect(prefixText).toHaveClass(...pricePrefixClasses)
+    expect(currencySign).toHaveClass(...tabletPriceSignClasses)
+    expect(currencySign).not.toHaveClass(
+      '[font-family:var(--font-more-sugar),cursive,fantasy]',
+      '[font-weight:var(--t-font-weight-bold)]',
+      '[font-size:var(--t-font-size-subtitle-small)]',
+      'align-top'
+    )
     expect(composedPriceText).toBeInTheDocument()
   })
 
-  it('applies tokenized tablet typography to key points list', () => {
+  it('applies tokenized mobile and tablet typography to key points list', () => {
     renderLayout()
 
     const keyPointsListItem = screen.getByText('Freshly baked and packed')
@@ -211,6 +268,15 @@ describe('CatalogProductDetailLayout', () => {
 
     expect(keyPointsList).not.toBeNull()
     expect(keyPointsList).toHaveClass(
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-normal)]',
+      '[font-style:normal]',
+      '[font-size:var(--t-font-size-base)]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-(--d-color-base-content)',
       'tablet:[font-family:var(--t-font-family-theme-primary)]',
       'tablet:[font-weight:var(--t-font-weight-normal)]',
       'tablet:[font-style:normal]',
@@ -220,10 +286,11 @@ describe('CatalogProductDetailLayout', () => {
       'tablet:[letter-spacing:0]',
       'tablet:text-(--d-color-base-content)'
     )
+    expect(keyPointsList).not.toHaveClass('font-sans', 'text-[20px]', 'leading-[30px]', 'text-base-content')
     expect(keyPointsList).not.toHaveClass('tablet:text-[58px]', 'tablet:leading-[72px]')
   })
 
-  it('applies tokenized tablet typography to accordion summary titles', () => {
+  it('applies tokenized mobile and tablet typography to accordion summary titles', () => {
     renderLayout()
 
     const ingredientsSummary = screen.getByText('Ingredients')
@@ -235,6 +302,15 @@ describe('CatalogProductDetailLayout', () => {
 
     expect(ingredientsSummary).toHaveClass(
       'box-border',
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-normal)]',
+      '[font-style:normal]',
+      '[font-size:var(--t-font-size-base)]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-[color:var(--d-color-base-content,#1F2937)]',
       'tablet:[font-family:var(--t-font-family-theme-primary)]',
       'tablet:[font-weight:var(--t-font-weight-normal)]',
       'tablet:[font-style:normal]',
@@ -246,6 +322,7 @@ describe('CatalogProductDetailLayout', () => {
       'tablet:text-(--d-color-base-content)'
     )
     expect(ingredientsSummary).toHaveStyle({ boxSizing: 'border-box' })
+    expect(ingredientsSummary).not.toHaveClass('font-sans', 'text-[20px]', 'leading-[30px]', 'text-base-content')
     expect(ingredientsSummary).not.toHaveClass('tablet:text-[58px]', 'tablet:leading-[72px]')
   })
 
@@ -525,28 +602,34 @@ describe('CatalogProductDetailLayout', () => {
     expect(onCtaClick).toHaveBeenCalledTimes(1)
   })
 
-  it('applies tokenized tablet CTA button styles without duplicate daisyUI defaults', () => {
+  it('applies tokenized CTA button styles without duplicate daisyUI defaults', () => {
     renderLayout()
 
     const ctaButton = screen.getByRole('button', { name: 'Add to cart +' })
 
     expect(ctaButton).toHaveClass(
-      'tablet:h-12',
-      'tablet:min-h-12',
+      'h-12',
+      'min-h-12',
+      'shadow-sm',
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-semibold)]',
+      '[font-style:normal]',
+      '[font-size:var(--t-font-size-sm)]',
+      '[leading-trim:none]',
+      '[line-height:var(--d-lineHeight-14)]',
+      '[letter-spacing:0]',
+      'text-center',
+      'align-middle',
+      'text-primary-content',
       'tablet:gap-2',
-      'tablet:px-4',
-      'tablet:shadow-sm',
-      'tablet:[font-family:var(--t-font-family-theme-primary)]',
-      'tablet:[font-weight:var(--t-font-weight-semibold)]',
-      'tablet:[font-style:normal]',
-      'tablet:[font-size:var(--t-font-size-sm)]',
-      'tablet:[leading-trim:none]',
-      'tablet:[line-height:var(--d-lineHeight-14)]',
-      'tablet:[letter-spacing:0]',
-      'tablet:text-center',
-      'tablet:align-middle'
+      'tablet:px-4'
     )
     expect(ctaButton).not.toHaveClass(
+      'h-16',
+      'min-h-16',
+      'font-sans',
+      'text-[20px]',
+      'leading-6',
       'tablet:text-[48px]',
       'tablet:leading-[56px]',
       'rounded-field'

@@ -38,7 +38,8 @@ const fallbackImage: CatalogProductDetailImage = {
   alt: 'Product image placeholder'
 }
 
-const tabletPricePrefixAndSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
+const pricePrefixClass = '[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-bold)] [font-style:normal] [font-size:12px] tablet:[font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:100%] [letter-spacing:-0.02em] align-top text-primary-500'
+const tabletPriceSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
 
 interface SplitPriceTextResult {
   prefix: string
@@ -264,24 +265,24 @@ export function CatalogProductDetailLayout({
         <section aria-label='Product details'>
           <header>
             <div className='flex items-start justify-between gap-4'>
-              <p className='font-sans text-[16px] leading-6 text-base-content/55 tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:var(--t-font-lineHeight-leading-7)] tablet:[letter-spacing:0] tablet:align-middle tablet:text-(--color-catalog-detail-muted)'>
+              <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/55 tablet:[font-size:var(--t-font-size-sm)] tablet:text-(--color-catalog-detail-muted)'>
                 {categoryLabel}
               </p>
             </div>
 
-            <h1 className='mt-1 font-oldenburg text-[36px] leading-[42px] text-base-content tablet:[font-family:var(--font-oldenburg),Georgia,serif] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:text-[24px] tablet:[leading-trim:none] tablet:[line-height:var(--t-font-lineHeight-leading-7)] tablet:[letter-spacing:0] tablet:align-middle tablet:text-(--color-filter-sort-mobile-text)'>
+            <h1 className='mt-1 font-oldenburg [font-weight:var(--t-font-weight-normal)] [font-style:normal] [font-size:var(--t-font-size-xl)] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-(--color-filter-sort-mobile-text) tablet:text-[24px]'>
               {title}
             </h1>
 
             <p className='mt-3 flex flex-wrap items-end gap-x-4 gap-y-1 text-base-content'>
-              <span className='font-moreSugar text-[56px] leading-[56px] text-primary-500 tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-title-page-base)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-middle tablet:text-primary-500'>
+              <span className='[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-normal)] [font-style:normal] [font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-primary-500 tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-title-page-base)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-middle tablet:text-primary-500'>
                 {splitPrice.prefix.length > 0 ? (
-                  <span className={tabletPricePrefixAndSignClass}>
+                  <span className={pricePrefixClass}>
                     {splitPrice.prefix}
                   </span>
                 ) : null}
                 {splitPrice.currencySign ? (
-                  <span className={tabletPricePrefixAndSignClass}>
+                  <span className={tabletPriceSignClass}>
                     {splitPrice.currencySign}
                   </span>
                 ) : null}
@@ -295,7 +296,7 @@ export function CatalogProductDetailLayout({
             </p>
           </header>
 
-          <ul className='mt-5 list-disc space-y-1 pl-6 font-sans text-[20px] leading-[30px] text-base-content tablet:pl-8 tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-base)] tablet:[leading-trim:none] tablet:[line-height:140%] tablet:[letter-spacing:0] tablet:text-(--d-color-base-content)'>
+          <ul className='mt-5 list-disc space-y-1 pl-6 [font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] [font-size:var(--t-font-size-base)] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-(--d-color-base-content) tablet:pl-8 tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-base)] tablet:[leading-trim:none] tablet:[line-height:140%] tablet:[letter-spacing:0] tablet:text-(--d-color-base-content)'>
             {keyPoints.map((point) => (
               <li key={point}>{point}</li>
             ))}
@@ -304,7 +305,7 @@ export function CatalogProductDetailLayout({
           <button
             type='button'
             onClick={onCtaClick}
-            className='btn btn-primary mt-6 h-16 min-h-16 w-full border-none px-8 font-sans text-[20px] font-semibold normal-case leading-6 tablet:h-12 tablet:min-h-12 tablet:gap-2 tablet:px-4 tablet:shadow-sm tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-semibold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:var(--d-lineHeight-14)] tablet:[letter-spacing:0] tablet:text-center tablet:align-middle'
+            className='btn btn-primary mt-6 h-12 min-h-12 w-full border-none px-8 normal-case shadow-sm [font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-semibold)] [font-style:normal] [font-size:var(--t-font-size-sm)] [leading-trim:none] [line-height:var(--d-lineHeight-14)] [letter-spacing:0] text-center align-middle text-primary-content tablet:gap-2 tablet:px-4'
           >
             {ctaLabel}
           </button>
@@ -317,7 +318,7 @@ export function CatalogProductDetailLayout({
                 className='catalog-product-accordion-row collapse collapse-plus rounded-none border-b border-base-300 bg-transparent first:border-t'
               >
                 <summary
-                  className='collapse-title box-border px-6 py-5 font-sans text-[20px] leading-[30px] text-base-content tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-base)] tablet:[leading-trim:none] tablet:[line-height:var(--t-font-lineHeight-leading-7)] tablet:[letter-spacing:0] tablet:align-middle tablet:text-(--d-color-base-content)'
+                  className='collapse-title box-border px-6 py-5 [font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] [font-size:var(--t-font-size-base)] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-[color:var(--d-color-base-content,#1F2937)] tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-base)] tablet:[leading-trim:none] tablet:[line-height:var(--t-font-lineHeight-leading-7)] tablet:[letter-spacing:0] tablet:align-middle tablet:text-(--d-color-base-content)'
                   style={{ boxSizing: 'border-box' }}
                 >
                   {section.title}
