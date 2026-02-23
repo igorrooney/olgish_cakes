@@ -570,9 +570,19 @@ describe('CakesPage', () => {
     )
 
     expect(pageHeading).toBeInTheDocument()
-    expect(pageHeading).toHaveClass('sr-only', 'tablet:not-sr-only')
+    expect(pageHeading).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'tablet:!mt-2',
+      'tablet:!mx-auto'
+    )
     expect(pageIntro).toBeInTheDocument()
-    expect(pageIntro).toHaveClass('sr-only', 'tablet:not-sr-only')
+    expect(pageIntro).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'tablet:!mt-3',
+      'tablet:!mx-auto'
+    )
     const headingSection = pageHeading.closest('section')
     if (!headingSection) {
       throw new Error('Expected heading section wrapper')

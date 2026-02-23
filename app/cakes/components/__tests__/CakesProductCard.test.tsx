@@ -53,7 +53,12 @@ function renderCard(cakeOverrides: Partial<TabletCake> = {}, options: RenderCard
   const cake = { ...baseCake, ...cakeOverrides }
   const { isLcpCandidate = false } = options
 
-  return render(<CakesProductCard cake={cake} isLcpCandidate={isLcpCandidate} />)
+  return render(
+    <CakesProductCard
+      cake={cake}
+      isLcpCandidate={isLcpCandidate}
+    />
+  )
 }
 
 function renderMobileCard(

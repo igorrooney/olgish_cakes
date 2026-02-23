@@ -26,6 +26,8 @@
   --color-featured-offer: #FFF5CB;
   --color-base-300: #E5E6E6;
   --color-base-content: #1F2937;
+  --color-catalog-detail-muted: #999999;
+  --color-gallery-dot-active: #B3B3B3;
   --color-filter-sort-mobile-text: #0D0D0D;
   --color-filter-sort-mobile-grid-icon: #8B8DDA;
   --color-filter-sort-mobile-icon-active: #8B8DDA;
@@ -80,6 +82,8 @@
   --t-font-size-sm: 0.875rem;
   --t-font-size-lg: 1.125rem;
   --t-font-size-xl: 1.25rem;
+  --t-font-size-title-page-base: 3rem;
+  --t-font-size-subtitle-small: 1.5rem;
   --t-font-weight-semibold: 600;
   --t-font-lineHeight-leading-5: 1.25rem;
   --t-font-lineHeight-leading-7: 1.75rem;
@@ -91,6 +95,18 @@
 
 .mobile-filter-collapse-icon > .collapse-title::after {
   display: none;
+}
+
+.catalog-product-accordion-row.collapse-plus > .collapse-title::after {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary-400, #6467CE);
+  font-size: 24px;
+  line-height: 24px;
+  display: grid;
+  place-items: center;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 @keyframes catalog-logo-tilt-spin {
@@ -286,7 +302,7 @@
 }
 
 :root {
-  --background: #ffffff;
+  --background: #FFFBEB;
   --foreground: #171717;
 }
 
@@ -315,6 +331,7 @@ body {
 }
 
 html {
+  background: var(--background);
   scroll-behavior: smooth;
 }
 

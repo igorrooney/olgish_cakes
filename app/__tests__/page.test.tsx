@@ -157,7 +157,7 @@ jest.mock('@/lib/design-system', () => ({
     secondary: { main: '#FDB913', dark: '#C9C200' },
     success: { main: '#1D8348' },
     text: { primary: '#000', secondary: '#666' },
-    background: { default: '#FFF8E7', paper: '#FFF', subtle: '#FFF5E6' },
+    background: { default: '#FFFBEB', paper: '#FFF', subtle: '#FFF5E6' },
     border: { light: '#E0E0E0' }
   },
   spacing: { sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
@@ -175,7 +175,7 @@ jest.mock('@/lib/design-system', () => ({
       secondary: { main: '#FDB913', dark: '#C9C200' },
       success: { main: '#1D8348' },
       text: { primary: '#000', secondary: '#666' },
-      background: { default: '#FFF8E7', paper: '#FFF', subtle: '#FFF5E6' },
+      background: { default: '#FFFBEB', paper: '#FFF', subtle: '#FFF5E6' },
       border: { light: '#E0E0E0' }
     },
     spacing: { sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },

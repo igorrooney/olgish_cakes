@@ -28,7 +28,7 @@ export const colors = {
 
   // Background Colors
   background: {
-    default: "#FFF8E7", // Light honey color
+    default: "#FFFBEB", // Warm cream default
     paper: "#FFFFFF",
     subtle: "#FFF5E6", // Cream
     warm: "#FEF9F0", // Very light honey

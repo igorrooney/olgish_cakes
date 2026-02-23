@@ -1950,7 +1950,10 @@ export function CakesTabletCatalog({
               <div className='mt-4 grid grid-cols-1 gap-4 tablet:auto-rows-fr tablet:grid-cols-2 small-laptop:grid-cols-3'>
                 {desktopFilteredCakes.map((cake, index) => (
                   <div key={cake.id} className={getCakeItemClassName(index)}>
-                    <CakesProductCard cake={cake} isLcpCandidate={isDesktopLcpCandidate(index)} />
+                    <CakesProductCard
+                      cake={cake}
+                      isLcpCandidate={isDesktopLcpCandidate(index)}
+                    />
                   </div>
                 ))}
               </div>

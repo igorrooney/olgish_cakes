@@ -1,256 +1,273 @@
-"use client";
+'use client'
 
-import { Box, Grid, Typography, Button, Container } from "@/lib/mui-optimization";
-import { useState } from "react";
-import {
-  PriceDisplay,
-  DisplayHeading,
-  StyledAccordion,
-  IngredientChip,
-  AllergenChip,
-} from "@/lib/ui-components";
-import { RichTextRenderer } from "@/app/components/RichTextRenderer";
-import { HamperImageGallery } from "@/app/components/HamperImageGallery";
-import { GiftHamperOrderModal } from "./GiftHamperOrderModal";
-import { GiftHamper } from "@/types/giftHamper";
-import { designTokens } from "@/lib/design-system";
-import Link from "next/link";
-
-const { colors, typography, spacing, shadows } = designTokens;
+import { useMemo, useState, type ReactNode } from 'react'
+import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
+import { GiftHamperOrderModal } from './GiftHamperOrderModal'
+import { blocksToText } from '@/types/cake'
+import type { GiftHamper } from '@/types/giftHamper'
+import { urlFor } from '@/sanity/lib/image'
+import { getGiftHamperVisibleDescriptionText, giftHamperVisibleDescriptionFallback } from './description-content'
 
 interface GiftHamperPageClientProps {
-  hamper: GiftHamper;
+  hamper: GiftHamper
+  backHref: string
 }
 
-export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
-  const primaryImage = hamper.images?.find(img => img.isMain) || hamper.images?.[0];
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+function formatPrice(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2)
+}
+
+function toParagraphs(text: string) {
+  return text
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0)
+}
+
+function normalizeCandidatePoint(value: string) {
+  const normalized = value
+    .replace(/\s+/g, ' ')
+    .replace(/^[-*]\s*/, '')
+    .trim()
+
+  if (normalized.length === 0) {
+    return null
+  }
+
+  if (normalized.length <= 88) {
+    return normalized
+  }
+
+  return `${normalized.slice(0, 85).trimEnd()}...`
+}
+
+function extractKeyPointsFromText(text: string) {
+  const paragraphCandidates = toParagraphs(text)
+  const sentenceCandidates = text
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length > 0)
+  const orderedCandidates = [...paragraphCandidates, ...sentenceCandidates]
+  const keyPoints: string[] = []
+  const seen = new Set<string>()
+
+  for (const candidate of orderedCandidates) {
+    const normalizedCandidate = normalizeCandidatePoint(candidate)
+
+    if (!normalizedCandidate || seen.has(normalizedCandidate)) {
+      continue
+    }
+
+    seen.add(normalizedCandidate)
+    keyPoints.push(normalizedCandidate)
+
+    if (keyPoints.length === 3) {
+      break
+    }
+  }
+
+  return keyPoints
+}
+
+function resolveKeyPoints(extractedPoints: string[], fallbackPoints: string[]) {
+  const uniquePoints: string[] = []
+  const seen = new Set<string>()
+
+  for (const point of [...extractedPoints, ...fallbackPoints]) {
+    if (seen.has(point)) {
+      continue
+    }
+
+    seen.add(point)
+    uniquePoints.push(point)
+
+    if (uniquePoints.length === 3) {
+      break
+    }
+  }
+
+  return uniquePoints
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function mapHamperImagesToGallery(hamper: GiftHamper): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${hamper.name} by Olgish Cakes`
+  const hamperImages = Array.isArray(hamper.images) ? hamper.images : []
+  const mainImageIndex = hamperImages.findIndex((image) => image.isMain === true)
+  const orderedImages = mainImageIndex >= 0
+    ? [hamperImages[mainImageIndex], ...hamperImages.filter((_, index) => index !== mainImageIndex)]
+    : hamperImages
+
+  orderedImages.forEach((image) => {
+    if (!hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = urlFor(image).width(1200).height(1200).url()
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  })
+
+  return mappedImages
+}
+
+function renderDescriptionSectionContent(text: string): ReactNode {
+  const paragraphs = toParagraphs(text)
+
+  if (paragraphs.length === 0) {
+    return (
+      <p>
+        {giftHamperVisibleDescriptionFallback}
+      </p>
+    )
+  }
+
+  return (
+    <div className='space-y-3'>
+      {paragraphs.map((paragraph) => (
+        <p key={paragraph}>{paragraph}</p>
+      ))}
+    </div>
+  )
+}
+
+function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
+  const ingredients = hamper.ingredients ?? []
+  const allergens = hamper.allergens ?? []
+  const hasIngredients = ingredients.length > 0
+  const hasAllergens = allergens.length > 0
+
+  if (!hasIngredients && !hasAllergens) {
+    return (
+      <p>
+        Ingredient details are available on request before ordering.
+      </p>
+    )
+  }
+
+  return (
+    <div className='space-y-3'>
+      {hasIngredients ? (
+        <div>
+          <p className='font-semibold text-base-content'>Ingredients</p>
+          <ul className='list-disc space-y-1 pl-5'>
+            {ingredients.map((ingredient) => (
+              <li key={ingredient}>{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {hasAllergens ? (
+        <div>
+          <p className='font-semibold text-base-content'>Allergens</p>
+          <ul className='list-disc space-y-1 pl-5'>
+            {allergens.map((allergen) => (
+              <li key={allergen}>{allergen}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function renderDeliverySectionContent(): ReactNode {
+  return (
+    <div className='space-y-3'>
+      <p>
+        We dispatch cake-by-post orders within 2-3 working days.
+      </p>
+      <p>
+        Free UK shipping is included. Add any delivery notes in your order request and we will confirm availability.
+      </p>
+    </div>
+  )
+}
+
+export function GiftHamperPageClient({
+  hamper,
+  backHref
+}: GiftHamperPageClientProps) {
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const galleryImages = useMemo(() => {
+    return mapHamperImagesToGallery(hamper)
+  }, [hamper])
+  const keyPoints = useMemo(() => {
+    const fallbackPoints = [
+      'Freshly baked and packed',
+      'Personalised charity postcard',
+      'Free UK shipping'
+    ]
+    const shortDescriptionText = Array.isArray(hamper.shortDescription)
+      ? blocksToText(hamper.shortDescription)
+      : ''
+    const extractedPoints = extractKeyPointsFromText(shortDescriptionText)
+
+    if (extractedPoints.length >= 3) {
+      return extractedPoints.slice(0, 3)
+    }
+
+    return resolveKeyPoints(extractedPoints, fallbackPoints)
+  }, [hamper.shortDescription])
+  const sections = useMemo<CatalogProductDetailSection[]>(() => {
+    const descriptionText = getGiftHamperVisibleDescriptionText(hamper)
+
+    return [
+      {
+        id: 'full-description',
+        title: 'Full description',
+        content: renderDescriptionSectionContent(descriptionText)
+      },
+      {
+        id: 'ingredients',
+        title: 'Ingredients',
+        content: renderIngredientsSectionContent(hamper)
+      },
+      {
+        id: 'delivery',
+        title: 'Delivery',
+        content: renderDeliverySectionContent()
+      }
+    ]
+  }, [hamper])
 
   return (
     <>
-      <Container
-        component="article"
-        sx={{ maxWidth: "1200px", mx: "auto", py: { xs: 5, md: 10 }, px: { xs: 4, md: 8 } }}
-      >
-        {/* Title */}
-        <DisplayHeading
-          component="h1"
-          sx={{
-            mb: spacing["3xl"],
-            textAlign: "center",
-            px: { xs: spacing.lg, md: spacing["4xl"] },
-          }}
-        >
-          {hamper.name}
-        </DisplayHeading>
-
-        <Grid container spacing={{ xs: 6, md: 12 }} sx={{ mb: spacing["5xl"] }}>
-          {/* Gallery */}
-          <Grid item xs={12} md={6}>
-            <section aria-label="Product images">
-              <HamperImageGallery name={hamper.name} images={hamper.images} />
-            </section>
-          </Grid>
-
-          {/* Sidebar */}
-          <Grid item xs={12} md={6}>
-            <Box
-              component="aside"
-              aria-label="Product information and ordering"
-              sx={{
-                position: "sticky",
-                top: 0,
-                px: 2.5,
-                py: 2.5,
-                pl: 3,
-                pr: 3,
-                mr: { xs: 1, md: 2 },
-                backgroundColor: colors.background.paper,
-                borderRadius: "35px",
-                boxShadow: shadows.lg,
-                border: `1px solid ${colors.border.light}`,
-                display: "flex",
-                flexDirection: "column",
-                gap: 2.5,
-                minWidth: 0,
-              }}
-            >
-              {/* Price */}
-              <section aria-label="Pricing information">
-                <PriceDisplay price={hamper.price} size="xlarge" sx={{ ml: 5 }} />
-                <Typography
-                  component="p"
-                  fontSize={typography.fontSize.sm}
-                  sx={{ color: colors.grey[500], ml: 5 }}
-                >
-                  Curated and packed with care
-                </Typography>
-              </section>
-
-              {/* Short description */}
-              {hamper.shortDescription && hamper.shortDescription.length > 0 && (
-                <section aria-label="Key features">
-                  <RichTextRenderer value={hamper.shortDescription} variant="body2" />
-                </section>
-              )}
-
-              {/* Order button */}
-              <Box component="section" aria-label="Ordering" sx={{ my: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  aria-label={`Order ${hamper.name} now`}
-                  sx={{
-                    backgroundColor: colors.primary.main,
-                    color: colors.primary.contrast,
-                    textTransform: "none",
-                    fontWeight: typography.fontWeight.semibold,
-                    fontSize: typography.fontSize.lg,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 1.5,
-                    width: "100%",
-                    transition: "all 0.2s ease-in-out",
-                    boxShadow: shadows.md,
-                    "&:hover": { backgroundColor: colors.primary.dark },
-                  }}
-                  onClick={() => setIsOrderModalOpen(true)}
-                >
-                  Order Now
-                </Button>
-              </Box>
-
-              {/* Details accordions (match cake page layout) */}
-              <Box component="section" aria-label="Product details" sx={{ mt: 2 }}>
-                {/* Description Accordion */}
-                {hamper.description && (
-                  <StyledAccordion title="About This Hamper" sx={{ mb: 1 }}>
-                    <Box sx={{ fontSize: typography.fontSize.base, lineHeight: 1.7 }}>
-                      <RichTextRenderer value={hamper.description} />
-                    </Box>
-                  </StyledAccordion>
-                )}
-
-                {/* Ingredients Accordion */}
-                {hamper.ingredients && hamper.ingredients.length > 0 && (
-                  <StyledAccordion title="Ingredients" sx={{ mb: 1 }}>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-                      {hamper.ingredients.map((ingredient, index) => (
-                        <IngredientChip key={index} label={ingredient} />
-                      ))}
-                    </Box>
-
-                    {hamper.allergens && hamper.allergens.length > 0 && (
-                      <>
-                        <Typography
-                          component="h4"
-                          variant="h6"
-                          sx={{
-                            mb: 1,
-                            color: colors.error.main,
-                            fontWeight: typography.fontWeight.semibold,
-                          }}
-                        >
-                          Allergens
-                        </Typography>
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                          {hamper.allergens.map((allergen, index) => (
-                            <AllergenChip key={index} label={allergen} />
-                          ))}
-                        </Box>
-                      </>
-                    )}
-                  </StyledAccordion>
-                )}
-
-                {/* Delivery Accordion */}
-                <StyledAccordion title="Delivery">
-                  <Typography
-                    component="p"
-                    variant="body1"
-                    sx={{ mb: 1, fontSize: typography.fontSize.base }}
-                  >
-                    We aim to ship orders within 2-3 working days.
-                  </Typography>
-                  <Typography
-                    component="p"
-                    variant="body1"
-                    sx={{ fontSize: typography.fontSize.base }}
-                  >
-                    We offer free UK delivery on all orders. For guaranteed delivery on a specific
-                    day, please contact us directly.
-                  </Typography>
-                </StyledAccordion>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
-
-      {/* Related Hampers Section for SEO */}
-      <Box
-        component="section"
-        aria-label="Related gift hampers"
-        sx={{
-          py: { xs: 6, md: 10 },
-          px: { xs: 4, md: 8 },
-          backgroundColor: colors.background.subtle,
-        }}
-      >
-        <Container>
-          <Box sx={{ textAlign: "center", maxWidth: "600px", mx: "auto" }}>
-            <Typography
-              component="h2"
-              variant="h3"
-              sx={{
-                mb: spacing.lg,
-                fontWeight: typography.fontWeight.bold,
-                color: colors.text.primary,
-              }}
-            >
-              Explore More Gift Hampers
-            </Typography>
-            <Typography
-              component="p"
-              variant="body1"
-              sx={{
-                mb: spacing["2xl"],
-                color: colors.text.secondary,
-                fontSize: typography.fontSize.lg,
-                lineHeight: 1.6,
-              }}
-            >
-              Discover our curated range of luxury Ukrainian gift hampers, thoughtfully assembled
-              for every occasion.
-            </Typography>
-            <Link href="/cakes-by-post" style={{ textDecoration: 'none' }}>
-              <Button variant="outlined"
-              size="large"
-              sx={{
-                borderColor: colors.primary.main,
-                color: colors.primary.main,
-                borderWidth: 2,
-                px: 4,
-                py: 1.5,
-                fontSize: typography.fontSize.lg,
-                fontWeight: typography.fontWeight.semibold,
-                borderRadius: 2,
-                textTransform: "none",
-                transition: "all 0.3s ease-in-out",
-                "&:hover": {
-                  backgroundColor: colors.primary.main,
-                  color: colors.primary.contrast,
-                  borderColor: colors.primary.main,
-                  transform: "translateY(-2px)",
-                  boxShadow: shadows.lg,
-                },
-              }}>
-              Browse All Cakes by Post
-            </Button>
-            </Link>
-          </Box>
-        </Container>
-      </Box>
+      <CatalogProductDetailLayout
+        backHref={backHref}
+        backLabel='Back to cakes by post'
+        categoryLabel='Cakes by post'
+        title={hamper.name}
+        priceText={`\u00A3${formatPrice(hamper.price)}`}
+        priceSuffix='+ free shipping'
+        keyPoints={keyPoints}
+        ctaLabel='Order now +'
+        onCtaClick={() => setIsOrderModalOpen(true)}
+        images={galleryImages}
+        sections={sections}
+      />
 
       <GiftHamperOrderModal
         open={isOrderModalOpen}
@@ -258,5 +275,5 @@ export function GiftHamperPageClient({ hamper }: GiftHamperPageClientProps) {
         hamper={hamper}
       />
     </>
-  );
+  )
 }

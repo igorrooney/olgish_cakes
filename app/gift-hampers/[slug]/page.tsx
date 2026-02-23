@@ -1,5 +1,3 @@
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { getAllTestimonialsStats } from "@/app/utils/fetchTestimonials";
 import { getGiftHamperBySlug, getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
@@ -7,12 +5,12 @@ import { BRAND_ID } from "@/lib/schema-constants";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
-import type { GiftHamper, GiftHamperFAQItem, RichTextBlock, RichTextChild } from "@/types/giftHamper";
-import { Container } from "@mui/material";
+import type { GiftHamper } from "@/types/giftHamper";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import type { Brand, Graph, Product } from "schema-dts";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
+import { getGiftHamperVisibleDescriptionText } from "./description-content";
 
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
@@ -32,6 +30,36 @@ export async function generateStaticParams() {
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+function buildQueryStringWithoutFromParam(searchParams: Record<string, string | string[] | undefined>) {
+  const sanitizedSearchParams = new URLSearchParams()
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key === 'from' || value === undefined) {
+      return
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        sanitizedSearchParams.append(key, entry)
+      })
+      return
+    }
+
+    sanitizedSearchParams.append(key, value)
+  })
+
+  return sanitizedSearchParams.toString()
+}
+
+function normalizeMetaDescription(value: string | undefined) {
+  if (!value) {
+    return ''
+  }
+
+  return value.replace(/\s+/g, ' ').trim()
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -45,6 +73,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const isCakeByPost = hamper.slug?.current === "cake-by-post";
+  const normalizedShortDescription = hamper.shortDescription
+    ? normalizeMetaDescription(blocksToText(hamper.shortDescription))
+    : ''
   
   // Prioritize custom SEO fields first, then special case optimizations, then generic fallbacks
   const metaTitle =
@@ -54,12 +85,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     `${hamper.name} | Cakes by Post UK`;
   
   const metaDescription =
-    hamper.seo?.metaDescription ||
+    normalizeMetaDescription(hamper.seo?.metaDescription) ||
     (isCakeByPost &&
       "Buy traditional Ukrainian honey cake by post from OlgishCakes. Letterbox-friendly gift hamper with vacuum-packed cake slices. Perfect surprise delivery for birthdays, anniversaries & special occasions across the UK.") ||
-    (hamper.shortDescription
-      ? blocksToText(hamper.shortDescription).substring(0, 160)
-      : `${hamper.name} premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.`);
+    normalizedShortDescription ||
+    `${hamper.name} premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.`;
   const keywords =
     hamper.seo?.keywords?.join(", ") ||
     (isCakeByPost &&
@@ -114,12 +144,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function GiftHamperPage({ params }: PageProps) {
+export default async function GiftHamperPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const [hamper, testimonialStats] = await Promise.all([
-    getGiftHamperBySlug(slug),
-    getAllTestimonialsStats()
-  ]);
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const hasFromQueryParam = resolvedSearchParams
+    ? Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'from')
+    : false;
+
+  if (resolvedSearchParams && hasFromQueryParam) {
+    const sanitizedQueryString = buildQueryStringWithoutFromParam(resolvedSearchParams)
+    const redirectPath = sanitizedQueryString.length > 0
+      ? `/cakes-by-post/${slug}?${sanitizedQueryString}`
+      : `/cakes-by-post/${slug}`
+
+    permanentRedirect(redirectPath)
+  }
+
+  const hamper = await getGiftHamperBySlug(slug);
+  const backHref = '/cakes-by-post'
   if (!hamper) notFound();
 
   return (
@@ -134,6 +176,19 @@ export default async function GiftHamperPage({ params }: PageProps) {
           : ["https://olgishcakes.co.uk/images/placeholder-cake.jpg"];
 
         const isCakeByPost = hamper.slug?.current === "cake-by-post";
+        const visibleDescriptionText = getGiftHamperVisibleDescriptionText(hamper)
+        const visibleAdditionalProperties = [
+          ...(hamper.ingredients && hamper.ingredients.length > 0 ? [{
+            "@type": "PropertyValue",
+            name: "Ingredients",
+            value: hamper.ingredients.join(", ")
+          }] : []),
+          ...(hamper.allergens && hamper.allergens.length > 0 ? [{
+            "@type": "PropertyValue",
+            name: "Allergens",
+            value: hamper.allergens.join(", ")
+          }] : [])
+        ]
         const productJsonLd: Graph = {
           "@context": "https://schema.org",
           "@graph": [
@@ -150,15 +205,7 @@ export default async function GiftHamperPage({ params }: PageProps) {
               "@type": "Product",
               "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}#product`,
               name: hamper.name,
-              description: isCakeByPost
-                ? "Traditional Ukrainian honey cake by post. Letterbox-friendly pack of 2 slices, vacuum-packed for freshness. Perfect for surprising loved ones with delicious cake delivery anywhere in the UK."
-                : hamper.shortDescription?.length
-                  ? Array.isArray(hamper.shortDescription)
-                    ? hamper.shortDescription
-                        .map((p: RichTextBlock) => (p.children ? p.children.map((c: RichTextChild) => c.text).join("") : ""))
-                        .join(" ")
-                    : String(hamper.shortDescription)
-                  : `${hamper.name} luxury Ukrainian gift hamper handcrafted in Leeds with UK delivery`,
+              description: visibleDescriptionText,
               brand: { "@id": BRAND_ID },
               manufacturer: {
                 "@type": "Organization",
@@ -179,46 +226,8 @@ export default async function GiftHamperPage({ params }: PageProps) {
           ...(hamper.allergens && hamper.allergens.length > 0 && {
             containsAllergens: hamper.allergens,
           }),
-          additionalProperty: [
-            ...(isCakeByPost ? [
-              {
-                "@type": "PropertyValue",
-                name: "Delivery Method",
-                value: "Letterbox Post"
-              },
-              {
-                "@type": "PropertyValue",
-                name: "Packaging",
-                value: "Vacuum Sealed"
-              },
-              {
-                "@type": "PropertyValue",
-                name: "Shelf Life",
-                value: "7 days"
-              }
-            ] : []),
-            ...(hamper.ingredients && hamper.ingredients.length > 0 ? [{
-              "@type": "PropertyValue",
-              name: "Ingredients",
-              value: hamper.ingredients.join(", ")
-            }] : []),
-            ...(hamper.allergens && hamper.allergens.length > 0 ? [{
-              "@type": "PropertyValue",
-              name: "Allergens",
-              value: hamper.allergens.join(", ")
-            }] : [])
-          ],
-          ...(isCakeByPost && {
-            nutrition: {
-              "@type": "NutritionInformation",
-              calories: "320 calories",
-              fatContent: "12 grams",
-              saturatedFatContent: "7 grams",
-              carbohydrateContent: "48 grams",
-              sugarContent: "28 grams",
-              proteinContent: "5 grams",
-              servingSize: "100g"
-            }
+          ...(visibleAdditionalProperties.length > 0 && {
+            additionalProperty: visibleAdditionalProperties
           }),
           offers: {
             "@type": "Offer",
@@ -277,150 +286,23 @@ export default async function GiftHamperPage({ params }: PageProps) {
             },
             description: "Send an order enquiry for this gift hamper"
           },
-          aggregateRating: { 
-            "@type": "AggregateRating", 
-            ratingValue: testimonialStats.averageRating.toFixed(1), 
-            reviewCount: testimonialStats.count.toString(), 
-            bestRating: "5", 
-            worstRating: "1" 
-          },
-          review: [
-            {
-              "@type": "Review",
-              itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}#product`
-              },
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-              author: { "@type": "Person", name: "Emily Carter" },
-              reviewBody: `Fantastic presentation and quality. The ${hamper.name} made a perfect gift.`,
-              datePublished: "2025-09-30"
-            },
-            {
-              "@type": "Review",
-              itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}#product`
-              },
-              reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-              author: { "@type": "Person", name: "James Wilson" },
-              reviewBody: `Great selection in the ${hamper.name}. Arrived quickly and beautifully packed.`,
-              datePublished: "2025-08-15"
-            }
-          ],
             } as Product
           ]
         };
-
-        const faqJsonLd = isCakeByPost
-          ? {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: [
-                {
-                  "@type": "Question",
-                  name: "What is cake by post?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Cake by post is a convenient way to send delicious cakes through the mail. Our letterbox-friendly packaging ensures your cake arrives fresh and ready to enjoy, perfect for surprising loved ones anywhere in the UK."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  name: "How long does cake by post stay fresh?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Our cakes are vacuum-packed and specially designed for postal delivery. They stay fresh for up to 7 days when stored properly. We recommend consuming within 3-4 days for the best taste experience."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  name: "Do you deliver cake by post to all UK addresses?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Yes, we deliver our cake by post service to all UK mainland addresses. We offer free standard delivery on all orders. For guaranteed delivery on a specific day, please contact us directly."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  name: "What types of cake can be sent by post?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "We specialize in traditional Ukrainian honey cake (honey cake) that's perfect for postal delivery. Our cakes are cut into letterbox-friendly slices and vacuum-packed to maintain freshness during transit."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  name: "How do I order cake by post?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Simply select the 'Cake by Post' option, add to cart, and proceed to checkout. Include the recipient's address and any special delivery instructions. We'll pack and ship your cake within 2-3 working days."
-                  }
-                }
-              ]
-            }
-          : hamper?.seo?.faq && Array.isArray(hamper.seo.faq)
-            ? {
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                mainEntity: hamper.seo.faq
-                  .filter((q: GiftHamperFAQItem) => q?.question && q?.answer)
-                  .slice(0, 6)
-                  .map((q: GiftHamperFAQItem) => ({
-                    "@type": "Question",
-                    name: q.question,
-                    acceptedAnswer: { "@type": "Answer", text: q.answer }
-                  }))
-              }
-            : null;
-
-        const breadcrumbJsonLd = {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://olgishcakes.co.uk" },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Cakes by post",
-              item: "https://olgishcakes.co.uk/cakes-by-post",
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: hamper.name,
-              item: `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}`,
-            },
-          ],
-        } as const;
 
         return (
           <>
             <script
               type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, '\u003c') }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, '\\u003c') }}
             />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\u003c') }}
-            />
-            {faqJsonLd && (
-              <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\u003c') }}
-              />
-            )}
           </>
         );
       })()}
-      <Container maxWidth="lg" sx={{ py: 3 }}>
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Cakes by post", href: "/cakes-by-post" },
-            { label: hamper.name },
-          ]}
-        />
-      </Container>
-      <GiftHamperPageClient hamper={hamper} />
+      <GiftHamperPageClient
+        hamper={hamper}
+        backHref={backHref}
+      />
     </main>
   );
 }

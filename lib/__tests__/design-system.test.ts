@@ -74,7 +74,7 @@ describe('design-system', () => {
 
     describe('background', () => {
       it('should have light honey default', () => {
-        expect(colors.background.default).toBe('#FFF8E7')
+        expect(colors.background.default).toBe('#FFFBEB')
       })
 
       it('should have white paper', () => {

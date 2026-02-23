@@ -38,7 +38,6 @@ export function CakesProductCard({
   const imageLoadingOverlayClassName = `pointer-events-none absolute inset-0 bg-base-200 transition-opacity duration-300 motion-reduce:animate-none ${
     isImageLoaded ? 'opacity-0' : 'animate-pulse opacity-100'
   }`
-
   useEffect(() => {
     setIsImageLoaded(false)
   }, [cake.imageUrl])

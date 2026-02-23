@@ -182,10 +182,10 @@ export function CatalogPageTemplate({
         className='min-h-screen bg-base-100 [font-family:var(--font-inter)]'
       >
         <section className='mx-auto text-center w-full max-w-[952px] px-4 pb-0 pt-0 tablet:pb-2 tablet:pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
-          <h1 className='sr-only tablet:not-sr-only mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
+          <h1 className='sr-only tablet:not-sr-only mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mt-2 tablet:!mx-auto tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             {heading}
           </h1>
-          <p className='sr-only tablet:not-sr-only mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
+          <p className='sr-only tablet:not-sr-only mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:!mt-3 tablet:!mx-auto tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
             {intro}
           </p>
         </section>

@@ -1,364 +1,304 @@
-"use client";
+'use client'
 
-import { useState, useMemo, useCallback } from "react";
-import { Box, Grid, Typography, Button, Paper, Divider, Container } from "@/lib/mui-optimization";
-import { CakeImageGallery } from "@/app/components/CakeImageGallery";
-import { DesignSelector, DesignType } from "@/app/components/DesignSelector";
-import { OrderModal } from "./OrderModal";
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { RichTextRenderer } from "@/app/components/RichTextRenderer";
-import { IngredientChip, AllergenChip, DisplayHeading } from "@/lib/ui-components";
-import { StyledAccordion } from "@/lib/ui-components";
-import { PriceDisplay } from "@/lib/ui-components";
-import { Cake } from "@/types/cake";
-import { designTokens } from "@/lib/design-system";
-import Link from "next/link";
-import { TrustpilotReviews } from "@/app/components/TrustpilotReviews";
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '../components/CatalogProductDetailLayout'
+import { OrderModal } from './OrderModal'
+import { urlFor } from '@/sanity/lib/image'
+import { blocksToText, type Cake, type CakeImage } from '@/types/cake'
 
-const { colors, typography, spacing, shadows } = designTokens;
-
-interface PageProps {
-  cake: Cake;
+interface CakePageClientProps {
+  cake: Cake
+  backHref: string
 }
 
-export function CakePageClient({ cake }: PageProps) {
-  const [designType, setDesignType] = useState<DesignType>("standard");
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+function formatPrice(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2)
+}
 
-  const hasIndividualDesigns = Boolean(cake.designs?.individual?.length);
-  const currentPrice =
-    designType === "individual" ? (cake.pricing?.individual ?? 0) : (cake.pricing?.standard ?? 0);
+function toParagraphs(text: string) {
+  return text
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0)
+}
 
-  const handleDesignTypeChange = useCallback(
-    (newDesignType: DesignType) => {
-      setDesignType(newDesignType);
+function normalizeCandidatePoint(value: string) {
+  const normalized = value
+    .replace(/\s+/g, ' ')
+    .replace(/^[-*]\s*/, '')
+    .trim()
 
-      // Throttled analytics tracking
-      if (typeof window !== "undefined" && window.gtag && window.requestIdleCallback) {
-        window.requestIdleCallback(() => {
-          window.gtag("event", "design_type_change", {
-            cake_name: cake.name,
-            design_type: newDesignType,
-            price: newDesignType === "individual" ? (cake.pricing?.individual ?? 0) : (cake.pricing?.standard ?? 0),
-          });
-        });
-      }
-    },
-    [cake.name, cake.pricing?.individual, cake.pricing?.standard]
-  );
+  if (normalized.length === 0) {
+    return null
+  }
 
-  const handleOrderClick = useCallback(() => {
-    setIsOrderModalOpen(true);
+  if (normalized.length <= 88) {
+    return normalized
+  }
 
-    // Track order button clicks with idle callback
-    if (typeof window !== "undefined" && window.gtag && window.requestIdleCallback) {
-      window.requestIdleCallback(() => {
-        window.gtag("event", "begin_checkout", {
-          cake_name: cake.name,
-          design_type: designType,
-          price: currentPrice,
-          currency: "GBP",
-        });
-      });
+  return `${normalized.slice(0, 85).trimEnd()}...`
+}
+
+function extractKeyPointsFromText(text: string) {
+  const paragraphCandidates = toParagraphs(text)
+  const sentenceCandidates = text
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length > 0)
+
+  const orderedCandidates = [...paragraphCandidates, ...sentenceCandidates]
+  const keyPoints: string[] = []
+  const seen = new Set<string>()
+
+  for (const candidate of orderedCandidates) {
+    const normalizedCandidate = normalizeCandidatePoint(candidate)
+
+    if (!normalizedCandidate) {
+      continue
     }
-  }, [cake.name, designType, currentPrice]);
+
+    if (seen.has(normalizedCandidate)) {
+      continue
+    }
+
+    seen.add(normalizedCandidate)
+    keyPoints.push(normalizedCandidate)
+
+    if (keyPoints.length === 3) {
+      break
+    }
+  }
+
+  return keyPoints
+}
+
+function resolveKeyPoints(extractedPoints: string[], fallbackPoints: string[]) {
+  const uniquePoints: string[] = []
+  const seen = new Set<string>()
+
+  for (const point of [...extractedPoints, ...fallbackPoints]) {
+    if (seen.has(point)) {
+      continue
+    }
+
+    seen.add(point)
+    uniquePoints.push(point)
+
+    if (uniquePoints.length === 3) {
+      break
+    }
+  }
+
+  return uniquePoints
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function mapCakeImagesToGallery(cake: Cake): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${cake.name} by Olgish Cakes`
+
+  function addImage(image: Cake['mainImage'] | CakeImage | undefined) {
+    if (!image || !hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = urlFor(image).width(1200).height(1200).url()
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  }
+
+  addImage(cake.mainImage)
+  cake.designs?.standard?.forEach((image) => addImage(image))
+  cake.designs?.individual?.forEach((image) => addImage(image))
+  cake.images?.forEach((image) => addImage(image))
+
+  return mappedImages
+}
+
+function renderDescriptionSectionContent(descriptionText: string): ReactNode {
+  const paragraphs = toParagraphs(descriptionText)
+
+  if (paragraphs.length === 0) {
+    return (
+      <p>
+        Freshly baked to order with traditional Ukrainian recipes and premium ingredients.
+      </p>
+    )
+  }
 
   return (
-    <main role="main" aria-label={`${cake.name} product details`}>
-      <Container
-        component="article"
-        sx={{ maxWidth: "1200px", mx: "auto", py: { xs: 5, md: 10 }, px: { xs: 4, md: 8 } }}
-      >
-        {/* Product Title */}
-        <DisplayHeading
-          component="h1"
-          sx={{
-            mb: spacing["3xl"],
-            textAlign: "center",
-            px: { xs: spacing.lg, md: spacing["4xl"] },
-          }}
-        >
-          {cake.name}
-        </DisplayHeading>
+    <div className='space-y-3'>
+      {paragraphs.map((paragraph) => (
+        <p key={paragraph}>{paragraph}</p>
+      ))}
+    </div>
+  )
+}
 
-        <Grid container spacing={{ xs: 6, md: 12 }} sx={{ mb: spacing["5xl"] }}>
-          {/* Product Images */}
-          <Grid item xs={12} md={6}>
-            <section aria-label="Product images">
-              <CakeImageGallery
-                designs={cake.designs}
-                name={cake.name}
-                designType={designType}
-                onDesignTypeChange={handleDesignTypeChange}
-                hideDesignSelector
-              />
-            </section>
-          </Grid>
+function renderIngredientsSectionContent(cake: Cake): ReactNode {
+  const hasIngredients = cake.ingredients.length > 0
+  const hasAllergens = Array.isArray(cake.allergens) && cake.allergens.length > 0
 
-          {/* Product Details */}
-          <Grid item xs={12} md={6}>
-            <Box
-              component="aside"
-              aria-label="Product information and ordering"
-              sx={{
-                position: "sticky",
-                top: 0,
-                px: 2.5,
-                py: 2.5,
-                pl: 3,
-                pr: 3,
-                mr: { xs: 1, md: 2 },
-                backgroundColor: colors.background.paper,
-                borderRadius: "35px",
-                boxShadow: shadows.lg,
-                border: `1px solid ${colors.border.light}`,
-                display: "flex",
-                flexDirection: "column",
-                gap: 2.5,
-                minWidth: 0,
-              }}
-            >
-              {/* Price Section */}
-              <section aria-label="Pricing information">
-                <PriceDisplay price={currentPrice} size="xlarge" sx={{ ml: 5 }} />
-                <Typography
-                  component="p"
-                  fontSize={typography.fontSize.sm}
-                  sx={{ color: colors.grey[500], ml: 5 }}
-                  aria-label="Baking information"
-                >
-                  Freshly Baked to Order
-                </Typography>
-              </section>
+  if (!hasIngredients && !hasAllergens) {
+    return (
+      <p>
+        Ingredient details are available on request before ordering.
+      </p>
+    )
+  }
 
-              {/* Design Selector */}
-              {hasIndividualDesigns && (
-                <section aria-label="Design options">
-                  <Box sx={{ mb: 2 }}>
-                    <DesignSelector
-                      hasIndividualDesigns={hasIndividualDesigns}
-                      onChange={setDesignType}
-                      value={designType}
-                    />
-                  </Box>
-                </section>
-              )}
+  return (
+    <div className='space-y-3'>
+      {hasIngredients ? (
+        <div>
+          <p className='font-semibold text-base-content'>Ingredients</p>
+          <ul className='list-disc space-y-1 pl-5'>
+            {cake.ingredients.map((ingredient) => (
+              <li key={ingredient}>{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
-              {/* Key Features */}
-              <Paper
-                component="section"
-                aria-label="Product description"
-                elevation={0}
-                sx={{
-                  p: 2,
-                  mb: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    textAlign: "left",
-                    fontSize: typography.fontSize.base,
-                  }}
-                >
-                  {cake.shortDescription && cake.shortDescription.length > 0 ? (
-                    <RichTextRenderer
-                      value={cake.shortDescription}
-                      variant="body2"
-                      sx={{
-                        textAlign: "left",
-                        fontSize: typography.fontSize.base,
-                      }}
-                    />
-                  ) : (
-                    <Typography
-                      component="p"
-                      variant="body2"
-                      sx={{
-                        textAlign: "center",
-                        fontStyle: "italic",
-                        color: colors.text.secondary,
-                        fontSize: typography.fontSize.lg,
-                      }}
-                    >
-                      Freshly baked to order with free UK delivery and gift note included.
-                    </Typography>
-                  )}
-                </Box>
-              </Paper>
+      {hasAllergens ? (
+        <div>
+          <p className='font-semibold text-base-content'>Allergens</p>
+          <ul className='list-disc space-y-1 pl-5'>
+            {cake.allergens?.map((allergen) => (
+              <li key={allergen}>{allergen}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  )
+}
 
-              {/* Order Button */}
-              <Box component="section" aria-label="Ordering" sx={{ my: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleOrderClick}
-                  aria-label={`Order ${cake.name} now`}
-                  sx={{
-                    backgroundColor: colors.primary.main,
-                    color: colors.primary.contrast,
-                    textTransform: "none",
-                    fontWeight: typography.fontWeight.semibold,
-                    fontSize: typography.fontSize.lg,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 1.5,
-                    width: "100%",
-                    transition: "all 0.2s ease-in-out",
-                    boxShadow: shadows.md,
-                    "&:hover": {
-                      backgroundColor: colors.primary.dark,
-                      transform: "translateY(-2px)",
-                      boxShadow: shadows.lg,
-                    },
-                  }}
-                >
-                  Order Now
-                </Button>
-              </Box>
+function renderDeliverySectionContent(): ReactNode {
+  return (
+    <div className='space-y-3'>
+      <p>
+        We usually prepare cake orders within 2-3 working days.
+      </p>
+      <p>
+        Free UK delivery is included. If you need a specific delivery day, please include it in your order request.
+      </p>
+    </div>
+  )
+}
 
-              {/* Collapsible Sections */}
-              <Box component="section" aria-label="Product details" sx={{ mt: 2 }}>
-                {/* Description Accordion */}
-                <StyledAccordion title="About This Cake" sx={{ mb: 1 }}>
-                  <Box
-                    sx={{
-                      fontSize: typography.fontSize.base,
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    <RichTextRenderer value={cake.description} />
-                  </Box>
-                </StyledAccordion>
+export function CakePageClient({
+  cake,
+  backHref
+}: CakePageClientProps) {
+  const [designType, setDesignType] = useState<'standard' | 'individual'>('standard')
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const currentPrice = designType === 'individual'
+    ? (cake.pricing?.individual ?? 0)
+    : (cake.pricing?.standard ?? 0)
 
-                {/* Ingredients Accordion */}
-                <StyledAccordion title="Ingredients" sx={{ mb: 1 }}>
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-                    {cake.ingredients.map((ingredient, index) => (
-                      <IngredientChip key={index} label={ingredient} />
-                    ))}
-                  </Box>
+  const galleryImages = useMemo(() => {
+    return mapCakeImagesToGallery(cake)
+  }, [cake])
+  const keyPoints = useMemo(() => {
+    const fallbackPoints = [
+      'Freshly baked to order',
+      'Personalised design consultation available',
+      'Free UK delivery'
+    ]
+    const shortDescriptionText = Array.isArray(cake.shortDescription)
+      ? blocksToText(cake.shortDescription)
+      : ''
+    const extractedPoints = extractKeyPointsFromText(shortDescriptionText)
 
-                  {cake.allergens && cake.allergens.length > 0 && (
-                    <>
-                      <Divider sx={{ my: 2 }} />
-                      <Typography
-                        component="h4"
-                        variant="h6"
-                        sx={{
-                          mb: 1,
-                          color: colors.error.main,
-                          fontWeight: typography.fontWeight.semibold,
-                        }}
-                      >
-                        Allergens
-                      </Typography>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {cake.allergens.map((allergen, index) => (
-                          <AllergenChip key={index} label={allergen} />
-                        ))}
-                      </Box>
-                    </>
-                  )}
-                </StyledAccordion>
+    if (extractedPoints.length >= 3) {
+      return extractedPoints.slice(0, 3)
+    }
 
-                {/* Delivery Accordion */}
-                <StyledAccordion title="Delivery">
-                  <Typography
-                    component="p"
-                    variant="body1"
-                    sx={{ mb: 1, fontSize: typography.fontSize.base }}
-                  >
-                    We aim to ship orders within 2-3 working days.
-                  </Typography>
-                  <Typography
-                    component="p"
-                    variant="body1"
-                    sx={{ fontSize: typography.fontSize.base }}
-                  >
-                    We offer free UK delivery on all orders. For guaranteed delivery on a specific
-                    day, please contact us directly.
-                  </Typography>
-                </StyledAccordion>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
+    return resolveKeyPoints(extractedPoints, fallbackPoints)
+  }, [cake.shortDescription])
+  const sections = useMemo<CatalogProductDetailSection[]>(() => {
+    const descriptionText = blocksToText(cake.description)
+    return [
+      {
+        id: 'full-description',
+        title: 'Full description',
+        content: renderDescriptionSectionContent(descriptionText)
+      },
+      {
+        id: 'ingredients',
+        title: 'Ingredients',
+        content: renderIngredientsSectionContent(cake)
+      },
+      {
+        id: 'delivery',
+        title: 'Delivery',
+        content: renderDeliverySectionContent()
+      }
+    ]
+  }, [cake])
 
-      {/* Related Cakes Section for SEO */}
-      <Box
-        component="section"
-        aria-label="Related cakes"
-        sx={{
-          py: { xs: 6, md: 10 },
-          px: { xs: 4, md: 8 },
-          backgroundColor: colors.background.subtle,
-        }}
-      >
-        <Container>
-          <Box
-            sx={{
-              textAlign: "center",
-              maxWidth: "600px",
-              mx: "auto",
-            }}
-          >
-            <Typography
-              component="h2"
-              variant="h3"
-              sx={{
-                mb: spacing.lg,
-                fontWeight: typography.fontWeight.bold,
-                color: colors.text.primary,
-              }}
-            >
-              Explore More Ukrainian Cakes
-            </Typography>
+  const handleDesignTypeChange = useCallback((nextDesignType: 'standard' | 'individual') => {
+    setDesignType(nextDesignType)
 
-            <Typography
-              component="p"
-              variant="body1"
-              sx={{
-                mb: spacing["2xl"],
-                color: colors.text.secondary,
-                fontSize: typography.fontSize.lg,
-                lineHeight: 1.6,
-              }}
-            >
-              Discover our complete collection of traditional Ukrainian cakes, each made with
-              authentic recipes and premium ingredients.
-            </Typography>
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'design_type_change', {
+        cake_name: cake.name,
+        design_type: nextDesignType,
+        price: nextDesignType === 'individual'
+          ? (cake.pricing?.individual ?? 0)
+          : (cake.pricing?.standard ?? 0)
+      })
+    }
+  }, [cake.name, cake.pricing?.individual, cake.pricing?.standard])
 
-            <Link href="/cakes" style={{ textDecoration: 'none' }}>
-              <Button variant="outlined"
-              size="large"
-              sx={{
-                borderColor: colors.primary.main,
-                color: colors.primary.main,
-                borderWidth: 2,
-                px: 4,
-                py: 1.5,
-                fontSize: typography.fontSize.lg,
-                fontWeight: typography.fontWeight.semibold,
-                borderRadius: 2,
-                textTransform: "none",
-                transition: "all 0.3s ease-in-out",
-                "&:hover": {
-                  backgroundColor: colors.primary.main,
-                  color: colors.primary.contrast,
-                  borderColor: colors.primary.main,
-                  transform: "translateY(-2px)",
-                  boxShadow: shadows.lg,
-                },
-              }}>
-              Browse All Cakes
-            </Button>
-            </Link>
-          </Box>
-        </Container>
-      </Box>
+  const handleAddToCart = useCallback(() => {
+    setIsOrderModalOpen(true)
 
-      <TrustpilotReviews productName={cake.name} />
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'begin_checkout', {
+        cake_name: cake.name,
+        design_type: designType,
+        price: currentPrice,
+        currency: 'GBP'
+      })
+    }
+  }, [cake.name, currentPrice, designType])
+
+  return (
+    <>
+      <CatalogProductDetailLayout
+        backHref={backHref}
+        backLabel='Back to all cakes'
+        categoryLabel='Custom cakes'
+        title={cake.name}
+        priceText={`from \u00A3${formatPrice(cake.pricing?.standard ?? 0)}`}
+        keyPoints={keyPoints}
+        ctaLabel='Order now +'
+        onCtaClick={handleAddToCart}
+        images={galleryImages}
+        sections={sections}
+      />
 
       <OrderModal
         open={isOrderModalOpen}
@@ -367,6 +307,6 @@ export function CakePageClient({ cake }: PageProps) {
         designType={designType}
         onDesignTypeChange={handleDesignTypeChange}
       />
-    </main>
-  );
+    </>
+  )
 }

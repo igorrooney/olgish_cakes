@@ -11,6 +11,7 @@ import { SiteHeader } from "./components/homepage/SiteHeader";
 import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { RouteScrollReset } from "./components/RouteScrollReset";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
@@ -660,6 +661,7 @@ export default async function RootLayout({
             <ReviewStatsProvider stats={reviewStats}>
               <Providers>
                 <div className="flex flex-col min-h-screen">
+                  <RouteScrollReset />
                   <SiteHeader />
                   <main className="flex-grow">{children}</main>
                   <SiteFooter />

@@ -9,10 +9,14 @@ import CakeDetailPage, { generateMetadata, generateStaticParams } from '../page'
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
+  }),
+  permanentRedirect: jest.fn(() => {
+    throw new Error('NEXT_REDIRECT')
   })
 }))
 
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
+let capturedCakePageClientProps: Record<string, unknown> | null = null
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -46,35 +50,17 @@ jest.mock('@/app/utils/seo', () => ({
   getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
 }))
 
-jest.mock('@/app/utils/review-stats', () => ({
-  buildAggregateRating: jest.fn(() => ({
-    '@type': 'AggregateRating',
-    ratingValue: '5.0',
-    reviewCount: '13',
-    bestRating: '5',
-    worstRating: '1'
-  }))
-}))
-
-jest.mock('@/app/utils/review-stats.server', () => ({
-  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
-}))
-
 jest.mock('@/types/cake', () => ({
   blocksToText: jest.fn((blocks) => 'Converted text')
 }))
+const { blocksToText: mockBlocksToText } = jest.requireMock('@/types/cake')
 
 // Mock components
 jest.mock('../CakePageClient', () => ({
-  CakePageClient: () => <div data-testid="cake-page-client">Cake Page Client</div>
-}))
-
-jest.mock('@/app/components/Breadcrumbs', () => ({
-  Breadcrumbs: () => <nav>Breadcrumbs</nav>
-}))
-
-jest.mock('@mui/material', () => ({
-  Container: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  CakePageClient: (props: Record<string, unknown>) => {
+    capturedCakePageClientProps = props
+    return <div data-testid="cake-page-client">Cake Page Client</div>
+  }
 }))
 
 // Mock Sanity image URL builder
@@ -113,6 +99,8 @@ describe('CakeDetailPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    capturedCakePageClientProps = null
+    mockBlocksToText.mockReturnValue('Converted text')
     // Reset urlFor mock to default behavior
     mockUrlFor.mockReturnValue({
       width: jest.fn(() => ({
@@ -193,6 +181,57 @@ describe('CakeDetailPage', () => {
       expect(metadata.description).toContain('Converted text')
     })
 
+    it('should not truncate long shortDescription fallback and should normalize whitespace', async () => {
+      const longDescription = `${'A'.repeat(120)}   \n\n ${'B'.repeat(120)}`
+      const cakeWithoutSEO = {
+        ...mockCake,
+        name: 'Vanilla Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce(longDescription)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
+      const description = metadata.description as string
+
+      expect(description).toBe(`${'A'.repeat(120)} ${'B'.repeat(120)}`)
+      expect(description.length).toBeGreaterThan(160)
+    })
+
+    it('should fall back to default description when normalized shortDescription is empty', async () => {
+      const cakeWithoutSEO = {
+        ...mockCake,
+        name: 'Vanilla Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: '' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce('   \n\t   ')
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
+
+      expect(metadata.description).toBe('traditional Ukrainian honey cake - Vanilla Cake. Freshly baked in Leeds with real recipes. Free UK delivery.')
+    })
+
+    it('should prioritize normalized SEO metaDescription over shortDescription fallback', async () => {
+      const cakeWithSeoAndShortDescription = {
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: '  SEO   description \n value  ',
+          keywords: ['custom']
+        },
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithSeoAndShortDescription)
+      mockBlocksToText.mockReturnValueOnce(`${'C'.repeat(220)}`)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+
+      expect(metadata.description).toBe('SEO description value')
+    })
+
     it('should optimize honey cake for "buy honey cake online" keyword', async () => {
       const honeyCake = {
         ...mockCake,
@@ -239,7 +278,9 @@ describe('CakeDetailPage', () => {
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
-      expect(() => render(page)).not.toThrow()
+      const { container } = render(page)
+
+      expect(container.querySelector('nav[aria-label="Breadcrumb navigation"]')).not.toBeInTheDocument()
     })
 
     it('should call notFound for missing cake', async () => {
@@ -260,6 +301,132 @@ describe('CakeDetailPage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
+    })
+
+    it('should escape html fragments in Product and Organization JSON-LD scripts', async () => {
+      const cakeWithUnsafeContent = {
+        ...mockCake,
+        name: 'Honey <script>alert("xss")</script> Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithUnsafeContent)
+      mockBlocksToText.mockReturnValueOnce('Fresh <script>alert("xss")</script> notes')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const organizationScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Organization"') &&
+        script.textContent?.includes('"hasOfferCatalog"')
+      )
+
+      expect(productScript).toBeDefined()
+      expect(organizationScript).toBeDefined()
+
+      const productScriptText = productScript?.textContent || ''
+      const organizationScriptText = organizationScript?.textContent || ''
+
+      expect(productScriptText).toContain('\\u003cscript')
+      expect(productScriptText).not.toContain('<script')
+      expect(organizationScriptText).toContain('\\u003cscript')
+      expect(organizationScriptText).not.toContain('<script')
+    })
+
+    it('should not include BreadcrumbList structured data', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const breadcrumbScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"BreadcrumbList"')
+      )
+
+      expect(breadcrumbScript).toBeUndefined()
+    })
+
+    it('passes fallback backHref to CakePageClient when from param is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({})
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('redirects to clean canonical url when from param is present and preserves non-from params', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      await expect(async () => {
+        await CakeDetailPage({
+          params: Promise.resolve({ slug: 'honey-cake' }),
+          searchParams: Promise.resolve({
+            from: '/cakes?sort=priceLowToHigh&page=2&evil=true',
+            page: '3',
+            utm_source: 'newsletter'
+          })
+        })
+      }).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(permanentRedirect).toHaveBeenCalledWith('/cakes/honey-cake?page=3&utm_source=newsletter')
+      expect(mockGetCakeBySlug).not.toHaveBeenCalled()
+    })
+
+    it('redirects to clean canonical url when from param is empty', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      await expect(async () => {
+        await CakeDetailPage({
+          params: Promise.resolve({ slug: 'honey-cake' }),
+          searchParams: Promise.resolve({
+            from: ''
+          })
+        })
+      }).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(permanentRedirect).toHaveBeenCalledWith('/cakes/honey-cake')
+      expect(mockGetCakeBySlug).not.toHaveBeenCalled()
+    })
+
+    it('passes fallback backHref to CakePageClient when from param is absent and other params exist', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          page: '2'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('omits FAQPage JSON-LD and does not pass faqItems to CakePageClient', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.faqItems).toBeUndefined()
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+      expect(faqScript).toBeUndefined()
     })
   })
 
@@ -340,7 +507,7 @@ describe('CakeDetailPage', () => {
       expect(jsonLd.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
     })
 
-    it('should include aggregateRating', async () => {
+    it('should not include aggregateRating in Product schema', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
@@ -352,14 +519,11 @@ describe('CakeDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      expect(jsonLd.aggregateRating).toBeDefined()
-      expect(jsonLd.aggregateRating['@type']).toBe('AggregateRating')
-      expect(jsonLd.aggregateRating.ratingValue).toBeDefined()
-      expect(jsonLd.aggregateRating.reviewCount).toBeDefined()
+
+      expect(jsonLd.aggregateRating).toBeUndefined()
     })
 
-    it('should include review array', async () => {
+    it('should not include review array in Product schema', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
@@ -371,10 +535,29 @@ describe('CakeDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      expect(jsonLd.review).toBeDefined()
-      expect(Array.isArray(jsonLd.review)).toBe(true)
-      expect(jsonLd.review.length).toBeGreaterThan(0)
+
+      expect(jsonLd.review).toBeUndefined()
+    })
+
+    it('should not include aggregateRating in nested itemOffered Product under Organization', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const organizationScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Organization"') &&
+        script.textContent?.includes('"hasOfferCatalog"')
+      )
+
+      expect(organizationScript).toBeDefined()
+
+      const organizationJsonLd = JSON.parse(organizationScript!.textContent || '{}')
+      const itemOffered = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered
+
+      expect(itemOffered).toBeDefined()
+      expect(itemOffered.aggregateRating).toBeUndefined()
     })
   })
 

@@ -1,17 +1,13 @@
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { getCakeBySlug } from "@/app/utils/fetchCakes";
 import { Cake, blocksToText } from "@/types/cake";
-import { Container } from "@mui/material";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { CakePageClient } from "./CakePageClient";
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
-import { buildAggregateRating } from '@/app/utils/review-stats'
-import { getReviewStats } from '@/app/utils/review-stats.server'
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
@@ -34,6 +30,40 @@ interface PageProps {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}
+
+function buildQueryStringWithoutFromParam(searchParams: Record<string, string | string[] | undefined>) {
+  const sanitizedSearchParams = new URLSearchParams()
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key === 'from' || value === undefined) {
+      return
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((entry) => {
+        sanitizedSearchParams.append(key, entry)
+      })
+      return
+    }
+
+    sanitizedSearchParams.append(key, value)
+  })
+
+  return sanitizedSearchParams.toString()
+}
+
+function normalizeMetaDescription(value: string | undefined) {
+  if (!value) {
+    return ''
+  }
+
+  return value.replace(/\s+/g, ' ').trim()
+}
+
+function safeJsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -49,6 +79,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   // Special optimization for honey cake "buy honey cake online" keyword
   const isHoneyCake = slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
+  const normalizedShortDescription = cake.shortDescription
+    ? normalizeMetaDescription(blocksToText(cake.shortDescription))
+    : ''
 
   // Use SEO fields if available, otherwise generate from content
   const metaTitle = isHoneyCake
@@ -56,11 +89,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
 
   const metaDescription = isHoneyCake
-    ? (cake.seo?.metaDescription || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
-    : (cake.seo?.metaDescription ||
-      (cake.shortDescription
-        ? blocksToText(cake.shortDescription).substring(0, 160)
-        : `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`));
+    ? (normalizeMetaDescription(cake.seo?.metaDescription) || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
+    : (normalizeMetaDescription(cake.seo?.metaDescription) ||
+      normalizedShortDescription ||
+      `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
 
   const keywords = isHoneyCake
     ? `buy honey cake online, order honey cake, honey cake delivery, buy medovik online, ukrainian honey cake online, order medovik, honey cake uk, buy honey cake uk, medovik delivery, online honey cake, ${cake.name}, Ukrainian honey cake, Medovik, Leeds cake, traditional Ukrainian cake, fresh cake delivery, UK cake delivery`
@@ -142,11 +174,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CakePage({ params }: PageProps) {
+export default async function CakePage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const hasFromQueryParam = resolvedSearchParams
+    ? Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'from')
+    : false;
+
+  if (resolvedSearchParams && hasFromQueryParam) {
+    const sanitizedQueryString = buildQueryStringWithoutFromParam(resolvedSearchParams)
+    const redirectPath = sanitizedQueryString.length > 0
+      ? `/cakes/${slug}?${sanitizedQueryString}`
+      : `/cakes/${slug}`
+
+    permanentRedirect(redirectPath)
+  }
+
   const cake = await getCakeBySlug(slug);
-  const reviewStats = await getReviewStats()
-  const aggregateRating = buildAggregateRating(reviewStats)
+  const backHref = '/cakes'
 
   if (!cake) {
     notFound();
@@ -182,7 +227,7 @@ export default async function CakePage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Product",
             "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`,
@@ -241,23 +286,6 @@ export default async function CakePage({ params }: PageProps) {
                 "https://schema.org/PaymentByBankTransfer",
               ],
             },
-            ...(aggregateRating ? { aggregateRating } : {}),
-            review: [
-              {
-                "@type": "Review",
-                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-                author: { "@type": "Person", name: "Sarah Johnson" },
-                reviewBody: `Absolutely delicious ${cake.name}! Beautifully presented and tasted incredible. Highly recommend.`,
-                datePublished: "2025-09-30",
-              },
-              {
-                "@type": "Review",
-                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-                author: { "@type": "Person", name: "Michael Davies" },
-                reviewBody: `Professional service and the ${cake.name} exceeded expectations. Will order again!`,
-                datePublished: "2025-08-15",
-              },
-            ],
           }),
         }}
       />
@@ -266,7 +294,7 @@ export default async function CakePage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -318,95 +346,10 @@ export default async function CakePage({ params }: PageProps) {
                       shippingDetails: getOfferShippingDetails(),
                       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                     },
-                    ...(aggregateRating ? { aggregateRating } : {}),
                   },
                 },
               ],
             },
-          }),
-        }}
-      />
-
-      {/* Breadcrumb Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://olgishcakes.co.uk",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "All Cakes",
-                item: "https://olgishcakes.co.uk/cakes",
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: cake.name,
-                item: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-              },
-            ],
-          }),
-        }}
-      />
-
-      {/* FAQ Schema for better search visibility */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: `How long does it take to make a ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `My ${cake.name} is freshly baked to order and typically takes 2-3 working days to prepare. For custom designs, please allow 3-7 working days.`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `Can I customize the ${cake.name} design?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `Yes! I offer both standard and custom designs for my ${cake.name}. Custom designs allow for personalization while keeping the real Ukrainian taste.`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `Is delivery available for the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and surrounding areas.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: `What are the ingredients in the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `The ${cake.name} contains: ${cake.ingredients.join(", ")}.${cake.allergens && cake.allergens.length > 0 ? ` Allergens: ${cake.allergens.join(", ")}.` : ""}`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `How should I store the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `Store your ${cake.name} in an airtight container in the refrigerator for up to 5 days. For longer storage, wrap tightly and freeze for up to 3 months.`,
-                },
-              },
-            ],
           }),
         }}
       />
@@ -416,21 +359,11 @@ export default async function CakePage({ params }: PageProps) {
         Skip to main content
       </a>
 
-      {/* Breadcrumbs */}
-      <Container maxWidth="lg" sx={{ py: 2 }}>
-        <nav aria-label="Breadcrumb navigation">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "All Cakes", href: "/cakes" },
-              { label: cake.name, href: `/cakes/${cake.slug.current}` },
-            ]}
-          />
-        </nav>
-      </Container>
-
       <main id="main-content" tabIndex={-1}>
-        <CakePageClient cake={cake} />
+        <CakePageClient
+          cake={cake}
+          backHref={backHref}
+        />
       </main>
     </>
   );
