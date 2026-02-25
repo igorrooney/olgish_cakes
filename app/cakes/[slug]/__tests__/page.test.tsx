@@ -43,6 +43,7 @@ jest.mock('@/app/utils/fetchCakes', () => ({
 
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
 const { getAllCakes: mockGetAllCakes, getCakeBySlug: mockGetCakeBySlug } = jest.requireMock('@/app/utils/fetchCakes')
+const { getOfferShippingDetails: mockGetOfferShippingDetails } = jest.requireMock('@/app/utils/seo')
 
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
@@ -475,6 +476,7 @@ describe('CakeDetailPage', () => {
 
     it('should include shippingDetails in Offer', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
+      mockBlocksToText.mockReturnValue('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -488,6 +490,217 @@ describe('CakeDetailPage', () => {
       
       expect(jsonLd.offers.shippingDetails).toBeDefined()
       expect(jsonLd.offers.shippingDetails['@type']).toBe('OfferShippingDetails')
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 0,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
+    })
+
+    it('omits shippingDetails when delivery text conflicts with policy values', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const previousNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'production'
+      const conflictingDeliveryCake = {
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: 'Custom Description'
+        },
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'We usually prepare cake orders within 5-7 working days. Free UK delivery is included.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      }
+      mockBlocksToText
+        .mockReturnValueOnce('We usually prepare cake orders within 5-7 working days. Free UK delivery is included.')
+        .mockReturnValueOnce('We usually prepare cake orders within 5-7 working days. Free UK delivery is included.')
+      mockGetCakeBySlug.mockResolvedValue(conflictingDeliveryCake)
+
+      try {
+        const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const productScript = Array.from(scripts).find(script =>
+          script.textContent?.includes('"@type":"Product"')
+        )
+
+        const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+        expect(jsonLd.offers.shippingDetails).toBeUndefined()
+        expect(jsonLd.offers.hasMerchantReturnPolicy).toBeDefined()
+        expect(consoleWarnSpy).not.toHaveBeenCalled()
+      } finally {
+        process.env.NODE_ENV = previousNodeEnv
+        consoleWarnSpy.mockRestore()
+      }
+    })
+
+    it('omits shippingDetails when explicit paid fee conflicts with policy fee', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Dispatch in 2-3 working days. UK delivery is \u00A35.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+      expect(jsonLd.offers.shippingDetails).toBeUndefined()
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('shipping fee \u00A35'))
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('keeps shippingDetails when delivery text says UK and policy country input is non-GB', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'We usually prepare cake orders within 2-3 working days. Free UK delivery is included.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'DE',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
+        .mockReturnValueOnce('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+      expect(jsonLd.offers.shippingDetails).toBeDefined()
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('normalizes unsupported deliveryMethod to default before emitting shippingDetails', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Dispatch in 2-3 working days. UK delivery is \u00A36.'
+                }
+              ]
+            }
+          ],
+          policySource: 'custom',
+          customPolicy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://example.com/custom-delivery-method'
+          }
+        }
+      })
+      mockBlocksToText.mockReturnValue('Dispatch in 2-3 working days. UK delivery is \u00A36.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      render(page)
+
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 6,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
     })
 
     it('should include hasMerchantReturnPolicy in Offer', async () => {

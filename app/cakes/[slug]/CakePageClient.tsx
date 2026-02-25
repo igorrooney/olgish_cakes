@@ -1,10 +1,12 @@
 'use client'
 
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '../components/CatalogProductDetailLayout'
 import { OrderModal } from './OrderModal'
 import { urlFor } from '@/sanity/lib/image'
 import { blocksToText, type Cake, type CakeImage } from '@/types/cake'
+import { getCakeDeliveryFallbackKeyPoint, resolveCakeDeliveryContent } from './delivery-content'
 
 interface CakePageClientProps {
   cake: Cake
@@ -194,16 +196,30 @@ function renderIngredientsSectionContent(cake: Cake): ReactNode {
   )
 }
 
-function renderDeliverySectionContent(): ReactNode {
-  return (
-    <div className='space-y-3'>
-      <p>
-        We usually prepare cake orders within 2-3 working days.
-      </p>
-      <p>
-        Free UK delivery is included. If you need a specific delivery day, please include it in your order request.
-      </p>
-    </div>
+const deliveryPortableTextComponents: PortableTextComponents = {
+  block: {
+    normal: ({
+      children
+    }) => (
+      <p className='mb-3 last:mb-0'>{children}</p>
+    )
+  },
+  list: {
+    bullet: ({
+      children
+    }) => (
+      <ul className='mb-3 list-disc space-y-1 pl-5 last:mb-0'>{children}</ul>
+    ),
+    number: ({
+      children
+    }) => (
+      <ol className='mb-3 list-decimal space-y-1 pl-5 last:mb-0'>{children}</ol>
+    )
+  },
+  listItem: ({
+    children
+  }) => (
+    <li>{children}</li>
   )
 }
 
@@ -220,11 +236,17 @@ export function CakePageClient({
   const galleryImages = useMemo(() => {
     return mapCakeImagesToGallery(cake)
   }, [cake])
+  const resolvedDeliveryContent = useMemo(() => {
+    return resolveCakeDeliveryContent(cake)
+  }, [cake])
   const keyPoints = useMemo(() => {
+    const deliveryFallbackKeyPoint = resolvedDeliveryContent.shouldEmitShippingDetails
+      ? getCakeDeliveryFallbackKeyPoint(resolvedDeliveryContent.policy)
+      : 'Delivery details confirmed before dispatch'
     const fallbackPoints = [
       'Freshly baked to order',
       'Personalised design consultation available',
-      'Free UK delivery'
+      deliveryFallbackKeyPoint
     ]
     const shortDescriptionText = Array.isArray(cake.shortDescription)
       ? blocksToText(cake.shortDescription)
@@ -236,9 +258,10 @@ export function CakePageClient({
     }
 
     return resolveKeyPoints(extractedPoints, fallbackPoints)
-  }, [cake.shortDescription])
+  }, [cake.shortDescription, resolvedDeliveryContent.policy])
   const sections = useMemo<CatalogProductDetailSection[]>(() => {
     const descriptionText = blocksToText(cake.description)
+
     return [
       {
         id: 'full-description',
@@ -252,11 +275,16 @@ export function CakePageClient({
       },
       {
         id: 'delivery',
-        title: 'Delivery',
-        content: renderDeliverySectionContent()
+        title: resolvedDeliveryContent.title,
+        content: (
+          <PortableText
+            value={resolvedDeliveryContent.description}
+            components={deliveryPortableTextComponents}
+          />
+        )
       }
     ]
-  }, [cake])
+  }, [cake, resolvedDeliveryContent])
 
   const handleDesignTypeChange = useCallback((nextDesignType: 'standard' | 'individual') => {
     setDesignType(nextDesignType)

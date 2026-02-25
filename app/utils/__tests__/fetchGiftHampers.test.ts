@@ -3,8 +3,12 @@ jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn)
 }))
 
-import { getAllGiftHampers, getFeaturedGiftHampers, getRevalidateTime } from '../fetchGiftHampers'
+import { getAllGiftHampers, getFeaturedGiftHampers, getGiftHamperBySlug, getRevalidateTime } from '../fetchGiftHampers'
 import { GiftHamper } from '@/types/giftHamper'
+
+jest.mock('next-sanity', () => ({
+  groq: (strings: TemplateStringsArray) => strings[0]
+}))
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -247,6 +251,54 @@ describe('fetchGiftHampers', () => {
       // Verify error was logged
       expect(consoleSpy.mock.calls.length >= 0).toBe(true)
       consoleSpy.mockRestore()
+    })
+  })
+
+  describe('getGiftHamperBySlug', () => {
+    it('should fetch gift hamper by slug', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      const result = await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(result).toEqual(mockHamper)
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"giftHampersDeliverySection"'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'deluxe-hamper' })
+    })
+
+    it('should use cache for non-preview requests', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      await getGiftHamperBySlug('deluxe-hamper')
+      await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should bypass cache for preview requests', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      await getGiftHamperBySlug('deluxe-hamper', true)
+      await getGiftHamperBySlug('deluxe-hamper', true)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    it('should return null on error', async () => {
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      const result = await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when gift hamper is not found', async () => {
+      mockFetch.mockResolvedValue(null)
+
+      const result = await getGiftHamperBySlug('non-existent')
+
+      expect(result).toBeNull()
     })
   })
 

@@ -537,7 +537,7 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
 
       expect(response.headers.get('Content-Type')).toBe('application/xml; charset=utf-8')
-      expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600')
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=0, s-maxage=0')
     })
   })
 

@@ -38,6 +38,7 @@ jest.mock('@/app/utils/fetchGiftHampers', () => ({
 
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
 const { getAllGiftHampers: mockGetAllGiftHampers, getGiftHamperBySlug: mockGetGiftHamperBySlug } = jest.requireMock('@/app/utils/fetchGiftHampers')
+const { getOfferShippingDetails: mockGetOfferShippingDetails } = jest.requireMock('@/app/utils/seo')
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
 const { blocksToText: mockBlocksToText } = jest.requireMock('@/types/cake')
 jest.mock('@/app/utils/seo', () => ({
@@ -300,7 +301,9 @@ describe('HamperDetailPage', () => {
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
       mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
-      mockBlocksToText.mockReturnValueOnce('  Visible   CMS \n description text  ')
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('  Visible   CMS \n description text  ')
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
       const { container } = render(page)
@@ -321,7 +324,9 @@ describe('HamperDetailPage', () => {
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
       mockGetGiftHamperBySlug.mockResolvedValue(hamperWithoutDescription)
-      mockBlocksToText.mockReturnValueOnce('  Short   description \n from CMS  ')
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('  Short   description \n from CMS  ')
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
@@ -344,6 +349,202 @@ describe('HamperDetailPage', () => {
 
       const product = getProductStructuredData(container)
       expect(product.description).toBe('Handmade cake-by-post hamper prepared in Leeds and packed with care for UK delivery.')
+    })
+
+    it('includes shippingDetails in Offer when delivery text matches policy', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeDefined()
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 0,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: true
+      })
+    })
+
+    it('omits shippingDetails when delivery text conflicts with policy values', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const previousNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'production'
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: 'Custom Description'
+        },
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.')
+
+      try {
+        const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+        const { container } = render(page)
+
+        const product = getProductStructuredData(container)
+        const offer = product.offers as UnknownRecord
+
+        expect(offer.shippingDetails).toBeUndefined()
+        expect(offer.hasMerchantReturnPolicy).toBeDefined()
+        expect(consoleWarnSpy).not.toHaveBeenCalled()
+      } finally {
+        process.env.NODE_ENV = previousNodeEnv
+        consoleWarnSpy.mockRestore()
+      }
+    })
+
+    it('omits shippingDetails when explicit paid fee conflicts with policy fee', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'Dispatch in 2-3 working days. UK delivery is \u00A35.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeUndefined()
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('shipping fee \u00A35'))
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('keeps shippingDetails when delivery text says UK and policy country input is non-GB', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'DE',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeDefined()
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('normalizes unsupported deliveryMethod to default before emitting shippingDetails', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'Dispatch in 2-3 working days. UK delivery is \u00A36.' }] }],
+          policySource: 'custom',
+          customPolicy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://example.com/custom-delivery-method'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText.mockReturnValue('Dispatch in 2-3 working days. UK delivery is \u00A36.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      render(page)
+
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 6,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
     })
 
     it('omits aggregateRating from Product structured data', async () => {

@@ -40,7 +40,7 @@ This guide explains how content updates work in production and how to set up imm
    - **URL**: `https://your-domain.com/api/revalidate`
    - **HTTP Method**: `POST`
    - **Dataset**: `production`
-   - **Filter**: `_type in ["cake", "cakesFeaturedOffer", "giftHamper", "collection", "giftHamperCollection", "testimonial", "faq", "blogPost", "marketSchedule"]`
+   - **Filter**: `_type in ["cake","testimonial","faq","giftHamper","giftHamperCollection","blogPost","marketSchedule","collection","cakesFeaturedOffer","cakesDeliverySection","giftHampersDeliverySection","collectionsDisplayOrder","productsDisplayOrder"]`
    - **Events**: `create`, `update`, `delete`
    - **HTTP headers**:
      - `Authorization: Bearer YOUR_REVALIDATE_SECRET`

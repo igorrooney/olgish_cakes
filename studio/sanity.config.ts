@@ -6,7 +6,7 @@ import { apiVersion, dataset, projectId } from "../sanity/env";
 import { schema } from "../sanity/schema";
 import { structure } from "../sanity/structure";
 
-const singletonTypes = new Set(['cakesFeaturedOffer'])
+const singletonTypes = new Set(['cakesFeaturedOffer', 'cakesDeliverySection', 'giftHampersDeliverySection', 'collectionsDisplayOrder', 'productsDisplayOrder'])
 
 export default defineConfig({
   basePath: "/studio",

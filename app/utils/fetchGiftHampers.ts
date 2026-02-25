@@ -3,6 +3,7 @@ import { GiftHamper } from "@/types/giftHamper";
 import { getRevalidateTime } from "./fetchCakes";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
+import { GIFT_HAMPER_BY_SLUG_QUERY } from '@/lib/queries/giftHampers'
 
 interface ProductReference {
   _ref: string
@@ -155,36 +156,7 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
 export { getRevalidateTime };
 
 export async function getGiftHamperBySlug(slug: string, preview = false): Promise<GiftHamper | null> {
-  const query = `*[_type == "giftHamper" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    shortDescription,
-    description,
-    price,
-    order,
-    images[] { _type, asset, alt, isMain, caption },
-    isFeatured,
-    "category": coalesce(category, collections[0]->name, "Gift Hampers"),
-    collections[]->{
-      _id,
-      name,
-      isFeatured
-    },
-    ingredients,
-    allergens,
-    seo {
-      metaTitle,
-      metaDescription,
-      keywords,
-      canonicalUrl,
-      faq[] {
-        question,
-        answer
-      }
-    }
-  }`;
+  const query = GIFT_HAMPER_BY_SLUG_QUERY
 
   try {
     if (preview) {

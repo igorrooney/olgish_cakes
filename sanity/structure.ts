@@ -15,6 +15,7 @@ export const structure: StructureResolver = S =>
               S.documentTypeListItem('cake').title('Cakes'),
               S.documentTypeListItem('giftHamper').title('Gift Hampers'),
               S.divider(),
+              S.documentTypeListItem('cakeFillingType').title('Cake Filling Types'),
               S.documentTypeListItem('collection').title('Cakes Collections'),
               S.documentTypeListItem('giftHamperCollection').title('Gift Hampers Collections')
             ])
@@ -31,6 +32,20 @@ export const structure: StructureResolver = S =>
                   S.document()
                     .schemaType('cakesFeaturedOffer')
                     .documentId('cakesFeaturedOffer')
+                ),
+              S.listItem()
+                .title('Cakes Delivery Section')
+                .child(
+                  S.document()
+                    .schemaType('cakesDeliverySection')
+                    .documentId('cakesDeliverySection')
+                ),
+              S.listItem()
+                .title('Gift Hampers Delivery Section')
+                .child(
+                  S.document()
+                    .schemaType('giftHampersDeliverySection')
+                    .documentId('giftHampersDeliverySection')
                 ),
               S.listItem()
                 .title('Collections Display Order')

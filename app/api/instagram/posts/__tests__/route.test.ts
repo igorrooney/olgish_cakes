@@ -34,7 +34,7 @@ describe('instagram posts route', () => {
 
     expect(response.status).toBe(200)
     expect(body.data).toHaveLength(1)
-    expect(mockGetLatestInstagramPosts).toHaveBeenCalledWith({ limit: 4 })
+    expect(mockGetLatestInstagramPosts).toHaveBeenCalledWith({ limit: 3 })
   })
 
   it('returns a 500 response when fetching fails', async () => {

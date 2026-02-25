@@ -265,7 +265,10 @@ describe('fetchCakes', () => {
       const result = await getCakeBySlug('honey-cake')
 
       expect(result).toEqual(mockCake)
-      expect(mockFetch).toHaveBeenCalledWith(expect.any(String), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"cakesDeliverySection"'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'honey-cake' })
     })
 
     it('should use cache for non-preview requests', async () => {

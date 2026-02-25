@@ -134,6 +134,11 @@ describe('CakePageClient', () => {
     return latestProps
   }
 
+  function getDeliverySection() {
+    const sections = getLatestSections()
+    return sections.find((section) => section.id === 'delivery')
+  }
+
   it('maps content into shared detail layout and passes back link', () => {
     render(
       <CakePageClient
@@ -179,6 +184,78 @@ describe('CakePageClient', () => {
     expect(screen.getByText('Free UK delivery')).toBeInTheDocument()
   })
 
+  it('uses paid-delivery fallback key point when shipping fee is above zero', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          shortDescription: [],
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Dispatch in 2-3 working days. UK delivery is \u00A34.50.'
+                  }
+                ]
+              }
+            ],
+            policySource: 'custom',
+            customPolicy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 3,
+              shippingFeeGbp: 4.5,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    expect(screen.getByText('UK delivery from \u00A34.50')).toBeInTheDocument()
+    expect(screen.queryByText('Free UK delivery')).not.toBeInTheDocument()
+  })
+
+  it('uses neutral delivery fallback key point when shipping details are omitted', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          shortDescription: [],
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'UK delivery is \u00A30.'
+                  }
+                ]
+              }
+            ],
+            policySource: 'custom',
+            customPolicy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 3,
+              shippingFeeGbp: 4.5,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    expect(screen.getByText('Delivery details confirmed before dispatch')).toBeInTheDocument()
+    expect(screen.queryByText('UK delivery from \u00A34.50')).not.toBeInTheDocument()
+  })
+
   it('does not render removed legacy below-fold section copy', () => {
     render(
       <CakePageClient
@@ -200,6 +277,77 @@ describe('CakePageClient', () => {
 
     const sections = getLatestSections()
     expect(sections.map((section) => section.id)).toEqual(['full-description', 'ingredients', 'delivery'])
+  })
+
+  it('uses the global cakes delivery section name as the delivery accordion title', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          cakesDeliverySection: {
+            name: 'Shipping & delivery',
+            description: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Global delivery description'
+                  }
+                ]
+              }
+            ]
+          }
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const deliverySection = getDeliverySection()
+    expect(deliverySection?.title).toBe('Shipping & delivery')
+  })
+
+  it('passes custom delivery rich text to the delivery section when custom source is selected', () => {
+    const customDeliveryDescription = [
+      {
+        _type: 'block',
+        children: [
+          {
+            text: 'Custom delivery description'
+          }
+        ]
+      }
+    ]
+
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: customDeliveryDescription
+          },
+          cakesDeliverySection: {
+            name: 'Shipping & delivery',
+            description: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Global delivery description'
+                  }
+                ]
+              }
+            ]
+          }
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const deliverySection = getDeliverySection()
+    const deliveryContent = deliverySection?.content as React.ReactElement<{ value: unknown }>
+
+    expect(deliveryContent.props.value).toEqual(customDeliveryDescription)
   })
 })
 

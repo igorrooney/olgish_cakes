@@ -11,6 +11,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import type { Brand, Graph, Product } from "schema-dts";
 import { GiftHamperPageClient } from "./GiftHamperPageClient";
 import { getGiftHamperVisibleDescriptionText } from "./description-content";
+import { resolveGiftHamperDeliveryContent } from "./delivery-content";
 
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
@@ -164,6 +165,22 @@ export default async function GiftHamperPage({ params, searchParams }: PageProps
   const backHref = '/cakes-by-post'
   if (!hamper) notFound();
 
+  const resolvedDeliveryContent = resolveGiftHamperDeliveryContent(hamper)
+  const shouldEmitShippingDetails = resolvedDeliveryContent.shouldEmitShippingDetails
+  const shippingDetailsForStructuredData = shouldEmitShippingDetails
+    ? getOfferShippingDetails(
+      resolvedDeliveryContent.policy,
+      resolvedDeliveryContent.shippingDetailsVisibleClaims
+    )
+    : undefined
+  const shouldLogShippingDetailsOmission = process.env.NODE_ENV !== 'production'
+
+  if (!shouldEmitShippingDetails && shouldLogShippingDetailsOmission) {
+    console.warn(
+      `[seo][${hamper.slug.current}] Omitted Offer.shippingDetails due to delivery policy mismatch: ${resolvedDeliveryContent.shippingDetailsOmissionReason || 'unknown reason'}`
+    )
+  }
+
   return (
     <main className="min-h-screen">
       {(() => {
@@ -244,34 +261,7 @@ export default async function GiftHamperPage({ params, searchParams }: PageProps
               name: "Olgish Cakes",
               url: "https://olgishcakes.co.uk",
             },
-            shippingDetails: isCakeByPost ? {
-              "@type": "OfferShippingDetails",
-              shippingRate: {
-                "@type": "MonetaryAmount",
-                value: 0,
-                currency: "GBP",
-              },
-              shippingDestination: {
-                "@type": "DefinedRegion",
-                addressCountry: "GB",
-              },
-              deliveryTime: {
-                "@type": "ShippingDeliveryTime",
-                handlingTime: {
-                  "@type": "QuantitativeValue",
-                  minValue: 0,
-                  maxValue: 1,
-                  unitCode: "DAY",
-                },
-                transitTime: {
-                  "@type": "QuantitativeValue",
-                  minValue: 1,
-                  maxValue: 3,
-                  unitCode: "DAY",
-                },
-              },
-              appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
-            } : getOfferShippingDetails(),
+            ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
             hasMerchantReturnPolicy: getMerchantReturnPolicy()
           },
           potentialAction: {

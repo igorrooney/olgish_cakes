@@ -3,6 +3,7 @@
 ## Purpose & Goals
 - Commercial project focused on ranking #1 on Google
 - SEO-first approach
+- We sell only across the UK
 - Natural English tone (Ukrainian living in England)
 - Never use `any` in TypeScript
 - Always use Context7 MCP when working with libraries/APIs

@@ -3,7 +3,7 @@ import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
 import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
-import { CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
+import { CAKE_BY_SLUG_QUERY, CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
 import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
 
 interface FeaturedOfferImageQueryResult {
@@ -319,48 +319,7 @@ export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeatu
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-
-  const query = `*[_type == "cake" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    order,
-    mainImage {
-      _type,
-      asset
-    },
-    images {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      },
-      individual[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      }
-    },
-    "category": coalesce(category, collections[0]->name, "Traditional"),
-    collections[]->{
-      _id,
-      name,
-      isFeatured
-    },
-    ingredients,
-    allergens
-  }`;
+  const query = CAKE_BY_SLUG_QUERY;
 
   try {
     if (preview) {

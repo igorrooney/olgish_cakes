@@ -1,3 +1,5 @@
+import type { DeliveryPolicy } from './deliveryPolicy'
+
 export interface CakeSize {
   name: "8inch";
   price: number;
@@ -43,6 +45,22 @@ export interface CakeCollection {
   isFeatured?: boolean;
 }
 
+export type CakeDeliveryDescriptionSource = 'global' | 'custom'
+export type CakeDeliveryPolicySource = 'global' | 'custom'
+
+export interface CakeDeliverySectionOverride {
+  descriptionSource?: CakeDeliveryDescriptionSource
+  customDescription?: RichTextBlock[]
+  policySource?: CakeDeliveryPolicySource
+  customPolicy?: Partial<DeliveryPolicy>
+}
+
+export interface CakesDeliverySectionContent {
+  name?: string
+  description?: RichTextBlock[]
+  policy?: Partial<DeliveryPolicy>
+}
+
 interface RichTextChild {
   text: string;
   [key: string]: unknown;
@@ -80,6 +98,8 @@ export interface Cake {
   seo?: CakeSEO;
   description: RichTextBlock[]; // Rich text blocks
   shortDescription?: RichTextBlock[]; // Rich text blocks for short description
+  deliverySection?: CakeDeliverySectionOverride;
+  cakesDeliverySection?: CakesDeliverySectionContent;
   bestsellerShortDescription?: RichTextBlock[]; // Rich text blocks for bestseller section
   bestsellerCustomerStory?: string; // Customer story quote for bestseller section
   bestsellerStoryDetails?: string; // Who the cake was made for, occasion, etc.

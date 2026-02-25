@@ -10,5 +10,8 @@ import cakesFeaturedOffer from './cakesFeaturedOffer'
 import collectionsDisplayOrder from './collectionsDisplayOrder'
 import productsDisplayOrder from './productsDisplayOrder'
 import ingredient from './ingredient'
+import cakeFillingType from './cakeFillingType'
+import cakesDeliverySection from './cakesDeliverySection'
+import giftHampersDeliverySection from './giftHampersDeliverySection'
 
-export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer, ingredient]
+export const schemaTypes = [cake, giftHamper, testimonial, faq, blogPost, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer, ingredient, cakeFillingType, cakesDeliverySection, giftHampersDeliverySection]

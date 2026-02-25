@@ -73,6 +73,12 @@ async function handlePOST(request: NextRequest) {
       addPath('/cakes')
       addTag('cakes')
       addTag('cakes-featured-offer')
+    } else if (_type === 'cakesDeliverySection') {
+      addPath('/cakes')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes')
+      addTag('sitemaps')
     } else if (_type === "testimonial") {
       // Revalidate testimonial pages
       addPath("/testimonials")
@@ -97,6 +103,13 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('pages')
+      addTag('sitemaps')
+    } else if (_type === 'giftHampersDeliverySection') {
+      addPath('/cakes-by-post')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
       addTag('sitemaps')
     } else if (_type === "blogPost") {
       // Revalidate blog pages

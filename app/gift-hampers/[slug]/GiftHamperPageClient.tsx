@@ -1,12 +1,14 @@
 'use client'
 
 import { useMemo, useState, type ReactNode } from 'react'
+import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
 import { GiftHamperOrderModal } from './GiftHamperOrderModal'
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
 import { urlFor } from '@/sanity/lib/image'
 import { getGiftHamperVisibleDescriptionText, giftHamperVisibleDescriptionFallback } from './description-content'
+import { getGiftHamperDeliveryFallbackKeyPoint, resolveGiftHamperDeliveryContent } from './delivery-content'
 
 interface GiftHamperPageClientProps {
   hamper: GiftHamper
@@ -193,16 +195,30 @@ function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
   )
 }
 
-function renderDeliverySectionContent(): ReactNode {
-  return (
-    <div className='space-y-3'>
-      <p>
-        We dispatch cake-by-post orders within 2-3 working days.
-      </p>
-      <p>
-        Free UK shipping is included. Add any delivery notes in your order request and we will confirm availability.
-      </p>
-    </div>
+const deliveryPortableTextComponents: PortableTextComponents = {
+  block: {
+    normal: ({
+      children
+    }) => (
+      <p className='mb-3 last:mb-0'>{children}</p>
+    )
+  },
+  list: {
+    bullet: ({
+      children
+    }) => (
+      <ul className='mb-3 list-disc space-y-1 pl-5 last:mb-0'>{children}</ul>
+    ),
+    number: ({
+      children
+    }) => (
+      <ol className='mb-3 list-decimal space-y-1 pl-5 last:mb-0'>{children}</ol>
+    )
+  },
+  listItem: ({
+    children
+  }) => (
+    <li>{children}</li>
   )
 }
 
@@ -214,11 +230,17 @@ export function GiftHamperPageClient({
   const galleryImages = useMemo(() => {
     return mapHamperImagesToGallery(hamper)
   }, [hamper])
+  const resolvedDeliveryContent = useMemo(() => {
+    return resolveGiftHamperDeliveryContent(hamper)
+  }, [hamper])
   const keyPoints = useMemo(() => {
+    const deliveryFallbackKeyPoint = resolvedDeliveryContent.shouldEmitShippingDetails
+      ? getGiftHamperDeliveryFallbackKeyPoint(resolvedDeliveryContent.policy)
+      : 'Delivery details confirmed before dispatch'
     const fallbackPoints = [
       'Freshly baked and packed',
       'Personalised charity postcard',
-      'Free UK shipping'
+      deliveryFallbackKeyPoint
     ]
     const shortDescriptionText = Array.isArray(hamper.shortDescription)
       ? blocksToText(hamper.shortDescription)
@@ -230,7 +252,7 @@ export function GiftHamperPageClient({
     }
 
     return resolveKeyPoints(extractedPoints, fallbackPoints)
-  }, [hamper.shortDescription])
+  }, [hamper.shortDescription, resolvedDeliveryContent.policy])
   const sections = useMemo<CatalogProductDetailSection[]>(() => {
     const descriptionText = getGiftHamperVisibleDescriptionText(hamper)
 
@@ -247,11 +269,16 @@ export function GiftHamperPageClient({
       },
       {
         id: 'delivery',
-        title: 'Delivery',
-        content: renderDeliverySectionContent()
+        title: resolvedDeliveryContent.title,
+        content: (
+          <PortableText
+            value={resolvedDeliveryContent.description}
+            components={deliveryPortableTextComponents}
+          />
+        )
       }
     ]
-  }, [hamper])
+  }, [hamper, resolvedDeliveryContent])
 
   return (
     <>

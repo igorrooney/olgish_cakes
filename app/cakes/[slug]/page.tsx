@@ -8,6 +8,7 @@ import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } 
 import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
+import { resolveCakeDeliveryContent } from "./delivery-content";
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
@@ -197,6 +198,22 @@ export default async function CakePage({ params, searchParams }: PageProps) {
     notFound();
   }
 
+  const resolvedDeliveryContent = resolveCakeDeliveryContent(cake)
+  const shouldEmitShippingDetails = resolvedDeliveryContent.shouldEmitShippingDetails
+  const shippingDetailsForStructuredData = shouldEmitShippingDetails
+    ? getOfferShippingDetails(
+      resolvedDeliveryContent.policy,
+      resolvedDeliveryContent.shippingDetailsVisibleClaims
+    )
+    : undefined
+  const shouldLogShippingDetailsOmission = process.env.NODE_ENV !== 'production'
+
+  if (!shouldEmitShippingDetails && shouldLogShippingDetailsOmission) {
+    console.warn(
+      `[seo][${cake.slug.current}] Omitted Offer.shippingDetails due to delivery policy mismatch: ${resolvedDeliveryContent.shippingDetailsOmissionReason || 'unknown reason'}`
+    )
+  }
+
   // Ensure image is always present and absolute for Product JSON-LD
   const productImageUrl = (() => {
     // Get the best available image
@@ -272,7 +289,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
                 name: "Olgish Cakes",
                 url: "https://olgishcakes.co.uk"
               },
-              shippingDetails: getOfferShippingDetails(),
+              ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
               eligibleTransactionVolume: {
                 "@type": "PriceSpecification",
@@ -343,7 +360,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
                         name: "Olgish Cakes",
                         url: "https://olgishcakes.co.uk",
                       },
-                      shippingDetails: getOfferShippingDetails(),
+                      ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
                       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
                     },
                   },

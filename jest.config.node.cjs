@@ -6,13 +6,12 @@ const createJestConfig = nextJest({
   dir: './'
 })
 
+const apiTestRegex = 'app[\\\\/]api[\\\\/].*\\.(spec|test)\\.[jt]sx?$'
+
 const customJestConfig = {
   ...baseConfig,
   testEnvironment: 'node',
-  testMatch: [
-    'app/api/**/__tests__/**/*.[jt]s?(x)',
-    'app/api/**/?(*.)+(spec|test).[jt]s?(x)'
-  ]
+  testRegex: [apiTestRegex]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

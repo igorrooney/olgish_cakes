@@ -46,6 +46,51 @@ describe('/api/revalidate', () => {
     expect(revalidateTag).toHaveBeenCalledWith('gift-hamper-collections', 'max')
   })
 
+  it('revalidates cakes delivery section paths and tags', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'cakesDeliverySection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
+  it('revalidates gift hampers delivery section paths and tags', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'giftHampersDeliverySection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
   it('revalidates product paths and tags for productsDisplayOrder', async () => {
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',

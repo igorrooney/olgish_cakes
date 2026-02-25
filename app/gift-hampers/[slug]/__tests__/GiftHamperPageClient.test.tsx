@@ -134,6 +134,11 @@ describe('GiftHamperPageClient', () => {
     return getLatestLayoutProps().images as Array<{ src: string, alt: string }>
   }
 
+  function getDeliverySection() {
+    const sections = getLatestSections()
+    return sections.find((section) => section.id === 'delivery')
+  }
+
   it('maps content into shared detail layout and passes back link', () => {
     render(
       <GiftHamperPageClient
@@ -181,6 +186,78 @@ describe('GiftHamperPageClient', () => {
     expect(screen.getByText('Free UK shipping')).toBeInTheDocument()
   })
 
+  it('uses paid-shipping fallback key point when shipping fee is above zero', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          shortDescription: [],
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Dispatch in 2-3 working days. UK shipping is \u00A36.75.'
+                  }
+                ]
+              }
+            ],
+            policySource: 'custom',
+            customPolicy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 3,
+              shippingFeeGbp: 6.75,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    expect(screen.getByText('UK shipping from \u00A36.75')).toBeInTheDocument()
+    expect(screen.queryByText('Free UK shipping')).not.toBeInTheDocument()
+  })
+
+  it('uses neutral delivery fallback key point when shipping details are omitted', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          shortDescription: [],
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'UK shipping is \u00A30.'
+                  }
+                ]
+              }
+            ],
+            policySource: 'custom',
+            customPolicy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 3,
+              shippingFeeGbp: 6.75,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    expect(screen.getByText('Delivery details confirmed before dispatch')).toBeInTheDocument()
+    expect(screen.queryByText('UK shipping from \u00A36.75')).not.toBeInTheDocument()
+  })
+
   it('does not render removed legacy below-fold section copy', () => {
     render(
       <GiftHamperPageClient
@@ -202,6 +279,77 @@ describe('GiftHamperPageClient', () => {
 
     const sections = getLatestSections()
     expect(sections.map((section) => section.id)).toEqual(['full-description', 'ingredients', 'delivery'])
+  })
+
+  it('uses the global gift hampers delivery section name as the delivery accordion title', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          giftHampersDeliverySection: {
+            name: 'Shipping & delivery',
+            description: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Global hamper delivery description'
+                  }
+                ]
+              }
+            ]
+          }
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const deliverySection = getDeliverySection()
+    expect(deliverySection?.title).toBe('Shipping & delivery')
+  })
+
+  it('passes custom delivery rich text to the delivery section when custom source is selected', () => {
+    const customDeliveryDescription = [
+      {
+        _type: 'block',
+        children: [
+          {
+            text: 'Custom hamper delivery description'
+          }
+        ]
+      }
+    ]
+
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          deliverySection: {
+            descriptionSource: 'custom',
+            customDescription: customDeliveryDescription
+          },
+          giftHampersDeliverySection: {
+            name: 'Shipping & delivery',
+            description: [
+              {
+                _type: 'block',
+                children: [
+                  {
+                    text: 'Global hamper delivery description'
+                  }
+                ]
+              }
+            ]
+          }
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const deliverySection = getDeliverySection()
+    const deliveryContent = deliverySection?.content as React.ReactElement<{ value: unknown }>
+
+    expect(deliveryContent.props.value).toEqual(customDeliveryDescription)
   })
 
   it('forces the first isMain hamper image to index 0 in the gallery payload', () => {
