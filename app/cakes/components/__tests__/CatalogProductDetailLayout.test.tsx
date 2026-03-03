@@ -92,7 +92,14 @@ function renderLayout(
   onCtaClick = jest.fn(),
   priceText = '\u00A38.50',
   images = galleryImages,
-  backLabel?: string
+  backLabel?: string,
+  orderContent?: React.ReactNode,
+  isOrderFormOpen = false,
+  onBackToProduct?: () => void,
+  galleryBelowContent?: React.ReactNode,
+  requestedActiveImageIndex?: number,
+  requestedActiveImageKey?: string,
+  onCtaIntent?: () => void
 ) {
   return render(
     <CatalogProductDetailLayout
@@ -109,6 +116,13 @@ function renderLayout(
       ]}
       ctaLabel='Add to cart +'
       onCtaClick={onCtaClick}
+      onCtaIntent={onCtaIntent}
+      orderContent={orderContent}
+      isOrderFormOpen={isOrderFormOpen}
+      onBackToProduct={onBackToProduct}
+      galleryBelowContent={galleryBelowContent}
+      requestedActiveImageIndex={requestedActiveImageIndex}
+      requestedActiveImageKey={requestedActiveImageKey}
       images={images}
       sections={sections}
     />
@@ -211,6 +225,26 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).not.toBeNull()
     expect(imageWrapper).toHaveClass('rounded-[8px]')
     expect(imageWrapper).not.toHaveClass('rounded-box')
+  })
+
+  it('renders optional gallery-below content with fixed top spacing', () => {
+    renderLayout(
+      jest.fn(),
+      '\u00A38.50',
+      galleryImages,
+      undefined,
+      undefined,
+      false,
+      undefined,
+      <div data-testid='gallery-below-node'>Filling preview</div>
+    )
+
+    const galleryBelowNode = screen.getByTestId('gallery-below-node')
+    const galleryBelowWrapper = galleryBelowNode.parentElement
+
+    expect(galleryBelowNode).toBeInTheDocument()
+    expect(galleryBelowWrapper).not.toBeNull()
+    expect(galleryBelowWrapper).toHaveClass('mt-8')
   })
 
   it('applies tokenized mobile and tablet typography to category label', () => {
@@ -503,7 +537,9 @@ describe('CatalogProductDetailLayout', () => {
     renderLayout()
 
     expect(screen.getByRole('heading', { level: 1, name: 'Christmas Gift Box & Card' })).toBeInTheDocument()
-    expect(screen.getByText((_, element) => element?.textContent === '\u00A38.50')).toBeInTheDocument()
+    expect(screen.getByText((_, element) => {
+      return element?.tagName.toLowerCase() === 'span' && element.textContent === '\u00A38.50'
+    })).toBeInTheDocument()
     expect(screen.getByText('+ free shipping')).toBeInTheDocument()
     expect(screen.getByText('Freshly baked and packed')).toBeInTheDocument()
     expect(screen.getByText('Personalised charity postcard')).toBeInTheDocument()
@@ -520,6 +556,66 @@ describe('CatalogProductDetailLayout', () => {
     fireEvent.click(secondDot)
 
     expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
+  })
+
+  it('applies requested active image when request key changes', () => {
+    const onCtaClick = jest.fn()
+    const baseProps = {
+      backHref: '/cakes?sort=new&page=2',
+      categoryLabel: 'Cakes by post',
+      title: 'Christmas Gift Box & Card',
+      priceText: '\u00A38.50',
+      priceSuffix: '+ free shipping',
+      keyPoints: [
+        'Freshly baked and packed',
+        'Personalised charity postcard',
+        'Free UK shipping'
+      ],
+      ctaLabel: 'Add to cart +',
+      onCtaClick,
+      images: galleryImages,
+      sections
+    }
+
+    const { rerender } = render(
+      <CatalogProductDetailLayout
+        {...baseProps}
+        requestedActiveImageIndex={1}
+        requestedActiveImageKey='filling-1'
+      />
+    )
+
+    expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'View previous image' }))
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+
+    rerender(
+      <CatalogProductDetailLayout
+        {...baseProps}
+        requestedActiveImageIndex={1}
+        requestedActiveImageKey='filling-2'
+      />
+    )
+
+    expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
+  })
+
+  it('ignores requested active image when requested index is out of bounds', () => {
+    renderLayout(
+      jest.fn(),
+      '\u00A38.50',
+      galleryImages,
+      undefined,
+      undefined,
+      false,
+      undefined,
+      undefined,
+      8,
+      'filling-1'
+    )
+
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
   })
 
   it('renders strict 8x8 dots with 8px gap and tokenized active styles', () => {
@@ -811,6 +907,82 @@ describe('CatalogProductDetailLayout', () => {
     expect(onCtaClick).toHaveBeenCalledTimes(1)
   })
 
+  it('calls CTA intent handler on mouse enter', () => {
+    const onCtaIntent = jest.fn()
+    renderLayout(jest.fn(), '\u00A38.50', galleryImages, undefined, undefined, false, undefined, undefined, undefined, undefined, onCtaIntent)
+
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'Add to cart +' }))
+
+    expect(onCtaIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls CTA intent handler on focus', () => {
+    const onCtaIntent = jest.fn()
+    renderLayout(jest.fn(), '\u00A38.50', galleryImages, undefined, undefined, false, undefined, undefined, undefined, undefined, onCtaIntent)
+
+    fireEvent.focus(screen.getByRole('button', { name: 'Add to cart +' }))
+
+    expect(onCtaIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls CTA intent handler on touch start', () => {
+    const onCtaIntent = jest.fn()
+    renderLayout(jest.fn(), '\u00A38.50', galleryImages, undefined, undefined, false, undefined, undefined, undefined, undefined, onCtaIntent)
+
+    fireEvent.touchStart(screen.getByRole('button', { name: 'Add to cart +' }))
+
+    expect(onCtaIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders optional inline order content below CTA', () => {
+    renderLayout(jest.fn(), '\u00A38.50', galleryImages, undefined, <div>Inline order content</div>)
+    expect(screen.getByText('Inline order content')).toBeInTheDocument()
+  })
+
+  it('renders compact open-state header and inline order content in open order-form mode', () => {
+    renderLayout(
+      jest.fn(),
+      '\u00A38.50',
+      galleryImages,
+      undefined,
+      <div>Inline order content</div>,
+      true
+    )
+
+    expect(screen.getByText('You selected:')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Christmas Gift Box & Card' })).toBeInTheDocument()
+    expect(screen.getByText((_, element) => {
+      return element?.tagName.toLowerCase() === 'span' && element.textContent === '\u00A38.50'
+    })).toBeInTheDocument()
+    expect(screen.getByText('Inline order content')).toBeInTheDocument()
+    expect(screen.queryByText('Cakes by post')).not.toBeInTheDocument()
+    expect(screen.queryByText('+ free shipping')).not.toBeInTheDocument()
+    expect(screen.queryByText('Freshly baked and packed')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Add to cart +' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Full description')).not.toBeInTheDocument()
+  })
+
+  it('uses in-page back callback in open order-form mode', () => {
+    const onBackToProduct = jest.fn()
+    const historyBackSpy = jest.spyOn(window.history, 'back').mockImplementation(() => undefined)
+
+    renderLayout(
+      jest.fn(),
+      '\u00A38.50',
+      galleryImages,
+      'Back to product',
+      <div>Inline order content</div>,
+      true,
+      onBackToProduct
+    )
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to product' }))
+
+    expect(onBackToProduct).toHaveBeenCalledTimes(1)
+    expect(historyBackSpy).not.toHaveBeenCalled()
+    historyBackSpy.mockRestore()
+  })
+
   it('applies tokenized CTA button styles without duplicate daisyUI defaults', () => {
     renderLayout()
 
@@ -845,4 +1017,3 @@ describe('CatalogProductDetailLayout', () => {
     )
   })
 })
-

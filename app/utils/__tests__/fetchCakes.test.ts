@@ -103,6 +103,24 @@ describe('fetchCakes', () => {
       expect(mockFetch).toHaveBeenCalled()
     })
 
+    it('should include servings pricing in getAllCakes query', async () => {
+      mockFetch.mockResolvedValue([mockCake])
+
+      await getAllCakes()
+
+      const firstCall = mockFetch.mock.calls[0]
+      if (!firstCall) {
+        throw new Error('Expected getAllCakes query call')
+      }
+
+      const queryArg = firstCall[0]
+      if (typeof queryArg !== 'string') {
+        throw new Error('Expected query argument to be a string')
+      }
+
+      expect(queryArg).toContain('newDesignPricingByServings')
+    })
+
     it('should prioritize products display order for cakes', async () => {
       const firstCake: Cake = {
         ...mockCake,
@@ -269,6 +287,9 @@ describe('fetchCakes', () => {
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"cakesDeliverySection"'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('fillingTypes[]->{\n      _id,\n      name,\n      image {'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('defaultFillingType->{'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('defaultFillingType->{\n      _id,\n      name,\n      image {'), { slug: 'honey-cake' })
     })
 
     it('should use cache for non-preview requests', async () => {

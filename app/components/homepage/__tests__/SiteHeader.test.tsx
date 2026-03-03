@@ -4,8 +4,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { SiteHeader } from '../SiteHeader'
 import React, { act } from 'react'
+import { usePathname } from 'next/navigation'
+
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn()
+}))
 
 describe('SiteHeader', () => {
+  const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
+  let mockPathname = '/'
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockPathname = '/'
+    mockUsePathname.mockImplementation(() => mockPathname)
+  })
   it('renders logo and menu button', () => {
     render(<SiteHeader />)
 
@@ -381,4 +394,70 @@ describe('SiteHeader', () => {
     fireEvent.keyDown(customSummary, { key: 'ArrowDown' })
     expect(customDetails.open).toBe(false)
   })
+
+  it('closes desktop dropdown when pathname changes', () => {
+    const { rerender } = render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
+    expect(customDetails.open).toBe(true)
+
+    mockPathname = '/cakes'
+    rerender(<SiteHeader />)
+
+    const updatedCustomDetails = screen
+      .getByText(/custom cakes/i)
+      .closest('summary')
+      ?.closest('details') as HTMLDetailsElement
+
+    expect(updatedCustomDetails.open).toBe(false)
+  })
+
+  it('closes mobile menu when pathname changes', () => {
+    const { rerender } = render(<SiteHeader />)
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+
+    mockPathname = '/contact'
+    rerender(<SiteHeader />)
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  it('does not close desktop dropdown on rerender when pathname is unchanged', () => {
+    const { rerender } = render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
+    expect(customDetails.open).toBe(true)
+
+    rerender(<SiteHeader />)
+
+    const updatedCustomDetails = screen
+      .getByText(/custom cakes/i)
+      .closest('summary')
+      ?.closest('details') as HTMLDetailsElement
+
+    expect(updatedCustomDetails.open).toBe(true)
+  })
 })
+

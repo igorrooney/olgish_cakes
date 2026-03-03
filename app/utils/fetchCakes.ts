@@ -188,6 +188,7 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
       bestsellerShortDescription,
       size,
       pricing,
+      newDesignPricingByServings,
       order,
       isBestseller,
       mainImage {

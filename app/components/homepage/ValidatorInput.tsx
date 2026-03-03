@@ -79,6 +79,38 @@ const tokenizedInputStyle = (hasError: boolean) => ({
     : 'color-mix(in srgb, var(--d-color-base-content) calc(var(--u-opacity-stroke-20) * 100%), transparent)'
 })
 
+const errorCardClassName =
+  'mt-2 flex items-start gap-2 rounded-md border border-error/30 bg-error/10 px-3 py-2 text-sm text-error'
+
+function renderErrorCard(id: string, error?: string) {
+  if (!error) {
+    return null
+  }
+
+  return (
+    <div
+      className={errorCardClassName}
+      id={`${id}-error`}
+      role='alert'
+      aria-live='assertive'
+    >
+      <span
+        className='mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
+        aria-hidden='true'
+      >
+        <svg viewBox='0 0 20 20' fill='currentColor' className='h-4 w-4'>
+          <path
+            fillRule='evenodd'
+            d='M10 2a8 8 0 100 16 8 8 0 000-16zm0 4a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1zm0 9a1.25 1.25 0 100-2.5A1.25 1.25 0 0010 15z'
+            clipRule='evenodd'
+          />
+        </svg>
+      </span>
+      <span>{error}</span>
+    </div>
+  )
+}
+
 export function ValidatorInput(props: ValidatorInputProps) {
   const hasError = Boolean(props.error)
   const labelLayout = props.labelLayout ?? 'between'
@@ -102,7 +134,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
       options,
       error,
       required = false,
-      hintText,
       onValueChange
     } = props
     const resolvedLabelClassName = selectLabelLayout
@@ -117,7 +148,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       : labelAltClassName
 
     return (
-      <div className="form-control w-full">
+      <div className='form-control w-full'>
         <label className={resolvedLabelClassName} htmlFor={id}>
           <span className={labelTextClassName}>
             {label}
@@ -148,13 +179,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
             )
           })}
         </select>
-        <div
-          className={`validator-hint text-error ${hasError ? '' : 'hidden'}`}
-          id={`${id}-error`}
-          role="alert"
-        >
-          {error || hintText}
-        </div>
+        {renderErrorCard(id, error)}
       </div>
     )
   }
@@ -170,7 +195,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
       inputClassName,
       error,
       required = false,
-      hintText,
       onValueChange
     } = props
     const resolvedLabelClassName = textAreaLabelLayout
@@ -190,7 +214,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       : baseTextAreaClassName
 
     return (
-      <div className="form-control w-full">
+      <div className='form-control w-full'>
         <label className={resolvedLabelClassName} htmlFor={id}>
           <span className={labelTextClassName}>
             {label}
@@ -212,13 +236,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
           aria-invalid={hasError}
           aria-describedby={hasError ? `${id}-error` : undefined}
         />
-        <div
-          className={`validator-hint text-error ${hasError ? '' : 'hidden'}`}
-          id={`${id}-error`}
-          role="alert"
-        >
-          {error || hintText}
-        </div>
+        {renderErrorCard(id, error)}
       </div>
     )
   }
@@ -234,7 +252,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
       infoRight,
       selectedFileName,
       error,
-      hintText,
       inputRef,
       onFileChange
     } = props
@@ -250,7 +267,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       : labelAltClassName
 
     return (
-      <div className="form-control w-full">
+      <div className='form-control w-full'>
         <label className={resolvedLabelClassName} htmlFor={id}>
           <span className={labelTextClassName}>
             {label}
@@ -263,8 +280,8 @@ export function ValidatorInput(props: ValidatorInputProps) {
         </label>
         <input
           id={id}
-          type="file"
-          className="file-input file-input-primary w-full file-input-theme text-base-content opacity-100"
+          type='file'
+          className='file-input file-input-primary w-full file-input-theme text-base-content opacity-100'
           accept={accept}
           ref={inputRef}
           onChange={(event) => onFileChange?.(event.target.files)}
@@ -272,29 +289,23 @@ export function ValidatorInput(props: ValidatorInputProps) {
           aria-describedby={error ? `${id}-error` : undefined}
         />
         {selectedFileName ? (
-          <div className="label w-full">
-            <span className="label-text-alt text-xs text-base-content opacity-100 truncate">
+          <div className='label w-full'>
+            <span className='label-text-alt text-xs text-base-content opacity-100 truncate'>
               Selected: {selectedFileName}
             </span>
           </div>
         ) : null}
         {(infoLeft || infoRight) && (
-          <div className="label w-full justify-between">
-            <span className="label-text-alt text-xs text-base-content opacity-100">
+          <div className='label w-full justify-between'>
+            <span className='label-text-alt text-xs text-base-content opacity-100'>
               {infoLeft}
             </span>
-            <span className="label-text-alt text-xs text-base-content opacity-100">
+            <span className='label-text-alt text-xs text-base-content opacity-100'>
               {infoRight}
             </span>
           </div>
         )}
-        <div
-          className={`validator-hint text-error ${error ? '' : 'hidden'}`}
-          id={`${id}-error`}
-          role="alert"
-        >
-          {error || hintText}
-        </div>
+        {renderErrorCard(id, error)}
       </div>
     )
   }
@@ -314,7 +325,6 @@ export function ValidatorInput(props: ValidatorInputProps) {
     inputClassName,
     error,
     required = false,
-    hintText,
     onValueChange
   } = props
   const resolvedLabelClassName = inputLabelLayout
@@ -336,7 +346,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
   const shouldShowValidation = props.showValidation ?? true
 
   return (
-    <div className="form-control w-full">
+    <div className='form-control w-full'>
       {labelPlacement === 'outside' ? (
         <label className={resolvedLabelClassName} htmlFor={id}>
           <span className={labelTextClassName}>
@@ -370,18 +380,12 @@ export function ValidatorInput(props: ValidatorInputProps) {
           aria-describedby={hasError ? `${id}-error` : undefined}
         />
         {shouldShowTrailingIcon ? (
-          <span className="ml-2 flex items-center pointer-events-none">
+          <span className='ml-2 flex items-center pointer-events-none'>
             {trailingIcon}
           </span>
         ) : null}
       </label>
-      <div
-        className={`validator-hint text-error ${hasError ? '' : 'hidden'}`}
-        id={`${id}-error`}
-        role="alert"
-      >
-        {error || hintText}
-      </div>
+      {renderErrorCard(id, error)}
     </div>
   )
 }

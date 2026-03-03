@@ -56,6 +56,7 @@ export const formFieldOrder = [
   'occasion',
   'date',
   'requirements',
+  'giftNote',
   'referenceImage'
 ] as const
 
@@ -74,3 +75,4 @@ export const getReferenceImageError = (file: File | null) => {
 
   return null
 }
+

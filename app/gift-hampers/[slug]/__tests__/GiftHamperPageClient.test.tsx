@@ -4,19 +4,52 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { GiftHamperPageClient } from '../GiftHamperPageClient'
+import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
 import type { GiftHamper } from '@/types/giftHamper'
 import type { CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
 
 const capturedLayoutProps: Array<Record<string, unknown>> = []
+const mockOrderIntentHandler = jest.fn()
+const mockedUseOrderFormPrefetch = useOrderFormPrefetch as jest.MockedFunction<typeof useOrderFormPrefetch>
+jest.mock('next/dynamic', () => {
+  return () => {
+    const React = require('react') as typeof import('react')
+    const module = require('@/app/components/homepage/ProductOrderInlineForm') as { ProductOrderInlineForm?: React.ComponentType<Record<string, unknown>>, default?: React.ComponentType<Record<string, unknown>> }
+    const ResolvedComponent = module.ProductOrderInlineForm ?? module.default ?? (() => null)
 
-jest.mock('../GiftHamperOrderModal', () => ({
-  GiftHamperOrderModal: ({
-    open
+    return function DynamicComponent(props: Record<string, unknown>) {
+      return <ResolvedComponent {...props} />
+    }
+  }
+})
+
+jest.mock('@/app/components/homepage/useOrderFormPrefetch', () => ({
+  useOrderFormPrefetch: jest.fn()
+}))
+
+jest.mock('@/app/components/homepage/ProductOrderInlineForm', () => ({
+  ProductOrderInlineForm: ({
+    productType,
+    productId,
+    productName,
+    totalPrice,
+    showOccasionField
   }: {
-    open: boolean
+    productType: string
+    productId: string
+    productName: string
+    totalPrice: number
+    showOccasionField?: boolean
   }) => (
-    <div data-testid='gift-hamper-order-modal' data-open={open ? 'true' : 'false'}>
-      Gift hamper order modal
+    <div
+      data-testid='inline-order-form'
+      data-product-type={productType}
+      data-product-id={productId}
+      data-product-name={productName}
+      data-total-price={String(totalPrice)}
+      data-show-occasion-field={String(showOccasionField)}
+    >
+      Inline order form
     </div>
   )
 }))
@@ -43,6 +76,12 @@ jest.mock('@/app/cakes/components/CatalogProductDetailLayout', () => ({
         <button type='button' onClick={props.onCtaClick as () => void}>
           Trigger add to cart
         </button>
+        {typeof props.onBackToProduct === 'function' ? (
+          <button type='button' onClick={props.onBackToProduct as () => void}>
+            Trigger back to product
+          </button>
+        ) : null}
+        {props.orderContent as React.ReactNode}
       </div>
     )
   }
@@ -110,6 +149,9 @@ const baseHamper: GiftHamper = {
 describe('GiftHamperPageClient', () => {
   beforeEach(() => {
     capturedLayoutProps.length = 0
+    mockOrderIntentHandler.mockReset()
+    mockedUseOrderFormPrefetch.mockReset()
+    mockedUseOrderFormPrefetch.mockReturnValue(mockOrderIntentHandler)
   })
 
   function getLatestSections() {
@@ -157,7 +199,7 @@ describe('GiftHamperPageClient', () => {
     expect(getLatestLayoutProps().priceSuffix).toBeUndefined()
   })
 
-  it('opens the existing gift hamper order modal when Add to cart is triggered', () => {
+  it('configures order-form prefetch with occasion prefetch disabled', () => {
     render(
       <GiftHamperPageClient
         hamper={baseHamper}
@@ -165,9 +207,67 @@ describe('GiftHamperPageClient', () => {
       />
     )
 
-    expect(screen.getByTestId('gift-hamper-order-modal')).toHaveAttribute('data-open', 'false')
+    expect(mockedUseOrderFormPrefetch).toHaveBeenCalledWith({ prefetchOccasionOptions: false })
+    expect(getLatestLayoutProps().onCtaIntent).toBe(mockOrderIntentHandler)
+  })
+  it('reveals inline order form when Add to cart is triggered', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={baseHamper}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    expect(screen.queryByTestId('inline-order-form')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
-    expect(screen.getByTestId('gift-hamper-order-modal')).toHaveAttribute('data-open', 'true')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-type', 'gift-hamper')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-id', 'christmas-gift-box')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-name', 'Christmas Gift Box & Card')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-show-occasion-field', 'false')
+  })
+
+  it('switches back label to "Back to product" when the inline order form is open', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={baseHamper}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    expect(getLatestLayoutProps().backLabel).toBe('Back to cakes by post')
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(getLatestLayoutProps().backLabel).toBe('Back to product')
+    expect(screen.getByTestId('layout-back-link')).toHaveTextContent('Back to product')
+  })
+
+  it('keeps price text contract when order form is open', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={baseHamper}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    expect(getLatestLayoutProps().priceText).toBe('\u00A38.50')
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(getLatestLayoutProps().priceText).toBe('\u00A38.50')
+    expect(screen.getByTestId('inline-order-form')).toBeInTheDocument()
+  })
+
+  it('closes open state via back action and restores closed view', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={baseHamper}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(screen.getByTestId('inline-order-form')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger back to product' }))
+
+    expect(screen.queryByTestId('inline-order-form')).not.toBeInTheDocument()
+    expect(getLatestLayoutProps().backLabel).toBe('Back to cakes by post')
   })
 
   it('uses fallback key points when short description does not provide enough items', () => {
@@ -393,4 +493,3 @@ describe('GiftHamperPageClient', () => {
     })
   })
 })
-

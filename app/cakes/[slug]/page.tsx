@@ -6,6 +6,7 @@ import { CakePageClient } from "./CakePageClient";
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
+import { resolveCakeBasePrice } from "@/lib/utils/cake-base-price";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { resolveCakeDeliveryContent } from "./delivery-content";
@@ -77,6 +78,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: "The requested cake could not be found.",
     };
   }
+  const cakeBasePrice = resolveCakeBasePrice({
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    pricing: cake.pricing
+  })
 
   // Special optimization for honey cake "buy honey cake online" keyword
   const isHoneyCake = slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
@@ -164,12 +169,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       google: "your-google-verification-code",
     },
     other: {
-      price: (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
+      price: cakeBasePrice.toString(),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
-      "og:price:amount": (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
+      "og:price:amount": cakeBasePrice.toString(),
       "og:price:currency": "GBP",
     },
   };
@@ -191,12 +196,16 @@ export default async function CakePage({ params, searchParams }: PageProps) {
     permanentRedirect(redirectPath)
   }
 
-  const cake = await getCakeBySlug(slug);
+  const cake = await getCakeBySlug(slug)
   const backHref = '/cakes'
 
   if (!cake) {
     notFound();
   }
+  const cakeBasePrice = resolveCakeBasePrice({
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    pricing: cake.pricing
+  })
 
   const resolvedDeliveryContent = resolveCakeDeliveryContent(cake)
   const shouldEmitShippingDetails = resolvedDeliveryContent.shouldEmitShippingDetails
@@ -277,7 +286,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
             offers: {
               "@type": "Offer",
               "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#offer`,
-              price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
+              price: formatStructuredDataPrice(cakeBasePrice, 0),
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
               condition: "https://schema.org/NewCondition",
@@ -293,7 +302,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
               eligibleTransactionVolume: {
                 "@type": "PriceSpecification",
-                price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
+                price: formatStructuredDataPrice(cakeBasePrice, 0),
                 priceCurrency: "GBP",
                 valueAddedTaxIncluded: true,
               },
@@ -350,7 +359,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
                     category: "Ukrainian Honey Cake",
                     offers: {
                       "@type": "Offer",
-                      price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+                      price: formatStructuredDataPrice(cakeBasePrice, 0),
                       priceCurrency: "GBP",
                       availability: "https://schema.org/InStock",
                       priceValidUntil: getPriceValidUntil(30),
@@ -385,3 +394,6 @@ export default async function CakePage({ params, searchParams }: PageProps) {
     </>
   );
 }
+
+
+

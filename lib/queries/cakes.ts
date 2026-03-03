@@ -36,7 +36,26 @@ export const CAKE_BY_SLUG_QUERY = groq`
     shortDescription,
     size,
     pricing,
+    newDesignPricingByServings,
     order,
+    fillingTypes[]->{
+      _id,
+      name,
+      image {
+        _type,
+        alt,
+        asset
+      }
+    },
+    defaultFillingType->{
+      _id,
+      name,
+      image {
+        _type,
+        alt,
+        asset
+      }
+    },
     deliverySection {
       descriptionSource,
       customDescription,

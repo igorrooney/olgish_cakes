@@ -26,6 +26,25 @@ export interface CakePricing {
   individual: number;
 }
 
+export interface CakeFillingType {
+  _id: string
+  name: string
+  image?: CakeImage
+}
+
+export interface CakePricingByServings {
+  servings2To4?: number
+  servings4To8?: number
+  servings8To12?: number
+  servings12To20?: number
+  servings20Plus?: number
+  servings2To4IsDefault?: boolean
+  servings4To8IsDefault?: boolean
+  servings8To12IsDefault?: boolean
+  servings12To20IsDefault?: boolean
+  servings20PlusIsDefault?: boolean
+}
+
 export interface CakeSEO {
   metaTitle?: string;
   metaDescription?: string;
@@ -105,6 +124,9 @@ export interface Cake {
   bestsellerStoryDetails?: string; // Who the cake was made for, occasion, etc.
   size: string;
   pricing: CakePricing;
+  newDesignPricingByServings?: CakePricingByServings
+  fillingTypes?: CakeFillingType[]
+  defaultFillingType?: CakeFillingType
   mainImage?: {
     _type: string;
     asset?: {

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { EmailIcon } from "../icons/EmailIcon";
 import { PhoneIcon } from "../icons/PhoneIcon";
 import { AddressIcon } from "../icons/AddressIcon";
-import { OCCASION_OPTIONS } from "./formOptions";
+import { OCCASION_OPTIONS, type OccasionOption } from "./formOptions";
 import { useCustomCakeEnquiry } from "@/app/hooks/useCustomCakeEnquiry";
 import { buildCustomCakeEnquiryFormData, isSubmissionError } from "@/app/services/customCakeEnquiry";
 import { ValidatorInput } from "./ValidatorInput";
@@ -31,7 +31,13 @@ const formInitialState: FormValues = {
   requirements: "",
 };
 
-export function EnquiryForm() {
+interface EnquiryFormProps {
+  occasionOptions?: OccasionOption[];
+}
+
+export function EnquiryForm({
+  occasionOptions = OCCASION_OPTIONS,
+}: EnquiryFormProps) {
   const [formData, setFormData] = useState<FormValues>(formInitialState);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const referenceImageInputRef = useRef<HTMLInputElement | null>(null);
@@ -263,7 +269,7 @@ export function EnquiryForm() {
             value={formData.occasion ?? ""}
             label="What's the occasion?"
             labelAlt="(Optional)"
-            options={OCCASION_OPTIONS}
+            options={occasionOptions}
             hintText="Select an occasion"
             onValueChange={(value) => {
               updateField("occasion", value);
@@ -327,7 +333,7 @@ export function EnquiryForm() {
           )}
           <button
             type="submit"
-            className={`btn h-8 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}
+            className={`btn h-12 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}
             disabled={isSubmitting || isCsrfLoading}
             aria-busy={isSubmitting}
           >
@@ -361,3 +367,5 @@ export function EnquiryForm() {
     </section>
   );
 }
+
+

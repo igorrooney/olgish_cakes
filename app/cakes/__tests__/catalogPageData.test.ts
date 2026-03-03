@@ -177,6 +177,61 @@ describe('catalogPageData gift-hamper fallbacks', () => {
     expect(mockHeight).toHaveBeenCalledWith(900)
   })
 
+  it('maps Kyiv-style custom cake price to 2-4 servings default when provided', async () => {
+    mockedGetAllCakes.mockResolvedValue([
+      {
+        ...sampleCake,
+        pricing: {
+          standard: 34,
+          individual: 45
+        },
+        newDesignPricingByServings: {
+          servings2To4: 20,
+          servings4To8: 34,
+          servings8To12: 48,
+          servings2To4IsDefault: true
+        }
+      }
+    ])
+    const data = await getCatalogPageData('cakes')
+    expect(data.cakesForUi).toHaveLength(1)
+    expect(data.cakesForUi[0]?.price).toBe(20)
+  })
+  it('maps custom cake price to minimum serving when no default flag is provided', async () => {
+    mockedGetAllCakes.mockResolvedValue([
+      {
+        ...sampleCake,
+        pricing: {
+          standard: 25,
+          individual: 35
+        },
+        newDesignPricingByServings: {
+          servings2To4: 25,
+          servings4To8: 40,
+          servings8To12: 55
+        }
+      }
+    ])
+    const data = await getCatalogPageData('cakes')
+    expect(data.cakesForUi).toHaveLength(1)
+    expect(data.cakesForUi[0]?.price).toBe(25)
+  })
+  it('falls back to legacy standard price when servings pricing is unavailable', async () => {
+    mockedGetAllCakes.mockResolvedValue([
+      {
+        ...sampleCake,
+        pricing: {
+          standard: 31,
+          individual: 41
+        },
+        newDesignPricingByServings: undefined
+      }
+    ])
+    const data = await getCatalogPageData('cakes')
+    expect(data.cakesForUi).toHaveLength(1)
+    expect(data.cakesForUi[0]?.price).toBe(31)
+  })
+
   it('requests 900x900 transformed image URLs for mapped gift hampers', async () => {
     mockedGetAllGiftHampers.mockResolvedValue([sampleGiftHamper])
 
@@ -192,3 +247,4 @@ describe('catalogPageData gift-hamper fallbacks', () => {
     expect(mockHeight).toHaveBeenCalledWith(900)
   })
 })
+

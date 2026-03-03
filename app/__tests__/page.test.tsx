@@ -35,6 +35,9 @@ interface MUIComponentProps {
   [key: string]: unknown
 }
 
+let capturedOccasionsProps: Record<string, unknown> | null = null
+let capturedEnquiryFormProps: Record<string, unknown> | null = null
+
 // Mock fetch for CSRF token
 global.fetch = jest.fn(() =>
   Promise.resolve({
@@ -56,6 +59,10 @@ jest.mock('../utils/fetchTestimonials', () => ({
   getFeaturedTestimonials: jest.fn(() => Promise.resolve([])),
   getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 })),
   getAllTestimonials: jest.fn(() => Promise.resolve([]))
+}))
+
+jest.mock('../utils/fetchCollections', () => ({
+  getHomepageCollections: jest.fn(() => Promise.resolve([]))
 }))
 
 jest.mock('../utils/fetchMarketSchedule', () => ({
@@ -96,9 +103,15 @@ jest.mock('../components/homepage', () => ({
     return <div data-testid="mobile-markets">Mobile Markets</div>
   },
   Reviews: () => <div data-testid="reviews">Reviews</div>,
-  Occasions: () => <div data-testid='occasions'>Occasions</div>,
+  Occasions: (props: Record<string, unknown>) => {
+    capturedOccasionsProps = props
+    return <div data-testid='occasions'>Occasions</div>
+  },
   HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
-  EnquiryForm: () => <div data-testid="enquiry-form">Enquiry Form</div>,
+  EnquiryForm: (props: Record<string, unknown>) => {
+    capturedEnquiryFormProps = props
+    return <div data-testid="enquiry-form">Enquiry Form</div>
+  },
   Instagram: () => <div data-testid="instagram">Instagram</div>
 }))
 
@@ -200,10 +213,14 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 const mockGetAllTestimonials = getAllTestimonials as jest.MockedFunction<typeof getAllTestimonials>
+const { getHomepageCollections: mockGetHomepageCollections } = jest.requireMock('../utils/fetchCollections')
 
 describe('HomePage', () => {
   beforeEach(() => {
+    capturedOccasionsProps = null
+    capturedEnquiryFormProps = null
     mockGetAllTestimonials.mockResolvedValue([])
+    mockGetHomepageCollections.mockResolvedValue([])
   })
 
   describe('Metadata Generation', () => {
@@ -247,6 +264,26 @@ describe('HomePage', () => {
       const page = await HomePage()
 
       expect(() => render(page)).not.toThrow()
+    })
+
+    it('passes fetched collections to Occasions and built occasion options to EnquiryForm', async () => {
+      mockGetHomepageCollections.mockResolvedValue([
+        { _id: 'collection-1', name: 'Wedding Cakes' }
+      ])
+
+      const page = await HomePage()
+      render(page)
+
+      expect(capturedOccasionsProps).toEqual({
+        collections: [{ _id: 'collection-1', name: 'Wedding Cakes' }]
+      })
+      expect(capturedEnquiryFormProps).toEqual({
+        occasionOptions: [
+          { label: 'Select from list', value: '', disabled: true },
+          { label: 'Wedding Cakes', value: 'Wedding Cakes' },
+          { label: 'Other', value: 'other' }
+        ]
+      })
     })
 
     it('should include structured data scripts when testimonials exist', async () => {

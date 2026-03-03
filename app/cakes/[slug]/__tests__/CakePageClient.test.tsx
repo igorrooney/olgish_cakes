@@ -4,19 +4,72 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { CakePageClient } from '../CakePageClient'
+import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
 import type { Cake } from '@/types/cake'
-import type { CatalogProductDetailSection } from '../../components/CatalogProductDetailLayout'
+import type { CatalogProductDetailImage, CatalogProductDetailSection } from '../../components/CatalogProductDetailLayout'
 
 const capturedLayoutProps: Array<Record<string, unknown>> = []
+const mockOrderIntentHandler = jest.fn()
+const mockedUseOrderFormPrefetch = useOrderFormPrefetch as jest.MockedFunction<typeof useOrderFormPrefetch>
 
-jest.mock('../OrderModal', () => ({
-  OrderModal: ({
-    open
+
+jest.mock('next/dynamic', () => {
+  return () => {
+    const React = require('react') as typeof import('react')
+    const module = require('@/app/components/homepage/ProductOrderInlineForm') as { ProductOrderInlineForm?: React.ComponentType<Record<string, unknown>>, default?: React.ComponentType<Record<string, unknown>> }
+    const ResolvedComponent = module.ProductOrderInlineForm ?? module.default ?? (() => null)
+
+    return function DynamicComponent(props: Record<string, unknown>) {
+      return <ResolvedComponent {...props} />
+    }
+  }
+})
+
+jest.mock('@/app/components/homepage/useOrderFormPrefetch', () => ({
+  useOrderFormPrefetch: jest.fn()
+}))
+
+function setMatchMedia(matches: boolean) {
+  const mutableWindow = window as Window & { matchMedia: typeof window.matchMedia }
+
+  mutableWindow.matchMedia = jest.fn().mockImplementation((query: string) => ({
+    matches,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(() => true)
+  }))
+}
+
+jest.mock('@/app/components/homepage/ProductOrderInlineForm', () => ({
+  ProductOrderInlineForm: ({
+    productType,
+    productId,
+    productName,
+    totalPrice,
+    occasionOptions,
+    requestMode
   }: {
-    open: boolean
+    productType: string
+    productId: string
+    productName: string
+    totalPrice: number
+    occasionOptions?: Array<{ label: string, value?: string, disabled?: boolean }>
+    requestMode?: 'message' | 'custom-design'
   }) => (
-    <div data-testid='order-modal' data-open={open ? 'true' : 'false'}>
-      Order modal
+    <div
+      data-testid='inline-order-form'
+      data-product-type={productType}
+      data-product-id={productId}
+      data-product-name={productName}
+      data-total-price={String(totalPrice)}
+      data-occasion-options={JSON.stringify(occasionOptions ?? [])}
+      data-request-mode={requestMode ?? 'message'}
+    >
+      Inline order form
     </div>
   )
 }))
@@ -42,16 +95,27 @@ jest.mock('../../components/CatalogProductDetailLayout', () => ({
         <button type='button' onClick={props.onCtaClick as () => void}>
           Trigger add to cart
         </button>
+        {typeof props.onBackToProduct === 'function' ? (
+          <button type='button' onClick={props.onBackToProduct as () => void}>
+            Trigger back to product
+          </button>
+        ) : null}
+        {props.galleryBelowContent ? (
+          <div data-testid='layout-gallery-below-content'>
+            {props.galleryBelowContent as React.ReactNode}
+          </div>
+        ) : null}
+        {props.orderContent as React.ReactNode}
       </div>
     )
   }
 }))
 
 jest.mock('@/sanity/lib/image', () => ({
-  urlFor: () => ({
+  urlFor: (image?: { asset?: { _ref?: string } }) => ({
     width: () => ({
       height: () => ({
-        url: () => 'https://cdn.sanity.io/images/test/cake-image.jpg'
+        url: () => `https://cdn.sanity.io/images/test/${image?.asset?._ref ?? 'cake-image'}.jpg`
       })
     })
   })
@@ -111,9 +175,70 @@ const baseCake: Cake = {
   allergens: ['Gluten']
 }
 
+function createCakeWithOrderOptions(overrides: Partial<Cake> = {}): Cake {
+  return {
+    ...baseCake,
+    fillingTypes: [
+      {
+        _id: 'filling-cherry',
+        name: 'Cherry',
+        image: {
+          _type: 'image',
+          asset: {
+            _ref: 'image-filling-cherry',
+            _type: 'reference'
+          },
+          alt: 'Cherry filling slice'
+        }
+      },
+      {
+        _id: 'filling-chocolate',
+        name: 'Chocolate',
+        image: {
+          _type: 'image',
+          asset: {
+            _ref: 'image-filling-chocolate',
+            _type: 'reference'
+          },
+          alt: 'Chocolate filling slice'
+        }
+      }
+    ],
+    defaultFillingType: {
+      _id: 'filling-cherry',
+      name: 'Cherry',
+      image: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-filling-cherry',
+          _type: 'reference'
+        },
+        alt: 'Cherry filling slice'
+      }
+    },
+    newDesignPricingByServings: {
+      servings2To4: 30,
+      servings4To8: 45,
+      servings8To12: 60,
+      servings12To20: 75,
+      servings20Plus: 90,
+      servings2To4IsDefault: false,
+      servings4To8IsDefault: true,
+      servings8To12IsDefault: false,
+      servings12To20IsDefault: false,
+      servings20PlusIsDefault: false
+    },
+    ...overrides
+  }
+}
+
 describe('CakePageClient', () => {
   beforeEach(() => {
     capturedLayoutProps.length = 0
+    mockOrderIntentHandler.mockReset()
+    mockedUseOrderFormPrefetch.mockReset()
+    mockedUseOrderFormPrefetch.mockReturnValue(mockOrderIntentHandler)
+    setMatchMedia(false)
   })
 
   function getLatestSections() {
@@ -132,6 +257,10 @@ describe('CakePageClient', () => {
     }
 
     return latestProps
+  }
+
+  function getLatestLayoutImages() {
+    return getLatestLayoutProps().images as CatalogProductDetailImage[]
   }
 
   function getDeliverySection() {
@@ -155,7 +284,7 @@ describe('CakePageClient', () => {
     expect(getLatestLayoutProps().backLabel).toBe('Back to all cakes')
   })
 
-  it('opens the existing order modal when Add to cart is triggered', () => {
+  it('configures order-form prefetch with cake occasion options enabled', () => {
     render(
       <CakePageClient
         cake={baseCake}
@@ -163,9 +292,616 @@ describe('CakePageClient', () => {
       />
     )
 
-    expect(screen.getByTestId('order-modal')).toHaveAttribute('data-open', 'false')
+    expect(mockedUseOrderFormPrefetch).toHaveBeenCalledWith({ prefetchOccasionOptions: true })
+    expect(getLatestLayoutProps().onCtaIntent).toBe(mockOrderIntentHandler)
+  })
+  it('reveals inline order form when Add to cart is triggered', () => {
+    render(
+      <CakePageClient
+        cake={baseCake}
+        backHref='/cakes'
+      />
+    )
+
+    expect(screen.queryByTestId('inline-order-form')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
-    expect(screen.getByTestId('order-modal')).toHaveAttribute('data-open', 'true')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-type', 'cake')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-id', 'honey-cake')
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute('data-product-name', 'Honey Cake')
+  })
+
+  it('passes requestMode to inline order form based on custom design toggle', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    const inlineOrderForm = screen.getByTestId('inline-order-form')
+    const customDesignButton = screen.getByLabelText('Custom design')
+
+    expect(inlineOrderForm).toHaveAttribute('data-request-mode', 'message')
+
+    fireEvent.click(customDesignButton)
+    expect(inlineOrderForm).toHaveAttribute('data-request-mode', 'custom-design')
+
+    fireEvent.click(customDesignButton)
+    expect(inlineOrderForm).toHaveAttribute('data-request-mode', 'message')
+  })
+
+  it('does not pass explicit occasion options to inline order form', () => {
+    render(
+      <CakePageClient
+        cake={baseCake}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByTestId('inline-order-form')).toHaveAttribute(
+      'data-occasion-options',
+      JSON.stringify([])
+    )
+  })
+
+  it('uses centered primary-50 styling for filling and servings selects and custom design button', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    const fillingTypeSelect = screen.getByLabelText('Filling type')
+    const servingsSelect = screen.getByLabelText('Servings')
+    const customDesignButton = screen.getByLabelText('Custom design')
+
+    expect(fillingTypeSelect).toHaveClass('bg-primary-50')
+    expect(servingsSelect).toHaveClass('bg-primary-50')
+    expect(customDesignButton).toHaveClass('bg-primary-50')
+    expect(fillingTypeSelect).toHaveClass('tablet:h-12')
+    expect(fillingTypeSelect).toHaveClass('tablet:min-h-12')
+    expect(servingsSelect).toHaveClass('tablet:h-12')
+    expect(servingsSelect).toHaveClass('tablet:min-h-12')
+    expect(fillingTypeSelect).toHaveClass('text-center')
+    expect(servingsSelect).toHaveClass('text-center')
+    expect(customDesignButton).toHaveClass('text-center')
+    expect(fillingTypeSelect).toHaveClass('justify-center')
+    expect(servingsSelect).toHaveClass('justify-center')
+    expect(customDesignButton).toHaveClass('justify-center')
+    expect(fillingTypeSelect).toHaveStyle('text-align-last: center')
+    expect(servingsSelect).toHaveStyle('text-align-last: center')
+    expect(fillingTypeSelect).toHaveStyle('justify-content: center')
+    expect(servingsSelect).toHaveStyle('justify-content: center')
+    expect(fillingTypeSelect).not.toHaveClass('bg-base-200')
+    expect(servingsSelect).not.toHaveClass('bg-base-200')
+    expect(customDesignButton).not.toHaveClass('bg-base-200')
+    expect(customDesignButton).toHaveAttribute('aria-pressed', 'false')
+
+    Array.from(fillingTypeSelect.querySelectorAll('option')).forEach((option) => {
+      expect(option).toHaveClass('text-center')
+      expect(option).toHaveClass('justify-center')
+      expect(option).toHaveStyle('text-align: center')
+      expect(option).toHaveStyle('justify-content: center')
+    })
+
+    Array.from(servingsSelect.querySelectorAll('option')).forEach((option) => {
+      expect(option).toHaveClass('text-center')
+      expect(option).toHaveClass('justify-center')
+      expect(option).toHaveStyle('text-align: center')
+      expect(option).toHaveStyle('justify-content: center')
+    })
+  })
+
+  it('does not render filling preview below gallery when order form is closed', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    expect(screen.queryByTestId('layout-gallery-below-content')).not.toBeInTheDocument()
+  })
+
+  it('renders default filling preview below gallery when order form opens', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByTestId('layout-gallery-below-content')).toBeInTheDocument()
+    expect(screen.getByAltText('Cherry filling slice')).toBeInTheDocument()
+
+    const layoutImages = getLatestLayoutImages()
+    expect(layoutImages.some((image) => image.alt === 'Cherry filling slice')).toBe(false)
+  })
+
+  it('injects selected filling image as second gallery slide on mobile when order form opens', () => {
+    setMatchMedia(true)
+
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    const layoutImages = getLatestLayoutImages()
+    expect(layoutImages[1]?.alt).toBe('Cherry filling slice')
+    expect(screen.queryByTestId('layout-gallery-below-content')).not.toBeInTheDocument()
+  })
+
+  it('does not request carousel focus on mobile until filling changes', () => {
+    setMatchMedia(true)
+
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(getLatestLayoutProps().requestedActiveImageIndex).toBeUndefined()
+    expect(getLatestLayoutProps().requestedActiveImageKey).toBeUndefined()
+  })
+
+  it('requests carousel focus to second slide after mobile filling change', () => {
+    setMatchMedia(true)
+
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-chocolate' } })
+
+    expect(getLatestLayoutProps().requestedActiveImageIndex).toBe(1)
+    expect(getLatestLayoutProps().requestedActiveImageKey).toBe('filling-change-1')
+
+    const layoutImages = getLatestLayoutImages()
+    expect(layoutImages[1]?.alt).toBe('Chocolate filling slice')
+  })
+
+  it('clears mobile carousel focus request when selected filling has no image', () => {
+    setMatchMedia(true)
+
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          fillingTypes: [
+            {
+              _id: 'filling-cherry',
+              name: 'Cherry',
+              image: {
+                _type: 'image',
+                asset: {
+                  _ref: 'image-filling-cherry',
+                  _type: 'reference'
+                },
+                alt: 'Cherry filling slice'
+              }
+            },
+            {
+              _id: 'filling-no-image',
+              name: 'No image filling'
+            }
+          ],
+          defaultFillingType: {
+            _id: 'filling-cherry',
+            name: 'Cherry'
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-no-image' } })
+
+    expect(getLatestLayoutProps().requestedActiveImageIndex).toBeUndefined()
+    expect(getLatestLayoutProps().requestedActiveImageKey).toBeUndefined()
+  })
+
+  it('updates filling preview when filling selection changes', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(screen.getByAltText('Cherry filling slice')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-chocolate' } })
+
+    expect(screen.queryByAltText('Cherry filling slice')).not.toBeInTheDocument()
+    expect(screen.getByAltText('Chocolate filling slice')).toBeInTheDocument()
+  })
+
+  it('hides filling preview when selected filling has no image', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          fillingTypes: [
+            {
+              _id: 'filling-cherry',
+              name: 'Cherry',
+              image: {
+                _type: 'image',
+                asset: {
+                  _ref: 'image-filling-cherry',
+                  _type: 'reference'
+                },
+                alt: 'Cherry filling slice'
+              }
+            },
+            {
+              _id: 'filling-no-image',
+              name: 'No image filling'
+            }
+          ],
+          defaultFillingType: {
+            _id: 'filling-cherry',
+            name: 'Cherry'
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(screen.getByTestId('layout-gallery-below-content')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-no-image' } })
+
+    expect(screen.queryByTestId('layout-gallery-below-content')).not.toBeInTheDocument()
+  })
+
+  it('switches back label to "Back to product" when the inline order form is open', () => {
+    render(
+      <CakePageClient
+        cake={baseCake}
+        backHref='/cakes'
+      />
+    )
+
+    expect(getLatestLayoutProps().backLabel).toBe('Back to all cakes')
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(getLatestLayoutProps().backLabel).toBe('Back to product')
+    expect(screen.getByTestId('layout-back-link')).toHaveTextContent('Back to product')
+  })
+
+  it('resets filling preview back to default after back to product', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-chocolate' } })
+    expect(screen.getByAltText('Chocolate filling slice')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger back to product' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByAltText('Cherry filling slice')).toBeInTheDocument()
+    expect(screen.queryByAltText('Chocolate filling slice')).not.toBeInTheDocument()
+  })
+
+  it('uses live selected price text in open state and updates as options change', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A330')
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A330')
+
+    fireEvent.change(screen.getByLabelText('Servings'), { target: { value: 'servings8To12' } })
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A360')
+
+    const customDesignButton = screen.getByLabelText('Custom design')
+    fireEvent.click(customDesignButton)
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A374')
+
+    fireEvent.click(customDesignButton)
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A360')
+  })
+
+  it('closes open state via back action and resets cake options to defaults', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions()}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-chocolate' } })
+    fireEvent.change(screen.getByLabelText('Servings'), { target: { value: 'servings8To12' } })
+    fireEvent.click(screen.getByLabelText('Custom design'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger back to product' }))
+
+    expect(screen.queryByTestId('inline-order-form')).not.toBeInTheDocument()
+    expect(getLatestLayoutProps().backLabel).toBe('Back to all cakes')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Filling type')).toHaveValue('filling-cherry')
+    expect(screen.getByLabelText('Servings')).toHaveValue('servings2To4')
+    const resetCustomDesignButton = screen.getByLabelText('Custom design')
+    expect(resetCustomDesignButton).toHaveAttribute('aria-pressed', 'false')
+    expect(resetCustomDesignButton).toHaveTextContent('Add a custom design? + \u00A314')
+  })
+
+  it('uses explicitly selected default filling type when available', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          defaultFillingType: {
+            _id: 'filling-chocolate',
+            name: 'Chocolate'
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Filling type')).toHaveValue('filling-chocolate')
+  })
+
+  it('falls back to first filling type when default filling is missing', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          defaultFillingType: undefined
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Filling type')).toHaveValue('filling-cherry')
+  })
+
+  it('falls back to first filling type when default filling is not selected', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          defaultFillingType: {
+            _id: 'filling-lemon',
+            name: 'Lemon'
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Filling type')).toHaveValue('filling-cherry')
+  })
+
+  it('restores explicit default filling type after back to product reset', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          defaultFillingType: {
+            _id: 'filling-chocolate',
+            name: 'Chocolate'
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    fireEvent.change(screen.getByLabelText('Filling type'), { target: { value: 'filling-cherry' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger back to product' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Filling type')).toHaveValue('filling-chocolate')
+  })
+
+  it('uses minimum-priced serving even when a non-min tier is flagged default', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          newDesignPricingByServings: {
+            servings2To4: 30,
+            servings4To8: 45,
+            servings8To12: 60,
+            servings12To20: 75,
+            servings20Plus: 90,
+            servings2To4IsDefault: false,
+            servings4To8IsDefault: false,
+            servings8To12IsDefault: true,
+            servings12To20IsDefault: false,
+            servings20PlusIsDefault: false
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A330')
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Servings')).toHaveValue('servings2To4')
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A330')
+  })
+
+  it('falls back to minimum legacy price when servings pricing is unavailable', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          pricing: {
+            standard: 33,
+            individual: 31
+          },
+          newDesignPricingByServings: undefined
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A331')
+  })
+
+  it('falls back to minimum serving when default flags are missing', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          newDesignPricingByServings: {
+            servings2To4: 30,
+            servings4To8: 45,
+            servings8To12: 60,
+            servings12To20: 75,
+            servings20Plus: 90
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Servings')).toHaveValue('servings2To4')
+  })
+
+  it('falls back to first minimum serving when multiple defaults are set', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          newDesignPricingByServings: {
+            servings2To4: 30,
+            servings4To8: 45,
+            servings8To12: 60,
+            servings12To20: 75,
+            servings20Plus: 90,
+            servings2To4IsDefault: true,
+            servings4To8IsDefault: false,
+            servings8To12IsDefault: true,
+            servings12To20IsDefault: false,
+            servings20PlusIsDefault: false
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Servings')).toHaveValue('servings2To4')
+  })
+
+  it('falls back to first available minimum serving when 4-8 price is unavailable', () => {
+    const pricingWithoutCanonicalServing = {
+      ...createCakeWithOrderOptions().newDesignPricingByServings
+    } as Record<string, unknown>
+
+    delete pricingWithoutCanonicalServing.servings4To8
+
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          newDesignPricingByServings: pricingWithoutCanonicalServing as Cake['newDesignPricingByServings']
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    expect(screen.getByLabelText('Servings')).toHaveValue('servings2To4')
+    expect(getLatestLayoutProps().priceText).toBe('from \u00A330')
+  })
+
+  it('shows only priced servings in dropdown and keeps existing labels unchanged', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          newDesignPricingByServings: {
+            servings4To8: 45,
+            servings20Plus: 90,
+            servings2To4IsDefault: true,
+            servings4To8IsDefault: false,
+            servings8To12IsDefault: false,
+            servings12To20IsDefault: false,
+            servings20PlusIsDefault: false
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+
+    const servingsSelect = screen.getByLabelText('Servings') as HTMLSelectElement
+    const servingOptions = Array.from(servingsSelect.querySelectorAll('option')).map((option) => ({
+      value: option.value,
+      label: option.textContent ?? ''
+    }))
+
+    expect(servingsSelect).toHaveValue('servings4To8')
+    expect(servingOptions).toEqual([
+      { value: 'servings4To8', label: 'Serves 4-8 people' },
+      { value: 'servings20Plus', label: 'Serves 20+ people' }
+    ])
+    servingOptions.forEach((servingOption) => {
+      expect(/\u00A3/.test(servingOption.label)).toBe(false)
+    })
+  })
+
+  it('renders fixed custom design surcharge text and toggles active state text', () => {
+    render(
+      <CakePageClient
+        cake={createCakeWithOrderOptions({
+          pricing: {
+            standard: 29,
+            individual: 99
+          }
+        })}
+        backHref='/cakes'
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
+    const customDesignButton = screen.getByLabelText('Custom design')
+    expect(customDesignButton).toHaveTextContent('Add a custom design? + \u00A314')
+    expect(customDesignButton).toHaveAttribute('aria-pressed', 'false')
+
+    fireEvent.click(customDesignButton)
+    expect(customDesignButton).toHaveTextContent('Custom design added + \u00A314')
+    expect(customDesignButton).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('uses fallback key points when short description does not provide enough items', () => {
@@ -350,4 +1086,3 @@ describe('CakePageClient', () => {
     expect(deliveryContent.props.value).toEqual(customDeliveryDescription)
   })
 })
-

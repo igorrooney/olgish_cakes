@@ -125,7 +125,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
                     📊 Earnings
                   </Link>
                   <Link
-                    href="/test-emails"
+                    href="/admin/email-test"
                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >
                     📧 Test Emails

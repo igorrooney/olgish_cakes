@@ -66,10 +66,13 @@
     "validate:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
     "validate:schemas:real": "node --import tsx/esm scripts/validate-schemas.ts --real",
     "test:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
-    "test": "jest --projects jest.config.cjs jest.config.node.cjs",
-    "test:watch": "jest --projects jest.config.cjs jest.config.node.cjs --watch",
-    "test:coverage": "jest --projects jest.config.cjs jest.config.node.cjs --coverage",
-    "test:ci": "jest --projects jest.config.cjs jest.config.node.cjs --coverage --ci --maxWorkers=2 --bail"
+    "test": "jest --config jest.config.cjs",
+    "test:watch": "jest --config jest.config.cjs --watch",
+    "test:coverage": "jest --config jest.config.cjs --coverage",
+    "test:ci": "jest --config jest.config.cjs --coverage --ci --maxWorkers=2 --bail",
+    "test:web": "jest --config jest.config.web.cjs",
+    "test:api": "jest --config jest.config.node.cjs",
+    "test:file": "jest --config jest.config.cjs --runTestsByPath"
   },
   "engines": {
     "node": ">=20.9.0",

@@ -129,4 +129,14 @@ describe('Occasions', () => {
     expect(collection7Card).toHaveClass('hidden')
     expect(screen.getByRole('button', { name: '+ many more!' })).toBeInTheDocument()
   })
+
+  it('uses provided collections prop without fetching homepage collections', async () => {
+    const providedCollections: HomepageCollection[] = [baseCollection]
+
+    const element = await Occasions({ collections: providedCollections })
+    render(element)
+
+    expect(mockGetHomepageCollections).not.toHaveBeenCalled()
+    expect(screen.getByText('Kids Birthdays')).toBeInTheDocument()
+  })
 })

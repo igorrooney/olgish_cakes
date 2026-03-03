@@ -16,6 +16,10 @@ const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (m
 // Matches mobile catalog grid geometry: max-w-[952px], px-4, grid-cols-2 gap-4.
 const mobileGridImageSizes = '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)'
 
+function formatPrice(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2)
+}
+
 export function CakesProductCard({
   cake,
   variant = 'desktop',
@@ -83,9 +87,9 @@ export function CakesProductCard({
               className='absolute right-3 top-3 h-6 inline-flex items-center justify-center rounded-[8px] bg-primary-50 px-3 py-0 [font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-semibold)] not-italic text-[16px] [leading-trim:none] [line-height:var(--d-lineHeight-14)] tracking-[0] text-center align-middle text-primary-500 shadow-sm'
             >
               {isByPostCake ? (
-                <>&pound;{cake.price}</>
+                <>&pound;{formatPrice(cake.price)}</>
               ) : (
-                <>from &pound;{cake.price}</>
+                <>from &pound;{formatPrice(cake.price)}</>
               )}
             </p>
           </div>
@@ -126,9 +130,9 @@ export function CakesProductCard({
           </p>
           <p className='mt-auto text-[20px] font-semibold leading-7 text-base-content'>
             {isByPostCake ? (
-              <>&pound;{cake.price}</>
+              <>&pound;{formatPrice(cake.price)}</>
             ) : (
-              <>from &pound;{cake.price}</>
+              <>from &pound;{formatPrice(cake.price)}</>
             )}
           </p>
         </div>

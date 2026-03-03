@@ -32,7 +32,7 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: getDateInputValue(1) } })
   }
 
-  const renderWithCsrf = async () => {
+  const renderWithCsrf = async (occasionOptions?: Array<{ label: string, value?: string, disabled?: boolean }>) => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
@@ -43,7 +43,7 @@ describe('EnquiryForm', () => {
     await act(async () => {
       render(
         <QueryClientProvider client={queryClient}>
-          <EnquiryForm />
+          <EnquiryForm occasionOptions={occasionOptions} />
         </QueryClientProvider>
       )
       await Promise.resolve()
@@ -95,6 +95,24 @@ describe('EnquiryForm', () => {
     expect(screen.getByLabelText(/when do you need it/i)).toBeInTheDocument()
   })
 
+
+  it('renders Sanity-driven occasion options when provided', async () => {
+    await renderWithCsrf([
+      { label: 'Select from list', value: '', disabled: true },
+      { label: 'Wedding Cakes', value: 'Wedding Cakes' },
+      { label: 'Other', value: 'other' }
+    ])
+
+    expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
+  })
+
+  it('uses fallback occasion options when custom options are not provided', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Other' })).toBeInTheDocument()
+  })
   it('sets the minimum date to today for the date picker', async () => {
     const expectedMinDate = getDateInputValue()
 
@@ -120,10 +138,11 @@ describe('EnquiryForm', () => {
     expect(heading).toHaveClass('tablet:mx-auto')
   })
 
-  it('applies tablet height class to the submit button', async () => {
+  it('applies mobile and tablet height classes to the submit button', async () => {
     await renderWithCsrf()
 
     const submitButton = screen.getByRole('button', { name: /send enquiry/i })
+    expect(submitButton).toHaveClass('h-12')
     expect(submitButton).toHaveClass('tablet:h-12')
   })
 
@@ -469,3 +488,4 @@ describe('EnquiryForm', () => {
     })
   })
 })
+

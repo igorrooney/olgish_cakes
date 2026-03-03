@@ -1,9 +1,10 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useMemo, useState, type ReactNode } from 'react'
 import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
-import { GiftHamperOrderModal } from './GiftHamperOrderModal'
+import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
 import { urlFor } from '@/sanity/lib/image'
@@ -15,6 +16,14 @@ interface GiftHamperPageClientProps {
   backHref: string
 }
 
+const ProductOrderInlineForm = dynamic(
+  () => import('@/app/components/homepage/ProductOrderInlineForm').then((module) => module.ProductOrderInlineForm),
+  {
+    loading: () => (
+      <p className='text-sm text-base-content/70'>Loading order form...</p>
+    )
+  }
+)
 function formatPrice(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2)
 }
@@ -226,7 +235,9 @@ export function GiftHamperPageClient({
   hamper,
   backHref
 }: GiftHamperPageClientProps) {
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const [isOrderFormVisible, setIsOrderFormVisible] = useState(false)
+  const handleOrderIntent = useOrderFormPrefetch({ prefetchOccasionOptions: false })
+  const backLabel = isOrderFormVisible ? 'Back to product' : 'Back to cakes by post'
   const galleryImages = useMemo(() => {
     return mapHamperImagesToGallery(hamper)
   }, [hamper])
@@ -280,25 +291,43 @@ export function GiftHamperPageClient({
     ]
   }, [hamper, resolvedDeliveryContent])
 
+  const handleBackToProduct = () => {
+    setIsOrderFormVisible(false)
+  }
+
   return (
     <>
       <CatalogProductDetailLayout
         backHref={backHref}
-        backLabel='Back to cakes by post'
+        backLabel={backLabel}
         categoryLabel='Cakes by post'
         title={hamper.name}
         priceText={`\u00A3${formatPrice(hamper.price)}`}
         keyPoints={keyPoints}
         ctaLabel='Order now +'
-        onCtaClick={() => setIsOrderModalOpen(true)}
+        onCtaClick={() => setIsOrderFormVisible(true)}
+        onCtaIntent={handleOrderIntent}
+        isOrderFormOpen={isOrderFormVisible}
+        onBackToProduct={isOrderFormVisible ? handleBackToProduct : undefined}
+        orderContent={isOrderFormVisible ? (
+          <ProductOrderInlineForm
+            productType='gift-hamper'
+            productId={hamper.slug.current}
+            productName={hamper.name}
+            totalPrice={hamper.price}
+            orderEmailContext={{
+              designType: 'standard'
+            }}
+            showOccasionField={false}
+            contextLines={[
+              `Product: ${hamper.name}`,
+              'Product type: gift-hamper',
+              `Price: \u00A3${formatPrice(hamper.price)}`
+            ]}
+          />
+        ) : undefined}
         images={galleryImages}
         sections={sections}
-      />
-
-      <GiftHamperOrderModal
-        open={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
-        hamper={hamper}
       />
     </>
   )

@@ -29,6 +29,7 @@ describe('/api/quote', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
+    process.env.EMAIL_TRANSPORT_MODE = 'live'
     process.env.CONTACT_EMAIL_TO = 'test@example.com'
     mockSend.mockResolvedValue({ error: null })
     ;(global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) })
@@ -161,6 +162,29 @@ describe('/api/quote', () => {
       expect(response.status).toBe(500)
     })
 
+    it('should return 500 and skip order creation when transport does not accept delivery', async () => {
+      process.env.EMAIL_TRANSPORT_MODE = 'disabled'
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
+      formData.append('occasion', 'Wedding')
+      formData.append('cakeType', 'Custom')
+      formData.append('dateNeeded', '2025-12-01')
+      formData.append('budget', '£200-300')
+
+      const request = new NextRequest('http://localhost/api/quote', {
+        method: 'POST',
+        body: formData
+      })
+
+      const response = await POST(request)
+
+      expect(response.status).toBe(500)
+      expect(mockSend).not.toHaveBeenCalled()
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
     it('should return 500 when RESEND_API_KEY missing', async () => {
       delete process.env.RESEND_API_KEY
 

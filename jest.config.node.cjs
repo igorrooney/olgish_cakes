@@ -10,6 +10,7 @@ const apiTestRegex = 'app[\\\\/]api[\\\\/].*\\.(spec|test)\\.[jt]sx?$'
 
 const customJestConfig = {
   ...baseConfig,
+  displayName: 'api',
   testEnvironment: 'node',
   testRegex: [apiTestRegex]
 }

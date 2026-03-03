@@ -94,6 +94,16 @@ describe('CakesProductCard', () => {
     expect(screen.getByText(/from.*27/i)).toBeInTheDocument()
   })
 
+  it('formats custom cake decimal price with two decimal places', () => {
+    renderCard({ price: 27.5 })
+    expect(screen.getByText(/from.*27\.50/i)).toBeInTheDocument()
+  })
+  it('keeps integer custom cake price without trailing decimals', () => {
+    renderCard({ price: 27 })
+    expect(screen.getByText(/from.*27/i)).toBeInTheDocument()
+    expect(screen.queryByText(/from.*27\.00/i)).not.toBeInTheDocument()
+  })
+
   it('renders by-post cake price as fixed amount without from prefix', () => {
     renderCard({ productType: 'giftHamper', isByPost: true, isCustom: false })
     const price = screen.getByText(/27/)
@@ -343,6 +353,12 @@ describe('CakesProductCard', () => {
     expect(loadingOverlay).not.toHaveClass('animate-pulse')
     expect(image).toHaveClass('opacity-100')
     expect(image).not.toHaveClass('opacity-0')
+  })
+
+  it('formats mobile by-post cake price chip with two decimal places and no from prefix', () => {
+    renderMobileCard({ productType: 'giftHamper', isByPost: true, isCustom: false, price: 27.5 })
+    expect(screen.getByTestId('mobile-price-chip')).toHaveTextContent(/27\.50/)
+    expect(screen.getByTestId('mobile-price-chip')).not.toHaveTextContent(/from/i)
   })
 
   it('renders mobile by-post cake price chip without from prefix', () => {

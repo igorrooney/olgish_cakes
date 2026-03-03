@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 type DropdownId = 'custom-cakes' | 'learn-hub'
 
 export function SiteHeader() {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -84,6 +86,12 @@ export function SiteHeader() {
 
       setOpenDropdownId((current) => (current === dropdownId ? null : current))
     }
+
+  useEffect(() => {
+    setOpenDropdownId(null)
+    setIsMenuOpen(false)
+    lastTouchToggleRef.current = null
+  }, [pathname])
 
   // Close desktop dropdowns when clicking outside
   useEffect(() => {
@@ -545,3 +553,4 @@ export function SiteHeader() {
     </header >
   )
 }
+

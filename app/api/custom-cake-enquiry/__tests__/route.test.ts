@@ -58,6 +58,7 @@ describe('/api/custom-cake-enquiry', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
+    process.env.EMAIL_TRANSPORT_MODE = 'live'
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
     process.env.SUPABASE_URL = 'https://example.supabase.co'
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
@@ -217,6 +218,28 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSend).toHaveBeenCalledTimes(1)
   })
 
+  it('returns 500 when transport does not accept delivery', async () => {
+    (validateCsrfToken as jest.Mock).mockReturnValue(true)
+    process.env.EMAIL_TRANSPORT_MODE = 'disabled'
+
+    const formData = buildFormData({ csrfToken: 'valid-token' })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.22'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Internal server error')
+    expect(mockInsert).toHaveBeenCalled()
+    expect(mockSend).not.toHaveBeenCalled()
+  })
   it('attaches reference image when provided', async () => {
     (validateCsrfToken as jest.Mock).mockReturnValue(true)
     const file = new File(['image'], 'reference.jpg', { type: 'image/jpeg' })

@@ -420,12 +420,12 @@ describe('AdminAuthGuard', () => {
       })
     })
 
-    it('should link to /test-emails', async () => {
+    it('should link to /admin/email-test', async () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
         const emailsLink = screen.getByText('📧 Test Emails').closest('a')
-        expect(emailsLink).toHaveAttribute('href', '/test-emails')
+        expect(emailsLink).toHaveAttribute('href', '/admin/email-test')
       })
     })
 

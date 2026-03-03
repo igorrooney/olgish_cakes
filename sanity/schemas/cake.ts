@@ -1,5 +1,7 @@
 import { CakeCollectionsInput } from '../components/CakeCollectionsInput'
 import { CakeFillingTypesInput } from '../components/CakeFillingTypesInput'
+import { CakeServingsPricingInput } from '../components/CakeServingsPricingInput'
+import { validateCakeServingsPricing } from '../components/cakeServingsPricingDefaults'
 import { defaultDeliveryMethod, supportedDeliveryMethods } from '../../types/deliveryPolicy'
 
 interface ValidationContext {
@@ -7,6 +9,8 @@ interface ValidationContext {
     _id?: string
     _type?: string
     isBestseller?: boolean
+    fillingTypes?: Array<{ _ref?: string }>
+    defaultFillingType?: { _ref?: string }
   }
   getClient: (options?: { apiVersion?: string }) => {
     fetch: <T = unknown>(query: string, params?: Record<string, unknown>) => Promise<T>
@@ -62,6 +66,33 @@ const deliveryMethodOptions = supportedDeliveryMethods.map((method) => ({
   title: method === defaultDeliveryMethod ? 'Mail delivery (default)' : method,
   value: method
 }))
+function toBaseReferenceId(referenceId: string) {
+  return referenceId.startsWith('drafts.')
+    ? referenceId.slice('drafts.'.length)
+    : referenceId
+}
+
+function toReferenceIdVariants(referenceId: string) {
+  const baseReferenceId = toBaseReferenceId(referenceId)
+
+  return [baseReferenceId, `drafts.${baseReferenceId}`]
+}
+
+function getSelectedFillingTypeReferenceIds(document: ValidationContext['document']) {
+  if (!Array.isArray(document?.fillingTypes)) {
+    return []
+  }
+
+  const referenceIds = document.fillingTypes.flatMap((fillingTypeReference) => {
+    if (typeof fillingTypeReference?._ref !== 'string' || fillingTypeReference._ref.length === 0) {
+      return []
+    }
+
+    return toReferenceIdVariants(fillingTypeReference._ref)
+  })
+
+  return Array.from(new Set(referenceIds))
+}
 
 function extractDeliveryContextSegments(text: string) {
   return text
@@ -623,39 +654,81 @@ export default {
       title: "New Design Pricing by Servings",
       type: "object",
       description: "New design only. Legacy pricing.standard and pricing.individual remain for current production.",
+      components: {
+        input: CakeServingsPricingInput
+      },
+      initialValue: {
+        servings2To4IsDefault: false,
+        servings4To8IsDefault: true,
+        servings8To12IsDefault: false,
+        servings12To20IsDefault: false,
+        servings20PlusIsDefault: false
+      },
       fields: [
         {
           name: "servings2To4",
           title: "2-4 people",
           type: "number",
-          validation: (Rule: ValidationRule) => Rule.required().min(0).precision(2),
+          validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
+        },
+        {
+          name: "servings2To4IsDefault",
+          title: "Is default",
+          type: "boolean",
+          initialValue: false
         },
         {
           name: "servings4To8",
           title: "4-8 people",
           type: "number",
-          validation: (Rule: ValidationRule) => Rule.required().min(0).precision(2),
+          validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
+        },
+        {
+          name: "servings4To8IsDefault",
+          title: "Is default",
+          type: "boolean",
+          initialValue: true
         },
         {
           name: "servings8To12",
           title: "8-12 people",
           type: "number",
-          validation: (Rule: ValidationRule) => Rule.required().min(0).precision(2),
+          validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
+        },
+        {
+          name: "servings8To12IsDefault",
+          title: "Is default",
+          type: "boolean",
+          initialValue: false
         },
         {
           name: "servings12To20",
           title: "12-20 people",
           type: "number",
-          validation: (Rule: ValidationRule) => Rule.required().min(0).precision(2),
+          validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
+        },
+        {
+          name: "servings12To20IsDefault",
+          title: "Is default",
+          type: "boolean",
+          initialValue: false
         },
         {
           name: "servings20Plus",
           title: "20+ people",
           type: "number",
-          validation: (Rule: ValidationRule) => Rule.required().min(0).precision(2),
+          validation: (Rule: ValidationRule) => Rule.min(0).precision(2),
+        },
+        {
+          name: "servings20PlusIsDefault",
+          title: "Is default",
+          type: "boolean",
+          initialValue: false
         },
       ],
-      validation: (Rule: ValidationRule) => Rule.required(),
+      validation: (Rule: ValidationRule) => Rule
+        .required()
+        .custom((value: unknown) => validateCakeServingsPricing(value)),
     },
     {
       name: "mainImage",
@@ -752,6 +825,65 @@ export default {
         Rule.required()
           .min(1)
           .error('Select at least one filling type.')
+    },
+    {
+      name: 'defaultFillingType',
+      title: 'Default Filling Type For Order Form',
+      type: 'reference',
+      description: 'Select the filling type that should be preselected in the cake order form.',
+      to: [{ type: 'cakeFillingType' }],
+      options: {
+        disableNew: true,
+        filter: ({ document }: { document?: ValidationContext['document'] }) => {
+          const selectedReferenceIds = getSelectedFillingTypeReferenceIds(document)
+
+          if (selectedReferenceIds.length === 0) {
+            return {
+              filter: '_id == $emptySelectionId',
+              params: {
+                emptySelectionId: '__no_selected_filling_types__'
+              }
+            }
+          }
+
+          return {
+            filter: '_id in $selectedReferenceIds',
+            params: {
+              selectedReferenceIds
+            }
+          }
+        }
+      },
+      validation: (Rule: ValidationRule) =>
+        Rule.required()
+          .custom((value: unknown, context: ValidationContext) => {
+            if (typeof value !== 'object' || value === null) {
+              return 'Select a default filling type for the order form.'
+            }
+
+            const maybeReferenceValue = value as { _ref?: unknown }
+            if (typeof maybeReferenceValue._ref !== 'string' || maybeReferenceValue._ref.length === 0) {
+              return 'Select a default filling type for the order form.'
+            }
+
+            const selectedFillingTypeBaseIds = new Set(
+              (context.document?.fillingTypes ?? [])
+                .map((fillingTypeReference) => {
+                  return typeof fillingTypeReference?._ref === 'string'
+                    ? toBaseReferenceId(fillingTypeReference._ref)
+                    : ''
+                })
+                .filter((referenceId) => referenceId.length > 0)
+            )
+
+            const selectedDefaultBaseId = toBaseReferenceId(maybeReferenceValue._ref)
+
+            if (!selectedFillingTypeBaseIds.has(selectedDefaultBaseId)) {
+              return 'Default filling type must be one of the selected filling types.'
+            }
+
+            return true
+          })
     },
     {
       name: 'category',

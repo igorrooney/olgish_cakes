@@ -271,6 +271,47 @@ describe('CakeDetailPage', () => {
 
       expect(metadata.keywords).toBeDefined()
     })
+
+    it('should use minimum servings price in metadata other fields when available', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 30,
+          individual: 50
+        },
+        newDesignPricingByServings: {
+          servings2To4: 30,
+          servings4To8: 45,
+          servings8To12: 60,
+          servings2To4IsDefault: false,
+          servings4To8IsDefault: false,
+          servings8To12IsDefault: true
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const metadataOther = metadata.other as Record<string, string>
+
+      expect(metadataOther.price).toBe('30')
+      expect(metadataOther['og:price:amount']).toBe('30')
+    })
+
+    it('should fallback metadata other price fields to legacy standard when servings pricing is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 31,
+          individual: 50
+        },
+        newDesignPricingByServings: undefined
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const metadataOther = metadata.other as Record<string, string>
+
+      expect(metadataOther.price).toBe('31')
+      expect(metadataOther['og:price:amount']).toBe('31')
+    })
   })
 
   describe('Page Rendering', () => {
@@ -365,6 +406,7 @@ describe('CakeDetailPage', () => {
       expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
     })
 
+
     it('redirects to clean canonical url when from param is present and preserves non-from params', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
@@ -432,6 +474,73 @@ describe('CakeDetailPage', () => {
   })
 
   describe('Structured Data - GSC Merchant Listings Compliance', () => {
+    it('should use minimum servings price across Product and Organization offers when available', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 30,
+          individual: 50
+        },
+        newDesignPricingByServings: {
+          servings2To4: 30,
+          servings4To8: 45,
+          servings8To12: 60,
+          servings2To4IsDefault: false,
+          servings4To8IsDefault: false,
+          servings8To12IsDefault: true
+        }
+      })
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Product"')
+      })
+      const organizationScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Organization"') &&
+          script.textContent?.includes('"hasOfferCatalog"')
+      })
+
+      const productJsonLd = JSON.parse(productScript?.textContent || '{}')
+      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
+      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
+
+      expect(productJsonLd.offers.price).toBe(30)
+      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(30)
+      expect(organizationOffer?.price).toBe(30)
+    })
+
+    it('should fallback structured data prices to legacy standard when servings pricing is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 34,
+          individual: 50
+        },
+        newDesignPricingByServings: undefined
+      })
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Product"')
+      })
+      const organizationScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Organization"') &&
+          script.textContent?.includes('"hasOfferCatalog"')
+      })
+
+      const productJsonLd = JSON.parse(productScript?.textContent || '{}')
+      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
+      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
+
+      expect(productJsonLd.offers.price).toBe(34)
+      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(34)
+      expect(organizationOffer?.price).toBe(34)
+    })
+
     it('should include Product structured data with required fields', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
@@ -1032,3 +1141,7 @@ describe('CakeDetailPage', () => {
     })
   })
 })
+
+
+
+

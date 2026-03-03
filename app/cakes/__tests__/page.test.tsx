@@ -687,6 +687,40 @@ describe('CakesPage', () => {
     expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes/sample-honey-cake')
   })
 
+  it('uses minimum servings base price for ItemList structured data offers', async () => {
+    mockedGetAllCakes.mockResolvedValueOnce([
+      {
+        ...sampleCake,
+        pricing: {
+          standard: 35,
+          individual: 45
+        },
+        newDesignPricingByServings: {
+          servings2To4: 35,
+          servings4To8: 49,
+          servings8To12: 62
+        }
+      }
+    ])
+    const page = await CakesPage()
+    const { container } = renderCakesPage(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
+    const itemListGraphBlock = jsonLdBlocks.find((block) => Array.isArray(block['@graph']))
+    if (!isRecord(itemListGraphBlock) || !Array.isArray(itemListGraphBlock['@graph'])) {
+      throw new Error('Expected @graph structured data block')
+    }
+    const itemListEntry = itemListGraphBlock['@graph']
+      .find((entry) => isRecord(entry) && entry['@type'] === 'ItemList')
+    if (!isRecord(itemListEntry) || !Array.isArray(itemListEntry.itemListElement)) {
+      throw new Error('Expected ItemList entry in @graph')
+    }
+    const firstListItem = itemListEntry.itemListElement[0]
+    if (!isRecord(firstListItem) || !isRecord(firstListItem.item) || !isRecord(firstListItem.item.offers)) {
+      throw new Error('Expected first list item offer data')
+    }
+    expect(firstListItem.item.offers.price).toBe(35)
+  })
+
   it('keeps ItemList structured data aligned with fallback custom cakes', async () => {
     mockedGetAllCakes.mockResolvedValueOnce([])
 
@@ -721,3 +755,4 @@ describe('CakesPage', () => {
     expect(urls.some((url) => url.includes('/gift-hampers/'))).toBe(false)
   })
 })
+

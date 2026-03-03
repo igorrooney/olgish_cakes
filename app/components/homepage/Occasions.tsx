@@ -5,6 +5,10 @@ import type { HomepageCollection } from '@/app/types/collection'
 import { urlFor } from '@/sanity/lib/image'
 import type { DisplayCollection } from './occasions.types'
 
+interface OccasionsProps {
+  collections?: HomepageCollection[]
+}
+
 const buildDisplayCollections = (collections: HomepageCollection[]): DisplayCollection[] => {
   const queryValueById = createCollectionQueryValueMap(collections, 'cake')
 
@@ -37,9 +41,9 @@ const buildDisplayCollections = (collections: HomepageCollection[]): DisplayColl
     .filter((collection): collection is DisplayCollection => collection !== null)
 }
 
-export async function Occasions() {
-  const collections = await getHomepageCollections()
-  const displayCollections = buildDisplayCollections(collections)
+export async function Occasions({ collections }: OccasionsProps = {}) {
+  const resolvedCollections = collections ?? await getHomepageCollections()
+  const displayCollections = buildDisplayCollections(resolvedCollections)
 
   if (displayCollections.length === 0) {
     return null

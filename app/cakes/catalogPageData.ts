@@ -11,6 +11,7 @@ import {
   normalizeDocumentId
 } from '../utils/collectionQueryValue'
 import type { CakesCollectionOption, CakesFeaturedOfferData, TabletCake } from './components/types'
+import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
 
 type UrlForImage = Parameters<typeof urlFor>[0]
 type RichTextBlockLike = {
@@ -219,6 +220,10 @@ function mapCakeToTabletCake(cake: Cake): TabletCake {
   const imageUrl = image ? urlFor(image.image).width(900).height(900).url() : '/images/placeholder-cake.jpg'
   const imageAlt = image?.alt?.trim() || `${cake.name} by Olgish Cakes`
   const collectionIds = (cake.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
+  const basePrice = resolveCakeBasePrice({
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    pricing: cake.pricing
+  })
 
   return {
     id: cake._id,
@@ -226,7 +231,7 @@ function mapCakeToTabletCake(cake: Cake): TabletCake {
     href: `/cakes/${cake.slug.current}`,
     name: cake.name,
     description: getDescription(cake),
-    price: cake.pricing?.standard ?? 0,
+    price: basePrice,
     imageUrl,
     imageAlt,
     isByPost: false,
