@@ -799,10 +799,6 @@ export default {
           }
         }
       ],
-      validation: (Rule: ValidationRule) =>
-        Rule.required()
-          .min(1)
-          .error('Select at least one collection.')
     },
     {
       name: 'fillingTypes',
@@ -1033,3 +1029,4 @@ export default {
     },
   },
 };
+

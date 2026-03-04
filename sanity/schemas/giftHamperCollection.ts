@@ -1,3 +1,5 @@
+import { GiftHamperCollectionProductsInput } from '../components/CollectionProductAssignmentsInput'
+
 interface ValidationContext {
   document?: {
     _id?: string
@@ -75,6 +77,24 @@ export default {
         },
       ],
     },
+    {
+      name: 'giftHampers',
+      title: 'Gift Hampers in This Collection',
+      type: 'array',
+      description: 'Select gift hampers that should belong to this collection. Changes sync to gift hamper documents immediately.',
+      components: {
+        input: GiftHamperCollectionProductsInput
+      },
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'giftHamper' }],
+          options: {
+            disableNew: true
+          }
+        }
+      ]
+    }
   ],
   preview: {
     select: {

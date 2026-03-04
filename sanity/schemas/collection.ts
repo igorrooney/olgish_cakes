@@ -1,3 +1,5 @@
+import { CollectionCakesInput } from '../components/CollectionProductAssignmentsInput'
+
 interface ValidationContext {
   document?: {
     _id?: string
@@ -74,6 +76,24 @@ export default {
           validation: (Rule: ValidationRule) => Rule.required(),
         },
       ],
+    },
+    {
+      name: 'cakes',
+      title: 'Cakes in This Collection',
+      type: 'array',
+      description: 'Select cakes that should belong to this collection. Changes sync to cake documents immediately.',
+      components: {
+        input: CollectionCakesInput
+      },
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'cake' }],
+          options: {
+            disableNew: true
+          }
+        }
+      ]
     },
     {
       name: 'seo',

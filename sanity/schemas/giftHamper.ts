@@ -439,10 +439,6 @@ export default {
           }
         }
       ],
-      validation: (Rule: ValidationRule) =>
-        Rule.required()
-          .min(1)
-          .error('Select at least one gift hamper collection.')
     },
     {
       name: 'category',
@@ -510,3 +506,4 @@ export default {
     },
   },
 };
+
