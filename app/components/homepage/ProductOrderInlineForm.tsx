@@ -479,6 +479,7 @@ export function ProductOrderInlineForm({
           label="What's the occasion?"
           labelAlt='(Optional)'
           options={resolvedOccasionOptions}
+          selectClassName='cursor-pointer'
           hintText='Select an occasion'
           onValueChange={(value) => updateField('occasion', value)}
         />
@@ -616,4 +617,3 @@ export function ProductOrderInlineForm({
     </form>
   )
 }
-

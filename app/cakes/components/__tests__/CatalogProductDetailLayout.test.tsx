@@ -216,15 +216,32 @@ describe('CatalogProductDetailLayout', () => {
     )
   })
 
-  it('applies 8px radius to the main gallery image container', () => {
+  it('applies edge-to-edge mobile classes and preserves tablet styling on main gallery image container', () => {
     renderLayout()
 
     const firstImage = screen.getByAltText('Gift hamper image 1')
     const imageWrapper = firstImage.parentElement
 
     expect(imageWrapper).not.toBeNull()
-    expect(imageWrapper).toHaveClass('rounded-[8px]')
+    expect(imageWrapper).toHaveClass(
+      '-mx-4',
+      'w-[calc(100%+2rem)]',
+      'rounded-none',
+      'tablet:mx-0',
+      'tablet:w-full',
+      'tablet:rounded-[8px]'
+    )
     expect(imageWrapper).not.toHaveClass('rounded-box')
+  })
+
+  it('uses touch lock on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    expect(imageWrapper).not.toBeNull()
+    expect(imageWrapper).toHaveClass('touch-none', 'tablet:touch-pan-y')
   })
 
   it('renders optional gallery-below content with fixed top spacing', () => {
@@ -629,11 +646,12 @@ describe('CatalogProductDetailLayout', () => {
     expect(firstDotButton).toHaveClass(
       'h-2',
       'w-2',
+      'cursor-pointer',
       'border',
       'border-[var(--color-gallery-dot-active)]',
       'bg-[var(--color-gallery-dot-active)]'
     )
-    expect(secondDotButton).toHaveClass('h-2', 'w-2', 'border', 'border-base-300', 'bg-base-100')
+    expect(secondDotButton).toHaveClass('h-2', 'w-2', 'cursor-pointer', 'border', 'border-base-300', 'bg-base-100')
     expect(firstDotButton).not.toHaveClass('h-6', 'w-6')
     expect(secondDotButton).not.toHaveClass('h-6', 'w-6')
 
@@ -651,6 +669,67 @@ describe('CatalogProductDetailLayout', () => {
 
     expect(screen.getByRole('button', { name: 'View previous image' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'View next image' })).toBeInTheDocument()
+  })
+
+  it('keeps mobile arrows hidden by default while preserving tablet visibility classes', () => {
+    renderLayout()
+
+    const previousArrow = screen.getByRole('button', { name: 'View previous image' })
+    const nextArrow = screen.getByRole('button', { name: 'View next image' })
+
+    expect(previousArrow).toHaveClass('opacity-0', 'pointer-events-none', 'tablet:opacity-80', 'tablet:pointer-events-auto')
+    expect(nextArrow).toHaveClass('opacity-0', 'pointer-events-none', 'tablet:opacity-80', 'tablet:pointer-events-auto')
+  })
+
+  it('reveals mobile arrows while gallery is focused and hides them again on blur', () => {
+    renderLayout()
+
+    const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
+    const backLink = screen.getByRole('link', { name: 'Back to results' })
+    const previousArrow = screen.getByRole('button', { name: 'View previous image' })
+    const nextArrow = screen.getByRole('button', { name: 'View next image' })
+
+    expect(previousArrow).toHaveClass('opacity-0', 'pointer-events-none')
+    expect(nextArrow).toHaveClass('opacity-0', 'pointer-events-none')
+
+    fireEvent.focus(galleryRegion)
+
+    expect(previousArrow).toHaveClass('opacity-100', 'pointer-events-auto')
+    expect(nextArrow).toHaveClass('opacity-100', 'pointer-events-auto')
+
+    fireEvent.blur(galleryRegion, { relatedTarget: backLink })
+
+    expect(previousArrow).toHaveClass('opacity-0', 'pointer-events-none')
+    expect(nextArrow).toHaveClass('opacity-0', 'pointer-events-none')
+  })
+
+  it('focuses gallery on image touch start so arrows become visible on mobile', () => {
+    renderLayout()
+
+    const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
+    const previousArrow = screen.getByRole('button', { name: 'View previous image' })
+    const nextArrow = screen.getByRole('button', { name: 'View next image' })
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    const touchPoint = createTouchPoint({
+      clientX: 220,
+      clientY: 120
+    })
+
+    fireEvent.touchStart(imageWrapper, {
+      touches: [touchPoint],
+      changedTouches: [touchPoint],
+      targetTouches: [touchPoint]
+    })
+
+    expect(galleryRegion).toHaveFocus()
+    expect(previousArrow).toHaveClass('opacity-100', 'pointer-events-auto')
+    expect(nextArrow).toHaveClass('opacity-100', 'pointer-events-auto')
   })
 
   it('hides image arrows and dots when gallery has a single image', () => {
@@ -707,7 +786,7 @@ describe('CatalogProductDetailLayout', () => {
     renderLayout()
 
     const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
-    galleryRegion.focus()
+    fireEvent.focus(galleryRegion)
     fireEvent.keyDown(galleryRegion, { key: 'ArrowRight' })
     expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
     fireEvent.keyDown(galleryRegion, { key: 'ArrowLeft' })
@@ -775,6 +854,48 @@ describe('CatalogProductDetailLayout', () => {
     })
 
     expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+  })
+
+  it('does not navigate on diagonal swipe with excessive vertical drift', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 140,
+      endY: 160
+    })
+
+    expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
+  })
+
+  it('navigates on horizontal swipe with minor vertical drift', () => {
+    renderLayout()
+
+    const firstImage = screen.getByAltText('Gift hamper image 1')
+    const imageWrapper = firstImage.parentElement
+
+    if (imageWrapper === null) {
+      throw new Error('Expected gallery image wrapper to exist')
+    }
+
+    fireGallerySwipeGesture({
+      element: imageWrapper,
+      startX: 220,
+      startY: 120,
+      endX: 130,
+      endY: 130
+    })
+
+    expect(screen.getByAltText('Gift hamper image 2')).toBeInTheDocument()
   })
 
   it('does not navigate images on vertical-dominant swipe', () => {
@@ -845,7 +966,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.getByAltText('Gift hamper image 1')).toBeInTheDocument()
   })
 
-  it('applies edge placement and opacity styles to image arrows', () => {
+  it('applies edge placement and focus-driven visibility styles to image arrows', () => {
     renderLayout()
 
     const previousArrow = screen.getByRole('button', { name: 'View previous image' })
@@ -857,7 +978,11 @@ describe('CatalogProductDetailLayout', () => {
       '-translate-y-1/2',
       'bg-base-100/90',
       'shadow-md',
-      'opacity-80',
+      'cursor-pointer',
+      'opacity-0',
+      'pointer-events-none',
+      'tablet:opacity-80',
+      'tablet:pointer-events-auto',
       'hover:opacity-100',
       'focus-visible:ring-2',
       'focus-visible:ring-primary-500',
@@ -870,7 +995,11 @@ describe('CatalogProductDetailLayout', () => {
       '-translate-y-1/2',
       'bg-base-100/90',
       'shadow-md',
-      'opacity-80',
+      'cursor-pointer',
+      'opacity-0',
+      'pointer-events-none',
+      'tablet:opacity-80',
+      'tablet:pointer-events-auto',
       'hover:opacity-100',
       'focus-visible:ring-2',
       'focus-visible:ring-primary-500',

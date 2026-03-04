@@ -192,7 +192,7 @@ export function SiteHeader() {
   }, [isMenuOpen])
 
   return (
-    <header className='sticky top-0 z-[9999] relative'>
+    <header className='relative z-[9999] tablet:sticky tablet:top-0'>
       {openDropdownId !== null && (
         <div
           data-nav-overlay
@@ -553,4 +553,3 @@ export function SiteHeader() {
     </header >
   )
 }
-

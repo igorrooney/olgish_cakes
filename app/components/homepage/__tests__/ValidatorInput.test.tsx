@@ -49,6 +49,50 @@ describe('ValidatorInput error card', () => {
     expect(alert).toHaveTextContent('Please select an occasion')
   })
 
+  it('applies custom className to select field when provided', () => {
+    render(
+      <ValidatorInput
+        fieldType='select'
+        id='occasion'
+        value=''
+        label='Occasion'
+        options={[
+          { label: 'Select from list', value: '', disabled: true },
+          { label: 'Birthday', value: 'birthday' }
+        ]}
+        selectClassName='cursor-pointer'
+        hintText='Select an occasion'
+        onValueChange={() => {}}
+      />
+    )
+
+    expect(screen.getByLabelText('Occasion')).toHaveClass('cursor-pointer')
+  })
+
+  it('applies cursor-pointer class to date input and wrapper', () => {
+    render(
+      <ValidatorInput
+        id='date'
+        type='date'
+        placeholder='Select a date'
+        value=''
+        label='When do you need it?'
+        hintText='Select a date'
+        onValueChange={() => {}}
+      />
+    )
+
+    const dateInput = screen.getByLabelText('When do you need it?')
+    expect(dateInput).toHaveClass('cursor-pointer')
+
+    const inputWrapper = dateInput.closest('label')
+    if (!inputWrapper) {
+      throw new Error('Expected date input wrapper label')
+    }
+
+    expect(inputWrapper).toHaveClass('cursor-pointer')
+  })
+
   it('renders a visible error card for textarea field', () => {
     render(
       <ValidatorInput

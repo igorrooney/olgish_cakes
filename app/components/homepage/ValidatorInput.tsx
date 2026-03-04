@@ -34,6 +34,7 @@ type ValidatorInputProps =
       label: string
       labelAlt?: string
       labelLayout?: 'between' | 'stacked'
+      selectClassName?: string
       options: SelectOption[]
       error?: string
       required?: boolean
@@ -131,6 +132,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       label,
       labelAlt,
       labelLayout: selectLabelLayout,
+      selectClassName,
       options,
       error,
       required = false,
@@ -146,6 +148,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
         ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
         : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
       : labelAltClassName
+    const resolvedSelectClassName = `select w-full bg-white text-base-content opacity-100 focus:!outline-none focus:!outline-offset-0 ${hasError ? '' : 'focus:ring-1 focus:ring-primary/30'} ${selectClassName ?? ''}`.trim()
 
     return (
       <div className='form-control w-full'>
@@ -161,7 +164,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
         </label>
         <select
           id={id}
-          className={`select w-full bg-white text-base-content opacity-100 focus:!outline-none focus:!outline-offset-0 ${hasError ? '' : 'focus:ring-1 focus:ring-primary/30'}`}
+          className={resolvedSelectClassName}
           style={tokenizedInputStyle(hasError)}
           value={value}
           required={required}
@@ -339,9 +342,11 @@ export function ValidatorInput(props: ValidatorInputProps) {
     : labelAltClassName
   const baseInputClassName =
     'flex-1 bg-transparent text-base-content opacity-100 outline-none !outline-none !outline-offset-0 focus:!outline-none focus:!outline-offset-0'
+  const isDateInput = type === 'date'
+  const dateInputClassName = isDateInput ? 'cursor-pointer' : ''
   const mergedInputClassName = inputClassName
-    ? `${baseInputClassName} ${inputClassName}`
-    : baseInputClassName
+    ? `${baseInputClassName} ${dateInputClassName} ${inputClassName}`.trim()
+    : `${baseInputClassName} ${dateInputClassName}`.trim()
   const shouldShowTrailingIcon = Boolean(trailingIcon)
   const shouldShowValidation = props.showValidation ?? true
 
@@ -360,7 +365,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
         </label>
       ) : null}
       <label
-        className={`input w-full bg-white text-base-content opacity-100 relative ${shouldShowValidation ? 'validator' : ''} ${hasError ? '' : 'focus-within:ring-1 focus-within:ring-primary/30'}`}
+        className={`input w-full bg-white text-base-content opacity-100 relative ${shouldShowValidation ? 'validator' : ''} ${hasError ? '' : 'focus-within:ring-1 focus-within:ring-primary/30'} ${isDateInput ? 'cursor-pointer' : ''}`}
         style={tokenizedInputStyle(hasError)}
       >
         {icon ? icon : null}

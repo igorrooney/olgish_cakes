@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 
 export interface CatalogProductDetailImage {
@@ -45,6 +45,8 @@ const fallbackImage: CatalogProductDetailImage = {
   alt: 'Product image placeholder'
 }
 const swipeNavigationMinDistancePx = 48
+const swipeNavigationMaxVerticalDriftPx = 24
+const swipeNavigationHorizontalDominanceRatio = 1.25
 
 const pricePrefixClass = '[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-bold)] [font-style:normal] [font-size:12px] tablet:[font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:100%] [letter-spacing:-0.02em] align-top text-primary-500'
 const tabletPriceSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
@@ -115,6 +117,8 @@ export function CatalogProductDetailLayout({
   sections
 }: CatalogProductDetailLayoutProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [isGalleryFocused, setIsGalleryFocused] = useState(false)
+  const galleryRegionRef = useRef<HTMLElement | null>(null)
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchCurrentXRef = useRef<number | null>(null)
@@ -179,11 +183,39 @@ export function CatalogProductDetailLayout({
     }
   }, [handleNextImage, handlePreviousImage, isMultiImageGallery])
 
+  const focusGalleryRegion = useCallback(() => {
+    if (!isMultiImageGallery || galleryRegionRef.current === null) {
+      return
+    }
+
+    galleryRegionRef.current.focus({ preventScroll: true })
+  }, [isMultiImageGallery])
+
+  const handleGalleryFocusCapture = useCallback(() => {
+    if (!isMultiImageGallery) {
+      return
+    }
+
+    setIsGalleryFocused(true)
+  }, [isMultiImageGallery])
+
+  const handleGalleryBlurCapture = useCallback((event: ReactFocusEvent<HTMLElement>) => {
+    const nextFocusedElement = event.relatedTarget
+
+    if (nextFocusedElement instanceof Node && event.currentTarget.contains(nextFocusedElement)) {
+      return
+    }
+
+    setIsGalleryFocused(false)
+  }, [])
+
   const handleGalleryTouchStart = useCallback((event: ReactTouchEvent<HTMLElement>) => {
     if (!isMultiImageGallery || event.touches.length !== 1) {
       resetSwipeTrackingState()
       return
     }
+
+    focusGalleryRegion()
 
     const touchPoint = event.touches[0]
     touchStartXRef.current = touchPoint.clientX
@@ -191,7 +223,7 @@ export function CatalogProductDetailLayout({
     touchCurrentXRef.current = touchPoint.clientX
     touchCurrentYRef.current = touchPoint.clientY
     isSwipeTrackingRef.current = true
-  }, [isMultiImageGallery, resetSwipeTrackingState])
+  }, [focusGalleryRegion, isMultiImageGallery, resetSwipeTrackingState])
 
   const handleGalleryTouchMove = useCallback((event: ReactTouchEvent<HTMLElement>) => {
     if (!isSwipeTrackingRef.current) {
@@ -235,12 +267,15 @@ export function CatalogProductDetailLayout({
 
     const deltaX = touchEndX - touchStartX
     const deltaY = touchEndY - touchStartY
-    const isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY)
-    const hasSufficientSwipeDistance = Math.abs(deltaX) >= swipeNavigationMinDistancePx
+    const absDeltaX = Math.abs(deltaX)
+    const absDeltaY = Math.abs(deltaY)
+    const hasSufficientSwipeDistance = absDeltaX >= swipeNavigationMinDistancePx
+    const hasAcceptableVerticalDrift = absDeltaY <= swipeNavigationMaxVerticalDriftPx
+    const isHorizontallyDominantGesture = absDeltaX >= absDeltaY * swipeNavigationHorizontalDominanceRatio
 
     resetSwipeTrackingState()
 
-    if (!isHorizontalSwipe || !hasSufficientSwipeDistance) {
+    if (!hasSufficientSwipeDistance || !hasAcceptableVerticalDrift || !isHorizontallyDominantGesture) {
       return
     }
 
@@ -276,6 +311,7 @@ export function CatalogProductDetailLayout({
       return
     }
 
+    setIsGalleryFocused(false)
     resetSwipeTrackingState()
   }, [isMultiImageGallery, resetSwipeTrackingState])
 
@@ -337,10 +373,13 @@ export function CatalogProductDetailLayout({
 
       <div className='mt-5 grid grid-cols-1 gap-8 tablet:mt-8 tablet:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] tablet:items-start tablet:gap-10'>
         <section
+          ref={galleryRegionRef}
           aria-label='Product gallery'
           role='region'
           tabIndex={isMultiImageGallery ? 0 : undefined}
           onKeyDown={handleGalleryKeyDown}
+          onFocusCapture={handleGalleryFocusCapture}
+          onBlurCapture={handleGalleryBlurCapture}
           className='focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
         >
           <span className='sr-only'>
@@ -351,8 +390,7 @@ export function CatalogProductDetailLayout({
             onTouchMove={handleGalleryTouchMove}
             onTouchEnd={handleGalleryTouchEnd}
             onTouchCancel={handleGalleryTouchCancel}
-            className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'
-            style={{ touchAction: 'pan-y' }}
+            className='relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-none overflow-hidden rounded-none bg-base-200 tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]'
           >
             <Image
               src={activeImage.src}
@@ -368,7 +406,7 @@ export function CatalogProductDetailLayout({
                   type='button'
                   onClick={handlePreviousImage}
                   aria-label='View previous image'
-                  className='touch-target absolute left-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 opacity-80 shadow-md transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100'
+                  className={`touch-target cursor-pointer absolute left-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
                 >
                   <span aria-hidden='true' className='text-[18px] leading-none'>&lsaquo;</span>
                 </button>
@@ -376,7 +414,7 @@ export function CatalogProductDetailLayout({
                   type='button'
                   onClick={handleNextImage}
                   aria-label='View next image'
-                  className='touch-target absolute right-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 opacity-80 shadow-md transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100'
+                  className={`touch-target cursor-pointer absolute right-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
                 >
                   <span aria-hidden='true' className='text-[18px] leading-none'>&rsaquo;</span>
                 </button>
@@ -396,7 +434,7 @@ export function CatalogProductDetailLayout({
                     aria-selected={isActive}
                     aria-label={`View image ${index + 1}`}
                     onClick={() => setActiveImageIndex(index)}
-                    className={`h-2 w-2 rounded-full border transition-colors ${
+                    className={`h-2 w-2 cursor-pointer rounded-full border transition-colors ${
                       isActive
                         ? 'border-[var(--color-gallery-dot-active)] bg-[var(--color-gallery-dot-active)]'
                         : 'border-base-300 bg-base-100'

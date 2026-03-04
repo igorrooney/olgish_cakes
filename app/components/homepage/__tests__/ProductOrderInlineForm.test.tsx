@@ -87,6 +87,32 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.queryByLabelText(/upload a reference image/i)).not.toBeInTheDocument()
   })
 
+  it('applies cursor-pointer class to the occasion dropdown', () => {
+    render(
+      <ProductOrderInlineForm
+        productType='cake'
+        productId='cake-slug'
+        productName='Honey Cake'
+        totalPrice={45}
+      />
+    )
+
+    expect(screen.getByLabelText(/what's the occasion\?/i)).toHaveClass('cursor-pointer')
+  })
+
+  it('applies cursor-pointer class to the date input', () => {
+    render(
+      <ProductOrderInlineForm
+        productType='cake'
+        productId='cake-slug'
+        productName='Honey Cake'
+        totalPrice={45}
+      />
+    )
+
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveClass('cursor-pointer')
+  })
+
   it('renders requirements and upload fields in custom-design mode', () => {
     render(
       <ProductOrderInlineForm
@@ -887,4 +913,3 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
   })
 })
-

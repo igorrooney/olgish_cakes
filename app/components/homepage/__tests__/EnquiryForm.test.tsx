@@ -96,6 +96,12 @@ describe('EnquiryForm', () => {
   })
 
 
+  it('applies cursor-pointer class to the date input', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveClass('cursor-pointer')
+  })
+
   it('renders Sanity-driven occasion options when provided', async () => {
     await renderWithCsrf([
       { label: 'Select from list', value: '', disabled: true },

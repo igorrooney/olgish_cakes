@@ -578,8 +578,8 @@ export function CakePageClient({
   const requestedActiveImageKey = shouldRequestFillingImageFocus
     ? `filling-change-${fillingChangeTokenCounter}`
     : undefined
-  const orderSelectClassName = 'select w-full tablet:h-12 tablet:min-h-12 rounded-full border-base-300 bg-primary-50 !ps-7 justify-center text-center text-base-content focus:!outline-none'
-  const orderCustomDesignButtonClassName = 'flex h-[32px] w-full items-center justify-center rounded-full border border-base-300 bg-primary-50 px-7 py-0 text-center text-[12px] leading-[14px] text-base-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
+  const orderSelectClassName = 'select w-full cursor-pointer tablet:h-12 tablet:min-h-12 rounded-full border-base-300 bg-primary-50 !ps-7 justify-center text-center text-base-content focus:!outline-none'
+  const orderCustomDesignButtonClassName = 'flex h-[32px] w-full cursor-pointer items-center justify-center rounded-full border border-base-300 bg-primary-50 px-7 py-0 text-center text-[12px] leading-[14px] text-base-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
   const orderCustomDesignButtonActiveClassName = 'border-[var(--d-color-status-success-bg)]'
   const orderOptionClassName = 'text-center justify-center'
   const orderSelectStyle: CSSProperties = {

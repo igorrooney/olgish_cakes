@@ -26,6 +26,19 @@ describe('SiteHeader', () => {
     expect(screen.getByAltText(/olgish cakes logo/i)).toBeInTheDocument()
   })
 
+  it('uses tablet-only sticky classes so mobile header is not sticky', () => {
+    render(<SiteHeader />)
+
+    const header = screen.getByRole('banner')
+
+    expect(header).toHaveClass('relative')
+    expect(header).toHaveClass('z-[9999]')
+    expect(header).toHaveClass('tablet:sticky')
+    expect(header).toHaveClass('tablet:top-0')
+    expect(header).not.toHaveClass('sticky')
+    expect(header).not.toHaveClass('top-0')
+  })
+
   it('opens and closes menu on button click', () => {
     render(<SiteHeader />)
 
