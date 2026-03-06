@@ -34,6 +34,8 @@ jest.mock('next/link', () => ({
   )
 }))
 
+const originalWindowImage = window.Image
+
 const sections: CatalogProductDetailSection[] = [
   {
     id: 'full-description',
@@ -118,6 +120,35 @@ const burstNavigationGalleryImages = [
     alt: 'Gift hamper image 7'
   }
 ]
+
+function mockWindowImagePreload() {
+  const preloadedSrcs: string[] = []
+  const originalImage = window.Image
+
+  class MockWindowImage {
+    onload: HTMLImageElement['onload'] = null
+    onerror: HTMLImageElement['onerror'] = null
+    private srcValue = ''
+
+    get src() {
+      return this.srcValue
+    }
+
+    set src(value: string) {
+      this.srcValue = value
+      preloadedSrcs.push(value)
+    }
+  }
+
+  window.Image = MockWindowImage as unknown as typeof window.Image
+
+  return {
+    preloadedSrcs,
+    restore() {
+      window.Image = originalImage
+    }
+  }
+}
 
 function renderLayout(
   onCtaClick = jest.fn(),
@@ -300,6 +331,11 @@ describe('CatalogProductDetailLayout', () => {
     setHistoryStateWithPreviousPathname()
     window.matchMedia = undefined as unknown as typeof window.matchMedia
     window.location.hash = ''
+    window.Image = originalWindowImage
+  })
+
+  afterEach(() => {
+    window.Image = originalWindowImage
   })
 
   it('applies the tablet and desktop container max widths', () => {
@@ -330,12 +366,12 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).not.toHaveClass('rounded-box')
   })
 
-  it('uses touch auto on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
+  it('uses touch none on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
     renderLayout()
 
     const imageWrapper = getGalleryViewport()
 
-    expect(imageWrapper).toHaveClass('touch-auto', 'tablet:touch-pan-y')
+    expect(imageWrapper).toHaveClass('touch-none', 'tablet:touch-pan-y')
   })
 
   it('renders stacked fade layers for the gallery stage', () => {
@@ -348,6 +384,66 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.getByTestId('product-gallery-active-layer')).toHaveClass('absolute', 'inset-0')
     expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
     expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
+  })
+
+  it('immediately preloads all non-active gallery images on first render', () => {
+    const { preloadedSrcs, restore } = mockWindowImagePreload()
+
+    try {
+      renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
+
+      expect(preloadedSrcs).toEqual(
+        burstNavigationGalleryImages.slice(1).map((image) => image.src)
+      )
+    } finally {
+      restore()
+    }
+  })
+
+  it('does not preload images for a single-image gallery', () => {
+    const { preloadedSrcs, restore } = mockWindowImagePreload()
+
+    try {
+      renderLayout(jest.fn(), '\u00A38.50', [galleryImages[0]])
+
+      expect(preloadedSrcs).toEqual([])
+    } finally {
+      restore()
+    }
+  })
+
+  it('does not duplicate preloads when rerendered with the same gallery image sources', () => {
+    const { preloadedSrcs, restore } = mockWindowImagePreload()
+    const rerenderedGalleryImages = galleryImages.map((image) => ({ ...image }))
+
+    try {
+      const { rerender } = renderLayout()
+
+      expect(preloadedSrcs).toEqual(['/images/hamper-2.jpg'])
+
+      rerender(
+        <CatalogProductDetailLayout
+          backHref='/cakes?sort=new&page=2'
+          categoryLabel='Cakes by post'
+          title='Christmas Gift Box & Card'
+          priceText='\u00A38.50'
+          priceSuffix='+ free shipping'
+          keyPoints={[
+            'Freshly baked and packed',
+            'Personalised charity postcard',
+            'Free UK shipping'
+          ]}
+          ctaLabel='Add to cart +'
+          onCtaClick={jest.fn()}
+          images={rerenderedGalleryImages}
+          sections={sections}
+        />
+      )
+
+      expect(preloadedSrcs).toEqual(['/images/hamper-2.jpg'])
+    } finally {
+      restore()
+    }
   })
 
   it('renders optional gallery-below content with fixed top spacing', () => {
@@ -1458,4 +1554,5 @@ describe('CatalogProductDetailLayout', () => {
     )
   })
 })
+
 

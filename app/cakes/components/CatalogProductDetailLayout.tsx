@@ -38,16 +38,6 @@ interface CatalogProductDetailLayoutProps {
   sections: CatalogProductDetailSection[]
 }
 
-interface IdleCallbackDeadline {
-  didTimeout: boolean
-  timeRemaining: () => number
-}
-
-type WindowWithIdleCallback = Omit<Window, 'requestIdleCallback' | 'cancelIdleCallback'> & {
-  requestIdleCallback?: (callback: (deadline: IdleCallbackDeadline) => void) => number
-  cancelIdleCallback?: (handle: number) => void
-}
-
 interface SplitPriceTextResult {
   prefix: string
   currencySign: string | null
@@ -170,9 +160,8 @@ export function CatalogProductDetailLayout({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const galleryRegionRef = useRef<HTMLElement | null>(null)
   const fadeCleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const preloadIdleCallbackRef = useRef<number | null>(null)
-  const preloadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
+  const activeGalleryPreloadImagesRef = useRef(new Map<string, HTMLImageElement>())
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchCurrentXRef = useRef<number | null>(null)
@@ -199,24 +188,6 @@ export function CatalogProductDetailLayout({
     if (fadeCleanupTimerRef.current !== null) {
       clearTimeout(fadeCleanupTimerRef.current)
       fadeCleanupTimerRef.current = null
-    }
-  }, [])
-
-  const clearScheduledImagePreload = useCallback(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const browserWindow = window as WindowWithIdleCallback
-
-    if (preloadIdleCallbackRef.current !== null && typeof browserWindow.cancelIdleCallback === 'function') {
-      browserWindow.cancelIdleCallback(preloadIdleCallbackRef.current)
-      preloadIdleCallbackRef.current = null
-    }
-
-    if (preloadTimeoutRef.current !== null) {
-      clearTimeout(preloadTimeoutRef.current)
-      preloadTimeoutRef.current = null
     }
   }, [])
 
@@ -401,22 +372,6 @@ export function CatalogProductDetailLayout({
     setPrefersReducedMotion(event.matches)
   })
 
-  const preloadGalleryImages = useEffectEvent(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    resolvedImages.forEach((image, index) => {
-      if (index === normalizedActiveImageIndex || preloadedGalleryImageSrcsRef.current.has(image.src)) {
-        return
-      }
-
-      preloadedGalleryImageSrcsRef.current.add(image.src)
-      const preloadImage = new window.Image()
-      preloadImage.src = image.src
-    })
-  })
-
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return
@@ -509,37 +464,42 @@ export function CatalogProductDetailLayout({
   }, [moveToImage, requestedActiveImageIndex, requestedActiveImageKey, resolvedImages.length])
 
   useEffect(() => {
-    clearScheduledImagePreload()
-
     if (typeof window === 'undefined') {
       return
     }
 
-    const browserWindow = window as WindowWithIdleCallback
+    resolvedImages.forEach((image, index) => {
+      if (index === normalizedActiveImageIndex ||
+        preloadedGalleryImageSrcsRef.current.has(image.src) ||
+        activeGalleryPreloadImagesRef.current.has(image.src)) {
+        return
+      }
 
-    if (typeof browserWindow.requestIdleCallback === 'function') {
-      preloadIdleCallbackRef.current = browserWindow.requestIdleCallback(() => {
-        preloadIdleCallbackRef.current = null
-        preloadGalleryImages()
-      })
+      const preloadImage = new window.Image()
+      const finalizePreload = () => {
+        preloadImage.onload = null
+        preloadImage.onerror = null
+        activeGalleryPreloadImagesRef.current.delete(image.src)
+      }
 
-      return clearScheduledImagePreload
-    }
-
-    preloadTimeoutRef.current = setTimeout(() => {
-      preloadTimeoutRef.current = null
-      preloadGalleryImages()
-    }, 0)
-
-    return clearScheduledImagePreload
-  }, [clearScheduledImagePreload, normalizedActiveImageIndex, resolvedImages])
+      preloadedGalleryImageSrcsRef.current.add(image.src)
+      activeGalleryPreloadImagesRef.current.set(image.src, preloadImage)
+      preloadImage.onload = finalizePreload
+      preloadImage.onerror = finalizePreload
+      preloadImage.src = image.src
+    })
+  }, [normalizedActiveImageIndex, resolvedImages])
 
   useEffect(() => {
     return () => {
       clearFadeCleanupTimer()
-      clearScheduledImagePreload()
+      activeGalleryPreloadImagesRef.current.forEach((preloadImage) => {
+        preloadImage.onload = null
+        preloadImage.onerror = null
+      })
+      activeGalleryPreloadImagesRef.current.clear()
     }
-  }, [clearFadeCleanupTimer, clearScheduledImagePreload])
+  }, [clearFadeCleanupTimer])
 
   const handleBackLinkClick = useCallback((event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (isOrderFormOpen && onBackToProduct && isPlainLeftClick(event)) {
@@ -605,7 +565,7 @@ export function CatalogProductDetailLayout({
             onTouchEnd={handleGalleryTouchEnd}
             onTouchCancel={handleGalleryTouchCancel}
             data-testid='product-gallery-viewport'
-            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-auto overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]`}
+            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-none overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]`}
           >
             <div
               data-testid='product-gallery-stage'
