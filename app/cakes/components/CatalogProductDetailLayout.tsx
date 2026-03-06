@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 
 export interface CatalogProductDetailImage {
@@ -38,7 +38,32 @@ interface CatalogProductDetailLayoutProps {
   sections: CatalogProductDetailSection[]
 }
 
+interface IdleCallbackDeadline {
+  didTimeout: boolean
+  timeRemaining: () => number
+}
+
+type WindowWithIdleCallback = Omit<Window, 'requestIdleCallback' | 'cancelIdleCallback'> & {
+  requestIdleCallback?: (callback: (deadline: IdleCallbackDeadline) => void) => number
+  cancelIdleCallback?: (handle: number) => void
+}
+
+interface SplitPriceTextResult {
+  prefix: string
+  currencySign: string | null
+  remainder: string
+}
+
+type GalleryDirection = 'next' | 'previous'
+
+interface FadeState {
+  activeIndex: number
+  leavingIndex: number | null
+  transitionKey: number
+}
+
 const imageSizes = '(min-width: 1024px) 560px, 100vw'
+const fadeDurationMs = 180
 
 const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
@@ -47,19 +72,9 @@ const fallbackImage: CatalogProductDetailImage = {
 const swipeNavigationMinDistancePx = 48
 const swipeNavigationMaxVerticalDriftPx = 24
 const swipeNavigationHorizontalDominanceRatio = 1.25
-const loopResetTransitionMs = 320
-const loopResetScrollSettleIdleMs = 80
-const loopResetFallbackRetryMs = 48
-const loopResetFallbackMaxExtraMs = 800
 
 const pricePrefixClass = '[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-bold)] [font-style:normal] [font-size:12px] tablet:[font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:100%] [letter-spacing:-0.02em] align-top text-primary-500'
 const tabletPriceSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
-
-interface SplitPriceTextResult {
-  prefix: string
-  currencySign: string | null
-  remainder: string
-}
 
 function splitPriceText(value: string): SplitPriceTextResult {
   const currencyMatch = /[\u00A3$\u20AC]/.exec(value)
@@ -100,44 +115,30 @@ function resolveNormalizedPathname(value: string, origin: string) {
   }
 }
 
-function toVisualIndex(realIndex: number, isLoopingGallery: boolean) {
-  return isLoopingGallery ? realIndex + 1 : realIndex
-}
-
-function resolveVisualIndexFromScrollPosition(
-  scrollLeft: number,
-  clientWidth: number,
-  slideCount: number
-) {
-  if (clientWidth <= 0 || slideCount <= 0) {
-    return null
-  }
-
-  const estimatedIndex = Math.round(scrollLeft / clientWidth)
-  const lastSlideIndex = slideCount - 1
-
-  if (estimatedIndex < 0) {
+function resolveWrappedImageIndex(index: number, imageCount: number) {
+  if (imageCount <= 0) {
     return 0
   }
 
-  if (estimatedIndex > lastSlideIndex) {
-    return lastSlideIndex
-  }
+  const normalizedIndex = index % imageCount
 
-  return estimatedIndex
+  return normalizedIndex >= 0 ? normalizedIndex : normalizedIndex + imageCount
 }
 
-function resolveRealIndexFromVisualIndex(
-  visualIndex: number,
-  slides: Array<{ realIndex: number }>
+function createNextFadeState(
+  currentState: FadeState,
+  nextActiveIndex: number,
+  useReducedMotion: boolean
 ) {
-  const selectedSlide = slides[visualIndex]
-
-  if (!selectedSlide) {
-    return 0
+  if (currentState.activeIndex === nextActiveIndex) {
+    return currentState
   }
 
-  return selectedSlide.realIndex
+  return {
+    activeIndex: nextActiveIndex,
+    leavingIndex: useReducedMotion ? null : currentState.activeIndex,
+    transitionKey: currentState.transitionKey + 1
+  }
 }
 
 export function CatalogProductDetailLayout({
@@ -160,22 +161,18 @@ export function CatalogProductDetailLayout({
   images,
   sections
 }: CatalogProductDetailLayoutProps) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const [activeVisualIndex, setActiveVisualIndex] = useState(0)
-  const [isLoopReady, setIsLoopReady] = useState(false)
+  const [fadeState, setFadeState] = useState<FadeState>({
+    activeIndex: 0,
+    leavingIndex: null,
+    transitionKey: 0
+  })
   const [isGalleryFocused, setIsGalleryFocused] = useState(false)
-  const latestRealImageIndexRef = useRef(0)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const galleryRegionRef = useRef<HTMLElement | null>(null)
-  const galleryCarouselRef = useRef<HTMLDivElement | null>(null)
-  const gallerySlideRefs = useRef<Array<HTMLDivElement | null>>([])
-  const pendingScrollBehaviorRef = useRef<ScrollBehavior>('smooth')
-  const scrollSettleSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const loopResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pendingLoopResetTargetVisualIndexRef = useRef<number | null>(null)
-  const lastCarouselScrollAtRef = useRef(0)
-  const loopResetFallbackDeadlineAtRef = useRef<number | null>(null)
-  const wasLoopingGalleryRef = useRef(false)
-  const previousResolvedImageCountRef = useRef(images.length > 0 ? images.length : 1)
+  const fadeCleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const preloadIdleCallbackRef = useRef<number | null>(null)
+  const preloadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchCurrentXRef = useRef<number | null>(null)
@@ -185,59 +182,42 @@ export function CatalogProductDetailLayout({
     return images.length > 0 ? images : [fallbackImage]
   }, [images])
   const isMultiImageGallery = resolvedImages.length > 1
-  const isLoopingGallery = isMultiImageGallery && isLoopReady
-  const renderedSlides = useMemo(() => {
-    if (!isLoopingGallery) {
-      return resolvedImages.map((image, index) => ({
-        key: `real-${index}-${image.src}`,
-        image,
-        realIndex: index,
-        isClone: false
-      }))
-    }
-
-    const firstImage = resolvedImages[0]
-    const lastImage = resolvedImages[resolvedImages.length - 1]
-
-    return [
-      {
-        key: `clone-head-${lastImage.src}`,
-        image: lastImage,
-        realIndex: resolvedImages.length - 1,
-        isClone: true
-      },
-      ...resolvedImages.map((image, index) => ({
-        key: `real-${index}-${image.src}`,
-        image,
-        realIndex: index,
-        isClone: false
-      })),
-      {
-        key: `clone-tail-${firstImage.src}`,
-        image: firstImage,
-        realIndex: 0,
-        isClone: true
-      }
-    ]
-  }, [isLoopingGallery, resolvedImages])
   const splitPrice = useMemo(() => {
     return splitPriceText(priceText)
   }, [priceText])
-  const normalizedActiveImageIndex = activeImageIndex <= resolvedImages.length - 1
-    ? activeImageIndex
+  const normalizedActiveImageIndex = fadeState.activeIndex <= resolvedImages.length - 1
+    ? fadeState.activeIndex
     : 0
+  const activeImage = resolvedImages[normalizedActiveImageIndex] ?? fallbackImage
+  const leavingImage = fadeState.leavingIndex !== null && fadeState.leavingIndex <= resolvedImages.length - 1
+    ? resolvedImages[fadeState.leavingIndex]
+    : null
   const shouldRenderOrderOnly = isOrderFormOpen && Boolean(orderContent)
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
 
-  const commitGalleryNavigationState = useCallback((
-    nextRealIndex: number,
-    nextVisualIndex: number,
-    behavior: ScrollBehavior
-  ) => {
-    latestRealImageIndexRef.current = nextRealIndex
-    pendingScrollBehaviorRef.current = behavior
-    setActiveImageIndex(nextRealIndex)
-    setActiveVisualIndex(nextVisualIndex)
+  const clearFadeCleanupTimer = useCallback(() => {
+    if (fadeCleanupTimerRef.current !== null) {
+      clearTimeout(fadeCleanupTimerRef.current)
+      fadeCleanupTimerRef.current = null
+    }
+  }, [])
+
+  const clearScheduledImagePreload = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const browserWindow = window as WindowWithIdleCallback
+
+    if (preloadIdleCallbackRef.current !== null && typeof browserWindow.cancelIdleCallback === 'function') {
+      browserWindow.cancelIdleCallback(preloadIdleCallbackRef.current)
+      preloadIdleCallbackRef.current = null
+    }
+
+    if (preloadTimeoutRef.current !== null) {
+      clearTimeout(preloadTimeoutRef.current)
+      preloadTimeoutRef.current = null
+    }
   }, [])
 
   const resetSwipeTrackingState = useCallback(() => {
@@ -247,273 +227,6 @@ export function CatalogProductDetailLayout({
     touchCurrentYRef.current = null
     isSwipeTrackingRef.current = false
   }, [])
-
-  const clearPendingLoopReset = useCallback(() => {
-    pendingLoopResetTargetVisualIndexRef.current = null
-    loopResetFallbackDeadlineAtRef.current = null
-
-    if (loopResetTimerRef.current !== null) {
-      clearTimeout(loopResetTimerRef.current)
-      loopResetTimerRef.current = null
-    }
-  }, [])
-
-  const clearPendingScrollSettleSync = useCallback(() => {
-    if (scrollSettleSyncTimerRef.current !== null) {
-      clearTimeout(scrollSettleSyncTimerRef.current)
-      scrollSettleSyncTimerRef.current = null
-    }
-  }, [])
-
-  const flushPendingLoopReset = useCallback(() => {
-    const targetVisualIndex = pendingLoopResetTargetVisualIndexRef.current
-
-    if (targetVisualIndex === null) {
-      return
-    }
-
-    clearPendingLoopReset()
-    pendingScrollBehaviorRef.current = 'auto'
-    setActiveVisualIndex(targetVisualIndex)
-  }, [clearPendingLoopReset])
-
-  const scheduleLoopReset = useCallback((targetVisualIndex: number) => {
-    clearPendingLoopReset()
-    pendingLoopResetTargetVisualIndexRef.current = targetVisualIndex
-    const now = Date.now()
-    lastCarouselScrollAtRef.current = now
-    loopResetFallbackDeadlineAtRef.current = now + loopResetTransitionMs + loopResetFallbackMaxExtraMs
-
-    const scheduleFallbackCheck = (delayMs: number) => {
-      loopResetTimerRef.current = setTimeout(() => {
-        if (pendingLoopResetTargetVisualIndexRef.current === null) {
-          return
-        }
-
-        const currentTime = Date.now()
-        const hasReachedFallbackDeadline = typeof loopResetFallbackDeadlineAtRef.current === 'number' &&
-          currentTime >= loopResetFallbackDeadlineAtRef.current
-        const hasScrollSettled = currentTime - lastCarouselScrollAtRef.current >= loopResetScrollSettleIdleMs
-
-        if (hasReachedFallbackDeadline || hasScrollSettled) {
-          flushPendingLoopReset()
-          return
-        }
-
-        scheduleFallbackCheck(loopResetFallbackRetryMs)
-      }, delayMs)
-    }
-
-    scheduleFallbackCheck(loopResetTransitionMs)
-  }, [clearPendingLoopReset, flushPendingLoopReset])
-
-  const scrollGalleryToImage = useCallback((index: number, behavior: ScrollBehavior) => {
-    const targetSlide = gallerySlideRefs.current[index]
-    const carouselElement = galleryCarouselRef.current
-
-    if (!carouselElement) {
-      return
-    }
-
-    const fallbackSlideOffsetLeft = targetSlide?.offsetLeft
-    const fallbackScrollLeft = typeof fallbackSlideOffsetLeft === 'number'
-      ? fallbackSlideOffsetLeft
-      : index * carouselElement.clientWidth
-
-    if (behavior === 'auto') {
-      const previousInlineScrollBehavior = carouselElement.style.scrollBehavior
-      carouselElement.style.scrollBehavior = 'auto'
-
-      if (typeof carouselElement.scrollTo === 'function') {
-        carouselElement.scrollTo({
-          left: fallbackScrollLeft,
-          behavior
-        })
-      } else if (targetSlide && typeof targetSlide.scrollIntoView === 'function') {
-        targetSlide.scrollIntoView({
-          behavior,
-          block: 'nearest',
-          inline: 'start'
-        })
-      } else {
-        carouselElement.scrollLeft = fallbackScrollLeft
-      }
-
-      const restoreInlineScrollBehavior = () => {
-        if (!carouselElement.isConnected) {
-          return
-        }
-
-        carouselElement.style.scrollBehavior = previousInlineScrollBehavior
-      }
-
-      if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
-        window.requestAnimationFrame(() => {
-          window.requestAnimationFrame(() => {
-            restoreInlineScrollBehavior()
-          })
-        })
-      } else {
-        setTimeout(() => {
-          restoreInlineScrollBehavior()
-        }, 0)
-      }
-
-      return
-    }
-
-    if (typeof carouselElement.scrollTo === 'function') {
-      carouselElement.scrollTo({
-        left: fallbackScrollLeft,
-        behavior
-      })
-
-      return
-    }
-
-    if (targetSlide && typeof targetSlide.scrollIntoView === 'function') {
-      targetSlide.scrollIntoView({
-        behavior,
-        block: 'nearest',
-        inline: 'start'
-      })
-      return
-    }
-
-    carouselElement.scrollLeft = fallbackScrollLeft
-  }, [])
-
-  const moveToRealImageIndex = useCallback((nextRealIndex: number, behavior: ScrollBehavior = 'smooth') => {
-    clearPendingScrollSettleSync()
-    clearPendingLoopReset()
-    commitGalleryNavigationState(nextRealIndex, toVisualIndex(nextRealIndex, isLoopingGallery), behavior)
-  }, [
-    clearPendingLoopReset,
-    clearPendingScrollSettleSync,
-    commitGalleryNavigationState,
-    isLoopingGallery
-  ])
-
-  const syncActiveImageIndexFromCarouselScrollPosition = useCallback((shouldSyncState: boolean) => {
-    const carouselElement = galleryCarouselRef.current
-
-    if (!carouselElement) {
-      return
-    }
-
-    const visualIndex = resolveVisualIndexFromScrollPosition(
-      carouselElement.scrollLeft,
-      carouselElement.clientWidth,
-      renderedSlides.length
-    )
-
-    if (visualIndex === null) {
-      return
-    }
-
-    const realIndex = resolveRealIndexFromVisualIndex(visualIndex, renderedSlides)
-    const isLoopResetPending = pendingLoopResetTargetVisualIndexRef.current !== null
-
-    if (!isLoopResetPending || shouldSyncState) {
-      latestRealImageIndexRef.current = realIndex
-    }
-
-    if (!shouldSyncState) {
-      return
-    }
-
-    setActiveImageIndex((currentIndex) => {
-      return currentIndex === realIndex ? currentIndex : realIndex
-    })
-  }, [renderedSlides])
-
-  const handlePreviousImage = useCallback(() => {
-    if (!isMultiImageGallery) {
-      return
-    }
-
-    const lastRealIndex = resolvedImages.length - 1
-    const currentRealIndex = latestRealImageIndexRef.current <= lastRealIndex
-      ? latestRealImageIndexRef.current
-      : 0
-
-    if (!isLoopingGallery) {
-      moveToRealImageIndex(currentRealIndex === 0 ? lastRealIndex : currentRealIndex - 1)
-      return
-    }
-
-    if (currentRealIndex === 0) {
-      clearPendingScrollSettleSync()
-      clearPendingLoopReset()
-      commitGalleryNavigationState(lastRealIndex, 0, 'smooth')
-      scheduleLoopReset(toVisualIndex(lastRealIndex, true))
-      return
-    }
-
-    moveToRealImageIndex(currentRealIndex - 1)
-  }, [
-    clearPendingLoopReset,
-    clearPendingScrollSettleSync,
-    commitGalleryNavigationState,
-    isLoopingGallery,
-    isMultiImageGallery,
-    moveToRealImageIndex,
-    resolvedImages.length,
-    scheduleLoopReset
-  ])
-
-  const handleNextImage = useCallback(() => {
-    if (!isMultiImageGallery) {
-      return
-    }
-
-    const lastRealIndex = resolvedImages.length - 1
-    const currentRealIndex = latestRealImageIndexRef.current <= lastRealIndex
-      ? latestRealImageIndexRef.current
-      : 0
-
-    if (!isLoopingGallery) {
-      moveToRealImageIndex(currentRealIndex === lastRealIndex ? 0 : currentRealIndex + 1)
-      return
-    }
-
-    if (currentRealIndex === lastRealIndex) {
-      clearPendingScrollSettleSync()
-      clearPendingLoopReset()
-      commitGalleryNavigationState(0, renderedSlides.length - 1, 'smooth')
-      scheduleLoopReset(toVisualIndex(0, true))
-      return
-    }
-
-    moveToRealImageIndex(currentRealIndex + 1)
-  }, [
-    clearPendingLoopReset,
-    clearPendingScrollSettleSync,
-    commitGalleryNavigationState,
-    isLoopingGallery,
-    isMultiImageGallery,
-    moveToRealImageIndex,
-    renderedSlides.length,
-    resolvedImages.length,
-    scheduleLoopReset
-  ])
-
-  const handleGalleryKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
-    if (!isMultiImageGallery) {
-      return
-    }
-
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault()
-      handlePreviousImage()
-      return
-    }
-
-    if (event.key === 'ArrowRight') {
-      event.preventDefault()
-      handleNextImage()
-    }
-  }, [handleNextImage, handlePreviousImage, isMultiImageGallery])
 
   const focusGalleryRegion = useCallback(() => {
     if (!isMultiImageGallery || galleryRegionRef.current === null) {
@@ -540,6 +253,60 @@ export function CatalogProductDetailLayout({
 
     setIsGalleryFocused(false)
   }, [])
+
+  const moveToImage = useCallback((nextImageIndex: number) => {
+    if (!isMultiImageGallery) {
+      return
+    }
+
+    setFadeState((currentState) => {
+      return createNextFadeState(
+        currentState,
+        resolveWrappedImageIndex(nextImageIndex, resolvedImages.length),
+        prefersReducedMotion
+      )
+    })
+  }, [isMultiImageGallery, prefersReducedMotion, resolvedImages.length])
+
+  const moveImageByDirection = useCallback((direction: GalleryDirection) => {
+    if (!isMultiImageGallery) {
+      return
+    }
+
+    setFadeState((currentState) => {
+      const nextActiveIndex = resolveWrappedImageIndex(
+        currentState.activeIndex + (direction === 'next' ? 1 : -1),
+        resolvedImages.length
+      )
+
+      return createNextFadeState(currentState, nextActiveIndex, prefersReducedMotion)
+    })
+  }, [isMultiImageGallery, prefersReducedMotion, resolvedImages.length])
+
+  const handlePreviousImage = useCallback(() => {
+    moveImageByDirection('previous')
+  }, [moveImageByDirection])
+
+  const handleNextImage = useCallback(() => {
+    moveImageByDirection('next')
+  }, [moveImageByDirection])
+
+  const handleGalleryKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
+    if (!isMultiImageGallery) {
+      return
+    }
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      handlePreviousImage()
+      return
+    }
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      handleNextImage()
+    }
+  }, [handleNextImage, handlePreviousImage, isMultiImageGallery])
 
   const handleGalleryTouchStart = useCallback((event: ReactTouchEvent<HTMLElement>) => {
     if (!isMultiImageGallery || event.touches.length !== 1) {
@@ -630,40 +397,104 @@ export function CatalogProductDetailLayout({
     resetSwipeTrackingState()
   }, [resetSwipeTrackingState])
 
-  useEffect(() => {
-    latestRealImageIndexRef.current = normalizedActiveImageIndex
-  }, [normalizedActiveImageIndex])
+  const handleReducedMotionChange = useEffectEvent((event: MediaQueryListEvent) => {
+    setPrefersReducedMotion(event.matches)
+  })
 
-  useEffect(() => {
-    pendingScrollBehaviorRef.current = 'auto'
-
-    if (isMultiImageGallery) {
-      scrollGalleryToImage(0, 'auto')
-    }
-
-    setActiveVisualIndex(toVisualIndex(0, isMultiImageGallery))
-    setIsLoopReady(isMultiImageGallery)
-  }, [isMultiImageGallery, scrollGalleryToImage])
-
-  useEffect(() => {
-    if (activeImageIndex <= resolvedImages.length - 1) {
+  const preloadGalleryImages = useEffectEvent(() => {
+    if (typeof window === 'undefined') {
       return
     }
 
-    clearPendingLoopReset()
-    commitGalleryNavigationState(0, toVisualIndex(0, isLoopingGallery), 'auto')
-  }, [activeImageIndex, clearPendingLoopReset, commitGalleryNavigationState, isLoopingGallery, resolvedImages.length])
+    resolvedImages.forEach((image, index) => {
+      if (index === normalizedActiveImageIndex || preloadedGalleryImageSrcsRef.current.has(image.src)) {
+        return
+      }
+
+      preloadedGalleryImageSrcsRef.current.add(image.src)
+      const preloadImage = new window.Image()
+      preloadImage.src = image.src
+    })
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return
+    }
+
+    const mediaQueryList = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQueryList.matches)
+
+    mediaQueryList.addEventListener('change', handleReducedMotionChange)
+
+    return () => {
+      mediaQueryList.removeEventListener('change', handleReducedMotionChange)
+    }
+  }, [])
+
+  useEffect(() => {
+    clearFadeCleanupTimer()
+
+    if (prefersReducedMotion || fadeState.leavingIndex === null) {
+      return
+    }
+
+    fadeCleanupTimerRef.current = setTimeout(() => {
+      fadeCleanupTimerRef.current = null
+      setFadeState((currentState) => {
+        return currentState.leavingIndex === null
+          ? currentState
+          : {
+              ...currentState,
+              leavingIndex: null
+            }
+      })
+    }, fadeDurationMs)
+
+    return clearFadeCleanupTimer
+  }, [clearFadeCleanupTimer, fadeState.leavingIndex, fadeState.transitionKey, prefersReducedMotion])
+
+  useEffect(() => {
+    if (!prefersReducedMotion || fadeState.leavingIndex === null) {
+      return
+    }
+
+    setFadeState((currentState) => {
+      return currentState.leavingIndex === null
+        ? currentState
+        : {
+            ...currentState,
+            leavingIndex: null
+          }
+    })
+  }, [fadeState.leavingIndex, prefersReducedMotion])
+
+  useEffect(() => {
+    setFadeState((currentState) => {
+      const nextActiveIndex = currentState.activeIndex <= resolvedImages.length - 1
+        ? currentState.activeIndex
+        : 0
+
+      if (nextActiveIndex === currentState.activeIndex && currentState.leavingIndex === null) {
+        return currentState
+      }
+
+      return {
+        activeIndex: nextActiveIndex,
+        leavingIndex: null,
+        transitionKey: currentState.transitionKey
+      }
+    })
+  }, [resolvedImages.length])
 
   useEffect(() => {
     if (isMultiImageGallery) {
       return
     }
 
-    clearPendingLoopReset()
-    clearPendingScrollSettleSync()
     setIsGalleryFocused(false)
     resetSwipeTrackingState()
-  }, [clearPendingLoopReset, clearPendingScrollSettleSync, isMultiImageGallery, resetSwipeTrackingState])
+  }, [isMultiImageGallery, resetSwipeTrackingState])
 
   useEffect(() => {
     if (typeof requestedActiveImageIndex !== 'number' || typeof requestedActiveImageKey !== 'string') {
@@ -674,96 +505,41 @@ export function CatalogProductDetailLayout({
       return
     }
 
-    moveToRealImageIndex(requestedActiveImageIndex)
-  }, [moveToRealImageIndex, requestedActiveImageIndex, requestedActiveImageKey, resolvedImages.length])
+    moveToImage(requestedActiveImageIndex)
+  }, [moveToImage, requestedActiveImageIndex, requestedActiveImageKey, resolvedImages.length])
 
   useEffect(() => {
-    const previousIsLoopingGallery = wasLoopingGalleryRef.current
-    const previousResolvedImageCount = previousResolvedImageCountRef.current
-    const hasLoopingModeChanged = previousIsLoopingGallery !== isLoopingGallery
-    const hasResolvedImageCountChanged = previousResolvedImageCount !== resolvedImages.length
+    clearScheduledImagePreload()
 
-    wasLoopingGalleryRef.current = isLoopingGallery
-    previousResolvedImageCountRef.current = resolvedImages.length
-    gallerySlideRefs.current = gallerySlideRefs.current.slice(0, renderedSlides.length)
-
-    if (!hasLoopingModeChanged && !hasResolvedImageCountChanged) {
+    if (typeof window === 'undefined') {
       return
     }
 
-    clearPendingLoopReset()
-    pendingScrollBehaviorRef.current = 'auto'
-    setActiveVisualIndex(toVisualIndex(normalizedActiveImageIndex, isMultiImageGallery))
-  }, [
-    clearPendingLoopReset,
-    isMultiImageGallery,
-    isLoopingGallery,
-    normalizedActiveImageIndex,
-    renderedSlides.length,
-    resolvedImages.length
-  ])
+    const browserWindow = window as WindowWithIdleCallback
 
-  useLayoutEffect(() => {
-    scrollGalleryToImage(activeVisualIndex, pendingScrollBehaviorRef.current)
-    pendingScrollBehaviorRef.current = 'smooth'
-  }, [activeVisualIndex, scrollGalleryToImage])
+    if (typeof browserWindow.requestIdleCallback === 'function') {
+      preloadIdleCallbackRef.current = browserWindow.requestIdleCallback(() => {
+        preloadIdleCallbackRef.current = null
+        preloadGalleryImages()
+      })
+
+      return clearScheduledImagePreload
+    }
+
+    preloadTimeoutRef.current = setTimeout(() => {
+      preloadTimeoutRef.current = null
+      preloadGalleryImages()
+    }, 0)
+
+    return clearScheduledImagePreload
+  }, [clearScheduledImagePreload, normalizedActiveImageIndex, resolvedImages])
 
   useEffect(() => {
     return () => {
-      clearPendingLoopReset()
-      clearPendingScrollSettleSync()
+      clearFadeCleanupTimer()
+      clearScheduledImagePreload()
     }
-  }, [clearPendingLoopReset, clearPendingScrollSettleSync])
-
-  const handleCarouselScroll = useCallback((event: Event) => {
-    if (event.target !== galleryCarouselRef.current) {
-      return
-    }
-
-    lastCarouselScrollAtRef.current = Date.now()
-    syncActiveImageIndexFromCarouselScrollPosition(false)
-    clearPendingScrollSettleSync()
-    scrollSettleSyncTimerRef.current = setTimeout(() => {
-      scrollSettleSyncTimerRef.current = null
-      syncActiveImageIndexFromCarouselScrollPosition(true)
-    }, loopResetScrollSettleIdleMs)
-  }, [clearPendingScrollSettleSync, syncActiveImageIndexFromCarouselScrollPosition])
-
-  const handleCarouselScrollEnd = useCallback((event: Event) => {
-    if (event.target !== galleryCarouselRef.current) {
-      return
-    }
-
-    clearPendingScrollSettleSync()
-    syncActiveImageIndexFromCarouselScrollPosition(true)
-
-    if (!isLoopingGallery) {
-      return
-    }
-
-    flushPendingLoopReset()
-  }, [
-    clearPendingScrollSettleSync,
-    flushPendingLoopReset,
-    isLoopingGallery,
-    syncActiveImageIndexFromCarouselScrollPosition
-  ])
-
-  useEffect(() => {
-    const carouselElement = galleryCarouselRef.current
-
-    if (!carouselElement) {
-      return
-    }
-
-    carouselElement.addEventListener('scroll', handleCarouselScroll, { passive: true })
-    carouselElement.addEventListener('scrollend', handleCarouselScrollEnd)
-
-    return () => {
-      carouselElement.removeEventListener('scroll', handleCarouselScroll)
-      carouselElement.removeEventListener('scrollend', handleCarouselScrollEnd)
-    }
-  }, [handleCarouselScroll, handleCarouselScrollEnd])
+  }, [clearFadeCleanupTimer, clearScheduledImagePreload])
 
   const handleBackLinkClick = useCallback((event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (isOrderFormOpen && onBackToProduct && isPlainLeftClick(event)) {
@@ -829,33 +605,50 @@ export function CatalogProductDetailLayout({
             onTouchEnd={handleGalleryTouchEnd}
             onTouchCancel={handleGalleryTouchCancel}
             data-testid='product-gallery-viewport'
-            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-none overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]`}
+            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-auto overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]`}
           >
             <div
-              ref={galleryCarouselRef}
-              data-testid='product-gallery-carousel'
-              className='carousel h-full w-full [scroll-snap-type:x_mandatory]'
+              data-testid='product-gallery-stage'
+              className='relative h-full w-full'
             >
-              {renderedSlides.map((slide, index) => (
+              {leavingImage ? (
                 <div
-                  key={slide.key}
-                  ref={(element) => {
-                    gallerySlideRefs.current[index] = element
-                  }}
-                  data-testid={`product-gallery-slide-${index + 1}`}
-                  aria-hidden={slide.isClone ? 'true' : undefined}
-                  className='carousel-item relative h-full w-full flex-none [scroll-snap-align:start]'
+                  key={`leaving-${fadeState.transitionKey}-${fadeState.leavingIndex}`}
+                  data-testid='product-gallery-leaving-layer'
+                  aria-hidden='true'
+                  className='pointer-events-none absolute inset-0 z-10'
+                  style={prefersReducedMotion
+                    ? undefined
+                    : {
+                        animationName: 'catalog-gallery-fade-out',
+                        animationDuration: `${fadeDurationMs}ms`,
+                        animationTimingFunction: 'ease-out',
+                        animationFillMode: 'forwards'
+                      }}
                 >
                   <Image
-                    src={slide.image.src}
-                    alt={slide.isClone ? '' : slide.image.alt}
+                    src={leavingImage.src}
+                    alt=''
                     fill
-                    priority={!slide.isClone && slide.realIndex === 0}
                     sizes={imageSizes}
                     className='object-cover'
                   />
                 </div>
-              ))}
+              ) : null}
+              <div
+                key={`active-${fadeState.transitionKey}-${normalizedActiveImageIndex}`}
+                data-testid='product-gallery-active-layer'
+                className='absolute inset-0'
+              >
+                <Image
+                  src={activeImage.src}
+                  alt={activeImage.alt}
+                  fill
+                  priority={normalizedActiveImageIndex === 0}
+                  sizes={imageSizes}
+                  className='object-cover'
+                />
+              </div>
             </div>
             {isMultiImageGallery ? (
               <>
@@ -863,7 +656,7 @@ export function CatalogProductDetailLayout({
                   type='button'
                   onClick={handlePreviousImage}
                   aria-label='View previous image'
-                  className={`touch-target cursor-pointer absolute left-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
+                  className={`touch-target cursor-pointer absolute left-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
                 >
                   <span aria-hidden='true' className='text-[18px] leading-none'>&lsaquo;</span>
                 </button>
@@ -871,7 +664,7 @@ export function CatalogProductDetailLayout({
                   type='button'
                   onClick={handleNextImage}
                   aria-label='View next image'
-                  className={`touch-target cursor-pointer absolute right-3 top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
+                  className={`touch-target cursor-pointer absolute right-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
                 >
                   <span aria-hidden='true' className='text-[18px] leading-none'>&rsaquo;</span>
                 </button>
@@ -890,7 +683,7 @@ export function CatalogProductDetailLayout({
                     role='tab'
                     aria-selected={isActive}
                     aria-label={`View image ${index + 1}`}
-                    onClick={() => moveToRealImageIndex(index)}
+                    onClick={() => moveToImage(index)}
                     className={`h-2 w-2 cursor-pointer rounded-full border transition-colors ${
                       isActive
                         ? 'border-[var(--color-gallery-dot-active)] bg-[var(--color-gallery-dot-active)]'
@@ -1025,8 +818,17 @@ export function CatalogProductDetailLayout({
           )}
         </section>
       </div>
+      <style jsx global>{`
+        @keyframes catalog-gallery-fade-out {
+          from {
+            opacity: 1;
+          }
+
+          to {
+            opacity: 0;
+          }
+        }
+      `}</style>
     </article>
   )
 }
-
-

@@ -119,9 +119,6 @@ const burstNavigationGalleryImages = [
   }
 ]
 
-let scrollIntoViewMock: jest.Mock
-let scrollToMock: jest.Mock
-
 function renderLayout(
   onCtaClick = jest.fn(),
   priceText = '\u00A38.50',
@@ -233,60 +230,61 @@ function fireGallerySwipeGesture({
   })
 }
 
-function fireRapidNativeClicks(element: HTMLElement, count: number) {
+function fireNativeClickSequence(elements: HTMLElement[]) {
   act(() => {
-    for (let index = 0; index < count; index += 1) {
+    elements.forEach((element) => {
       element.dispatchEvent(new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
         view: window
       }))
-    }
+    })
   })
+}
+
+function fireRapidNativeClicks(element: HTMLElement, count: number) {
+  fireNativeClickSequence(Array.from({ length: count }, () => element))
 }
 
 function getGalleryViewport() {
   return screen.getByTestId('product-gallery-viewport')
 }
 
-function getGalleryCarousel() {
-  return screen.getByTestId('product-gallery-carousel')
+function getGalleryStage() {
+  return screen.getByTestId('product-gallery-stage')
 }
 
-function setCarouselNativeScrollState({
-  scrollLeft,
-  clientWidth = 320
-}: {
-  scrollLeft: number
-  clientWidth?: number
-}) {
-  const carousel = getGalleryCarousel() as HTMLDivElement
+function getActiveGalleryImage() {
+  const image = screen.getByTestId('product-gallery-active-layer').querySelector('img')
 
-  Object.defineProperty(carousel, 'clientWidth', {
-    configurable: true,
-    value: clientWidth
-  })
-  Object.defineProperty(carousel, 'scrollLeft', {
-    configurable: true,
-    writable: true,
-    value: scrollLeft
-  })
+  if (!(image instanceof HTMLImageElement)) {
+    throw new Error('Expected active gallery image element')
+  }
 
-  return carousel
+  return image
 }
 
-function fireCarouselScroll(carousel: HTMLElement = getGalleryCarousel()) {
+function getLeavingGalleryImage() {
+  const image = screen.queryByTestId('product-gallery-leaving-layer')?.querySelector('img')
+
+  return image instanceof HTMLImageElement ? image : null
+}
+
+function advanceGalleryFade() {
   act(() => {
-    carousel.dispatchEvent(new Event('scroll', { bubbles: true }))
+    jest.advanceTimersByTime(180)
   })
 }
 
-function fireCarouselScrollEnd() {
-  const carousel = getGalleryCarousel()
-
-  act(() => {
-    carousel.dispatchEvent(new Event('scrollend', { bubbles: true }))
-  })
+function mockReducedMotionPreference(matches: boolean) {
+  window.matchMedia = jest.fn().mockImplementation(() => {
+    return {
+      matches,
+      media: '(prefers-reduced-motion: reduce)',
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    } as MediaQueryList
+  }) as typeof window.matchMedia
 }
 
 function expectActiveImage(imageNumber: number, imageCount: number) {
@@ -300,18 +298,7 @@ function expectActiveImage(imageNumber: number, imageCount: number) {
 describe('CatalogProductDetailLayout', () => {
   beforeEach(() => {
     setHistoryStateWithPreviousPathname()
-    scrollIntoViewMock = jest.fn()
-    scrollToMock = jest.fn()
-    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
-      configurable: true,
-      writable: true,
-      value: scrollIntoViewMock
-    })
-    Object.defineProperty(HTMLElement.prototype, 'scrollTo', {
-      configurable: true,
-      writable: true,
-      value: scrollToMock
-    })
+    window.matchMedia = undefined as unknown as typeof window.matchMedia
     window.location.hash = ''
   })
 
@@ -343,29 +330,24 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).not.toHaveClass('rounded-box')
   })
 
-  it('uses touch lock on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
+  it('uses touch auto on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
     renderLayout()
 
     const imageWrapper = getGalleryViewport()
 
-    expect(imageWrapper).toHaveClass('touch-none', 'tablet:touch-pan-y')
+    expect(imageWrapper).toHaveClass('touch-auto', 'tablet:touch-pan-y')
   })
 
-  it('renders DaisyUI carousel root and slide classes for the gallery track', () => {
+  it('renders stacked fade layers for the gallery stage', () => {
     renderLayout()
 
-    const carousel = getGalleryCarousel()
-    const firstSlide = screen.getByTestId('product-gallery-slide-1')
+    const stage = getGalleryStage()
 
-    expect(carousel).toHaveClass('carousel', 'h-full', 'w-full', '[scroll-snap-type:x_mandatory]')
-    expect(carousel).not.toHaveClass('scroll-smooth')
-    expect(firstSlide).toHaveClass('carousel-item', 'relative', 'h-full', 'w-full', 'flex-none', '[scroll-snap-align:start]')
-  })
-
-  it('uses auto behavior for initial loop-ready alignment', () => {
-    renderLayout()
-
-    expect(scrollToMock.mock.calls.some((call) => call[0]?.behavior === 'auto')).toBe(true)
+    expect(stage).toHaveClass('relative', 'h-full', 'w-full')
+    expect(stage).not.toHaveClass('carousel', '[scroll-snap-type:x_mandatory]')
+    expect(screen.getByTestId('product-gallery-active-layer')).toHaveClass('absolute', 'inset-0')
+    expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+    expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
   it('renders optional gallery-below content with fixed top spacing', () => {
@@ -687,18 +669,30 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.getByText('Free UK shipping')).toBeInTheDocument()
   })
 
-  it('supports image dot navigation', () => {
-    renderLayout()
+  it('supports image dot navigation with a hidden outgoing fade layer', () => {
+    jest.useFakeTimers()
 
-    expectActiveImage(1, 2)
+    try {
+      renderLayout()
 
-    const secondDot = screen.getByRole('tab', { name: 'View image 2' })
-    fireEvent.click(secondDot)
+      expectActiveImage(1, 2)
 
-    expectActiveImage(2, 2)
-    expect(scrollToMock).toHaveBeenLastCalledWith(expect.objectContaining({
-      behavior: 'smooth'
-    }))
+      fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
+
+      expectActiveImage(2, 2)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+      expect(screen.getByTestId('product-gallery-leaving-layer')).toHaveAttribute('aria-hidden', 'true')
+      expect(getLeavingGalleryImage()).toHaveAttribute('alt', '')
+
+      advanceGalleryFade()
+
+      expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
+    } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
+    }
   })
 
   it('applies requested active image when request key changes', () => {
@@ -812,12 +806,12 @@ describe('CatalogProductDetailLayout', () => {
 
     const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
     const galleryViewport = getGalleryViewport()
-    expect(galleryRegion).toHaveClass('group', 'focus:outline-none', 'focus-visible:outline-none')
-    expect(galleryViewport).toHaveClass('catalog-gallery-viewport')
     const backLink = screen.getByRole('link', { name: 'Back to results' })
     const previousArrow = screen.getByRole('button', { name: 'View previous image' })
     const nextArrow = screen.getByRole('button', { name: 'View next image' })
 
+    expect(galleryRegion).toHaveClass('group', 'focus:outline-none', 'focus-visible:outline-none')
+    expect(galleryViewport).toHaveClass('catalog-gallery-viewport')
     expect(previousArrow).toHaveClass('opacity-0', 'pointer-events-none')
     expect(nextArrow).toHaveClass('opacity-0', 'pointer-events-none')
     expect(galleryViewport).not.toHaveClass('outline', 'outline-2', 'outline-offset-2', 'outline-primary-500')
@@ -885,23 +879,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.queryByRole('tablist', { name: 'Product image slides' })).not.toBeInTheDocument()
   })
 
-  it('realigns to the first real slide before loop clones on single-to-multi rerender', () => {
-    const observedScrollStates: Array<{
-      behavior: ScrollBehavior | undefined
-      slideCount: number
-    }> = []
-
-    scrollToMock.mockImplementation(function (this: Element, firstArg?: number | ScrollToOptions) {
-      const options = typeof firstArg === 'object' && firstArg !== null
-        ? firstArg
-        : undefined
-
-      observedScrollStates.push({
-        behavior: options?.behavior,
-        slideCount: (this as HTMLElement).children.length
-      })
-    })
-
+  it('keeps the first image active and avoids extra fade layers when rerendering from single to multi image gallery', () => {
     const { rerender } = renderLayout(
       jest.fn(),
       '\u00A38.50',
@@ -912,8 +890,6 @@ describe('CatalogProductDetailLayout', () => {
         }
       ]
     )
-
-    observedScrollStates.length = 0
 
     rerender(
       <CatalogProductDetailLayout
@@ -934,14 +910,9 @@ describe('CatalogProductDetailLayout', () => {
       />
     )
 
-    expect(observedScrollStates.length).toBeGreaterThan(0)
-    expect(observedScrollStates[0]).toEqual(expect.objectContaining({
-      behavior: 'auto',
-      slideCount: 2
-    }))
-    expect(observedScrollStates.some((entry) => {
-      return entry.behavior === 'auto' && entry.slideCount === 4
-    })).toBe(true)
+    expectActiveImage(1, 2)
+    expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+    expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
   it('supports next arrow image navigation', () => {
@@ -951,48 +922,24 @@ describe('CatalogProductDetailLayout', () => {
     fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
 
     expectActiveImage(2, 2)
+    expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
   })
 
-  it('counts rapid native next clicks from the first image', () => {
-    renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
-
-    const nextArrow = screen.getByRole('button', { name: 'View next image' })
-
-    fireRapidNativeClicks(nextArrow, 3)
-
-    expectActiveImage(4, 7)
-  })
-
-  it('counts rapid native previous clicks from a middle image', () => {
-    renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
-
-    fireEvent.click(screen.getByRole('tab', { name: 'View image 5' }))
-
-    const previousArrow = screen.getByRole('button', { name: 'View previous image' })
-
-    fireRapidNativeClicks(previousArrow, 3)
-
-    expectActiveImage(2, 7)
-  })
-
-  it('counts rapid native next clicks across loop boundary without reverting on pending reset', () => {
+  it('counts rapid next clicks immediately and stops on the final image', () => {
     jest.useFakeTimers()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
-      fireEvent.click(screen.getByRole('tab', { name: 'View image 7' }))
 
-      const nextArrow = screen.getByRole('button', { name: 'View next image' })
+      fireRapidNativeClicks(screen.getByRole('button', { name: 'View next image' }), 3)
 
-      fireRapidNativeClicks(nextArrow, 2)
+      expectActiveImage(4, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 4')
 
-      expectActiveImage(2, 7)
+      advanceGalleryFade()
 
-      act(() => {
-        jest.advanceTimersByTime(1120)
-      })
-
-      expectActiveImage(2, 7)
+      expectActiveImage(4, 7)
+      expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
     } finally {
       act(() => {
         jest.runOnlyPendingTimers()
@@ -1001,25 +948,22 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('keeps next navigation intent during boundary smooth scroll before settle sync', () => {
+  it('counts rapid previous clicks from a middle image and stops on the final image', () => {
     jest.useFakeTimers()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
-      fireEvent.click(screen.getByRole('tab', { name: 'View image 7' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'View image 5' }))
 
-      const nextArrow = screen.getByRole('button', { name: 'View next image' })
-
-      fireEvent.click(nextArrow)
-
-      const carousel = setCarouselNativeScrollState({
-        scrollLeft: 320 * 7
-      })
-
-      fireCarouselScroll(carousel)
-      fireEvent.click(nextArrow)
+      fireRapidNativeClicks(screen.getByRole('button', { name: 'View previous image' }), 3)
 
       expectActiveImage(2, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+
+      advanceGalleryFade()
+
+      expectActiveImage(2, 7)
+      expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
     } finally {
       act(() => {
         jest.runOnlyPendingTimers()
@@ -1028,55 +972,23 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('keeps previous navigation intent during boundary smooth scroll before settle sync', () => {
+  it('preserves mixed rapid directional click order', () => {
     jest.useFakeTimers()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
+      fireEvent.click(screen.getByRole('tab', { name: 'View image 3' }))
 
-      const previousArrow = screen.getByRole('button', { name: 'View previous image' })
+      fireNativeClickSequence([
+        screen.getByRole('button', { name: 'View next image' }),
+        screen.getByRole('button', { name: 'View next image' }),
+        screen.getByRole('button', { name: 'View previous image' })
+      ])
 
-      fireEvent.click(previousArrow)
+      expectActiveImage(4, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 4')
 
-      const carousel = setCarouselNativeScrollState({
-        scrollLeft: 320
-      })
-
-      fireCarouselScroll(carousel)
-      fireEvent.click(previousArrow)
-
-      expectActiveImage(6, 7)
-    } finally {
-      act(() => {
-        jest.runOnlyPendingTimers()
-      })
-      jest.useRealTimers()
-    }
-  })
-  it('updates active image indicator after native carousel scroll settles', () => {
-    jest.useFakeTimers()
-
-    try {
-      renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
-
-      const carousel = setCarouselNativeScrollState({
-        scrollLeft: 320 * 4
-      })
-
-      fireCarouselScroll(carousel)
-
-      expectActiveImage(1, 7)
-
-      act(() => {
-        jest.advanceTimersByTime(79)
-      })
-
-      expectActiveImage(1, 7)
-
-      act(() => {
-        jest.advanceTimersByTime(1)
-      })
-
+      advanceGalleryFade()
       expectActiveImage(4, 7)
     } finally {
       act(() => {
@@ -1086,19 +998,40 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('uses native carousel scroll position for immediate next navigation state', () => {
+  it('wraps rapid next clicks across the loop boundary', () => {
+    jest.useFakeTimers()
+
+    try {
+      renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
+      fireEvent.click(screen.getByRole('tab', { name: 'View image 7' }))
+
+      fireRapidNativeClicks(screen.getByRole('button', { name: 'View next image' }), 2)
+
+      expectActiveImage(2, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+
+      advanceGalleryFade()
+      expectActiveImage(2, 7)
+    } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
+    }
+  })
+
+  it('wraps rapid previous clicks across the loop boundary', () => {
     jest.useFakeTimers()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
-      const carousel = setCarouselNativeScrollState({
-        scrollLeft: 320 * 5
-      })
+      fireRapidNativeClicks(screen.getByRole('button', { name: 'View previous image' }), 2)
 
-      fireCarouselScroll(carousel)
-      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+      expectActiveImage(6, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 6')
 
+      advanceGalleryFade()
       expectActiveImage(6, 7)
     } finally {
       act(() => {
@@ -1108,28 +1041,62 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('finalizes active image indicator on native scrollend without waiting for settle timer', () => {
+  it('lets a gallery dot interrupt the current fade immediately', () => {
     jest.useFakeTimers()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
-      const carousel = setCarouselNativeScrollState({
-        scrollLeft: 320 * 6
+      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'View image 7' }))
+
+      expectActiveImage(7, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 7')
+      expect(getLeavingGalleryImage()).toHaveAttribute('src', '/images/hamper-2.jpg')
+
+      advanceGalleryFade()
+      expectActiveImage(7, 7)
+    } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
       })
+      jest.useRealTimers()
+    }
+  })
 
-      fireCarouselScroll(carousel)
+  it('lets requested image updates interrupt the current fade immediately', () => {
+    jest.useFakeTimers()
 
-      expectActiveImage(1, 7)
+    try {
+      const { rerender } = renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
-      fireCarouselScrollEnd()
+      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+
+      rerender(
+        <CatalogProductDetailLayout
+          backHref='/cakes?sort=new&page=2'
+          categoryLabel='Cakes by post'
+          title='Christmas Gift Box & Card'
+          priceText='\u00A38.50'
+          priceSuffix='+ free shipping'
+          keyPoints={[
+            'Freshly baked and packed',
+            'Personalised charity postcard',
+            'Free UK shipping'
+          ]}
+          ctaLabel='Add to cart +'
+          onCtaClick={jest.fn()}
+          requestedActiveImageIndex={5}
+          requestedActiveImageKey='fade-interrupt-1'
+          images={burstNavigationGalleryImages}
+          sections={sections}
+        />
+      )
 
       expectActiveImage(6, 7)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 6')
 
-      act(() => {
-        jest.advanceTimersByTime(80)
-      })
-
+      advanceGalleryFade()
       expectActiveImage(6, 7)
     } finally {
       act(() => {
@@ -1137,6 +1104,37 @@ describe('CatalogProductDetailLayout', () => {
       })
       jest.useRealTimers()
     }
+  })
+
+  it('removes the leaving layer after the fade completes', () => {
+    jest.useFakeTimers()
+
+    try {
+      renderLayout()
+
+      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+
+      expect(screen.getByTestId('product-gallery-leaving-layer')).toBeInTheDocument()
+
+      advanceGalleryFade()
+
+      expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
+    } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
+    }
+  })
+
+  it('skips the leaving layer when reduced motion is preferred', () => {
+    mockReducedMotionPreference(true)
+    renderLayout()
+
+    fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+
+    expectActiveImage(2, 2)
+    expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
   it('does not update URL hash during gallery navigation', () => {
@@ -1150,171 +1148,11 @@ describe('CatalogProductDetailLayout', () => {
     expect(window.location.hash).toBe('#active-gallery')
   })
 
-  it('wraps to the last image when previous arrow is clicked on the first image', () => {
-    jest.useFakeTimers()
-
-    try {
-      renderLayout()
-      scrollIntoViewMock.mockClear()
-      scrollToMock.mockClear()
-
-      fireEvent.click(screen.getByRole('button', { name: 'View previous image' }))
-
-      expectActiveImage(2, 2)
-      expect(scrollToMock).toHaveBeenCalled()
-      expect(scrollToMock.mock.calls[0]?.[0]).toEqual(expect.objectContaining({
-        behavior: 'smooth'
-      }))
-
-      fireCarouselScrollEnd()
-
-      expect(scrollToMock).toHaveBeenLastCalledWith(expect.objectContaining({
-        behavior: 'auto'
-      }))
-
-      const callCountAfterScrollEnd = scrollToMock.mock.calls.length
-
-      act(() => {
-        jest.advanceTimersByTime(320)
-      })
-
-      expect(scrollToMock.mock.calls).toHaveLength(callCountAfterScrollEnd)
-    } finally {
-      act(() => {
-        jest.runOnlyPendingTimers()
-      })
-      jest.useRealTimers()
-    }
-  })
-
-  it('wraps to the first image when next arrow is clicked on the last image', () => {
-    jest.useFakeTimers()
-
-    try {
-      renderLayout()
-      fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
-      scrollIntoViewMock.mockClear()
-      scrollToMock.mockClear()
-
-      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
-
-      expectActiveImage(1, 2)
-      expect(scrollToMock).toHaveBeenCalled()
-      expect(scrollToMock.mock.calls[0]?.[0]).toEqual(expect.objectContaining({
-        behavior: 'smooth'
-      }))
-
-      fireCarouselScrollEnd()
-
-      expect(scrollToMock).toHaveBeenLastCalledWith(expect.objectContaining({
-        behavior: 'auto'
-      }))
-
-      const callCountAfterScrollEnd = scrollToMock.mock.calls.length
-
-      act(() => {
-        jest.advanceTimersByTime(320)
-      })
-
-      expect(scrollToMock.mock.calls).toHaveLength(callCountAfterScrollEnd)
-    } finally {
-      act(() => {
-        jest.runOnlyPendingTimers()
-      })
-      jest.useRealTimers()
-    }
-  })
-
-  it('temporarily forces inline auto scroll behavior during auto reset scroll and restores previous inline value', () => {
-    jest.useFakeTimers()
-
-    try {
-      const observedScrollStates: Array<{
-        behavior: ScrollBehavior | undefined
-        inlineScrollBehavior: string
-      }> = []
-
-      scrollToMock.mockImplementation(function (this: Element, firstArg?: number | ScrollToOptions) {
-        const options = typeof firstArg === 'object' && firstArg !== null
-          ? firstArg
-          : undefined
-
-        observedScrollStates.push({
-          behavior: options?.behavior,
-          inlineScrollBehavior: (this as HTMLElement).style.scrollBehavior ?? ''
-        })
-      })
-
-      renderLayout()
-      fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
-
-      const carousel = getGalleryCarousel() as HTMLDivElement
-      carousel.style.scrollBehavior = 'smooth'
-      observedScrollStates.length = 0
-
-      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
-      fireCarouselScrollEnd()
-
-      const autoRecord = observedScrollStates.find((entry) => entry.behavior === 'auto')
-
-      expect(autoRecord).toEqual(expect.objectContaining({ inlineScrollBehavior: 'auto' }))
-
-      act(() => {
-        jest.advanceTimersByTime(40)
-      })
-
-      expect(carousel.style.scrollBehavior).toBe('smooth')
-    } finally {
-      act(() => {
-        jest.runOnlyPendingTimers()
-      })
-      jest.useRealTimers()
-    }
-  })
-
-  it('falls back to timer-based loop reset when scrollend is not fired', () => {
-    jest.useFakeTimers()
-
-    try {
-      renderLayout()
-      fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
-      scrollIntoViewMock.mockClear()
-      scrollToMock.mockClear()
-
-      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
-
-      expectActiveImage(1, 2)
-      expect(scrollToMock).toHaveBeenCalledTimes(1)
-      expect(scrollToMock.mock.calls[0]?.[0]).toEqual(expect.objectContaining({
-        behavior: 'smooth'
-      }))
-
-      act(() => {
-        jest.advanceTimersByTime(319)
-      })
-
-      expect(scrollToMock).toHaveBeenCalledTimes(1)
-
-      act(() => {
-        jest.advanceTimersByTime(1)
-      })
-
-      expect(scrollToMock).toHaveBeenCalledTimes(2)
-      expect(scrollToMock).toHaveBeenLastCalledWith(expect.objectContaining({
-        behavior: 'auto'
-      }))
-    } finally {
-      act(() => {
-        jest.runOnlyPendingTimers()
-      })
-      jest.useRealTimers()
-    }
-  })
-
   it('supports keyboard arrow image navigation when gallery is focused', () => {
     renderLayout()
 
     const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
+
     fireEvent.focus(galleryRegion)
     fireEvent.keyDown(galleryRegion, { key: 'ArrowRight' })
     expectActiveImage(2, 2)
