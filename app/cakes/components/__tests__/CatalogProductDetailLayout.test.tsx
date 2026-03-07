@@ -36,6 +36,15 @@ jest.mock('next/link', () => ({
 
 const originalWindowImage = window.Image
 
+interface WindowImagePreloadMock {
+  preloadedSrcs: string[]
+  triggerLoad: (src: string) => void
+  triggerError: (src: string) => void
+  restore: () => void
+}
+
+let defaultWindowImagePreloadMock: WindowImagePreloadMock | null = null
+
 const sections: CatalogProductDetailSection[] = [
   {
     id: 'full-description',
@@ -121,13 +130,20 @@ const burstNavigationGalleryImages = [
   }
 ]
 
-function mockWindowImagePreload() {
+function mockWindowImagePreload(
+  options: {
+    autoLoad?: boolean
+  } = {}
+): WindowImagePreloadMock {
+  const { autoLoad = true } = options
   const preloadedSrcs: string[] = []
   const originalImage = window.Image
+  const imageInstancesBySrc = new Map<string, MockWindowImage[]>()
 
   class MockWindowImage {
     onload: HTMLImageElement['onload'] = null
     onerror: HTMLImageElement['onerror'] = null
+    private hasSettled = false
     private srcValue = ''
 
     get src() {
@@ -136,7 +152,34 @@ function mockWindowImagePreload() {
 
     set src(value: string) {
       this.srcValue = value
+      this.hasSettled = false
       preloadedSrcs.push(value)
+
+      const imageInstances = imageInstancesBySrc.get(value) ?? []
+      imageInstances.push(this)
+      imageInstancesBySrc.set(value, imageInstances)
+
+      if (autoLoad) {
+        this.triggerLoad()
+      }
+    }
+
+    triggerLoad() {
+      if (this.hasSettled) {
+        return
+      }
+
+      this.hasSettled = true
+      this.onload?.call(this as unknown as GlobalEventHandlers, new Event('load'))
+    }
+
+    triggerError() {
+      if (this.hasSettled) {
+        return
+      }
+
+      this.hasSettled = true
+      this.onerror?.call(this as unknown as GlobalEventHandlers, new Event('error'))
     }
   }
 
@@ -144,6 +187,16 @@ function mockWindowImagePreload() {
 
   return {
     preloadedSrcs,
+    triggerLoad(src) {
+      imageInstancesBySrc.get(src)?.forEach((imageInstance) => {
+        imageInstance.triggerLoad()
+      })
+    },
+    triggerError(src) {
+      imageInstancesBySrc.get(src)?.forEach((imageInstance) => {
+        imageInstance.triggerError()
+      })
+    },
     restore() {
       window.Image = originalImage
     }
@@ -285,14 +338,32 @@ function getGalleryStage() {
   return screen.getByTestId('product-gallery-stage')
 }
 
-function getActiveGalleryImage() {
-  const image = screen.getByTestId('product-gallery-active-layer').querySelector('img')
+function getStableGalleryImage() {
+  const image = screen.queryByTestId('product-gallery-active-layer')?.querySelector('img')
 
-  if (!(image instanceof HTMLImageElement)) {
+  return image instanceof HTMLImageElement ? image : null
+}
+
+function getEnteringGalleryImage() {
+  const image = screen.queryByTestId('product-gallery-entering-layer')?.querySelector('img')
+
+  return image instanceof HTMLImageElement ? image : null
+}
+
+function getActiveGalleryImage() {
+  const enteringImage = getEnteringGalleryImage()
+
+  if (enteringImage) {
+    return enteringImage
+  }
+
+  const stableImage = getStableGalleryImage()
+
+  if (!stableImage) {
     throw new Error('Expected active gallery image element')
   }
 
-  return image
+  return stableImage
 }
 
 function getLeavingGalleryImage() {
@@ -303,7 +374,7 @@ function getLeavingGalleryImage() {
 
 function advanceGalleryFade() {
   act(() => {
-    jest.advanceTimersByTime(180)
+    jest.advanceTimersByTime(220)
   })
 }
 
@@ -332,9 +403,12 @@ describe('CatalogProductDetailLayout', () => {
     window.matchMedia = undefined as unknown as typeof window.matchMedia
     window.location.hash = ''
     window.Image = originalWindowImage
+    defaultWindowImagePreloadMock = mockWindowImagePreload()
   })
 
   afterEach(() => {
+    defaultWindowImagePreloadMock?.restore()
+    defaultWindowImagePreloadMock = null
     window.Image = originalWindowImage
   })
 
@@ -374,7 +448,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).toHaveClass('touch-none', 'tablet:touch-pan-y')
   })
 
-  it('renders stacked fade layers for the gallery stage', () => {
+  it('renders a stable gallery layer when no image transition is active', () => {
     renderLayout()
 
     const stage = getGalleryStage()
@@ -383,6 +457,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(stage).not.toHaveClass('carousel', '[scroll-snap-type:x_mandatory]')
     expect(screen.getByTestId('product-gallery-active-layer')).toHaveClass('absolute', 'inset-0')
     expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+    expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
     expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
@@ -443,6 +518,33 @@ describe('CatalogProductDetailLayout', () => {
       expect(preloadedSrcs).toEqual(['/images/hamper-2.jpg'])
     } finally {
       restore()
+    }
+  })
+
+  it('keeps the current image visible until a requested unloaded image is ready', () => {
+    const imagePreloadMock = mockWindowImagePreload({ autoLoad: false })
+
+    try {
+      renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
+
+      fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
+
+      expectActiveImage(1, 7)
+      expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+      expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
+
+      act(() => {
+        imagePreloadMock.triggerLoad('/images/hamper-2.jpg')
+      })
+
+      expectActiveImage(2, 7)
+      expect(screen.queryByTestId('product-gallery-active-layer')).not.toBeInTheDocument()
+      expect(getEnteringGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+      expect(getLeavingGalleryImage()).toHaveAttribute('src', '/images/hamper-1.jpg')
+    } finally {
+      imagePreloadMock.restore()
     }
   })
 
@@ -765,7 +867,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.getByText('Free UK shipping')).toBeInTheDocument()
   })
 
-  it('supports image dot navigation with a hidden outgoing fade layer', () => {
+  it('crossfades between current and next image instead of swapping instantly', () => {
     jest.useFakeTimers()
 
     try {
@@ -776,12 +878,16 @@ describe('CatalogProductDetailLayout', () => {
       fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
 
       expectActiveImage(2, 2)
-      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+      expect(screen.queryByTestId('product-gallery-active-layer')).not.toBeInTheDocument()
+      expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
+      expect(getEnteringGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
       expect(screen.getByTestId('product-gallery-leaving-layer')).toHaveAttribute('aria-hidden', 'true')
       expect(getLeavingGalleryImage()).toHaveAttribute('alt', '')
 
       advanceGalleryFade()
 
+      expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
+      expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
     } finally {
       act(() => {
@@ -1008,6 +1114,7 @@ describe('CatalogProductDetailLayout', () => {
 
     expectActiveImage(1, 2)
     expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+    expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
     expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
@@ -1126,6 +1233,7 @@ describe('CatalogProductDetailLayout', () => {
 
       expectActiveImage(6, 7)
       expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 6')
+      expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
 
       advanceGalleryFade()
       expectActiveImage(6, 7)
@@ -1148,6 +1256,7 @@ describe('CatalogProductDetailLayout', () => {
 
       expectActiveImage(7, 7)
       expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 7')
+      expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
       expect(getLeavingGalleryImage()).toHaveAttribute('src', '/images/hamper-2.jpg')
 
       advanceGalleryFade()
@@ -1191,6 +1300,7 @@ describe('CatalogProductDetailLayout', () => {
 
       expectActiveImage(6, 7)
       expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 6')
+      expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
 
       advanceGalleryFade()
       expectActiveImage(6, 7)
@@ -1202,7 +1312,7 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('removes the leaving layer after the fade completes', () => {
+  it('cleans up entering and leaving layers after the crossfade completes', () => {
     jest.useFakeTimers()
 
     try {
@@ -1210,10 +1320,13 @@ describe('CatalogProductDetailLayout', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
 
+      expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
       expect(screen.getByTestId('product-gallery-leaving-layer')).toBeInTheDocument()
 
       advanceGalleryFade()
 
+      expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
+      expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
     } finally {
       act(() => {
@@ -1223,13 +1336,15 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
-  it('skips the leaving layer when reduced motion is preferred', () => {
+  it('skips entering and leaving layers when reduced motion is preferred', () => {
     mockReducedMotionPreference(true)
     renderLayout()
 
     fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
 
     expectActiveImage(2, 2)
+    expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
+    expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
     expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 

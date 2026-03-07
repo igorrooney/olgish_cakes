@@ -48,12 +48,14 @@ type GalleryDirection = 'next' | 'previous'
 
 interface FadeState {
   activeIndex: number
+  enteringIndex: number | null
   leavingIndex: number | null
+  pendingIndex: number | null
   transitionKey: number
 }
 
 const imageSizes = '(min-width: 1024px) 560px, 100vw'
-const fadeDurationMs = 180
+const fadeDurationMs = 220
 
 const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
@@ -115,18 +117,47 @@ function resolveWrappedImageIndex(index: number, imageCount: number) {
   return normalizedIndex >= 0 ? normalizedIndex : normalizedIndex + imageCount
 }
 
-function createNextFadeState(
+function resolveDisplayedImageIndex(state: FadeState) {
+  return state.enteringIndex ?? state.activeIndex
+}
+
+function createImmediateFadeState(
   currentState: FadeState,
-  nextActiveIndex: number,
-  useReducedMotion: boolean
+  nextActiveIndex: number
 ) {
-  if (currentState.activeIndex === nextActiveIndex) {
+  const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
+
+  if (currentDisplayedImageIndex === nextActiveIndex &&
+    currentState.pendingIndex === null &&
+    currentState.enteringIndex === null &&
+    currentState.leavingIndex === null) {
     return currentState
   }
 
   return {
     activeIndex: nextActiveIndex,
-    leavingIndex: useReducedMotion ? null : currentState.activeIndex,
+    enteringIndex: null,
+    leavingIndex: null,
+    pendingIndex: null,
+    transitionKey: currentState.transitionKey
+  }
+}
+
+function createCrossfadeState(
+  currentState: FadeState,
+  nextActiveIndex: number
+) {
+  const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
+
+  if (currentDisplayedImageIndex === nextActiveIndex && currentState.pendingIndex === null) {
+    return currentState
+  }
+
+  return {
+    activeIndex: currentState.activeIndex,
+    enteringIndex: nextActiveIndex,
+    leavingIndex: currentDisplayedImageIndex,
+    pendingIndex: null,
     transitionKey: currentState.transitionKey + 1
   }
 }
@@ -153,7 +184,9 @@ export function CatalogProductDetailLayout({
 }: CatalogProductDetailLayoutProps) {
   const [fadeState, setFadeState] = useState<FadeState>({
     activeIndex: 0,
+    enteringIndex: null,
     leavingIndex: null,
+    pendingIndex: null,
     transitionKey: 0
   })
   const [isGalleryFocused, setIsGalleryFocused] = useState(false)
@@ -162,6 +195,7 @@ export function CatalogProductDetailLayout({
   const fadeCleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
   const activeGalleryPreloadImagesRef = useRef(new Map<string, HTMLImageElement>())
+  const loadedGalleryImageSrcsRef = useRef(new Set<string>())
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchCurrentXRef = useRef<number | null>(null)
@@ -174,13 +208,21 @@ export function CatalogProductDetailLayout({
   const splitPrice = useMemo(() => {
     return splitPriceText(priceText)
   }, [priceText])
-  const normalizedActiveImageIndex = fadeState.activeIndex <= resolvedImages.length - 1
+  const normalizedStableActiveImageIndex = fadeState.activeIndex <= resolvedImages.length - 1
     ? fadeState.activeIndex
     : 0
-  const activeImage = resolvedImages[normalizedActiveImageIndex] ?? fallbackImage
+  const normalizedDisplayedImageIndex = fadeState.enteringIndex !== null && fadeState.enteringIndex <= resolvedImages.length - 1
+    ? fadeState.enteringIndex
+    : normalizedStableActiveImageIndex
+  const stableActiveImage = resolvedImages[normalizedStableActiveImageIndex] ?? fallbackImage
+  const enteringImage = fadeState.enteringIndex !== null && fadeState.enteringIndex <= resolvedImages.length - 1
+    ? resolvedImages[fadeState.enteringIndex]
+    : null
   const leavingImage = fadeState.leavingIndex !== null && fadeState.leavingIndex <= resolvedImages.length - 1
     ? resolvedImages[fadeState.leavingIndex]
     : null
+  const displayedImage = enteringImage ?? stableActiveImage
+  const isCrossfadeActive = enteringImage !== null && leavingImage !== null
   const shouldRenderOrderOnly = isOrderFormOpen && Boolean(orderContent)
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
 
@@ -190,6 +232,82 @@ export function CatalogProductDetailLayout({
       fadeCleanupTimerRef.current = null
     }
   }, [])
+
+  const markGalleryImageSrcAsLoaded = useCallback((imageSrc: string) => {
+    if (imageSrc.length === 0) {
+      return
+    }
+
+    loadedGalleryImageSrcsRef.current.add(imageSrc)
+
+    if (!isMultiImageGallery) {
+      return
+    }
+
+    setFadeState((currentState) => {
+      if (currentState.pendingIndex === null) {
+        return currentState
+      }
+
+      const pendingImage = resolvedImages[currentState.pendingIndex]
+
+      if (!pendingImage || pendingImage.src !== imageSrc) {
+        return currentState
+      }
+
+      return createCrossfadeState(currentState, currentState.pendingIndex)
+    })
+  }, [isMultiImageGallery, resolvedImages])
+
+  const canStartImageTransition = useCallback((imageSrc: string) => {
+    if (loadedGalleryImageSrcsRef.current.has(imageSrc)) {
+      return true
+    }
+
+    return preloadedGalleryImageSrcsRef.current.has(imageSrc) &&
+      !activeGalleryPreloadImagesRef.current.has(imageSrc)
+  }, [])
+
+  const createRequestedFadeState = useCallback((
+    currentState: FadeState,
+    nextImageIndex: number
+  ) => {
+    const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
+
+    if (currentDisplayedImageIndex === nextImageIndex) {
+      if (currentState.pendingIndex === null) {
+        return currentState
+      }
+
+      return {
+        ...currentState,
+        pendingIndex: null
+      }
+    }
+
+    if (prefersReducedMotion) {
+      return createImmediateFadeState(currentState, nextImageIndex)
+    }
+
+    const nextImage = resolvedImages[nextImageIndex]
+
+    if (!nextImage) {
+      return currentState
+    }
+
+    if (canStartImageTransition(nextImage.src)) {
+      return createCrossfadeState(currentState, nextImageIndex)
+    }
+
+    if (currentState.pendingIndex === nextImageIndex) {
+      return currentState
+    }
+
+    return {
+      ...currentState,
+      pendingIndex: nextImageIndex
+    }
+  }, [canStartImageTransition, prefersReducedMotion, resolvedImages])
 
   const resetSwipeTrackingState = useCallback(() => {
     touchStartXRef.current = null
@@ -231,13 +349,12 @@ export function CatalogProductDetailLayout({
     }
 
     setFadeState((currentState) => {
-      return createNextFadeState(
+      return createRequestedFadeState(
         currentState,
-        resolveWrappedImageIndex(nextImageIndex, resolvedImages.length),
-        prefersReducedMotion
+        resolveWrappedImageIndex(nextImageIndex, resolvedImages.length)
       )
     })
-  }, [isMultiImageGallery, prefersReducedMotion, resolvedImages.length])
+  }, [createRequestedFadeState, isMultiImageGallery, resolvedImages.length])
 
   const moveImageByDirection = useCallback((direction: GalleryDirection) => {
     if (!isMultiImageGallery) {
@@ -245,14 +362,15 @@ export function CatalogProductDetailLayout({
     }
 
     setFadeState((currentState) => {
+      const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
       const nextActiveIndex = resolveWrappedImageIndex(
-        currentState.activeIndex + (direction === 'next' ? 1 : -1),
+        currentDisplayedImageIndex + (direction === 'next' ? 1 : -1),
         resolvedImages.length
       )
 
-      return createNextFadeState(currentState, nextActiveIndex, prefersReducedMotion)
+      return createRequestedFadeState(currentState, nextActiveIndex)
     })
-  }, [isMultiImageGallery, prefersReducedMotion, resolvedImages.length])
+  }, [createRequestedFadeState, isMultiImageGallery, resolvedImages.length])
 
   const handlePreviousImage = useCallback(() => {
     moveImageByDirection('previous')
@@ -388,55 +506,74 @@ export function CatalogProductDetailLayout({
   }, [])
 
   useEffect(() => {
+    loadedGalleryImageSrcsRef.current.add(stableActiveImage.src)
+  }, [stableActiveImage.src])
+
+  useEffect(() => {
     clearFadeCleanupTimer()
 
-    if (prefersReducedMotion || fadeState.leavingIndex === null) {
+    if (prefersReducedMotion || fadeState.enteringIndex === null || fadeState.leavingIndex === null) {
       return
     }
 
     fadeCleanupTimerRef.current = setTimeout(() => {
       fadeCleanupTimerRef.current = null
       setFadeState((currentState) => {
-        return currentState.leavingIndex === null
-          ? currentState
-          : {
-              ...currentState,
-              leavingIndex: null
-            }
+        if (currentState.enteringIndex === null || currentState.leavingIndex === null) {
+          return currentState
+        }
+
+        return {
+          activeIndex: currentState.enteringIndex,
+          enteringIndex: null,
+          leavingIndex: null,
+          pendingIndex: currentState.pendingIndex,
+          transitionKey: currentState.transitionKey
+        }
       })
     }, fadeDurationMs)
 
     return clearFadeCleanupTimer
-  }, [clearFadeCleanupTimer, fadeState.leavingIndex, fadeState.transitionKey, prefersReducedMotion])
+  }, [clearFadeCleanupTimer, fadeState.enteringIndex, fadeState.leavingIndex, fadeState.transitionKey, prefersReducedMotion])
 
   useEffect(() => {
-    if (!prefersReducedMotion || fadeState.leavingIndex === null) {
+    if (!prefersReducedMotion) {
       return
     }
 
     setFadeState((currentState) => {
-      return currentState.leavingIndex === null
-        ? currentState
-        : {
-            ...currentState,
-            leavingIndex: null
-          }
+      if (currentState.enteringIndex === null &&
+        currentState.leavingIndex === null &&
+        currentState.pendingIndex === null) {
+        return currentState
+      }
+
+      return createImmediateFadeState(
+        currentState,
+        currentState.pendingIndex ?? currentState.enteringIndex ?? currentState.activeIndex
+      )
     })
-  }, [fadeState.leavingIndex, prefersReducedMotion])
+  }, [prefersReducedMotion])
 
   useEffect(() => {
     setFadeState((currentState) => {
-      const nextActiveIndex = currentState.activeIndex <= resolvedImages.length - 1
-        ? currentState.activeIndex
+      const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
+      const nextActiveIndex = currentDisplayedImageIndex <= resolvedImages.length - 1
+        ? currentDisplayedImageIndex
         : 0
 
-      if (nextActiveIndex === currentState.activeIndex && currentState.leavingIndex === null) {
+      if (currentState.activeIndex === nextActiveIndex &&
+        currentState.enteringIndex === null &&
+        currentState.leavingIndex === null &&
+        currentState.pendingIndex === null) {
         return currentState
       }
 
       return {
         activeIndex: nextActiveIndex,
+        enteringIndex: null,
         leavingIndex: null,
+        pendingIndex: null,
         transitionKey: currentState.transitionKey
       }
     })
@@ -469,7 +606,7 @@ export function CatalogProductDetailLayout({
     }
 
     resolvedImages.forEach((image, index) => {
-      if (index === normalizedActiveImageIndex ||
+      if (index === normalizedDisplayedImageIndex ||
         preloadedGalleryImageSrcsRef.current.has(image.src) ||
         activeGalleryPreloadImagesRef.current.has(image.src)) {
         return
@@ -481,14 +618,18 @@ export function CatalogProductDetailLayout({
         preloadImage.onerror = null
         activeGalleryPreloadImagesRef.current.delete(image.src)
       }
+      const handlePreloadLoad = () => {
+        finalizePreload()
+        markGalleryImageSrcAsLoaded(image.src)
+      }
 
       preloadedGalleryImageSrcsRef.current.add(image.src)
       activeGalleryPreloadImagesRef.current.set(image.src, preloadImage)
-      preloadImage.onload = finalizePreload
+      preloadImage.onload = handlePreloadLoad
       preloadImage.onerror = finalizePreload
       preloadImage.src = image.src
     })
-  }, [normalizedActiveImageIndex, resolvedImages])
+  }, [markGalleryImageSrcAsLoaded, normalizedDisplayedImageIndex, resolvedImages])
 
   useEffect(() => {
     return () => {
@@ -557,7 +698,7 @@ export function CatalogProductDetailLayout({
           className='group focus:outline-none focus-visible:outline-none'
         >
           <span className='sr-only'>
-            Image {normalizedActiveImageIndex + 1} of {resolvedImages.length}
+            Image {normalizedDisplayedImageIndex + 1} of {resolvedImages.length}
           </span>
           <div
             onTouchStart={handleGalleryTouchStart}
@@ -571,44 +712,75 @@ export function CatalogProductDetailLayout({
               data-testid='product-gallery-stage'
               className='relative h-full w-full'
             >
-              {leavingImage ? (
-                <div
-                  key={`leaving-${fadeState.transitionKey}-${fadeState.leavingIndex}`}
-                  data-testid='product-gallery-leaving-layer'
-                  aria-hidden='true'
-                  className='pointer-events-none absolute inset-0 z-10'
-                  style={prefersReducedMotion
-                    ? undefined
-                    : {
-                        animationName: 'catalog-gallery-fade-out',
-                        animationDuration: `${fadeDurationMs}ms`,
-                        animationTimingFunction: 'ease-out',
-                        animationFillMode: 'forwards'
+              {isCrossfadeActive ? (
+                <>
+                  <div
+                    key={`leaving-${fadeState.transitionKey}-${fadeState.leavingIndex}`}
+                    data-testid='product-gallery-leaving-layer'
+                    aria-hidden='true'
+                    className='pointer-events-none absolute inset-0 z-0'
+                    style={prefersReducedMotion
+                      ? undefined
+                      : {
+                          animationName: 'catalog-gallery-fade-out',
+                          animationDuration: `${fadeDurationMs}ms`,
+                          animationTimingFunction: 'ease-in-out',
+                          animationFillMode: 'forwards'
+                        }}
+                  >
+                    <Image
+                      src={leavingImage.src}
+                      alt=''
+                      fill
+                      sizes={imageSizes}
+                      className='object-cover'
+                    />
+                  </div>
+                  <div
+                    key={`entering-${fadeState.transitionKey}-${fadeState.enteringIndex}`}
+                    data-testid='product-gallery-entering-layer'
+                    className='absolute inset-0 z-10'
+                    style={prefersReducedMotion
+                      ? undefined
+                      : {
+                          animationName: 'catalog-gallery-fade-in',
+                          animationDuration: `${fadeDurationMs}ms`,
+                          animationTimingFunction: 'ease-in-out',
+                          animationFillMode: 'forwards'
+                        }}
+                  >
+                    <Image
+                      src={enteringImage.src}
+                      alt={enteringImage.alt}
+                      fill
+                      priority={normalizedDisplayedImageIndex === 0}
+                      sizes={imageSizes}
+                      className='object-cover'
+                      onLoad={() => {
+                        markGalleryImageSrcAsLoaded(enteringImage.src)
                       }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div
+                  key={`active-${fadeState.transitionKey}-${normalizedDisplayedImageIndex}`}
+                  data-testid='product-gallery-active-layer'
+                  className='absolute inset-0'
                 >
                   <Image
-                    src={leavingImage.src}
-                    alt=''
+                    src={displayedImage.src}
+                    alt={displayedImage.alt}
                     fill
+                    priority={normalizedDisplayedImageIndex === 0}
                     sizes={imageSizes}
                     className='object-cover'
+                    onLoad={() => {
+                      markGalleryImageSrcAsLoaded(displayedImage.src)
+                    }}
                   />
                 </div>
-              ) : null}
-              <div
-                key={`active-${fadeState.transitionKey}-${normalizedActiveImageIndex}`}
-                data-testid='product-gallery-active-layer'
-                className='absolute inset-0'
-              >
-                <Image
-                  src={activeImage.src}
-                  alt={activeImage.alt}
-                  fill
-                  priority={normalizedActiveImageIndex === 0}
-                  sizes={imageSizes}
-                  className='object-cover'
-                />
-              </div>
+              )}
             </div>
             {isMultiImageGallery ? (
               <>
@@ -634,7 +806,7 @@ export function CatalogProductDetailLayout({
           {isMultiImageGallery ? (
             <div className='mt-4 flex items-center justify-center gap-2' role='tablist' aria-label='Product image slides'>
               {resolvedImages.map((image, index) => {
-                const isActive = index === normalizedActiveImageIndex
+                const isActive = index === normalizedDisplayedImageIndex
 
                 return (
                   <button
@@ -779,6 +951,16 @@ export function CatalogProductDetailLayout({
         </section>
       </div>
       <style jsx global>{`
+        @keyframes catalog-gallery-fade-in {
+          from {
+            opacity: 0;
+          }
+
+          to {
+            opacity: 1;
+          }
+        }
+
         @keyframes catalog-gallery-fade-out {
           from {
             opacity: 1;
