@@ -190,12 +190,19 @@ export function CatalogProductDetailLayout({
     transitionKey: 0
   })
   const [isGalleryFocused, setIsGalleryFocused] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return false
+    }
+
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  })
   const galleryRegionRef = useRef<HTMLElement | null>(null)
   const fadeCleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prefersReducedMotionRef = useRef(prefersReducedMotion)
   const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
   const activeGalleryPreloadImagesRef = useRef(new Map<string, HTMLImageElement>())
-  const loadedGalleryImageSrcsRef = useRef(new Set<string>())
+  const readyGalleryImageSrcsRef = useRef(new Set<string>())
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchCurrentXRef = useRef<number | null>(null)
@@ -233,12 +240,12 @@ export function CatalogProductDetailLayout({
     }
   }, [])
 
-  const markGalleryImageSrcAsLoaded = useCallback((imageSrc: string) => {
+  const markGalleryImageSrcAsReady = useCallback((imageSrc: string) => {
     if (imageSrc.length === 0) {
       return
     }
 
-    loadedGalleryImageSrcsRef.current.add(imageSrc)
+    readyGalleryImageSrcsRef.current.add(imageSrc)
 
     if (!isMultiImageGallery) {
       return
@@ -255,17 +262,28 @@ export function CatalogProductDetailLayout({
         return currentState
       }
 
+      if (prefersReducedMotionRef.current) {
+        return createImmediateFadeState(currentState, currentState.pendingIndex)
+      }
+
       return createCrossfadeState(currentState, currentState.pendingIndex)
     })
   }, [isMultiImageGallery, resolvedImages])
 
-  const canStartImageTransition = useCallback((imageSrc: string) => {
-    if (loadedGalleryImageSrcsRef.current.has(imageSrc)) {
-      return true
+  const waitForGalleryImageDecode = useCallback((image: HTMLImageElement) => {
+    if (typeof image.decode !== 'function') {
+      return null
     }
 
-    return preloadedGalleryImageSrcsRef.current.has(imageSrc) &&
-      !activeGalleryPreloadImagesRef.current.has(imageSrc)
+    return image.decode().catch(() => {
+      if (!image.complete) {
+        throw new Error('Gallery image decode did not complete')
+      }
+    })
+  }, [])
+
+  const canStartImageTransition = useCallback((imageSrc: string) => {
+    return readyGalleryImageSrcsRef.current.has(imageSrc)
   }, [])
 
   const createRequestedFadeState = useCallback((
@@ -285,14 +303,25 @@ export function CatalogProductDetailLayout({
       }
     }
 
-    if (prefersReducedMotion) {
-      return createImmediateFadeState(currentState, nextImageIndex)
-    }
-
     const nextImage = resolvedImages[nextImageIndex]
 
     if (!nextImage) {
       return currentState
+    }
+
+    if (prefersReducedMotion) {
+      if (canStartImageTransition(nextImage.src)) {
+        return createImmediateFadeState(currentState, nextImageIndex)
+      }
+
+      if (currentState.pendingIndex === nextImageIndex) {
+        return currentState
+      }
+
+      return {
+        ...currentState,
+        pendingIndex: nextImageIndex
+      }
     }
 
     if (canStartImageTransition(nextImage.src)) {
@@ -491,6 +520,10 @@ export function CatalogProductDetailLayout({
   })
 
   useEffect(() => {
+    prefersReducedMotionRef.current = prefersReducedMotion
+  }, [prefersReducedMotion])
+
+  useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return
     }
@@ -506,7 +539,7 @@ export function CatalogProductDetailLayout({
   }, [])
 
   useEffect(() => {
-    loadedGalleryImageSrcsRef.current.add(stableActiveImage.src)
+    readyGalleryImageSrcsRef.current.add(stableActiveImage.src)
   }, [stableActiveImage.src])
 
   useEffect(() => {
@@ -542,18 +575,26 @@ export function CatalogProductDetailLayout({
     }
 
     setFadeState((currentState) => {
-      if (currentState.enteringIndex === null &&
-        currentState.leavingIndex === null &&
-        currentState.pendingIndex === null) {
+      if (currentState.enteringIndex !== null || currentState.leavingIndex !== null) {
+        return createImmediateFadeState(
+          currentState,
+          currentState.pendingIndex ?? currentState.enteringIndex ?? currentState.activeIndex
+        )
+      }
+
+      if (currentState.pendingIndex === null) {
         return currentState
       }
 
-      return createImmediateFadeState(
-        currentState,
-        currentState.pendingIndex ?? currentState.enteringIndex ?? currentState.activeIndex
-      )
+      const pendingImage = resolvedImages[currentState.pendingIndex]
+
+      if (!pendingImage || !canStartImageTransition(pendingImage.src)) {
+        return currentState
+      }
+
+      return createImmediateFadeState(currentState, currentState.pendingIndex)
     })
-  }, [prefersReducedMotion])
+  }, [canStartImageTransition, prefersReducedMotion, resolvedImages])
 
   useEffect(() => {
     setFadeState((currentState) => {
@@ -607,20 +648,47 @@ export function CatalogProductDetailLayout({
 
     resolvedImages.forEach((image, index) => {
       if (index === normalizedDisplayedImageIndex ||
+        readyGalleryImageSrcsRef.current.has(image.src) ||
         preloadedGalleryImageSrcsRef.current.has(image.src) ||
         activeGalleryPreloadImagesRef.current.has(image.src)) {
         return
       }
 
       const preloadImage = new window.Image()
+      const isCurrentPreload = () => {
+        return activeGalleryPreloadImagesRef.current.get(image.src) === preloadImage
+      }
       const finalizePreload = () => {
         preloadImage.onload = null
         preloadImage.onerror = null
-        activeGalleryPreloadImagesRef.current.delete(image.src)
+
+        if (isCurrentPreload()) {
+          activeGalleryPreloadImagesRef.current.delete(image.src)
+        }
       }
       const handlePreloadLoad = () => {
-        finalizePreload()
-        markGalleryImageSrcAsLoaded(image.src)
+        const decodePromise = waitForGalleryImageDecode(preloadImage)
+
+        if (!decodePromise) {
+          if (isCurrentPreload()) {
+            markGalleryImageSrcAsReady(image.src)
+          }
+
+          finalizePreload()
+          return
+        }
+
+        void decodePromise
+          .then(() => {
+            if (isCurrentPreload()) {
+              markGalleryImageSrcAsReady(image.src)
+            }
+          })
+          .catch(() => {
+          })
+          .finally(() => {
+            finalizePreload()
+          })
       }
 
       preloadedGalleryImageSrcsRef.current.add(image.src)
@@ -629,7 +697,7 @@ export function CatalogProductDetailLayout({
       preloadImage.onerror = finalizePreload
       preloadImage.src = image.src
     })
-  }, [markGalleryImageSrcAsLoaded, normalizedDisplayedImageIndex, resolvedImages])
+  }, [markGalleryImageSrcAsReady, normalizedDisplayedImageIndex, resolvedImages, waitForGalleryImageDecode])
 
   useEffect(() => {
     return () => {
@@ -755,9 +823,10 @@ export function CatalogProductDetailLayout({
                       fill
                       priority={normalizedDisplayedImageIndex === 0}
                       sizes={imageSizes}
+                      decoding='sync'
                       className='object-cover'
                       onLoad={() => {
-                        markGalleryImageSrcAsLoaded(enteringImage.src)
+                        markGalleryImageSrcAsReady(enteringImage.src)
                       }}
                     />
                   </div>
@@ -774,9 +843,10 @@ export function CatalogProductDetailLayout({
                     fill
                     priority={normalizedDisplayedImageIndex === 0}
                     sizes={imageSizes}
+                    decoding='sync'
                     className='object-cover'
                     onLoad={() => {
-                      markGalleryImageSrcAsLoaded(displayedImage.src)
+                      markGalleryImageSrcAsReady(displayedImage.src)
                     }}
                   />
                 </div>
