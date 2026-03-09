@@ -1027,6 +1027,8 @@ describe('CatalogProductDetailLayout', () => {
       renderLayout()
 
       expectActiveImage(1, 2)
+      expect(getStableGalleryImage()).not.toHaveAttribute('loading')
+      expect(getStableGalleryImage()).toHaveAttribute('decoding', 'async')
 
       fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
 
@@ -1034,14 +1036,20 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-active-layer')).not.toBeInTheDocument()
       expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
       expect(getEnteringGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+      expect(getEnteringGalleryImage()).toHaveAttribute('loading', 'eager')
+      expect(getEnteringGalleryImage()).toHaveAttribute('decoding', 'async')
       expect(screen.getByTestId('product-gallery-leaving-layer')).toHaveAttribute('aria-hidden', 'true')
       expect(getLeavingGalleryImage()).toHaveAttribute('alt', '')
+      expect(getLeavingGalleryImage()).toHaveAttribute('loading', 'eager')
+      expect(getLeavingGalleryImage()).toHaveAttribute('decoding', 'async')
 
       advanceGalleryFade()
 
       expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
       expect(screen.queryByTestId('product-gallery-entering-layer')).not.toBeInTheDocument()
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
+      expect(getStableGalleryImage()).toHaveAttribute('loading', 'eager')
+      expect(getStableGalleryImage()).toHaveAttribute('decoding', 'async')
     } finally {
       act(() => {
         jest.runOnlyPendingTimers()
@@ -2035,5 +2043,6 @@ describe('CatalogProductDetailLayout', () => {
     )
   })
 })
+
 
 

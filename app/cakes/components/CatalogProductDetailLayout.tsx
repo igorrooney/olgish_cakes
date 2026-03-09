@@ -268,6 +268,7 @@ export function CatalogProductDetailLayout({
   const shouldRenderOrderOnly = isOrderFormOpen && Boolean(orderContent)
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
   const shouldPreloadInitialHeroImage = fadeState.transitionKey === 0 && normalizedDisplayedImageIndex === 0
+  const stableGalleryImageLoading = shouldPreloadInitialHeroImage ? undefined : 'eager'
 
   const clearFadeCleanupTimer = useCallback(() => {
     if (fadeCleanupTimerRef.current !== null) {
@@ -849,7 +850,9 @@ export function CatalogProductDetailLayout({
                       src={leavingImage.src}
                       alt=''
                       fill
+                      loading='eager'
                       sizes={imageSizes}
+                      decoding='async'
                       className='object-cover'
                     />
                   </div>
@@ -871,8 +874,9 @@ export function CatalogProductDetailLayout({
                       alt={enteringImage.alt}
                       fill
                       preload={shouldPreloadInitialHeroImage}
+                      loading={stableGalleryImageLoading}
                       sizes={imageSizes}
-                      decoding='sync'
+                      decoding='async'
                       className='object-cover'
                       onLoad={() => {
                         markGalleryImageSrcAsReady(enteringImage.src)
@@ -891,8 +895,9 @@ export function CatalogProductDetailLayout({
                     alt={displayedImage.alt}
                     fill
                     preload={shouldPreloadInitialHeroImage}
+                    loading={stableGalleryImageLoading}
                     sizes={imageSizes}
-                    decoding='sync'
+                    decoding='async'
                     className='object-cover'
                     onLoad={() => {
                       markGalleryImageSrcAsReady(displayedImage.src)
@@ -1093,3 +1098,4 @@ export function CatalogProductDetailLayout({
     </article>
   )
 }
+
