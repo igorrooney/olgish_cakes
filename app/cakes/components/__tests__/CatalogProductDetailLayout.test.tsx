@@ -6,16 +6,59 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailSection } from '../CatalogProductDetailLayout'
 import { PREVIOUS_PATHNAME_STATE_KEY } from '../../../utils/history-state'
 
+const mockGalleryImageSizes = `(min-width: 1024px) 560px, 100vw`
+const mockOptimizedImageWidths = [640, 1200] as const
+
+function resolveMockOptimizedImageSrc(logicalSrc: string, width = mockOptimizedImageWidths[1]) {
+  return `/_next/image?url=${encodeURIComponent(logicalSrc)}&w=${width}&q=75`
+}
+
+function resolveMockOptimizedImageSrcSet(logicalSrc: string) {
+  return mockOptimizedImageWidths
+    .map((width) => `${resolveMockOptimizedImageSrc(logicalSrc, width)} ${width}w`)
+    .join(', ')
+}
+
+function resolveMockNextImageProps(logicalSrc: string, sizes = mockGalleryImageSizes) {
+  return {
+    sizes,
+    src: resolveMockOptimizedImageSrc(logicalSrc),
+    srcSet: resolveMockOptimizedImageSrcSet(logicalSrc)
+  }
+}
+
+function resolveMockPreloadRequest(logicalSrc: string) {
+  const imageProps = resolveMockNextImageProps(logicalSrc)
+
+  return {
+    fetchPriority: 'low',
+    sizes: imageProps.sizes,
+    src: imageProps.src,
+    srcSet: imageProps.srcSet
+  }
+}
+
 jest.mock('next/image', () => ({
   __esModule: true,
+  getImageProps: ({
+    sizes,
+    src
+  }: {
+    sizes?: string
+    src: string
+  }) => ({
+    props: resolveMockNextImageProps(src, sizes)
+  }),
   default: ({
     alt,
     fill: _fill,
+    preload: _preload,
     priority: _priority,
     sizes: _sizes,
     ...props
   }: React.ComponentProps<'img'> & {
     fill?: boolean
+    preload?: boolean
     priority?: boolean
     sizes?: string
   }) => (
@@ -36,7 +79,15 @@ jest.mock('next/link', () => ({
 
 const originalWindowImage = window.Image
 
+interface WindowImagePreloadRequest {
+  fetchPriority: string
+  sizes: string
+  src: string
+  srcSet: string
+}
+
 interface WindowImagePreloadMock {
+  preloadedRequests: WindowImagePreloadRequest[]
   preloadedSrcs: string[]
   triggerLoad: (src: string) => void
   triggerDecode: (src: string) => Promise<void>
@@ -131,6 +182,21 @@ const burstNavigationGalleryImages = [
   }
 ]
 
+const mobileOrderFlowGalleryImages = [
+  {
+    src: '/images/hamper-1.jpg',
+    alt: 'Gift hamper image 1'
+  },
+  {
+    src: '/images/filling-preview.jpg',
+    alt: 'Honey filling preview'
+  },
+  {
+    src: '/images/hamper-2.jpg',
+    alt: 'Gift hamper image 2'
+  }
+]
+
 function mockWindowImagePreload(
   options: {
     autoLoad?: boolean
@@ -143,6 +209,7 @@ function mockWindowImagePreload(
     supportsDecode = false,
     autoDecode = supportsDecode && autoLoad
   } = options
+  const preloadedRequests: WindowImagePreloadRequest[] = []
   const preloadedSrcs: string[] = []
   const originalImage = window.Image
   const imageInstancesBySrc = new Map<string, MockWindowImage[]>()
@@ -151,6 +218,9 @@ function mockWindowImagePreload(
     onload: HTMLImageElement['onload'] = null
     onerror: HTMLImageElement['onerror'] = null
     complete = false
+    fetchPriority = 'auto'
+    sizes = ''
+    srcset = ''
     decode?: () => Promise<void>
     private hasSettled = false
     private hasDecoded = false
@@ -181,6 +251,12 @@ function mockWindowImagePreload(
       }
 
       preloadedSrcs.push(value)
+      preloadedRequests.push({
+        fetchPriority: this.fetchPriority,
+        sizes: this.sizes,
+        src: value,
+        srcSet: this.srcset
+      })
 
       const imageInstances = imageInstancesBySrc.get(value) ?? []
       imageInstances.push(this)
@@ -242,6 +318,7 @@ function mockWindowImagePreload(
   window.Image = MockWindowImage as unknown as typeof window.Image
 
   return {
+    preloadedRequests,
     preloadedSrcs,
     triggerLoad(src) {
       imageInstancesBySrc.get(src)?.forEach((imageInstance) => {
@@ -525,13 +602,13 @@ describe('CatalogProductDetailLayout', () => {
   })
 
   it('immediately preloads all non-active gallery images on first render', () => {
-    const { preloadedSrcs, restore } = mockWindowImagePreload()
+    const { preloadedRequests, restore } = mockWindowImagePreload()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
-      expect(preloadedSrcs).toEqual(
-        burstNavigationGalleryImages.slice(1).map((image) => image.src)
+      expect(preloadedRequests).toEqual(
+        burstNavigationGalleryImages.slice(1).map((image) => resolveMockPreloadRequest(image.src))
       )
     } finally {
       restore()
@@ -539,25 +616,25 @@ describe('CatalogProductDetailLayout', () => {
   })
 
   it('does not preload images for a single-image gallery', () => {
-    const { preloadedSrcs, restore } = mockWindowImagePreload()
+    const { preloadedRequests, restore } = mockWindowImagePreload()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', [galleryImages[0]])
 
-      expect(preloadedSrcs).toEqual([])
+      expect(preloadedRequests).toEqual([])
     } finally {
       restore()
     }
   })
 
   it('does not duplicate preloads when rerendered with the same gallery image sources', () => {
-    const { preloadedSrcs, restore } = mockWindowImagePreload()
+    const { preloadedRequests, restore } = mockWindowImagePreload()
     const rerenderedGalleryImages = galleryImages.map((image) => ({ ...image }))
 
     try {
       const { rerender } = renderLayout()
 
-      expect(preloadedSrcs).toEqual(['/images/hamper-2.jpg'])
+      expect(preloadedRequests).toEqual([resolveMockPreloadRequest('/images/hamper-2.jpg')])
 
       rerender(
         <CatalogProductDetailLayout
@@ -578,7 +655,7 @@ describe('CatalogProductDetailLayout', () => {
         />
       )
 
-      expect(preloadedSrcs).toEqual(['/images/hamper-2.jpg'])
+      expect(preloadedRequests).toEqual([resolveMockPreloadRequest('/images/hamper-2.jpg')])
     } finally {
       restore()
     }
@@ -602,7 +679,7 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-2.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       expectActiveImage(1, 7)
@@ -612,7 +689,7 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
 
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-2.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       expectActiveImage(2, 7)
@@ -1430,14 +1507,14 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-2.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       expectActiveImage(1, 7)
       expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()
 
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-2.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       expectActiveImage(2, 7)
@@ -1460,10 +1537,10 @@ describe('CatalogProductDetailLayout', () => {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-2.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-2.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       fireEvent.click(screen.getByRole('button', { name: 'View next image' }))
@@ -1490,10 +1567,10 @@ describe('CatalogProductDetailLayout', () => {
       fireEvent.click(screen.getByRole('tab', { name: 'View image 6' }))
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-2.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-2.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
       })
 
       expectActiveImage(1, 7)
@@ -1503,10 +1580,10 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-6.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-6.jpg'))
       })
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-6.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-6.jpg'))
       })
 
       expectActiveImage(6, 7)
@@ -1517,6 +1594,69 @@ describe('CatalogProductDetailLayout', () => {
     }
   })
 
+  it('preloads and decode-gates a requested filling image inserted into the mobile gallery order flow', async () => {
+    const imagePreloadMock = mockWindowImagePreload({
+      autoLoad: false,
+      supportsDecode: true
+    })
+    const baseProps = {
+      backHref: '/cakes?sort=new&page=2',
+      categoryLabel: 'Cakes by post',
+      title: 'Christmas Gift Box & Card',
+      priceText: '\u00A38.50',
+      priceSuffix: '+ free shipping',
+      keyPoints: [
+        'Freshly baked and packed',
+        'Personalised charity postcard',
+        'Free UK shipping'
+      ],
+      ctaLabel: 'Add to cart +',
+      onCtaClick: jest.fn(),
+      images: mobileOrderFlowGalleryImages,
+      sections
+    }
+
+    try {
+      const { rerender } = render(
+        <CatalogProductDetailLayout
+          {...baseProps}
+        />
+      )
+
+      expect(imagePreloadMock.preloadedRequests).toEqual([
+        resolveMockPreloadRequest('/images/filling-preview.jpg'),
+        resolveMockPreloadRequest('/images/hamper-2.jpg')
+      ])
+
+      rerender(
+        <CatalogProductDetailLayout
+          {...baseProps}
+          requestedActiveImageIndex={1}
+          requestedActiveImageKey='filling-change-1'
+        />
+      )
+
+      expectActiveImage(1, 3)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+
+      act(() => {
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/filling-preview.jpg'))
+      })
+
+      expectActiveImage(1, 3)
+      expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
+
+      await act(async () => {
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/filling-preview.jpg'))
+      })
+
+      expectActiveImage(2, 3)
+      expect(getEnteringGalleryImage()).toHaveAttribute('alt', 'Honey filling preview')
+      expect(getLeavingGalleryImage()).toHaveAttribute('src', '/images/hamper-1.jpg')
+    } finally {
+      imagePreloadMock.restore()
+    }
+  })
   it('waits for decode before applying requested active image updates', async () => {
     const imagePreloadMock = mockWindowImagePreload({
       autoLoad: false,
@@ -1560,10 +1700,10 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
 
       act(() => {
-        imagePreloadMock.triggerLoad('/images/hamper-6.jpg')
+        imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-6.jpg'))
       })
       await act(async () => {
-        await imagePreloadMock.triggerDecode('/images/hamper-6.jpg')
+        await imagePreloadMock.triggerDecode(resolveMockOptimizedImageSrc('/images/hamper-6.jpg'))
       })
 
       expectActiveImage(6, 7)

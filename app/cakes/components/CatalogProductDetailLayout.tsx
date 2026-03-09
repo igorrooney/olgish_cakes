@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import Image, { getImageProps } from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
@@ -54,8 +54,16 @@ interface FadeState {
   transitionKey: number
 }
 
+interface GalleryImagePreloadDescriptor {
+  logicalSrc: string
+  optimizedSrc: string
+  optimizedSrcSet: string
+  sizes: string
+}
+
 const imageSizes = '(min-width: 1024px) 560px, 100vw'
 const fadeDurationMs = 220
+const galleryImageIntrinsicSizePx = 1200
 
 const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
@@ -162,6 +170,30 @@ function createCrossfadeState(
   }
 }
 
+function resolveGalleryImagePreloadDescriptor(
+  image: CatalogProductDetailImage
+): GalleryImagePreloadDescriptor {
+  const {
+    props: {
+      sizes,
+      src,
+      srcSet
+    }
+  } = getImageProps({
+    alt: image.alt,
+    height: galleryImageIntrinsicSizePx,
+    sizes: imageSizes,
+    src: image.src,
+    width: galleryImageIntrinsicSizePx
+  })
+
+  return {
+    logicalSrc: image.src,
+    optimizedSrc: src,
+    optimizedSrcSet: typeof srcSet === 'string' ? srcSet : '',
+    sizes: typeof sizes === 'string' ? sizes : imageSizes
+  }
+}
 export function CatalogProductDetailLayout({
   backHref,
   backLabel = 'Back to results',
@@ -211,6 +243,9 @@ export function CatalogProductDetailLayout({
   const resolvedImages = useMemo(() => {
     return images.length > 0 ? images : [fallbackImage]
   }, [images])
+  const galleryPreloadDescriptors = useMemo(() => {
+    return resolvedImages.map((image) => resolveGalleryImagePreloadDescriptor(image))
+  }, [resolvedImages])
   const isMultiImageGallery = resolvedImages.length > 1
   const splitPrice = useMemo(() => {
     return splitPriceText(priceText)
@@ -232,6 +267,7 @@ export function CatalogProductDetailLayout({
   const isCrossfadeActive = enteringImage !== null && leavingImage !== null
   const shouldRenderOrderOnly = isOrderFormOpen && Boolean(orderContent)
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
+  const shouldPreloadInitialHeroImage = fadeState.transitionKey === 0 && normalizedDisplayedImageIndex === 0
 
   const clearFadeCleanupTimer = useCallback(() => {
     if (fadeCleanupTimerRef.current !== null) {
@@ -642,28 +678,28 @@ export function CatalogProductDetailLayout({
   }, [moveToImage, requestedActiveImageIndex, requestedActiveImageKey, resolvedImages.length])
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !isMultiImageGallery) {
       return
     }
 
-    resolvedImages.forEach((image, index) => {
+    galleryPreloadDescriptors.forEach((preloadDescriptor, index) => {
       if (index === normalizedDisplayedImageIndex ||
-        readyGalleryImageSrcsRef.current.has(image.src) ||
-        preloadedGalleryImageSrcsRef.current.has(image.src) ||
-        activeGalleryPreloadImagesRef.current.has(image.src)) {
+        readyGalleryImageSrcsRef.current.has(preloadDescriptor.logicalSrc) ||
+        preloadedGalleryImageSrcsRef.current.has(preloadDescriptor.logicalSrc) ||
+        activeGalleryPreloadImagesRef.current.has(preloadDescriptor.logicalSrc)) {
         return
       }
 
       const preloadImage = new window.Image()
       const isCurrentPreload = () => {
-        return activeGalleryPreloadImagesRef.current.get(image.src) === preloadImage
+        return activeGalleryPreloadImagesRef.current.get(preloadDescriptor.logicalSrc) === preloadImage
       }
       const finalizePreload = () => {
         preloadImage.onload = null
         preloadImage.onerror = null
 
         if (isCurrentPreload()) {
-          activeGalleryPreloadImagesRef.current.delete(image.src)
+          activeGalleryPreloadImagesRef.current.delete(preloadDescriptor.logicalSrc)
         }
       }
       const handlePreloadLoad = () => {
@@ -671,7 +707,7 @@ export function CatalogProductDetailLayout({
 
         if (!decodePromise) {
           if (isCurrentPreload()) {
-            markGalleryImageSrcAsReady(image.src)
+            markGalleryImageSrcAsReady(preloadDescriptor.logicalSrc)
           }
 
           finalizePreload()
@@ -681,7 +717,7 @@ export function CatalogProductDetailLayout({
         void decodePromise
           .then(() => {
             if (isCurrentPreload()) {
-              markGalleryImageSrcAsReady(image.src)
+              markGalleryImageSrcAsReady(preloadDescriptor.logicalSrc)
             }
           })
           .catch(() => {
@@ -691,13 +727,26 @@ export function CatalogProductDetailLayout({
           })
       }
 
-      preloadedGalleryImageSrcsRef.current.add(image.src)
-      activeGalleryPreloadImagesRef.current.set(image.src, preloadImage)
+      preloadedGalleryImageSrcsRef.current.add(preloadDescriptor.logicalSrc)
+      activeGalleryPreloadImagesRef.current.set(preloadDescriptor.logicalSrc, preloadImage)
       preloadImage.onload = handlePreloadLoad
       preloadImage.onerror = finalizePreload
-      preloadImage.src = image.src
+      if ('fetchPriority' in preloadImage) {
+        preloadImage.fetchPriority = 'low'
+      }
+      if (preloadDescriptor.optimizedSrcSet.length > 0) {
+        preloadImage.srcset = preloadDescriptor.optimizedSrcSet
+      }
+      preloadImage.sizes = preloadDescriptor.sizes
+      preloadImage.src = preloadDescriptor.optimizedSrc
     })
-  }, [markGalleryImageSrcAsReady, normalizedDisplayedImageIndex, resolvedImages, waitForGalleryImageDecode])
+  }, [
+    galleryPreloadDescriptors,
+    isMultiImageGallery,
+    markGalleryImageSrcAsReady,
+    normalizedDisplayedImageIndex,
+    waitForGalleryImageDecode
+  ])
 
   useEffect(() => {
     return () => {
@@ -821,7 +870,7 @@ export function CatalogProductDetailLayout({
                       src={enteringImage.src}
                       alt={enteringImage.alt}
                       fill
-                      priority={normalizedDisplayedImageIndex === 0}
+                      preload={shouldPreloadInitialHeroImage}
                       sizes={imageSizes}
                       decoding='sync'
                       className='object-cover'
@@ -841,7 +890,7 @@ export function CatalogProductDetailLayout({
                     src={displayedImage.src}
                     alt={displayedImage.alt}
                     fill
-                    priority={normalizedDisplayedImageIndex === 0}
+                    preload={shouldPreloadInitialHeroImage}
                     sizes={imageSizes}
                     decoding='sync'
                     className='object-cover'
