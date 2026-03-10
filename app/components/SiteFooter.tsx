@@ -87,7 +87,7 @@ export function SiteFooter() {
               {isConsentEnabled ? (
                 <ManageCookiesLink className="link link-hover font-sans text-sm tablet:text-base text-base-content text-left" />
               ) : null}
-              <Link href="/sitemap" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
+              <Link href="/sitemap.xml" className="link link-hover font-sans text-sm tablet:text-base text-base-content">
                 Sitemap
               </Link>
             </nav>

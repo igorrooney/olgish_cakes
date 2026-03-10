@@ -58,6 +58,7 @@ describe('SiteFooter', () => {
     expect(screen.getByRole('link', { name: 'Cakes by post' })).toHaveAttribute('href', '/cakes-by-post')
     expect(screen.getByRole('link', { name: 'Custom cakes' })).toHaveAttribute('href', '/custom-cakes')
     expect(screen.getByRole('link', { name: 'Learn hub' })).toHaveAttribute('href', '/learn')
+    expect(screen.getByRole('link', { name: 'Sitemap' })).toHaveAttribute('href', '/sitemap.xml')
   })
 
   it('renders contact links', () => {
