@@ -7,6 +7,10 @@ import {
   getCatalogCustomCakesPriceCeiling,
   getCatalogPageData
 } from '../cakes/catalogPageData'
+import {
+  createCatalogMetadata,
+  type ResolvedSearchParams
+} from '../cakes/catalogSeo'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { getAllTestimonialsStats } from '../utils/fetchTestimonials'
 import { buildAggregateRating } from '../utils/review-stats'
@@ -24,53 +28,35 @@ type StructuredData = Record<string, unknown>
 const pageTitle = 'Cakes by Post UK | Ukrainian Letterbox Cake Delivery'
 const pageDescription = 'Order cakes by post across the UK from Olgish Cakes. Browse handmade Ukrainian cake hampers prepared in Leeds and packed fresh for reliable delivery.'
 
-const canonicalUrl = `${baseUrl}/cakes-by-post`
-
 export async function generateMetadata({
   searchParams
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>
 }): Promise<Metadata> {
-  void searchParams
+  const resolvedSearchParams: ResolvedSearchParams = searchParams ? await searchParams : {}
 
-  return {
+  return createCatalogMetadata({
     title: pageTitle,
     description: pageDescription,
     keywords:
       'cakes by post UK, cake by post delivery, letterbox cakes UK, Ukrainian honey cake by post, postal cake gifts, Olgish Cakes Leeds',
-    openGraph: {
-      title: pageTitle,
-      description: pageDescription,
-      url: canonicalUrl,
-      siteName: 'Olgish Cakes',
-      images: [
-        {
-          url: `${baseUrl}/images/gift-hampers-collection.jpg`,
-          width: 1200,
-          height: 630,
-          alt: 'Luxury Ukrainian gift hampers by Olgish Cakes'
-        }
-      ],
-      locale: 'en_GB',
-      type: 'website'
+    canonicalPath: '/cakes-by-post',
+    openGraphImage: {
+      url: '/images/gift-hampers-collection.jpg',
+      alt: 'Luxury Ukrainian gift hampers by Olgish Cakes'
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: pageTitle,
-      description: pageDescription,
-      images: [`${baseUrl}/images/gift-hampers-collection.jpg`]
-    },
-    alternates: {
-      canonical: canonicalUrl
-    },
-    verification: {
-      google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
-    },
-    other: {
-      'geo.region': 'GB-ENG',
-      'geo.placename': 'Leeds'
+    searchParams: resolvedSearchParams,
+    noindexOnQueryFilters: true,
+    extraMetadata: {
+      verification: {
+        google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
+      },
+      other: {
+        'geo.region': 'GB-ENG',
+        'geo.placename': 'Leeds'
+      }
     }
-  }
+  })
 }
 
 function toAbsoluteImageUrl(imageUrl: string) {
@@ -184,7 +170,6 @@ export default async function GiftHampersPage() {
       variant='giftHampers'
       heading='Cakes by post across the UK with handmade Ukrainian flavour'
       intro='Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
-      breadcrumbLabel='Cakes by post'
       canonicalPath='/cakes-by-post'
       localBusinessDescription='Handmade Ukrainian cakes by post, prepared in Leeds and delivered across the UK.'
       catalogData={catalogData}
@@ -203,6 +188,17 @@ export default async function GiftHampersPage() {
       localBusinessData={localBusinessData}
       additionalStructuredData={[
         createGiftHamperItemListStructuredData(giftHampersForStructuredData)
+      ]}
+      includeBreadcrumbStructuredData
+      breadcrumbItems={[
+        {
+          name: 'Home',
+          item: '/'
+        },
+        {
+          name: 'Cakes by post',
+          item: '/cakes-by-post'
+        }
       ]}
     />
   )

@@ -14,9 +14,11 @@ interface CakesFilterSidebarProps {
   onPriceChange: (price: number) => void
   onToggleCollection: (collectionId: string, checked: boolean) => void
   onReset: () => void
+  lockedCollectionIds?: string[]
+  showProductTypeFilters?: boolean
 }
 
-const sectionHeadingClassName = 'mb-1 text-base leading-[1.4] font-normal text-base-content'
+const sectionLabelClassName = 'mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/62'
 const seeMoreButtonClassName = 'btn btn-ghost btn-sm h-auto min-h-0 border-transparent bg-transparent px-0 py-0 text-base font-normal normal-case leading-none text-base-content shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:300] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:140%] tablet:[letter-spacing:0]'
 
 function FilterCheckbox({
@@ -25,6 +27,7 @@ function FilterCheckbox({
   helperText,
   onChange,
   isLoading = false,
+  isDisabled = false,
   loadingSrLabel,
   controlSlotTestId,
   spinnerTestId
@@ -34,12 +37,15 @@ function FilterCheckbox({
   helperText?: string
   onChange: (checked: boolean) => void
   isLoading?: boolean
+  isDisabled?: boolean
   loadingSrLabel?: string
   controlSlotTestId?: string
   spinnerTestId?: string
 }) {
+  const isInteractive = !isLoading && !isDisabled
+
   return (
-    <label className={`label flex w-full items-start justify-start gap-2 p-0 py-1 ${isLoading ? 'cursor-default' : 'cursor-pointer'}`}>
+    <label className={`label flex w-full items-start justify-start gap-2 p-0 py-1 ${isInteractive ? 'cursor-pointer' : 'cursor-default'}`}>
       <span
         aria-live='polite'
         className='m-0 mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
@@ -58,8 +64,9 @@ function FilterCheckbox({
           <input
             type='checkbox'
             checked={checked}
+            disabled={isDisabled}
             onChange={(event) => onChange(event.target.checked)}
-            className='m-0 h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border border-base-content/45 bg-base-100 accent-primary'
+            className='m-0 h-4 w-4 shrink-0 rounded-[4px] border border-base-content/45 bg-base-100 accent-primary disabled:cursor-not-allowed disabled:opacity-70'
           />
         )}
       </span>
@@ -87,7 +94,9 @@ export function CakesFilterSidebar({
   onToggleCustom,
   onPriceChange,
   onToggleCollection,
-  onReset
+  onReset,
+  lockedCollectionIds = [],
+  showProductTypeFilters = true
 }: CakesFilterSidebarProps) {
   const [showAllCollections, setShowAllCollections] = useState(false)
   const activeCollectionOptions = useMemo(() => {
@@ -111,6 +120,7 @@ export function CakesFilterSidebar({
     () => new Set(filters.selectedCollectionIds),
     [filters.selectedCollectionIds]
   )
+  const lockedCollectionIdSet = useMemo(() => new Set(lockedCollectionIds), [lockedCollectionIds])
 
   useEffect(() => {
     setShowAllCollections(false)
@@ -126,10 +136,10 @@ export function CakesFilterSidebar({
   }
 
   return (
-    <aside className='card h-fit border border-base-300 bg-[var(--color-featured-offer)] shadow-none tablet:w-60 tablet:max-w-60'>
+    <aside aria-label='Catalog filters' className='card h-fit border border-base-300 bg-base-100 shadow-[0_16px_30px_rgba(15,23,42,0.03)] tablet:w-60 tablet:max-w-60'>
       <div className='card-body gap-0 p-4'>
         <div className='mb-4 flex items-center justify-between'>
-          <h2 className='m-0 text-base font-normal leading-[1.4] text-base-content'>Filter by</h2>
+          <p className='m-0 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/62'>Filter by</p>
           <button
             type='button'
             onClick={resetAllFilters}
@@ -139,30 +149,32 @@ export function CakesFilterSidebar({
           </button>
         </div>
 
-        <div className='space-y-1'>
-          <FilterCheckbox
-            checked={filters.showByPost}
-            label='Cakes by post'
-            helperText='Delivered nationwide'
-            onChange={onToggleByPost}
-            isLoading={isByPostLoading}
-            loadingSrLabel='Loading cakes by post'
-            controlSlotTestId='by-post-control-slot'
-            spinnerTestId='by-post-loader-spinner'
-          />
-          <FilterCheckbox
-            checked={filters.showCustom}
-            label='Custom cakes'
-            helperText='Made to order'
-            onChange={onToggleCustom}
-            isLoading={isCustomLoading}
-            loadingSrLabel='Loading custom cakes'
-            controlSlotTestId='custom-control-slot'
-            spinnerTestId='custom-loader-spinner'
-          />
-        </div>
+        {showProductTypeFilters ? (
+          <div className='space-y-1'>
+            <FilterCheckbox
+              checked={filters.showByPost}
+              label='Cakes by post'
+              helperText='Delivered nationwide'
+              onChange={onToggleByPost}
+              isLoading={isByPostLoading}
+              loadingSrLabel='Loading cakes by post'
+              controlSlotTestId='by-post-control-slot'
+              spinnerTestId='by-post-loader-spinner'
+            />
+            <FilterCheckbox
+              checked={filters.showCustom}
+              label='Custom cakes'
+              helperText='Made to order'
+              onChange={onToggleCustom}
+              isLoading={isCustomLoading}
+              loadingSrLabel='Loading custom cakes'
+              controlSlotTestId='custom-control-slot'
+              spinnerTestId='custom-loader-spinner'
+            />
+          </div>
+        ) : null}
 
-        <div className='mt-6'>
+        <div className={`${showProductTypeFilters ? 'mt-6' : 'mt-0'}`}>
           <div className='mb-2 flex items-center justify-between text-base leading-[1.4] text-base-content'>
             <span>Price</span>
             <span>{`\u00A30-${filters.maxPrice}`}</span>
@@ -182,14 +194,15 @@ export function CakesFilterSidebar({
 
         {featuredCollectionOptions.length > 0 ? (
           <div className='mt-6 space-y-1'>
-            <h3 className={sectionHeadingClassName}>
+            <p className={sectionLabelClassName}>
               Featured
-            </h3>
+            </p>
             {featuredCollectionOptions.map((option) => (
               <FilterCheckbox
                 key={option.id}
                 checked={selectedCollectionIds.has(option.id)}
                 label={option.label}
+                isDisabled={lockedCollectionIdSet.has(option.id)}
                 onChange={(checked) => onToggleCollection(option.id, checked)}
               />
             ))}
@@ -198,14 +211,15 @@ export function CakesFilterSidebar({
 
         {nonFeaturedCollectionOptions.length > 0 ? (
           <div className='mt-6 hidden space-y-1 tablet:block'>
-            <h3 className={sectionHeadingClassName}>
+            <p className={sectionLabelClassName}>
               Collection
-            </h3>
+            </p>
             {visibleCollectionOptions.map((option) => (
               <FilterCheckbox
                 key={option.id}
                 checked={selectedCollectionIds.has(option.id)}
                 label={option.label}
+                isDisabled={lockedCollectionIdSet.has(option.id)}
                 onChange={(checked) => onToggleCollection(option.id, checked)}
               />
             ))}

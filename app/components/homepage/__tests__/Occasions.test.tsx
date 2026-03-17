@@ -70,6 +70,26 @@ describe('Occasions', () => {
     expect(screen.queryByRole('button', { name: 'Show less' })).not.toBeInTheDocument()
   })
 
+  it('routes anniversary collections to the canonical landing page', async () => {
+    const anniversaryCollection: HomepageCollection = {
+      _id: 'collection-anniversary',
+      name: 'Anniversary Cakes',
+      image: {
+        asset: { _ref: 'image-anniversary', _type: 'reference' },
+        alt: 'Anniversary cake'
+      }
+    }
+
+    const element = await Occasions({ collections: [anniversaryCollection] })
+    render(element)
+
+    expect(screen.getByRole('link', { name: /Anniversary Cakes/i })).toHaveAttribute(
+      'href',
+      '/anniversary-cakes-leeds'
+    )
+    expect(mockGetHomepageCollections).not.toHaveBeenCalled()
+  })
+
   it('returns null when no collections are available', async () => {
     mockGetHomepageCollections.mockResolvedValueOnce([])
 

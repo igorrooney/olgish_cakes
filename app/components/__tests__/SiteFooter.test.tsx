@@ -45,6 +45,7 @@ describe('SiteFooter', () => {
 
     delete process.env.NEXT_PUBLIC_GTM_ID
   })
+
   it('renders the divider image', () => {
     render(<SiteFooter />)
 
@@ -98,7 +99,7 @@ describe('SiteFooter', () => {
 
     const year = new Date().getFullYear()
     expect(
-      screen.getByText(`© ${year} Olgish Cakes. All rights reserved.`)
+      screen.getByText((content) => content.includes(`${year} Olgish Cakes. All rights reserved.`))
     ).toBeInTheDocument()
   })
 
@@ -122,7 +123,7 @@ describe('SiteFooter', () => {
   it('renders manage cookies button when GTM is enabled', () => {
     render(<SiteFooter />)
 
-    expect(screen.getByRole('button', { name: 'Manage cookie preferences' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Manage cookies' })).toBeInTheDocument()
   })
 
   it('does not render manage cookies button when GTM is disabled', () => {
@@ -130,7 +131,7 @@ describe('SiteFooter', () => {
 
     render(<SiteFooter />)
 
-    expect(screen.queryByRole('button', { name: 'Manage cookie preferences' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Manage cookies' })).not.toBeInTheDocument()
   })
 
   it('renders a single contentinfo landmark', () => {

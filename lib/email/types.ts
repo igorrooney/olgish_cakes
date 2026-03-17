@@ -11,7 +11,8 @@ export const emailTemplateIds = [
   'orders-status-update',
   'quote-admin-request',
   'custom-cake-enquiry-admin',
-  'custom-cake-enquiry-customer'
+  'custom-cake-enquiry-customer',
+  'custom-cake-enquiry-failure-alert'
 ] as const
 
 export type EmailTemplateId = (typeof emailTemplateIds)[number]
@@ -88,6 +89,7 @@ export interface OrdersStatusUpdateInput extends EmailTemplateCommonInput {}
 export interface QuoteAdminRequestInput extends EmailTemplateCommonInput {}
 export interface CustomCakeEnquiryAdminInput extends EmailTemplateCommonInput {}
 export interface CustomCakeEnquiryCustomerInput extends EmailTemplateCommonInput {}
+export interface CustomCakeEnquiryFailureAlertInput extends EmailTemplateCommonInput {}
 
 export type EmailRenderInputMap = {
   'contact-admin-inquiry': ContactAdminInquiryInput
@@ -101,6 +103,7 @@ export type EmailRenderInputMap = {
   'quote-admin-request': QuoteAdminRequestInput
   'custom-cake-enquiry-admin': CustomCakeEnquiryAdminInput
   'custom-cake-enquiry-customer': CustomCakeEnquiryCustomerInput
+  'custom-cake-enquiry-failure-alert': CustomCakeEnquiryFailureAlertInput
 }
 
 export interface RenderedEmail {

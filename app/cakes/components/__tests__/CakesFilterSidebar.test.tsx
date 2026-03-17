@@ -63,15 +63,11 @@ describe('CakesFilterSidebar', () => {
   it('uses semantic border token on the sidebar container', () => {
     renderSidebar()
 
-    const filterHeading = screen.getByRole('heading', { name: /Filter by/i })
-    const sidebar = filterHeading.closest('aside')
-
-    if (sidebar === null) {
-      throw new Error('Expected filter sidebar aside to be rendered')
-    }
+    const sidebar = screen.getByLabelText('Catalog filters')
 
     expect(sidebar).toHaveClass('border-base-300')
     expect(sidebar.className).not.toContain('border-[#D9D9D9]')
+    expect(screen.getByText('Filter by')).toBeInTheDocument()
   })
 
   it('renders fixed-size control slots with checkboxes when not loading', () => {

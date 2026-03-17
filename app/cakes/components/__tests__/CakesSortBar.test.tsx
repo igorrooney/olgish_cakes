@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { CakesSortBar } from '../CakesSortBar'
 
 describe('CakesSortBar', () => {
-  it('renders all sort options', () => {
+  it('renders all default sort options', () => {
     render(<CakesSortBar selectedSort='new' onSelectSort={() => {}} />)
 
     expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument()
@@ -10,7 +10,7 @@ describe('CakesSortBar', () => {
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
   })
 
-  it('applies active classes and shows checkmark only for the active option', () => {
+  it('applies active classes and shows checkmark only for the active default option', () => {
     render(<CakesSortBar selectedSort='priceHighToLow' onSelectSort={() => {}} />)
 
     const activeButton = screen.getByRole('button', { name: 'Price: High to low' })
@@ -23,7 +23,7 @@ describe('CakesSortBar', () => {
     expect(inactiveButton.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  it('applies tablet size and spacing classes to all sort buttons', () => {
+  it('applies tablet size and spacing classes to all default sort buttons', () => {
     render(<CakesSortBar selectedSort='new' onSelectSort={() => {}} />)
 
     const labels = ['New', 'Price: High to low', 'Price: Low to high']
@@ -63,5 +63,21 @@ describe('CakesSortBar', () => {
 
     expect(onSelectSort).toHaveBeenCalledTimes(1)
     expect(onSelectSort).toHaveBeenCalledWith('priceHighToLow')
+  })
+
+  it('renders a compact screen-fitting layout for category-page toolbars', () => {
+    render(<CakesSortBar selectedSort='new' onSelectSort={() => {}} layout='inline-compact' />)
+
+    const container = screen.getByRole('button', { name: 'Newest' }).parentElement
+    const newestButton = screen.getByRole('button', { name: 'Newest' })
+    const highButton = screen.getByRole('button', { name: 'Price high' })
+    const lowButton = screen.getByRole('button', { name: 'Price low' })
+
+    expect(container).toHaveClass('grid', 'grid-cols-3', 'gap-2')
+    expect(container).not.toHaveClass('flex-nowrap', 'overflow-x-auto')
+    expect(newestButton).toHaveClass('w-full', 'min-w-0', 'text-center', 'whitespace-normal')
+    expect(highButton).toBeInTheDocument()
+    expect(lowButton).toBeInTheDocument()
+    expect(newestButton.querySelector('svg')).not.toBeInTheDocument()
   })
 })

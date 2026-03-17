@@ -39,6 +39,8 @@ export interface CatalogFilterDefaults {
   custom: boolean
 }
 
+export type CatalogMode = 'all-cakes' | 'category-landing'
+
 export interface CakesTabletCatalogProps {
   cakes: TabletCake[]
   featuredOffer: CakesFeaturedOfferData | null
@@ -48,6 +50,14 @@ export interface CakesTabletCatalogProps {
   lazyCustomCakesPriceCeilingHint?: number
   lazyByPostCakesEndpoint?: string
   lazyByPostCakesPriceCeilingHint?: number
+  catalogMode?: CatalogMode
+  lockedCollectionQueryValues?: string[]
+  showProductTypeFilters?: boolean
+  showDesktopFilters?: boolean
+  showMobileFilterSheet?: boolean
+  showPriceFilter?: boolean
+  showCollectionFilters?: boolean
+  mobileToolbarVariant?: 'full' | 'inline-compact'
 }
 
 export type CakesSortOption = 'new' | 'priceHighToLow' | 'priceLowToHigh'

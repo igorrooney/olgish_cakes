@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { NextRequest } from 'next/server'
-import { proxy } from '../../proxy'
+import { config, proxy } from '../../proxy'
 import { isAdminAuthenticated } from '../../lib/admin-auth'
 
 jest.mock('../../lib/admin-auth', () => ({
@@ -37,14 +37,12 @@ describe('proxy SEO headers for cakes filters', () => {
     )
   })
 
-  it('sets noindex, follow for pure paginated cakes URLs', async () => {
+  it('keeps pure paginated cakes URLs indexable', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/cakes?page=2')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBe(
-      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-    )
+    expect(response.headers.get('X-Robots-Tag')).toBeNull()
   })
 
   it('sets noindex, follow for filtered cakes-by-post URLs', async () => {
@@ -57,14 +55,12 @@ describe('proxy SEO headers for cakes filters', () => {
     )
   })
 
-  it('sets noindex, follow for pure paginated cakes-by-post URLs', async () => {
+  it('keeps pure paginated cakes-by-post URLs indexable', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/cakes-by-post?page=2')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBe(
-      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-    )
+    expect(response.headers.get('X-Robots-Tag')).toBeNull()
   })
 
   it('sets noindex, follow for filtered gift-hampers URLs', async () => {
@@ -77,14 +73,12 @@ describe('proxy SEO headers for cakes filters', () => {
     )
   })
 
-  it('sets noindex, follow for pure paginated gift-hampers URLs', async () => {
+  it('keeps pure paginated gift-hampers URLs indexable', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/gift-hampers?page=2')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBe(
-      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-    )
+    expect(response.headers.get('X-Robots-Tag')).toBeNull()
   })
 
   it('sets noindex, follow for mixed cakes pagination and filter URLs', async () => {
@@ -206,5 +200,30 @@ describe('proxy SEO headers for cakes filters', () => {
     const response = await proxy(request)
 
     expect(response.headers.get('X-Robots-Tag')).toBeNull()
+  })
+
+  it('returns 410 for retired corporate cakes landing page', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/corporate-cakes-leeds')
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(410)
+    expect(response.headers.get('location')).toBeNull()
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, follow')
+  })
+
+  it('redirects retired traditional Ukrainian cakes landing page to /cakes', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/traditional-ukrainian-cakes')
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://olgishcakes.co.uk/cakes')
+  })
+
+  it('excludes crawl metadata routes from the matcher', () => {
+    expect(config.matcher).toContain(
+      '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|sitemap-images.xml|sitemap-products.xml|icon.svg|apple-icon.png).*)'
+    )
   })
 })

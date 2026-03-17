@@ -1,79 +1,75 @@
-'use client';
+'use client'
 
-import React from 'react';
-import Link from 'next/link';
-import { Box, Typography, Chip, Stack } from '@mui/material';
+import Link from 'next/link'
+import { Box, Typography, Chip, Stack } from '@mui/material'
 
 interface CategoryLinksProps {
-  currentCategory?: string;
-  categories: string[];
+  currentCategory?: string
+  categories: string[]
+}
+
+const categoryMappings: Record<string, { url: string, label: string, description: string }> = {
+  'wedding-cakes': {
+    url: '/wedding-cakes',
+    label: 'Wedding Cakes',
+    description: 'Explore our stunning wedding cake collection'
+  },
+  'birthday-cakes': {
+    url: '/birthday-cakes',
+    label: 'Birthday Cakes',
+    description: 'Discover perfect birthday cake designs'
+  },
+  'custom-cakes': {
+    url: '/custom-cake-design',
+    label: 'Custom Cakes',
+    description: 'Create your unique custom cake design'
+  },
+  'honey-cake': {
+    url: '/honey-cake-history',
+    label: 'Honey Cake',
+    description: 'Learn about our famous honey cake'
+  },
+  'seasonal-cakes': {
+    url: '/seasonal-cakes',
+    label: 'Seasonal Cakes',
+    description: 'Cakes for every season and occasion'
+  }
 }
 
 export function CategoryLinks({ currentCategory, categories }: CategoryLinksProps) {
-  // Define category mappings with SEO-friendly URLs
-  const categoryMappings: Record<string, { url: string; label: string; description: string }> = {
-    'wedding-cakes': {
-      url: '/wedding-cakes',
-      label: 'Wedding Cakes',
-      description: 'Explore our stunning wedding cake collection'
-    },
-    'birthday-cakes': {
-      url: '/birthday-cakes',
-      label: 'Birthday Cakes',
-      description: 'Discover perfect birthday cake designs'
-    },
-    'custom-cakes': {
-      url: '/custom-cake-design',
-      label: 'Custom Cakes',
-      description: 'Create your unique custom cake design'
-    },
-    'ukrainian-cakes': {
-      url: '/traditional-ukrainian-cakes',
-      label: 'Ukrainian Cakes',
-      description: 'Authentic Ukrainian cake traditions'
-    },
-    'honey-cake': {
-      url: '/honey-cake-history',
-      label: 'Honey Cake',
-      description: 'Learn about our famous honey cake'
-    },
-    'corporate-cakes': {
-      url: '/corporate-cakes-leeds',
-      label: 'Corporate Cakes',
-      description: 'Professional cakes for business events'
-    },
-    'seasonal-cakes': {
-      url: '/seasonal-cakes',
-      label: 'Seasonal Cakes',
-      description: 'Cakes for every season and occasion'
-    }
-  };
-
-  // Filter out current category and get related categories
   const relatedCategories = categories
-    .filter(cat => cat !== currentCategory)
-    .slice(0, 4); // Show maximum 4 related categories
+    .filter((category) => category.toLowerCase() !== currentCategory?.toLowerCase())
+    .slice(0, 4)
 
-  if (relatedCategories.length === 0) return null;
+  const hasMappedCategories = relatedCategories.some((category) => {
+    return Boolean(categoryMappings[category.toLowerCase()])
+  })
+
+  if (relatedCategories.length === 0 || !hasMappedCategories) {
+    return null
+  }
 
   return (
     <Box sx={{ mt: 4, mb: 4 }}>
       <Typography
-        variant="h4"
+        variant='h4'
         sx={{
-          fontSize: { xs: "1.25rem", md: "1.5rem" },
+          fontSize: { xs: '1.25rem', md: '1.5rem' },
           fontWeight: 600,
-          color: "#1e293b",
-          mb: 2,
+          color: '#1e293b',
+          mb: 2
         }}
       >
         Explore More Categories
       </Typography>
 
-      <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+      <Stack direction='row' spacing={2} flexWrap='wrap' useFlexGap>
         {relatedCategories.map((category) => {
-          const mapping = categoryMappings[category.toLowerCase()];
-          if (!mapping) return null;
+          const mapping = categoryMappings[category.toLowerCase()]
+
+          if (!mapping) {
+            return null
+          }
 
           return (
             <Link
@@ -96,27 +92,27 @@ export function CategoryLinks({ currentCategory, categories }: CategoryLinksProp
                     backgroundColor: '#2E3192',
                     color: 'white',
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(46, 49, 146, 0.15)',
+                    boxShadow: '0 4px 12px rgba(46, 49, 146, 0.15)'
                   },
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.2s ease'
                 }}
                 title={mapping.description}
               />
             </Link>
-          );
+          )
         })}
       </Stack>
 
       <Typography
-        variant="body2"
+        variant='body2'
         sx={{
           color: '#64748b',
           mt: 2,
-          fontStyle: 'italic',
+          fontStyle: 'italic'
         }}
       >
         Discover more cake categories and find the perfect design for your special occasion.
       </Typography>
     </Box>
-  );
+  )
 }

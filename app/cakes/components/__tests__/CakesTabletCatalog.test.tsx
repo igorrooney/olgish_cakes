@@ -580,7 +580,14 @@ function renderCatalog({
   lazyCustomCakesPriceCeilingHint,
   lazyByPostCakesEndpoint,
   lazyByPostCakesPriceCeilingHint,
-  strictMode = false
+  strictMode = false,
+  catalogMode = 'all-cakes',
+  showProductTypeFilters = true,
+  showDesktopFilters = true,
+  showMobileFilterSheet = true,
+  showPriceFilter = true,
+  showCollectionFilters = true,
+  mobileToolbarVariant = 'full'
 }: {
   items?: TabletCake[]
   cakeCount?: number
@@ -594,6 +601,13 @@ function renderCatalog({
   lazyByPostCakesEndpoint?: string
   lazyByPostCakesPriceCeilingHint?: number
   strictMode?: boolean
+  catalogMode?: 'all-cakes' | 'category-landing'
+  showProductTypeFilters?: boolean
+  showDesktopFilters?: boolean
+  showMobileFilterSheet?: boolean
+  showPriceFilter?: boolean
+  showCollectionFilters?: boolean
+  mobileToolbarVariant?: 'full' | 'inline-compact'
 } = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -616,6 +630,13 @@ function renderCatalog({
       lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
       lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
       lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
+      catalogMode={catalogMode}
+      showProductTypeFilters={showProductTypeFilters}
+      showDesktopFilters={showDesktopFilters}
+      showMobileFilterSheet={showMobileFilterSheet}
+      showPriceFilter={showPriceFilter}
+      showCollectionFilters={showCollectionFilters}
+      mobileToolbarVariant={mobileToolbarVariant}
     />
   )
 
@@ -639,7 +660,14 @@ function renderCatalogToMarkup({
   lazyCustomCakesEndpoint,
   lazyCustomCakesPriceCeilingHint,
   lazyByPostCakesEndpoint,
-  lazyByPostCakesPriceCeilingHint
+  lazyByPostCakesPriceCeilingHint,
+  catalogMode = 'all-cakes',
+  showProductTypeFilters = true,
+  showDesktopFilters = true,
+  showMobileFilterSheet = true,
+  showPriceFilter = true,
+  showCollectionFilters = true,
+  mobileToolbarVariant = 'full'
 }: {
   items?: TabletCake[]
   cakeCount?: number
@@ -652,6 +680,13 @@ function renderCatalogToMarkup({
   lazyCustomCakesPriceCeilingHint?: number
   lazyByPostCakesEndpoint?: string
   lazyByPostCakesPriceCeilingHint?: number
+  catalogMode?: 'all-cakes' | 'category-landing'
+  showProductTypeFilters?: boolean
+  showDesktopFilters?: boolean
+  showMobileFilterSheet?: boolean
+  showPriceFilter?: boolean
+  showCollectionFilters?: boolean
+  mobileToolbarVariant?: 'full' | 'inline-compact'
 } = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -675,6 +710,13 @@ function renderCatalogToMarkup({
         lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
         lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
         lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
+        catalogMode={catalogMode}
+        showProductTypeFilters={showProductTypeFilters}
+        showDesktopFilters={showDesktopFilters}
+        showMobileFilterSheet={showMobileFilterSheet}
+        showPriceFilter={showPriceFilter}
+        showCollectionFilters={showCollectionFilters}
+        mobileToolbarVariant={mobileToolbarVariant}
       />
     </QueryClientProvider>
   )
@@ -2308,7 +2350,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getByRole('tab', { name: 'Custom cakes' })).toHaveAttribute('aria-selected', 'true')
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
 
     await waitFor(() => {
       expect(screen.getByTestId('mobile-filter-sort-sheet')).toBeInTheDocument()
@@ -2334,7 +2376,7 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByText('Cake 1')).toBeInTheDocument()
     expect(screen.getByText('Cake 6')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
 
@@ -2363,7 +2405,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
     fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
 
@@ -2392,7 +2434,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
     fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
 
@@ -2427,7 +2469,7 @@ describe('CakesTabletCatalog', () => {
     expect(window.location.search).toContain('collections=h-postal-gifts')
     expect(screen.getByText('No cakes match the selected filters yet.')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
 
     await waitFor(() => {
@@ -2475,7 +2517,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
     fireEvent.click(screen.getByRole('button', { name: 'Apply mobile filters' }))
 
@@ -2498,17 +2540,17 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft sort high to low' }))
     fireEvent.click(screen.getByRole('button', { name: 'Cancel mobile filters' }))
     expect(window.location.search).toBe('')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss mobile filters via backdrop' }))
     expect(window.location.search).toBe('')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open filter and sort' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
     fireEvent.click(screen.getByRole('button', { name: 'Draft first collection' }))
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss mobile filters via esc' }))
     expect(window.location.search).toBe('')
@@ -2804,6 +2846,106 @@ describe('CakesTabletCatalog', () => {
     expect(urlSearchParams.get('maxPrice')).toBe('5')
   })
 
+  it('renders an inline compact mobile sort bar for category landing pages', async () => {
+    renderCatalog({
+      viewportWidth: 390,
+      items: createMixedCatalogItems({
+        customCount: 8,
+        byPostCount: 0
+      }),
+      catalogMode: 'category-landing',
+      showProductTypeFilters: false,
+      showDesktopFilters: false,
+      showMobileFilterSheet: false,
+      showPriceFilter: false,
+      showCollectionFilters: false,
+      mobileToolbarVariant: 'inline-compact'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Sort new' })).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: 'Filter & Sort' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: 'Custom cakes' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Grid view' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Single-column view' })).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+  })
+
+  it('removes the desktop filter sidebar for category landing pages', async () => {
+    renderCatalog({
+      viewportWidth: 1200,
+      cakeCount: 6,
+      catalogMode: 'category-landing',
+      showProductTypeFilters: false,
+      showDesktopFilters: false,
+      showMobileFilterSheet: false,
+      showPriceFilter: false,
+      showCollectionFilters: false,
+      mobileToolbarVariant: 'inline-compact'
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Sort new' })).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('button', { name: 'Reset filters' })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Price range')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Toggle first collection' })).not.toBeInTheDocument()
+  })
+
+  it('preserves pure pagination query params on category landing pages', async () => {
+    renderCatalog({
+      viewportWidth: 1200,
+      items: createMixedCatalogItems({
+        customCount: 12,
+        byPostCount: 0
+      }),
+      search: '?sort=priceLowToHigh&page=2',
+      catalogMode: 'category-landing',
+      showProductTypeFilters: false,
+      showDesktopFilters: false,
+      showMobileFilterSheet: false,
+      showPriceFilter: false,
+      showCollectionFilters: false,
+      mobileToolbarVariant: 'inline-compact'
+    })
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('sort=priceLowToHigh')
+      expect(window.location.search).toContain('page=2')
+    })
+  })
+
+  it('clears hidden filter query params on category landing pages while keeping sort', async () => {
+    renderCatalog({
+      viewportWidth: 1200,
+      items: createMixedCatalogItems({
+        customCount: 12,
+        byPostCount: 0
+      }),
+      search: '?sort=priceLowToHigh&maxPrice=5&collections=c-celebration&page=2',
+      catalogMode: 'category-landing',
+      showProductTypeFilters: false,
+      showDesktopFilters: false,
+      showMobileFilterSheet: false,
+      showPriceFilter: false,
+      showCollectionFilters: false,
+      mobileToolbarVariant: 'inline-compact'
+    })
+
+    await waitFor(() => {
+      expect(window.location.search).toContain('sort=priceLowToHigh')
+    })
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain('maxPrice=')
+      expect(window.location.search).not.toContain('collections=')
+      expect(window.location.search).not.toContain('page=')
+    })
+  })
+
   it('keeps empty state and hides pagination when no cards match', () => {
     renderCatalog({ cakeCount: 0 })
 
@@ -2811,3 +2953,5 @@ describe('CakesTabletCatalog', () => {
     expect(screen.queryByRole('navigation', { name: 'Cake catalog pagination' })).not.toBeInTheDocument()
   })
 })
+
+

@@ -168,7 +168,31 @@ describe('SiteHeader', () => {
     expect(dropdownLinks[0]).toBe('All cakes')
     expect(dropdownLinks[dropdownLinks.length - 1]).toBe('Order form')
     expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
-    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/custom-cake-enquiry')
+    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/#custom-cake-enquiry-heading')
+  })
+
+  it('points the desktop order form link to the canonical quote page outside the homepage', () => {
+    mockPathname = '/birthday-cakes'
+
+    render(<SiteHeader />)
+
+    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/get-custom-quote')
+  })
+
+  it('points wedding cakes navigation to the canonical category page', () => {
+    render(<SiteHeader />)
+
+    const weddingCakesLink = screen.getByRole('link', { name: /wedding cakes/i })
+
+    expect(weddingCakesLink).toHaveAttribute('href', '/wedding-cakes')
+  })
+
+  it('points birthday, anniversary and baby shower navigation to canonical category page links', () => {
+    render(<SiteHeader />)
+
+    expect(screen.getByRole('link', { name: /birthday cakes/i })).toHaveAttribute('href', '/birthday-cakes')
+    expect(screen.getByRole('link', { name: /anniversary cakes/i })).toHaveAttribute('href', '/anniversary-cakes-leeds')
+    expect(screen.getByRole('link', { name: /baby shower cakes/i })).toHaveAttribute('href', '/baby-shower-cakes')
   })
 
   it('removes all cakes from mobile menu and points custom cakes to /cakes', () => {
@@ -364,7 +388,7 @@ describe('SiteHeader', () => {
     expect(learnSummary).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('keeps desktop dropdown open when clicking inside dropdown content', () => {
+  it('closes desktop dropdown when clicking a custom cakes category link on the same pathname', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
@@ -380,10 +404,33 @@ describe('SiteHeader', () => {
 
     expect(customDetails.open).toBe(true)
 
-    const orderFormLink = screen.getByRole('link', { name: /order form/i })
-    fireEvent.click(orderFormLink)
+    const weddingCakesLink = screen.getByRole('link', { name: /wedding cakes/i })
+    fireEvent.click(weddingCakesLink)
+
+    expect(customDetails.open).toBe(false)
+  })
+
+  it('closes desktop dropdown when clicking another cakes category while already on /cakes', () => {
+    mockPathname = '/cakes'
+    render(<SiteHeader />)
+
+    const customSummaryText = screen.getByText(/custom cakes/i)
+    const customSummary = customSummaryText.closest('summary')
+
+    if (!customSummary) {
+      throw new Error('Custom cakes summary not found')
+    }
+
+    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+
+    fireEvent.click(customSummary)
 
     expect(customDetails.open).toBe(true)
+
+    const birthdayCakesLink = screen.getByRole('link', { name: /birthday cakes/i })
+    fireEvent.click(birthdayCakesLink)
+
+    expect(customDetails.open).toBe(false)
   })
 
   it('toggles desktop dropdowns with keyboard', () => {
@@ -473,4 +520,7 @@ describe('SiteHeader', () => {
     expect(updatedCustomDetails.open).toBe(true)
   })
 })
+
+
+
 

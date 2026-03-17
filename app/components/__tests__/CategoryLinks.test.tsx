@@ -5,230 +5,175 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { CategoryLinks } from '../CategoryLinks'
 
-// Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: MockProps) => <a href={href} {...props}>{children}</a>
+  return ({ children, href, ...props }: MockProps) => (
+    <a href={href} {...props}>{children}</a>
+  )
 })
 
-// Mock MUI
 jest.mock('@mui/material', () => ({
-  Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
+  Box: ({ children, sx, ...props }: MockProps) => (
+    <div data-testid='box' {...props}>{children}</div>
+  ),
   Typography: ({ children, variant, className, sx, ...props }: MockProps) => (
-    <div data-testid="typography" data-variant={variant} className={className} {...props}>
+    <div data-testid='typography' data-variant={variant} className={className} {...props}>
       {children}
     </div>
   ),
   Chip: ({ label, size, className, sx, title, ...props }: MockProps) => (
-    <span data-testid="chip" data-size={size} className={className} title={title} {...props}>
+    <span data-testid='chip' data-size={size} className={className} title={title} {...props}>
       {label}
     </span>
   ),
   Stack: ({ children, direction, spacing, flexWrap, useFlexGap, ...props }: MockProps) => (
-    <div data-testid="stack" data-direction={direction} {...props}>{children}</div>
+    <div data-testid='stack' data-direction={direction} {...props}>{children}</div>
   )
 }))
 
 describe('CategoryLinks', () => {
-  const categories = [
-    'wedding-cakes',
-    'birthday-cakes',
-    'custom-cakes',
-    'ukrainian-cakes'
-  ]
+  const activeCategories = ['wedding-cakes', 'birthday-cakes', 'custom-cakes', 'honey-cake']
 
   describe('Rendering', () => {
-    it('should render category links', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      expect(screen.getByText('Explore More Categories')).toBeInTheDocument()
-    })
-
-    it('should render Box container', () => {
-      render(<CategoryLinks categories={categories} />)
+    it('renders the wrapper content and active mapped categories', () => {
+      render(<CategoryLinks categories={activeCategories} />)
 
       expect(screen.getAllByTestId('box').length).toBeGreaterThan(0)
-    })
-
-    it('should render Stack component', () => {
-      render(<CategoryLinks categories={categories} />)
-
       expect(screen.getByTestId('stack')).toBeInTheDocument()
-    })
-
-    it('should render heading', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      const typography = screen.getAllByTestId('typography')
-      const heading = typography.find(t => t.textContent === 'Explore More Categories')
-      expect(heading).toBeTruthy()
-    })
-
-    it('should render description text', () => {
-      render(<CategoryLinks categories={categories} />)
-
+      expect(screen.getByText('Explore More Categories')).toBeInTheDocument()
       expect(screen.getByText(/Discover more cake categories/)).toBeInTheDocument()
+      expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
+      expect(screen.getByText('Birthday Cakes')).toBeInTheDocument()
+      expect(screen.getByText('Custom Cakes')).toBeInTheDocument()
+      expect(screen.getByText('Honey Cake')).toBeInTheDocument()
     })
   })
 
   describe('Category Filtering', () => {
-    it('should filter out current category', () => {
-      render(<CategoryLinks currentCategory="wedding-cakes" categories={categories} />)
+    it('filters out the current category case-insensitively', () => {
+      render(<CategoryLinks currentCategory='WEDDING-CAKES' categories={activeCategories} />)
 
       expect(screen.queryByText('Wedding Cakes')).not.toBeInTheDocument()
-    })
-
-    it('should show other categories when current is specified', () => {
-      render(<CategoryLinks currentCategory="wedding-cakes" categories={categories} />)
-
       expect(screen.getByText('Birthday Cakes')).toBeInTheDocument()
       expect(screen.getByText('Custom Cakes')).toBeInTheDocument()
     })
 
-    it('should show all categories when currentCategory not specified', () => {
-      render(<CategoryLinks categories={categories} />)
+    it('slices to the first four categories before omitting unmapped retired slugs', () => {
+      render(
+        <CategoryLinks
+          categories={[
+            'wedding-cakes',
+            'ukrainian-cakes',
+            'custom-cakes',
+            'corporate-cakes',
+            'birthday-cakes'
+          ]}
+        />
+      )
 
       expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
-      expect(screen.getByText('Birthday Cakes')).toBeInTheDocument()
       expect(screen.getByText('Custom Cakes')).toBeInTheDocument()
-      expect(screen.getByText('Ukrainian Cakes')).toBeInTheDocument()
-    })
-
-    it('should limit to 4 categories', () => {
-      const manyCategories = [
-        'wedding-cakes',
-        'birthday-cakes',
-        'custom-cakes',
-        'ukrainian-cakes',
-        'honey-cake',
-        'corporate-cakes',
-        'seasonal-cakes'
-      ]
-
-      const { container } = render(<CategoryLinks categories={manyCategories} />)
-
-      const chips = container.querySelectorAll('[data-testid="chip"]')
-      expect(chips.length).toBeLessThanOrEqual(4)
+      expect(screen.queryByText('Ukrainian Cakes')).not.toBeInTheDocument()
+      expect(screen.queryByText('Corporate Cakes')).not.toBeInTheDocument()
+      expect(screen.queryByText('Birthday Cakes')).not.toBeInTheDocument()
+      expect(screen.getAllByTestId('chip')).toHaveLength(2)
     })
   })
 
   describe('Category Links', () => {
-    it('should link to wedding-cakes URL', () => {
-      render(<CategoryLinks categories={categories} />)
+    it('renders active category links with the correct destinations', () => {
+      render(<CategoryLinks categories={activeCategories} />)
 
-      const weddingLink = screen.getByText('Wedding Cakes').closest('a')
-      expect(weddingLink).toHaveAttribute('href', '/wedding-cakes')
+      expect(screen.getByText('Wedding Cakes').closest('a')).toHaveAttribute('href', '/wedding-cakes')
+      expect(screen.getByText('Birthday Cakes').closest('a')).toHaveAttribute('href', '/birthday-cakes')
+      expect(screen.getByText('Custom Cakes').closest('a')).toHaveAttribute('href', '/custom-cake-design')
+      expect(screen.getByText('Honey Cake').closest('a')).toHaveAttribute('href', '/honey-cake-history')
     })
 
-    it('should link to birthday-cakes URL', () => {
-      render(<CategoryLinks categories={categories} />)
+    it('keeps active category descriptions in the chip title attribute', () => {
+      render(<CategoryLinks categories={['wedding-cakes']} />)
 
-      const birthdayLink = screen.getByText('Birthday Cakes').closest('a')
-      expect(birthdayLink).toHaveAttribute('href', '/birthday-cakes')
-    })
-
-    it('should link to custom-cakes URL', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      const customLink = screen.getByText('Custom Cakes').closest('a')
-      expect(customLink).toHaveAttribute('href', '/custom-cake-design')
-    })
-
-    it('should link to ukrainian-cakes URL', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      const ukrainianLink = screen.getByText('Ukrainian Cakes').closest('a')
-      expect(ukrainianLink).toHaveAttribute('href', '/traditional-ukrainian-cakes')
+      expect(screen.getByTestId('chip')).toHaveAttribute('title', 'Explore our stunning wedding cake collection')
     })
   })
 
-  describe('Empty State', () => {
-    it('should return null when no categories', () => {
-      const { container } = render(<CategoryLinks categories={[]} />)
+  describe('Retired Categories', () => {
+    it('does not render chips or links for retired slugs', () => {
+      render(<CategoryLinks categories={['ukrainian-cakes', 'corporate-cakes', 'wedding-cakes']} />)
 
-      expect(container.firstChild).toBeNull()
+      expect(screen.queryByText('Ukrainian Cakes')).not.toBeInTheDocument()
+      expect(screen.queryByText('Corporate Cakes')).not.toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Browse Ukrainian Cakes cakes' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: 'Browse Corporate Cakes cakes' })).not.toBeInTheDocument()
+      expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
     })
 
-    it('should return null when only current category exists', () => {
-      const { container } = render(
-        <CategoryLinks currentCategory="wedding-cakes" categories={['wedding-cakes']} />
-      )
-
-      expect(container.firstChild).toBeNull()
-    })
-
-    it('should render when at least one category remains after filtering', () => {
+    it('renders only active mapped categories from a mixed list', () => {
       render(
         <CategoryLinks
-          currentCategory="wedding-cakes"
-          categories={['wedding-cakes', 'birthday-cakes']}
+          categories={['ukrainian-cakes', 'wedding-cakes', 'unknown-category', 'corporate-cakes']}
         />
       )
 
-      expect(screen.getByText('Birthday Cakes')).toBeInTheDocument()
+      expect(screen.getAllByTestId('chip')).toHaveLength(1)
+      expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
     })
   })
 
   describe('Category Mappings', () => {
-    it('should skip unmapped categories', () => {
-      render(<CategoryLinks categories={['wedding-cakes', 'unknown-category']} />)
+    it('skips unknown categories and matches categories case-insensitively', () => {
+      render(<CategoryLinks categories={['WEDDING-CAKES', 'unknown-category']} />)
 
       expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
-      // unknown-category should not render
-      const chips = screen.getAllByTestId('chip')
-      expect(chips.length).toBe(1)
-    })
-
-    it('should handle case-insensitive category matching', () => {
-      render(<CategoryLinks categories={['WEDDING-CAKES']} />)
-
-      expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
-    })
-
-    it('should provide descriptions in title attribute', () => {
-      render(<CategoryLinks categories={['wedding-cakes']} />)
-
-      const chip = screen.getByTestId('chip')
-      expect(chip).toHaveAttribute('title', 'Explore our stunning wedding cake collection')
+      expect(screen.getAllByTestId('chip')).toHaveLength(1)
     })
   })
 
   describe('Accessibility', () => {
-    it('should have aria-labels for links', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      const weddingLink = screen.getByText('Wedding Cakes').closest('a')
-      expect(weddingLink).toHaveAttribute('aria-label', 'Browse Wedding Cakes cakes')
-    })
-
-    it('should remove text decoration from links', () => {
-      const { container } = render(<CategoryLinks categories={categories} />)
-
+    it('keeps aria-labels and link styling for rendered links', () => {
+      const { container } = render(<CategoryLinks categories={['wedding-cakes', 'birthday-cakes']} />)
       const links = container.querySelectorAll('a')
-      links.forEach(link => {
+
+      expect(screen.getByRole('link', { name: 'Browse Wedding Cakes cakes' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Browse Birthday Cakes cakes' })).toBeInTheDocument()
+
+      links.forEach((link) => {
         expect(link).toHaveStyle({ textDecoration: 'none' })
       })
     })
   })
 
+  describe('Empty State', () => {
+    it('returns null when no categories are provided', () => {
+      const { container } = render(<CategoryLinks categories={[]} />)
+
+      expect(container.firstChild).toBeNull()
+    })
+
+    it('returns null when only the current category remains after filtering', () => {
+      const { container } = render(
+        <CategoryLinks currentCategory='wedding-cakes' categories={['wedding-cakes']} />
+      )
+
+      expect(container.firstChild).toBeNull()
+    })
+
+    it('returns null when nothing mapped remains after filtering and unmapping', () => {
+      const { container } = render(
+        <CategoryLinks
+          currentCategory='wedding-cakes'
+          categories={['wedding-cakes', 'ukrainian-cakes', 'corporate-cakes', 'unknown-category']}
+        />
+      )
+
+      expect(container.firstChild).toBeNull()
+    })
+  })
+
   describe('Props', () => {
-    it('should accept categories array', () => {
-      render(<CategoryLinks categories={categories} />)
+    it('handles an undefined currentCategory', () => {
+      render(<CategoryLinks categories={['seasonal-cakes']} />)
 
-      const chips = screen.getAllByTestId('chip')
-      expect(chips.length).toBeGreaterThan(0)
-    })
-
-    it('should accept optional currentCategory', () => {
-      render(<CategoryLinks currentCategory="wedding-cakes" categories={categories} />)
-
-      expect(screen.queryByText('Wedding Cakes')).not.toBeInTheDocument()
-    })
-
-    it('should handle undefined currentCategory', () => {
-      render(<CategoryLinks categories={categories} />)
-
-      expect(screen.getByText('Wedding Cakes')).toBeInTheDocument()
+      expect(screen.getByText('Seasonal Cakes')).toBeInTheDocument()
     })
   })
 })
-

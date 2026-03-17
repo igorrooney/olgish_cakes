@@ -138,6 +138,8 @@ describe('EnquiryForm', () => {
     }
 
     expect(container).toHaveClass('tablet:max-w-[696px]')
+    expect(heading).toHaveClass('scroll-mt-24')
+    expect(heading).toHaveClass('tablet:scroll-mt-36')
     expect(heading).toHaveClass('tablet:text-[36px]')
     expect(heading).toHaveClass('tablet:leading-[52px]')
     expect(heading).toHaveClass('tablet:max-w-[331px]')
@@ -491,6 +493,35 @@ describe('EnquiryForm', () => {
     await waitFor(() => {
       const enabledButton = screen.getByRole('button', { name: /enquiry sent/i })
       expect(enabledButton).not.toBeDisabled()
+    })
+  })
+
+  it('shows a server-provided message when submission fails on the server', async () => {
+    ;(global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === '/api/csrf-token') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ token: 'test-csrf-token-123' })
+        })
+      }
+
+      if (url === '/api/custom-cake-enquiry') {
+        return Promise.resolve({
+          ok: false,
+          json: async () => ({ error: 'Internal server error' })
+        })
+      }
+
+      return Promise.reject(new Error('Unexpected fetch call'))
+    })
+
+    await renderWithCsrf()
+    fillValidForm()
+
+    fireEvent.click(screen.getByRole('button', { name: /send enquiry/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/internal server error/i)).toBeInTheDocument()
     })
   })
 })

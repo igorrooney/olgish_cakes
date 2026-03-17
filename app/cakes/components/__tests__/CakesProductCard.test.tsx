@@ -151,13 +151,13 @@ describe('CakesProductCard', () => {
   it('renders the card as a single clickable link', () => {
     renderCard()
 
-    expect(screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toBeInTheDocument()
   })
 
   it('links CTA to the cake details page', () => {
     renderCard()
 
-    expect(screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toHaveAttribute(
       'href',
       '/cakes/christmas-honey-cake'
     )
@@ -166,13 +166,13 @@ describe('CakesProductCard', () => {
   it('sets CTA accessible name using the cake name', () => {
     renderCard({ name: 'Kyiv Cake' })
 
-    expect(screen.getByRole('link', { name: 'View details for Kyiv Cake' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Kyiv Cake/i })).toBeInTheDocument()
   })
 
   it('keeps card layout classes for equal-height rows and bottom-aligned price', () => {
     const { container } = renderCard()
     const article = container.querySelector('article')
-    const cardLink = screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })
+    const cardLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
     const price = screen.getByText(/from.*27/i)
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
     const imageWrapper = image.parentElement
@@ -262,7 +262,7 @@ describe('CakesProductCard', () => {
 
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
     const imageWrapper = image.parentElement
-    const mobileLink = screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })
+    const mobileLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
 
     expect(image).toHaveAttribute('sizes', '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)')
     expect(imageWrapper).not.toBeNull()
@@ -279,7 +279,7 @@ describe('CakesProductCard', () => {
 
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
     const imageWrapper = image.parentElement
-    const mobileLink = screen.getByRole('link', { name: 'View details for Christmas Honey Cake' })
+    const mobileLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
     const mobilePriceChip = screen.getByTestId('mobile-price-chip')
     const mobileHeading = screen.getByRole('heading', { level: 3, name: 'Christmas Honey Cake' })
 
@@ -368,3 +368,4 @@ describe('CakesProductCard', () => {
     expect(screen.getByTestId('mobile-price-chip')).not.toHaveTextContent(/from/i)
   })
 })
+

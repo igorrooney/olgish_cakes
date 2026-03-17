@@ -400,7 +400,7 @@ export default function ChristmasCakesLeedsPage() {
                 Order Christmas Cakes
               </Button>
             </Link>
-              <Link href="/traditional-ukrainian-cakes" style={{ textDecoration: 'none' }}>
+              <Link href="/ukrainian-cake" style={{ textDecoration: 'none' }}>
               <Button variant="outlined"
                 color="primary"
                 size="large"

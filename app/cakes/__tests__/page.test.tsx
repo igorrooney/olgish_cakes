@@ -328,13 +328,14 @@ describe('CakesPage', () => {
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
   })
 
-  it('uses base canonical metadata for pure pagination query', async () => {
+  it('uses self canonical metadata for pure pagination query', async () => {
     const metadata = await generateMetadata({
       searchParams: Promise.resolve({ page: '2' })
     })
 
-    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
-    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes?page=2')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes?page=2')
+    expect(metadata.robots).toBeUndefined()
   })
 
   it('falls back to base canonical metadata for mixed pagination query', async () => {
@@ -344,6 +345,10 @@ describe('CakesPage', () => {
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
+    expect(metadata.robots).toEqual({
+      index: false,
+      follow: true
+    })
   })
 
   it('keeps metadata title and description for SEO', async () => {
@@ -385,7 +390,7 @@ describe('CakesPage', () => {
           name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
         })
       ).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toBeInTheDocument()
       expect(warnSpy).toHaveBeenCalledWith(
         'Failed to fetch by-post cakes price ceiling hint for cakes page:',
         expect.any(Error)
@@ -407,8 +412,8 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View details for Postal Gift Hamper' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Postal Gift Hamper/i })).not.toBeInTheDocument()
 
     const byPostCheckbox = screen.getByRole('checkbox', { name: /Cakes by post/i })
     const customCheckbox = screen.getByRole('checkbox', { name: /Custom cakes/i })
@@ -418,15 +423,15 @@ describe('CakesPage', () => {
 
     fireEvent.click(byPostCheckbox)
 
-    await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })
-    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
+    await screen.findByRole('link', { name: /View details for Postal Gift Hamper/i })
+    expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Postal Gift Hamper/i })).toBeInTheDocument()
 
     fireEvent.click(customCheckbox)
 
-    await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })
-    expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
+    await screen.findByRole('link', { name: /View details for Postal Gift Hamper/i })
+    expect(screen.queryByRole('link', { name: /View details for Sample Honey Cake/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Postal Gift Hamper/i })).toBeInTheDocument()
   })
 
   it('restores filter state from URL params for shareable links', async () => {
@@ -444,8 +449,8 @@ describe('CakesPage', () => {
     const customCheckbox = screen.getByRole('checkbox', { name: /Custom cakes/i })
 
     expect(customCheckbox).not.toBeChecked()
-    expect(screen.queryByRole('link', { name: 'View details for Sample Honey Cake' })).not.toBeInTheDocument()
-    expect(await screen.findByRole('link', { name: 'View details for Postal Gift Hamper' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Sample Honey Cake/i })).not.toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: /View details for Postal Gift Hamper/i })).toBeInTheDocument()
 
     const byPostCheckbox = await screen.findByRole('checkbox', { name: /Cakes by post/i })
     expect(byPostCheckbox).toBeChecked()
@@ -473,8 +478,98 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page, '?collections=c-wedding-cakes')
 
-    expect(screen.getByRole('link', { name: 'View details for Wedding Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View details for Kyiv Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Wedding Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Kyiv Cake/i })).not.toBeInTheDocument()
+  })
+
+  it('restores birthday collection filters from URL params', async () => {
+    mockedGetHomepageCollections.mockResolvedValueOnce([{
+      _id: 'collection-birthday',
+      name: 'Birthday Cakes',
+      isFeatured: false
+    }])
+    mockedGetAllCakes.mockResolvedValueOnce([
+      {
+        ...sampleCake,
+        _id: 'cake-birthday-1',
+        name: 'Birthday Star Cake',
+        slug: { current: 'birthday-star-cake' },
+        collections: [{ _id: 'collection-birthday', name: 'Birthday Cakes' }]
+      },
+      {
+        ...sampleCake,
+        _id: 'cake-birthday-2',
+        name: 'Kyiv Cake',
+        slug: { current: 'kyiv-cake' },
+        collections: [{ _id: 'collection-other', name: 'Traditional' }]
+      }
+    ])
+
+    const page = await CakesPage()
+    renderCakesPage(page, '?collections=c-birthday-cakes')
+
+    expect(screen.getByRole('link', { name: /View details for Birthday Star Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Kyiv Cake/i })).not.toBeInTheDocument()
+  })
+
+  it('restores anniversary collection filters from URL params', async () => {
+    mockedGetHomepageCollections.mockResolvedValueOnce([{
+      _id: 'collection-anniversary',
+      name: 'Anniversary Cakes',
+      isFeatured: false
+    }])
+    mockedGetAllCakes.mockResolvedValueOnce([
+      {
+        ...sampleCake,
+        _id: 'cake-anniversary-1',
+        name: 'Anniversary Rose Cake',
+        slug: { current: 'anniversary-rose-cake' },
+        collections: [{ _id: 'collection-anniversary', name: 'Anniversary Cakes' }]
+      },
+      {
+        ...sampleCake,
+        _id: 'cake-anniversary-2',
+        name: 'Kyiv Cake',
+        slug: { current: 'kyiv-cake' },
+        collections: [{ _id: 'collection-other', name: 'Traditional' }]
+      }
+    ])
+
+    const page = await CakesPage()
+    renderCakesPage(page, '?collections=c-anniversary-cakes')
+
+    expect(screen.getByRole('link', { name: /View details for Anniversary Rose Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Kyiv Cake/i })).not.toBeInTheDocument()
+  })
+
+  it('restores baby shower collection filters from URL params', async () => {
+    mockedGetHomepageCollections.mockResolvedValueOnce([{
+      _id: 'collection-baby-shower',
+      name: 'Baby Shower Cakes',
+      isFeatured: false
+    }])
+    mockedGetAllCakes.mockResolvedValueOnce([
+      {
+        ...sampleCake,
+        _id: 'cake-baby-shower-1',
+        name: 'Baby Shower Cloud Cake',
+        slug: { current: 'baby-shower-cloud-cake' },
+        collections: [{ _id: 'collection-baby-shower', name: 'Baby Shower Cakes' }]
+      },
+      {
+        ...sampleCake,
+        _id: 'cake-baby-shower-2',
+        name: 'Kyiv Cake',
+        slug: { current: 'kyiv-cake' },
+        collections: [{ _id: 'collection-other', name: 'Traditional' }]
+      }
+    ])
+
+    const page = await CakesPage()
+    renderCakesPage(page, '?collections=c-baby-shower-cakes')
+
+    expect(screen.getByRole('link', { name: /View details for Baby Shower Cloud Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Kyiv Cake/i })).not.toBeInTheDocument()
   })
 
   it('keeps old collection id query values working', async () => {
@@ -499,8 +594,8 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page, '?collections=collection-cake')
 
-    expect(screen.getByRole('link', { name: 'View details for Legacy Collection Cake' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'View details for Unrelated Cake' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /View details for Legacy Collection Cake/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /View details for Unrelated Cake/i })).not.toBeInTheDocument()
   })
 
   it('writes short collection query value when selecting collection', async () => {
@@ -594,13 +689,17 @@ describe('CakesPage', () => {
     expect(screen.queryByRole('button', { name: 'Most popular' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
-    expect(screen.getByRole('link', { name: 'View details for Sample Honey Cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
+    expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toHaveAttribute('href', '/cakes/sample-honey-cake')
     expect(screen.getByRole('heading', { level: 3, name: 'Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
-    expect(screen.getByText('Do you make custom birthday and wedding cakes in Leeds?')).toBeInTheDocument()
-    expect(screen.getByText('Can any cake be delivered across the UK?')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Do you make custom birthday and wedding cakes in Leeds?' })).toBeInTheDocument()
+
+    const ukDeliveryButton = screen.getByRole('button', { name: 'Can any cake be delivered across the UK?' })
+    fireEvent.click(ukDeliveryButton)
     expect(screen.getByText('Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so I can confirm the cake type, date, delivery details, and cost.')).toBeInTheDocument()
-    expect(screen.getByText('Do you work with corporate clients and events?')).toBeInTheDocument()
+
+    const corporateClientsButton = screen.getByRole('button', { name: 'Do you work with corporate clients and events?' })
+    fireEvent.click(corporateClientsButton)
     expect(screen.getByText('Yes. I work with corporate clients and can supply cakes for any event or corporate celebration. Share your date, headcount, and style, and I will suggest suitable options.')).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Catalog pagination crawl links' })).not.toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Catalog product crawl links' })).not.toBeInTheDocument()
@@ -623,7 +722,7 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('link', { name: 'View details for Luxury Cake' })).toHaveAttribute('href', '/cakes/luxury-cake')
+    expect(screen.getByRole('link', { name: /View details for Luxury Cake/i })).toHaveAttribute('href', '/cakes/luxury-cake')
   })
 
   it('hides featured offer when not configured in Sanity', async () => {
@@ -755,4 +854,7 @@ describe('CakesPage', () => {
     expect(urls.some((url) => url.includes('/gift-hampers/'))).toBe(false)
   })
 })
+
+
+
 

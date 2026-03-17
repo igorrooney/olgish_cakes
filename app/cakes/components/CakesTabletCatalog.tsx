@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type MouseEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -24,6 +24,7 @@ import {
   CakesTabletCatalogProps,
   TabletCake
 } from './types'
+import { categoryLandingProductShellClassName } from './categoryLandingLayout'
 
 function getPriceCeiling(cakes: TabletCake[]) {
   if (cakes.length === 0) {
@@ -340,7 +341,15 @@ export function CakesTabletCatalog({
   lazyCustomCakesEndpoint,
   lazyCustomCakesPriceCeilingHint,
   lazyByPostCakesEndpoint,
-  lazyByPostCakesPriceCeilingHint
+  lazyByPostCakesPriceCeilingHint,
+  catalogMode = 'all-cakes',
+  lockedCollectionQueryValues = [],
+  showProductTypeFilters = true,
+  showDesktopFilters = true,
+  showMobileFilterSheet = true,
+  showPriceFilter = true,
+  showCollectionFilters = true,
+  mobileToolbarVariant = 'full'
 }: CakesTabletCatalogProps) {
   const queryClient = useQueryClient()
   const pathname = usePathname()
@@ -380,6 +389,14 @@ export function CakesTabletCatalog({
     byPost: MOBILE_PAGE_SIZE
   })
   const mobileSentinelRef = useRef<HTMLDivElement | null>(null)
+  const isCategoryLanding = catalogMode === 'category-landing'
+  const shouldShowProductTypeFilters = showProductTypeFilters && !isCategoryLanding
+  const shouldRenderDesktopFilters = showDesktopFilters && !isCategoryLanding && (showPriceFilter || showCollectionFilters || shouldShowProductTypeFilters)
+  const shouldRenderMobileFilterSheet = showMobileFilterSheet && !isCategoryLanding && (showCollectionFilters || shouldShowProductTypeFilters)
+  const shouldUseInlineCompactMobileToolbar = mobileToolbarVariant === 'inline-compact'
+  const catalogSectionClassName = isCategoryLanding
+    ? categoryLandingProductShellClassName
+    : 'mx-auto w-full max-w-[952px] px-4 pb-16 pt-0 tablet:pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'
   const queryParsers = useMemo(() => {
     return {
       sort: parseAsStringLiteral(sortOptions).withDefault('new'),
@@ -534,6 +551,40 @@ export function CakesTabletCatalog({
       page: null
     })
   }, [setQueryState])
+
+  useEffect(() => {
+    if (!isCategoryLanding) {
+      return
+    }
+
+    const hasHiddenCategoryFilters =
+      queryState.byPost !== initialFilterDefaults.byPost ||
+      queryState.custom !== initialFilterDefaults.custom ||
+      queryState.maxPrice !== null ||
+      queryState.collections.length > 0
+
+    if (!hasHiddenCategoryFilters) {
+      return
+    }
+
+    void setQueryState({
+      byPost: null,
+      custom: null,
+      maxPrice: null,
+      collections: null,
+      page: null
+    })
+  }, [
+    initialFilterDefaults.byPost,
+    initialFilterDefaults.custom,
+    isCategoryLanding,
+    queryState.byPost,
+    queryState.collections,
+    queryState.custom,
+    queryState.maxPrice,
+    queryState.page,
+    setQueryState
+  ])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -769,7 +820,22 @@ export function CakesTabletCatalog({
     () => queryState.collections.filter((value) => collectionIdByQueryValue.has(value)),
     [collectionIdByQueryValue, queryState.collections]
   )
-  const effectiveCollectionValues = optimisticCollectionValues ?? selectedCollectionValues
+  const lockedCollectionValues = useMemo(() => {
+    return lockedCollectionQueryValues.filter((value) => collectionIdByQueryValue.has(value))
+  }, [collectionIdByQueryValue, lockedCollectionQueryValues])
+  const lockedCollectionIds = useMemo(() => {
+    const collectionIds = lockedCollectionValues
+      .map((value) => collectionIdByQueryValue.get(value))
+      .filter((value): value is string => value !== undefined)
+
+    return Array.from(new Set(collectionIds)).filter((collectionId) => collectionIdSet.has(collectionId))
+  }, [collectionIdByQueryValue, collectionIdSet, lockedCollectionValues])
+  const lockedCollectionIdSet = useMemo(() => new Set(lockedCollectionIds), [lockedCollectionIds])
+  const effectiveCollectionValues = useMemo(() => {
+    const nextCollectionValues = optimisticCollectionValues ?? selectedCollectionValues
+
+    return Array.from(new Set([...nextCollectionValues, ...lockedCollectionValues]))
+  }, [lockedCollectionValues, optimisticCollectionValues, selectedCollectionValues])
   const selectedCollectionIds = useMemo(() => {
     const collectionIds = effectiveCollectionValues
       .map((value) => collectionIdByQueryValue.get(value))
@@ -778,6 +844,7 @@ export function CakesTabletCatalog({
     return Array.from(new Set(collectionIds)).filter((collectionId) => collectionIdSet.has(collectionId))
   }, [collectionIdByQueryValue, collectionIdSet, effectiveCollectionValues])
   const getLoadedScopePriceCeiling = useCallback(({
+
     showByPost,
     showCustom,
     selectedCollectionIds
@@ -1040,6 +1107,10 @@ export function CakesTabletCatalog({
   ])
 
   const handleToggleCollection = useCallback((collectionId: string, checked: boolean) => {
+    if (lockedCollectionIdSet.has(collectionId)) {
+      return
+    }
+
     const queryValue = collectionQueryValueById.get(collectionId)
 
     if (!queryValue) {
@@ -1086,6 +1157,7 @@ export function CakesTabletCatalog({
     effectiveCollectionValues,
     finishMaxPriceQueryWrite,
     getLoadedScopePriceCeiling,
+    lockedCollectionIdSet,
     setQueryState
   ])
 
@@ -1151,19 +1223,24 @@ export function CakesTabletCatalog({
     setIsMobileFilterSortOpen(false)
   }, [])
   const handleMobileDraftCollectionToggle = useCallback((collectionId: string, checked: boolean) => {
+    if (lockedCollectionIdSet.has(collectionId)) {
+      return
+    }
+
     setMobileDraftSelectedCollectionIds((previousCollectionIds) => {
       const nextCollectionIds = checked
         ? [...previousCollectionIds, collectionId]
         : previousCollectionIds.filter((selectedCollectionId) => selectedCollectionId !== collectionId)
 
-      return Array.from(new Set(nextCollectionIds))
+      return Array.from(new Set([...nextCollectionIds, ...lockedCollectionIds]))
         .filter((selectedCollectionId) => activeCollectionIdSet.has(selectedCollectionId))
     })
-  }, [activeCollectionIdSet])
+  }, [activeCollectionIdSet, lockedCollectionIdSet, lockedCollectionIds])
   const handleApplyMobileFilterSort = useCallback(() => {
-    const normalizedDraftCollectionIds = Array.from(new Set(mobileDraftSelectedCollectionIds))
+    const normalizedDraftCollectionIds = Array.from(new Set([...mobileDraftSelectedCollectionIds, ...lockedCollectionIds]))
       .filter((collectionId) => activeCollectionIdSet.has(collectionId))
     const nextCollectionValues = normalizedDraftCollectionIds
+      .filter((collectionId) => !lockedCollectionIdSet.has(collectionId))
       .map((collectionId) => collectionQueryValueById.get(collectionId))
       .filter((value): value is string => value !== undefined)
 
@@ -1179,6 +1256,8 @@ export function CakesTabletCatalog({
     activeMobileTab,
     activeCollectionIdSet,
     collectionQueryValueById,
+    lockedCollectionIds,
+    lockedCollectionIdSet,
     mobileDraftSelectedCollectionIds,
     mobileDraftSort,
     resetMobileVisibleCount,
@@ -1186,7 +1265,7 @@ export function CakesTabletCatalog({
   ])
 
   const handleMobileTabChange = useCallback((tab: MobileTab) => {
-    if (tab === activeMobileTab) {
+    if (!shouldShowProductTypeFilters || tab === activeMobileTab) {
       return
     }
 
@@ -1703,16 +1782,17 @@ export function CakesTabletCatalog({
       ? mobileFilterSortIconActiveClassName
       : mobileFilterSortIconInactiveClassName
   }`
-  const mobileCatalogGridClassName = activeMobileViewMode === 'grid'
+  const effectiveMobileViewMode: MobileViewMode = shouldUseInlineCompactMobileToolbar ? 'grid' : activeMobileViewMode
+  const mobileCatalogGridClassName = effectiveMobileViewMode === 'grid'
     ? 'mt-6 grid grid-cols-2 gap-4'
     : 'mt-6 grid grid-cols-1 gap-4'
   const isMobileLcpCandidate = useCallback((index: number) => {
-    if (activeMobileViewMode === 'single') {
+    if (effectiveMobileViewMode === 'single') {
       return index === 0
     }
 
     return index < 2
-  }, [activeMobileViewMode])
+  }, [effectiveMobileViewMode])
   function renderMobileCatalogContent({
     includeInfiniteScrollSentinel,
     includeFilterSortSheet,
@@ -1726,92 +1806,108 @@ export function CakesTabletCatalog({
   }) {
     return (
       <>
-        <div className='flex items-end gap-0 border-b border-base-300' role='tablist' aria-label='Catalog category tabs'>
-          <button
-            type='button'
-            role='tab'
-            aria-selected={activeMobileTab === 'byPost'}
-            onClick={() => handleMobileTabChange('byPost')}
-            className={`${mobileTabBaseClassName} ${
-              activeMobileTab === 'byPost' ? mobileTabActiveClassName : mobileTabInactiveClassName
-            }`}
-          >
-            Cakes by post
-          </button>
-          <button
-            type='button'
-            role='tab'
-            aria-selected={activeMobileTab === 'custom'}
-            onClick={() => handleMobileTabChange('custom')}
-            className={`${mobileTabBaseClassName} ${
-              activeMobileTab === 'custom' ? mobileTabActiveClassName : mobileTabInactiveClassName
-            }`}
-          >
-            Custom cakes
-          </button>
-        </div>
-
-        <div className='mt-8 flex items-center justify-between'>
-          <button
-            type='button'
-            aria-label='Open filter and sort'
-            onClick={handleOpenMobileFilterSort}
-            className='btn btn-ghost h-auto min-h-0 border-transparent bg-transparent p-0 normal-case shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none'
-          >
-            <span className={mobileFilterSortLabelClassName}>
-              Filter & Sort
-            </span>
-          </button>
-          <div role='group' aria-label='Mobile catalog view mode' className='flex items-center gap-2'>
+        {shouldShowProductTypeFilters ? (
+          <div className='flex items-end gap-0 border-b border-base-300' role='tablist' aria-label='Catalog category tabs'>
             <button
               type='button'
-              aria-label='Grid view'
-              aria-pressed={activeMobileViewMode === 'grid'}
-              onClick={() => handleMobileViewModeChange('grid')}
-              className={mobileFilterSortIconButtonClassName}
+              role='tab'
+              aria-selected={activeMobileTab === 'byPost'}
+              onClick={() => handleMobileTabChange('byPost')}
+              className={`${mobileTabBaseClassName} ${
+                activeMobileTab === 'byPost' ? mobileTabActiveClassName : mobileTabInactiveClassName
+              }`}
             >
-              <svg
-                data-testid='mobile-filter-sort-grid-icon'
-                width='16'
-                height='16'
-                viewBox='0 0 16 16'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                className={mobileGridIconClassName}
-                focusable='false'
-              >
-                <path
-                  d='M4.75 9C5.99264 9 7 10.0074 7 11.25V13.75C7 14.9926 5.99264 16 4.75 16H2.25C1.00736 16 0 14.9926 0 13.75V11.25C0 10.0074 1.00736 9 2.25 9H4.75ZM13.75 9C14.9926 9 16 10.0074 16 11.25V13.75C16 14.9926 14.9926 16 13.75 16H11.25C10.0074 16 9 14.9926 9 13.75V11.25C9 10.0074 10.0074 9 11.25 9H13.75ZM4.75 0C5.99264 0 7 1.00736 7 2.25V4.75C7 5.99264 5.99264 7 4.75 7H2.25C1.00736 7 0 5.99264 0 4.75V2.25C0 1.00736 1.00736 0 2.25 0H4.75ZM13.75 0C14.9926 0 16 1.00736 16 2.25V4.75C16 5.99264 14.9926 7 13.75 7H11.25C10.0074 7 9 5.99264 9 4.75V2.25C9 1.00736 10.0074 0 11.25 0H13.75Z'
-                  fill='currentColor'
-                />
-              </svg>
+              Cakes by post
             </button>
             <button
               type='button'
-              aria-label='Single-column view'
-              aria-pressed={activeMobileViewMode === 'single'}
-              onClick={() => handleMobileViewModeChange('single')}
-              className={mobileFilterSortIconButtonClassName}
+              role='tab'
+              aria-selected={activeMobileTab === 'custom'}
+              onClick={() => handleMobileTabChange('custom')}
+              className={`${mobileTabBaseClassName} ${
+                activeMobileTab === 'custom' ? mobileTabActiveClassName : mobileTabInactiveClassName
+              }`}
             >
-              <svg
-                data-testid='mobile-filter-sort-outline-icon'
-                width='16'
-                height='16'
-                viewBox='0 0 16 16'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                className={mobileOutlineIconClassName}
-                focusable='false'
-              >
-                <path
-                  fillRule='evenodd'
-                  clipRule='evenodd'
-                  d='M0 5.14286C0 2.30254 2.30254 0 5.14286 0H10.8571C13.6975 0 16 2.30254 16 5.14286V10.8571C16 13.6975 13.6975 16 10.8571 16H5.14286C2.30254 16 0 13.6975 0 10.8571V5.14286ZM5.14286 3.42857C4.19608 3.42857 3.42857 4.19608 3.42857 5.14286V10.8571C3.42857 11.8039 4.19608 12.5714 5.14286 12.5714H10.8571C11.8039 12.5714 12.5714 11.8039 12.5714 10.8571V5.14286C12.5714 4.19608 11.8039 3.42857 10.8571 3.42857H5.14286Z'
-                  fill='currentColor'
-                />
-              </svg>
+              Custom cakes
             </button>
           </div>
+        ) : null}
+        <div className={`${shouldShowProductTypeFilters ? 'mt-8' : 'mt-2'} ${shouldUseInlineCompactMobileToolbar ? 'block' : 'flex items-center justify-between'}`}>
+          {shouldUseInlineCompactMobileToolbar ? (
+            <div className='min-w-0'>
+              <p className='mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/80'>
+                Sort by
+              </p>
+              <CakesSortBar
+                selectedSort={selectedSort}
+                onSelectSort={handleSortChange}
+                layout='inline-compact'
+              />
+            </div>
+          ) : (
+            <>
+              <button
+                type='button'
+                aria-label='Filter & Sort'
+                onClick={handleOpenMobileFilterSort}
+                className='btn btn-ghost h-auto min-h-0 border-transparent bg-transparent p-0 normal-case shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none'
+              >
+                <span className={mobileFilterSortLabelClassName}>
+                  Filter & Sort
+                </span>
+              </button>
+              <div role='group' aria-label='Mobile catalog view mode' className='flex items-center gap-2'>
+                <button
+                  type='button'
+                  aria-label='Grid view'
+                  aria-pressed={activeMobileViewMode === 'grid'}
+                  onClick={() => handleMobileViewModeChange('grid')}
+                  className={mobileFilterSortIconButtonClassName}
+                >
+                  <svg
+                    data-testid='mobile-filter-sort-grid-icon'
+                    width='16'
+                    height='16'
+                    viewBox='0 0 16 16'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                    className={mobileGridIconClassName}
+                    focusable='false'
+                  >
+                    <path
+                      d='M4.75 9C5.99264 9 7 10.0074 7 11.25V13.75C7 14.9926 5.99264 16 4.75 16H2.25C1.00736 16 0 14.9926 0 13.75V11.25C0 10.0074 1.00736 9 2.25 9H4.75ZM13.75 9C14.9926 9 16 10.0074 16 11.25V13.75C16 14.9926 14.9926 16 13.75 16H11.25C10.0074 16 9 14.9926 9 13.75V11.25C9 10.0074 10.0074 9 11.25 9H13.75ZM4.75 0C5.99264 0 7 1.00736 7 2.25V4.75C7 5.99264 5.99264 7 4.75 7H2.25C1.00736 7 0 5.99264 0 4.75V2.25C0 1.00736 1.00736 0 2.25 0H4.75ZM13.75 0C14.9926 0 16 1.00736 16 2.25V4.75C16 5.99264 14.9926 7 13.75 7H11.25C10.0074 7 9 5.99264 9 4.75V2.25C9 1.00736 10.0074 0 11.25 0H13.75Z'
+                      fill='currentColor'
+                    />
+                  </svg>
+                </button>
+                <button
+                  type='button'
+                  aria-label='Single-column view'
+                  aria-pressed={activeMobileViewMode === 'single'}
+                  onClick={() => handleMobileViewModeChange('single')}
+                  className={mobileFilterSortIconButtonClassName}
+                >
+                  <svg
+                    data-testid='mobile-filter-sort-outline-icon'
+                    width='16'
+                    height='16'
+                    viewBox='0 0 16 16'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                    className={mobileOutlineIconClassName}
+                    focusable='false'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      clipRule='evenodd'
+                      d='M0 5.14286C0 2.30254 2.30254 0 5.14286 0H10.8571C13.6975 0 16 2.30254 16 5.14286V10.8571C16 13.6975 13.6975 16 10.8571 16H5.14286C2.30254 16 0 13.6975 0 10.8571V5.14286ZM5.14286 3.42857C4.19608 3.42857 3.42857 4.19608 3.42857 5.14286V10.8571C3.42857 11.8039 4.19608 12.5714 5.14286 12.5714H10.8571C11.8039 12.5714 12.5714 11.8039 12.5714 10.8571V5.14286C12.5714 4.19608 11.8039 3.42857 10.8571 3.42857H5.14286Z'
+                      fill='currentColor'
+                    />
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {mobileVisibleItems.length > 0 ? (
@@ -1821,7 +1917,7 @@ export function CakesTabletCatalog({
                 <CakesProductCard
                   cake={cake}
                   variant='mobile'
-                  mobileViewMode={activeMobileViewMode}
+                  mobileViewMode={effectiveMobileViewMode}
                   isLcpCandidate={allowLcpCandidates && isMobileLcpCandidate(index)}
                 />
               </div>
@@ -1882,13 +1978,14 @@ export function CakesTabletCatalog({
             </button>
           </div>
         ) : null}
-        {includeFilterSortSheet ? (
+        {includeFilterSortSheet && shouldRenderMobileFilterSheet ? (
           <CakesMobileFilterSortSheet
             open={isMobileFilterSortOpen}
             selectedSort={mobileDraftSort}
             featuredCollectionOptions={featuredCollectionOptions}
             collectionOptions={nonFeaturedCollectionOptions}
             selectedCollectionIds={mobileDraftSelectedCollectionIds}
+            lockedCollectionIds={lockedCollectionIds}
             onSortChange={setMobileDraftSort}
             onToggleCollection={handleMobileDraftCollectionToggle}
             onApply={handleApplyMobileFilterSort}
@@ -1900,7 +1997,7 @@ export function CakesTabletCatalog({
   }
 
   return (
-    <section className='mx-auto w-full max-w-[952px] px-4 pb-16 pt-0 tablet:pt-8 tablet:px-0 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
+    <section className={catalogSectionClassName}>
       {featuredOffer ? (
         <div className='hidden tablet:block'>
           {!shouldRenderMobileLayout ? <CakesFeaturedOffer featuredOffer={featuredOffer} /> : null}
@@ -1922,30 +2019,34 @@ export function CakesTabletCatalog({
         <div className='mt-2'>
           {renderMobileCatalogContent({
             includeInfiniteScrollSentinel: true,
-            includeFilterSortSheet: true,
+            includeFilterSortSheet: shouldRenderMobileFilterSheet,
             includeNoScriptCrawlLinks: false,
             allowLcpCandidates: true
           })}
         </div>
       ) : (
-        <div className='mt-10 hidden flex-col gap-5 tablet:flex tablet:gap-6 tablet:flex-row tablet:items-start' data-testid='desktop-catalog-layout'>
-          <div className='tablet:w-60 tablet:flex-none'>
-            <CakesFilterSidebar
-              filters={filters}
-              priceMax={priceCeiling}
-              collectionOptions={availableCollectionOptions}
-              isByPostLoading={shouldShowByPostCakesLoadingState}
-              isCustomLoading={shouldShowCustomCakesLoadingState}
-              onToggleByPost={handleToggleByPost}
-              onToggleCustom={handleToggleCustom}
-              onPriceChange={handlePriceChange}
-              onToggleCollection={handleToggleCollection}
-              onReset={handleReset}
-            />
-          </div>
+        <div className={`hidden flex-col gap-5 tablet:flex ${shouldRenderDesktopFilters ? 'mt-10 tablet:flex-row tablet:items-start tablet:gap-6' : isCategoryLanding ? 'mt-3' : 'mt-4'}`} data-testid='desktop-catalog-layout'>
+          {shouldRenderDesktopFilters ? (
+            <div className='tablet:w-60 tablet:flex-none'>
+              <CakesFilterSidebar
+                filters={filters}
+                priceMax={priceCeiling}
+                collectionOptions={availableCollectionOptions}
+                isByPostLoading={shouldShowByPostCakesLoadingState}
+                isCustomLoading={shouldShowCustomCakesLoadingState}
+                onToggleByPost={handleToggleByPost}
+                onToggleCustom={handleToggleCustom}
+                onPriceChange={handlePriceChange}
+                onToggleCollection={handleToggleCollection}
+                onReset={handleReset}
+              />
+            </div>
+          ) : null}
 
-          <div className='min-w-0 tablet:flex-1'>
-            <CakesSortBar selectedSort={selectedSort} onSelectSort={handleSortChange} />
+          <div className={`min-w-0 ${shouldRenderDesktopFilters ? 'tablet:flex-1' : 'w-full'}`}>
+            <div className={shouldRenderDesktopFilters ? '' : 'flex justify-start'}>
+              <CakesSortBar selectedSort={selectedSort} onSelectSort={handleSortChange} />
+            </div>
             {desktopFilteredCakes.length > 0 ? (
               <div className='mt-4 grid grid-cols-1 gap-4 tablet:auto-rows-fr tablet:grid-cols-2 small-laptop:grid-cols-3'>
                 {desktopFilteredCakes.map((cake, index) => (
@@ -2006,3 +2107,12 @@ export function CakesTabletCatalog({
     </section>
   )
 }
+
+
+
+
+
+
+
+
+

@@ -21,6 +21,7 @@ interface CakesMobileFilterSortSheetProps {
   onToggleCollection: (collectionId: string, checked: boolean) => void
   onApply: () => void
   onCancel: () => void
+  lockedCollectionIds?: string[]
 }
 
 const sortOptions: Array<{ id: CakesSortOption, label: string }> = [
@@ -43,11 +44,13 @@ const swipeCloseScrollTopTolerancePx = 4
 function CollectionCheckbox({
   checked,
   label,
-  onChange
+  onChange,
+  disabled = false
 }: {
   checked: boolean
   label: string
   onChange: (checked: boolean) => void
+  disabled?: boolean
 }) {
   return (
     <label
@@ -55,14 +58,15 @@ function CollectionCheckbox({
         checked
           ? '[font-weight:var(--t-font-weight-semibold)]'
           : '[font-weight:var(--t-font-weight-normal)]'
-      } flex w-full cursor-pointer items-center justify-between gap-3 py-1`}
+      } flex w-full items-center justify-between gap-3 py-1 ${disabled ? 'cursor-default opacity-70' : 'cursor-pointer'}`}
     >
       <span>{label}</span>
       <input
         type='checkbox'
         checked={checked}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className='checkbox checkbox-sm rounded-[8px] border-base-300 bg-base-100 [--chkbg:var(--color-primary)] [--chkfg:var(--color-primary-content)]'
+        className='checkbox checkbox-sm rounded-[8px] border-base-300 bg-base-100 [--chkbg:var(--color-primary)] [--chkfg:var(--color-primary-content)] disabled:cursor-not-allowed'
       />
     </label>
   )
@@ -77,7 +81,8 @@ export function CakesMobileFilterSortSheet({
   onSortChange,
   onToggleCollection,
   onApply,
-  onCancel
+  onCancel,
+  lockedCollectionIds = []
 }: CakesMobileFilterSortSheetProps) {
   const dialogRef = useRef<HTMLDialogElement | null>(null)
   const modalBoxRef = useRef<HTMLDivElement | null>(null)
@@ -97,6 +102,7 @@ export function CakesMobileFilterSortSheet({
     () => new Set(selectedCollectionIds),
     [selectedCollectionIds]
   )
+  const lockedCollectionIdSet = useMemo(() => new Set(lockedCollectionIds), [lockedCollectionIds])
   const optionsSignature = useMemo(() => {
     const featuredIds = featuredCollectionOptions.map((option) => option.id).join('|')
     const collectionIds = collectionOptions.map((option) => option.id).join('|')
@@ -328,7 +334,6 @@ export function CakesMobileFilterSortSheet({
         })
         return
       } catch {
-        // Fall back to direct assignment for environments that do not support options.
       }
     }
 
@@ -535,6 +540,7 @@ export function CakesMobileFilterSortSheet({
                       key={option.id}
                       checked={selectedCollectionIdSet.has(option.id)}
                       label={option.label}
+                      disabled={lockedCollectionIdSet.has(option.id)}
                       onChange={(checked) => onToggleCollection(option.id, checked)}
                     />
                   ))}
@@ -566,6 +572,7 @@ export function CakesMobileFilterSortSheet({
                       key={option.id}
                       checked={selectedCollectionIdSet.has(option.id)}
                       label={option.label}
+                      disabled={lockedCollectionIdSet.has(option.id)}
                       onChange={(checked) => onToggleCollection(option.id, checked)}
                     />
                   ))}

@@ -35,6 +35,20 @@ const customerScenarios = [
   }
 ]
 
+const failureAlertScenarios = [
+  {
+    id: 'default',
+    label: 'Custom enquiry failure alert (default)',
+    input: createDefaultScenarioInput({
+      titleOverride: 'Custom Cake Enquiry Alert: Test Customer',
+      productName: 'Custom Cake Enquiry Failure Alert',
+      intro: 'A custom cake enquiry was saved, but one or more follow-up notifications failed.',
+      message: 'Failed notifications: admin email',
+      note: 'Enquiry saved in the database. Provider error: Transport did not accept admin email.'
+    })
+  }
+]
+
 export const customCakeTemplateDefinitions: Record<string, TemplateDefinition<EmailTemplateCommonInput>> = {
   'custom-cake-enquiry-admin': createTemplateDefinition(
     {
@@ -53,5 +67,14 @@ export const customCakeTemplateDefinitions: Record<string, TemplateDefinition<Em
       admin: false
     },
     customerScenarios
+  ),
+  'custom-cake-enquiry-failure-alert': createTemplateDefinition(
+    {
+      subject: 'Custom cake enquiry notification failure',
+      heading: 'Custom cake enquiry notification failure',
+      intro: 'A custom cake enquiry was saved, but one or more notification steps failed.',
+      admin: true
+    },
+    failureAlertScenarios
   )
 }

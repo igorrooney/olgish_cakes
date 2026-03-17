@@ -100,7 +100,8 @@ const templateLabels: Record<EmailTemplateId, string> = {
   'orders-status-update': 'Orders: Status update',
   'quote-admin-request': 'Quote: Admin request',
   'custom-cake-enquiry-admin': 'Custom enquiry: Admin',
-  'custom-cake-enquiry-customer': 'Custom enquiry: Customer'
+  'custom-cake-enquiry-customer': 'Custom enquiry: Customer',
+  'custom-cake-enquiry-failure-alert': 'Custom enquiry: Failure alert'
 }
 
 const commonFields: EditableFieldKey[] = [
@@ -245,6 +246,12 @@ const templateFieldMap: Record<EmailTemplateId, EditableFieldKey[]> = {
     ...orderFields,
     ...preferenceFields,
     ...listFields
+  ],
+  'custom-cake-enquiry-failure-alert': [
+    ...commonFields,
+    ...orderFields,
+    ...preferenceFields,
+    'attachmentNames'
   ]
 }
 

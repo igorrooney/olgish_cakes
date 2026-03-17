@@ -467,6 +467,22 @@ const nextConfig = {
         destination: "/cakes-by-post",
         permanent: true,
       },
+
+      {
+        source: "/honey-cake-near-me",
+        destination: "/honey-cake",
+        permanent: true,
+      },
+      {
+        source: "/custom-cake-enquiry",
+        destination: "/get-custom-quote",
+        permanent: true,
+      },
+      {
+        source: "/traditional-ukrainian-cakes",
+        destination: "/cakes",
+        permanent: true,
+      },
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml
@@ -479,3 +495,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

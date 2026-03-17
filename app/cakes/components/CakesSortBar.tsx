@@ -1,16 +1,19 @@
-'use client'
-
 import { CakesSortOption } from './types'
 
 interface CakesSortBarProps {
   selectedSort: CakesSortOption
   onSelectSort: (option: CakesSortOption) => void
+  layout?: 'default' | 'inline-compact'
 }
 
-const sortOptions: Array<{ id: CakesSortOption, label: string }> = [
-  { id: 'new', label: 'New' },
-  { id: 'priceHighToLow', label: 'Price: High to low' },
-  { id: 'priceLowToHigh', label: 'Price: Low to high' }
+const sortOptions: Array<{
+  id: CakesSortOption
+  label: string
+  compactLabel?: string
+}> = [
+  { id: 'new', label: 'New', compactLabel: 'Newest' },
+  { id: 'priceHighToLow', label: 'Price: High to low', compactLabel: 'Price high' },
+  { id: 'priceLowToHigh', label: 'Price: Low to high', compactLabel: 'Price low' }
 ]
 
 const baseButtonClassName = [
@@ -37,6 +40,19 @@ const baseButtonClassName = [
   'tablet:rounded-btn'
 ].join(' ')
 
+const compactInlineButtonClassName = [
+  'h-auto',
+  'min-h-11',
+  'w-full',
+  'min-w-0',
+  'px-2',
+  'py-2',
+  'text-center',
+  'text-[13px]',
+  'leading-5',
+  'tablet:text-sm'
+].join(' ')
+
 const activeButtonClassName = 'btn-primary border-primary bg-primary text-primary-content'
 const inactiveButtonClassName = 'border-transparent bg-primary-50 text-base-content/55'
 
@@ -44,11 +60,21 @@ function isActive(option: CakesSortOption, selectedSort: CakesSortOption) {
   return option === selectedSort
 }
 
-export function CakesSortBar({ selectedSort, onSelectSort }: CakesSortBarProps) {
+export function CakesSortBar({
+  selectedSort,
+  onSelectSort,
+  layout = 'default'
+}: CakesSortBarProps) {
+  const isInlineCompactLayout = layout === 'inline-compact'
+  const containerClassName = isInlineCompactLayout
+    ? 'grid grid-cols-3 gap-2'
+    : 'flex flex-wrap justify-start gap-2 tablet:justify-end'
+
   return (
-    <div className='flex flex-wrap justify-start gap-2 tablet:justify-end'>
+    <div className={containerClassName}>
       {sortOptions.map((option) => {
         const active = isActive(option.id, selectedSort)
+        const buttonLabel = isInlineCompactLayout ? option.compactLabel ?? option.label : option.label
 
         return (
           <button
@@ -56,12 +82,20 @@ export function CakesSortBar({ selectedSort, onSelectSort }: CakesSortBarProps) 
             type='button'
             onClick={() => onSelectSort(option.id)}
             className={`${baseButtonClassName} ${
+              isInlineCompactLayout
+                ? compactInlineButtonClassName
+                : ''
+            } ${
+              isInlineCompactLayout
+                ? 'whitespace-normal'
+                : ''
+            } ${
               active
                 ? activeButtonClassName
                 : inactiveButtonClassName
             }`}
           >
-            {active ? (
+            {active && !isInlineCompactLayout ? (
               <svg
                 width='12'
                 height='10'
@@ -79,7 +113,7 @@ export function CakesSortBar({ selectedSort, onSelectSort }: CakesSortBarProps) 
                 />
               </svg>
             ) : null}
-            {option.label}
+            {buttonLabel}
           </button>
         )
       })}

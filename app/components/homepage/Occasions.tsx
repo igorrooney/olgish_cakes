@@ -1,6 +1,7 @@
 import { OccasionsClient } from './OccasionsClient'
 import { getHomepageCollections } from '@/app/utils/fetchCollections'
 import { createCollectionQueryValueMap, normalizeDocumentId } from '@/app/utils/collectionQueryValue'
+import { getCategoryLandingPathByQueryValue } from '@/app/cakes/categoryLandingConfig'
 import type { HomepageCollection } from '@/app/types/collection'
 import { urlFor } from '@/sanity/lib/image'
 import type { DisplayCollection } from './occasions.types'
@@ -12,8 +13,8 @@ interface OccasionsProps {
 const buildDisplayCollections = (collections: HomepageCollection[]): DisplayCollection[] => {
   const queryValueById = createCollectionQueryValueMap(collections, 'cake')
 
-  return collections
-    .map((collection) => {
+  const displayCollections = collections
+    .map((collection): DisplayCollection | null => {
       const image = collection.image
 
       if (!image?.asset?._ref) {
@@ -28,6 +29,7 @@ const buildDisplayCollections = (collections: HomepageCollection[]): DisplayColl
       }
 
       const imageAlt = image.alt?.trim() || collection.name
+      const canonicalCategoryPath = getCategoryLandingPathByQueryValue(queryValue)
       const searchParams = new URLSearchParams({ collections: queryValue })
 
       return {
@@ -35,10 +37,12 @@ const buildDisplayCollections = (collections: HomepageCollection[]): DisplayColl
         name: collection.name,
         imageUrl: urlFor(image).width(480).height(480).url(),
         imageAlt,
-        href: `/cakes?${searchParams.toString()}`
+        href: canonicalCategoryPath ?? `/cakes?${searchParams.toString()}`
       }
     })
     .filter((collection): collection is DisplayCollection => collection !== null)
+
+  return displayCollections
 }
 
 export async function Occasions({ collections }: OccasionsProps = {}) {

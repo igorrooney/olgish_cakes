@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { CatalogFaqAccordion } from '../CatalogFaqAccordion'
 import type { CatalogFaqItem } from '../../catalogFaqItems'
 
@@ -17,7 +17,7 @@ const faqItems: CatalogFaqItem[] = [
 ]
 
 describe('CatalogFaqAccordion', () => {
-  it('renders responsive intro copy and faq entries', () => {
+  it('renders responsive intro copy and an accessible accordion', () => {
     render(
       <CatalogFaqAccordion
         sectionId='catalog-faq'
@@ -35,10 +35,21 @@ describe('CatalogFaqAccordion', () => {
     expect(mobileIntro).toHaveClass('tablet:hidden')
     expect(desktopIntro).toBeInTheDocument()
     expect(desktopIntro).toHaveClass('hidden', 'tablet:block')
-    expect(screen.getByText('Do you deliver cakes by post?')).toBeInTheDocument()
+
+    const firstQuestionButton = screen.getByRole('button', { name: 'Do you deliver cakes by post?' })
+    const secondQuestionButton = screen.getByRole('button', { name: 'Can I request a custom design?' })
+
+    expect(firstQuestionButton).toHaveAttribute('aria-expanded', 'true')
+    expect(secondQuestionButton).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByText('Yes, selected cakes are available by post across the UK.')).toBeInTheDocument()
-    expect(screen.getByText('Can I request a custom design?')).toBeInTheDocument()
+    expect(screen.queryByText('Yes, custom requests are available for local celebration cakes.')).not.toBeInTheDocument()
+
+    fireEvent.click(secondQuestionButton)
+
+    expect(firstQuestionButton).toHaveAttribute('aria-expanded', 'false')
+    expect(secondQuestionButton).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText('Yes, custom requests are available for local celebration cakes.')).toBeInTheDocument()
+    expect(screen.queryByText('Yes, selected cakes are available by post across the UK.')).not.toBeInTheDocument()
   })
 
   it('falls back to mobile intro when desktop intro is missing', () => {

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import GiftHampersPage, { generateMetadata } from '../page'
 import {
   getCatalogCustomCakesPriceCeiling,
@@ -125,13 +125,14 @@ describe('GiftHampersPage', () => {
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
-  it('uses base cakes-by-post canonical metadata for pure pagination query', async () => {
+  it('uses self canonical cakes-by-post metadata for pure pagination query', async () => {
     const metadata = await generateMetadata({
       searchParams: Promise.resolve({ page: '2' })
     })
 
-    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
-    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post?page=2')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post?page=2')
+    expect(metadata.robots).toBeUndefined()
   })
 
   it('falls back to base cakes-by-post canonical metadata for mixed pagination query', async () => {
@@ -141,6 +142,10 @@ describe('GiftHampersPage', () => {
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.robots).toEqual({
+      index: false,
+      follow: true
+    })
   })
 
   it('fetches shared catalog data, custom price ceiling hint and testimonial stats', async () => {
@@ -234,10 +239,10 @@ describe('GiftHampersPage', () => {
       screen.getByText('Quick answers about UK delivery, gifting options, and what to expect from cakes by post.')
     ).toBeInTheDocument()
 
-    expect(screen.getByText('Do you deliver gift hampers across the UK?')).toBeInTheDocument()
-    expect(
-      screen.getByText('What is included in each gift hamper?')
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Do you deliver gift hampers across the UK?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Can I include a personalised gift message?' })).toBeInTheDocument()
+    const hamperContentsButton = screen.getByRole('button', { name: 'What is included in each gift hamper?' })
+    fireEvent.click(hamperContentsButton)
     expect(
       screen.getByText('Each product page lists exact hamper contents, sizes, and key details so you can choose with confidence.')
     ).toBeInTheDocument()
@@ -351,3 +356,7 @@ describe('GiftHampersPage', () => {
     expect(isRecord(localBusinessBlock.aggregateRating)).toBe(true)
   })
 })
+
+
+
+

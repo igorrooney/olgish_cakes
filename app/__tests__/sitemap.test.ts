@@ -3,9 +3,10 @@ jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn)
 }))
 
+import { categoryLandingConfig } from '../cakes/categoryLandingConfig'
 import sitemap from '../sitemap'
+import { getStaticSitemapEntry, getStaticSitemapLastModified } from '../sitemap-static-pages'
 
-// Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
   const mockFetch = jest.fn()
   return {
@@ -14,7 +15,9 @@ jest.mock('@/sanity/lib/client', () => {
   }
 })
 
-const { __mockFetch: mockFetch } = jest.requireMock('@/sanity/lib/client')
+const { __mockFetch: mockFetch } = jest.requireMock('@/sanity/lib/client') as {
+  __mockFetch: jest.Mock
+}
 
 describe('sitemap', () => {
   beforeEach(() => {
@@ -40,9 +43,9 @@ describe('sitemap', () => {
   describe('Sitemap Generation', () => {
     it('should generate sitemap entries', async () => {
       mockFetch
-        .mockResolvedValueOnce([]) // cakes
-        .mockResolvedValueOnce([]) // blog posts
-        .mockResolvedValueOnce([]) // hampers
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
 
       const result = await sitemap()
 
@@ -53,10 +56,12 @@ describe('sitemap', () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
+      const homeUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk')
+      const homeEntry = getStaticSitemapEntry('/')
 
-      const homeUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk')
       expect(homeUrl).toBeDefined()
       expect(homeUrl?.priority).toBe(1.0)
+      expect(homeUrl?.lastModified).toEqual(new Date(homeEntry?.lastModified || ''))
     })
 
     it('should include cake routes', async () => {
@@ -66,8 +71,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
+      const cakeUrl = result.find((entry) => entry.url.includes('/cakes/honey-cake'))
 
-      const cakeUrl = result.find(entry => entry.url.includes('/cakes/honey-cake'))
       expect(cakeUrl).toBeDefined()
     })
 
@@ -83,8 +88,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
+      const blogUrl = result.find((entry) => entry.url.includes('/blog/test-post'))
 
-      const blogUrl = result.find(entry => entry.url.includes('/blog/test-post'))
       expect(blogUrl).toBeDefined()
     })
 
@@ -92,11 +97,10 @@ describe('sitemap', () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
+      const leedsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-leeds')
+      const wakefieldUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-wakefield')
+      const bradfordUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-bradford')
 
-      const leedsUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-leeds')
-      const wakefieldUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-wakefield')
-      const bradfordUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cakes-bradford')
-      
       expect(leedsUrl).toBeDefined()
       expect(wakefieldUrl).toBeDefined()
       expect(bradfordUrl).toBeDefined()
@@ -106,10 +110,61 @@ describe('sitemap', () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
+      const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')
 
-      const deliveryUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')
       expect(deliveryUrl).toBeDefined()
       expect(deliveryUrl?.priority).toBe(0.9)
+    })
+
+    it('should include category landing pages with config-driven lastModified dates', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+
+      Object.values(categoryLandingConfig).forEach((config) => {
+        const categoryUrl = result.find((entry) => entry.url === `https://olgishcakes.co.uk${config.canonicalPath}`)
+
+        expect(categoryUrl).toBeDefined()
+        expect(categoryUrl?.lastModified).toEqual(new Date(config.lastSignificantUpdate))
+      })
+    })
+
+    it('should keep static page lastModified values stable instead of using the runtime date', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+      const homeUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk')
+      const aboutUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/about')
+      const homeEntry = getStaticSitemapEntry('/')
+      const aboutEntry = getStaticSitemapEntry('/about')
+      const runtimeDate = new Date('2026-03-17T12:00:00.000Z')
+
+      expect(homeUrl?.lastModified).toEqual(new Date(homeEntry?.lastModified || ''))
+      expect(aboutUrl?.lastModified).toEqual(new Date(aboutEntry?.lastModified || ''))
+      expect(homeUrl?.lastModified).not.toEqual(runtimeDate)
+      expect(aboutUrl?.lastModified).not.toEqual(runtimeDate)
+    })
+
+    it('should expose the updated committed lastModified values for cakes and cakes by post', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+      const cakesUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes')
+      const hampersUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post')
+
+      expect(cakesUrl?.lastModified).toEqual(new Date('2026-03-17'))
+      expect(hampersUrl?.lastModified).toEqual(new Date('2026-03-12'))
+      expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
+      expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
+    })
+    it('should exclude retired legacy landing pages from sitemap coverage', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/corporate-cakes-leeds')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/traditional-ukrainian-cakes')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/honey-cake-near-me')).toBeUndefined()
     })
 
     it('should filter out hampers without slug', async () => {
@@ -119,9 +174,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([{ _id: 'hamper-123', _updatedAt: '2025-01-01' }])
 
       const result = await sitemap()
+      const hamperUrl = result.find((entry) => entry.url.includes('/cakes-by-post/hamper-123'))
 
-      // Sitemap filters out hampers without slug.current, so this should not be included
-      const hamperUrl = result.find(entry => entry.url.includes('/cakes-by-post/hamper-123'))
       expect(hamperUrl).toBeUndefined()
     })
   })
@@ -137,9 +191,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
-
-      const featuredUrl = result.find(entry => entry.url.includes('/blog/featured'))
-      const normalUrl = result.find(entry => entry.url.includes('/blog/normal'))
+      const featuredUrl = result.find((entry) => entry.url.includes('/blog/featured'))
+      const normalUrl = result.find((entry) => entry.url.includes('/blog/normal'))
 
       expect(featuredUrl?.priority).toBeGreaterThan(normalUrl?.priority || 0)
     })
@@ -157,9 +210,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
-
-      const recentUrl = result.find(entry => entry.url.includes('/blog/recent'))
-      const oldUrl = result.find(entry => entry.url.includes('/blog/old'))
+      const recentUrl = result.find((entry) => entry.url.includes('/blog/recent'))
+      const oldUrl = result.find((entry) => entry.url.includes('/blog/old'))
 
       expect(recentUrl?.priority).toBeGreaterThan(oldUrl?.priority || 0)
     })
@@ -169,8 +221,8 @@ describe('sitemap', () => {
 
       const result = await sitemap()
 
-      for (let i = 0; i < result.length - 1; i++) {
-        expect(result[i].priority).toBeGreaterThanOrEqual(result[i + 1].priority || 0)
+      for (let index = 0; index < result.length - 1; index++) {
+        expect(result[index].priority).toBeGreaterThanOrEqual(result[index + 1].priority || 0)
       }
     })
   })
@@ -183,8 +235,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
+      const entry = result.find((item) => item.url.includes('/cakes/test'))
 
-      const entry = result.find(entry => entry.url.includes('/cakes/test'))
       expect(entry?.priority).toBe(0.95)
     })
 
@@ -195,8 +247,8 @@ describe('sitemap', () => {
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
+      const entry = result.find((item) => item.url.includes('/cakes/test'))
 
-      const entry = result.find(entry => entry.url.includes('/cakes/test'))
       expect(entry?.changeFrequency).toBe('daily')
     })
   })
@@ -208,8 +260,7 @@ describe('sitemap', () => {
       await sitemap()
 
       const cakesQuery = mockFetch.mock.calls[0][0]
-      
-      // Verify the query includes test filtering
+
       expect(cakesQuery).toContain('!slug.current match "test*"')
       expect(cakesQuery).toContain('!slug.current match "*test*"')
       expect(cakesQuery).toContain('defined(slug.current)')
@@ -221,8 +272,7 @@ describe('sitemap', () => {
       await sitemap()
 
       const blogQuery = mockFetch.mock.calls[1][0]
-      
-      // Verify the query includes test filtering
+
       expect(blogQuery).toContain('!slug.current match "test*"')
       expect(blogQuery).toContain('!slug.current match "*test*"')
       expect(blogQuery).toContain('defined(slug.current)')
@@ -234,8 +284,7 @@ describe('sitemap', () => {
       await sitemap()
 
       const hampersQuery = mockFetch.mock.calls[2][0]
-      
-      // Verify the query includes test filtering
+
       expect(hampersQuery).toContain('!slug.current match "test*"')
       expect(hampersQuery).toContain('!slug.current match "*test*"')
       expect(hampersQuery).toContain('defined(slug.current)')
@@ -245,19 +294,17 @@ describe('sitemap', () => {
       mockFetch
         .mockResolvedValueOnce([
           { slug: { current: 'valid-cake' }, _updatedAt: '2025-01-01' },
-          { slug: null, _updatedAt: '2025-01-01' } // Invalid - no slug
+          { slug: null, _updatedAt: '2025-01-01' }
         ])
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
 
       const result = await sitemap()
-
-      const validEntry = result.find(entry => entry.url.includes('/cakes/valid-cake'))
-      const invalidEntry = result.find(entry => entry.url.includes('null'))
+      const validEntry = result.find((entry) => entry.url.includes('/cakes/valid-cake'))
+      const invalidEntry = result.find((entry) => entry.url.includes('null'))
 
       expect(validEntry).toBeDefined()
       expect(invalidEntry).toBeUndefined()
     })
   })
 })
-

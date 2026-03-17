@@ -27,9 +27,15 @@ export function SiteHeader() {
     'menu menu-md [&::before]:hidden !m-0 !p-0 items-start [&>li]:w-full'
   const mobileMenuItemClassName =
     'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
+  const orderFormHref = pathname === '/' ? '/#custom-cake-enquiry-heading' : '/get-custom-quote'
 
   const toggleDropdown = (dropdownId: DropdownId) => {
     setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
+  }
+
+  const handleDesktopDropdownNavigation = () => {
+    setOpenDropdownId(null)
+    lastTouchToggleRef.current = null
   }
 
   const handleSummaryClick = (
@@ -266,54 +272,34 @@ export function SiteHeader() {
                   >
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/cakes' className={dropdownItemClassName}>
+                        <Link href='/cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           All cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/wedding-cakes' className={dropdownItemClassName}>
+                        <Link href='/wedding-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Wedding cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/birthday-cakes' className={dropdownItemClassName}>
+                        <Link href='/birthday-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Birthday cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/anniversary-cakes-leeds' className={dropdownItemClassName}>
+                        <Link href='/anniversary-cakes-leeds' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Anniversary cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/baby-shower-cakes' className={dropdownItemClassName}>
+                        <Link href='/baby-shower-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Baby shower cakes
                         </Link>
                       </li>
                     </ul>
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/christening-cakes' className={dropdownItemClassName}>
-                          Christening cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/corporate-cakes-leeds' className={dropdownItemClassName}>
-                          Corporate cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/traditional-ukrainian-cakes' className={dropdownItemClassName}>
-                          Ukrainian cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/honey-cake-near-me' className={dropdownItemClassName}>
-                          Honey cake
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/custom-cake-enquiry' className={dropdownItemClassName}>
+                        <Link href={orderFormHref} className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Order form
                         </Link>
                       </li>
@@ -363,27 +349,27 @@ export function SiteHeader() {
                   >
                     <ul className={dropdownMenuListClassName}>
                       <li>
-                        <Link href='/learn/articles' className={dropdownItemClassName}>
+                        <Link href='/learn/articles' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Articles
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/guides' className={dropdownItemClassName}>
+                        <Link href='/learn/guides' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Guides
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/workshops' className={dropdownItemClassName}>
+                        <Link href='/learn/workshops' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Workshops
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/customer-stories' className={dropdownItemClassName}>
+                        <Link href='/learn/customer-stories' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Customer stories
                         </Link>
                       </li>
                       <li>
-                        <Link href='/farmers-markets' className={dropdownItemClassName}>
+                        <Link href='/farmers-markets' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Find us at farmers markets
                         </Link>
                       </li>
@@ -553,3 +539,8 @@ export function SiteHeader() {
     </header >
   )
 }
+
+
+
+
+

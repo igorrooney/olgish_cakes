@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
@@ -13,7 +13,6 @@ interface CakesProductCardProps {
 }
 
 const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
-// Matches mobile catalog grid geometry: max-w-[952px], px-4, grid-cols-2 gap-4.
 const mobileGridImageSizes = '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)'
 
 function formatPrice(value: number) {
@@ -29,6 +28,7 @@ export function CakesProductCard({
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const imageWrapperRef = useRef<HTMLDivElement | null>(null)
   const isByPostCake = cake.productType === 'giftHamper'
+  const formattedPrice = formatPrice(cake.price)
   const mobileImageSizes = mobileViewMode === 'grid' ? mobileGridImageSizes : cardImageSizes
   const mobileImageWrapperClassName = mobileViewMode === 'grid'
     ? 'relative aspect-square w-full overflow-hidden rounded-btn bg-base-200'
@@ -42,6 +42,7 @@ export function CakesProductCard({
   const imageLoadingOverlayClassName = `pointer-events-none absolute inset-0 bg-base-200 transition-opacity duration-300 motion-reduce:animate-none ${
     isImageLoaded ? 'opacity-0' : 'animate-pulse opacity-100'
   }`
+
   useEffect(() => {
     setIsImageLoaded(false)
   }, [cake.imageUrl])
@@ -64,7 +65,8 @@ export function CakesProductCard({
 
   if (variant === 'mobile') {
     return (
-      <Link href={cake.href} aria-label={`View details for ${cake.name}`} className={mobileCardLinkClassName}>
+      <Link href={cake.href} className={mobileCardLinkClassName}>
+        <span className='sr-only'>View details for {cake.name}</span>
         <article className='flex h-full flex-col'>
           <div ref={imageWrapperRef} className={mobileImageWrapperClassName}>
             <div
@@ -87,9 +89,9 @@ export function CakesProductCard({
               className='absolute right-3 top-3 h-6 inline-flex items-center justify-center rounded-[8px] bg-primary-50 px-3 py-0 [font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-semibold)] not-italic text-[16px] [leading-trim:none] [line-height:var(--d-lineHeight-14)] tracking-[0] text-center align-middle text-primary-500 shadow-sm'
             >
               {isByPostCake ? (
-                <>&pound;{formatPrice(cake.price)}</>
+                <>&pound;{formattedPrice}</>
               ) : (
-                <>from &pound;{formatPrice(cake.price)}</>
+                <>from &pound;{formattedPrice}</>
               )}
             </p>
           </div>
@@ -102,7 +104,8 @@ export function CakesProductCard({
   }
 
   return (
-    <Link href={cake.href} aria-label={`View details for ${cake.name}`} className='block h-full'>
+    <Link href={cake.href} className='block h-full'>
+      <span className='sr-only'>View details for {cake.name}</span>
       <article className='flex h-full flex-col overflow-hidden rounded-[10px] border border-primary-50 bg-primary-50 shadow-none'>
         <div className='p-[8px] pb-0'>
           <div ref={imageWrapperRef} className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
@@ -130,9 +133,9 @@ export function CakesProductCard({
           </p>
           <p className='mt-auto text-[20px] font-semibold leading-7 text-base-content'>
             {isByPostCake ? (
-              <>&pound;{formatPrice(cake.price)}</>
+              <>&pound;{formattedPrice}</>
             ) : (
-              <>from &pound;{formatPrice(cake.price)}</>
+              <>from &pound;{formattedPrice}</>
             )}
           </p>
         </div>
