@@ -1,12 +1,58 @@
 /**
  * Tests for backup-sanity-to-drive.ts validation logic
- * 
+ *
  * Tests validation patterns and error messages without executing the backup script.
  */
 
 import { describe, expect, it } from '@jest/globals'
+import { buildSanityExportCommand } from '../backup-sanity-to-drive'
+
+interface TestBackupConfig {
+    projectId: string
+    dataset: string
+    authToken: string
+    clientId: string
+    clientSecret: string
+    refreshToken: string
+    folderId: string
+}
 
 describe('backup-sanity-to-drive validation patterns', () => {
+    describe('Sanity export command construction', () => {
+        const baseConfig: TestBackupConfig = {
+            projectId: 'as9bci7b',
+            dataset: 'production',
+            authToken: 'token-value',
+            clientId: 'client-id',
+            clientSecret: 'client-secret',
+            refreshToken: 'refresh-token',
+            folderId: 'folder-id'
+        }
+
+        it('should use the repo-pinned Sanity CLI through pnpm exec', () => {
+            const outputPath = '/tmp/sanity-backup.tar.gz'
+
+            const command = buildSanityExportCommand(baseConfig, outputPath)
+
+            expect(command.command).toBe(process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm')
+            expect(command.args.slice(0, 4)).toEqual(['exec', 'sanity', 'dataset', 'export'])
+            expect(command.args).not.toContain('sanity@latest')
+            expect(command.args).not.toContain('--project')
+            expect(command.args).toContain('--project-id')
+        })
+
+        it('should keep dataset and destination as positional arguments and use project-id override', () => {
+            const outputPath = '/tmp/sanity-backup.tar.gz'
+
+            const command = buildSanityExportCommand(baseConfig, outputPath)
+
+            expect(command.args[4]).toBe(baseConfig.dataset)
+            expect(command.args[5]).toBe(outputPath)
+            expect(command.args[6]).toBe('--project-id')
+            expect(command.args[7]).toBe(baseConfig.projectId)
+        })
+    })
+
     describe('Project ID validation regex', () => {
         const projectIdRegex = /^[a-z0-9]+$/
 
@@ -139,56 +185,56 @@ describe('backup-sanity-to-drive validation patterns', () => {
          * Sanitization function that matches the implementation
          * This tests the logic without importing the actual function
          */
-        const sanitizeEnvVar = (value: string | undefined, name: string): string => {
+        const sanitizeEnvVar = (value: string | undefined): string => {
             if (!value) {
                 return ''
             }
-            
+
             const sanitized = value
                 .trim()
                 .replace(/[\r\n]+/g, '')
                 .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '')
-            
+
             return sanitized
         }
 
         it('should trim whitespace from environment variables', () => {
-            expect(sanitizeEnvVar('  token123  ', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('\ttoken123\t', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('  token123  ')).toBe('token123')
+            expect(sanitizeEnvVar('\ttoken123\t')).toBe('token123')
         })
 
         it('should remove newlines and carriage returns', () => {
-            expect(sanitizeEnvVar('token123\n', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('token123\r\n', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('token\n123', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('token\r\n123', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token123\n')).toBe('token123')
+            expect(sanitizeEnvVar('token123\r\n')).toBe('token123')
+            expect(sanitizeEnvVar('token\n123')).toBe('token123')
+            expect(sanitizeEnvVar('token\r\n123')).toBe('token123')
         })
 
         it('should remove other control characters', () => {
-            expect(sanitizeEnvVar('token\x00123', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('token\x1F123', 'TEST')).toBe('token123')
+            expect(sanitizeEnvVar('token\x00123')).toBe('token123')
+            expect(sanitizeEnvVar('token\x1F123')).toBe('token123')
         })
 
         it('should handle empty strings', () => {
-            expect(sanitizeEnvVar('', 'TEST')).toBe('')
-            expect(sanitizeEnvVar(undefined, 'TEST')).toBe('')
+            expect(sanitizeEnvVar('')).toBe('')
+            expect(sanitizeEnvVar(undefined)).toBe('')
         })
 
         it('should preserve valid characters', () => {
-            expect(sanitizeEnvVar('sk1234567890abcdef', 'TEST')).toBe('sk1234567890abcdef')
-            expect(sanitizeEnvVar('token-with-hyphens', 'TEST')).toBe('token-with-hyphens')
-            expect(sanitizeEnvVar('token_with_underscores', 'TEST')).toBe('token_with_underscores')
+            expect(sanitizeEnvVar('sk1234567890abcdef')).toBe('sk1234567890abcdef')
+            expect(sanitizeEnvVar('token-with-hyphens')).toBe('token-with-hyphens')
+            expect(sanitizeEnvVar('token_with_underscores')).toBe('token_with_underscores')
         })
 
         it('should handle GitHub Actions secret format (with trailing newline)', () => {
             // GitHub Actions secrets often have trailing newlines
             const secretWithNewline = 'sk1234567890abcdef\n'
-            expect(sanitizeEnvVar(secretWithNewline, 'TEST')).toBe('sk1234567890abcdef')
+            expect(sanitizeEnvVar(secretWithNewline)).toBe('sk1234567890abcdef')
         })
 
         it('should handle multiple newlines', () => {
-            expect(sanitizeEnvVar('token\n\n123', 'TEST')).toBe('token123')
-            expect(sanitizeEnvVar('\n\ntoken\n\n', 'TEST')).toBe('token')
+            expect(sanitizeEnvVar('token\n\n123')).toBe('token123')
+            expect(sanitizeEnvVar('\n\ntoken\n\n')).toBe('token')
         })
     })
 })
