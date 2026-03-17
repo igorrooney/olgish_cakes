@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { QuoteFormScrollLink } from './QuoteFormScrollLink'
 
 export function GetCustomQuoteCtaBand() {
   return (
@@ -18,12 +19,11 @@ export function GetCustomQuoteCtaBand() {
           </div>
 
           <div className='flex flex-col gap-3 tablet:flex-row small-laptop:flex-col'>
-            <Link
-              href='#quote-form'
+            <QuoteFormScrollLink
               className='btn btn-primary h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:min-w-[220px] tablet:text-base'
             >
               Go to the quote form
-            </Link>
+            </QuoteFormScrollLink>
             <Link
               href='/cakes'
               className='btn btn-outline h-12 border-primary-500 bg-base-100 px-6 text-sm font-semibold normal-case text-primary-700 tablet:h-14 tablet:min-w-[220px] tablet:text-base'

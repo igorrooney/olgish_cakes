@@ -146,7 +146,7 @@ describe('SiteHeader', () => {
     expect(topLevelLabels[1]).toBe('Custom cakes')
   })
 
-  it('orders custom cakes dropdown with all cakes first and order form last', () => {
+  it('orders custom cakes dropdown with all cakes first and get a quote last', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
@@ -166,17 +166,17 @@ describe('SiteHeader', () => {
       .map((link) => link.textContent?.trim() ?? '')
 
     expect(dropdownLinks[0]).toBe('All cakes')
-    expect(dropdownLinks[dropdownLinks.length - 1]).toBe('Order form')
+    expect(dropdownLinks[dropdownLinks.length - 1]).toBe('Get a quote')
     expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
-    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/#custom-cake-enquiry-heading')
+    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute('href', '/get-custom-quote#quote-form')
   })
 
-  it('points the desktop order form link to the canonical quote page outside the homepage', () => {
+  it('points the desktop get a quote link to the canonical quote page on non-home routes', () => {
     mockPathname = '/birthday-cakes'
 
     render(<SiteHeader />)
 
-    expect(screen.getByRole('link', { name: /order form/i })).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute('href', '/get-custom-quote#quote-form')
   })
 
   it('points wedding cakes navigation to the canonical category page', () => {
@@ -260,7 +260,7 @@ describe('SiteHeader', () => {
 
     expect(screen.getByText(/custom cakes/i)).toBeInTheDocument()
     expect(screen.getByText(/learn\s*&\s*visit/i)).toBeInTheDocument()
-    expect(screen.getByText(/order form/i)).toBeInTheDocument()
+    expect(screen.getByText(/get a quote/i)).toBeInTheDocument()
   })
 
   it('toggles desktop dropdowns and closes when clicking outside', () => {

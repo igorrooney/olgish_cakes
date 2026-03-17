@@ -69,7 +69,7 @@ describe('GetCustomQuotePage', () => {
       })
     ).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
-    expect(screen.getAllByRole('link', { name: /start your quote/i })[0]).toHaveAttribute('href', '#quote-form')
+    expect(screen.getAllByRole('link', { name: /start your quote/i })[0]).toHaveAttribute('href', '/get-custom-quote#quote-form')
     expect(screen.getByRole('heading', { level: 2, name: 'A clear process from the start' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2, name: 'Browse a few good places to start' })).toHaveLength(1)
     expect(screen.getByText('Tell me what you are planning')).toBeInTheDocument()

@@ -27,7 +27,7 @@ export function SiteHeader() {
     'menu menu-md [&::before]:hidden !m-0 !p-0 items-start [&>li]:w-full'
   const mobileMenuItemClassName =
     'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
-  const orderFormHref = pathname === '/' ? '/#custom-cake-enquiry-heading' : '/get-custom-quote'
+  const quotePageHref = '/get-custom-quote#quote-form'
 
   const toggleDropdown = (dropdownId: DropdownId) => {
     setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
@@ -299,8 +299,8 @@ export function SiteHeader() {
                     </ul>
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href={orderFormHref} className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
-                          Order form
+                        <Link href={quotePageHref} className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
+                          Get a quote
                         </Link>
                       </li>
                     </ul>

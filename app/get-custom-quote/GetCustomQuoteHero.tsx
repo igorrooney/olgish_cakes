@@ -3,6 +3,7 @@ import Link from 'next/link'
 import heroCakeCenter from '@/public/homeHero/home-hero-cake-center.png'
 import heroCakeLeft from '@/public/homeHero/home-hero-cake-left.png'
 import heroCakeRight from '@/public/homeHero/home-hero-cake-right.png'
+import { QuoteFormScrollLink } from './QuoteFormScrollLink'
 
 export function GetCustomQuoteHero() {
   return (
@@ -21,12 +22,11 @@ export function GetCustomQuoteHero() {
             </p>
           </div>
           <div className='flex w-full flex-col gap-3 tablet:flex-row tablet:justify-center small-laptop:justify-start'>
-            <Link
-              href='#quote-form'
+            <QuoteFormScrollLink
               className='btn btn-primary h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:min-w-[220px] tablet:text-base'
             >
               Start your quote
-            </Link>
+            </QuoteFormScrollLink>
             <Link
               href='/cakes'
               className='btn btn-outline h-12 border-primary-500 bg-base-100 px-6 text-sm font-semibold normal-case text-primary-700 tablet:h-14 tablet:min-w-[220px] tablet:text-base'
