@@ -531,5 +531,31 @@ describe('HomePage', () => {
         }
       })
     })
+
+    it('should emit bakery structured data with a clean pound-symbol price range', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+
+      let bakerySchema: { '@type'?: string, priceRange?: string } | null = null
+
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@type'?: string
+            priceRange?: string
+          }
+
+          if (data['@type'] === 'Bakery') {
+            bakerySchema = data
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
+
+      expect(bakerySchema).toBeTruthy()
+      expect(bakerySchema?.priceRange).toBe('££')
+    })
   })
 })

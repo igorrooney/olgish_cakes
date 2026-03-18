@@ -25,7 +25,7 @@ const labelClassName = 'font-oldenburg text-xs text-base-content leading-[15px] 
 const MOBILE_INITIAL_COLLECTIONS = 6
 const SMALL_LAPTOP_INITIAL_COLLECTIONS = 8
 const moreButtonClassName =
-  'font-oldenburg text-[24px] text-base-content text-center transition-colors hover:text-primary-500 focus-visible:text-primary-500'
+  'font-oldenburg cursor-pointer text-[24px] text-base-content text-center transition-colors hover:text-primary-500 focus-visible:text-primary-500'
 
 const getVisibilityClassName = (index: number, showAll: boolean) => {
   if (showAll) {

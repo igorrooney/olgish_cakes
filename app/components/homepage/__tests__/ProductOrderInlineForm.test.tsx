@@ -23,7 +23,11 @@ function createTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        retry: false
+        retry: false,
+        gcTime: 0
+      },
+      mutations: {
+        gcTime: 0
       }
     }
   })
@@ -56,6 +60,11 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.change(screen.getByLabelText(/full name:/i), { target: { value: 'John Doe' } })
     fireEvent.change(screen.getByLabelText(/email address:/i), { target: { value: 'john@example.com' } })
     fireEvent.change(screen.getByLabelText(/phone number:/i), { target: { value: '07911123456' } })
+  }
+
+  const selectOccasion = (optionName: string) => {
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
+    fireEvent.click(screen.getByRole('option', { name: optionName }))
   }
 
   beforeEach(() => {
@@ -482,7 +491,7 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Leeds' } })
     fireEvent.change(screen.getByLabelText(/postcode/i), { target: { value: 'LS1 1AA' } })
     fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: neededDate } })
-    fireEvent.change(screen.getByLabelText(/what's the occasion\?/i), { target: { value: 'birthday' } })
+    selectOccasion('Birthday')
     fireEvent.change(screen.getByLabelText(/message/i), { target: { value: 'Please confirm collection time.' } })
 
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
@@ -868,6 +877,7 @@ describe('ProductOrderInlineForm', () => {
       />
     )
 
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
     expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
   })
 
@@ -887,6 +897,7 @@ describe('ProductOrderInlineForm', () => {
       expect(mockedFetchOccasionOptions).toHaveBeenCalled()
     })
 
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
     expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
   })
 
@@ -907,9 +918,13 @@ describe('ProductOrderInlineForm', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
+      expect(mockedFetchOccasionOptions).toHaveBeenCalled()
     })
 
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
+    })
     expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
   })
 })

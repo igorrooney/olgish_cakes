@@ -4,22 +4,16 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { EnquiryForm } from '../EnquiryForm'
+import { getTodayDateInputValue } from '../mobileForm.utils'
 
 describe('EnquiryForm', () => {
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
 
-  const formatDateForInput = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
   const getDateInputValue = (daysFromNow = 0) => {
     const date = new Date()
     date.setDate(date.getDate() + daysFromNow)
-    return formatDateForInput(date)
+    return getTodayDateInputValue(date)
   }
 
   const fillValidForm = () => {
@@ -109,13 +103,16 @@ describe('EnquiryForm', () => {
       { label: 'Other', value: 'other' }
     ])
 
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
     expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
+    expect(screen.getByLabelText(/what's the occasion\?/i)).toHaveAttribute('aria-controls', 'occasion-listbox')
     expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
   })
 
   it('uses fallback occasion options when custom options are not provided', async () => {
     await renderWithCsrf()
 
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
     expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'Other' })).toBeInTheDocument()
   })
@@ -125,6 +122,12 @@ describe('EnquiryForm', () => {
     await renderWithCsrf()
 
     expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
+  })
+
+  it('does not depend on a server-supplied min date prop', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', getDateInputValue())
   })
 
   it('applies tablet layout classes to the container and heading', async () => {
@@ -167,6 +170,23 @@ describe('EnquiryForm', () => {
 
     const dateInput = screen.getByLabelText(/when do you need it/i)
     fireEvent.change(dateInput, { target: { value: getDateInputValue(-1) } })
+
+    expect(dateInput).toHaveValue('')
+    expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
+  })
+
+  it('rejects a date that becomes past after the form stays open across midnight', async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-03-18T23:55:00.000Z'))
+
+    await renderWithCsrf()
+
+    const dateInput = screen.getByLabelText(/when do you need it/i)
+    expect(dateInput).toHaveAttribute('min', '2026-03-18')
+
+    jest.setSystemTime(new Date('2026-03-19T00:05:00.000Z'))
+
+    fireEvent.change(dateInput, { target: { value: '2026-03-18' } })
 
     expect(dateInput).toHaveValue('')
     expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()

@@ -1,20 +1,32 @@
 import { z } from 'zod'
 
-export const getTodayDateInputValue = () => {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
+const londonDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/London',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit'
+})
+
+export const getTodayDateInputValue = (baseDate = new Date()) => {
+  const dateParts = londonDateFormatter.formatToParts(baseDate)
+  const year = dateParts.find((part) => part.type === 'year')?.value
+  const month = dateParts.find((part) => part.type === 'month')?.value
+  const day = dateParts.find((part) => part.type === 'day')?.value
+
+  if (!year || !month || !day) {
+    throw new Error('Failed to format London date parts')
+  }
+
   return `${year}-${month}-${day}`
 }
 
 export const dateMinErrorMessage = 'Please select today or a future date'
 
-export const isDateOnOrAfterToday = (value: string) => {
+export const isDateOnOrAfterToday = (value: string, todayDate = getTodayDateInputValue()) => {
   if (!value) {
     return true
   }
-  return value >= getTodayDateInputValue()
+  return value >= todayDate
 }
 
 export const formSchema = z.object({

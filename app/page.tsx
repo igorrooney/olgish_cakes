@@ -274,7 +274,6 @@ export default async function Home() {
     hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial)
   )
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
-  const hasTestimonials = eligibleTestimonials.length > 0
   const reviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
   const productReviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapProductReview)
   const reviewStats = calculateReviewStats(testimonials)

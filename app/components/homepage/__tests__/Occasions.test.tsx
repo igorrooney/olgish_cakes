@@ -140,6 +140,7 @@ describe('Occasions', () => {
     expect(collection9Card?.className).not.toContain('small-laptop:flex')
 
     const moreButton = screen.getByRole('button', { name: '+ many more!' })
+    expect(moreButton).toHaveClass('cursor-pointer')
     fireEvent.click(moreButton)
 
     expect(collection7Card).not.toHaveClass('hidden')

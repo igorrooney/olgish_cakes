@@ -26,6 +26,32 @@ describe('SiteHeader', () => {
     expect(screen.getByAltText(/olgish cakes logo/i)).toBeInTheDocument()
   })
 
+  it('hydrates the canonical desktop header without changing the quote link or sticky classes', () => {
+    const { MessageChannel } = require('worker_threads')
+    const originalMessageChannel = global.MessageChannel
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    global.MessageChannel = MessageChannel
+    const { hydrateRoot } = require('react-dom/client')
+    const { renderToString } = require('react-dom/server')
+    const container = document.createElement('div')
+    container.innerHTML = renderToString(<SiteHeader />)
+
+    act(() => {
+      hydrateRoot(container, <SiteHeader />)
+    })
+
+    const header = container.querySelector('header')
+    const quoteLink = Array.from(container.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Get a quote')
+
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+    expect(header?.className).toContain('tablet:sticky')
+    expect(header?.className).not.toContain('sticky top-0 z-[9999] relative')
+    expect(quoteLink?.getAttribute('href')).toBe('/get-custom-quote#quote-form')
+
+    global.MessageChannel = originalMessageChannel
+    consoleErrorSpy.mockRestore()
+  })
+
   it('uses tablet-only sticky classes so mobile header is not sticky', () => {
     render(<SiteHeader />)
 

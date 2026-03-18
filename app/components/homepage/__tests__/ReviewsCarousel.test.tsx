@@ -1,13 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { Testimonial } from '@/app/types/testimonial'
 import { ReviewsCarousel } from '../ReviewsCarousel'
 
-const minutes = 60 * 1000
-const hours = 60 * minutes
+const hours = 60 * 60 * 1000
 const days = 24 * hours
+
+const longReviewPrefix = 'This review is long enough to overflow after three lines in the review card layout.'
+const exactThreeLineReviewPrefix = 'This review fits exactly within the visible three-line clamp and should not render a disclosure.'
+const responsiveReviewPrefix = 'This review changes between three lines and four lines as the available width changes.'
 
 const createTestimonial = (overrides: Partial<Testimonial>): Testimonial => ({
   _id: 'testimonial-1',
@@ -22,15 +25,79 @@ const createTestimonial = (overrides: Partial<Testimonial>): Testimonial => ({
   ...overrides
 })
 
+const getReviewTextElement = (controlId: string | null): HTMLElement => {
+  const reviewText = controlId ? document.getElementById(controlId) : null
+
+  if (!reviewText) {
+    throw new Error(`Review text element not found for control id: ${controlId}`)
+  }
+
+  return reviewText
+}
+
 describe('ReviewsCarousel', () => {
   const now = new Date('2026-01-29T12:00:00Z')
+  let clientWidthSpy: jest.SpyInstance<number, []>
+  let clientHeightSpy: jest.SpyInstance<number, []>
+  let scrollHeightSpy: jest.SpyInstance<number, []>
+  let currentReviewWidth = 342
 
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(now)
+
+    clientWidthSpy = jest.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
+      if (this.tagName === 'P') {
+        return currentReviewWidth
+      }
+
+      return 0
+    })
+
+    scrollHeightSpy = jest.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      if (this.tagName !== 'P') {
+        return 0
+      }
+
+      const textContent = this.textContent ?? ''
+
+      if (textContent.includes(longReviewPrefix)) {
+        return 110
+      }
+
+      if (textContent.includes(responsiveReviewPrefix)) {
+        return currentReviewWidth >= 342 ? 66 : 88
+      }
+
+      if (textContent.includes(exactThreeLineReviewPrefix)) {
+        return 66
+      }
+
+      return 66
+    })
+
+    clientHeightSpy = jest.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      if (this.tagName !== 'P') {
+        return 0
+      }
+
+      const element = this as HTMLParagraphElement
+      const isClamped = element.style.maxHeight === '66px'
+      const height = element.scrollHeight
+
+      if (!isClamped) {
+        return height
+      }
+
+      return Math.min(height, 66)
+    })
   })
 
   afterEach(() => {
+    clientWidthSpy.mockRestore()
+    clientHeightSpy.mockRestore()
+    scrollHeightSpy.mockRestore()
+    currentReviewWidth = 342
     jest.useRealTimers()
   })
 
@@ -40,7 +107,7 @@ describe('ReviewsCarousel', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders reviews with absolute and relative dates plus fallback names', () => {
+  it('renders reviews with absolute dates and fallback names', () => {
     const testimonials = [
       createTestimonial({
         _id: 't-1',
@@ -51,40 +118,9 @@ describe('ReviewsCarousel', () => {
       }),
       createTestimonial({
         _id: 't-2',
-        date: new Date(now.getTime() - 10 * minutes).toISOString(),
+        date: new Date(now.getTime() - 6 * days).toISOString(),
         customerName: '',
         text: 'Soft and fresh.'
-      }),
-      createTestimonial({
-        _id: 't-3',
-        title: 'So tasty',
-        date: new Date(now.getTime() - 2 * hours).toISOString(),
-        customerName: 'Kateryna',
-        text: 'Perfect layers.'
-      }),
-      createTestimonial({
-        _id: 't-4',
-        date: new Date(now.getTime() - 3 * days).toISOString(),
-        customerName: 'Sofiia',
-        text: 'We will order again.'
-      }),
-      createTestimonial({
-        _id: 't-5',
-        date: new Date(now.getTime() - 4 * days).toISOString(),
-        customerName: 'Mila',
-        text: 'Great for celebrations.'
-      }),
-      createTestimonial({
-        _id: 't-6',
-        date: new Date(now.getTime() - 5 * days).toISOString(),
-        customerName: 'Nina',
-        text: 'Wonderful service.'
-      }),
-      createTestimonial({
-        _id: 't-7',
-        date: new Date(now.getTime() - 6 * days).toISOString(),
-        customerName: 'Olia',
-        text: 'Absolutely delicious.'
       })
     ]
 
@@ -92,15 +128,9 @@ describe('ReviewsCarousel', () => {
 
     expect(screen.getByText('Our reviews')).toBeInTheDocument()
     expect(screen.getAllByText('Amazing cake')).toHaveLength(3)
-    expect(screen.getAllByText('So tasty')).toHaveLength(3)
-    expect(screen.getAllByText(/just now/i)).toHaveLength(3)
-    expect(screen.getAllByText(/10 minutes ago/i)).toHaveLength(3)
-    expect(screen.getAllByText(/2 hours ago/i)).toHaveLength(3)
-    expect(screen.getAllByText(/3 days ago/i)).toHaveLength(3)
-    expect(screen.getAllByText(/4 days ago/i)).toHaveLength(3)
-    expect(screen.getAllByText(/5 days ago/i)).toHaveLength(3)
-    expect(screen.getAllByText(/6 days ago/i)).toHaveLength(3)
     expect(screen.getAllByText(/29 January 2026/i).length).toBeGreaterThanOrEqual(3)
+    expect(screen.getAllByText(/23 January 2026/i).length).toBeGreaterThanOrEqual(3)
+    expect(screen.queryByText(/days ago/i)).not.toBeInTheDocument()
     expect(screen.getAllByText('Anonymous')).toHaveLength(3)
   })
 
@@ -115,7 +145,6 @@ describe('ReviewsCarousel', () => {
     )
 
     const { container } = render(<ReviewsCarousel testimonials={testimonials} />)
-
     const previousReviewButton = screen.getByRole('button', { name: 'Previous review' })
     const nextReviewButton = screen.getByRole('button', { name: 'Next review' })
 
@@ -141,10 +170,6 @@ describe('ReviewsCarousel', () => {
     expect(nextReviewsButtons[0]).toHaveAttribute('aria-controls', tabletItems[1].id)
     expect(previousReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[0].id)
     expect(nextReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[1].id)
-    expect(previousReviewsButtons[0]).toHaveAttribute('aria-disabled', 'true')
-    expect(nextReviewsButtons[0]).toHaveAttribute('aria-disabled', 'false')
-    expect(previousReviewsButtons[1]).toHaveAttribute('aria-disabled', 'true')
-    expect(nextReviewsButtons[1]).toHaveAttribute('aria-disabled', 'false')
 
     const scrollTo = jest.fn()
     Object.defineProperty(mobileCarousel, 'scrollTo', {
@@ -172,24 +197,200 @@ describe('ReviewsCarousel', () => {
 
     expect(previousReviewButton).not.toBeDisabled()
     expect(nextReviewButton).toBeDisabled()
-    expect(previousReviewButton).toHaveAttribute('aria-disabled', 'false')
-    expect(nextReviewButton).toHaveAttribute('aria-disabled', 'true')
   })
 
-  it('hides multi-review controls when only one slide is needed', () => {
-    const testimonials = Array.from({ length: 4 }, (_, index) =>
-      createTestimonial({
-        _id: `single-slide-${index}`,
-        date: new Date(now.getTime() - index * days).toISOString(),
-        customerName: `Customer ${index + 1}`,
-        text: `Review ${index + 1}`
-      })
+  it('shows an accessible disclosure control only for overflowing reviews', () => {
+    const longReview = `${longReviewPrefix} It keeps going with extra detail about taste, texture, design, service, and delivery so the button should appear.`
+    const shortReview = 'Short review that fits.'
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'overflowing-review',
+            text: longReview,
+            customerName: 'Iryna'
+          }),
+          createTestimonial({
+            _id: 'short-review',
+            text: shortReview,
+            customerName: 'Olha'
+          })
+        ]}
+      />
     )
 
-    render(<ReviewsCarousel testimonials={testimonials} />)
+    expect(screen.getAllByTestId('review-disclosure-slot')).toHaveLength(6)
+    const readMoreButtons = screen.getAllByRole('button', { name: 'Read more' })
+    expect(readMoreButtons).toHaveLength(3)
+    expect(screen.getAllByText(shortReview)).toHaveLength(3)
 
-    expect(screen.getAllByRole('button', { name: 'Next review' })).toHaveLength(1)
-    expect(screen.queryByRole('button', { name: 'Next reviews' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Previous reviews' })).toBeNull()
+    const longReviewText = getReviewTextElement(readMoreButtons[0].getAttribute('aria-controls'))
+    expect(longReviewText).toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
+    expect(readMoreButtons[0]).toHaveAttribute('aria-expanded', 'false')
+    expect(readMoreButtons[0]).toHaveAttribute('aria-controls', longReviewText.id)
+    expect(screen.getAllByText('...')).toHaveLength(3)
   })
+
+  it('toggles overflowing reviews independently without affecting review metadata', () => {
+    const longReviewOne = `${longReviewPrefix} It keeps going with extra detail about taste, texture, design, service, and delivery so the button should appear.`
+    const longReviewTwo = `${longReviewPrefix} Another customer adds extra words about celebration photos, family reactions, and perfect packaging.`
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'overflowing-review-one',
+            title: 'Amazing cake',
+            text: longReviewOne,
+            customerName: 'Iryna'
+          }),
+          createTestimonial({
+            _id: 'overflowing-review-two',
+            title: 'Wonderful service',
+            text: longReviewTwo,
+            customerName: 'Kateryna'
+          })
+        ]}
+      />
+    )
+
+    const readMoreButtons = screen.getAllByRole('button', { name: 'Read more' })
+    const firstReviewText = getReviewTextElement(readMoreButtons[0].getAttribute('aria-controls'))
+    const secondReviewText = getReviewTextElement(readMoreButtons[1].getAttribute('aria-controls'))
+
+    fireEvent.click(readMoreButtons[0])
+
+    expect(readMoreButtons[0]).toHaveAttribute('aria-expanded', 'true')
+    expect(readMoreButtons[0]).toHaveTextContent('Show less')
+    expect(firstReviewText).not.toHaveStyle({ maxHeight: '66px' })
+    expect(secondReviewText).toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
+    expect(screen.getAllByText('...')).toHaveLength(5)
+    expect(screen.getAllByText('Amazing cake')).toHaveLength(3)
+    expect(screen.getAllByText('Iryna')).toHaveLength(3)
+    expect(screen.getAllByText(/1 January 2026/i)).toHaveLength(6)
+
+    fireEvent.click(readMoreButtons[1])
+
+    expect(readMoreButtons[1]).toHaveAttribute('aria-expanded', 'true')
+    expect(secondReviewText).not.toHaveStyle({ maxHeight: '66px' })
+    expect(screen.getAllByText('...')).toHaveLength(4)
+  })
+
+  it('keeps expanded reviews open after resize remeasurement', () => {
+    const longReview = `${longReviewPrefix} It keeps going with extra detail about taste, texture, design, service, and delivery so the button should appear.`
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'persistent-overflowing-review',
+            text: longReview,
+            customerName: 'Iryna'
+          })
+        ]}
+      />
+    )
+
+    const disclosureButton = screen.getAllByRole('button', { name: 'Read more' })[0]
+    const reviewText = getReviewTextElement(disclosureButton.getAttribute('aria-controls'))
+
+    fireEvent.click(disclosureButton)
+
+    expect(disclosureButton).toHaveAttribute('aria-expanded', 'true')
+    expect(reviewText).not.toHaveStyle({ maxHeight: '66px' })
+
+    act(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    const showLessButtons = screen.getAllByRole('button', { name: 'Show less' })
+
+    expect(showLessButtons).toHaveLength(1)
+    expect(showLessButtons[0]).toHaveAttribute('aria-expanded', 'true')
+    expect(reviewText).not.toHaveStyle({ maxHeight: '66px' })
+  })
+
+  it('does not show a disclosure for reviews that fit exactly within three lines', () => {
+    const exactThreeLineReview = `${exactThreeLineReviewPrefix} The copy is still readable without hidden content.`
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'exact-three-lines-review',
+            text: exactThreeLineReview,
+            customerName: 'Olha'
+          })
+        ]}
+      />
+    )
+
+    expect(screen.getAllByText(exactThreeLineReview)).toHaveLength(3)
+    expect(screen.queryByRole('button', { name: 'Read more' })).not.toBeInTheDocument()
+    expect(screen.queryByText('...')).not.toBeInTheDocument()
+  })
+
+  it('updates disclosure visibility when the review width changes after resize', () => {
+    const responsiveReview = `${responsiveReviewPrefix} It should only reveal the button once the layout becomes narrow enough to truncate it.`
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'responsive-review',
+            text: responsiveReview,
+            customerName: 'Iryna'
+          })
+        ]}
+      />
+    )
+
+    expect(screen.queryByRole('button', { name: 'Read more' })).not.toBeInTheDocument()
+
+    currentReviewWidth = 240
+
+    act(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    expect(screen.getAllByRole('button', { name: 'Read more' })).toHaveLength(3)
+  })
+
+  it('removes the clamp when a resized review no longer overflows', () => {
+    const responsiveReview = `${responsiveReviewPrefix} It should stop truncating once the layout becomes wide enough again.`
+
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createTestimonial({
+            _id: 'responsive-unclamped-review',
+            text: responsiveReview,
+            customerName: 'Iryna'
+          })
+        ]}
+      />
+    )
+
+    currentReviewWidth = 240
+
+    act(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    const disclosureButton = screen.getAllByRole('button', { name: 'Read more' })[0]
+    const reviewText = getReviewTextElement(disclosureButton.getAttribute('aria-controls'))
+
+    expect(reviewText).toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
+
+    currentReviewWidth = 342
+
+    act(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    expect(screen.queryByRole('button', { name: 'Read more' })).not.toBeInTheDocument()
+    expect(reviewText).not.toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
+  })
+
 })

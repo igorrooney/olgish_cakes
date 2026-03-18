@@ -15,6 +15,15 @@ describe('GetCustomQuoteForm', () => {
     { label: 'Birthday Cakes', value: 'Birthday Cakes' },
     { label: 'Other', value: 'other' }
   ]
+  const optionLabelsByValue: Record<string, string> = {
+    birthday: 'Birthday',
+    wedding: 'Wedding',
+    anniversary: 'Anniversary',
+    baby_shower: 'Baby shower',
+    corporate_event: 'Corporate event',
+    christening: 'Christening',
+    other: 'Other'
+  }
 
   const formatDateForInput = (date: Date) => {
     const year = date.getFullYear()
@@ -62,7 +71,10 @@ describe('GetCustomQuoteForm', () => {
     fireEvent.change(screen.getByLabelText(/^Phone number$/i), { target: { value: phone } })
     fireEvent.change(screen.getByLabelText(/^Date needed$/i), { target: { value: getDateInputValue(5) } })
     fireEvent.change(screen.getByLabelText(/^Approximate servings$/i), { target: { value: '24 guests' } })
-    fireEvent.change(screen.getByRole('combobox', { name: /Occasion/i }), { target: { value: occasion } })
+    if (occasion) {
+      fireEvent.click(screen.getByLabelText(/^Occasion/i))
+      fireEvent.click(screen.getByRole('option', { name: optionLabelsByValue[occasion] ?? occasion }))
+    }
     fireEvent.change(screen.getByLabelText(/^Cake brief/i), {
       target: { value: 'Blue floral cake with vanilla raspberry flavour for a milestone birthday.' }
     })
@@ -95,7 +107,7 @@ describe('GetCustomQuoteForm', () => {
     expect(screen.getByLabelText(/^Phone number$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Date needed$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Approximate servings$/i)).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: /Occasion/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Occasion/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Cake brief/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Reference image/i)).toBeInTheDocument()
     expect(screen.getByText(/please add either an email address or a phone number so i can get back to you/i)).toBeInTheDocument()
@@ -106,7 +118,7 @@ describe('GetCustomQuoteForm', () => {
   it('renders the top grid fields in the expected DOM order', async () => {
     await renderForm()
 
-    const gridInputs = Array.from(document.querySelectorAll('input, select'))
+    const gridInputs = Array.from(document.querySelectorAll('input, select, button'))
       .map((element) => element.id)
       .filter((id) => ['fullName', 'email', 'phone', 'servings', 'date', 'occasion'].includes(id))
 
@@ -123,6 +135,7 @@ describe('GetCustomQuoteForm', () => {
   it('renders provided collection-based occasion options', async () => {
     await renderForm({ occasionOptions: collectionOccasionOptions })
 
+    fireEvent.click(screen.getByLabelText(/^Occasion/i))
     expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'Birthday Cakes' })).toBeInTheDocument()
   })
