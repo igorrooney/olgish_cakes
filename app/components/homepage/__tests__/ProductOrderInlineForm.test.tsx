@@ -5,7 +5,7 @@ import React from 'react'
 import { fireEvent, render as rtlRender, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductOrderInlineForm } from '../ProductOrderInlineForm'
-import { OCCASION_OPTIONS } from '../formOptions'
+import { OCCASION_OPTIONS, type OccasionOption } from '../formOptions'
 import { fetchOccasionOptions } from '@/app/services/occasionOptions'
 
 jest.mock('@/app/services/occasionOptions', () => {
@@ -926,5 +926,59 @@ describe('ProductOrderInlineForm', () => {
       expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
     })
     expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
+  })
+
+  it('preserves the selected fallback occasion when fetched options replace the list', async () => {
+    let resolveOccasionOptions: ((options: OccasionOption[]) => void) | null = null
+    mockedFetchOccasionOptions.mockImplementationOnce(() => {
+      return new Promise((resolve) => {
+        resolveOccasionOptions = resolve
+      })
+    })
+
+    render(
+      <ProductOrderInlineForm
+        productType='cake'
+        productId='cake-slug'
+        productName='Honey Cake'
+        totalPrice={45}
+      />
+    )
+
+    fillRequiredFields()
+    selectOccasion('Birthday')
+
+    expect(screen.getByLabelText(/what's the occasion\?/i)).toHaveTextContent('Birthday')
+
+    resolveOccasionOptions?.([
+      { label: 'Select from list', value: '', disabled: true },
+      { label: 'Wedding Cakes', value: 'Wedding Cakes' },
+      { label: 'Other', value: 'other' }
+    ])
+
+    await waitFor(() => {
+      expect(mockedFetchOccasionOptions).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/what's the occasion\?/i)).toHaveTextContent('Birthday')
+    })
+
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
+    expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText(/message/i), { target: { value: 'Please confirm collection time.' } })
+    fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({
+        method: 'POST'
+      }))
+    })
+
+    const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
+    const body = requestInit.body as FormData
+
+    expect(body.get('occasion')).toBe('birthday')
   })
 })

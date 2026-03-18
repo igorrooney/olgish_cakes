@@ -643,8 +643,11 @@ async function handlePOST(request: NextRequest) {
         }
       })
 
-      if (adminFallbackResponse.error) {
-        logger.error('Fallback admin email failed', adminFallbackResponse.error)
+      if (!adminFallbackResponse.accepted || adminFallbackResponse.error) {
+        const adminFallbackError = adminFallbackResponse.error?.message || 'Transport did not accept admin fallback email'
+
+        logger.error('Fallback admin email failed', adminFallbackError)
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
       }
 
       const customerFallbackResponse = await sendEmail({
@@ -670,8 +673,11 @@ async function handlePOST(request: NextRequest) {
         }
       })
 
-      if (customerFallbackResponse.error) {
-        logger.error('Fallback customer email failed', customerFallbackResponse.error)
+      if (!customerFallbackResponse.accepted || customerFallbackResponse.error) {
+        logger.error(
+          'Fallback customer email failed',
+          customerFallbackResponse.error?.message || 'Transport did not accept customer fallback email'
+        )
       }
     }
 

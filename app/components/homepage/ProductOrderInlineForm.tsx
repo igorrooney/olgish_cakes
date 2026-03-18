@@ -129,6 +129,43 @@ function formatPrice(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2)
 }
 
+function getOccasionOptionValue(option: OccasionOption) {
+  return option.value ?? option.label
+}
+
+function getOccasionOptionLabel(value: string, options: OccasionOption[]) {
+  const matchedOption = options.find((option) => getOccasionOptionValue(option) === value)
+
+  return matchedOption?.label ?? value
+}
+
+function mergeSelectedOccasionOption(options: OccasionOption[], selectedValue: string) {
+  if (selectedValue.length === 0) {
+    return options
+  }
+
+  const hasSelectedOption = options.some((option) => getOccasionOptionValue(option) === selectedValue)
+  if (hasSelectedOption) {
+    return options
+  }
+
+  const selectedOption: OccasionOption = {
+    label: getOccasionOptionLabel(selectedValue, [...OCCASION_OPTIONS, ...options]),
+    value: selectedValue
+  }
+
+  if (options.length === 0) {
+    return [selectedOption]
+  }
+
+  const [firstOption, ...remainingOptions] = options
+  if ((firstOption.value ?? '') === '' || firstOption.disabled) {
+    return [firstOption, selectedOption, ...remainingOptions]
+  }
+
+  return [selectedOption, ...options]
+}
+
 export function ProductOrderInlineForm({
   productType,
   productId,
@@ -173,6 +210,9 @@ export function ProductOrderInlineForm({
 
     return OCCASION_OPTIONS
   }, [occasionOptions, occasionOptionsQuery.data, occasionOptionsQuery.isSuccess, showOccasionField])
+  const displayOccasionOptions = useMemo(() => {
+    return mergeSelectedOccasionOption(resolvedOccasionOptions, formData.occasion ?? '')
+  }, [formData.occasion, resolvedOccasionOptions])
   const buttonClassName = hasSubmittedSuccessfully
     ? 'bg-[var(--d-color-status-success-bg)] hover:bg-[var(--d-color-status-success-bg)]'
     : 'bg-primary-500 hover:bg-primary-700'
@@ -478,7 +518,7 @@ export function ProductOrderInlineForm({
           value={formData.occasion ?? ''}
           label="What's the occasion?"
           labelAlt='(Optional)'
-          options={resolvedOccasionOptions}
+          options={displayOccasionOptions}
           selectClassName='cursor-pointer'
           hintText='Select an occasion'
           onValueChange={(value) => updateField('occasion', value)}

@@ -49,7 +49,7 @@ describe('/api/contact', () => {
     process.env.CONTACT_EMAIL_TO = 'test@example.com'
     process.env.SANITY_API_TOKEN = 'test-token'
     process.env.ORDER_EMAIL_BCC = 'orders-bcc@example.com'
-    mockSend.mockResolvedValue({ error: null })
+    mockSend.mockResolvedValue({ data: { id: 'test-email-id' }, error: null })
     mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id' })
     mockUploadFromMock.mockResolvedValue({ _id: 'test-asset-id' })
     mockPatchCommitFromMock.mockResolvedValue({ _id: 'test-order-id' })
@@ -779,6 +779,35 @@ describe('/api/contact', () => {
       expect(mockSend).toHaveBeenCalledTimes(2)
       expect(fallbackCustomerEmailCall?.text).toContain('Gift note: Happy birthday!')
       expect(fallbackCustomerEmailCall?.html).toContain('Gift note')
+    })
+
+    it('should return 500 when fallback admin email is not accepted', async () => {
+      mockCreateFromMock.mockRejectedValue(new Error('Sanity creation failed'))
+      mockSend.mockResolvedValueOnce({ error: { message: 'Admin fallback failed' } })
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Please ring before delivery')
+      formData.append('customerMessage', 'No nuts please')
+      formData.append('isOrderForm', 'true')
+      formData.append('productType', 'cake')
+      formData.append('productId', 'honey-cake')
+      formData.append('productName', 'Honey Cake')
+      formData.append('totalPrice', '25')
+
+      const request = new NextRequest('http://localhost/api/contact', {
+        method: 'POST',
+        body: formData
+      })
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(json).toEqual({ error: 'Failed to send email' })
+      expect(mockSend).toHaveBeenCalledTimes(1)
     })
 
     it('should not send fallback emails when only metadata patch fails', async () => {
