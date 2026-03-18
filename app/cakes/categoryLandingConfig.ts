@@ -729,6 +729,10 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
   }
 }
 
+export const categoryLandingCanonicalPaths = Object.freeze(
+  Object.values(categoryLandingConfig).map((config) => config.canonicalPath)
+)
+
 const categoryLandingPathByQueryValue = new Map<string, `/${string}`>(
   Object.values(categoryLandingConfig).flatMap((config) => ([
     [config.collectionQueryValue, config.canonicalPath] as const,

@@ -5,11 +5,7 @@ import {
   classifyPageOnlyQueryFromListingSearchParams,
   isIndexablePageOnlyPagination
 } from '@/lib/utils/catalog-listing-query-seo'
-import {
-  getMerchantReturnPolicy,
-  getOfferShippingDetails,
-  getPriceValidUntil
-} from '../utils/seo'
+import { getMerchantReturnPolicy, getPriceValidUntil } from '../utils/seo'
 import type { CatalogFaqItem } from './catalogFaqItems'
 
 const baseUrl = 'https://olgishcakes.co.uk'
@@ -160,7 +156,6 @@ export function createCatalogItemListStructuredData({
                   name: 'Olgish Cakes',
                   url: baseUrl
                 },
-                shippingDetails: getOfferShippingDetails(),
                 hasMerchantReturnPolicy: getMerchantReturnPolicy()
               }
             }

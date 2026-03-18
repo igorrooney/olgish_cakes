@@ -784,6 +784,11 @@ describe('CakesPage', () => {
     }
 
     expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes/sample-honey-cake')
+    expect(firstListItem.item).toHaveProperty('offers')
+    if (!isRecord(firstListItem.item.offers)) {
+      throw new Error('Expected first list item offer data')
+    }
+    expect(firstListItem.item.offers).not.toHaveProperty('shippingDetails')
   })
 
   it('uses minimum servings base price for ItemList structured data offers', async () => {

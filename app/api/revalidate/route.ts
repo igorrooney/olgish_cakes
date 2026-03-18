@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateRequest, formatValidationErrors } from "@/lib/validation";
 import { withRateLimit } from "@/lib/rate-limit";
+import { categoryLandingCanonicalPaths } from "@/app/cakes/categoryLandingConfig";
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -53,6 +54,12 @@ async function handlePOST(request: NextRequest) {
       tagsToRevalidate.add(tag)
     }
 
+    const addCakeCategoryLandingPaths = () => {
+      categoryLandingCanonicalPaths.forEach((path) => {
+        addPath(path)
+      })
+    }
+
     // Revalidate specific paths based on content type
     if (_type === "cake") {
       // Revalidate cake-specific pages
@@ -60,6 +67,7 @@ async function handlePOST(request: NextRequest) {
         addPath(`/cakes/${slug.current}`)
         addPath("/cakes") // Revalidate cakes list
         addPath("/") // Revalidate home page (might have featured cakes)
+        addCakeCategoryLandingPaths()
 
         // Clear specific cache entries
         await invalidateCache(`cake-${slug.current}`);
@@ -147,6 +155,7 @@ async function handlePOST(request: NextRequest) {
       // Revalidate product listing pages that use manual display order
       addPath('/cakes')
       addPath('/cakes-by-post')
+      addCakeCategoryLandingPaths()
       addTag('cakes')
       addTag('cakes-by-post')
       addTag('gift-hampers')

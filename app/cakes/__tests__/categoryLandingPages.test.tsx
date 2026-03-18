@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import { generateCategoryLandingMetadata, renderCategoryLandingPage } from '../renderCategoryLandingPage'
 import { getCategoryLandingPostCatalogContent } from '../components/categoryLandingEditorial'
 import {
+  categoryLandingCanonicalPaths,
   getCategoryLandingConfig,
   getCategoryLandingPathByQueryValue
 } from '../categoryLandingConfig'
@@ -217,6 +218,15 @@ describe('category landing pages', () => {
     expect(getCategoryLandingPathByQueryValue('c-anniversary-cakes-leeds')).toBe('/anniversary-cakes-leeds')
   })
 
+  it('exports every category landing canonical path from shared config', () => {
+    expect(categoryLandingCanonicalPaths).toEqual([
+      '/wedding-cakes',
+      '/birthday-cakes',
+      '/anniversary-cakes-leeds',
+      '/baby-shower-cakes'
+    ])
+  })
+
   it('points all category primary quote ctas to the canonical quote page', () => {
     categoryLandingSlugs.forEach((slug) => {
       const config = getCategoryLandingConfig(slug)
@@ -287,6 +297,38 @@ describe('category landing pages', () => {
         })
       ])
     })
+
+    const itemListGraphEntry = templateProps.additionalStructuredData?.[0]
+
+    if (!itemListGraphEntry || !Array.isArray(itemListGraphEntry['@graph'])) {
+      throw new Error('Expected ItemList structured data graph')
+    }
+
+    const itemListEntry = itemListGraphEntry['@graph']
+      .find((entry) => typeof entry === 'object' && entry !== null && entry['@type'] === 'ItemList')
+
+    if (
+      !itemListEntry ||
+      typeof itemListEntry !== 'object' ||
+      !Array.isArray(itemListEntry.itemListElement)
+    ) {
+      throw new Error('Expected ItemList entry in category landing graph')
+    }
+
+    const firstListItem = itemListEntry.itemListElement[0]
+
+    if (
+      !firstListItem ||
+      typeof firstListItem !== 'object' ||
+      typeof firstListItem.item !== 'object' ||
+      firstListItem.item === null ||
+      typeof firstListItem.item.offers !== 'object' ||
+      firstListItem.item.offers === null
+    ) {
+      throw new Error('Expected first category landing list item offer data')
+    }
+
+    expect(firstListItem.item.offers).not.toHaveProperty('shippingDetails')
   })
 
   it('resolves unique post-catalog editorial content for each category slug', () => {

@@ -4,6 +4,7 @@
 import { NextRequest } from 'next/server'
 import { POST } from '../route'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { categoryLandingCanonicalPaths } from '@/app/cakes/categoryLandingConfig'
 
 jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
@@ -108,9 +109,41 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
+    categoryLandingCanonicalPaths.forEach((path) => {
+      expect(revalidatePath).toHaveBeenCalledWith(path)
+    })
     expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
+  it('revalidates cake detail, listings and category landing pages for cake updates', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'cake',
+        slug: {
+          current: 'sample-cake'
+        }
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes/sample-cake')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    categoryLandingCanonicalPaths.forEach((path) => {
+      expect(revalidatePath).toHaveBeenCalledWith(path)
+    })
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })
 })
