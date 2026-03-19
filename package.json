@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:quiet": "eslint . --quiet",
-    "type-check": "tsc --noEmit",
+    "type-check": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "ci": "pnpm run type-check && pnpm run lint && pnpm run test:ci && pnpm run validate:schemas",
     "seed": "tsx scripts/seed-cakes.ts",
