@@ -100,7 +100,7 @@ describe('sitemap-products', () => {
       const result = await sitemapProducts()
 
       expect(result.find((entry) => entry.url.includes('/cakes/test-cake'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/cakes/birthday-test-cake'))).toBeUndefined()
+      expect(result.find((entry) => entry.url.includes('/cakes/birthday-test-cake'))).toBeDefined()
       expect(result.find((entry) => entry.url.includes('/cakes/honey-cake'))).toBeDefined()
     })
 
@@ -109,6 +109,7 @@ describe('sitemap-products', () => {
         .mockResolvedValueOnce([
           { slug: { current: 'test-cake' }, _updatedAt: '2025-01-01' },
           { slug: { current: 'birthday-test-cake' }, _updatedAt: '2025-01-01' },
+          { slug: { current: 'latest-cake' }, _updatedAt: '2025-01-01' },
           { _updatedAt: '2025-01-01' },
           { slug: { current: 'honey-cake' }, _updatedAt: '2025-01-01' }
         ])
@@ -120,8 +121,9 @@ describe('sitemap-products', () => {
         .map((entry) => entry.url)
 
       expect(cakeUrls).toContain('https://olgishcakes.co.uk/cakes/honey-cake')
+      expect(cakeUrls).toContain('https://olgishcakes.co.uk/cakes/birthday-test-cake')
+      expect(cakeUrls).toContain('https://olgishcakes.co.uk/cakes/latest-cake')
       expect(cakeUrls).not.toContain('https://olgishcakes.co.uk/cakes/test-cake')
-      expect(cakeUrls).not.toContain('https://olgishcakes.co.uk/cakes/birthday-test-cake')
       expect(cakeUrls).not.toContain('https://olgishcakes.co.uk/cakes/undefined')
     })
 
@@ -148,7 +150,7 @@ describe('sitemap-products', () => {
       const result = await sitemapProducts()
 
       expect(result.find((entry) => entry.url.includes('/cakes-by-post/test-hamper'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe-test-hamper'))).toBeUndefined()
+      expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe-test-hamper'))).toBeDefined()
       expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe'))).toBeDefined()
     })
   })
@@ -162,8 +164,8 @@ describe('sitemap-products', () => {
       const cakesQuery = mockFetch.mock.calls[0][0]
 
       expect(cakesQuery).toContain('defined(slug.current)')
-      expect(cakesQuery).toContain('!slug.current match "test*"')
-      expect(cakesQuery).toContain('!slug.current match "*test*"')
+      expect(cakesQuery).toContain('slug.current != "test"')
+      expect(cakesQuery).toContain('!slug.current match "test-*"')
     })
   })
 })

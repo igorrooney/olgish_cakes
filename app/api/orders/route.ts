@@ -4,6 +4,7 @@ import { generateOrderNumber } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { formatValidationErrors, orderSchema, validateRequest } from '@/lib/validation'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { urlFor } from '@/sanity/lib/image'
 import { serverClient } from '@/sanity/lib/client'
 import type { Attachment, OrderItem } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
@@ -90,6 +91,24 @@ function normalizeEmailOrderItems(items: OrderItem[]) {
   }))
 }
 
+function getAttachmentLabel(attachment: Attachment) {
+  return attachment.alt || attachment.caption || 'Attachment'
+}
+
+function getReferenceImageUrls(attachments: Attachment[]) {
+  return attachments.flatMap((attachment) => {
+    if (!attachment.asset) {
+      return []
+    }
+
+    try {
+      return [urlFor(attachment.asset).width(400).height(300).url()]
+    } catch {
+      return attachment.asset.url ? [attachment.asset.url] : []
+    }
+  })
+}
+
 async function handlePOST(request: NextRequest) {
   try {
     const orderData = await request.json() as RawOrderRequest
@@ -152,6 +171,8 @@ async function handlePOST(request: NextRequest) {
       : [fallbackItem]
 
     const attachments = Array.isArray(orderData.attachments) ? orderData.attachments : []
+    const attachmentNames = attachments.map(getAttachmentLabel)
+    const referenceImageUrls = getReferenceImageUrls(attachments)
 
     const orderDoc = {
       _type: 'order',
@@ -266,7 +287,7 @@ async function handlePOST(request: NextRequest) {
           paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection'),
           giftNote: validatedOrderData.giftNote,
           note: validatedOrderData.note,
-          attachmentNames: attachments.map((attachment) => attachment.alt || attachment.caption || 'Attachment')
+          attachmentNames
         },
         modeOverride: emailMode,
         message: {
@@ -346,7 +367,8 @@ async function handlePOST(request: NextRequest) {
           message: validatedOrderData.message,
           note: validatedOrderData.note,
           giftNote: validatedOrderData.giftNote,
-          attachmentNames: attachments.map((attachment) => attachment.alt || attachment.caption || 'Attachment')
+          attachmentNames,
+          referenceImageUrls
         },
         modeOverride: emailMode,
         message: {

@@ -12,6 +12,10 @@ interface SitemapGiftHamper {
   _updatedAt: string
 }
 
+function isExplicitTestSlug(slug: string) {
+  return slug === 'test' || slug.startsWith('test-')
+}
+
 function hasIndexableCakeSlug(cake: SitemapCake): cake is SitemapCake & { slug: { current: string } } {
   const slug = cake.slug?.current
 
@@ -19,7 +23,7 @@ function hasIndexableCakeSlug(cake: SitemapCake): cake is SitemapCake & { slug: 
     return false
   }
 
-  return !slug.startsWith('test') && !slug.includes('test')
+  return !isExplicitTestSlug(slug)
 }
 
 function hasIndexableGiftHamperSlug(hamper: SitemapGiftHamper): hamper is SitemapGiftHamper & { slug: { current: string } } {
@@ -29,7 +33,7 @@ function hasIndexableGiftHamperSlug(hamper: SitemapGiftHamper): hamper is Sitema
     return false
   }
 
-  return !slug.startsWith('test') && !slug.includes('test')
+  return !isExplicitTestSlug(slug)
 }
 
 async function getProducts() {
@@ -38,8 +42,8 @@ async function getProducts() {
     cachedSanityFetch<SitemapCake[]>(`*[
       _type == "cake" &&
       defined(slug.current) &&
-      !slug.current match "test*" &&
-      !slug.current match "*test*"
+      slug.current != "test" &&
+      !slug.current match "test-*"
     ] {
       _id,
       name,
@@ -59,8 +63,8 @@ async function getProducts() {
     cachedSanityFetch<SitemapGiftHamper[]>(`*[
       _type == "giftHamper" &&
       defined(slug.current) &&
-      !slug.current match "test*" &&
-      !slug.current match "*test*"
+      slug.current != "test" &&
+      !slug.current match "test-*"
     ] {
       slug,
       _updatedAt

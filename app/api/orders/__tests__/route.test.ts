@@ -215,4 +215,78 @@ describe('/api/orders POST', () => {
       totalPrice: 15
     })
   })
+
+  it('passes reference image URLs to the admin email when attachments are present', async () => {
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '07123456789',
+        message: 'Please match the reference design',
+        orderType: 'standard',
+        productType: 'cake',
+        productName: 'Honey Cake',
+        designType: 'individual',
+        quantity: 1,
+        unitPrice: 30,
+        totalPrice: 30,
+        deliveryMethod: 'collection',
+        paymentMethod: 'cash-collection',
+        attachments: [
+          {
+            _type: 'reference',
+            asset: {
+              _type: 'image',
+              _id: 'image-1',
+              _ref: 'image-ref-1',
+              url: 'https://cdn.sanity.io/images/demo/reference-1.jpg'
+            },
+            alt: 'Design reference'
+          }
+        ]
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+
+    const customerCall = mockSendEmail.mock.calls[0]?.[0]
+    const adminCall = mockSendEmail.mock.calls[1]?.[0]
+
+    expect(customerCall.input.attachmentNames).toEqual(['Design reference'])
+    expect(customerCall.input.referenceImageUrls).toBeUndefined()
+    expect(adminCall.input.attachmentNames).toEqual(['Design reference'])
+    expect(adminCall.input.referenceImageUrls).toEqual([
+      'https://cdn.sanity.io/images/demo/reference-1.jpg'
+    ])
+  })
 })

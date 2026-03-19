@@ -138,6 +138,7 @@ async function handlePOST(request: NextRequest) {
       // Revalidate homepage collections
       addPath("/")
       addPath('/cakes')
+      addCakeCategoryLandingPaths()
       addTag('cake-collections')
     } else if (_type === 'giftHamperCollection') {
       // Revalidate gift hamper collections used on cakes filters

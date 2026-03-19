@@ -46,6 +46,10 @@ interface GiftHamperImageResult {
   _updatedAt: string
 }
 
+function isExplicitTestSlug(slug: string) {
+  return slug === 'test' || slug.startsWith('test-')
+}
+
 function hasIndexableBlogSlug(post: BlogImageResult): post is BlogImageResult & { slug: { current: string } } {
   const slug = post.slug?.current
 
@@ -53,7 +57,7 @@ function hasIndexableBlogSlug(post: BlogImageResult): post is BlogImageResult & 
     return false
   }
 
-  return !slug.startsWith('test') && !slug.includes('test')
+  return !isExplicitTestSlug(slug)
 }
 
 function hasIndexableCakeSlug(cake: CakeImageResult): cake is CakeImageResult & { slug: { current: string } } {
@@ -63,7 +67,7 @@ function hasIndexableCakeSlug(cake: CakeImageResult): cake is CakeImageResult & 
     return false
   }
 
-  return !slug.startsWith('test') && !slug.includes('test')
+  return !isExplicitTestSlug(slug)
 }
 
 function hasIndexableGiftHamperSlug(hamper: GiftHamperImageResult): hamper is GiftHamperImageResult & { slug: { current: string } } {
@@ -73,7 +77,7 @@ function hasIndexableGiftHamperSlug(hamper: GiftHamperImageResult): hamper is Gi
     return false
   }
 
-  return !slug.startsWith('test') && !slug.includes('test')
+  return !isExplicitTestSlug(slug)
 }
 
 function hasSanityImageUrl(image: SanityImageRef): image is SanityImageRef & { asset: SanityImageAsset } {
@@ -123,8 +127,8 @@ async function getBlogImages() {
     _type == "blogPost" &&
     status == "published" &&
     defined(slug.current) &&
-    !slug.current match "test*" &&
-    !slug.current match "*test*"
+    slug.current != "test" &&
+    !slug.current match "test-*"
   ] {
     slug,
     featuredImage {
@@ -159,8 +163,8 @@ async function getCakeImages() {
   const query = `*[
     _type == "cake" &&
     defined(slug.current) &&
-    !slug.current match "test*" &&
-    !slug.current match "*test*"
+    slug.current != "test" &&
+    !slug.current match "test-*"
   ] {
     slug,
     images[] {
@@ -184,8 +188,8 @@ async function getGiftHamperImages() {
   const query = `*[
     _type == "giftHamper" &&
     defined(slug.current) &&
-    !slug.current match "test*" &&
-    !slug.current match "*test*"
+    slug.current != "test" &&
+    !slug.current match "test-*"
   ] {
     slug,
     images[] {

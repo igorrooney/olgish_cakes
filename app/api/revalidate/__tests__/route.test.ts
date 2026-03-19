@@ -146,4 +146,27 @@ describe('/api/revalidate', () => {
     expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })
+
+  it('revalidates category landing pages for collection updates', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'collection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    categoryLandingCanonicalPaths.forEach((path) => {
+      expect(revalidatePath).toHaveBeenCalledWith(path)
+    })
+    expect(revalidateTag).toHaveBeenCalledWith('cake-collections', 'max')
+  })
 })

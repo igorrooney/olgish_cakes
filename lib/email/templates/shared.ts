@@ -78,6 +78,23 @@ function nonEmptySections(sections: EmailSection[]): EmailSection[] {
   return sections.filter((section) => section.rows.length > 0)
 }
 
+function renderReferenceImageGalleryHtml(imageUrls?: string[]) {
+  if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+    return ''
+  }
+
+  const uniqueImageUrls = Array.from(new Set(imageUrls.map(toTrimmed).filter((url) => url.length > 0)))
+  if (uniqueImageUrls.length === 0) {
+    return ''
+  }
+
+  const imageCards = uniqueImageUrls
+    .map((imageUrl, index) => `<div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;"><img src="${escapeHtml(imageUrl)}" alt="Reference image ${index + 1}" style="width: 100%; height: auto; display: block;" /></div>`)
+    .join('')
+
+  return `<div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin: 0 0 24px 0;"><h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 18px; font-weight: 600;">Reference images</h3><p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px; line-height: 1.6;">The customer included design reference images for this order.</p><div style="display: flex; flex-wrap: wrap; gap: 12px;">${imageCards}</div></div>`
+}
+
 interface NormalizedOrderItem {
   productName: string
   productId: string
@@ -340,6 +357,7 @@ export const commonInputSchema = z.object({
   note: z.string().optional(),
   giftNote: z.string().optional(),
   attachmentNames: z.array(z.string()).optional(),
+  referenceImageUrls: z.array(z.string()).optional(),
   nextSteps: z.array(z.string()).optional(),
   intro: z.string().optional(),
   titleOverride: z.string().optional(),
@@ -535,7 +553,7 @@ function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput)
     ? renderRowsAsText(sections)
     : buildCustomerTextBody(input, nextSteps)
   const bodyHtml = meta.admin
-    ? renderRowsAsHtml(sections)
+    ? `${renderReferenceImageGalleryHtml(input.referenceImageUrls)}${renderRowsAsHtml(sections)}`
     : buildCustomerHtmlBody(input, nextSteps)
 
   const greetingName = input.customerName?.trim() || 'there'

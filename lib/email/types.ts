@@ -59,6 +59,7 @@ export interface EmailTemplateCommonInput {
   note?: string
   giftNote?: string
   attachmentNames?: string[]
+  referenceImageUrls?: string[]
   nextSteps?: string[]
   intro?: string
   titleOverride?: string

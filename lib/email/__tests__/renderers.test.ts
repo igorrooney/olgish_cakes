@@ -173,6 +173,20 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Napoleon Slice')
   })
 
+  it('renders reference image previews in admin notifications', () => {
+    const rendered = renderEmailTemplate('orders-admin-notification', {
+      customerName: 'Admin',
+      orderNumber: 'OC-IMAGE-ADMIN',
+      attachmentNames: ['design-reference.jpg'],
+      referenceImageUrls: ['https://cdn.sanity.io/images/demo/reference-1.jpg']
+    })
+
+    expect(rendered.text).toContain('Attachments: design-reference.jpg')
+    expect(rendered.html).toContain('Reference images')
+    expect(rendered.html).toContain('https://cdn.sanity.io/images/demo/reference-1.jpg')
+    expect(rendered.html).toContain('alt="Reference image 1"')
+  })
+
   it('renders multiple order items in customer confirmation', () => {
     const rendered = renderEmailTemplate('orders-customer-confirmation', {
       customerName: 'Jane',

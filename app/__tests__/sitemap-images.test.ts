@@ -280,7 +280,7 @@ describe('sitemap-images', () => {
       const result = await sitemapImages()
 
       expect(result.find((entry) => entry.url.includes('/blog/test-post'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/blog/guide-test-post'))).toBeUndefined()
+      expect(result.find((entry) => entry.url.includes('/blog/guide-test-post'))).toBeDefined()
       expect(result.find((entry) => entry.url.includes('/blog/published-post'))).toBeDefined()
     })
 
@@ -312,7 +312,7 @@ describe('sitemap-images', () => {
       const result = await sitemapImages()
 
       expect(result.find((entry) => entry.url.includes('/cakes/test-cake'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/cakes/birthday-test-cake'))).toBeUndefined()
+      expect(result.find((entry) => entry.url.includes('/cakes/birthday-test-cake'))).toBeDefined()
       expect(result.find((entry) => entry.url.includes('/cakes/honey-cake'))).toBeDefined()
     })
 
@@ -372,8 +372,8 @@ describe('sitemap-images', () => {
       const result = await sitemapImages()
 
       expect(result.find((entry) => entry.url.includes('/cakes-by-post/test-hamper'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe-test-hamper'))).toBeUndefined()
-      expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe'))?.images).toEqual(['https://cdn.sanity.io/deluxe.jpg'])
+      expect(result.find((entry) => entry.url.includes('/cakes-by-post/deluxe-test-hamper'))).toBeDefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post/deluxe')?.images).toEqual(['https://cdn.sanity.io/deluxe.jpg'])
     })
 
     it('should skip malformed and test blog and cake records without throwing', async () => {
@@ -467,8 +467,8 @@ describe('sitemap-images', () => {
       const blogQuery = mockFetch.mock.calls[0][0]
 
       expect(blogQuery).toContain('defined(slug.current)')
-      expect(blogQuery).toContain('!slug.current match "test*"')
-      expect(blogQuery).toContain('!slug.current match "*test*"')
+      expect(blogQuery).toContain('slug.current != "test"')
+      expect(blogQuery).toContain('!slug.current match "test-*"')
       expect(blogQuery).toContain('status == "published"')
     })
 
@@ -480,8 +480,8 @@ describe('sitemap-images', () => {
       const cakesQuery = mockFetch.mock.calls[1][0]
 
       expect(cakesQuery).toContain('defined(slug.current)')
-      expect(cakesQuery).toContain('!slug.current match "test*"')
-      expect(cakesQuery).toContain('!slug.current match "*test*"')
+      expect(cakesQuery).toContain('slug.current != "test"')
+      expect(cakesQuery).toContain('!slug.current match "test-*"')
     })
   })
 })
