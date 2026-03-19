@@ -406,39 +406,55 @@ describe('CakeDetailPage', () => {
       expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
     })
 
-
-    it('redirects to clean canonical url when from param is present and preserves non-from params', async () => {
+    it('uses the originating cakes-by-post listing as backHref when from is valid', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
-      await expect(async () => {
-        await CakeDetailPage({
-          params: Promise.resolve({ slug: 'honey-cake' }),
-          searchParams: Promise.resolve({
-            from: '/cakes?sort=priceLowToHigh&page=2&evil=true',
-            page: '3',
-            utm_source: 'newsletter'
-          })
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?sort=priceLowToHigh&page=2'
         })
-      }).rejects.toThrow('NEXT_REDIRECT')
+      })
+      render(page)
 
-      expect(permanentRedirect).toHaveBeenCalledWith('/cakes/honey-cake?page=3&utm_source=newsletter')
-      expect(mockGetCakeBySlug).not.toHaveBeenCalled()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes-by-post?sort=priceLowToHigh&page=2')
     })
 
-    it('redirects to clean canonical url when from param is empty', async () => {
+    it('falls back to /cakes when from includes disallowed query keys', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
-      await expect(async () => {
-        await CakeDetailPage({
-          params: Promise.resolve({ slug: 'honey-cake' }),
-          searchParams: Promise.resolve({
-            from: ''
-          })
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?sort=priceLowToHigh&page=2&evil=true'
         })
-      }).rejects.toThrow('NEXT_REDIRECT')
+      })
+      render(page)
 
-      expect(permanentRedirect).toHaveBeenCalledWith('/cakes/honey-cake')
-      expect(mockGetCakeBySlug).not.toHaveBeenCalled()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('falls back to /cakes when from is external or fragment-based', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const externalPage = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: 'https://example.com/cakes-by-post?page=2'
+        })
+      })
+      render(externalPage)
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+
+      const fragmentPage = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?page=2#catalog'
+        })
+      })
+      render(fragmentPage)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
     })
 
     it('passes fallback backHref to CakePageClient when from param is absent and other params exist', async () => {

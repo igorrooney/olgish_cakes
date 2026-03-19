@@ -10,6 +10,7 @@ type CatalogCustomCakesData = {
     id: string
     slug: string
     href: string
+    navigationTarget: 'product' | 'landing'
     name: string
     description: string
     price: number
@@ -39,6 +40,7 @@ describe('/api/catalog/custom-cakes', () => {
           id: 'cake-1',
           slug: 'sample-cake',
           href: '/cakes/sample-cake',
+          navigationTarget: 'product' as const,
           name: 'Sample Cake',
           description: 'Sample description',
           price: 35,

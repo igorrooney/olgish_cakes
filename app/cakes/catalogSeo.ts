@@ -115,6 +115,8 @@ export function createCatalogItemListStructuredData({
   listName: string
   items: TabletCake[]
 }): StructuredData {
+  const productItems = items.filter((item) => item.navigationTarget === 'product')
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -128,7 +130,7 @@ export function createCatalogItemListStructuredData({
       {
         '@type': 'ItemList',
         name: listName,
-        itemListElement: items.map((item, index) => {
+        itemListElement: productItems.map((item, index) => {
           const itemUrl = toAbsoluteProductUrl(item.href)
 
           return {

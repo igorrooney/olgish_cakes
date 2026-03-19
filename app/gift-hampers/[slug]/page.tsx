@@ -1,17 +1,18 @@
-import { getGiftHamperBySlug, getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { BRAND_ID } from "@/lib/schema-constants";
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
-import { urlFor as buildImageUrl, urlFor } from "@/sanity/lib/image";
-import { blocksToText } from "@/types/cake";
-import type { GiftHamper } from "@/types/giftHamper";
-import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
-import type { Brand, Graph, Product } from "schema-dts";
-import { GiftHamperPageClient } from "./GiftHamperPageClient";
-import { getGiftHamperVisibleDescriptionText } from "./description-content";
-import { resolveGiftHamperDeliveryContent } from "./delivery-content";
+import { getGiftHamperBySlug, getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { BRAND_ID } from '@/lib/schema-constants'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { urlFor as buildImageUrl, urlFor } from '@/sanity/lib/image'
+import { blocksToText } from '@/types/cake'
+import type { GiftHamper } from '@/types/giftHamper'
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import type { Brand, Graph, Product } from 'schema-dts'
+import { GiftHamperPageClient } from './GiftHamperPageClient'
+import { getGiftHamperVisibleDescriptionText } from './description-content'
+import { resolveGiftHamperDeliveryContent } from './delivery-content'
+import { buildCatalogBackHref } from '../../cakes/catalogNavigation'
 
 // Generate static params for all gift hampers at build time
 export async function generateStaticParams() {
@@ -30,29 +31,8 @@ export async function generateStaticParams() {
 }
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}
-
-function buildQueryStringWithoutFromParam(searchParams: Record<string, string | string[] | undefined>) {
-  const sanitizedSearchParams = new URLSearchParams()
-
-  Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === 'from' || value === undefined) {
-      return
-    }
-
-    if (Array.isArray(value)) {
-      value.forEach((entry) => {
-        sanitizedSearchParams.append(key, entry)
-      })
-      return
-    }
-
-    sanitizedSearchParams.append(key, value)
-  })
-
-  return sanitizedSearchParams.toString()
+  params: Promise<{ slug: string }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 function normalizeMetaDescription(value: string | undefined) {
@@ -101,7 +81,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .replace(/\/gift-hampers$/, '/cakes-by-post');
 
   const primaryImage = hamper.images?.find(img => img.isMain) || hamper.images?.[0];
-  const ogImageUrl = primaryImage?.asset?._ref
+  const _ogImageUrl = primaryImage?.asset?._ref
     ? urlFor(primaryImage).width(1200).height(630).url()
     : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug?.current || slug}.jpg`;
 
@@ -147,22 +127,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GiftHamperPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const hasFromQueryParam = resolvedSearchParams
-    ? Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'from')
-    : false;
-
-  if (resolvedSearchParams && hasFromQueryParam) {
-    const sanitizedQueryString = buildQueryStringWithoutFromParam(resolvedSearchParams)
-    const redirectPath = sanitizedQueryString.length > 0
-      ? `/cakes-by-post/${slug}?${sanitizedQueryString}`
-      : `/cakes-by-post/${slug}`
-
-    permanentRedirect(redirectPath)
-  }
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
 
   const hamper = await getGiftHamperBySlug(slug);
-  const backHref = '/cakes-by-post'
+  const backHref = buildCatalogBackHref({
+    fallbackHref: '/cakes-by-post',
+    fromParam: resolvedSearchParams?.from
+  })
   if (!hamper) notFound();
 
   const resolvedDeliveryContent = resolveGiftHamperDeliveryContent(hamper)

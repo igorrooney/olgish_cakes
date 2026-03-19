@@ -33,6 +33,7 @@ const baseCake: TabletCake = {
   id: 'cake-1',
   slug: 'christmas-honey-cake',
   href: '/cakes/christmas-honey-cake',
+  navigationTarget: 'product',
   name: 'Christmas Honey Cake',
   description: 'Layered honey sponge with sour cream and festive decoration.',
   price: 27,
@@ -163,10 +164,35 @@ describe('CakesProductCard', () => {
     )
   })
 
+  it('prefers the explicit linkHref when one is provided', () => {
+    render(
+      <CakesProductCard
+        cake={baseCake}
+        linkHref='/cakes/christmas-honey-cake?from=%2Fcakes-by-post%3Fpage%3D2'
+      />
+    )
+
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toHaveAttribute(
+      'href',
+      '/cakes/christmas-honey-cake?from=%2Fcakes-by-post%3Fpage%3D2'
+    )
+  })
+
   it('sets CTA accessible name using the cake name', () => {
     renderCard({ name: 'Kyiv Cake' })
 
     expect(screen.getByRole('link', { name: /View details for Kyiv Cake/i })).toBeInTheDocument()
+  })
+
+  it('announces landing CTA cards as explore links and replaces pricing copy', () => {
+    renderCard({
+      navigationTarget: 'landing',
+      name: 'Birthday cakes in Leeds'
+    })
+
+    expect(screen.getByRole('link', { name: /Explore Birthday cakes in Leeds/i })).toBeInTheDocument()
+    expect(screen.getByText('Explore')).toBeInTheDocument()
+    expect(screen.queryByText(/from/i)).not.toBeInTheDocument()
   })
 
   it('keeps card layout classes for equal-height rows and bottom-aligned price', () => {

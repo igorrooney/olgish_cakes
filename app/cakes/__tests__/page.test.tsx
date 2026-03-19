@@ -259,6 +259,7 @@ const sampleByPostCatalogCake = {
   id: 'hamper-1',
   slug: 'postal-gift-hamper',
   href: '/cakes-by-post/postal-gift-hamper',
+  navigationTarget: 'product' as const,
   name: 'Postal Gift Hamper',
   description: 'A thoughtful by post gift hamper.',
   price: 32,
@@ -689,7 +690,10 @@ describe('CakesPage', () => {
     expect(screen.queryByRole('button', { name: 'Most popular' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Price: Low to high' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Get free honey cake' })).toHaveAttribute('href', '/cakes/sample-honey-cake')
-    expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toHaveAttribute('href', '/cakes/sample-honey-cake')
+    expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toHaveAttribute(
+      'href',
+      '/cakes/sample-honey-cake?from=%2Fcakes'
+    )
     expect(screen.getByRole('heading', { level: 3, name: 'Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Do you make custom birthday and wedding cakes in Leeds?' })).toBeInTheDocument()
@@ -722,7 +726,10 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('link', { name: /View details for Luxury Cake/i })).toHaveAttribute('href', '/cakes/luxury-cake')
+    expect(screen.getByRole('link', { name: /View details for Luxury Cake/i })).toHaveAttribute(
+      'href',
+      '/cakes/luxury-cake?from=%2Fcakes'
+    )
   })
 
   it('hides featured offer when not configured in Sanity', async () => {
@@ -740,7 +747,11 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('heading', { level: 3, name: 'Birthday Celebration Cake' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: 'Birthday cakes in Leeds' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Explore Birthday cakes in Leeds/i })).toHaveAttribute(
+      'href',
+      '/birthday-cakes?from=%2Fcakes'
+    )
     expect(screen.queryByText('Cake by Post Gift Hamper')).not.toBeInTheDocument()
   })
 
@@ -825,7 +836,7 @@ describe('CakesPage', () => {
     expect(firstListItem.item.offers.price).toBe(35)
   })
 
-  it('keeps ItemList structured data aligned with fallback custom cakes', async () => {
+  it('excludes fallback landing CTAs from ItemList structured data', async () => {
     mockedGetAllCakes.mockResolvedValueOnce([])
 
     const page = await CakesPage()
@@ -854,9 +865,7 @@ describe('CakesPage', () => {
       })
       .filter((url) => url.length > 0)
 
-    expect(urls.length).toBeGreaterThan(0)
-    expect(urls.every((url) => url.startsWith('https://olgishcakes.co.uk/cakes/'))).toBe(true)
-    expect(urls.some((url) => url.includes('/gift-hampers/'))).toBe(false)
+    expect(urls).toEqual([])
   })
 })
 

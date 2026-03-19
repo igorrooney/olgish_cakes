@@ -20,6 +20,7 @@ export interface TabletCake {
   id: string
   slug: string
   href: string
+  navigationTarget: 'product' | 'landing'
   name: string
   description: string
   price: number

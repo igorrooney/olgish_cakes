@@ -289,11 +289,13 @@ jest.mock('../CakesFeaturedOffer', () => ({
 jest.mock('../CakesProductCard', () => ({
   CakesProductCard: ({
     cake,
+    linkHref,
     variant = 'desktop',
     mobileViewMode = 'grid',
     isLcpCandidate = false
   }: {
     cake: { name: string, href: string }
+    linkHref?: string
     variant?: 'desktop' | 'mobile'
     mobileViewMode?: 'grid' | 'single'
     isLcpCandidate?: boolean
@@ -304,7 +306,7 @@ jest.mock('../CakesProductCard', () => ({
     }
 
     return (
-      <a href={cake.href} aria-label={`View details for ${cake.name}`}>
+      <a href={linkHref ?? cake.href} aria-label={`View details for ${cake.name}`}>
         <article
           data-testid='cake-card'
           data-variant={variant}
@@ -516,6 +518,7 @@ function createCake(index: number): TabletCake {
     id: `cake-${index}`,
     slug: `cake-${index}`,
     href: `/cakes/cake-${index}`,
+    navigationTarget: 'product',
     name: `Cake ${index}`,
     description: `Description ${index}`,
     price: index,
@@ -534,6 +537,7 @@ function createGiftHamper(index: number): TabletCake {
     id: `hamper-${index}`,
     slug: `hamper-${index}`,
     href: `/cakes-by-post/hamper-${index}`,
+    navigationTarget: 'product',
     name: `Hamper ${index}`,
     description: `Hamper description ${index}`,
     price: 20 + index,
@@ -2084,6 +2088,46 @@ describe('CakesTabletCatalog', () => {
     expect(serverMarkup).toContain('href="/cakes/cake-10"')
     expect(serverMarkup).toContain('href="?page=2"')
     expect(serverMarkup).not.toContain('href="."')
+  })
+
+  it('adds a safe from param to custom cake links on the cakes-by-post route', async () => {
+    renderCatalog({
+      pathname: '/cakes-by-post',
+      search: '?byPost=false&custom=true&sort=priceLowToHigh&page=2',
+      items: createMixedCatalogItems({
+        customCount: 8,
+        byPostCount: 0
+      }),
+      initialFilterDefaults: {
+        byPost: true,
+        custom: false
+      }
+    })
+
+    expect(screen.getByRole('link', { name: /View details for Cake 7/i })).toHaveAttribute(
+      'href',
+      '/cakes/cake-7?from=%2Fcakes-by-post%3Fsort%3DpriceLowToHigh%26byPost%3Dfalse%26custom%3Dtrue%26page%3D2'
+    )
+  })
+
+  it('adds a safe from param to hamper links on the cakes route', () => {
+    renderCatalog({
+      pathname: '/cakes',
+      search: '?byPost=true&custom=false&page=2',
+      items: createMixedCatalogItems({
+        customCount: 0,
+        byPostCount: 8
+      }),
+      initialFilterDefaults: {
+        byPost: false,
+        custom: true
+      }
+    })
+
+    expect(screen.getByRole('link', { name: /View details for Hamper 7/i })).toHaveAttribute(
+      'href',
+      '/cakes-by-post/hamper-7?from=%2Fcakes%3FbyPost%3Dtrue%26custom%3Dfalse%26page%3D2'
+    )
   })
 
   it('limits no-js crawl links to active custom tab on cakes route', () => {

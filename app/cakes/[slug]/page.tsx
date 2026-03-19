@@ -1,20 +1,20 @@
-import { getCakeBySlug } from "@/app/utils/fetchCakes";
-import { Cake, blocksToText } from "@/types/cake";
-import { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
-import { CakePageClient } from "./CakePageClient";
+import { getAllCakes, getCakeBySlug } from '@/app/utils/fetchCakes'
+import { Cake, blocksToText } from '@/types/cake'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { CakePageClient } from './CakePageClient'
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
-import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
-import { resolveCakeBasePrice } from "@/lib/utils/cake-base-price";
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
-import { urlFor } from "@/sanity/lib/image";
-import { resolveCakeDeliveryContent } from "./delivery-content";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
+import { ensureAbsoluteImageUrl } from '@/lib/utils/image-url'
+import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { urlFor } from '@/sanity/lib/image'
+import { resolveCakeDeliveryContent } from './delivery-content'
+import { buildCatalogBackHref } from '../catalogNavigation'
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
   try {
-    const { getAllCakes } = require('@/app/utils/fetchCakes');
     const cakes = await getAllCakes(false);
 
     return cakes
@@ -30,30 +30,9 @@ export async function generateStaticParams() {
 
 interface PageProps {
   params: Promise<{
-    slug: string;
-  }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}
-
-function buildQueryStringWithoutFromParam(searchParams: Record<string, string | string[] | undefined>) {
-  const sanitizedSearchParams = new URLSearchParams()
-
-  Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === 'from' || value === undefined) {
-      return
-    }
-
-    if (Array.isArray(value)) {
-      value.forEach((entry) => {
-        sanitizedSearchParams.append(key, entry)
-      })
-      return
-    }
-
-    sanitizedSearchParams.append(key, value)
-  })
-
-  return sanitizedSearchParams.toString()
+    slug: string
+  }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 function normalizeMetaDescription(value: string | undefined) {
@@ -182,22 +161,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CakePage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const hasFromQueryParam = resolvedSearchParams
-    ? Object.prototype.hasOwnProperty.call(resolvedSearchParams, 'from')
-    : false;
-
-  if (resolvedSearchParams && hasFromQueryParam) {
-    const sanitizedQueryString = buildQueryStringWithoutFromParam(resolvedSearchParams)
-    const redirectPath = sanitizedQueryString.length > 0
-      ? `/cakes/${slug}?${sanitizedQueryString}`
-      : `/cakes/${slug}`
-
-    permanentRedirect(redirectPath)
-  }
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
 
   const cake = await getCakeBySlug(slug)
-  const backHref = '/cakes'
+  const backHref = buildCatalogBackHref({
+    fallbackHref: '/cakes',
+    fromParam: resolvedSearchParams?.from
+  })
 
   if (!cake) {
     notFound();

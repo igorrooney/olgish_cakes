@@ -7,6 +7,7 @@ import { TabletCake } from './types'
 
 interface CakesProductCardProps {
   cake: TabletCake
+  linkHref?: string
   variant?: 'desktop' | 'mobile'
   mobileViewMode?: 'grid' | 'single'
   isLcpCandidate?: boolean
@@ -21,6 +22,7 @@ function formatPrice(value: number) {
 
 export function CakesProductCard({
   cake,
+  linkHref,
   variant = 'desktop',
   mobileViewMode = 'grid',
   isLcpCandidate = false
@@ -28,7 +30,9 @@ export function CakesProductCard({
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const imageWrapperRef = useRef<HTMLDivElement | null>(null)
   const isByPostCake = cake.productType === 'giftHamper'
+  const isLandingNavigation = cake.navigationTarget === 'landing'
   const formattedPrice = formatPrice(cake.price)
+  const resolvedLinkHref = linkHref ?? cake.href
   const mobileImageSizes = mobileViewMode === 'grid' ? mobileGridImageSizes : cardImageSizes
   const mobileImageWrapperClassName = mobileViewMode === 'grid'
     ? 'relative aspect-square w-full overflow-hidden rounded-btn bg-base-200'
@@ -42,6 +46,9 @@ export function CakesProductCard({
   const imageLoadingOverlayClassName = `pointer-events-none absolute inset-0 bg-base-200 transition-opacity duration-300 motion-reduce:animate-none ${
     isImageLoaded ? 'opacity-0' : 'animate-pulse opacity-100'
   }`
+  const cardAriaLabel = isLandingNavigation
+    ? `Explore ${cake.name}`
+    : `View details for ${cake.name}`
 
   useEffect(() => {
     setIsImageLoaded(false)
@@ -65,8 +72,8 @@ export function CakesProductCard({
 
   if (variant === 'mobile') {
     return (
-      <Link href={cake.href} className={mobileCardLinkClassName}>
-        <span className='sr-only'>View details for {cake.name}</span>
+      <Link href={resolvedLinkHref} className={mobileCardLinkClassName}>
+        <span className='sr-only'>{cardAriaLabel}</span>
         <article className='flex h-full flex-col'>
           <div ref={imageWrapperRef} className={mobileImageWrapperClassName}>
             <div
@@ -88,7 +95,9 @@ export function CakesProductCard({
               data-testid='mobile-price-chip'
               className='absolute right-3 top-3 h-6 inline-flex items-center justify-center rounded-[8px] bg-primary-50 px-3 py-0 [font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-semibold)] not-italic text-[16px] [leading-trim:none] [line-height:var(--d-lineHeight-14)] tracking-[0] text-center align-middle text-primary-500 shadow-sm'
             >
-              {isByPostCake ? (
+              {isLandingNavigation ? (
+                <>Explore</>
+              ) : isByPostCake ? (
                 <>&pound;{formattedPrice}</>
               ) : (
                 <>from &pound;{formattedPrice}</>
@@ -104,8 +113,8 @@ export function CakesProductCard({
   }
 
   return (
-    <Link href={cake.href} className='block h-full'>
-      <span className='sr-only'>View details for {cake.name}</span>
+    <Link href={resolvedLinkHref} className='block h-full'>
+      <span className='sr-only'>{cardAriaLabel}</span>
       <article className='flex h-full flex-col overflow-hidden rounded-[10px] border border-primary-50 bg-primary-50 shadow-none'>
         <div className='p-[8px] pb-0'>
           <div ref={imageWrapperRef} className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
@@ -132,7 +141,9 @@ export function CakesProductCard({
             {cake.description}
           </p>
           <p className='mt-auto text-[20px] font-semibold leading-7 text-base-content'>
-            {isByPostCake ? (
+            {isLandingNavigation ? (
+              <>Explore</>
+            ) : isByPostCake ? (
               <>&pound;{formattedPrice}</>
             ) : (
               <>from &pound;{formattedPrice}</>

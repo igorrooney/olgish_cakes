@@ -25,6 +25,7 @@ import {
   TabletCake
 } from './types'
 import { categoryLandingProductShellClassName } from './categoryLandingLayout'
+import { buildCatalogProductLinkHref } from '../catalogNavigation'
 
 function getPriceCeiling(cakes: TabletCake[]) {
   if (cakes.length === 0) {
@@ -35,7 +36,6 @@ function getPriceCeiling(cakes: TabletCake[]) {
 }
 
 const sortOptions = ['new', 'priceHighToLow', 'priceLowToHigh'] as const
-const mobileViewModes = ['grid', 'single'] as const
 const mobileViewModeStorageKey = 'catalog-mobile-view-mode'
 const MOBILE_PAGE_SIZE = 6
 const TABLET_PAGE_SIZE = 6
@@ -48,7 +48,7 @@ const BY_POST_CATALOG_PATH = '/cakes-by-post'
 
 type PaginationToken = number | 'ellipsis-leading' | 'ellipsis-trailing'
 type MobileTab = 'custom' | 'byPost'
-type MobileViewMode = (typeof mobileViewModes)[number]
+type MobileViewMode = 'grid' | 'single'
 
 function isMobileViewMode(value: unknown): value is MobileViewMode {
   return value === 'grid' || value === 'single'
@@ -111,6 +111,7 @@ function isTabletCake(value: unknown): value is TabletCake {
   return typeof value.id === 'string' &&
     typeof value.slug === 'string' &&
     typeof value.href === 'string' &&
+    (value.navigationTarget === 'product' || value.navigationTarget === 'landing') &&
     typeof value.name === 'string' &&
     typeof value.description === 'string' &&
     typeof value.price === 'number' &&
@@ -410,6 +411,30 @@ export function CakesTabletCatalog({
   const [queryState, setQueryState] = useQueryStates(queryParsers, {
     history: 'replace'
   })
+  const buildProductCardLinkHref = useCallback((href: string) => {
+    return buildCatalogProductLinkHref({
+      defaultByPost: initialFilterDefaults.byPost,
+      defaultCustom: initialFilterDefaults.custom,
+      href,
+      maxPrice: queryState.maxPrice,
+      pathname,
+      page: queryState.page,
+      selectedCollections: queryState.collections,
+      showByPost: queryState.byPost,
+      showCustom: queryState.custom,
+      sort: queryState.sort
+    })
+  }, [
+    initialFilterDefaults.byPost,
+    initialFilterDefaults.custom,
+    pathname,
+    queryState.byPost,
+    queryState.collections,
+    queryState.custom,
+    queryState.maxPrice,
+    queryState.page,
+    queryState.sort
+  ])
   const effectiveByPostFilter = optimisticByPostFilter ?? queryState.byPost
   const effectiveCustomFilter = optimisticCustomFilter ?? queryState.custom
   const activeMobileTab = useMemo(() => {
@@ -1303,6 +1328,7 @@ export function CakesTabletCatalog({
     activeMobileTab,
     scheduleOptimisticByPostReset,
     scheduleOptimisticCustomReset,
+    shouldShowProductTypeFilters,
     setQueryState
   ])
   const handleMobileViewModeChange = useCallback((viewMode: MobileViewMode) => {
@@ -1607,8 +1633,7 @@ export function CakesTabletCatalog({
 
     return `?${queryString}`
   }, [
-    initialFilterDefaults.byPost,
-    initialFilterDefaults.custom,
+    initialFilterDefaults,
     pathname,
     queryState.byPost,
     queryState.collections,
@@ -1916,6 +1941,7 @@ export function CakesTabletCatalog({
               <div key={cake.id} className='h-full'>
                 <CakesProductCard
                   cake={cake}
+                  linkHref={buildProductCardLinkHref(cake.href)}
                   variant='mobile'
                   mobileViewMode={effectiveMobileViewMode}
                   isLcpCandidate={allowLcpCandidates && isMobileLcpCandidate(index)}
@@ -2053,6 +2079,7 @@ export function CakesTabletCatalog({
                   <div key={cake.id} className={getCakeItemClassName(index)}>
                     <CakesProductCard
                       cake={cake}
+                      linkHref={buildProductCardLinkHref(cake.href)}
                       isLcpCandidate={isDesktopLcpCandidate(index)}
                     />
                   </div>

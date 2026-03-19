@@ -688,38 +688,55 @@ describe('HamperDetailPage', () => {
       expect(faqScript).toBeUndefined()
     })
 
-    it('redirects to clean canonical url when from param is present and preserves non-from params', async () => {
+    it('uses the originating cakes listing as backHref when from is valid', async () => {
       mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
-      await expect(async () => {
-        await HamperDetailPage({
-          params: Promise.resolve({ slug: 'deluxe-hamper' }),
-          searchParams: Promise.resolve({
-            from: '/cakes-by-post?sort=new&page=3&unsafe=1',
-            page: '4',
-            utm_medium: 'email'
-          })
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?byPost=true&custom=false&page=3'
         })
-      }).rejects.toThrow('NEXT_REDIRECT')
+      })
+      render(page)
 
-      expect(permanentRedirect).toHaveBeenCalledWith('/cakes-by-post/deluxe-hamper?page=4&utm_medium=email')
-      expect(mockGetGiftHamperBySlug).not.toHaveBeenCalled()
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes?byPost=true&custom=false&page=3')
     })
 
-    it('redirects to clean canonical url when from param is empty', async () => {
+    it('falls back to /cakes-by-post when from includes disallowed query keys', async () => {
       mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
-      await expect(async () => {
-        await HamperDetailPage({
-          params: Promise.resolve({ slug: 'deluxe-hamper' }),
-          searchParams: Promise.resolve({
-            from: ''
-          })
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?byPost=true&custom=false&page=3&utm_medium=email'
         })
-      }).rejects.toThrow('NEXT_REDIRECT')
+      })
+      render(page)
 
-      expect(permanentRedirect).toHaveBeenCalledWith('/cakes-by-post/deluxe-hamper')
-      expect(mockGetGiftHamperBySlug).not.toHaveBeenCalled()
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+    })
+
+    it('falls back to /cakes-by-post when from is external or fragment-based', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const externalPage = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: 'https://example.com/cakes?page=3'
+        })
+      })
+      render(externalPage)
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+
+      const fragmentPage = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?page=3#catalog'
+        })
+      })
+      render(fragmentPage)
+
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
     })
 
     it('passes fallback backHref to GiftHamperPageClient when from param is absent and other params exist', async () => {
