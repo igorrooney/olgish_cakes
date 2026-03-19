@@ -63,22 +63,24 @@ describe('proxy SEO headers for cakes filters', () => {
     expect(response.headers.get('X-Robots-Tag')).toBeNull()
   })
 
-  it('sets noindex, follow for filtered gift-hampers URLs', async () => {
+  it('redirects filtered gift-hampers URLs to cakes-by-post while preserving filters', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/gift-hampers?collections=h-postal-gifts')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBe(
-      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe(
+      'https://olgishcakes.co.uk/cakes-by-post?collections=h-postal-gifts'
     )
   })
 
-  it('keeps pure paginated gift-hampers URLs indexable', async () => {
+  it('redirects paginated gift-hampers URLs to cakes-by-post while preserving pagination', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/gift-hampers?page=2')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBeNull()
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://olgishcakes.co.uk/cakes-by-post?page=2')
   })
 
   it('sets noindex, follow for mixed cakes pagination and filter URLs', async () => {
@@ -101,13 +103,14 @@ describe('proxy SEO headers for cakes filters', () => {
     )
   })
 
-  it('sets noindex, follow for mixed gift-hampers pagination and filter URLs', async () => {
+  it('redirects mixed gift-hampers pagination and filter URLs to cakes-by-post', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/gift-hampers?page=2&collections=h-postal-gifts')
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBe(
-      'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe(
+      'https://olgishcakes.co.uk/cakes-by-post?page=2&collections=h-postal-gifts'
     )
   })
 

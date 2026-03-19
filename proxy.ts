@@ -27,10 +27,15 @@ export async function proxy(request: NextRequest) {
 
     return NextResponse.redirect(redirectUrl, 308)
   }
-  if (request.nextUrl.pathname === '/gift-hampers' && request.nextUrl.search.length === 0) {
+  if (request.nextUrl.pathname === '/gift-hampers') {
     const redirectUrl = request.nextUrl.clone()
+    const pageOnlyQuery = classifyPageOnlyQueryFromUrlSearchParams(request.nextUrl.searchParams)
 
     redirectUrl.pathname = '/cakes-by-post'
+
+    if (pageOnlyQuery.isPageOnly && pageOnlyQuery.pageNumber === 1) {
+      redirectUrl.search = ''
+    }
 
     return NextResponse.redirect(redirectUrl, 308)
   }

@@ -6,7 +6,7 @@ interface CollectionQueryValueInput {
 }
 
 function getProductPrefix(productType: CollectionQueryValueProductType) {
-  return productType === 'cake' ? 'c' : 'p'
+  return productType === 'cake' ? 'c' : 'h'
 }
 
 export function normalizeDocumentId(documentId: string) {

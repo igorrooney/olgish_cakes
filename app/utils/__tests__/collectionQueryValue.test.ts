@@ -32,6 +32,20 @@ describe('collectionQueryValue', () => {
     expect(queryValueById.get('collection-1')).toBe('c-wedding-cakes')
   })
 
+  it('uses the legacy h-prefix for gift hamper collections', () => {
+    const queryValueById = createCollectionQueryValueMap(
+      [
+        {
+          _id: 'collection-1',
+          name: 'Postal Gifts'
+        }
+      ],
+      'giftHamper'
+    )
+
+    expect(queryValueById.get('collection-1')).toBe('h-postal-gifts')
+  })
+
   it('creates unique values when collection names collide', () => {
     const queryValueById = createCollectionQueryValueMap(
       [
