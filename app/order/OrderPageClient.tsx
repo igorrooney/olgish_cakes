@@ -370,7 +370,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                 sx={{
                   color: "text.secondary",
                   letterSpacing: "0.2em",
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), system-ui, sans-serif",
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   fontWeight: 500,
                   mb: { xs: 3, sm: 4 },
@@ -383,7 +383,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
               <Typography
                 variant="h1"
                 sx={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: "var(--font-alice), Georgia, serif",
                   fontSize: {
                     xs: "2rem",
                     sm: "2.5rem",
@@ -414,7 +414,7 @@ export function OrderPageClient({ testimonials = [] }: OrderPageClientProps) {
                     sm: "1.125rem",
                   },
                   lineHeight: { xs: 1.6, sm: 1.75 },
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), system-ui, sans-serif",
                   fontWeight: 400,
                   maxWidth: { xs: "100%", sm: "90%", md: "36rem" },
                   mx: "auto",

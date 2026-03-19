@@ -3,7 +3,6 @@ import { designTokens } from "@/lib/design-system";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -20,35 +19,50 @@ import { Providers } from "./providers";
 import { buildAggregateRating, formatRatingValue, formatReviewCount } from "./utils/review-stats";
 import { getReviewStats } from "./utils/review-stats.server";
 
-const alice = Alice({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-alice",
-  display: "swap",
+const alice = localFont({
+  src: [
+    {
+      path: './fonts/alice/Alice-Regular.woff2',
+      weight: '400',
+      style: 'normal'
+    }
+  ],
+  variable: '--font-alice',
+  display: 'swap',
   preload: true,
-  fallback: ["Georgia", "serif"],
-  adjustFontFallback: true,
-});
+  fallback: ['Georgia', 'serif'],
+  adjustFontFallback: 'Times New Roman'
+})
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-inter",
-  display: "swap",
+const inter = localFont({
+  src: [
+    {
+      path: './fonts/inter/Inter-Variable.woff2',
+      weight: '100 900',
+      style: 'normal'
+    }
+  ],
+  variable: '--font-inter',
+  display: 'swap',
   preload: true,
-  fallback: ["system-ui", "sans-serif"],
-  adjustFontFallback: true,
-});
+  fallback: ['system-ui', 'sans-serif'],
+  adjustFontFallback: 'Arial'
+})
 
-const oldenburg = Oldenburg({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-oldenburg",
-  display: "swap",
+const oldenburg = localFont({
+  src: [
+    {
+      path: './fonts/oldenburg/Oldenburg-Regular.woff2',
+      weight: '400',
+      style: 'normal'
+    }
+  ],
+  variable: '--font-oldenburg',
+  display: 'swap',
   preload: true,
-  fallback: ["Georgia", "serif"],
-  adjustFontFallback: true,
-});
+  fallback: ['Georgia', 'serif'],
+  adjustFontFallback: 'Times New Roman'
+})
 
 const moreSugar = localFont({
   src: [
@@ -435,7 +449,7 @@ export default async function RootLayout({
           <link rel="preconnect" href="https://cdn.kiprotect.com" crossOrigin="anonymous" />
         ) : null}
 
-        {/* Fonts are loaded via next/font/google - see Alice import at top of file */}
+        {/* Fonts are self-hosted via next/font/local - see font definitions at top of file */}
 
         {isConsentEnabled ? (
           <>

@@ -97,7 +97,7 @@ export function WebVitalsMonitor() {
         document.head.appendChild(link);
       });
 
-      // Font loading is handled automatically by Next.js next/font/google
+      // Font loading is handled automatically by Next.js next/font/local
       // No manual preload needed
     };
 
