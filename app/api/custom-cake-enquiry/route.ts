@@ -640,7 +640,7 @@ export async function POST(request: NextRequest) {
 
       failureAlertSent = failureAlertResult.sent
 
-      if (!failureAlertSent) {
+      if (!failureAlertResult.sent) {
         logFailureAlertFailure(failureAlertResult.errorMessage, {
           customerName: formData.fullName,
           customerEmail: formData.email || undefined,
