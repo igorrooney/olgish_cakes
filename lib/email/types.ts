@@ -79,18 +79,18 @@ export interface EmailTemplateCommonInput {
   trackingNumber?: string
 }
 
-export interface ContactAdminInquiryInput extends EmailTemplateCommonInput {}
-export interface ContactInlineOrderCustomerInput extends EmailTemplateCommonInput {}
-export interface ContactInlineOrderAdminInput extends EmailTemplateCommonInput {}
-export interface ContactInlineOrderFallbackCustomerInput extends EmailTemplateCommonInput {}
-export interface ContactInlineOrderFallbackAdminInput extends EmailTemplateCommonInput {}
-export interface OrdersCustomerConfirmationInput extends EmailTemplateCommonInput {}
-export interface OrdersAdminNotificationInput extends EmailTemplateCommonInput {}
-export interface OrdersStatusUpdateInput extends EmailTemplateCommonInput {}
-export interface QuoteAdminRequestInput extends EmailTemplateCommonInput {}
-export interface CustomCakeEnquiryAdminInput extends EmailTemplateCommonInput {}
-export interface CustomCakeEnquiryCustomerInput extends EmailTemplateCommonInput {}
-export interface CustomCakeEnquiryFailureAlertInput extends EmailTemplateCommonInput {}
+export type ContactAdminInquiryInput = EmailTemplateCommonInput
+export type ContactInlineOrderCustomerInput = EmailTemplateCommonInput
+export type ContactInlineOrderAdminInput = EmailTemplateCommonInput
+export type ContactInlineOrderFallbackCustomerInput = EmailTemplateCommonInput
+export type ContactInlineOrderFallbackAdminInput = EmailTemplateCommonInput
+export type OrdersCustomerConfirmationInput = EmailTemplateCommonInput
+export type OrdersAdminNotificationInput = EmailTemplateCommonInput
+export type OrdersStatusUpdateInput = EmailTemplateCommonInput
+export type QuoteAdminRequestInput = EmailTemplateCommonInput
+export type CustomCakeEnquiryAdminInput = EmailTemplateCommonInput
+export type CustomCakeEnquiryCustomerInput = EmailTemplateCommonInput
+export type CustomCakeEnquiryFailureAlertInput = EmailTemplateCommonInput
 
 export type EmailRenderInputMap = {
   'contact-admin-inquiry': ContactAdminInquiryInput

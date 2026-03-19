@@ -524,7 +524,7 @@ function renderCustomerCard(title: string, rows: CustomerRow[]): string {
 }
 
 function buildCustomerFooterHtml(): string {
-  return `<div style="border-top: 1px solid #e5e7eb; margin-top: 16px; padding-top: 20px; text-align: center;"><p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px; line-height: 1.6;">Questions about your order? We\'re here to help.</p><p style="margin: 0; font-size: 14px; line-height: 1.7;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none;">+44 786 721 8194</a></p></div>`
+  return `<div style="border-top: 1px solid #e5e7eb; margin-top: 16px; padding-top: 20px; text-align: center;"><p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px; line-height: 1.6;">Questions about your order? We're here to help.</p><p style="margin: 0; font-size: 14px; line-height: 1.7;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none;">+44 786 721 8194</a></p></div>`
 }
 
 function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: string[]): string {
