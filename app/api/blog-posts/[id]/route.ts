@@ -1,24 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
-
-// Validate Sanity configuration before client initialization
-if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
-  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID')
-}
-if (!process.env.NEXT_PUBLIC_SANITY_DATASET) {
-  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_DATASET')
-}
-if (!process.env.SANITY_API_TOKEN) {
-  throw new Error('Missing environment variable: SANITY_API_TOKEN')
-}
-
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
-  useCdn: false,
-  token: process.env.SANITY_API_TOKEN,
-})
+import { createSanityWriteClient } from '@/lib/sanity-admin-client'
 
 export async function PUT(
   request: NextRequest,
@@ -27,6 +8,7 @@ export async function PUT(
   try {
     const formData = await request.formData()
     const { id } = await params
+    const client = createSanityWriteClient()
 
     const title = formData.get('title') as string
     const content = formData.get('content') as string
@@ -132,6 +114,7 @@ export async function PATCH(
   try {
     const body = await request.json()
     const { id } = await params
+    const client = createSanityWriteClient()
 
     console.warn('Patching blog post:', id, body)
 
@@ -152,11 +135,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params
+    const client = createSanityWriteClient()
 
     await client.delete(id)
 

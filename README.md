@@ -43,11 +43,12 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
    CONTACT_EMAIL_TO=hello@olgishcakes.co.uk
    
    # CSRF Protection (Required for form submissions)
-   CSRF_SECRET=your_csrf_secret_here
+   CSRF_SECRET=replace_with_openssl_rand_hex_32_output
    ```
    
    **Note:** For development, you can use the template values from `env.development.template`.
-   For production, use `env.production.template` and ensure `CSRF_SECRET` is set to a secure random value.
+   For production, use `env.production.template` and ensure `CSRF_SECRET` is set to a secure random value generated with `openssl rand -hex 32`.
+   Build-only CI can omit runtime-only secrets such as `CSRF_SECRET`, but any environment that serves requests must provide them.
    
    See [Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md) for detailed email configuration.
 4. Run the development server:

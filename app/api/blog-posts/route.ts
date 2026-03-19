@@ -1,26 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
-
-// Validate Sanity configuration before client initialization
-if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {
-  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_PROJECT_ID')
-}
-if (!process.env.NEXT_PUBLIC_SANITY_DATASET) {
-  throw new Error('Missing environment variable: NEXT_PUBLIC_SANITY_DATASET')
-}
-if (!process.env.SANITY_API_TOKEN) {
-  throw new Error('Missing environment variable: SANITY_API_TOKEN')
-}
-
-// Client for write operations only (create, update, delete)
-const writeClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31',
-  useCdn: false,
-  token: process.env.SANITY_API_TOKEN,
-})
+import { createSanityWriteClient } from '@/lib/sanity-admin-client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -62,7 +42,7 @@ export async function GET(request: NextRequest) {
       },
       viewCount
     }`
-    const params: any = {}
+    const params: Record<string, string> = {}
 
     // Add status filter
     if (status) {
@@ -86,6 +66,7 @@ export async function GET(request: NextRequest) {
 
     // Don't cache draft or scheduled posts - they need real-time updates
     if (status === 'draft' || status === 'scheduled') {
+      const writeClient = createSanityWriteClient()
       const posts = await writeClient.fetch(query, params)
       return NextResponse.json({ posts })
     }
@@ -139,6 +120,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const writeClient = createSanityWriteClient()
 
     console.warn('Creating blog post with data:', {
       title,

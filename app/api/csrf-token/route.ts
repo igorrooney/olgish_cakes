@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
-import { generateCsrfToken } from '@/lib/csrf';
+import { NextResponse } from 'next/server'
+import { generateCsrfToken, getCsrfTokenCookieName } from '@/lib/csrf'
+
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/csrf-token
@@ -12,19 +14,27 @@ import { generateCsrfToken } from '@/lib/csrf';
  * - Both must match for request to be valid
  */
 export async function GET() {
-  const token = generateCsrfToken();
+  try {
+    const token = generateCsrfToken()
 
-  const response = NextResponse.json({ token }, { status: 200 });
-  
-  // Set secure httpOnly cookie for CSRF validation
-  response.cookies.set('csrf-token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 3600, // 1 hour
-    path: '/',
-  });
+    const response = NextResponse.json({ token }, { status: 200 })
 
-  return response;
+    // Set secure httpOnly cookie for CSRF validation
+    response.cookies.set(getCsrfTokenCookieName(), token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600, // 1 hour
+      path: '/',
+    })
+
+    return response
+  } catch (error) {
+    console.error('Failed to generate CSRF token', error)
+
+    return NextResponse.json(
+      { error: 'Failed to generate CSRF token' },
+      { status: 500 }
+    )
+  }
 }
-
