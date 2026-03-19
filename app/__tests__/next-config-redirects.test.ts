@@ -13,11 +13,6 @@ describe('next.config redirects', () => {
 
     expect(redirects).toEqual(expect.arrayContaining([
       {
-        source: '/gift-hampers',
-        destination: '/cakes-by-post',
-        permanent: true
-      },
-      {
         source: '/gift-hampers/:slug',
         destination: '/cakes-by-post/:slug',
         permanent: true
@@ -47,14 +42,14 @@ describe('next.config redirects', () => {
         source: '/honey-cake-near-me',
         destination: '/honey-cake',
         permanent: true
-      },
+      }
+    ]))
+    expect(redirects).not.toEqual(expect.arrayContaining([
       {
         source: '/traditional-ukrainian-cakes',
         destination: '/cakes',
         permanent: true
-      }
-    ]))
-    expect(redirects).not.toEqual(expect.arrayContaining([
+      },
       {
         source: '/corporate-cakes-leeds',
         destination: '/cakes',

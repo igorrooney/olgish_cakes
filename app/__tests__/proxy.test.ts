@@ -199,7 +199,8 @@ describe('proxy SEO headers for cakes filters', () => {
 
     const response = await proxy(request)
 
-    expect(response.headers.get('X-Robots-Tag')).toBeNull()
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
   it('returns 410 for retired corporate cakes landing page', async () => {
@@ -214,6 +215,15 @@ describe('proxy SEO headers for cakes filters', () => {
 
   it('redirects retired traditional Ukrainian cakes landing page to /cakes', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/traditional-ukrainian-cakes')
+
+    const response = await proxy(request)
+
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://olgishcakes.co.uk/cakes')
+  })
+
+  it('redirects retired traditional Ukrainian cakes landing page with query params to clean /cakes', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/traditional-ukrainian-cakes?utm_source=google')
 
     const response = await proxy(request)
 

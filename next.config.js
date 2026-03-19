@@ -448,11 +448,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/gift-hampers",
-        destination: "/cakes-by-post",
-        permanent: true,
-      },
-      {
         source: "/gift-hampers/:slug",
         destination: "/cakes-by-post/:slug",
         permanent: true,
@@ -476,11 +471,6 @@ const nextConfig = {
       {
         source: "/custom-cake-enquiry",
         destination: "/get-custom-quote",
-        permanent: true,
-      },
-      {
-        source: "/traditional-ukrainian-cakes",
-        destination: "/cakes",
         permanent: true,
       },
     ];

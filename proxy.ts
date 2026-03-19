@@ -27,6 +27,13 @@ export async function proxy(request: NextRequest) {
 
     return NextResponse.redirect(redirectUrl, 308)
   }
+  if (request.nextUrl.pathname === '/gift-hampers' && request.nextUrl.search.length === 0) {
+    const redirectUrl = request.nextUrl.clone()
+
+    redirectUrl.pathname = '/cakes-by-post'
+
+    return NextResponse.redirect(redirectUrl, 308)
+  }
   if (request.nextUrl.pathname === '/corporate-cakes-leeds') {
     return new NextResponse(null, {
       status: 410,
@@ -55,10 +62,12 @@ export async function proxy(request: NextRequest) {
   if (hasCatalogQuery) {
     const pageOnlyQuery = classifyPageOnlyQueryFromUrlSearchParams(request.nextUrl.searchParams)
     if (pageOnlyQuery.isPageOnly && pageOnlyQuery.pageNumber === 1) {
-      const redirectUrl = new URL(request.nextUrl.toString())
+      const redirectUrl = request.nextUrl.clone()
+
       if (request.nextUrl.pathname === '/gift-hampers') {
         redirectUrl.pathname = '/cakes-by-post'
       }
+
       redirectUrl.search = ''
       return NextResponse.redirect(redirectUrl, 308)
     }
