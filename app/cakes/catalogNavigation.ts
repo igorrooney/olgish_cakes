@@ -1,3 +1,5 @@
+import { categoryLandingCanonicalPaths } from '@/app/cakes/categoryLandingConfig'
+
 type SearchParamValue = string | string[] | undefined
 
 export const allowedCatalogPathnames = ['/cakes', '/cakes-by-post'] as const
@@ -16,9 +18,13 @@ type AllowedCatalogQueryKey = (typeof allowedCatalogQueryKeys)[number]
 const catalogBaseUrl = 'https://olgishcakes.co.uk'
 const defaultSort = 'new'
 const defaultPage = 1
+const allowedCatalogOriginPathnames = new Set<string>([
+  ...allowedCatalogPathnames,
+  ...categoryLandingCanonicalPaths
+])
 
-function isAllowedCatalogPathname(pathname: string): pathname is AllowedCatalogPathname {
-  return allowedCatalogPathnames.includes(pathname as AllowedCatalogPathname)
+function isAllowedCatalogOriginPathname(pathname: string) {
+  return allowedCatalogOriginPathnames.has(pathname)
 }
 
 function isAllowedCatalogQueryKey(key: string): key is AllowedCatalogQueryKey {
@@ -57,7 +63,7 @@ export function buildCatalogBackHref({
       return fallbackHref
     }
 
-    if (resolvedUrl.hash.length > 0 || isAllowedCatalogPathname(resolvedUrl.pathname) === false) {
+    if (resolvedUrl.hash.length > 0 || isAllowedCatalogOriginPathname(resolvedUrl.pathname) === false) {
       return fallbackHref
     }
 
@@ -104,7 +110,7 @@ export function buildCatalogProductLinkHref({
   showCustom: boolean
   sort: string
 }) {
-  if (href.startsWith('/') === false || isAllowedCatalogPathname(pathname) === false) {
+  if (href.startsWith('/') === false || isAllowedCatalogOriginPathname(pathname) === false) {
     return href
   }
 

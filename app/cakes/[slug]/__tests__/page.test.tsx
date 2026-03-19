@@ -420,6 +420,20 @@ describe('CakeDetailPage', () => {
       expect(capturedCakePageClientProps?.backHref).toBe('/cakes-by-post?sort=priceLowToHigh&page=2')
     })
 
+    it('uses the originating category landing listing as backHref when from is a valid landing page', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/birthday-cakes?page=2'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/birthday-cakes?page=2')
+    })
+
     it('falls back to /cakes when from includes disallowed query keys', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 

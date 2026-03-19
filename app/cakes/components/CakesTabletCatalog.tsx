@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type MouseEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
+import { breakpoints } from '@/lib/breakpoints'
 import {
   parseAsArrayOf,
   parseAsBoolean,
@@ -41,7 +42,8 @@ const MOBILE_PAGE_SIZE = 6
 const TABLET_PAGE_SIZE = 6
 const SMALL_LAPTOP_PAGE_SIZE = 9
 const TRUNCATED_PAGINATION_THRESHOLD = 7
-const TABLET_BREAKPOINT = 1024
+const TABLET_BREAKPOINT = breakpoints.tablet
+const SMALL_LAPTOP_BREAKPOINT = breakpoints['small-laptop']
 const MOBILE_SENTINEL_ROOT_MARGIN = '240px 0px'
 const DEFAULT_CATALOG_PATH = '/cakes'
 const BY_POST_CATALOG_PATH = '/cakes-by-post'
@@ -230,12 +232,20 @@ function isPlainLeftClick(event: MouseEvent<HTMLAnchorElement>) {
     !event.altKey
 }
 
-function getViewportSnapshot() {
+function getIsMobileViewportSnapshot() {
   if (typeof window === 'undefined') {
     return false
   }
 
   return window.innerWidth < TABLET_BREAKPOINT
+}
+
+function getIsSmallLaptopViewportSnapshot() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return window.innerWidth >= SMALL_LAPTOP_BREAKPOINT
 }
 
 function getViewportServerSnapshot() {
@@ -257,7 +267,15 @@ function subscribeToViewportChanges(onStoreChange: () => void) {
 function useIsMobileViewport() {
   return useSyncExternalStore(
     subscribeToViewportChanges,
-    getViewportSnapshot,
+    getIsMobileViewportSnapshot,
+    getViewportServerSnapshot
+  )
+}
+
+function useIsSmallLaptopViewport() {
+  return useSyncExternalStore(
+    subscribeToViewportChanges,
+    getIsSmallLaptopViewportSnapshot,
     getViewportServerSnapshot
   )
 }
@@ -381,6 +399,7 @@ export function CakesTabletCatalog({
   const [activeMaxPriceQueryWriteId, setActiveMaxPriceQueryWriteId] = useState(0)
   const [hasHydrated, setHasHydrated] = useState(false)
   const isMobileViewport = useIsMobileViewport()
+  const isSmallLaptopViewport = useIsSmallLaptopViewport()
   const [isMobileFilterSortOpen, setIsMobileFilterSortOpen] = useState(false)
   const [mobileDraftSort, setMobileDraftSort] = useState<CakesSortOption>('new')
   const [mobileDraftSelectedCollectionIds, setMobileDraftSelectedCollectionIds] = useState<string[]>([])
@@ -411,30 +430,6 @@ export function CakesTabletCatalog({
   const [queryState, setQueryState] = useQueryStates(queryParsers, {
     history: 'replace'
   })
-  const buildProductCardLinkHref = useCallback((href: string) => {
-    return buildCatalogProductLinkHref({
-      defaultByPost: initialFilterDefaults.byPost,
-      defaultCustom: initialFilterDefaults.custom,
-      href,
-      maxPrice: queryState.maxPrice,
-      pathname,
-      page: queryState.page,
-      selectedCollections: queryState.collections,
-      showByPost: queryState.byPost,
-      showCustom: queryState.custom,
-      sort: queryState.sort
-    })
-  }, [
-    initialFilterDefaults.byPost,
-    initialFilterDefaults.custom,
-    pathname,
-    queryState.byPost,
-    queryState.collections,
-    queryState.custom,
-    queryState.maxPrice,
-    queryState.page,
-    queryState.sort
-  ])
   const effectiveByPostFilter = optimisticByPostFilter ?? queryState.byPost
   const effectiveCustomFilter = optimisticCustomFilter ?? queryState.custom
   const activeMobileTab = useMemo(() => {
@@ -551,10 +546,6 @@ export function CakesTabletCatalog({
     () => new Set(activeCollectionOptions.map((option) => option.id)),
     [activeCollectionOptions]
   )
-
-  useEffect(() => {
-    scrollWindowToTop()
-  }, [])
 
   useEffect(() => {
     if (hasNormalizedCleanUrlDefaultsRef.current) {
@@ -1399,6 +1390,35 @@ export function CakesTabletCatalog({
   const smallLaptopCurrentPage = useMemo(() => {
     return getClampedPage(queryState.page, smallLaptopTotalPages)
   }, [queryState.page, smallLaptopTotalPages])
+  const activeDesktopCatalogPage = useMemo(() => {
+    return isSmallLaptopViewport
+      ? smallLaptopCurrentPage
+      : tabletCurrentPage
+  }, [isSmallLaptopViewport, smallLaptopCurrentPage, tabletCurrentPage])
+  const buildProductCardLinkHref = useCallback((href: string) => {
+    return buildCatalogProductLinkHref({
+      defaultByPost: initialFilterDefaults.byPost,
+      defaultCustom: initialFilterDefaults.custom,
+      href,
+      maxPrice: queryState.maxPrice,
+      pathname,
+      page: activeDesktopCatalogPage,
+      selectedCollections: queryState.collections,
+      showByPost: queryState.byPost,
+      showCustom: queryState.custom,
+      sort: queryState.sort
+    })
+  }, [
+    activeDesktopCatalogPage,
+    initialFilterDefaults.byPost,
+    initialFilterDefaults.custom,
+    pathname,
+    queryState.byPost,
+    queryState.collections,
+    queryState.custom,
+    queryState.maxPrice,
+    queryState.sort
+  ])
   const tabletPageStartIndex = useMemo(() => {
     return (tabletCurrentPage - 1) * TABLET_PAGE_SIZE
   }, [tabletCurrentPage])
@@ -1455,14 +1475,14 @@ export function CakesTabletCatalog({
   }, [smallLaptopCurrentPage, tabletCurrentPage])
 
   useEffect(() => {
-    if (queryState.page === tabletCurrentPage) {
+    if (queryState.page === activeDesktopCatalogPage) {
       return
     }
 
     void setQueryState({
-      page: tabletCurrentPage === 1 ? null : tabletCurrentPage
+      page: activeDesktopCatalogPage === 1 ? null : activeDesktopCatalogPage
     })
-  }, [queryState.page, setQueryState, tabletCurrentPage])
+  }, [activeDesktopCatalogPage, queryState.page, setQueryState])
 
   const paginationFocusClassName = 'focus:!outline-none focus-visible:!outline-none focus:!shadow-none focus-visible:!shadow-none'
   const paginationItemClassName = `join-item btn h-12 min-h-12 rounded-none border-0 bg-base-100 text-base-content ${paginationFocusClassName}`

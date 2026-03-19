@@ -595,7 +595,7 @@ function renderCatalog({
 }: {
   items?: TabletCake[]
   cakeCount?: number
-  pathname?: '/cakes' | '/cakes-by-post' | '/gift-hampers'
+  pathname?: `/${string}`
   search?: string
   viewportWidth?: number
   collectionOptionsOverride?: CakesCollectionOption[]
@@ -675,7 +675,7 @@ function renderCatalogToMarkup({
 }: {
   items?: TabletCake[]
   cakeCount?: number
-  pathname?: '/cakes' | '/cakes-by-post' | '/gift-hampers'
+  pathname?: `/${string}`
   search?: string
   viewportWidth?: number
   collectionOptionsOverride?: CakesCollectionOption[]
@@ -1451,16 +1451,18 @@ describe('CakesTabletCatalog', () => {
     expectCakeHiddenOnTablet('Hamper 100')
   })
 
-  it('scrolls to top on initial render', async () => {
+  it('does not change scroll position on initial render', async () => {
     document.documentElement.scrollTop = 180
     document.body.scrollTop = 120
 
     renderCatalog()
 
     await waitFor(() => {
-      expect(document.documentElement.scrollTop).toBe(0)
-      expect(document.body.scrollTop).toBe(0)
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(10)
     })
+
+    expect(document.documentElement.scrollTop).toBe(180)
+    expect(document.body.scrollTop).toBe(120)
   })
 
   it('updates URL and visible cards when selecting another page', async () => {
@@ -1843,6 +1845,21 @@ describe('CakesTabletCatalog', () => {
     expectCakeHiddenOnTablet('Cake 1')
   })
 
+  it('normalizes small laptop page values above range to the last visible page', async () => {
+    renderCatalog({
+      cakeCount: 13,
+      search: '?page=3',
+      viewportWidth: 1280
+    })
+
+    await waitFor(() => {
+      expect(window.location.search).toBe('?page=2')
+    })
+
+    expect(screen.getByRole('button', { name: 'Go to small laptop page 2' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('button', { name: 'Go to small laptop page 2' })).toBeDisabled()
+  })
+
   it('shows trailing ellipsis on first page when many pages exist', async () => {
     renderCatalog({ cakeCount: 60 })
 
@@ -2127,6 +2144,20 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByRole('link', { name: /View details for Hamper 7/i })).toHaveAttribute(
       'href',
       '/cakes-by-post/hamper-7?from=%2Fcakes%3FbyPost%3Dtrue%26custom%3Dfalse%26page%3D2'
+    )
+  })
+
+  it('adds a safe from param to product links on category landing routes', () => {
+    renderCatalog({
+      cakeCount: 8,
+      catalogMode: 'category-landing',
+      pathname: '/birthday-cakes',
+      search: '?page=2'
+    })
+
+    expect(screen.getByRole('link', { name: /View details for Cake 7/i })).toHaveAttribute(
+      'href',
+      '/cakes/cake-7?from=%2Fbirthday-cakes%3Fpage%3D2'
     )
   })
 
