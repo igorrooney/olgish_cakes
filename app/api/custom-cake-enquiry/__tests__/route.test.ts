@@ -362,8 +362,39 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(500)
     expect(data.error).toBe('Email service not configured')
-    expect(mockInsert).toHaveBeenCalled()
+    expect(mockCreateClient).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('returns 500 before uploading a reference image when live email is not configured', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    process.env.RESEND_API_KEY = ''
+    mockGetEmailTransportMode.mockReturnValue('live')
+    mockRequiresLiveEmailConfiguration.mockReturnValue(true)
+
+    const file = new File(['image'], 'reference.jpg', { type: 'image/jpeg' })
+    const formData = buildFormData()
+    formData.append('referenceImage', file)
+
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.34'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Email service not configured')
+    expect(mockCreateClient).not.toHaveBeenCalled()
+    expect(mockUpload).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
@@ -482,7 +513,7 @@ describe('/api/custom-cake-enquiry', () => {
     }))
   })
 
-  it('returns 200 and only logs when the failure alert email itself fails', async () => {
+  it('returns 500 when all operator-visible notifications fail after customer email succeeds', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
     mockSendEmail
       .mockResolvedValueOnce(createSendResult(false, { message: 'Admin send failed' }))
@@ -502,8 +533,8 @@ describe('/api/custom-cake-enquiry', () => {
     const response = await POST(request)
     const data = await response.json()
 
-    expect(response.status).toBe(200)
-    expect(data.message).toBe('Enquiry submitted successfully')
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.')
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Custom cake enquiry failure alert failed',
@@ -512,6 +543,125 @@ describe('/api/custom-cake-enquiry', () => {
         failedSteps: ['admin-email']
       })
     )
+  })
+
+  it('returns 500 when admin email fails, customer email fails, and failure alert fails', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    mockSendEmail
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Admin send failed' }))
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Customer send failed' }))
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Failure alert send failed' }))
+
+    const formData = buildFormData()
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.35'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.')
+    expect(mockSendEmail).toHaveBeenCalledTimes(3)
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Custom cake enquiry failure alert failed',
+      expect.objectContaining({
+        errorMessage: 'Failure alert send failed',
+        failedSteps: ['admin-email', 'customer-email']
+      })
+    )
+  })
+
+  it('returns 500 when admin email fails, customer email is skipped, and failure alert fails', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    mockSendEmail
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Admin send failed' }))
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Failure alert send failed' }))
+
+    const formData = buildFormData({
+      email: null,
+      phone: '+44 7000 000 111'
+    })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.36'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.')
+    expect(mockSendEmail).toHaveBeenCalledTimes(2)
+    expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      templateId: 'custom-cake-enquiry-failure-alert'
+    }))
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Custom cake enquiry failure alert failed',
+      expect.objectContaining({
+        errorMessage: 'Failure alert send failed',
+        failedSteps: ['admin-email']
+      })
+    )
+  })
+
+  it('returns 200 when admin email fails, customer email fails, and failure alert succeeds', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    mockSendEmail
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Admin send failed' }))
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Customer send failed' }))
+      .mockResolvedValueOnce(createSendResult())
+
+    const formData = buildFormData()
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.37'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.message).toBe('Enquiry submitted successfully')
+    expect(mockSendEmail).toHaveBeenCalledTimes(3)
+  })
+
+  it('returns 200 when admin email succeeds and customer email fails', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    mockSendEmail
+      .mockResolvedValueOnce(createSendResult())
+      .mockResolvedValueOnce(createSendResult(false, { message: 'Customer send failed' }))
+      .mockResolvedValueOnce(createSendResult())
+
+    const formData = buildFormData()
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.38'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.message).toBe('Enquiry submitted successfully')
+    expect(mockSendEmail).toHaveBeenCalledTimes(3)
   })
 
   it('attaches reference image when provided', async () => {

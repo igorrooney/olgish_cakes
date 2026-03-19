@@ -27,6 +27,9 @@ type ErrorResponse = {
 
 const enquiryFallbackErrorMessage =
   'Something went wrong while sending your quote request. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+const maskedServerErrorMessages = new Set([
+  'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
+])
 
 const getServerErrorMessage = (error: unknown) => {
   if (typeof error !== 'string') {
@@ -35,7 +38,11 @@ const getServerErrorMessage = (error: unknown) => {
 
   const trimmedError = error.trim()
 
-  return trimmedError.length > 0 ? trimmedError : null
+  if (trimmedError.length === 0 || maskedServerErrorMessages.has(trimmedError)) {
+    return null
+  }
+
+  return trimmedError
 }
 
 const createSubmissionError = (message: string, fieldErrors?: Record<string, string>) => {

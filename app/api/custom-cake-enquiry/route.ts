@@ -6,6 +6,8 @@ import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
+const notificationFailureErrorMessage =
+  'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
 
 const getSupabaseAdminClient = () => {
   const supabaseUrl = process.env.SUPABASE_URL
@@ -236,6 +238,11 @@ const sendFailureAlertEmail = async (params: {
       }
 }
 
+const hasOperationalNotificationSuccess = (params: {
+  adminEmailSent: boolean
+  failureAlertSent: boolean
+}) => params.adminEmailSent || params.failureAlertSent
+
 const uploadReferenceImage = async (supabase: SupabaseAdminClient, file: File) => {
   const bucket = getReferenceImageBucket()
   const filePath = buildReferenceImagePath(file.name)
@@ -381,6 +388,17 @@ const occasionLabels: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    const emailMode = getEmailTransportMode()
+    const canSendLiveEmail =
+      !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
+
+    if (!canSendLiveEmail) {
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      )
+    }
+
     const ip = getClientIp(request)
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
@@ -491,8 +509,6 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to save enquiry')
     }
 
-    const emailMode = getEmailTransportMode()
-
     const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',
@@ -514,34 +530,66 @@ export async function POST(request: NextRequest) {
       ? Buffer.from(await referenceImage.arrayBuffer())
       : null
 
-    const canSendLiveEmail = !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
+    const adminEmailResponse = await sendEmail({
+      templateId: 'custom-cake-enquiry-admin',
+      input: {
+        customerName: formData.fullName,
+        customerEmail: formData.email || undefined,
+        customerPhone: formData.phone || undefined,
+        address: formData.address,
+        city: formData.city,
+        postcode: formData.postcode,
+        dateNeeded: formData.date,
+        occasion: resolvedOccasion,
+        customerMessage: resolvedRequirements,
+        attachmentNames: referenceImage ? [referenceImage.name] : []
+      },
+      modeOverride: emailMode,
+      message: {
+        from: emailFromAddress,
+        to: recipientEmail,
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+        replyTo: formData.email || undefined,
+        attachments: referenceImage && attachmentBuffer
+          ? [
+              {
+                filename: referenceImage.name,
+                content: attachmentBuffer,
+                contentType: referenceImage.type || undefined
+              }
+            ]
+          : []
+      }
+    })
 
-    if (!canSendLiveEmail) {
-      return NextResponse.json(
-        { error: 'Email service not configured' },
-        { status: 500 }
-      )
-    } else {
-      const adminEmailResponse = await sendEmail({
-        templateId: 'custom-cake-enquiry-admin',
+    const adminEmailSent = adminEmailResponse.accepted && !adminEmailResponse.error
+
+    if (!adminEmailSent) {
+      notificationErrors.push({
+        step: 'admin-email',
+        message: adminEmailResponse.error?.message || 'Transport did not accept admin email'
+      })
+    }
+
+    let customerEmailSent = false
+
+    if (formData.email) {
+      const customerEmailResponse = await sendEmail({
+        templateId: 'custom-cake-enquiry-customer',
         input: {
           customerName: formData.fullName,
           customerEmail: formData.email || undefined,
-          customerPhone: formData.phone || undefined,
-          address: formData.address,
-          city: formData.city,
-          postcode: formData.postcode,
           dateNeeded: formData.date,
           occasion: resolvedOccasion,
           customerMessage: resolvedRequirements,
-          attachmentNames: referenceImage ? [referenceImage.name] : []
+          message: 'Date needed: ' + formattedDate
         },
         modeOverride: emailMode,
         message: {
           from: emailFromAddress,
-          to: recipientEmail,
+          to: formData.email,
           bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-          replyTo: formData.email || undefined,
+          replyTo: recipientEmail,
           attachments: referenceImage && attachmentBuffer
             ? [
                 {
@@ -554,50 +602,17 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      if (!adminEmailResponse.accepted || adminEmailResponse.error) {
+      customerEmailSent = customerEmailResponse.accepted && !customerEmailResponse.error
+
+      if (!customerEmailSent) {
         notificationErrors.push({
-          step: 'admin-email',
-          message: adminEmailResponse.error?.message || 'Transport did not accept admin email'
+          step: 'customer-email',
+          message: customerEmailResponse.error?.message || 'Transport did not accept customer email'
         })
-      }
-
-      if (formData.email) {
-        const customerEmailResponse = await sendEmail({
-          templateId: 'custom-cake-enquiry-customer',
-          input: {
-            customerName: formData.fullName,
-            customerEmail: formData.email || undefined,
-            dateNeeded: formData.date,
-            occasion: resolvedOccasion,
-            customerMessage: resolvedRequirements,
-            message: 'Date needed: ' + formattedDate
-          },
-          modeOverride: emailMode,
-          message: {
-            from: emailFromAddress,
-            to: formData.email,
-            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-            replyTo: recipientEmail,
-            attachments: referenceImage && attachmentBuffer
-              ? [
-                  {
-                    filename: referenceImage.name,
-                    content: attachmentBuffer,
-                    contentType: referenceImage.type || undefined
-                  }
-                ]
-              : []
-          }
-        })
-
-        if (!customerEmailResponse.accepted || customerEmailResponse.error) {
-          notificationErrors.push({
-            step: 'customer-email',
-            message: customerEmailResponse.error?.message || 'Transport did not accept customer email'
-          })
-        }
       }
     }
+
+    let failureAlertSent = false
 
     if (notificationErrors.length > 0) {
       notificationErrors.forEach((entry) => {
@@ -623,7 +638,9 @@ export async function POST(request: NextRequest) {
         emailMode
       })
 
-      if (!failureAlertResult.sent) {
+      failureAlertSent = failureAlertResult.sent
+
+      if (!failureAlertSent) {
         logFailureAlertFailure(failureAlertResult.errorMessage, {
           customerName: formData.fullName,
           customerEmail: formData.email || undefined,
@@ -633,11 +650,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (!hasOperationalNotificationSuccess({ adminEmailSent, failureAlertSent })) {
+      return NextResponse.json(
+        {
+          error: notificationFailureErrorMessage
+        },
+        { status: 500 }
+      )
+    }
+
     if (process.env.NODE_ENV === 'development') {
       console.log('Custom cake enquiry received:', {
         fullName: formData.fullName,
         email: formData.email || null,
-        date: formData.date
+        date: formData.date,
+        customerEmailSent,
+        adminEmailSent,
+        failureAlertSent
       })
     }
 
