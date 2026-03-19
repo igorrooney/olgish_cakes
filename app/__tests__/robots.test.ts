@@ -28,7 +28,8 @@ describe('robots.txt', () => {
     expect(rules.disallow).toContain('/studio/')
     expect(rules.disallow).toContain('/api/')
     expect(rules.disallow).toContain('/admin/')
-    expect(rules.disallow).toContain('/test-emails')
+    expect(rules.disallow).not.toContain('/test-emails')
+    expect(rules.disallow).not.toContain('/test-emails/')
   })
 
   it('should include sitemap URL', () => {

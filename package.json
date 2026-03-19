@@ -58,6 +58,7 @@
     "backup:setup": "node scripts/quick-setup.js",
     "backup:manager": "node scripts/backup-manager.js",
     "backup:sanity:drive": "tsx scripts/backup-sanity-to-drive.ts",
+    "backfill:collections-display-order": "node --import tsx/esm scripts/backfill-collections-display-order.ts",
     "setup:gdrive": "tsx scripts/setup-google-drive-oauth.ts",
     "setup:gdrive-oauth": "tsx scripts/setup-google-drive-oauth.ts",
     "seo:ranking": "node scripts/advanced-seo-ranking.js",
@@ -66,10 +67,13 @@
     "validate:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
     "validate:schemas:real": "node --import tsx/esm scripts/validate-schemas.ts --real",
     "test:schemas": "node --import tsx/esm scripts/validate-schemas.ts",
-    "test": "jest --projects jest.config.cjs jest.config.node.cjs",
-    "test:watch": "jest --projects jest.config.cjs jest.config.node.cjs --watch",
-    "test:coverage": "jest --projects jest.config.cjs jest.config.node.cjs --coverage",
-    "test:ci": "jest --projects jest.config.cjs jest.config.node.cjs --coverage --ci --maxWorkers=2 --bail"
+    "test": "jest --config jest.config.cjs",
+    "test:watch": "jest --config jest.config.cjs --watch",
+    "test:coverage": "jest --config jest.config.cjs --coverage",
+    "test:ci": "jest --config jest.config.cjs --coverage --ci --maxWorkers=2 --bail",
+    "test:web": "jest --config jest.config.web.cjs",
+    "test:api": "jest --config jest.config.node.cjs",
+    "test:file": "jest --config jest.config.cjs --runTestsByPath"
   },
   "engines": {
     "node": ">=20.9.0",
@@ -103,6 +107,7 @@
     "next": "16.1.6",
     "next-sanity": "^7.1.4",
     "node-cron": "^3.0.3",
+    "nuqs": "^2.8.8",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "resend": "^4.2.0",

@@ -6,10 +6,28 @@ import { apiVersion, dataset, projectId } from "../sanity/env";
 import { schema } from "../sanity/schema";
 import { structure } from "../sanity/structure";
 
+const singletonTypes = new Set(['cakesFeaturedOffer', 'cakesDeliverySection', 'giftHampersDeliverySection', 'collectionsDisplayOrder', 'productsDisplayOrder'])
+
 export default defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
   schema,
   plugins: [structureTool({ structure }), visionTool({ defaultApiVersion: apiVersion })],
+  document: {
+    newDocumentOptions: (previousOptions, context) => {
+      if (context.creationContext.type !== 'global') {
+        return previousOptions
+      }
+
+      return previousOptions.filter((option) => !singletonTypes.has(option.templateId))
+    },
+    actions: (previousActions, context) => {
+      if (!singletonTypes.has(context.schemaType)) {
+        return previousActions
+      }
+
+      return previousActions.filter((action) => action.action !== 'duplicate')
+    }
+  }
 });

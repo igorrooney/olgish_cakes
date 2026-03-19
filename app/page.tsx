@@ -16,6 +16,8 @@ import {
   Reviews,
 } from './components/homepage'
 import { getAllTestimonials } from './utils/fetchTestimonials'
+import { getHomepageCollections } from './utils/fetchCollections'
+import { buildOccasionOptionsFromCollections } from './components/homepage/formOptions'
 import { getMarketSchedule } from './utils/fetchMarketSchedule'
 import { generateEventSEOMetadata } from './utils/generateEventStructuredData'
 import { getPriceValidUntil } from './utils/seo'
@@ -264,11 +266,14 @@ export async function generateMetadata(
 }
 
 export default async function Home() {
-  const testimonials = await getAllTestimonials()
+  const [testimonials, collections] = await Promise.all([
+    getAllTestimonials(),
+    getHomepageCollections()
+  ])
   const eligibleTestimonials = testimonials.filter((testimonial) =>
     hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial)
   )
-  const hasTestimonials = eligibleTestimonials.length > 0
+  const occasionOptions = buildOccasionOptionsFromCollections(collections)
   const reviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
   const productReviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapProductReview)
   const reviewStats = calculateReviewStats(testimonials)
@@ -511,7 +516,7 @@ export default async function Home() {
               className="w-full h-auto object-contain"
             />
           </div>
-          <Occasions />
+          <Occasions collections={collections} />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image
@@ -525,7 +530,7 @@ export default async function Home() {
               />
             </div>
           </div>
-          <EnquiryForm />
+          <EnquiryForm occasionOptions={occasionOptions} />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image

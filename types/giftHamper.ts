@@ -1,3 +1,5 @@
+import type { DeliveryPolicy } from './deliveryPolicy'
+
 export interface GiftHamperImage {
   _type?: string;
   asset?: {
@@ -52,6 +54,22 @@ export interface RichTextBlock {
   [key: string]: unknown;
 }
 
+export type GiftHamperDeliveryDescriptionSource = 'global' | 'custom'
+export type GiftHamperDeliveryPolicySource = 'global' | 'custom'
+
+export interface GiftHamperDeliverySectionOverride {
+  descriptionSource?: GiftHamperDeliveryDescriptionSource
+  customDescription?: RichTextBlock[]
+  policySource?: GiftHamperDeliveryPolicySource
+  customPolicy?: Partial<DeliveryPolicy>
+}
+
+export interface GiftHampersDeliverySectionContent {
+  name?: string
+  description?: RichTextBlock[]
+  policy?: Partial<DeliveryPolicy>
+}
+
 export interface GiftHamper {
   _id: string;
   _createdAt: string;
@@ -60,9 +78,16 @@ export interface GiftHamper {
   seo?: GiftHamperSEO;
   description?: RichTextBlock[];
   shortDescription?: RichTextBlock[];
+  deliverySection?: GiftHamperDeliverySectionOverride;
+  giftHampersDeliverySection?: GiftHampersDeliverySectionContent;
   price: number;
   images?: GiftHamperImage[]; // includes one with isMain = true
   designs?: GiftHamperDesigns; // deprecated; not used for hampers
+  collections?: Array<{
+    _id: string;
+    name: string;
+    isFeatured?: boolean;
+  }>;
   category?: string;
   ingredients?: string[];
   allergens?: string[];

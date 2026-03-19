@@ -284,11 +284,8 @@ describe('GSC Compliance Fixes', () => {
   describe('Merchant Listings - Price Format Fix', () => {
     it('should have numeric prices in offers (not strings)', () => {
       // This test verifies the fix for "Invalid floating point number in property 'price' (in 'offers')"
-      // The fix was applied to:
-      // - app/traditional-ukrainian-cakes/page.tsx
-      // - app/page.tsx
-      // - app/order/OrderPageStructuredData.tsx
-      // - app/components/MarketSchedule.tsx
+      // The fix was applied to active structured data outputs across the site,
+      // including homepage, ordering, and market schedule schemas.
 
       const validOffer = {
         '@type': 'Offer',
@@ -336,8 +333,8 @@ describe('GSC Compliance Fixes', () => {
       })
     })
 
-    it('should have correct price format in traditional-ukrainian-cakes page', () => {
-      // Mock the structured data from traditional-ukrainian-cakes page
+    it('should have correct price format in legacy Ukrainian cakes structured data', () => {
+      // Mock representative Ukrainian cakes structured data
       const structuredData = {
         '@type': 'ItemList',
         itemListElement: [

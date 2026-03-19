@@ -81,7 +81,7 @@ describe('Markets', () => {
     jest.useRealTimers()
   })
 
-  it('renders heading and link to full schedule', async () => {
+  it('renders heading without a full-schedule CTA when only one upcoming market exists', async () => {
     const market = createMarket({
       _id: 'market-1',
       title: 'Leeds Market',
@@ -96,10 +96,8 @@ describe('Markets', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: /Upcoming\s+Farmers markets/i })
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /See all markets/i })).toHaveAttribute(
-      'href',
-      '/market-schedule'
-    )
+    expect(screen.queryByRole('link', { name: /See all markets/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Show all markets/i })).not.toBeInTheDocument()
   })
 
   it('renders market details with formatted date and time', async () => {
@@ -131,6 +129,21 @@ describe('Markets', () => {
     expect(directionsLink).toHaveAttribute('href', 'https://maps.google.com/leeds')
     expect(directionsLink).toHaveAttribute('target', '_blank')
     expect(directionsLink).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('formats ISO datetime market dates into readable UK dates', async () => {
+    const market = createMarket({
+      _id: 'market-iso',
+      title: 'ISO Market',
+      date: '2026-01-17T12:00:00.000Z'
+    })
+
+    mockGetMarketSchedule.mockResolvedValueOnce([market])
+
+    await renderMarkets()
+
+    expect(screen.getByText('Saturday 17 January')).toBeInTheDocument()
+    expect(screen.queryByText('2026-01-17T12:00:00.000Z')).not.toBeInTheDocument()
   })
 
   it('filters out past markets', async () => {
@@ -166,7 +179,7 @@ describe('Markets', () => {
     expect(titles).toEqual(['First', 'Third', 'Second'])
   })
 
-  it('limits the list to 10 upcoming markets', async () => {
+  it('renders all upcoming markets and exposes a reveal control for larger lists', async () => {
     const markets = Array.from({ length: 12 }, (_, index) => (
       createMarket({
         _id: `market-${index}`,
@@ -180,9 +193,10 @@ describe('Markets', () => {
     await renderMarkets()
 
     const headings = screen.getAllByRole('heading', { level: 3 })
-    expect(headings).toHaveLength(10)
+    expect(headings).toHaveLength(12)
     expect(headings[0]).toHaveTextContent('Market 1')
-    expect(headings[9]).toHaveTextContent('Market 10')
+    expect(headings[11]).toHaveTextContent('Market 12')
+    expect(screen.getByRole('button', { name: /Show all markets/i })).toBeInTheDocument()
   })
 
   it('omits the website link when a market has no website', async () => {

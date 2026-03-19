@@ -187,6 +187,13 @@ const nextConfig = {
           },
         ],
       },
+      // Catalog API payloads remain cacheable but should never be indexed
+      {
+        source: "/api/catalog/(.*)",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
       // Non-cacheable API routes
       {
         source: "/api/admin/(.*)",
@@ -440,6 +447,32 @@ const nextConfig = {
         destination: "/order",
         permanent: true,
       },
+      {
+        source: "/gift-hampers/:slug",
+        destination: "/cakes-by-post/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cake-by-post-service",
+        destination: "/cakes-by-post",
+        permanent: true,
+      },
+      {
+        source: "/cake-postal-delivery",
+        destination: "/cakes-by-post",
+        permanent: true,
+      },
+
+      {
+        source: "/honey-cake-near-me",
+        destination: "/honey-cake",
+        permanent: true,
+      },
+      {
+        source: "/custom-cake-enquiry",
+        destination: "/get-custom-quote",
+        permanent: true,
+      },
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml
@@ -452,3 +485,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

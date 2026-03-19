@@ -1,7 +1,10 @@
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { REVIEW_DATES } from "@/lib/structured-data-defaults";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+import type { DeliveryPolicy } from "@/types/deliveryPolicy";
 import { Metadata } from "next";
+import type { DeliveryPolicyVisibleClaims } from "./delivery-policy";
+import { normalizeDeliveryPolicy } from "./delivery-policy";
 import { buildAggregateRating, formatRatingValue, formatReviewCount, normalizeReviewStats, type ReviewStats } from "./review-stats";
 
 // SEO Configuration
@@ -153,34 +156,36 @@ export function getMerchantReturnPolicy() {
 }
 
 // Reusable shipping details for Offer (helps Merchant listings rich results)
-export function getOfferShippingDetails() {
+export function getOfferShippingDetails(
+  policyInput?: Partial<DeliveryPolicy> | null,
+  visibleClaims?: DeliveryPolicyVisibleClaims | null
+) {
+  const resolvedPolicy = normalizeDeliveryPolicy(policyInput)
+  const shouldIncludeDeliveryMethod = visibleClaims == null || visibleClaims.deliveryMethod
+
   return {
     "@type": "OfferShippingDetails",
     shippingRate: {
       "@type": "MonetaryAmount",
-      value: 0,
+      value: resolvedPolicy.shippingFeeGbp,
       currency: "GBP",
     },
     shippingDestination: {
       "@type": "DefinedRegion",
-      addressCountry: "GB",
+      addressCountry: resolvedPolicy.shippingDestinationCountry,
     },
     deliveryTime: {
       "@type": "ShippingDeliveryTime",
       handlingTime: {
         "@type": "QuantitativeValue",
-        minValue: 0,
-        maxValue: 1,
-        unitCode: "DAY",
-      },
-      transitTime: {
-        "@type": "QuantitativeValue",
-        minValue: 1,
-        maxValue: 3,
+        minValue: resolvedPolicy.dispatchMinDays,
+        maxValue: resolvedPolicy.dispatchMaxDays,
         unitCode: "DAY",
       },
     },
-    appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
+    ...(shouldIncludeDeliveryMethod ? {
+      appliesToDeliveryMethod: resolvedPolicy.deliveryMethod,
+    } : {}),
   } as const;
 }
 

@@ -60,7 +60,6 @@ module.exports = {
     '!sanity/**',
     '!studio/**'
   ],
-  coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
   coverageThreshold: {
     // Realistic coverage thresholds based on current codebase
     // Will be increased incrementally as more tests are added

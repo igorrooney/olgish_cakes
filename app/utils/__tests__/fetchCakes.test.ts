@@ -1,5 +1,6 @@
-import { getAllCakes, getFeaturedCakes, getCakeBySlug, getRevalidateTime, clearCache, invalidateCache, getCacheBustingKey, forceRefreshCakes } from '../fetchCakes'
+import { getAllCakes, getFeaturedCakes, getCakeBySlug, getCakesFeaturedOffer, getRevalidateTime, clearCache, invalidateCache, getCacheBustingKey, forceRefreshCakes } from '../fetchCakes'
 import { Cake } from '@/types/cake'
+import { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
 
 // Mock unstable_cache to bypass Next.js context requirement
 jest.mock('next/cache', () => ({
@@ -41,6 +42,16 @@ describe('fetchCakes', () => {
     category: 'Traditional',
     ingredients: ['Honey', 'Flour'],
     allergens: ['Gluten']
+  }
+
+  const expectedFeaturedOffer: CakesFeaturedOffer = {
+    eyebrow: 'Featured',
+    title: 'FREE Honey Cake Offer',
+    description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+    ctaLabel: 'Get free honey cake',
+    cakeSlug: 'honey-cake',
+    imageUrl: 'https://cdn.sanity.io/images/project/dataset/main.jpg',
+    imageAlt: 'Main image alt'
   }
 
   beforeEach(() => {
@@ -90,6 +101,74 @@ describe('fetchCakes', () => {
 
       expect(result).toEqual([mockCake])
       expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should include servings pricing in getAllCakes query', async () => {
+      mockFetch.mockResolvedValue([mockCake])
+
+      await getAllCakes()
+
+      const firstCall = mockFetch.mock.calls[0]
+      if (!firstCall) {
+        throw new Error('Expected getAllCakes query call')
+      }
+
+      const queryArg = firstCall[0]
+      if (typeof queryArg !== 'string') {
+        throw new Error('Expected query argument to be a string')
+      }
+
+      expect(queryArg).toContain('newDesignPricingByServings')
+    })
+
+    it('should prioritize products display order for cakes', async () => {
+      const firstCake: Cake = {
+        ...mockCake,
+        _id: 'cake-1',
+        name: 'Cake One',
+        order: 2
+      }
+      const secondCake: Cake = {
+        ...mockCake,
+        _id: 'cake-2',
+        name: 'Cake Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        cakes: [firstCake, secondCake],
+        displayOrder: {
+          cakesOrder: [{ _ref: 'cake-2' }, { _ref: 'cake-1' }]
+        }
+      })
+
+      const result = await getAllCakes()
+
+      expect(result.map((cake) => cake._id)).toEqual(['cake-2', 'cake-1'])
+    })
+
+    it('should fallback to legacy order when products display order is not configured', async () => {
+      const firstCake: Cake = {
+        ...mockCake,
+        _id: 'cake-1',
+        name: 'Cake One',
+        order: 2
+      }
+      const secondCake: Cake = {
+        ...mockCake,
+        _id: 'cake-2',
+        name: 'Cake Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        cakes: [firstCake, secondCake],
+        displayOrder: null
+      })
+
+      const result = await getAllCakes()
+
+      expect(result.map((cake) => cake._id)).toEqual(['cake-2', 'cake-1'])
     })
 
     it('should use cache for non-preview requests', async () => {
@@ -204,7 +283,13 @@ describe('fetchCakes', () => {
       const result = await getCakeBySlug('honey-cake')
 
       expect(result).toEqual(mockCake)
-      expect(mockFetch).toHaveBeenCalledWith(expect.any(String), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"cakesDeliverySection"'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('fillingTypes[]->{\n      _id,\n      name,\n      image {'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('defaultFillingType->{'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('defaultFillingType->{\n      _id,\n      name,\n      image {'), { slug: 'honey-cake' })
     })
 
     it('should use cache for non-preview requests', async () => {
@@ -259,6 +344,121 @@ describe('fetchCakes', () => {
       await getCakeBySlug('non-existent')
 
       expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('getCakesFeaturedOffer', () => {
+    it('should fetch and map cakes featured offer', async () => {
+      mockFetch.mockResolvedValue({
+        eyebrow: 'Featured',
+        title: 'FREE Honey Cake Offer',
+        description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+        ctaLabel: 'Get free honey cake',
+        featuredCake: {
+          name: 'Honey Cake',
+          slug: { current: 'honey-cake' },
+          mainImage: {
+            alt: 'Main image alt',
+            asset: {
+              url: 'https://cdn.sanity.io/images/project/dataset/main.jpg'
+            }
+          }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toEqual(expectedFeaturedOffer)
+      expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should prioritize override image over cake image', async () => {
+      mockFetch.mockResolvedValue({
+        eyebrow: 'Featured',
+        title: 'FREE Honey Cake Offer',
+        description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+        ctaLabel: 'Get free honey cake',
+        overrideImage: {
+          alt: 'Override alt',
+          asset: {
+            url: 'https://cdn.sanity.io/images/project/dataset/override.jpg'
+          }
+        },
+        featuredCake: {
+          name: 'Honey Cake',
+          slug: { current: 'honey-cake' },
+          mainImage: {
+            alt: 'Main image alt',
+            asset: {
+              url: 'https://cdn.sanity.io/images/project/dataset/main.jpg'
+            }
+          }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result?.imageUrl).toBe('https://cdn.sanity.io/images/project/dataset/override.jpg')
+      expect(result?.imageAlt).toBe('Override alt')
+    })
+
+    it('should return null when featured offer is missing slug', async () => {
+      mockFetch.mockResolvedValue({
+        title: 'Missing slug offer',
+        featuredCake: {
+          name: 'Honey Cake'
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when featured offer is inactive', async () => {
+      mockFetch.mockResolvedValue({
+        isActive: false,
+        featuredCake: {
+          slug: { current: 'honey-cake' }
+        }
+      })
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when featured offer is not found', async () => {
+      mockFetch.mockResolvedValue(null)
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+    })
+
+    it('should bypass cache for preview requests', async () => {
+      mockFetch.mockResolvedValue({
+        featuredCake: {
+          slug: { current: 'honey-cake' }
+        }
+      })
+
+      await getCakesFeaturedOffer(true)
+      await getCakesFeaturedOffer(true)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockGetClient).toHaveBeenCalledWith(true)
+    })
+
+    it('should return null and log on error', async () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      const result = await getCakesFeaturedOffer()
+
+      expect(result).toBeNull()
+      expect(consoleSpy).toHaveBeenCalledWith('Error fetching cakes featured offer:', expect.any(Error))
+      consoleSpy.mockRestore()
     })
   })
 

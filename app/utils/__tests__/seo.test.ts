@@ -1,4 +1,5 @@
-import { SEO_CONFIG, PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS } from '../seo'
+import { SEO_CONFIG, PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS, getOfferShippingDetails } from '../seo'
+import { defaultDeliveryMethod } from '@/types/deliveryPolicy'
 
 describe('seo utilities', () => {
   describe('SEO_CONFIG', () => {
@@ -105,6 +106,57 @@ describe('seo utilities', () => {
     it('should export LONG_TAIL_KEYWORDS', () => {
       const module = require('../seo')
       expect(module.LONG_TAIL_KEYWORDS).toBeDefined()
+    })
+  })
+
+  describe('getOfferShippingDetails', () => {
+    it('always includes required shipping fields for OfferShippingDetails', () => {
+      const shippingDetails = getOfferShippingDetails(
+        {
+          dispatchMinDays: 4,
+          dispatchMaxDays: 6,
+          shippingFeeGbp: 5,
+          shippingDestinationCountry: 'DE',
+          deliveryMethod: defaultDeliveryMethod
+        },
+        {
+          timing: false,
+          shippingCost: true,
+          destinationCountry: false,
+          deliveryMethod: false
+        }
+      )
+
+      expect(shippingDetails.shippingRate).toEqual({
+        '@type': 'MonetaryAmount',
+        value: 5,
+        currency: 'GBP'
+      })
+      expect(shippingDetails.shippingDestination).toEqual({
+        '@type': 'DefinedRegion',
+        addressCountry: 'GB'
+      })
+      expect(shippingDetails.deliveryTime.handlingTime).toEqual({
+        '@type': 'QuantitativeValue',
+        minValue: 4,
+        maxValue: 6,
+        unitCode: 'DAY'
+      })
+      expect(shippingDetails.appliesToDeliveryMethod).toBeUndefined()
+    })
+
+    it('includes delivery method when the claim is visible', () => {
+      const shippingDetails = getOfferShippingDetails(
+        undefined,
+        {
+          timing: true,
+          shippingCost: true,
+          destinationCountry: true,
+          deliveryMethod: true
+        }
+      )
+
+      expect(shippingDetails.appliesToDeliveryMethod).toBe(defaultDeliveryMethod)
     })
   })
 })

@@ -7,7 +7,7 @@ export interface Cake {
     current: string;
   };
   description: string;
-  shortDescription?: any[]; // Rich text blocks for short description
+  shortDescription?: Array<Record<string, unknown>>; // Rich text blocks for short description
   size: string;
   pricing: {
     standard: number;
@@ -34,6 +34,11 @@ export interface Cake {
     }>;
   };
   category: string;
+  collections?: Array<{
+    _id: string;
+    name: string;
+    isFeatured?: boolean;
+  }>;
   ingredients: string[];
   allergens?: string[];
   isBestseller?: boolean;

@@ -9,6 +9,6 @@ export type HomepageCollectionImage = {
 export type HomepageCollection = {
   _id: string
   name: string
-  homepageOrder?: number
+  isFeatured?: boolean
   image?: HomepageCollectionImage
 }

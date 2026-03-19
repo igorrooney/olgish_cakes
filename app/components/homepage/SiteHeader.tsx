@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 
 type DropdownId = 'custom-cakes' | 'learn-hub'
 
 export function SiteHeader() {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -18,16 +20,22 @@ export function SiteHeader() {
   const topNavItemClassName =
     'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent transition-colors whitespace-nowrap'
   const topNavSummaryClassName =
-    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[\"\"]'
+    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[""]'
   const dropdownItemClassName =
     'flex items-center h-7 px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 active:!bg-transparent transition-colors whitespace-nowrap shadow-none active:shadow-none focus:shadow-none focus-visible:shadow-none'
   const dropdownMenuListClassName =
     'menu menu-md [&::before]:hidden !m-0 !p-0 items-start [&>li]:w-full'
   const mobileMenuItemClassName =
     'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
+  const quotePageHref = '/get-custom-quote#quote-form'
 
   const toggleDropdown = (dropdownId: DropdownId) => {
     setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
+  }
+
+  const handleDesktopDropdownNavigation = () => {
+    setOpenDropdownId(null)
+    lastTouchToggleRef.current = null
   }
 
   const handleSummaryClick = (
@@ -84,6 +92,12 @@ export function SiteHeader() {
 
       setOpenDropdownId((current) => (current === dropdownId ? null : current))
     }
+
+  useEffect(() => {
+    setOpenDropdownId(null)
+    setIsMenuOpen(false)
+    lastTouchToggleRef.current = null
+  }, [pathname])
 
   // Close desktop dropdowns when clicking outside
   useEffect(() => {
@@ -184,7 +198,7 @@ export function SiteHeader() {
   }, [isMenuOpen])
 
   return (
-    <header className='sticky top-0 z-[9999] relative'>
+    <header className='relative z-[9999] tablet:sticky tablet:top-0'>
       {openDropdownId !== null && (
         <div
           data-nav-overlay
@@ -212,7 +226,7 @@ export function SiteHeader() {
           <nav aria-label='Main navigation'>
             <ul className='menu menu-horizontal px-1 !list-none gap-6 large-laptop:gap-8 flex-nowrap whitespace-nowrap overflow-visible [&>li]:list-none [&>li]:marker:text-transparent [&>li]:before:hidden [&>li]:after:hidden'>
               <li>
-                <Link href='/cakes' className={topNavItemClassName}>
+                <Link href='/cakes-by-post' className={topNavItemClassName}>
                   Cakes by post
                 </Link>
               </li>
@@ -258,60 +272,40 @@ export function SiteHeader() {
                   >
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/custom-cake-enquiry' className={dropdownItemClassName}>
-                          Order form
+                        <Link href='/cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
+                          All cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/wedding-cakes' className={dropdownItemClassName}>
+                        <Link href='/wedding-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Wedding cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/birthday-cakes' className={dropdownItemClassName}>
+                        <Link href='/birthday-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Birthday cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/anniversary-cakes-leeds' className={dropdownItemClassName}>
+                        <Link href='/anniversary-cakes-leeds' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Anniversary cakes
                         </Link>
                       </li>
                       <li>
-                        <Link href='/baby-shower-cakes' className={dropdownItemClassName}>
+                        <Link href='/baby-shower-cakes' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Baby shower cakes
                         </Link>
                       </li>
                     </ul>
                     <ul className={`${dropdownMenuListClassName} flex-1`}>
                       <li>
-                        <Link href='/christening-cakes' className={dropdownItemClassName}>
-                          Christening cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/corporate-cakes-leeds' className={dropdownItemClassName}>
-                          Corporate cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/traditional-ukrainian-cakes' className={dropdownItemClassName}>
-                          Ukrainian cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href='/honey-cake-near-me' className={dropdownItemClassName}>
-                          Honey cake
+                        <Link href={quotePageHref} className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
+                          Get a quote
                         </Link>
                       </li>
                     </ul>
                   </div>
                 </details>
-              </li>
-              <li>
-                <Link href='/farmers-markets' className={topNavItemClassName}>
-                  Farmers markets
-                </Link>
               </li>
               <li className='overflow-visible'>
                 <details
@@ -329,7 +323,7 @@ export function SiteHeader() {
                     aria-expanded={openDropdownId === 'learn-hub'}
                   >
                     <span className='group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8'>
-                      Learn hub
+                      Learn & visit
                     </span>
                     <svg
                       width='16'
@@ -355,23 +349,28 @@ export function SiteHeader() {
                   >
                     <ul className={dropdownMenuListClassName}>
                       <li>
-                        <Link href='/learn/articles' className={dropdownItemClassName}>
+                        <Link href='/learn/articles' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Articles
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/guides' className={dropdownItemClassName}>
+                        <Link href='/learn/guides' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Guides
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/workshops' className={dropdownItemClassName}>
+                        <Link href='/learn/workshops' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Workshops
                         </Link>
                       </li>
                       <li>
-                        <Link href='/learn/customer-stories' className={dropdownItemClassName}>
+                        <Link href='/learn/customer-stories' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
                           Customer stories
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href='/farmers-markets' className={dropdownItemClassName} onClick={handleDesktopDropdownNavigation}>
+                          Find us at farmers markets
                         </Link>
                       </li>
                     </ul>
@@ -454,7 +453,7 @@ export function SiteHeader() {
                 </p>
               </div>
               <Link
-                href='/cakes'
+                href='/cakes-by-post'
                 role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
@@ -462,20 +461,12 @@ export function SiteHeader() {
                 Cakes by post
               </Link>
               <Link
-                href='/custom-cakes'
+                href='/cakes'
                 role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Custom cakes
-              </Link>
-              <Link
-                href='/farmers-markets'
-                role='menuitem'
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Farmers markets
               </Link>
               <Link
                 href='/faqs'
@@ -497,7 +488,7 @@ export function SiteHeader() {
             <div className='flex flex-col items-start'>
               <div className='w-full min-h-[36px] px-4 flex items-center rounded-btn'>
                 <p className='font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]'>
-                  LEARN HUB
+                  LEARN & VISIT
                 </p>
               </div>
               <Link
@@ -532,6 +523,14 @@ export function SiteHeader() {
               >
                 Customer stories
               </Link>
+              <Link
+                href='/farmers-markets'
+                role='menuitem'
+                className={mobileMenuItemClassName}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Find us at farmers markets
+              </Link>
             </div>
           </div>
         </div>
@@ -540,3 +539,8 @@ export function SiteHeader() {
     </header >
   )
 }
+
+
+
+
+

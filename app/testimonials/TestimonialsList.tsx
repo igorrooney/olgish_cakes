@@ -6,6 +6,7 @@ import {
   InstagramIcon,
   FacebookIcon,
   GoogleIcon,
+  VerifiedIcon,
   CakeOutlinedIcon,
   ZoomInIcon,
   CloseIcon,
@@ -41,6 +42,7 @@ const sourceIcons = {
   instagram: <InstagramIcon />,
   facebook: <FacebookIcon />,
   google: <GoogleIcon />,
+  trustpilot: <VerifiedIcon />,
 } as const;
 
 interface TestimonialsListProps {

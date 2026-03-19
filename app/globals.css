@@ -23,8 +23,18 @@
   --color-accent-50: #FFEBE5;
   --color-base-100: #FFFBEB;
   --color-base-200: #FFF5E6;
+  --color-featured-offer: #FFF5CB;
   --color-base-300: #E5E6E6;
   --color-base-content: #1F2937;
+  --color-catalog-detail-muted: #999999;
+  --color-gallery-dot-active: #B3B3B3;
+  --color-filter-sort-mobile-text: #0D0D0D;
+  --color-filter-sort-mobile-grid-icon: #8B8DDA;
+  --color-filter-sort-mobile-icon-active: #8B8DDA;
+  --color-filter-sort-mobile-icon-inactive: #D8D9F3;
+  --color-filter-sort-mobile-sheet-bg: #E9EAF5;
+  --color-filter-sort-mobile-section-bg: #DDE0F2;
+  --color-filter-sort-mobile-handle: #B2B4FF;
   --color-primary: #2E3192;
   --color-primary-content: #FFFFFF;
   --color-primary-50: #ECECF9;
@@ -66,12 +76,58 @@
   --Primary-50: var(--color-primary-50);
   --Primary-400: var(--color-primary-400);
   --t-font-family-theme-primary: var(--font-inter);
+  --t-font-weight-normal: 400;
+  --t-font-weight-bold: 700;
+  --t-font-size-base: 1rem;
   --t-font-size-sm: 0.875rem;
+  --t-font-size-lg: 1.125rem;
+  --t-font-size-xl: 1.25rem;
+  --t-font-size-title-page-base: 3rem;
+  --t-font-size-subtitle-small: 1.5rem;
   --t-font-weight-semibold: 600;
   --t-font-lineHeight-leading-5: 1.25rem;
+  --t-font-lineHeight-leading-7: 1.75rem;
+  --d-lineHeight-14: 0.875rem;
 
   --depth: 1;
   --noise: 0;
+}
+
+.mobile-filter-collapse-icon > .collapse-title::after {
+  display: none;
+}
+
+.catalog-product-accordion-row.collapse-plus > .collapse-title::after {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary-400, #6467CE);
+  font-size: 24px;
+  line-height: 24px;
+  display: grid;
+  place-items: center;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes catalog-logo-tilt-spin {
+  0% {
+    transform: perspective(640px) rotateX(8deg) rotateY(-12deg) rotateZ(0deg);
+  }
+
+  50% {
+    transform: perspective(640px) rotateX(8deg) rotateY(12deg) rotateZ(180deg);
+  }
+
+  100% {
+    transform: perspective(640px) rotateX(8deg) rotateY(-12deg) rotateZ(360deg);
+  }
+}
+
+.catalog-logo-loader-spin {
+  animation: catalog-logo-tilt-spin 2.1s linear infinite;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 @layer components {
@@ -246,7 +302,7 @@
 }
 
 :root {
-  --background: #ffffff;
+  --background: #FFFBEB;
   --foreground: #171717;
 }
 
@@ -275,6 +331,7 @@ body {
 }
 
 html {
+  background: var(--background);
   scroll-behavior: smooth;
 }
 
@@ -448,6 +505,11 @@ img:not([data-nimg]) {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .catalog-logo-loader-spin {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

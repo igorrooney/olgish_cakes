@@ -1,10 +1,10 @@
 export type CustomCakeEnquirySubmission = {
   fullName: string
-  email: string
-  phone: string
-  address: string
-  city: string
-  postcode: string
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  postcode?: string
   occasion?: string
   date: string
   requirements?: string
@@ -23,6 +23,26 @@ type ValidationErrorDetail = {
 type ErrorResponse = {
   error?: string
   details?: ValidationErrorDetail[]
+}
+
+const enquiryFallbackErrorMessage =
+  'Something went wrong while sending your quote request. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+const maskedServerErrorMessages = new Set([
+  'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
+])
+
+const getServerErrorMessage = (error: unknown) => {
+  if (typeof error !== 'string') {
+    return null
+  }
+
+  const trimmedError = error.trim()
+
+  if (trimmedError.length === 0 || maskedServerErrorMessages.has(trimmedError)) {
+    return null
+  }
+
+  return trimmedError
 }
 
 const createSubmissionError = (message: string, fieldErrors?: Record<string, string>) => {
@@ -54,7 +74,7 @@ export const buildCustomCakeEnquiryFormData = (
 ) => {
   const submissionData = new FormData()
   Object.entries(values).forEach(([key, value]) => {
-    if (typeof value === 'string') {
+    if (typeof value === 'string' && value.length > 0) {
       submissionData.append(key, value)
     }
   })
@@ -87,7 +107,7 @@ export const submitCustomCakeEnquiry = async (
       throw createSubmissionError('Validation failed. Please check the form fields.', fieldErrors)
     }
 
-    throw new Error(errorData.error || 'Submission failed')
+    throw new Error(getServerErrorMessage(errorData.error) ?? enquiryFallbackErrorMessage)
   }
 
   return (await response.json().catch(() => ({}))) as Record<string, unknown>

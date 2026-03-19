@@ -80,7 +80,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         // Product referencing the brand by @id
         {
           "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`,
+          "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`,
           name: hamper.name,
           description: hamper.shortDescription
             ? blocksToText(hamper.shortDescription)
@@ -109,7 +109,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
               },
               reviewRating: {
                 "@type": "Rating",
@@ -127,7 +127,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
               },
               reviewRating: {
                 "@type": "Rating",
@@ -149,7 +149,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
             priceValidUntil: getPriceValidUntil(30),
-            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}`,
+            url: `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}`,
             seller: {
               "@type": "Organization",
               name: "Olgish Cakes",
@@ -191,7 +191,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
       </Box>
 
       <Link
-        href={`/gift-hampers/${hamper.slug?.current || hamper._id}`}
+        href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${hamper.name}`}
         itemProp="url"
@@ -291,7 +291,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
           </Typography>
         )}
 
-        <Link href={`/gift-hampers/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
           <OutlineButton
             sx={{
               mt: "auto",

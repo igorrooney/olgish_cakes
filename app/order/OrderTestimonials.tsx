@@ -4,7 +4,7 @@ import { memo, useMemo } from "react";
 import { Box, Typography, Grid, Card, CardContent, Rating, Chip, Skeleton } from "@mui/material";
 import { colors } from "@/lib/design-system";
 import type { Testimonial } from "@/app/types/testimonial";
-import { InstagramIcon, FacebookIcon, GoogleIcon } from "@/lib/mui-optimization";
+import { InstagramIcon, FacebookIcon, GoogleIcon, VerifiedIcon } from "@/lib/mui-optimization";
 import { TestimonialSkeleton } from "@/lib/skeleton-components";
 import dynamic from "next/dynamic";
 
@@ -18,6 +18,7 @@ const sourceIcons = {
   instagram: <InstagramIcon />,
   facebook: <FacebookIcon />,
   google: <GoogleIcon />,
+  trustpilot: <VerifiedIcon />,
 } as const;
 
 interface OrderTestimonialsProps {

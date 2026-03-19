@@ -1,429 +1,364 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from '@testing-library/react'
-import GiftHampersPage, { dynamic, metadata } from '../page'
+import { fireEvent, render, screen } from '@testing-library/react'
+import GiftHampersPage, { generateMetadata } from '../page'
+import {
+  getCatalogCustomCakesPriceCeiling,
+  getCatalogPageData
+} from '../../cakes/catalogPageData'
+import { getAllTestimonialsStats } from '../../utils/fetchTestimonials'
+import type { CatalogPageData } from '../../cakes/catalogPageData'
+import type { TabletCake } from '../../cakes/components/types'
 
-// Mock utils
-jest.mock('../../utils/fetchGiftHampers', () => ({
-  getAllGiftHampers: jest.fn(() => Promise.resolve([
-    {
-      _id: '1',
-      name: 'Deluxe Hamper',
-      slug: { current: 'deluxe-hamper' },
-      price: 45,
-      category: 'Gift Hampers'
-    }
-  ]))
-}))
+let shouldSuspendCatalog = false
 
-jest.mock('../../utils/fetchCakes', () => ({
-  getRevalidateTime: jest.fn(() => 60)
+jest.mock('../../cakes/catalogPageData', () => ({
+  getCatalogPageData: jest.fn(),
+  getCatalogCustomCakesPriceCeiling: jest.fn()
 }))
 
 jest.mock('../../utils/fetchTestimonials', () => ({
-  getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 }))
+  getAllTestimonialsStats: jest.fn()
 }))
 
-// Mock Sanity
-jest.mock('@/sanity/lib/image', () => ({
-  urlFor: jest.fn(() => ({
-    width: () => ({ height: () => ({ url: () => 'https://cdn.sanity.io/hamper.jpg' }) })
-  }))
-}))
+jest.mock('../../cakes/components/CakesTabletCatalog', () => ({
+  CakesTabletCatalog: ({
+    initialFilterDefaults
+  }: {
+    initialFilterDefaults: { byPost: boolean; custom: boolean }
+  }) => {
+    if (shouldSuspendCatalog) {
+      throw new Promise(() => {})
+    }
 
-// Mock components
-jest.mock('../../components/GiftHamperCard', () => ({
-  __esModule: true,
-  default: () => <div data-testid="gift-hamper-card">Gift Hamper Card</div>
-}))
-
-jest.mock('../HeroSection', () => ({
-  __esModule: true,
-  default: () => <div data-testid="hero-section">Hero Section</div>
-}))
-
-jest.mock('../../components/Breadcrumbs', () => ({
-  Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
-}))
-
-jest.mock('@/lib/ui-components', () => ({
-  StyledAccordion: ({ children, ...props }: MockProps) => <div data-testid="styled-accordion" {...props}>{children}</div>
-}))
-
-// Mock MUI
-jest.mock('@/lib/schema-constants', () => ({
-  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
-}))
-
-jest.mock('@/lib/constants', () => ({
-  BUSINESS_CONSTANTS: {
-    NAME: 'Olgish Cakes',
-    WEBSITE: 'https://olgishcakes.co.uk'
+    return (
+      <div
+        data-testid='cakes-catalog'
+        data-by-post={String(initialFilterDefaults.byPost)}
+        data-custom={String(initialFilterDefaults.custom)}
+      >
+        Shared catalog
+      </div>
+    )
   }
 }))
 
-jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
-  Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
-  Typography: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
-  Box: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
-}))
+const mockedGetCatalogPageData = getCatalogPageData as jest.MockedFunction<typeof getCatalogPageData>
+const mockedGetCatalogCustomCakesPriceCeiling =
+  getCatalogCustomCakesPriceCeiling as jest.MockedFunction<typeof getCatalogCustomCakesPriceCeiling>
+const mockedGetAllTestimonialsStats = getAllTestimonialsStats as jest.MockedFunction<typeof getAllTestimonialsStats>
+
+function createCake(index: number): TabletCake {
+  return {
+    id: `cake-${index}`,
+    slug: `cake-${index}`,
+    href: `/cakes/cake-${index}`,
+    navigationTarget: 'product',
+    name: `Cake ${index}`,
+    description: 'Cake description',
+    price: 40 + index,
+    imageUrl: '/images/cake.jpg',
+    imageAlt: 'Cake',
+    isByPost: false,
+    isCustom: true,
+    isPopular: false,
+    collectionIds: [],
+    productType: 'cake'
+  }
+}
+
+function createHamper(index: number): TabletCake {
+  return {
+    id: `hamper-${index}`,
+    slug: `hamper-${index}`,
+    href: `/cakes-by-post/hamper-${index}`,
+    navigationTarget: 'product',
+    name: `Hamper ${index}`,
+    description: 'Hamper description',
+    price: 30 + index,
+    imageUrl: '/images/hamper.jpg',
+    imageAlt: 'Hamper',
+    isByPost: true,
+    isCustom: false,
+    isPopular: false,
+    collectionIds: [],
+    productType: 'giftHamper'
+  }
+}
+
+function parseJsonLdScripts(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('script[type="application/ld+json"]'))
+    .map((script) => JSON.parse(script.textContent || '{}') as Record<string, unknown>)
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
 
 describe('GiftHampersPage', () => {
-  describe('Static Configuration', () => {
-    it('should have force-static dynamic', () => {
-      expect(dynamic).toBe('force-static')
-    })
+  const sampleHamper = createHamper(1)
+  const sampleCatalogData: CatalogPageData = {
+    cakesForUi: [createCake(1), sampleHamper],
+    mappedGiftHampers: [sampleHamper],
+    collectionOptions: [],
+    featuredOffer: null
+  }
 
-  })
-
-  describe('Metadata', () => {
-    it('should have title', () => {
-      expect(metadata.title).toContain('Gift Hampers')
-    })
-
-    it('should have description', () => {
-      expect(metadata.description).toBeDefined()
-      expect(metadata.description).toContain('hampers')
-    })
-
-    it('should have keywords', () => {
-      expect(metadata.keywords).toBeDefined()
-    })
-
-    it('should have OpenGraph URL', () => {
-      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/gift-hampers')
-    })
-
-    it('should have canonical URL', () => {
-      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/gift-hampers')
-    })
-
-    it('should have Google verification', () => {
-      expect(metadata.verification?.google).toBeDefined()
-    })
-
-    it('should have geo metadata', () => {
-      expect(metadata.other?.['geo.region']).toBe('GB-ENG')
-      expect(metadata.other?.['geo.placename']).toBe('Leeds')
+  beforeEach(() => {
+    mockedGetCatalogPageData.mockResolvedValue(sampleCatalogData)
+    mockedGetCatalogCustomCakesPriceCeiling.mockResolvedValue(80)
+    mockedGetAllTestimonialsStats.mockResolvedValue({
+      count: 127,
+      averageRating: 5
     })
   })
 
-  describe('Data Fetching', () => {
-    it('should fetch gift hampers', async () => {
-      const { getAllGiftHampers } = require('../../utils/fetchGiftHampers')
+  afterEach(() => {
+    shouldSuspendCatalog = false
+  })
 
-      await GiftHampersPage()
-
-      expect(getAllGiftHampers).toHaveBeenCalledWith(false)
+  it('uses base cakes-by-post canonical metadata when no query params are provided', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({})
     })
 
-    it('should fetch testimonial stats', async () => {
-      const { getAllTestimonialsStats } = require('../../utils/fetchTestimonials')
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+  })
 
-      await GiftHampersPage()
+  it('uses self canonical cakes-by-post metadata for pure pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2' })
+    })
 
-      expect(getAllTestimonialsStats).toHaveBeenCalled()
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post?page=2')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post?page=2')
+    expect(metadata.robots).toBeUndefined()
+  })
+
+  it('falls back to base cakes-by-post canonical metadata for mixed pagination query', async () => {
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({ page: '2', collections: 'h-postal-gifts' })
+    })
+
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
+    expect(metadata.robots).toEqual({
+      index: false,
+      follow: true
     })
   })
 
-  describe('Rendering', () => {
-    it('should render without crashing', async () => {
+  it('fetches shared catalog data, custom price ceiling hint and testimonial stats', async () => {
+    await GiftHampersPage()
+
+    expect(mockedGetCatalogPageData).toHaveBeenCalledTimes(1)
+    expect(mockedGetCatalogPageData).toHaveBeenCalledWith('giftHampers')
+    expect(mockedGetCatalogCustomCakesPriceCeiling).toHaveBeenCalledTimes(1)
+    expect(mockedGetAllTestimonialsStats).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders page when optional custom-cakes price hint fetch fails', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      mockedGetCatalogCustomCakesPriceCeiling.mockRejectedValueOnce(new Error('Hint fetch failed'))
+
       const page = await GiftHampersPage()
-
-      expect(() => render(page)).not.toThrow()
-    })
-
-    it('should render Hero Section', async () => {
-      const page = await GiftHampersPage()
-
       render(page)
 
-      expect(screen.getByTestId('hero-section')).toBeInTheDocument()
-    })
-
-    it('should render Breadcrumbs', async () => {
-      const page = await GiftHampersPage()
-
-      render(page)
-
-      expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
-    })
-
-    it('should render hamper cards', async () => {
-      const page = await GiftHampersPage()
-
-      render(page)
-
-      expect(screen.getByTestId('gift-hamper-card')).toBeInTheDocument()
-    })
-  })
-
-  describe('Structured Data - GSC Compliance', () => {
-    it('should have ItemList structured data', async () => {
-      const page = await GiftHampersPage()
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const itemListScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"ItemList"')
-      )
-
-      expect(itemListScript).toBeDefined()
-    })
-
-    it('should NOT have aggregateRating on individual products in ItemList', async () => {
-      const page = await GiftHampersPage()
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const itemListScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"ItemList"')
-      )
-
-      expect(itemListScript).toBeDefined()
-      
-      const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-      
-      // Extract ItemList from @graph if present
-      const itemList = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'ItemList')
-        : jsonLd
-      
-      // Verify ItemList exists
-      expect(itemList['@type']).toBe('ItemList')
-      
-      // Verify products don't have aggregateRating (GSC fix for "multiple aggregate ratings" error)
-      if (itemList.itemListElement && itemList.itemListElement.length > 0) {
-        itemList.itemListElement.forEach((listItem: UnknownRecord) => {
-          expect(listItem.item.aggregateRating).toBeUndefined()
+      expect(
+        screen.getByRole('heading', {
+          level: 1,
+          name: 'Cakes by post across the UK with handmade Ukrainian flavour'
         })
-      }
-    })
-
-    it('should have offers with shipping and return policy on products', async () => {
-      const page = await GiftHampersPage()
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const itemListScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"ItemList"')
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('cakes-catalog')).toBeInTheDocument()
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Failed to fetch custom cakes price ceiling hint for gift hampers page:',
+        expect.any(Error)
       )
+    } finally {
+      warnSpy.mockRestore()
+    }
+  })
 
-      const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-      
-      if (jsonLd.itemListElement && jsonLd.itemListElement.length > 0) {
-        const product = jsonLd.itemListElement[0].item
-        
-        // Verify offers exist
-        expect(product.offers).toBeDefined()
-        expect(product.offers['@type']).toBe('Offer')
-        
-        // Verify shipping details (GSC Merchant listings requirement)
-        expect(product.offers.shippingDetails).toBeDefined()
-        
-        // Verify return policy (GSC Merchant listings requirement)
-        expect(product.offers.hasMerchantReturnPolicy).toBeDefined()
-      }
+  it('renders shared catalog template with gift-hampers defaults', async () => {
+    const page = await GiftHampersPage()
+    render(page)
+
+    const pageHeading = screen.getByRole('heading', {
+      level: 1,
+      name: 'Cakes by post across the UK with handmade Ukrainian flavour'
     })
+    const pageIntro = screen.getByText(
+      'Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+    )
 
-    it('should have LocalBusiness with single aggregateRating', async () => {
+    expect(pageHeading).toBeInTheDocument()
+    expect(pageHeading).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'tablet:!mt-2',
+      'tablet:!mx-auto'
+    )
+    expect(pageIntro).toBeInTheDocument()
+    expect(pageIntro).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'tablet:!mt-3',
+      'tablet:!mx-auto'
+    )
+    const headingSection = pageHeading.closest('section')
+    if (!headingSection) {
+      throw new Error('Expected heading section wrapper')
+    }
+    expect(headingSection).toHaveClass('pt-0', 'pb-0', 'tablet:pt-8', 'tablet:pb-2')
+    expect(screen.queryByText('Cakes by post from Leeds with reliable UK-wide delivery')).not.toBeInTheDocument()
+    expect(screen.queryByText(
+      'Our cakes-by-post collection is designed for people who want reliable UK delivery without giving up handmade quality. Every order is prepared in Leeds and packed carefully for travel, with clear product pages covering flavours, contents, portion guidance and delivery expectations. You can compare by budget and occasion, then choose the best option for birthdays, thank-you gifts, corporate sending or family surprises. Ukrainian-inspired favourites such as honey cake slices and caramel biscuits are made with balanced sweetness and packaging selected for safe letterbox-friendly delivery. If you are unsure what to choose, start with recipient preferences and delivery date, and I can recommend the most suitable cake-by-post option.'
+    )).not.toBeInTheDocument()
+
+    const catalog = screen.getByTestId('cakes-catalog')
+    expect(catalog).toHaveAttribute('data-by-post', 'true')
+    expect(catalog).toHaveAttribute('data-custom', 'false')
+    expect(screen.queryByRole('navigation', { name: 'Catalog pagination crawl links' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Catalog product crawl links' })).not.toBeInTheDocument()
+  })
+
+  it('renders gift hamper faq accordion content', async () => {
+    const page = await GiftHampersPage()
+    render(page)
+
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Cakes by post FAQs'
+      })
+    ).toBeInTheDocument()
+    expect(screen.getByText('UK delivery and gifting FAQs for cakes by post.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Quick answers about UK delivery, gifting options, and what to expect from cakes by post.')
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'Do you deliver gift hampers across the UK?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Can I include a personalised gift message?' })).toBeInTheDocument()
+    const hamperContentsButton = screen.getByRole('button', { name: 'What is included in each gift hamper?' })
+    fireEvent.click(hamperContentsButton)
+    expect(
+      screen.getByText('Each product page lists exact hamper contents, sizes, and key details so you can choose with confidence.')
+    ).toBeInTheDocument()
+  })
+
+  it('renders catalog suspense fallback during catalog suspension', async () => {
+    shouldSuspendCatalog = true
+
+    try {
       const page = await GiftHampersPage()
-      const { container } = render(page)
+      render(page)
 
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const localBusinessScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"LocalBusiness"')
-      )
+      expect(screen.getByLabelText('Loading catalog products')).toBeInTheDocument()
+    } finally {
+      shouldSuspendCatalog = false
+    }
+  })
 
-      expect(localBusinessScript).toBeDefined()
-      
-      const jsonLd = JSON.parse(localBusinessScript!.textContent || '{}')
-      
-      // Verify single aggregateRating exists at business level
-      expect(jsonLd.aggregateRating).toBeDefined()
-      expect(jsonLd.aggregateRating['@type']).toBe('AggregateRating')
-      expect(jsonLd.aggregateRating.ratingValue).toBeDefined()
-      expect(jsonLd.aggregateRating.reviewCount).toBeDefined()
+  it('outputs breadcrumb, item list and local business structured data without faq page schema', async () => {
+    const page = await GiftHampersPage()
+    const { container } = render(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
+
+    const breadcrumbBlock = jsonLdBlocks.find((block) => block['@type'] === 'BreadcrumbList')
+    const faqBlock = jsonLdBlocks.find((block) => block['@type'] === 'FAQPage')
+    const localBusinessBlock = jsonLdBlocks.find((block) => block['@type'] === 'LocalBusiness')
+    const itemListGraphBlock = jsonLdBlocks.find((block) => Array.isArray(block['@graph']))
+
+    expect(breadcrumbBlock).toBeDefined()
+    expect(faqBlock).toBeUndefined()
+    expect(localBusinessBlock).toBeDefined()
+    expect(itemListGraphBlock).toBeDefined()
+
+    const breadcrumbItems = isRecord(breadcrumbBlock)
+      ? breadcrumbBlock.itemListElement
+      : undefined
+    expect(Array.isArray(breadcrumbItems)).toBe(true)
+    expect(breadcrumbItems).toHaveLength(2)
+
+    const graph = isRecord(itemListGraphBlock) && Array.isArray(itemListGraphBlock['@graph'])
+      ? itemListGraphBlock['@graph']
+      : []
+    expect(graph.length).toBeGreaterThan(0)
+
+    const itemListEntry = graph.find((entry) => isRecord(entry) && entry['@type'] === 'ItemList')
+    expect(itemListEntry).toBeDefined()
+
+    if (!isRecord(itemListEntry)) {
+      throw new Error('Expected ItemList entry in @graph')
+    }
+
+    const listItems = itemListEntry.itemListElement
+    expect(Array.isArray(listItems)).toBe(true)
+
+    if (!Array.isArray(listItems) || listItems.length === 0) {
+      throw new Error('Expected at least one item list element')
+    }
+
+    const firstListItem = listItems[0]
+    if (!isRecord(firstListItem) || !isRecord(firstListItem.item)) {
+      throw new Error('Expected first list item product data')
+    }
+
+    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes-by-post/hamper-1')
+  })
+
+  it('keeps ItemList structured data aligned with visible fallback hampers', async () => {
+    const fallbackVisibleHamper = createHamper(99)
+
+    mockedGetCatalogPageData.mockResolvedValueOnce({
+      ...sampleCatalogData,
+      cakesForUi: [fallbackVisibleHamper],
+      mappedGiftHampers: []
     })
 
-    it('should have breadcrumb structured data', async () => {
-      const page = await GiftHampersPage()
-      const { container } = render(page)
+    const page = await GiftHampersPage()
+    const { container } = render(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
+    const itemListGraphBlock = jsonLdBlocks.find((block) => Array.isArray(block['@graph']))
 
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const breadcrumbScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"BreadcrumbList"')
-      )
+    if (!isRecord(itemListGraphBlock) || !Array.isArray(itemListGraphBlock['@graph'])) {
+      throw new Error('Expected @graph structured data block')
+    }
 
-      expect(breadcrumbScript).toBeDefined()
-      
-      const jsonLd = JSON.parse(breadcrumbScript!.textContent || '{}')
-      expect(jsonLd['@type']).toBe('BreadcrumbList')
-      expect(jsonLd.itemListElement).toHaveLength(2)
-      expect(jsonLd.itemListElement[0].name).toBe('Home')
-      expect(jsonLd.itemListElement[1].name).toBe('Gift Hampers')
-    })
+    const itemListEntry = itemListGraphBlock['@graph']
+      .find((entry) => isRecord(entry) && entry['@type'] === 'ItemList')
 
-    it('should have FAQ structured data', async () => {
-      const page = await GiftHampersPage()
-      const { container } = render(page)
+    if (!isRecord(itemListEntry) || !Array.isArray(itemListEntry.itemListElement)) {
+      throw new Error('Expected ItemList entry in @graph')
+    }
 
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const faqScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"FAQPage"')
-      )
+    const firstListItem = itemListEntry.itemListElement[0]
 
-      expect(faqScript).toBeDefined()
-    })
+    if (!isRecord(firstListItem) || !isRecord(firstListItem.item)) {
+      throw new Error('Expected first list item product data')
+    }
 
-    describe('Brand Field Duplication Prevention', () => {
-      it('should use @graph format for ItemList structured data', async () => {
-        const page = await GiftHampersPage()
-        const { container } = render(page)
+    expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes-by-post/hamper-99')
+  })
 
-        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-        const itemListScript = Array.from(scripts).find(script => 
-          script.textContent?.includes('"@type":"ItemList"') || script.textContent?.includes('"@graph"')
-        )
+  it('includes aggregate rating in local business data when reviews exist', async () => {
+    const page = await GiftHampersPage()
+    const { container } = render(page)
+    const jsonLdBlocks = parseJsonLdScripts(container)
+    const localBusinessBlock = jsonLdBlocks.find((block) => block['@type'] === 'LocalBusiness')
 
-        expect(itemListScript).toBeDefined()
-        
-        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-        
-        // Should use @graph format to prevent duplicate brand fields
-        expect(jsonLd['@graph']).toBeDefined()
-        expect(Array.isArray(jsonLd['@graph'])).toBe(true)
-      })
+    if (!isRecord(localBusinessBlock)) {
+      throw new Error('Expected LocalBusiness structured data')
+    }
 
-      it('should have exactly one Brand entity in @graph', async () => {
-        const page = await GiftHampersPage()
-        const { container } = render(page)
-
-        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-        const itemListScript = Array.from(scripts).find(script => 
-          script.textContent?.includes('"@graph"')
-        )
-
-        expect(itemListScript).toBeDefined()
-        
-        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-        const graph = jsonLd['@graph'] || []
-        
-        // Count Brand entities
-        const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
-        
-        // Should have exactly one Brand entity
-        expect(brandEntities).toHaveLength(1)
-        
-        // Brand should have unique @id
-        expect(brandEntities[0]['@id']).toBe('https://olgishcakes.co.uk/#brand')
-        expect(brandEntities[0].name).toBe('Olgish Cakes')
-      })
-
-      it('should reference brand by @id in all products, not inline objects', async () => {
-        const page = await GiftHampersPage()
-        const { container } = render(page)
-
-        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-        const itemListScript = Array.from(scripts).find(script => 
-          script.textContent?.includes('"@graph"')
-        )
-
-        expect(itemListScript).toBeDefined()
-        
-        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-        const graph = jsonLd['@graph'] || []
-        
-        // Find ItemList
-        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
-        expect(itemList).toBeDefined()
-        
-        // Check all products in ItemList
-        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
-            const product = listItem.item
-            
-            // Brand should be a reference by @id, not an inline object
-            expect(product.brand).toBeDefined()
-            expect(product.brand['@id']).toBe('https://olgishcakes.co.uk/#brand')
-            
-            // Should NOT have inline brand object with @type
-            expect(product.brand['@type']).toBeUndefined()
-            expect(product.brand.name).toBeUndefined()
-          })
-        }
-      })
-
-      it('should NOT have duplicate brand fields in structured data', async () => {
-        const page = await GiftHampersPage()
-        const { container } = render(page)
-
-        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-        const itemListScript = Array.from(scripts).find(script => 
-          script.textContent?.includes('"@graph"')
-        )
-
-        expect(itemListScript).toBeDefined()
-        
-        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-        const graph = jsonLd['@graph'] || []
-        
-        // Find ItemList
-        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
-        expect(itemList).toBeDefined()
-        
-        // Count inline brand objects (should be 0)
-        let inlineBrandCount = 0
-        
-        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
-            const product = listItem.item
-            
-            // Check if brand is an inline object (has @type)
-            if (product.brand && product.brand['@type'] === 'Brand') {
-              inlineBrandCount++
-            }
-          })
-        }
-        
-        // Should have 0 inline brand objects (all should use @id references)
-        expect(inlineBrandCount).toBe(0)
-      })
-
-      it('should have consistent brand @id across all structured data', async () => {
-        const page = await GiftHampersPage()
-        const { container } = render(page)
-
-        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-        const itemListScript = Array.from(scripts).find(script => 
-          script.textContent?.includes('"@graph"')
-        )
-
-        expect(itemListScript).toBeDefined()
-        
-        const jsonLd = JSON.parse(itemListScript!.textContent || '{}')
-        const graph = jsonLd['@graph'] || []
-        
-        // Find Brand entity
-        const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
-        expect(brandEntity).toBeDefined()
-        const brandId = brandEntity['@id']
-        
-        // Find ItemList
-        const itemList = graph.find((entity: UnknownRecord) => entity['@type'] === 'ItemList')
-        expect(itemList).toBeDefined()
-        
-        // Verify all products reference the same brand @id
-        if (itemList?.itemListElement && itemList.itemListElement.length > 0) {
-          itemList.itemListElement.forEach((listItem: UnknownRecord) => {
-            const product = listItem.item
-            
-            expect(product.brand['@id']).toBe(brandId)
-          })
-        }
-      })
-    })
+    expect(isRecord(localBusinessBlock.aggregateRating)).toBe(true)
   })
 })
+
+
+
+

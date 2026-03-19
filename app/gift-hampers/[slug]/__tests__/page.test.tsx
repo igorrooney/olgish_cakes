@@ -7,12 +7,17 @@ jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn)
 }))
 import { render } from '@testing-library/react'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import HamperDetailPage, { generateMetadata, generateStaticParams } from '../page'
+let capturedGiftHamperPageClientProps: Record<string, unknown> | null = null
+type UnknownRecord = Record<string, unknown>
 
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
+  }),
+  permanentRedirect: jest.fn(() => {
+    throw new Error('NEXT_REDIRECT')
   })
 }))
 
@@ -33,7 +38,9 @@ jest.mock('@/app/utils/fetchGiftHampers', () => ({
 
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
 const { getAllGiftHampers: mockGetAllGiftHampers, getGiftHamperBySlug: mockGetGiftHamperBySlug } = jest.requireMock('@/app/utils/fetchGiftHampers')
+const { getOfferShippingDetails: mockGetOfferShippingDetails } = jest.requireMock('@/app/utils/seo')
 jest.mock('@/types/cake', () => ({ blocksToText: jest.fn(() => 'Text') }))
+const { blocksToText: mockBlocksToText } = jest.requireMock('@/types/cake')
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
   getMerchantReturnPolicy: jest.fn(() => ({})),
@@ -52,11 +59,11 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 jest.mock('../GiftHamperPageClient', () => ({
-  GiftHamperPageClient: () => <div data-testid="hamper-client">Client</div>
+  GiftHamperPageClient: (props: Record<string, unknown>) => {
+    capturedGiftHamperPageClientProps = props
+    return <div data-testid="hamper-client">Client</div>
+  }
 }))
-
-jest.mock('@/app/components/Breadcrumbs', () => ({ Breadcrumbs: () => <nav>Breadcrumbs</nav> }))
-jest.mock('@mui/material', () => ({ Container: ({ children }: MockProps) => <div>{children}</div> }))
 
 describe('HamperDetailPage', () => {
   const mockHamper = {
@@ -72,6 +79,8 @@ describe('HamperDetailPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    capturedGiftHamperPageClientProps = null
+    mockBlocksToText.mockReturnValue('Text')
     mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
     mockGetAllGiftHampers.mockResolvedValue([])
   })
@@ -104,7 +113,7 @@ describe('HamperDetailPage', () => {
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
       expect(metadata.title).toContain('Deluxe Hamper')
-      expect(metadata.title).toContain('Luxury Gift Hampers')
+      expect(metadata.title).toContain('Cakes by Post UK')
     })
 
     it('should prioritize custom SEO fields over defaults', async () => {
@@ -123,6 +132,55 @@ describe('HamperDetailPage', () => {
       expect(metadata.title).toBe('Custom SEO Title for Testing')
       expect(metadata.description).toBe('Custom SEO Description for Testing')
       expect(metadata.keywords).toBe('custom, seo, keywords')
+    })
+
+    it('should not truncate long shortDescription fallback and should normalize whitespace', async () => {
+      const longDescription = `${'H'.repeat(110)}   \n\n ${'I'.repeat(120)}`
+      const hamperWithoutSEO = {
+        ...mockHamper,
+        seo: undefined,
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce(longDescription)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const description = metadata.description as string
+
+      expect(description).toBe(`${'H'.repeat(110)} ${'I'.repeat(120)}`)
+      expect(description.length).toBeGreaterThan(160)
+    })
+
+    it('should fall back to default description when normalized shortDescription is empty', async () => {
+      const hamperWithoutSEO = {
+        ...mockHamper,
+        seo: undefined,
+        shortDescription: [{ children: [{ text: '' }] }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce('   \n\t   ')
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+
+      expect(metadata.description).toBe('Deluxe Hamper premium Ukrainian gift hamper. Handcrafted in Leeds. UK delivery.')
+    })
+
+    it('should prioritize normalized SEO metaDescription over shortDescription fallback', async () => {
+      const hamperWithSEOAndShortDescription = {
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Custom SEO Title for Testing',
+          metaDescription: '  Custom  SEO \n Description for Testing  ',
+          keywords: ['custom', 'seo', 'keywords']
+        },
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithSEOAndShortDescription)
+      mockBlocksToText.mockReturnValueOnce(`${'Z'.repeat(210)}`)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+
+      expect(metadata.description).toBe('Custom SEO Description for Testing')
     })
 
     it('should use special "cake-by-post" optimization when no custom SEO', async () => {
@@ -169,12 +227,374 @@ describe('HamperDetailPage', () => {
   })
 
   describe('Rendering', () => {
+    function getProductStructuredData(container: HTMLElement) {
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"') || script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const product = jsonLd['@graph']
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
+        : jsonLd
+
+      expect(product).toBeDefined()
+
+      return product as UnknownRecord
+    }
+
     it('should render hamper page', async () => {
       mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
 
-      expect(() => render(page)).not.toThrow()
+      const { queryByText } = render(page)
+
+      expect(queryByText('Breadcrumbs')).not.toBeInTheDocument()
+    })
+
+    it('should escape html fragments in JSON-LD script output', async () => {
+      const hamperWithUnsafeContent = {
+        ...mockHamper,
+        name: 'Deluxe <script>alert("xss")</script> Hamper',
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithUnsafeContent)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"') || script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+
+      const scriptText = productScript?.textContent || ''
+      expect(scriptText).toContain('\\u003cscript')
+      expect(scriptText).not.toContain('<script')
+    })
+
+    it('should not include BreadcrumbList structured data', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const breadcrumbScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"BreadcrumbList"')
+      )
+
+      expect(breadcrumbScript).toBeUndefined()
+    })
+
+    it('uses visible description source for cake-by-post Product schema when description exists', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        description: [{ _type: 'block', children: [{ text: 'Ignored by blocksToText mock' }] }],
+        shortDescription: [{ _type: 'block', children: [{ text: 'Fallback short description text' }] }],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('  Visible   CMS \n description text  ')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
+      const { container } = render(page)
+
+      const product = getProductStructuredData(container)
+      const description = product.description as string
+
+      expect(description).toBe('Visible CMS description text')
+      expect(description).not.toContain('pack of 2 slices')
+      expect(description).not.toContain('vacuum-packed')
+    })
+
+    it('uses shortDescription for Product schema when full description is unavailable', async () => {
+      const hamperWithoutDescription = {
+        ...mockHamper,
+        description: [],
+        shortDescription: [{ _type: 'block', children: [{ text: 'Ignored by blocksToText mock' }] }],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithoutDescription)
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('  Short   description \n from CMS  ')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const product = getProductStructuredData(container)
+      expect(product.description).toBe('Short description from CMS')
+    })
+
+    it('uses visible fallback for Product schema when both description fields are absent', async () => {
+      const hamperWithoutDescriptions = {
+        ...mockHamper,
+        description: [],
+        shortDescription: [],
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithoutDescriptions)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const product = getProductStructuredData(container)
+      expect(product.description).toBe('Handmade cake-by-post hamper prepared in Leeds and packed with care for UK delivery.')
+    })
+
+    it('includes shippingDetails in Offer when delivery text matches policy', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeDefined()
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 0,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: true
+      })
+    })
+
+    it('omits shippingDetails when delivery text conflicts with policy values', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const previousNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'production'
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: 'Custom Description'
+        },
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 5-7 working days. Free UK shipping is included.')
+
+      try {
+        const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+        const { container } = render(page)
+
+        const product = getProductStructuredData(container)
+        const offer = product.offers as UnknownRecord
+
+        expect(offer.shippingDetails).toBeUndefined()
+        expect(offer.hasMerchantReturnPolicy).toBeDefined()
+        expect(consoleWarnSpy).not.toHaveBeenCalled()
+      } finally {
+        process.env.NODE_ENV = previousNodeEnv
+        consoleWarnSpy.mockRestore()
+      }
+    })
+
+    it('omits shippingDetails when explicit paid fee conflicts with policy fee', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'Dispatch in 2-3 working days. UK delivery is \u00A35.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeUndefined()
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('shipping fee \u00A35'))
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('keeps shippingDetails when delivery text says UK and policy country input is non-GB', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.' }] }]
+        },
+        giftHampersDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'DE',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+        .mockReturnValueOnce('We dispatch cake-by-post orders within 2-3 working days. Free UK shipping is included.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+      const product = getProductStructuredData(container)
+      const offer = product.offers as UnknownRecord
+
+      expect(offer.shippingDetails).toBeDefined()
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('normalizes unsupported deliveryMethod to default before emitting shippingDetails', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [{ _type: 'block', children: [{ text: 'Dispatch in 2-3 working days. UK delivery is \u00A36.' }] }],
+          policySource: 'custom',
+          customPolicy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://example.com/custom-delivery-method'
+          }
+        },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+      mockBlocksToText.mockReturnValue('Dispatch in 2-3 working days. UK delivery is \u00A36.')
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      render(page)
+
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 6,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
+    })
+
+    it('omits aggregateRating from Product structured data', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"') || script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const product = jsonLd['@graph']
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
+        : jsonLd
+
+      expect(product).toBeDefined()
+      expect(product.aggregateRating).toBeUndefined()
+    })
+
+    it('omits review from Product structured data', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      })
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"') || script.textContent?.includes('"@graph"')
+      )
+
+      expect(productScript).toBeDefined()
+
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+      const product = jsonLd['@graph']
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
+        : jsonLd
+
+      expect(product).toBeDefined()
+      expect(product.review).toBeUndefined()
     })
 
     it('should call notFound for missing hamper', async () => {
@@ -186,10 +606,157 @@ describe('HamperDetailPage', () => {
       
       expect(notFound).toHaveBeenCalled()
     })
+
+    it('passes fallback backHref to GiftHamperPageClient when from param is missing', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({})
+      })
+      render(page)
+
+      expect(capturedGiftHamperPageClientProps).not.toBeNull()
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+    })
+
+    it('omits FAQPage JSON-LD and does not pass faqItems for a standard hamper', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      expect(capturedGiftHamperPageClientProps).not.toBeNull()
+      expect(capturedGiftHamperPageClientProps?.faqItems).toBeUndefined()
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+
+      expect(faqScript).toBeUndefined()
+    })
+
+    it('omits FAQPage JSON-LD and faqItems for cake-by-post slug', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' }
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
+      const { container } = render(page)
+
+      expect(capturedGiftHamperPageClientProps).not.toBeNull()
+      expect(capturedGiftHamperPageClientProps?.faqItems).toBeUndefined()
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+      expect(faqScript).toBeUndefined()
+    })
+
+    it('omits FAQPage JSON-LD and faqItems even when seo.faq exists', async () => {
+      const hamperWithSeoFaq = {
+        ...mockHamper,
+        seo: {
+          faq: [
+            { question: 'Q1', answer: 'A1' },
+            { question: 'Q2', answer: 'A2' },
+            { question: 'Q3', answer: 'A3' },
+            { question: 'Q4', answer: 'A4' },
+            { question: 'Q5', answer: 'A5' },
+            { question: 'Q6', answer: 'A6' },
+            { question: 'Q7', answer: 'A7' },
+            { question: 'Missing answer', answer: '' }
+          ]
+        }
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithSeoFaq)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+      const { container } = render(page)
+
+      expect(capturedGiftHamperPageClientProps).not.toBeNull()
+      expect(capturedGiftHamperPageClientProps?.faqItems).toBeUndefined()
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+      expect(faqScript).toBeUndefined()
+    })
+
+    it('uses the originating cakes listing as backHref when from is valid', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?byPost=true&custom=false&page=3'
+        })
+      })
+      render(page)
+
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes?byPost=true&custom=false&page=3')
+    })
+
+    it('falls back to /cakes-by-post when from includes disallowed query keys', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?byPost=true&custom=false&page=3&utm_medium=email'
+        })
+      })
+      render(page)
+
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+    })
+
+    it('falls back to /cakes-by-post when from is external or fragment-based', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const externalPage = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: 'https://example.com/cakes?page=3'
+        })
+      })
+      render(externalPage)
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+
+      const fragmentPage = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          from: '/cakes?page=3#catalog'
+        })
+      })
+      render(fragmentPage)
+
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+    })
+
+    it('passes fallback backHref to GiftHamperPageClient when from param is absent and other params exist', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue(mockHamper)
+
+      const page = await HamperDetailPage({
+        params: Promise.resolve({ slug: 'deluxe-hamper' }),
+        searchParams: Promise.resolve({
+          page: '3'
+        })
+      })
+      render(page)
+
+      expect(capturedGiftHamperPageClientProps).not.toBeNull()
+      expect(capturedGiftHamperPageClientProps?.backHref).toBe('/cakes-by-post')
+    })
   })
 
   describe('Structured Data - additionalProperty Bug Fix', () => {
-    it('should include delivery method properties for cake-by-post hampers', async () => {
+    it('should not include non-visible delivery/packaging/shelf-life properties for cake-by-post hampers', async () => {
       const cakeByPostHamper = {
         ...mockHamper,
         slug: { current: 'cake-by-post' },
@@ -212,21 +779,34 @@ describe('HamperDetailPage', () => {
       const product = jsonLd['@graph'] 
         ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
-      
-      // Verify cake-by-post specific properties exist
-      expect(product.additionalProperty).toBeDefined()
-      const properties = product.additionalProperty
-      
-      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
-      
-      expect(deliveryMethod).toBeDefined()
-      expect(deliveryMethod.value).toBe('Letterbox Post')
-      expect(packaging).toBeDefined()
-      expect(packaging.value).toBe('Vacuum Sealed')
-      expect(shelfLife).toBeDefined()
-      expect(shelfLife.value).toBe('7 days')
+
+      expect(product.additionalProperty).toBeUndefined()
+    })
+
+    it('should not include nutrition when it is not visible on page', async () => {
+      const cakeByPostHamper = {
+        ...mockHamper,
+        slug: { current: 'cake-by-post' },
+        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
+      }
+      mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostHamper)
+
+      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+
+      expect(productScript).toBeDefined()
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+      const product = jsonLd['@graph']
+        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
+        : jsonLd
+
+      expect(product.nutrition).toBeUndefined()
     })
 
     it('should include ingredient properties when present', async () => {
@@ -289,10 +869,7 @@ describe('HamperDetailPage', () => {
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
     })
 
-    it('CRITICAL: should preserve ALL additionalProperty fields when multiple conditions are true', async () => {
-      // This is the critical test for the bug fix
-      // Previously, when both isCakeByPost and allergens/ingredients existed,
-      // the spread operator would overwrite the first additionalProperty array
+    it('CRITICAL: should preserve only visible additionalProperty fields when multiple conditions are true', async () => {
       const fullHamper = {
         ...mockHamper,
         slug: { current: 'cake-by-post' },
@@ -319,41 +896,33 @@ describe('HamperDetailPage', () => {
       
       const properties = product.additionalProperty
       
-      // Verify ALL properties are present (no overwrites occurred)
-      expect(properties).toHaveLength(5) // 3 from cake-by-post + 1 ingredients + 1 allergens
-      
-      // Verify cake-by-post properties
-      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
-      
-      expect(deliveryMethod).toBeDefined()
-      expect(deliveryMethod.value).toBe('Letterbox Post')
-      expect(packaging).toBeDefined()
-      expect(packaging.value).toBe('Vacuum Sealed')
-      expect(shelfLife).toBeDefined()
-      expect(shelfLife.value).toBe('7 days')
-      
-      // Verify ingredients property
+      expect(properties).toHaveLength(2)
+
       const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
       expect(ingredients).toBeDefined()
       expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
-      
-      // Verify allergens property
+
       const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
       expect(allergens).toBeDefined()
       expect(allergens.value).toBe('Gluten, Eggs, Dairy')
-      
-      // Ensure no duplicates
+
+      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
+      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
+      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
+      expect(deliveryMethod).toBeUndefined()
+      expect(packaging).toBeUndefined()
+      expect(shelfLife).toBeUndefined()
+
       const propertyNames = properties.map((p: UnknownRecord) => p.name)
       const uniqueNames = [...new Set(propertyNames)]
       expect(propertyNames.length).toBe(uniqueNames.length)
     })
 
-    it('should not include properties when conditions are false', async () => {
+    it('should not include additionalProperty when visible fields are absent', async () => {
       const basicHamper = {
         ...mockHamper,
-        // No cake-by-post, no ingredients, no allergens
+        ingredients: [],
+        allergens: [],
         images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
       }
       mockGetGiftHamperBySlug.mockResolvedValue(basicHamper)
@@ -372,11 +941,8 @@ describe('HamperDetailPage', () => {
       const product = jsonLd['@graph'] 
         ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
         : jsonLd
-      
-      const properties = product.additionalProperty || []
-      
-      // Should be an empty array when no conditions are met
-      expect(properties).toHaveLength(0)
+
+      expect(product.additionalProperty).toBeUndefined()
     })
   })
 

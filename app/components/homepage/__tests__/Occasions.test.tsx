@@ -12,6 +12,17 @@ jest.mock('next/image', () => ({
   default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />
 }))
 
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    children,
+    href
+  }: {
+    children: React.ReactNode
+    href: string
+  }) => <a href={href}>{children}</a>
+}))
+
 jest.mock('@/sanity/lib/image', () => {
   const build = () => ({
     width: () => build(),
@@ -33,7 +44,6 @@ const mockGetHomepageCollections = getHomepageCollections as jest.MockedFunction
 const baseCollection: HomepageCollection = {
   _id: 'collection-1',
   name: 'Kids Birthdays',
-  homepageOrder: 1,
   image: {
     asset: { _ref: 'image-1', _type: 'reference' },
     alt: 'Kids birthday cake'
@@ -52,8 +62,32 @@ describe('Occasions', () => {
     render(element)
 
     expect(screen.getByText('Kids Birthdays')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Kids Birthdays/i })).toHaveAttribute(
+      'href',
+      '/cakes?collections=c-kids-birthdays'
+    )
     expect(screen.queryByRole('button', { name: '+ many more!' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Show less' })).not.toBeInTheDocument()
+  })
+
+  it('routes anniversary collections to the canonical landing page', async () => {
+    const anniversaryCollection: HomepageCollection = {
+      _id: 'collection-anniversary',
+      name: 'Anniversary Cakes',
+      image: {
+        asset: { _ref: 'image-anniversary', _type: 'reference' },
+        alt: 'Anniversary cake'
+      }
+    }
+
+    const element = await Occasions({ collections: [anniversaryCollection] })
+    render(element)
+
+    expect(screen.getByRole('link', { name: /Anniversary Cakes/i })).toHaveAttribute(
+      'href',
+      '/anniversary-cakes-leeds'
+    )
+    expect(mockGetHomepageCollections).not.toHaveBeenCalled()
   })
 
   it('returns null when no collections are available', async () => {
@@ -81,7 +115,6 @@ describe('Occasions', () => {
     const collections = Array.from({ length: 10 }, (_, index) => ({
       _id: `collection-${index + 1}`,
       name: `Collection ${index + 1}`,
-      homepageOrder: index + 1,
       image: {
         asset: { _ref: `image-${index + 1}`, _type: 'reference' },
         alt: `Collection ${index + 1} cake`
@@ -107,6 +140,7 @@ describe('Occasions', () => {
     expect(collection9Card?.className).not.toContain('small-laptop:flex')
 
     const moreButton = screen.getByRole('button', { name: '+ many more!' })
+    expect(moreButton).toHaveClass('cursor-pointer')
     fireEvent.click(moreButton)
 
     expect(collection7Card).not.toHaveClass('hidden')
@@ -115,5 +149,15 @@ describe('Occasions', () => {
 
     expect(collection7Card).toHaveClass('hidden')
     expect(screen.getByRole('button', { name: '+ many more!' })).toBeInTheDocument()
+  })
+
+  it('uses provided collections prop without fetching homepage collections', async () => {
+    const providedCollections: HomepageCollection[] = [baseCollection]
+
+    const element = await Occasions({ collections: providedCollections })
+    render(element)
+
+    expect(mockGetHomepageCollections).not.toHaveBeenCalled()
+    expect(screen.getByText('Kids Birthdays')).toBeInTheDocument()
   })
 })

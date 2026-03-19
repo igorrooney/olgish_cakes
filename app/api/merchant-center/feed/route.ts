@@ -47,7 +47,7 @@ const generateProductFeed = unstable_cache(
   },
   ['merchant-center-feed'],
   {
-    tags: ['cakes', 'gift-hampers', 'merchant-center-feed']
+    tags: ['cakes', 'cakes-by-post', 'merchant-center-feed']
   }
 );
 
@@ -181,7 +181,7 @@ function generateCakeItem(cake: Cake, baseUrl: string): string {
 }
 
 function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
+  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
   const mainImage: GiftHamperImage | undefined = hamper.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) ||
                    hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
                    hamper.images?.[0];

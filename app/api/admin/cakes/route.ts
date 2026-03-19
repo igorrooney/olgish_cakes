@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverClient } from "@/sanity/lib/client";
 
 // GET - Fetch all cakes for admin selection
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const query = `*[_type == "cake"] | order(name asc) {
       _id,
@@ -10,7 +10,11 @@ export async function GET(request: NextRequest) {
       slug,
       size,
       pricing,
-      category
+      "category": coalesce(category, collections[0]->name, "Traditional"),
+      collections[]->{
+        _id,
+        name
+      }
     }`;
 
     const cakes = await serverClient.fetch(query);

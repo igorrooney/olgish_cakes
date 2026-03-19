@@ -4,22 +4,16 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { EnquiryForm } from '../EnquiryForm'
+import { getTodayDateInputValue } from '../mobileForm.utils'
 
 describe('EnquiryForm', () => {
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
 
-  const formatDateForInput = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
   const getDateInputValue = (daysFromNow = 0) => {
     const date = new Date()
     date.setDate(date.getDate() + daysFromNow)
-    return formatDateForInput(date)
+    return getTodayDateInputValue(date)
   }
 
   const fillValidForm = () => {
@@ -32,7 +26,7 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: getDateInputValue(1) } })
   }
 
-  const renderWithCsrf = async () => {
+  const renderWithCsrf = async (occasionOptions?: Array<{ label: string, value?: string, disabled?: boolean }>) => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
@@ -43,7 +37,7 @@ describe('EnquiryForm', () => {
     await act(async () => {
       render(
         <QueryClientProvider client={queryClient}>
-          <EnquiryForm />
+          <EnquiryForm occasionOptions={occasionOptions} />
         </QueryClientProvider>
       )
       await Promise.resolve()
@@ -95,12 +89,45 @@ describe('EnquiryForm', () => {
     expect(screen.getByLabelText(/when do you need it/i)).toBeInTheDocument()
   })
 
+
+  it('applies cursor-pointer class to the date input', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveClass('cursor-pointer')
+  })
+
+  it('renders Sanity-driven occasion options when provided', async () => {
+    await renderWithCsrf([
+      { label: 'Select from list', value: '', disabled: true },
+      { label: 'Wedding Cakes', value: 'Wedding Cakes' },
+      { label: 'Other', value: 'other' }
+    ])
+
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
+    expect(screen.getByRole('option', { name: 'Wedding Cakes' })).toBeInTheDocument()
+    expect(screen.getByLabelText(/what's the occasion\?/i)).toHaveAttribute('aria-controls', 'occasion-listbox')
+    expect(screen.queryByRole('option', { name: 'Birthday' })).not.toBeInTheDocument()
+  })
+
+  it('uses fallback occasion options when custom options are not provided', async () => {
+    await renderWithCsrf()
+
+    fireEvent.click(screen.getByLabelText(/what's the occasion\?/i))
+    expect(screen.getByRole('option', { name: 'Birthday' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Other' })).toBeInTheDocument()
+  })
   it('sets the minimum date to today for the date picker', async () => {
     const expectedMinDate = getDateInputValue()
 
     await renderWithCsrf()
 
     expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
+  })
+
+  it('does not depend on a server-supplied min date prop', async () => {
+    await renderWithCsrf()
+
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', getDateInputValue())
   })
 
   it('applies tablet layout classes to the container and heading', async () => {
@@ -114,16 +141,19 @@ describe('EnquiryForm', () => {
     }
 
     expect(container).toHaveClass('tablet:max-w-[696px]')
+    expect(heading).toHaveClass('scroll-mt-24')
+    expect(heading).toHaveClass('tablet:scroll-mt-36')
     expect(heading).toHaveClass('tablet:text-[36px]')
     expect(heading).toHaveClass('tablet:leading-[52px]')
     expect(heading).toHaveClass('tablet:max-w-[331px]')
     expect(heading).toHaveClass('tablet:mx-auto')
   })
 
-  it('applies tablet height class to the submit button', async () => {
+  it('applies mobile and tablet height classes to the submit button', async () => {
     await renderWithCsrf()
 
     const submitButton = screen.getByRole('button', { name: /send enquiry/i })
+    expect(submitButton).toHaveClass('h-12')
     expect(submitButton).toHaveClass('tablet:h-12')
   })
 
@@ -140,6 +170,23 @@ describe('EnquiryForm', () => {
 
     const dateInput = screen.getByLabelText(/when do you need it/i)
     fireEvent.change(dateInput, { target: { value: getDateInputValue(-1) } })
+
+    expect(dateInput).toHaveValue('')
+    expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
+  })
+
+  it('rejects a date that becomes past after the form stays open across midnight', async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-03-18T23:55:00.000Z'))
+
+    await renderWithCsrf()
+
+    const dateInput = screen.getByLabelText(/when do you need it/i)
+    expect(dateInput).toHaveAttribute('min', '2026-03-18')
+
+    jest.setSystemTime(new Date('2026-03-19T00:05:00.000Z'))
+
+    fireEvent.change(dateInput, { target: { value: '2026-03-18' } })
 
     expect(dateInput).toHaveValue('')
     expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
@@ -468,4 +515,34 @@ describe('EnquiryForm', () => {
       expect(enabledButton).not.toBeDisabled()
     })
   })
+
+  it('shows a server-provided message when submission fails on the server', async () => {
+    ;(global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === '/api/csrf-token') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ token: 'test-csrf-token-123' })
+        })
+      }
+
+      if (url === '/api/custom-cake-enquiry') {
+        return Promise.resolve({
+          ok: false,
+          json: async () => ({ error: 'Internal server error' })
+        })
+      }
+
+      return Promise.reject(new Error('Unexpected fetch call'))
+    })
+
+    await renderWithCsrf()
+    fillValidForm()
+
+    fireEvent.click(screen.getByRole('button', { name: /send enquiry/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/internal server error/i)).toBeInTheDocument()
+    })
+  })
 })
+

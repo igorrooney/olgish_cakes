@@ -16,5 +16,5 @@ export interface Testimonial {
     url?: string;
     alt?: string;
   };
-  source?: "google" | "facebook" | "instagram" | "direct";
+  source?: "google" | "facebook" | "instagram" | "trustpilot" | "direct";
 }

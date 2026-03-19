@@ -22,10 +22,10 @@ export function ManageCookiesLink({ className }: ManageCookiesLinkProps) {
 
   return (
     <button
-      type="button"
+      type='button'
       onClick={handleClick}
       className={className}
-      aria-label="Manage cookie preferences"
+      aria-label='Manage cookies'
     >
       Manage cookies
     </button>

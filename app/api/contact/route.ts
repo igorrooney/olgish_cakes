@@ -1,723 +1,694 @@
-import { PHONE_UTILS } from "@/lib/constants";
-import { logger } from "@/lib/logger";
-import { generateOrderNumber, generateUniqueKey } from "@/lib/order-utils";
-import { withRateLimit } from "@/lib/rate-limit";
-import { contactFormSchema, formatValidationErrors, validateRequest } from "@/lib/validation";
-import { serverClient } from "@/sanity/lib/client";
-import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-const recipientEmail = process.env.CONTACT_EMAIL_TO || "hello@olgishcakes.co.uk";
+import { logger } from '@/lib/logger'
+import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
+import { withRateLimit } from '@/lib/rate-limit'
+import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { contactFormSchema, formatValidationErrors, validateRequest } from '@/lib/validation'
+import { serverClient } from '@/sanity/lib/client'
+import { NextRequest, NextResponse } from 'next/server'
+
+const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
+
+type InlineOrderProductType = 'cake' | 'gift-hamper'
+type InlineOrderRequestMode = 'message' | 'custom-design'
+type InlineOrderDesignType = 'standard' | 'individual'
+type InlineOrderType = 'browse-catalog' | 'custom-design' | 'wedding-cake' | 'gift-hamper' | 'custom-quote'
+
+const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
+
+interface SanityImageReference {
+  _type: 'image'
+  asset: {
+    _type: 'reference'
+    _ref: string
+  }
+}
+
+function toNonEmptyString(value: FormDataEntryValue | null): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function toPositiveNumber(value: FormDataEntryValue | null): number | null {
+  const parsed = Number.parseFloat(toNonEmptyString(value))
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return null
+  }
+
+  return parsed
+}
+
+function isInlineOrderProductType(value: string): value is InlineOrderProductType {
+  return value === 'cake' || value === 'gift-hamper'
+}
+
+function isLegacyOrderProductType(value: string): value is 'custom' {
+  return value === 'custom'
+}
+
+function resolveInlineOrderProductType(value: string): InlineOrderProductType | null {
+  if (value === 'gift-hamper') {
+    return 'gift-hamper'
+  }
+
+  if (value === 'cake' || value === 'custom') {
+    return 'cake'
+  }
+
+  return null
+}
+
+function getCustomerOrderEmailBcc(): string | undefined {
+  const configuredBcc = process.env.ORDER_EMAIL_BCC?.trim() || process.env.ADMIN_BCC_EMAIL?.trim()
+  if (!configuredBcc || configuredBcc.length === 0) {
+    return undefined
+  }
+
+  return configuredBcc
+}
+
+function isInlineOrderRequestMode(value: string): value is InlineOrderRequestMode {
+  return value === 'message' || value === 'custom-design'
+}
+
+function isInlineOrderDesignType(value: string): value is InlineOrderDesignType {
+  return value === 'standard' || value === 'individual'
+}
+
+const inlineOrderTypeNormalizationMap: Record<string, InlineOrderType> = {
+  'browse-catalog': 'browse-catalog',
+  'browse our catalog': 'browse-catalog',
+  'custom-design': 'custom-design',
+  'custom design': 'custom-design',
+  'wedding-cake': 'wedding-cake',
+  'wedding cake': 'wedding-cake',
+  'gift-hamper': 'gift-hamper',
+  'gift hamper': 'gift-hamper',
+  'custom-quote': 'custom-quote',
+  'custom quote': 'custom-quote'
+}
+
+function normalizeInlineOrderType(value: string): InlineOrderType | null {
+  const normalizedValue = value.trim().toLowerCase()
+  if (normalizedValue.length === 0) {
+    return null
+  }
+
+  return inlineOrderTypeNormalizationMap[normalizedValue] || null
+}
+
+function resolveInlineOrderType(params: {
+  productType: InlineOrderProductType
+  normalizedIncomingOrderType: InlineOrderType | null
+  requestMode: InlineOrderRequestMode
+}): InlineOrderType {
+  if (params.productType === 'gift-hamper') {
+    return 'gift-hamper'
+  }
+
+  if (params.normalizedIncomingOrderType && params.normalizedIncomingOrderType !== 'gift-hamper') {
+    return params.normalizedIncomingOrderType
+  }
+
+  if (params.requestMode === 'custom-design') {
+    return 'custom-design'
+  }
+
+  return 'browse-catalog'
+}
+
+function buildDeliveryAddress(address?: string | null, city?: string | null, postcode?: string | null) {
+  return [address, city, postcode]
+    .map((entry) => typeof entry === 'string' ? entry.trim() : '')
+    .filter((entry) => entry.length > 0)
+    .join(', ')
+}
+
+function normalizeDesignTypeLabel(designType: InlineOrderDesignType): string {
+  return designType === 'individual' ? 'Individual design' : 'Standard design'
+}
+
+function getPostalOrderAddressValidationErrors(address: string, city: string, postcode: string) {
+  const errors: string[] = []
+
+  if (address.length === 0) {
+    errors.push('address: Address is required for cakes by post orders')
+  } else if (address.length < 5) {
+    errors.push('address: Address must be at least 5 characters')
+  }
+
+  if (city.length === 0) {
+    errors.push('city: City is required for cakes by post orders')
+  } else if (city.length < 2) {
+    errors.push('city: City must be at least 2 characters')
+  }
+
+  if (postcode.length === 0) {
+    errors.push('postcode: Postcode is required for cakes by post orders')
+  } else if (!ukPostcodePattern.test(postcode)) {
+    errors.push('postcode: Invalid UK postcode')
+  }
+
+  return errors
+}
+
+function getInlineGiftNoteValidationErrors(giftNote: string) {
+  const errors: string[] = []
+
+  if (giftNote.length > 500) {
+    errors.push('giftNote: Gift note must be 500 characters or fewer')
+  }
+
+  return errors
+}
+const designImageConfig = {
+  acceptedTypes: ['image/jpeg', 'image/png', 'image/heic'],
+  maxBytes: 5 * 1024 * 1024
+}
+
+function getDesignImageError(file: File): string | null {
+  if (!designImageConfig.acceptedTypes.includes(file.type)) {
+    return 'Reference image must be a JPEG, PNG, or HEIC file'
+  }
+
+  if (file.size > designImageConfig.maxBytes) {
+    return 'Reference image must be 5MB or smaller'
+  }
+
+  return null
+}
 
 async function handlePOST(request: NextRequest) {
-  // Check for required environment variables at runtime
-  if (!process.env.RESEND_API_KEY) {
-    logger.error("RESEND_API_KEY environment variable is not set");
+  if (requiresLiveEmailConfiguration(getEmailTransportMode()) && !process.env.RESEND_API_KEY) {
     return NextResponse.json(
-      { error: "Internal server error: Email service not configured." },
+      { error: 'Email service not configured' },
       { status: 500 }
-    );
+    )
   }
-
-  if (!recipientEmail) {
-    logger.error("Recipient email address (CONTACT_EMAIL_TO) is not configured.");
-    return NextResponse.json(
-      { error: "Internal server error: Email configuration missing." },
-      { status: 500 }
-    );
-  }
-
-  // Initialize Resend at runtime
-  const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
-    const formData = await request.formData();
-    const name = formData.get("name") as string;
-    const address = formData.get("address") as string | null;
-    const city = formData.get("city") as string | null;
-    const postcode = formData.get("postcode") as string | null;
-    const email = formData.get("email") as string;
-    const phone = formData.get("phone") as string;
-    const message = formData.get("message") as string;
-    const dateNeeded = formData.get("dateNeeded") as string;
-    const dateNeededDisplay = formData.get("dateNeededDisplay") as string;
-    const designImage = formData.get("designImage") as File | null;
-    const cakeInterest = formData.get("cakeInterest") as string;
-    const isOrderForm = formData.get("isOrderForm") === "true";
+    const formData = await request.formData()
 
-    // Validate form data with Zod schema
+    const name = toNonEmptyString(formData.get('name'))
+    const email = toNonEmptyString(formData.get('email'))
+    const phone = toNonEmptyString(formData.get('phone'))
+    const message = toNonEmptyString(formData.get('message'))
+    const address = toNonEmptyString(formData.get('address'))
+    const city = toNonEmptyString(formData.get('city'))
+    const postcode = toNonEmptyString(formData.get('postcode'))
+    const dateNeeded = toNonEmptyString(formData.get('dateNeeded'))
+    const cakeInterest = toNonEmptyString(formData.get('cakeInterest'))
+    const note = toNonEmptyString(formData.get('note'))
+    const giftNote = toNonEmptyString(formData.get('giftNote'))
+    const referrer = toNonEmptyString(formData.get('referrer'))
+    const isOrderInquiry = toNonEmptyString(formData.get('isOrderForm')) === 'true'
+    const designImageEntry = formData.get('designImage')
+    const designImage = designImageEntry instanceof File && designImageEntry.size > 0
+      ? designImageEntry
+      : null
+
+    const productTypeValue = toNonEmptyString(formData.get('productType'))
+    const normalizedProductType = resolveInlineOrderProductType(productTypeValue)
+    const orderTypeRaw = toNonEmptyString(formData.get('orderType'))
+    const normalizedIncomingOrderType = normalizeInlineOrderType(orderTypeRaw)
+    const productId = toNonEmptyString(formData.get('productId'))
+    const productName = toNonEmptyString(formData.get('productName'))
+    const totalPrice = toPositiveNumber(formData.get('totalPrice'))
+    const hasLegacyProductType = isLegacyOrderProductType(productTypeValue)
+    const hasProductId = productId.length > 0 || hasLegacyProductType
+    const hasCompactOrderPayload = Boolean(normalizedProductType) && hasProductId && productName.length > 0 && totalPrice !== null
+    const requestModeRaw = toNonEmptyString(formData.get('requestMode'))
+    const designTypeRaw = toNonEmptyString(formData.get('designType'))
+    const occasion = toNonEmptyString(formData.get('occasion'))
+    const filling = toNonEmptyString(formData.get('filling'))
+    const servings = toNonEmptyString(formData.get('servings'))
+    const customerMessage = toNonEmptyString(formData.get('customerMessage'))
+    const requestMode: InlineOrderRequestMode = isInlineOrderRequestMode(requestModeRaw)
+      ? requestModeRaw
+      : 'message'
+    const designType: InlineOrderDesignType = isInlineOrderDesignType(designTypeRaw)
+      ? designTypeRaw
+      : 'standard'
+
     const validationResult = await validateRequest(contactFormSchema, {
       name,
       email,
       phone,
-      message: message || '',
+      message: message.length > 0 ? message : undefined,
       address: address || undefined,
       city: city || undefined,
       postcode: postcode || undefined,
       dateNeeded: dateNeeded || undefined,
       cakeInterest: cakeInterest || undefined,
-      isOrderForm: isOrderForm || undefined
-    });
+      isOrderForm: isOrderInquiry
+    })
 
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Validation failed", details: formatValidationErrors(validationResult.errors) },
+        { error: 'Validation failed', details: formatValidationErrors(validationResult.errors) },
         { status: 400 }
-      );
+      )
     }
 
-    // Additional check for message when not an order form
-    const isMessageRequired = !isOrderForm;
-    if (isMessageRequired && (!message || message.trim().length < 10)) {
-      return NextResponse.json(
-        { error: "Message must be at least 10 characters when not submitting an order" },
-        { status: 400 }
-      );
-    }
+    if (isOrderInquiry && hasCompactOrderPayload) {
+      if (normalizedProductType === 'gift-hamper') {
+        const postalOrderAddressErrors = getPostalOrderAddressValidationErrors(address, city, postcode)
 
-    const attachments = [];
-    let base64Image = "";
-    let imageBuffer: ArrayBuffer | null = null;
+        if (postalOrderAddressErrors.length > 0) {
+          return NextResponse.json(
+            { error: 'Validation failed', details: postalOrderAddressErrors.join(', ') },
+            { status: 400 }
+          )
+        }
+      }
+
+      const giftNoteErrors = getInlineGiftNoteValidationErrors(giftNote)
+      if (giftNoteErrors.length > 0) {
+        return NextResponse.json(
+          { error: 'Validation failed', details: giftNoteErrors.join(', ') },
+          { status: 400 }
+        )
+      }
+    }
 
     if (designImage) {
-      imageBuffer = await designImage.arrayBuffer();
-      base64Image = Buffer.from(imageBuffer).toString("base64");
-      attachments.push({
-        filename: designImage.name,
-        content: Buffer.from(imageBuffer),
-      });
+      const imageError = getDesignImageError(designImage)
+      if (imageError) {
+        return NextResponse.json(
+          { error: imageError },
+          { status: 400 }
+        )
+      }
     }
 
-    // More precise detection of order inquiries
-    const isOrderInquiry =
-      isOrderForm || (message.includes("Cake:") && message.includes("Design Type:"));
+    const emailMode = getEmailTransportMode()
+    const imageBuffer = designImage ? await designImage.arrayBuffer() : null
+    const isLegacyOrderInquiry = isOrderInquiry && !hasCompactOrderPayload
 
-    const formattedDate =
-      dateNeededDisplay ||
-      (dateNeeded
-        ? new Date(dateNeeded).toLocaleDateString("en-GB", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-        : null);
+    if (isLegacyOrderInquiry) {
+      logger.warn('Legacy order inquiry payload received without compact inline order fields', {
+        isOrderInquiry,
+        missingCompactFields: {
+          productType: normalizedProductType === null,
+          productId: !hasProductId,
+          productName: productName.length === 0,
+          totalPrice: totalPrice === null
+        }
+      })
+    }
 
-    const emailContent = `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                         ${isOrderInquiry ? "🎂 NEW CAKE ORDER INQUIRY" : "📨 NEW CONTACT MESSAGE"}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (!isOrderInquiry || isLegacyOrderInquiry) {
+      const adminEmailResult = await sendEmail({
+        templateId: 'contact-admin-inquiry',
+        input: {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          address: address || undefined,
+          city: city || undefined,
+          postcode: postcode || undefined,
+          dateNeeded: dateNeeded || undefined,
+          cakeInterest: cakeInterest || undefined,
+          message: message || undefined,
+          note: note || undefined,
+          giftNote: giftNote || undefined,
+          referrer: referrer || undefined,
+          attachmentNames: designImage ? [designImage.name] : [],
+          titleOverride: isLegacyOrderInquiry ? `New Order Inquiry: ${name}` : `New Contact: ${name}`
+        },
+        modeOverride: emailMode,
+        message: {
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+          to: recipientEmail,
+          bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+          replyTo: email,
+          attachments: designImage && imageBuffer
+            ? [
+                {
+                  filename: designImage.name,
+                  content: Buffer.from(imageBuffer)
+                }
+              ]
+            : []
+        }
+      })
 
-CUSTOMER INFORMATION
-──────────────────
-• Name: ${name}
-${address ? `• Address: ${address}` : ""}
-• Email: ${email}
-• Phone: ${phone}
-${city ? `• City: ${city}` : ""}
-${postcode ? `• Postcode: ${postcode}` : ""}
-${formattedDate ? `• Required Date: ${formattedDate}` : ""}
-${cakeInterest ? `• Cake Interest: ${cakeInterest}` : ""}
-
-MESSAGE DETAILS
-─────────────
-${message}
-${formData.get("note") ? `
-ADDITIONAL NOTES
-────────────────
-${formData.get("note")}
-` : ""}
-${formData.get("giftNote") ? `
-GIFT NOTE
-─────────
-${formData.get("giftNote")}
-` : ""}
-
-${designImage
-        ? `
-ATTACHMENTS
-───────────
-• Design Reference Image: ${designImage.name}
-`
-        : ""
+      if (!adminEmailResult.accepted || adminEmailResult.error) {
+        throw new Error(adminEmailResult.error?.message || 'Transport did not accept admin email')
       }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Best regards,
-Olgish Cakes
-        olgishcakes.co.uk
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`.trim();
+      return NextResponse.json({ success: true })
+    }
 
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .header {
-      text-align: center;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-bottom: 2px solid #eee;
-    }
-    .content {
-      padding: 20px;
-    }
-    .section {
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #2c5282;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 8px;
-      margin-bottom: 16px;
-    }
-    .info-item {
-      margin: 8px 0;
-    }
-    .message {
-      background-color: #f9f9f9;
-      padding: 15px;
-      border-radius: 4px;
-      white-space: pre-wrap;
-    }
-    .design-image {
-      max-width: 100%;
-      margin: 20px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border-top: 2px solid #eee;
-      font-size: 14px;
-      color: #666;
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1 style="color: #2c5282; margin: 0;">
-      ${isOrderInquiry ? "🎂 New Cake Order Inquiry" : "📨 New Contact Message"}
-    </h1>
-  </div>
+    let orderCreated = false
+    let orderError: unknown = null
 
-  <div class="content">
-    <div class="section">
-      <div class="section-title">Customer Information</div>
-      <div class="info-item">• Name: ${name}</div>
-      ${address ? `<div class="info-item">• Address: ${address}</div>` : ""}
-      ${city ? `<div class="info-item">• City: ${city}</div>` : ""}
-      <div class="info-item">• Email: ${email}</div>
-      <div class="info-item">• Phone: ${phone}</div>
-      ${postcode ? `<div class="info-item">• Postcode: ${postcode}</div>` : ""}
-      ${formattedDate ? `<div class="info-item">• Required Date: ${formattedDate}</div>` : ""}
-      ${cakeInterest ? `<div class="info-item">• Cake Interest: ${cakeInterest}</div>` : ""}
-    </div>
+    try {
+      let attachmentImages: SanityImageReference[] = []
+      if (designImage && imageBuffer) {
+        try {
+          const uploaded = await serverClient.assets.upload('image', Buffer.from(imageBuffer), {
+            filename: designImage.name,
+            contentType: designImage.type
+          })
 
-    <div class="section">
-      <div class="section-title">Message Details</div>
-      <div class="message">${message.replace(/\n/g, "<br>")}</div>
-    </div>
-
-    ${formData.get("note") ? `
-    <div class="section">
-      <div class="section-title">Additional Notes</div>
-      <div class="message">${(formData.get("note") as string).replace(/\n/g, "<br>")}</div>
-    </div>
-    ` : ""}
-
-    ${formData.get("giftNote") ? `
-    <div class="section">
-      <div class="section-title">Gift Note</div>
-      <div class="message">${(formData.get("giftNote") as string).replace(/\n/g, "<br>")}</div>
-    </div>
-    ` : ""}
-
-    ${designImage
-        ? `
-    <div class="section">
-      <div class="section-title">Design Reference</div>
-      <img src="data:${designImage.type};base64,${base64Image}" alt="Design Reference" class="design-image">
-    </div>
-    `
-        : ""
-      }
-  </div>
-
-  <div class="footer">
-    <strong>Best regards,</strong><br>
-    Olgish Cakes<br>
-            <a href="https://olgishcakes.co.uk" style="color: #2c5282; text-decoration: none;">olgishcakes.co.uk</a>
-  </div>
-</body>
-</html>`;
-
-    // Only send admin email for non-order inquiries
-    // Order inquiries will be handled by the orders API
-    let response;
-    if (!isOrderInquiry) {
-      response = await resend.emails.send({
-        from: "Olgish Cakes <hello@olgishcakes.co.uk>",
-        to: recipientEmail,
-        bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-        replyTo: email,
-        subject: `New Contact: ${name}`,
-        html: htmlContent,
-        text: emailContent, // Fallback plain text version
-        attachments: designImage
-          ? [
+          attachmentImages = [
             {
-              filename: designImage.name,
-              content: Buffer.from(imageBuffer!),
-            },
+              _type: 'image',
+              asset: { _type: 'reference', _ref: uploaded._id }
+            }
           ]
-          : [],
-      });
-    } else {
-      // For order inquiries, just create a mock response
-      response = { error: null };
-    }
-
-    if (response.error) {
-      logger.error("Resend API Error", response.error);
-      throw new Error(response.error.message);
-    }
-
-    // If this is an order form, also create an order in the system
-    if (isOrderInquiry) {
-      let orderCreated = false;
-      let orderError = null;
-
-      try {
-        // Upload design image to Sanity and pass image reference in attachments
-        interface SanityImageReference {
-          _type: 'image'
-          asset: {
-            _type: 'reference'
-            _ref: string
-          }
+        } catch (uploadError) {
+          logger.error('Failed to upload design image to Sanity', {
+            error: uploadError
+          })
         }
+      }
 
-        let attachmentImages: SanityImageReference[] = []
-        if (designImage) {
-          try {
-            // Convert File to Buffer for Sanity upload
-            const arrayBuffer = await designImage.arrayBuffer()
-            const buffer = Buffer.from(arrayBuffer)
+      const resolvedProductType: InlineOrderProductType = normalizedProductType || 'cake'
+      const resolvedOrderType = resolveInlineOrderType({
+        productType: resolvedProductType,
+        normalizedIncomingOrderType,
+        requestMode
+      })
+      const inferredDeliveryMethod = resolvedProductType === 'gift-hamper'
+        ? 'postal'
+        : 'collection'
+      const inferredPaymentMethod = resolvedProductType === 'gift-hamper'
+        ? 'card'
+        : 'cash-collection'
+      const inferredDeliveryAddress = buildDeliveryAddress(address, city, postcode)
+      const designTypeLabel = normalizeDesignTypeLabel(designType)
+      const resolvedCustomerMessage = customerMessage.length > 0
+        ? customerMessage
+        : message
 
-            const uploaded = await serverClient.assets.upload('image', buffer, {
-              filename: designImage.name,
-              contentType: designImage.type,
-            })
-
-            attachmentImages = [
-              {
-                _type: 'image',
-                asset: { _type: 'reference', _ref: uploaded._id },
-              },
-            ]
-          } catch (e: unknown) {
-            const error = e instanceof Error ? e : new Error(String(e))
-            logger.error('Failed to upload design image to Sanity', {
-              error,
-              message: error.message,
-              stack: error.stack,
-              name: error.name
-            })
-            // Continue without image attachment - don't fail the entire order
-          }
-        }
-
-        const orderData = {
+      const orderNumber = generateOrderNumber()
+      const orderDoc = {
+        _type: 'order',
+        orderNumber,
+        status: 'new',
+        orderType: resolvedOrderType,
+        customer: {
           name,
           email,
           phone,
-          address,
-          city,
-          postcode,
-          message,
-          dateNeeded,
-          orderType: formData.get("orderType") as string || "custom-quote",
-          productType: formData.get("productType") as string || "custom",
-          productId: formData.get("productId") as string || "",
-          productName: formData.get("productName") as string || "Custom Order",
-          designType: formData.get("designType") as string || "individual",
-          quantity: parseInt(formData.get("quantity") as string) || 1,
-          unitPrice: parseFloat(formData.get("unitPrice") as string) || 0,
-          totalPrice: parseFloat(formData.get("totalPrice") as string) || 0,
-          size: formData.get("size") as string || "",
-          flavor: formData.get("flavor") as string || "",
-          specialInstructions: formData.get("specialInstructions") as string || "",
-          deliveryMethod: formData.get("deliveryMethod") as string || "collection",
-          deliveryAddress: formData.get("deliveryAddress") as string || "",
-          deliveryNotes: formData.get("deliveryNotes") as string || "",
-          giftNote: formData.get("giftNote") as string || "",
-          note: formData.get("note") as string || "",
-          paymentMethod: formData.get("paymentMethod") as string || "cash-collection",
-          referrer: formData.get("referrer") as string || "",
-          attachments: attachmentImages,
-        };
-
-        // Create order directly in Sanity (no internal HTTP call)
-        // Generate unique numeric order number
-        const orderNumber = generateOrderNumber()
-
-        const orderDoc = {
-          _type: 'order',
-          orderNumber,
-          status: 'new',
-          orderType: orderData.orderType || 'custom-quote',
-          customer: {
-            name: orderData.name,
-            email: orderData.email,
-            phone: orderData.phone,
-            address: orderData.address || '',
-            city: orderData.city || '',
-            postcode: orderData.postcode || '',
-          },
-          items: [
-            {
-              _key: generateUniqueKey('item'),
-              productId: orderData.productId,
-              productName: orderData.productName,
-              productType: orderData.productType,
-              designType: orderData.designType,
-              quantity: orderData.quantity,
-              unitPrice: orderData.unitPrice,
-              totalPrice: orderData.totalPrice,
-              size: orderData.size,
-              flavor: orderData.flavor,
-              specialInstructions: orderData.specialInstructions,
-            },
-          ],
-          delivery: {
-            dateNeeded: orderData.dateNeeded || null,
-            deliveryMethod: orderData.deliveryMethod,
-            deliveryAddress: orderData.deliveryAddress || '',
-            deliveryNotes: orderData.deliveryNotes || '',
-            giftNote: orderData.giftNote || '',
-          },
-          pricing: {
-            subtotal: orderData.totalPrice || 0,
-            deliveryFee: 0,
-            discount: 0,
-            total: orderData.totalPrice || 0,
-            paymentStatus: 'pending',
-            paymentMethod: orderData.paymentMethod,
-          },
-          messages: [
-            {
-              _key: generateUniqueKey('msg'),
-              message: orderData.message,
-              attachments: orderData.attachments || [],
-            },
-          ],
-          metadata: {
-            source: 'website',
-            referrer: orderData.referrer || '',
-            userAgent: request.headers.get('user-agent') || '',
-          },
-        };
-
-        const createdOrder = await serverClient.create(orderDoc);
-        orderCreated = true;
-
-        // AUTOMATIC EMAIL SENDING: Send confirmation email to customer immediately after order creation
-        // This happens automatically for every order - no manual intervention needed
-        try {
-          // Check for Resend API key at runtime
-          if (!process.env.RESEND_API_KEY) {
-            logger.error('Contact API: RESEND_API_KEY not configured - skipping confirmation email');
-            throw new Error('Email service not configured');
+          address: address || '',
+          city: city || '',
+          postcode: postcode || ''
+        },
+        items: [
+          {
+            _key: generateUniqueKey('item'),
+            productId,
+            productName,
+            productType: resolvedProductType,
+            designType,
+            quantity: 1,
+            unitPrice: totalPrice || 0,
+            totalPrice: totalPrice || 0,
+            size: servings,
+            flavor: filling,
+            specialInstructions: resolvedCustomerMessage
           }
-
-          // Validate email address format
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(orderData.email)) {
-            logger.error('Contact API: Invalid email address format', orderData.email);
-            throw new Error(`Invalid email address format: ${orderData.email}`);
+        ],
+        delivery: {
+          dateNeeded: dateNeeded || null,
+          deliveryMethod: inferredDeliveryMethod,
+          deliveryAddress: inferredDeliveryAddress,
+          deliveryNotes: '',
+          giftNote: giftNote || ''
+        },
+        pricing: {
+          subtotal: totalPrice || 0,
+          deliveryFee: 0,
+          discount: 0,
+          total: totalPrice || 0,
+          paymentStatus: 'pending',
+          paymentMethod: inferredPaymentMethod
+        },
+        messages: [
+          {
+            _key: generateUniqueKey('msg'),
+            message: message || 'Order created via inline form',
+            attachments: attachmentImages
           }
-
-
-          const customerEmailResult = await resend.emails.send({
-            from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
-            to: orderData.email,
-            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-            subject: `Order Confirmation #${orderNumber} - Olgish Cakes`,
-            html: `
-              <!DOCTYPE html>
-              <html lang="en">
-              <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Order Confirmation - Olgish Cakes</title>
-              </head>
-              <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa;">
-                  <tr>
-                    <td align="center" style="padding: 40px 20px;">
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                        <tr>
-                          <td style="background: linear-gradient(135deg, #2E3192 0%, #1a237e 100%); padding: 40px 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
-                              🎂 Order Confirmed
-                            </h1>
-                            <p style="margin: 8px 0 0 0; color: #e3f2fd; font-size: 16px; font-weight: 400;">
-                              Thank you for choosing Olgish Cakes
-                            </p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 40px 30px;">
-                            <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                              Dear <strong>${orderData.name}</strong>,
-                            </p>
-                            <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                              Thank you for your order! We've received your request and will get back to you within 24 hours with confirmation and next steps. Our team is already preparing your delicious treats with love and care.
-                            </p>
-                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
-                              <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">Order Summary</h2>
-                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                                <tr>
-                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
-                                  <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">#${orderNumber}</td>
-                                </tr>
-                                <tr>
-                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
-                                  <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">New Order</td>
-                                </tr>
-                                ${orderData.dateNeeded ? `
-                                <tr>
-                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                                  <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(orderData.dateNeeded).toLocaleDateString('en-GB')}</td>
-                                </tr>
-                                ` : ''}
-                                <tr>
-                                  <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
-                                  <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${orderData.totalPrice || 0}</td>
-                                </tr>
-                              </table>
-                            </div>
-                            <div style="margin-bottom: 32px;">
-                              <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">Your Order</h3>
-                              <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
-                                <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${orderData.productName || 'Custom Order'}</h4>
-                                <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${orderData.totalPrice || orderData.unitPrice || 0}</p>
-                                <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                                  Quantity: ${orderData.quantity || 1}${orderData.productType === 'cake' ? ` • Design: ${orderData.designType === 'individual' ? 'Individual Design' : 'Standard Design'}` : ''}
-                                </p>
-                                ${orderData.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${orderData.specialInstructions}</p>` : ''}
-                              </div>
-                            </div>
-                            ${orderData.deliveryMethod !== 'collection' && orderData.deliveryAddress ? `
-                            <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
-                              <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">Delivery Address</h3>
-                              <p style="margin: 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
-                                ${orderData.deliveryAddress}${orderData.city ? `, ${orderData.city}` : ''}${orderData.postcode ? `, ${orderData.postcode}` : ''}
-                              </p>
-                            </div>
-                            ` : ''}
-                            ${orderData.note || orderData.giftNote ? `
-                            <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
-                              <h3 style="margin: 0 0 12px 0; color: #92400e; font-size: 16px; font-weight: 600;">Additional Notes</h3>
-                              ${orderData.note ? `<p style="margin: 0 0 8px 0; color: #92400e; font-size: 14px;"><strong>Notes:</strong> ${orderData.note}</p>` : ''}
-                              ${orderData.giftNote ? `<p style="margin: 0; color: #92400e; font-size: 14px;"><strong>Gift Note:</strong> ${orderData.giftNote}</p>` : ''}
-                            </div>
-                            ` : ''}
-                            <div style="background: #eff6ff; border: 1px solid #3b82f6; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
-                              <h3 style="margin: 0 0 12px 0; color: #1e40af; font-size: 16px; font-weight: 600;">What happens next?</h3>
-                              <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px; line-height: 1.6;">
-                                <li>We'll review your order and confirm all details within 24 hours</li>
-                                <li>You'll receive email updates when your order status changes</li>
-                                <li>We'll contact you if we need any additional information</li>
-                                <li>Your order will be prepared fresh and delivered on time</li>
-                              </ul>
-                            </div>
-                            <div style="text-align: center; padding: 24px 0; border-top: 1px solid #e5e7eb;">
-                              <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px;">
-                                Questions about your order? We're here to help!
-                              </p>
-                              <p style="margin: 0 0 20px 0; color: #374151; font-size: 14px;">
-                                📧 <a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 500;">hello@olgishcakes.co.uk</a><br>
-                                📞 <a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none; font-weight: 500;">${PHONE_UTILS.displayPhone}</a>
-                              </p>
-                              <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                                Reply to this email to track your order status
-                              </p>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px; font-weight: 500;">
-                              With love from Leeds, UK
-                            </p>
-                            <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                              © ${new Date().getFullYear()} Olgish Cakes. All rights reserved.<br>
-                              Traditional Ukrainian honey cakes made with love
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </body>
-              </html>
-            `,
-          });
-
-          if (customerEmailResult.error) {
-            if (process.env.NODE_ENV !== 'production') {
-              logger.error('❌ Contact API: Customer email error:', JSON.stringify(customerEmailResult.error, null, 2));
-              logger.error('❌ Contact API: Email error details:', {
-                message: customerEmailResult.error.message,
-                name: customerEmailResult.error.name,
-                orderNumber,
-                customerEmail: orderData.email
-              });
-            }
-            throw new Error(`Failed to send customer email: ${customerEmailResult.error.message || 'Unknown error'}`);
-          } else {
-            // Track successful email in order metadata
-            try {
-              await serverClient
-                .patch(createdOrder._id)
-                .set({
-                  'metadata.emailSent': true,
-                  'metadata.emailAttemptedAt': new Date().toISOString()
-                })
-                .commit();
-            } catch (metadataError) {
-              if (process.env.NODE_ENV !== 'production') {
-                logger.error('❌ Contact API: Failed to update order metadata for success:', metadataError);
-              }
-            }
-          }
-        } catch (emailError) {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.error('❌ Contact API: Failed to send confirmation email:', emailError);
-            logger.error('❌ Contact API: Email error stack:', emailError instanceof Error ? emailError.stack : 'No stack trace');
-            logger.error('❌ Contact API: Order was created but email failed - Order ID:', createdOrder._id);
-          }
-          // Don't fail the order creation if email fails, but log it prominently
-          // Store email failure in order metadata for tracking
-          try {
-            await serverClient
-              .patch(createdOrder._id)
-              .set({
-                'metadata.emailSent': false,
-                'metadata.emailError': emailError instanceof Error ? emailError.message : 'Unknown error',
-                'metadata.emailAttemptedAt': new Date().toISOString()
-              })
-              .commit();
-          } catch (metadataError) {
-            if (process.env.NODE_ENV !== 'production') {
-              logger.error('❌ Contact API: Failed to update order metadata:', metadataError);
-            }
+        ],
+        notes: [],
+        metadata: {
+          source: 'website-inline-v2',
+          orderSourceVersion: 'v2-inline',
+          referrer,
+          userAgent: request.headers.get('user-agent') || '',
+          ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+          inlineOrderContext: {
+            occasion: occasion || undefined,
+            requestMode,
+            designType,
+            filling: filling || undefined,
+            servings: servings || undefined,
+            customerMessage: resolvedCustomerMessage || undefined
           }
         }
-      } catch (orderException) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.error('❌ Exception while creating order:', orderException);
-        }
-        orderError = orderException;
       }
 
-      // FALLBACK: If order creation failed, send email directly from contact API
-      if (!orderCreated && orderError) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('⚠️  Order creation failed, sending fallback notification emails...');
+      const createdOrder = await serverClient.create(orderDoc)
+      orderCreated = true
+      const emailAttemptedAt = new Date().toISOString()
+
+      let customerEmailSent = false
+      let adminEmailSent = false
+      let customerEmailError = ''
+      let adminEmailError = ''
+
+      const customerEmailResult = await sendEmail({
+        templateId: 'contact-inline-order-customer',
+        input: {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          address: address || undefined,
+          city: city || undefined,
+          postcode: postcode || undefined,
+          orderNumber,
+          orderType: resolvedOrderType,
+          productName,
+          productId,
+          productType: resolvedProductType,
+          quantity: 1,
+          unitPrice: totalPrice || 0,
+          totalPrice: totalPrice || 0,
+          dateNeeded: dateNeeded || undefined,
+          occasion: occasion || undefined,
+          designType: designTypeLabel,
+          filling: filling || undefined,
+          servings: servings || undefined,
+          customerMessage: resolvedCustomerMessage || undefined,
+          giftNote: giftNote || undefined,
+          deliveryMethod: inferredDeliveryMethod,
+          deliveryAddress: inferredDeliveryAddress,
+          paymentMethod: inferredPaymentMethod,
+          referrer: referrer || undefined,
+          titleOverride: `Order Confirmation #${orderNumber} - Olgish Cakes`
+        },
+        modeOverride: emailMode,
+        message: {
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+          to: email,
+          bcc: getCustomerOrderEmailBcc()
         }
-        try {
-          // Send admin notification email
-          const adminEmailResponse = await resend.emails.send({
-            from: "Olgish Cakes <hello@olgishcakes.co.uk>",
-            to: recipientEmail,
-            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-            replyTo: email,
-            subject: `🆕 New Order Inquiry from ${name}`,
-            html: htmlContent,
-            text: emailContent,
-            attachments: designImage
-              ? [
+      })
+
+      if (!customerEmailResult.accepted || customerEmailResult.error) {
+        customerEmailError = customerEmailResult.error?.message || 'Transport did not accept customer email'
+      } else {
+        customerEmailSent = true
+      }
+
+      const adminEmailResult = await sendEmail({
+        templateId: 'contact-inline-order-admin',
+        input: {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          address: address || undefined,
+          city: city || undefined,
+          postcode: postcode || undefined,
+          orderNumber,
+          orderType: resolvedOrderType,
+          productName,
+          productId,
+          productType: resolvedProductType,
+          quantity: 1,
+          unitPrice: totalPrice || 0,
+          totalPrice: totalPrice || 0,
+          dateNeeded: dateNeeded || undefined,
+          occasion: occasion || undefined,
+          designType: designTypeLabel,
+          filling: filling || undefined,
+          servings: servings || undefined,
+          customerMessage: resolvedCustomerMessage || undefined,
+          deliveryMethod: inferredDeliveryMethod,
+          deliveryAddress: inferredDeliveryAddress,
+          paymentMethod: inferredPaymentMethod,
+          referrer: referrer || undefined,
+          message: message || undefined,
+          note: note || undefined,
+          giftNote: giftNote || undefined,
+          attachmentNames: designImage ? [designImage.name] : [],
+          titleOverride: `New inline order #${orderNumber} from ${name}`
+        },
+        modeOverride: emailMode,
+        message: {
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+          to: recipientEmail,
+          bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+          replyTo: email,
+          attachments: designImage && imageBuffer
+            ? [
                 {
                   filename: designImage.name,
-                  content: Buffer.from(imageBuffer!),
-                },
+                  content: Buffer.from(imageBuffer)
+                }
               ]
-              : [],
-          });
-
-          if (adminEmailResponse.error) {
-            logger.error('Fallback admin email failed', adminEmailResponse.error);
-          }
-          // Email sent successfully - no action needed
-
-          // Send simple confirmation to customer
-          const customerEmailResponse = await resend.emails.send({
-            from: "Olgish Cakes <hello@olgishcakes.co.uk>",
-            to: email,
-            subject: "Order Inquiry Received - Olgish Cakes",
-            html: `
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <meta charset="utf-8">
-              </head>
-              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="text-align: center; padding: 20px; background-color: #f9f9f9; border-bottom: 2px solid #eee;">
-                  <h1 style="color: #2c5282; margin: 0;">🎂 Order Inquiry Received</h1>
-                </div>
-                <div style="padding: 20px;">
-                  <p>Dear ${name},</p>
-                  <p>Thank you for your order inquiry! We've received your request and will get back to you within 24 hours.</p>
-                  <p>We'll review your requirements and send you a detailed confirmation with next steps.</p>
-                  <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Your Details:</strong></p>
-                    <p style="margin: 5px 0;">Email: ${email}</p>
-                    <p style="margin: 5px 0;">Phone: ${phone}</p>
-                    ${formattedDate ? `<p style="margin: 5px 0;">Date Needed: ${formattedDate}</p>` : ''}
-                  </div>
-                  <p>If you have any questions, please don't hesitate to contact us.</p>
-                  <p>Best regards,<br>Olgish Cakes<br><a href="https://olgishcakes.co.uk">olgishcakes.co.uk</a></p>
-                </div>
-              </body>
-              </html>
-            `,
-          });
-
-          if (customerEmailResponse.error) {
-            logger.error('Fallback customer email failed', customerEmailResponse.error);
-          }
-          // Email sent successfully - no action needed
-        } catch (fallbackError) {
-          logger.error('Fallback email sending failed completely', fallbackError);
-          // Log but don't throw - we don't want to show error to user
+            : []
         }
+      })
+
+      if (!adminEmailResult.accepted || adminEmailResult.error) {
+        adminEmailError = adminEmailResult.error?.message || 'Transport did not accept admin email'
+      } else {
+        adminEmailSent = true
+      }
+
+      const metadataPatch: Record<string, unknown> = {
+        'metadata.customerEmailSent': customerEmailSent,
+        'metadata.adminEmailSent': adminEmailSent,
+        'metadata.emailAttemptedAt': emailAttemptedAt
+      }
+      if (customerEmailError.length > 0) {
+        metadataPatch['metadata.customerEmailError'] = customerEmailError
+      }
+      if (adminEmailError.length > 0) {
+        metadataPatch['metadata.adminEmailError'] = adminEmailError
+      }
+
+      await serverClient
+        .patch(createdOrder._id)
+        .set(metadataPatch)
+        .commit()
+    } catch (creationError) {
+      orderError = creationError
+      logger.error('Exception while creating inline order', creationError)
+    }
+
+    if (!orderCreated && orderError) {
+      const fallbackProductType: InlineOrderProductType = isInlineOrderProductType(productTypeValue) || isLegacyOrderProductType(productTypeValue)
+        ? (productTypeValue === 'gift-hamper' ? 'gift-hamper' : 'cake')
+        : 'cake'
+      const fallbackOrderType = resolveInlineOrderType({
+        productType: fallbackProductType,
+        normalizedIncomingOrderType,
+        requestMode
+      })
+      const fallbackDeliveryMethod = fallbackProductType === 'gift-hamper' ? 'postal' : 'collection'
+      const fallbackPaymentMethod = fallbackProductType === 'gift-hamper' ? 'card' : 'cash-collection'
+      const fallbackDeliveryAddress = buildDeliveryAddress(address, city, postcode)
+      const fallbackDesignTypeLabel = normalizeDesignTypeLabel(designType)
+
+      const adminFallbackResponse = await sendEmail({
+        templateId: 'contact-inline-order-fallback-admin',
+        input: {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          address: address || undefined,
+          city: city || undefined,
+          postcode: postcode || undefined,
+          orderType: fallbackOrderType,
+          productName: productName || undefined,
+          productId: productId || undefined,
+          productType: fallbackProductType,
+          quantity: 1,
+          unitPrice: totalPrice || 0,
+          totalPrice: totalPrice || 0,
+          dateNeeded: dateNeeded || undefined,
+          occasion: occasion || undefined,
+          designType: fallbackDesignTypeLabel,
+          filling: filling || undefined,
+          servings: servings || undefined,
+          customerMessage: customerMessage || undefined,
+          deliveryMethod: fallbackDeliveryMethod,
+          deliveryAddress: fallbackDeliveryAddress,
+          paymentMethod: fallbackPaymentMethod,
+          referrer: referrer || undefined,
+          message: message || undefined,
+          note: note || undefined,
+          giftNote: giftNote || undefined,
+          attachmentNames: designImage ? [designImage.name] : [],
+          titleOverride: `New Order Inquiry from ${name}`
+        },
+        modeOverride: emailMode,
+        message: {
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+          to: recipientEmail,
+          bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+          replyTo: email,
+          attachments: designImage && imageBuffer
+            ? [
+                {
+                  filename: designImage.name,
+                  content: Buffer.from(imageBuffer)
+                }
+              ]
+            : []
+        }
+      })
+
+      if (!adminFallbackResponse.accepted || adminFallbackResponse.error) {
+        const adminFallbackError = adminFallbackResponse.error?.message || 'Transport did not accept admin fallback email'
+
+        logger.error('Fallback admin email failed', adminFallbackError)
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+      }
+
+      const customerFallbackResponse = await sendEmail({
+        templateId: 'contact-inline-order-fallback-customer',
+        input: {
+          customerName: name,
+          customerEmail: email,
+          customerPhone: phone,
+          dateNeeded: dateNeeded || undefined,
+          occasion: occasion || undefined,
+          designType: fallbackDesignTypeLabel,
+          filling: filling || undefined,
+          servings: servings || undefined,
+          customerMessage: customerMessage || undefined,
+          giftNote: giftNote || undefined,
+          titleOverride: 'Order Inquiry Received - Olgish Cakes'
+        },
+        modeOverride: emailMode,
+        message: {
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+          to: email,
+          bcc: getCustomerOrderEmailBcc()
+        }
+      })
+
+      if (!customerFallbackResponse.accepted || customerFallbackResponse.error) {
+        logger.error(
+          'Fallback customer email failed',
+          customerFallbackResponse.error?.message || 'Transport did not accept customer fallback email'
+        )
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true })
   } catch (error) {
-    logger.error("Contact API Error", error);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    logger.error('Contact API Error', error)
+    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
   }
 }
 
-// Apply rate limiting: 10 requests per minute
 export const POST = withRateLimit(handlePOST, {
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 10 // 10 requests per minute
-});
+  windowMs: 60 * 1000,
+  maxRequests: 10
+})

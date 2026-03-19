@@ -1,320 +1,205 @@
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { Box, Container, Grid, Typography } from "@/lib/mui-optimization";
-import { BRAND_ID } from "@/lib/schema-constants";
-import { StyledAccordion } from "@/lib/ui-components";
-import { urlFor } from "@/sanity/lib/image";
-import type { GiftHamperImage, RichTextBlock, RichTextChild } from "@/types/giftHamper";
-import type { Metadata } from "next";
-import type { Brand, Graph } from "schema-dts";
-import { Breadcrumbs } from "../components/Breadcrumbs";
-import GiftHamperCard from "../components/GiftHamperCard";
-import { getAllGiftHampers } from "../utils/fetchGiftHampers";
-import { getAllTestimonialsStats } from "../utils/fetchTestimonials";
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "../utils/seo";
+import type { Metadata } from 'next'
+import { CatalogFaqAccordion } from '../cakes/components/CatalogFaqAccordion'
+import type { TabletCake } from '../cakes/components/types'
+import { CatalogPageTemplate } from '../cakes/CatalogPageTemplate'
+import { giftHampersCatalogFaqItems } from '../cakes/catalogFaqItems'
+import {
+  getCatalogCustomCakesPriceCeiling,
+  getCatalogPageData
+} from '../cakes/catalogPageData'
+import {
+  createCatalogMetadata,
+  type ResolvedSearchParams
+} from '../cakes/catalogSeo'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { getAllTestimonialsStats } from '../utils/fetchTestimonials'
 import { buildAggregateRating } from '../utils/review-stats'
-import HeroSection from "./HeroSection";
+import {
+  getMerchantReturnPolicy,
+  getOfferShippingDetails,
+  getPriceValidUntil
+} from '../utils/seo'
 
-// Force static generation
-export const dynamic = "force-static";
+const baseUrl = 'https://olgishcakes.co.uk'
+const brandId = `${baseUrl}/#brand`
 
-export const metadata: Metadata = {
-  title: "Gift Hampers | Luxury Ukrainian Baskets",
-  description:
-    "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats. Handcrafted in Leeds with UK delivery.",
-  keywords:
-    "gift hampers, luxury gift hampers, Ukrainian hampers, gourmet gift baskets, Leeds hampers, Yorkshire gift hampers, food gifts UK, premium hampers Leeds, artisan hampers",
-  openGraph: {
-    title: "Gift Hampers | Luxury Ukrainian Baskets",
-    description:
-      "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats.",
-    url: "https://olgishcakes.co.uk/gift-hampers",
-    siteName: "Olgish Cakes",
-    images: [
-      {
-        url: "https://olgishcakes.co.uk/images/gift-hampers-collection.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Luxury Ukrainian Gift Hampers - Olgish Cakes",
-      },
-    ],
-    locale: "en_GB",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Gift Hampers | Luxury Ukrainian Baskets",
-    description:
-      "Explore our curated collection of luxury Ukrainian gift hampers. Thoughtfully assembled baskets with premium treats.",
-    images: ["https://olgishcakes.co.uk/images/gift-hampers-collection.jpg"],
-  },
-  alternates: { canonical: "https://olgishcakes.co.uk/gift-hampers" },
-  authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
-  creator: "Olgish Cakes",
-  publisher: "Olgish Cakes",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL("https://olgishcakes.co.uk"),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+type StructuredData = Record<string, unknown>
+
+const pageTitle = 'Cakes by Post UK | Ukrainian Letterbox Cake Delivery'
+const pageDescription = 'Order cakes by post across the UK from Olgish Cakes. Browse handmade Ukrainian cake hampers prepared in Leeds and packed fresh for reliable delivery.'
+
+export async function generateMetadata({
+  searchParams
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}): Promise<Metadata> {
+  const resolvedSearchParams: ResolvedSearchParams = searchParams ? await searchParams : {}
+
+  return createCatalogMetadata({
+    title: pageTitle,
+    description: pageDescription,
+    keywords:
+      'cakes by post UK, cake by post delivery, letterbox cakes UK, Ukrainian honey cake by post, postal cake gifts, Olgish Cakes Leeds',
+    canonicalPath: '/cakes-by-post',
+    openGraphImage: {
+      url: '/images/gift-hampers-collection.jpg',
+      alt: 'Luxury Ukrainian gift hampers by Olgish Cakes'
     },
-  },
-  verification: {
-    google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
-  },
-  other: {
-    "geo.region": "GB-ENG",
-    "geo.placename": "Leeds",
-  },
-};
+    searchParams: resolvedSearchParams,
+    noindexOnQueryFilters: true,
+    extraMetadata: {
+      verification: {
+        google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
+      },
+      other: {
+        'geo.region': 'GB-ENG',
+        'geo.placename': 'Leeds'
+      }
+    }
+  })
+}
+
+function toAbsoluteImageUrl(imageUrl: string) {
+  return imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`
+}
+
+function toAbsoluteProductUrl(href: string) {
+  return href.startsWith('http') ? href : `${baseUrl}${href}`
+}
+
+function createGiftHamperItemListStructuredData(giftHampers: TabletCake[]): StructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Brand',
+        '@id': brandId,
+        name: 'Olgish Cakes',
+        url: baseUrl,
+        logo: `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`
+      },
+      {
+        '@type': 'ItemList',
+        name: 'Cakes by Post UK Collection',
+        itemListElement: giftHampers.map((hamper, index) => {
+          const hamperUrl = toAbsoluteProductUrl(hamper.href)
+
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              '@id': `${hamperUrl}#product`,
+              name: hamper.name,
+              description: hamper.description,
+              image: toAbsoluteImageUrl(hamper.imageUrl),
+              url: hamperUrl,
+              brand: {
+                '@id': brandId
+              },
+              offers: {
+                '@type': 'Offer',
+                price: formatStructuredDataPrice(hamper.price, 0),
+                priceCurrency: 'GBP',
+                availability: 'https://schema.org/InStock',
+                priceValidUntil: getPriceValidUntil(30),
+                url: hamperUrl,
+                seller: {
+                  '@type': 'Organization',
+                  name: 'Olgish Cakes',
+                  url: baseUrl
+                },
+                shippingDetails: getOfferShippingDetails(),
+                hasMerchantReturnPolicy: getMerchantReturnPolicy()
+              }
+            }
+          }
+        })
+      }
+    ]
+  }
+}
+
+function resolveGiftHampersForStructuredData(catalogData: {
+  mappedGiftHampers: TabletCake[]
+  cakesForUi: TabletCake[]
+}) {
+  if (catalogData.mappedGiftHampers.length > 0) {
+    return catalogData.mappedGiftHampers
+  }
+
+  return catalogData.cakesForUi.filter((cake) => cake.productType === 'giftHamper')
+}
 
 export default async function GiftHampersPage() {
-  // Force static data for build-time generation
-  const [hampers, testimonialStats] = await Promise.all([
-    getAllGiftHampers(false),
+  const [catalogData, customCakesPriceCeilingHint, testimonialStats] = await Promise.all([
+    getCatalogPageData('giftHampers'),
+    getCatalogCustomCakesPriceCeiling().catch((error) => {
+      console.warn('Failed to fetch custom cakes price ceiling hint for gift hampers page:', error)
+      return undefined
+    }),
     getAllTestimonialsStats()
-  ]);
-  const aggregateRating = buildAggregateRating(testimonialStats)
+  ])
 
-  const localBusinessData = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: "Olgish Cakes",
-    url: "https://olgishcakes.co.uk",
-    telephone: "+44 786 721 8194",
-    email: "hello@olgishcakes.co.uk",
+  const aggregateRating = buildAggregateRating(testimonialStats)
+  const giftHampersForStructuredData = resolveGiftHampersForStructuredData(catalogData)
+  const localBusinessData: StructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Olgish Cakes',
+    url: baseUrl,
+    telephone: '+44 786 721 8194',
+    email: 'hello@olgishcakes.co.uk',
     address: {
-      "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
-      addressLocality: "Leeds",
-      postalCode: "LS17",
-      addressRegion: "West Yorkshire",
-      addressCountry: "GB",
+      '@type': 'PostalAddress',
+      streetAddress: 'Allerton Grange',
+      addressLocality: 'Leeds',
+      postalCode: 'LS17',
+      addressRegion: 'West Yorkshire',
+      addressCountry: 'GB'
     },
     sameAs: [
-      "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
-      "https://www.instagram.com/olgish_cakes/",
+      'https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB',
+      'https://www.instagram.com/olgish_cakes/'
     ],
-    ...(aggregateRating ? { aggregateRating } : {}),
-  };
+    ...(aggregateRating ? { aggregateRating } : {})
+  }
 
   return (
-    <>
-      {(() => {
-        // Breadcrumbs + ItemList JSON-LD (server-rendered)
-        const breadcrumbJsonLd = {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://olgishcakes.co.uk" },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Gift Hampers",
-              item: "https://olgishcakes.co.uk/gift-hampers",
-            },
-          ],
-        } as const;
-
-        // Use @graph to structure all entities and avoid duplicate brand fields
-        const itemListJsonLd: Graph = {
-          "@context": "https://schema.org",
-          "@graph": [
-            // Single Brand entity referenced by all products
-            {
-              "@type": "Brand",
-              "@id": BRAND_ID,
-              name: BUSINESS_CONSTANTS.NAME,
-              url: BUSINESS_CONSTANTS.WEBSITE,
-              logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
-            } as Brand,
-            // ItemList with products referencing the brand
-            {
-              "@type": "ItemList",
-              name: "Luxury Ukrainian Gift Hampers",
-              itemListElement: (hampers || []).map((h, index) => {
-                // Get the best available image
-                const mainImage = h.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) || h.images?.[0];
-                const imageUrl = mainImage?.asset?._ref
-                  ? urlFor(mainImage).width(800).height(800).url()
-                  : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
-
-                return {
-                  "@type": "ListItem",
-                  position: index + 1,
-                  item: {
-                    "@type": "Product",
-                    "@id": `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}#product`,
-                    name: h.name,
-                    description: h.shortDescription 
-                      ? (Array.isArray(h.shortDescription) 
-                        ? h.shortDescription.map((p: RichTextBlock) => p.children?.map((c: RichTextChild) => c.text).join("") || "").join(" ")
-                        : String(h.shortDescription))
-                      : `${h.name} luxury Ukrainian gift hamper`,
-                    image: imageUrl,
-                    url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-                    brand: { "@id": BRAND_ID },
-                    offers: {
-                      "@type": "Offer",
-                      price: h.price || 0,
-                      priceCurrency: "GBP",
-                      availability: "https://schema.org/InStock",
-                      priceValidUntil: getPriceValidUntil(30),
-                      url: `https://olgishcakes.co.uk/gift-hampers/${h.slug.current}`,
-                      seller: {
-                        "@type": "Organization",
-                        name: "Olgish Cakes",
-                        url: "https://olgishcakes.co.uk"
-                      },
-                      shippingDetails: getOfferShippingDetails(),
-                      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-                    }
-                  }
-                };
-              }),
-            }
-          ]
-        } as const;
-
-        const faqJsonLd = {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: [
-            {
-              "@type": "Question",
-              name: "Do you deliver gift hampers across the UK?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Yes. We ship our gift hampers nationwide across the UK with careful packaging to ensure items arrive in perfect condition.",
-              },
-            },
-            {
-              "@type": "Question",
-              name: "Can I include a personalised message?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Absolutely. Add a personalised gift note at checkout and we will include it inside the hamper.",
-              },
-            },
-            {
-              "@type": "Question",
-              name: "Are your hampers suitable for corporate gifting?",
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: "Yes. We offer beautifully presented hampers ideal for client and team gifts. Contact us for bespoke quantities and branding.",
-              },
-            },
-          ],
-        } as const;
-
-        const localBusinessJsonLd = localBusinessData;
-
-        return (
-          <>
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, '\u003c') }}
-            />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd).replace(/</g, '\u003c') }}
-            />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd).replace(/</g, '\u003c') }}
-            />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\u003c') }}
-            />
-          </>
-        );
-      })()}
-      <main className="min-h-screen bg-gray-50">
-        <HeroSection />
-
-        <Container maxWidth="lg" sx={{ py: 2 }}>
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Gift Hampers", href: "/gift-hampers" },
-            ]}
-          />
-        </Container>
-
-        <Container maxWidth="lg" className="py-16">
-          {!hampers || hampers.length === 0 ? (
-            <Box className="text-center py-16">
-              <Typography variant="h2" component="h2" className="mb-4 text-gray-700 font-light">
-                Our Gift Hampers
-              </Typography>
-              <Typography variant="body1" color="text.secondary" className="max-w-md mx-auto">
-                We’re assembling our luxury hamper collection. Please check back soon!
-              </Typography>
-            </Box>
-          ) : (
-            <Grid container spacing={6} className="mt-8">
-              {hampers.map(hamper => (
-                <Grid item xs={12} sm={6} md={4} key={hamper._id}>
-                  <GiftHamperCard hamper={hamper} testimonialStats={testimonialStats} />
-                </Grid>
-              ))}
-            </Grid>
-          )}
-        </Container>
-
-        {/* SEO body content block for topical authority */}
-        <Container maxWidth="lg" sx={{ pb: 12 }}>
-          <Box component="section" aria-label="About our gift hampers" sx={{ mt: 6 }}>
-            <Typography component="h2" variant="h3" className="mb-4 text-gray-800">
-              Luxury Ukrainian Gift Hampers in Leeds, with UK Delivery
-            </Typography>
-            <Typography component="p" variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              Our curated hampers feature handmade Ukrainian treats crafted by Olgish Cakes in
-              Leeds. Thoughtful selections for birthdays, anniversaries, corporate gifting and
-              festive celebrations.
-            </Typography>
-            <Typography component="p" variant="body1" color="text.secondary">
-              Order online for reliable UK delivery. Every hamper is prepared to order for peak
-              freshness and beautifully presented for an unforgettable gifting experience.
-            </Typography>
-          </Box>
-
-          {/* FAQ for rich results */}
-          <Box component="section" aria-label="Gift hampers FAQs" sx={{ mt: 6 }}>
-            <Typography component="h2" variant="h3" className="mb-4 text-gray-800">
-              Frequently Asked Questions
-            </Typography>
-            <StyledAccordion title="Do you deliver gift hampers across the UK?">
-              <Typography component="p" variant="body1" color="text.secondary">
-                Yes. We ship our gift hampers nationwide across the UK with careful packaging to
-                ensure items arrive in perfect condition.
-              </Typography>
-            </StyledAccordion>
-            <StyledAccordion title="Can I include a personalised message?">
-              <Typography component="p" variant="body1" color="text.secondary">
-                Absolutely. Add a personalised gift note at checkout and we will include it inside
-                the hamper.
-              </Typography>
-            </StyledAccordion>
-            <StyledAccordion title="Are your hampers suitable for corporate gifting?">
-              <Typography component="p" variant="body1" color="text.secondary">
-                Yes. We offer beautifully presented hampers ideal for client and team gifts. Contact
-                us for bespoke quantities and branding.
-              </Typography>
-            </StyledAccordion>
-          </Box>
-        </Container>
-      </main>
-    </>
-  );
+    <CatalogPageTemplate
+      variant='giftHampers'
+      heading='Cakes by post across the UK with handmade Ukrainian flavour'
+      intro='Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+      canonicalPath='/cakes-by-post'
+      localBusinessDescription='Handmade Ukrainian cakes by post, prepared in Leeds and delivered across the UK.'
+      catalogData={catalogData}
+      initialFilterDefaults={{ byPost: true, custom: false }}
+      lazyCustomCakesEndpoint='/api/catalog/custom-cakes'
+      lazyCustomCakesPriceCeilingHint={customCakesPriceCeilingHint}
+      postCatalogContent={(
+        <CatalogFaqAccordion
+          sectionId='cakes-by-post-faq-title'
+          title='Cakes by post FAQs'
+          intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
+          mobileIntro='UK delivery and gifting FAQs for cakes by post.'
+          items={giftHampersCatalogFaqItems}
+        />
+      )}
+      localBusinessData={localBusinessData}
+      additionalStructuredData={[
+        createGiftHamperItemListStructuredData(giftHampersForStructuredData)
+      ]}
+      includeBreadcrumbStructuredData
+      breadcrumbItems={[
+        {
+          name: 'Home',
+          item: '/'
+        },
+        {
+          name: 'Cakes by post',
+          item: '/cakes-by-post'
+        }
+      ]}
+    />
+  )
 }

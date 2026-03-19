@@ -1,37 +1,50 @@
-import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
-import { MetadataRoute } from "next";
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import type { MetadataRoute } from 'next'
+import { getStaticSitemapLastModified } from './sitemap-static-pages'
 
 interface SitemapCake {
-  _id: string
-  name: string
-  slug: { current: string }
+  slug?: { current: string }
   _updatedAt: string
-  pricing?: any
-  mainImage?: any
-  designs?: any
-  category?: string
-  shortDescription?: any
-  description?: any
-  seo?: { priority?: number; changefreq?: string }
 }
 
 interface SitemapGiftHamper {
-  _id: string
-  name: string
   slug?: { current: string }
   _updatedAt: string
-  price?: number
-  images?: any
-  category?: string
-  shortDescription?: any
-  description?: any
-  seo?: { priority?: number; changefreq?: string }
+}
+
+function isExplicitTestSlug(slug: string) {
+  return slug === 'test' || slug.startsWith('test-')
+}
+
+function hasIndexableCakeSlug(cake: SitemapCake): cake is SitemapCake & { slug: { current: string } } {
+  const slug = cake.slug?.current
+
+  if (!slug) {
+    return false
+  }
+
+  return !isExplicitTestSlug(slug)
+}
+
+function hasIndexableGiftHamperSlug(hamper: SitemapGiftHamper): hamper is SitemapGiftHamper & { slug: { current: string } } {
+  const slug = hamper.slug?.current
+
+  if (!slug) {
+    return false
+  }
+
+  return !isExplicitTestSlug(slug)
 }
 
 async function getProducts() {
   const config = getCacheConfig('sitemaps')
   const [cakes, giftHampers] = await Promise.all([
-    cachedSanityFetch<SitemapCake[]>(`*[_type == "cake"] {
+    cachedSanityFetch<SitemapCake[]>(`*[
+      _type == "cake" &&
+      defined(slug.current) &&
+      slug.current != "test" &&
+      !slug.current match "test-*"
+    ] {
       _id,
       name,
       slug,
@@ -47,70 +60,62 @@ async function getProducts() {
         changefreq
       }
     }`, {}, config),
-    cachedSanityFetch<SitemapGiftHamper[]>(`*[_type == "giftHamper"] {
-      _id,
-      name,
+    cachedSanityFetch<SitemapGiftHamper[]>(`*[
+      _type == "giftHamper" &&
+      defined(slug.current) &&
+      slug.current != "test" &&
+      !slug.current match "test-*"
+    ] {
       slug,
-      _updatedAt,
-      price,
-      images,
-      category,
-      shortDescription,
-      description,
-      seo {
-        priority,
-        changefreq
-      }
+      _updatedAt
     }`, {}, config)
-  ]);
+  ])
 
-  return { cakes, giftHampers };
+  return { cakes, giftHampers }
 }
 
 export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://olgishcakes.co.uk";
-  const { cakes, giftHampers } = await getProducts();
+  const baseUrl = 'https://olgishcakes.co.uk'
+  const { cakes, giftHampers } = await getProducts()
 
-  // Cake product pages with high priority for Google Merchant Center
-  const cakeRoutes = cakes.map((cake: any) => ({
-    url: `${baseUrl}/cakes/${cake.slug.current}`,
-    lastModified: new Date(cake._updatedAt),
-    changeFrequency: "daily" as const, // High frequency for product pages
-    priority: 0.95, // Very high priority for products
-  }));
+  const cakeRoutes = cakes
+    .filter(hasIndexableCakeSlug)
+    .map((cake) => ({
+      url: `${baseUrl}/cakes/${cake.slug.current}`,
+      lastModified: new Date(cake._updatedAt),
+      changeFrequency: 'daily' as const,
+      priority: 0.95
+    }))
 
-  // Gift hamper product pages with high priority
-  const giftHamperRoutes = giftHampers.map((hamper: any) => ({
-    url: `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`,
-    lastModified: new Date(hamper._updatedAt),
-    changeFrequency: "daily" as const, // High frequency for product pages
-    priority: 0.95, // Very high priority for products
-  }));
+  const giftHamperRoutes = giftHampers
+    .filter(hasIndexableGiftHamperSlug)
+    .map((hamper) => ({
+      url: `${baseUrl}/cakes-by-post/${hamper.slug.current}`,
+      lastModified: new Date(hamper._updatedAt),
+      changeFrequency: 'daily' as const,
+      priority: 0.95
+    }))
 
-  // Product category pages
   const categoryPages = [
     {
       url: `${baseUrl}/cakes`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
+      lastModified: getStaticSitemapLastModified('/cakes'),
+      changeFrequency: 'daily' as const,
+      priority: 0.9
     },
     {
-      url: `${baseUrl}/gift-hampers`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
+      url: `${baseUrl}/cakes-by-post`,
+      lastModified: getStaticSitemapLastModified('/cakes-by-post'),
+      changeFrequency: 'daily' as const,
+      priority: 0.9
     },
     {
       url: `${baseUrl}/order`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.95,
-    },
-  ];
+      lastModified: getStaticSitemapLastModified('/order'),
+      changeFrequency: 'daily' as const,
+      priority: 0.95
+    }
+  ]
 
-  // Combine all product-related pages
-  const allProductPages = [...categoryPages, ...cakeRoutes, ...giftHamperRoutes];
-
-  return allProductPages;
+  return [...categoryPages, ...cakeRoutes, ...giftHamperRoutes]
 }

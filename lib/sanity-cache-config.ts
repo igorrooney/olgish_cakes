@@ -22,13 +22,21 @@ export const SANITY_CACHE_CONFIG = {
     revalidate: NO_REVALIDATE,
     tags: ['cakes']
   },
+  cakesFeaturedOffer: {
+    revalidate: NO_REVALIDATE,
+    tags: ['cakes', 'cakes-featured-offer']
+  },
   giftHampers: {
     revalidate: NO_REVALIDATE,
-    tags: ['gift-hampers']
+    tags: ['cakes-by-post', 'gift-hampers']
   },
-  collections: {
+  cakeCollections: {
     revalidate: NO_REVALIDATE,
-    tags: ['collections']
+    tags: ['cake-collections']
+  },
+  giftHamperCollections: {
+    revalidate: NO_REVALIDATE,
+    tags: ['gift-hamper-collections']
   },
   marketSchedule: {
     revalidate: NO_REVALIDATE,

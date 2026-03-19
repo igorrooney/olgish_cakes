@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateRequest, formatValidationErrors } from "@/lib/validation";
 import { withRateLimit } from "@/lib/rate-limit";
+import { categoryLandingCanonicalPaths } from "@/app/cakes/categoryLandingConfig";
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -11,7 +12,7 @@ const revalidateSchema = z.object({
   _id: z.string().optional(),
   slug: z.object({
     current: z.string()
-  }).optional()
+  }).nullable().optional()
 });
 
 async function handlePOST(request: NextRequest) {
@@ -53,6 +54,12 @@ async function handlePOST(request: NextRequest) {
       tagsToRevalidate.add(tag)
     }
 
+    const addCakeCategoryLandingPaths = () => {
+      categoryLandingCanonicalPaths.forEach((path) => {
+        addPath(path)
+      })
+    }
+
     // Revalidate specific paths based on content type
     if (_type === "cake") {
       // Revalidate cake-specific pages
@@ -60,6 +67,7 @@ async function handlePOST(request: NextRequest) {
         addPath(`/cakes/${slug.current}`)
         addPath("/cakes") // Revalidate cakes list
         addPath("/") // Revalidate home page (might have featured cakes)
+        addCakeCategoryLandingPaths()
 
         // Clear specific cache entries
         await invalidateCache(`cake-${slug.current}`);
@@ -69,13 +77,23 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes')
       addTag('pages')
       addTag('sitemaps')
+    } else if (_type === 'cakesFeaturedOffer') {
+      addPath('/cakes')
+      addTag('cakes')
+      addTag('cakes-featured-offer')
+    } else if (_type === 'cakesDeliverySection') {
+      addPath('/cakes')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes')
+      addTag('sitemaps')
     } else if (_type === "testimonial") {
       // Revalidate testimonial pages
       addPath("/testimonials")
       addPath("/") // Home page might show testimonials
       addPath("/about")
       addPath("/order")
-      addPath("/gift-hampers")
+      addPath("/cakes-by-post")
       await invalidateCache("testimonials");
       addTag('testimonials')
     } else if (_type === "faq") {
@@ -86,12 +104,20 @@ async function handlePOST(request: NextRequest) {
     } else if (_type === "giftHamper") {
       // Revalidate gift hamper pages
       if (slug?.current) {
-        addPath(`/gift-hampers/${slug.current}`)
-        addPath("/gift-hampers") // Revalidate gift hampers list
+        addPath(`/cakes-by-post/${slug.current}`)
+        addPath('/cakes-by-post') // Revalidate cakes-by-post list
       }
-      await invalidateCache("gift-hampers");
+      await invalidateCache('cakes-by-post');
+      addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('pages')
+      addTag('sitemaps')
+    } else if (_type === 'giftHampersDeliverySection') {
+      addPath('/cakes-by-post')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
       addTag('sitemaps')
     } else if (_type === "blogPost") {
       // Revalidate blog pages
@@ -111,7 +137,30 @@ async function handlePOST(request: NextRequest) {
     } else if (_type === 'collection') {
       // Revalidate homepage collections
       addPath("/")
-      addTag('collections')
+      addPath('/cakes')
+      addCakeCategoryLandingPaths()
+      addTag('cake-collections')
+    } else if (_type === 'giftHamperCollection') {
+      // Revalidate gift hamper collections used on cakes filters
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addTag('gift-hamper-collections')
+    } else if (_type === 'collectionsDisplayOrder') {
+      // Revalidate homepage and cakes filters that use collections order
+      addPath('/')
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addTag('cake-collections')
+      addTag('gift-hamper-collections')
+    } else if (_type === 'productsDisplayOrder') {
+      // Revalidate product listing pages that use manual display order
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addCakeCategoryLandingPaths()
+      addTag('cakes')
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
+      addTag('sitemaps')
     }
 
     for (const path of pathsToRevalidate) {

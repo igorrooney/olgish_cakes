@@ -6,10 +6,12 @@ import type { Metadata, Viewport } from "next";
 import { Alice, Inter, Oldenburg } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { SiteHeader } from "./components/homepage/SiteHeader";
 import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
 import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { RouteScrollReset } from "./components/RouteScrollReset";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
@@ -412,7 +414,12 @@ export default async function RootLayout({
   const aggregateRating = buildAggregateRating(reviewStats)
 
   return (
-    <html lang="en-GB" data-theme="olgish-cakes" className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}>
+    <html
+      lang="en-GB"
+      data-theme="olgish-cakes"
+      data-scroll-behavior="smooth"
+      className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}
+    >
       <head>
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
 
@@ -649,22 +656,25 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
-        <ConditionalMuiProviders>
-          <ReviewStatsProvider stats={reviewStats}>
-            <Providers>
-              <div className="flex flex-col min-h-screen">
-                <SiteHeader />
-                <main className="flex-grow">{children}</main>
-                <SiteFooter />
-                <ScrollToTop />
-                <WebVitalsMonitor />
-                <PerformanceOptimizer />
-              </div>
-            </Providers>
-          </ReviewStatsProvider>
-        </ConditionalMuiProviders>
-        <Analytics />
-        <SpeedInsights />
+        <NuqsAdapter>
+          <ConditionalMuiProviders>
+            <ReviewStatsProvider stats={reviewStats}>
+              <Providers>
+                <div className="flex flex-col min-h-screen">
+                  <RouteScrollReset />
+                  <SiteHeader />
+                  <main className="flex-grow">{children}</main>
+                  <SiteFooter />
+                  <ScrollToTop />
+                  <WebVitalsMonitor />
+                  <PerformanceOptimizer />
+                </div>
+              </Providers>
+            </ReviewStatsProvider>
+          </ConditionalMuiProviders>
+          <Analytics />
+          <SpeedInsights />
+        </NuqsAdapter>
 
         {/* Critical CSS loading script */}
         <Script id="critical-css-loader" strategy="afterInteractive">

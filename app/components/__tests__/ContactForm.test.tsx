@@ -105,7 +105,7 @@ jest.mock('@/lib/design-system', () => ({
       text: { primary: '#000', secondary: '#666' },
       primary: { main: '#2E3192', dark: '#1F2368', contrast: '#FFF' },
       secondary: { main: '#FEF102' },
-      background: { paper: '#FFF', subtle: '#FFF5E6', default: '#FFF8E7' },
+      background: { paper: '#FFF', subtle: '#FFF5E6', default: '#FFFBEB' },
       border: { light: '#E0E0E0' },
       error: { main: '#D04436' },
       success: { main: '#1D8348' }

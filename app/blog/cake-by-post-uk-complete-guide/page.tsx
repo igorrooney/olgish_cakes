@@ -197,7 +197,7 @@ export default function CakeByPostGuidePage() {
         "@type": "HowToStep",
         name: "Visit our website",
         text: "Go to our cake by post service page to view available options",
-        url: "https://olgishcakes.co.uk/gift-hampers/cake-by-post-service"
+        url: "https://olgishcakes.co.uk/cakes-by-post"
       },
       {
         "@type": "HowToStep",
@@ -744,7 +744,7 @@ export default function CakeByPostGuidePage() {
                 <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
                   Surprise someone special with our traditional Ukrainian honey cake delivered straight to their door.
                 </Typography>
-                <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+                <Link href="/cakes-by-post/cake-by-post" style={{ textDecoration: 'none' }}>
               <Button variant="contained"
                   size="large"
                   sx={{
@@ -815,7 +815,7 @@ export default function CakeByPostGuidePage() {
                   <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7 }}>
                     Ready to send a delicious surprise? Order our traditional Ukrainian honey cake by post today.
                   </Typography>
-                  <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+                  <Link href="/cakes-by-post/cake-by-post" style={{ textDecoration: 'none' }}>
               <Button variant="contained"
                     fullWidth
                     sx={{

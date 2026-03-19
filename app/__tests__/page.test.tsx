@@ -35,6 +35,9 @@ interface MUIComponentProps {
   [key: string]: unknown
 }
 
+let capturedOccasionsProps: Record<string, unknown> | null = null
+let capturedEnquiryFormProps: Record<string, unknown> | null = null
+
 // Mock fetch for CSRF token
 global.fetch = jest.fn(() =>
   Promise.resolve({
@@ -56,6 +59,10 @@ jest.mock('../utils/fetchTestimonials', () => ({
   getFeaturedTestimonials: jest.fn(() => Promise.resolve([])),
   getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 })),
   getAllTestimonials: jest.fn(() => Promise.resolve([]))
+}))
+
+jest.mock('../utils/fetchCollections', () => ({
+  getHomepageCollections: jest.fn(() => Promise.resolve([]))
 }))
 
 jest.mock('../utils/fetchMarketSchedule', () => ({
@@ -96,9 +103,15 @@ jest.mock('../components/homepage', () => ({
     return <div data-testid="mobile-markets">Mobile Markets</div>
   },
   Reviews: () => <div data-testid="reviews">Reviews</div>,
-  Occasions: () => <div data-testid='occasions'>Occasions</div>,
+  Occasions: (props: Record<string, unknown>) => {
+    capturedOccasionsProps = props
+    return <div data-testid='occasions'>Occasions</div>
+  },
   HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
-  EnquiryForm: () => <div data-testid="enquiry-form">Enquiry Form</div>,
+  EnquiryForm: (props: Record<string, unknown>) => {
+    capturedEnquiryFormProps = props
+    return <div data-testid="enquiry-form">Enquiry Form</div>
+  },
   Instagram: () => <div data-testid="instagram">Instagram</div>
 }))
 
@@ -157,7 +170,7 @@ jest.mock('@/lib/design-system', () => ({
     secondary: { main: '#FDB913', dark: '#C9C200' },
     success: { main: '#1D8348' },
     text: { primary: '#000', secondary: '#666' },
-    background: { default: '#FFF8E7', paper: '#FFF', subtle: '#FFF5E6' },
+    background: { default: '#FFFBEB', paper: '#FFF', subtle: '#FFF5E6' },
     border: { light: '#E0E0E0' }
   },
   spacing: { sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
@@ -175,7 +188,7 @@ jest.mock('@/lib/design-system', () => ({
       secondary: { main: '#FDB913', dark: '#C9C200' },
       success: { main: '#1D8348' },
       text: { primary: '#000', secondary: '#666' },
-      background: { default: '#FFF8E7', paper: '#FFF', subtle: '#FFF5E6' },
+      background: { default: '#FFFBEB', paper: '#FFF', subtle: '#FFF5E6' },
       border: { light: '#E0E0E0' }
     },
     spacing: { sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
@@ -200,10 +213,14 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 const mockGetAllTestimonials = getAllTestimonials as jest.MockedFunction<typeof getAllTestimonials>
+const { getHomepageCollections: mockGetHomepageCollections } = jest.requireMock('../utils/fetchCollections')
 
 describe('HomePage', () => {
   beforeEach(() => {
+    capturedOccasionsProps = null
+    capturedEnquiryFormProps = null
     mockGetAllTestimonials.mockResolvedValue([])
+    mockGetHomepageCollections.mockResolvedValue([])
   })
 
   describe('Metadata Generation', () => {
@@ -247,6 +264,26 @@ describe('HomePage', () => {
       const page = await HomePage()
 
       expect(() => render(page)).not.toThrow()
+    })
+
+    it('passes fetched collections to Occasions and built occasion options to EnquiryForm', async () => {
+      mockGetHomepageCollections.mockResolvedValue([
+        { _id: 'collection-1', name: 'Wedding Cakes' }
+      ])
+
+      const page = await HomePage()
+      render(page)
+
+      expect(capturedOccasionsProps).toEqual({
+        collections: [{ _id: 'collection-1', name: 'Wedding Cakes' }]
+      })
+      expect(capturedEnquiryFormProps).toEqual({
+        occasionOptions: [
+          { label: 'Select from list', value: '', disabled: true },
+          { label: 'Wedding Cakes', value: 'Wedding Cakes' },
+          { label: 'Other', value: 'other' }
+        ]
+      })
     })
 
     it('should include structured data scripts when testimonials exist', async () => {
@@ -493,6 +530,32 @@ describe('HomePage', () => {
           // Ignore parse errors
         }
       })
+    })
+
+    it('should emit bakery structured data with a clean pound-symbol price range', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+
+      let bakerySchema: { '@type'?: string, priceRange?: string } | null = null
+
+      scripts.forEach((script) => {
+        try {
+          const data = JSON.parse(script.textContent || '{}') as {
+            '@type'?: string
+            priceRange?: string
+          }
+
+          if (data['@type'] === 'Bakery') {
+            bakerySchema = data
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      })
+
+      expect(bakerySchema).toBeTruthy()
+      expect(bakerySchema?.priceRange).toBe('££')
     })
   })
 })

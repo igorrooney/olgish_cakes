@@ -1,12 +1,29 @@
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { PHONE_UTILS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { generateUniqueKey } from "@/lib/order-utils";
 import { serverClient } from "@/sanity/lib/client";
-import { urlFor } from "@/sanity/lib/image";
-import type { Order, OrderItem, OrderMessage, OrderMessageAttachment, OrderNoteImage, OrderUpdate } from "@/types/order";
+import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from "@/lib/email/service";
+import type { Order, OrderItem, OrderNoteImage, OrderUpdate } from "@/types/order";
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+
+function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
+  if (!Array.isArray(items)) {
+    return []
+  }
+
+  return items.map((item) => ({
+    productName: item.productName || 'Custom Order',
+    quantity: typeof item.quantity === 'number' && Number.isFinite(item.quantity) ? item.quantity : 1,
+    unitPrice: typeof item.unitPrice === 'number' && Number.isFinite(item.unitPrice) ? item.unitPrice : 0,
+    totalPrice: typeof item.totalPrice === 'number' && Number.isFinite(item.totalPrice) ? item.totalPrice : 0,
+    designType: item.designType,
+    specialInstructions: item.specialInstructions,
+    filling: item.flavor,
+    servings: item.size,
+    productType: item.productType,
+    productId: item.productId
+  }))
+}
 
 // GET - Fetch single order by ID
 export async function GET(
@@ -500,294 +517,135 @@ export async function DELETE(
 
 // Helper function to send status update emails
 async function sendStatusUpdateEmail(order: Order, newStatus: string) {
-  // Check for Resend API key at runtime
-  if (!process.env.RESEND_API_KEY) {
-    logger.error('RESEND_API_KEY not configured - skipping status update email');
-    return;
+  const emailMode = getEmailTransportMode()
+
+  if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
+    logger.error('RESEND_API_KEY not configured - skipping status update email')
+    return
   }
 
-  // Initialize Resend at runtime
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
   const statusMessages = {
-    'confirmed': {
+    confirmed: {
       subject: `Order Confirmed #${order.orderNumber} - Olgish Cakes`,
-      message: `Great news! Your order has been confirmed and we've started working on it. We'll keep you updated on the progress.`
+      message: 'Great news! Your order has been confirmed and we\'ve started working on it. We\'ll keep you updated on progress.'
     },
     'in-progress': {
       subject: `Order In Progress #${order.orderNumber} - Olgish Cakes`,
-      message: `Your order is now in progress. Our team is preparing your delicious cake with care and attention to detail.`
+      message: 'Your order is now in progress. Our team is preparing your cake with care.'
     },
     'ready-pickup': {
       subject: `Order Ready for Collection #${order.orderNumber} - Olgish Cakes`,
-      message: `Your order is ready for collection! Please contact us to arrange pickup or delivery.`
+      message: 'Your order is ready for collection. Please contact us to arrange pickup.'
     },
     'out-delivery': {
       subject: `Order Out for Delivery #${order.orderNumber} - Olgish Cakes`,
       message: (() => {
-        const deliveryMethod = order.delivery.deliveryMethod;
-        let baseMessage = 'Great news! Your order is on its way to you.';
+        const deliveryMethod = order.delivery.deliveryMethod
 
         if (deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') {
-          baseMessage = 'Great news! Your order has been dispatched via Royal Mail and is on its way to you. You should receive it within the next few days.';
-        } else if (deliveryMethod === 'local-delivery') {
-          baseMessage = 'Great news! Your order is out for local delivery and will be with you soon.';
-        } else if (deliveryMethod === 'collection') {
-          baseMessage = 'Great news! Your order is ready for collection. Please contact us to arrange pickup.';
-        } else if (deliveryMethod === 'market-pickup') {
-          baseMessage = 'Great news! Your order is ready for collection at our market stall. Please contact us to arrange pickup.';
+          return order.delivery.trackingNumber
+            ? 'Great news! Your order has been dispatched via Royal Mail. You can use the tracking number below to follow delivery.'
+            : 'Great news! Your order has been dispatched via Royal Mail and is on the way.'
         }
 
-        // Only add tracking info for postal deliveries with tracking number
-        if ((deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') && order.delivery.trackingNumber) {
-          const trackingInfo = ` You can track your package using the tracking number provided below.`;
-          return baseMessage + trackingInfo;
+        if (deliveryMethod === 'local-delivery') {
+          return 'Great news! Your order is out for local delivery and will be with you soon.'
         }
 
-        return baseMessage;
+        if (deliveryMethod === 'market-pickup') {
+          return 'Great news! Your order is ready for collection at our market stall. Please contact us to arrange pickup.'
+        }
+
+        return 'Great news! Your order is on its way to you.'
       })()
     },
-    'delivered': {
+    delivered: {
       subject: `Order Delivered #${order.orderNumber} - Olgish Cakes`,
-      message: `Your order has been delivered! We hope you enjoy your delicious cake. Please let us know if you have any feedback.`
+      message: 'Your order has been delivered. We hope you enjoy your cake.'
     },
-    'completed': {
+    completed: {
       subject: `Order Completed #${order.orderNumber} - Olgish Cakes`,
-      message: `Thank you for choosing Olgish Cakes! Your order has been completed. We hope you enjoyed your cake and look forward to serving you again.`
+      message: 'Thank you for choosing Olgish Cakes. Your order is completed and we look forward to serving you again.'
     },
-    'cancelled': {
+    cancelled: {
       subject: `Order Cancelled #${order.orderNumber} - Olgish Cakes`,
-      message: `We're sorry to inform you that your order has been cancelled. If you have any questions, please don't hesitate to contact us.`
+      message: 'We\'re sorry to inform you that your order has been cancelled. If you have questions, please contact us.'
     }
-  };
+  } as const
 
-  const statusInfo = statusMessages[newStatus as keyof typeof statusMessages];
-  if (!statusInfo) return;
+  const statusInfo = statusMessages[newStatus as keyof typeof statusMessages]
+  if (!statusInfo) {
+    return
+  }
+
+  const firstItem = order.items?.[0]
+  const totalPrice = (() => {
+    if (typeof order.pricing?.total === 'number' && order.pricing.total > 0) {
+      return order.pricing.total
+    }
+
+    if (Array.isArray(order.items) && order.items.length > 0) {
+      return order.items.reduce((sum: number, item: OrderItem) => {
+        const itemTotal = typeof item.totalPrice === 'number' ? item.totalPrice : item.unitPrice || 0
+        return sum + itemTotal
+      }, 0)
+    }
+
+    return 0
+  })()
+
+  const normalizedStatus = newStatus === 'ready-pickup'
+    ? 'ready'
+    : newStatus === 'out-delivery'
+      ? 'out-for-delivery'
+      : newStatus
 
   try {
-    const bccEmail = process.env.ADMIN_BCC_EMAIL || undefined;
+    const sendResult = await sendEmail({
+      templateId: 'orders-status-update',
+      input: {
+        customerName: order.customer.name,
+        customerEmail: order.customer.email,
+        customerPhone: order.customer.phone,
+        address: order.customer.address,
+        city: order.customer.city,
+        postcode: order.customer.postcode,
+        orderNumber: order.orderNumber,
+        orderType: order.orderType,
+        productName: firstItem?.productName,
+        productId: firstItem?.productId,
+        productType: firstItem?.productType,
+        quantity: firstItem?.quantity,
+        unitPrice: firstItem?.unitPrice,
+        totalPrice,
+        orderItems: normalizeEmailOrderItems(order.items),
+        dateNeeded: order.delivery.dateNeeded || undefined,
+        status: normalizedStatus,
+        designType: firstItem?.designType,
+        filling: firstItem?.flavor,
+        servings: firstItem?.size,
+        customerMessage: firstItem?.specialInstructions,
+        deliveryMethod: order.delivery.deliveryMethod,
+        deliveryAddress: order.delivery.deliveryAddress,
+        paymentMethod: order.pricing?.paymentMethod,
+        trackingNumber: order.delivery.trackingNumber || undefined,
+        titleOverride: statusInfo.subject,
+        statusMessage: statusInfo.message
+      },
+      modeOverride: emailMode,
+      message: {
+        from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+        to: order.customer.email,
+        bcc: process.env.ADMIN_BCC_EMAIL || undefined
+      }
+    })
 
-    // Send the actual email
-    await resend.emails.send({
-      from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
-      to: order.customer.email,
-      bcc: bccEmail,
-      subject: statusInfo.subject,
-      html: `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Order Status Update - Olgish Cakes</title>
-        </head>
-        <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa;">
-            <tr>
-              <td align="center" style="padding: 40px 20px;">
-                <!-- Main Container -->
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #2E3192 0%, #1a237e 100%); padding: 40px 30px; text-align: center;">
-                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
-                        🎂 Order Status Update
-                      </h1>
-                      <p style="margin: 8px 0 0 0; color: #e3f2fd; font-size: 16px; font-weight: 400;">
-                        Your order progress update
-                      </p>
-                    </td>
-                  </tr>
-
-                  <!-- Content -->
-                  <tr>
-                    <td style="padding: 40px 30px;">
-                      <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                        Dear <strong>${order.customer.name}</strong>,
-                      </p>
-
-                      <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                        ${statusInfo.message}
-                      </p>
-
-                      <!-- Order Summary Card -->
-                      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
-                        <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">
-                          Order Summary
-                        </h2>
-
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                          <tr>
-                            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
-                            <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">#${order.orderNumber}</td>
-                          </tr>
-                          <tr>
-                            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
-                            <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">${newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('-', ' ')}</td>
-                          </tr>
-                          ${order.delivery.dateNeeded ? `
-                          <tr>
-                            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Date Needed</td>
-                            <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">${new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}</td>
-                          </tr>
-                          ` : ''}
-                          <tr>
-                            <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
-                            <td style="padding: 8px 0; color: #1f2937; font-size: 18px; font-weight: 700; text-align: right;">£${(() => {
-          // Use pricing.total if available, otherwise calculate from items
-          if (order.pricing?.total && order.pricing.total > 0) {
-            return order.pricing.total;
-          }
-          // Calculate total from items as fallback
-          if (order.items && order.items.length > 0) {
-            return order.items.reduce((sum: number, item: OrderItem) => sum + (item.totalPrice || item.unitPrice || 0), 0);
-          }
-          return 0;
-        })()}</td>
-                          </tr>
-                        </table>
-                      </div>
-
-                      <!-- Product Details -->
-                      <div style="margin-bottom: 32px;">
-                        <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px; font-weight: 600;">
-                          Your Order
-                        </h3>
-
-                        ${order.items.map((item: OrderItem) => `
-                          <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
-                            <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
-                            <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
-                            <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                              Quantity: ${item.quantity || 1}${item.productType === 'cake' ? ` • Design: ${item.designType === 'individual' ? 'Individual Design' : 'Standard Design'}` : ''}
-                            </p>
-                            ${item.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${item.specialInstructions}</p>` : ''}
-                          </div>
-                        `).join('')}
-                      </div>
-
-                      <!-- Design Images Section -->
-                      ${(() => {
-          // Check if any items have individual design and if there are message attachments
-          const hasIndividualDesign = order.items?.some((item: OrderItem) => item.designType === 'individual');
-          const hasAttachments = order.messages && order.messages.some((message: OrderMessage) => message.attachments && message.attachments.length > 0);
-
-          if (hasIndividualDesign && hasAttachments && order.messages) {
-            const allAttachments = order.messages
-              .filter((message: OrderMessage) => message.attachments && message.attachments.length > 0)
-              .flatMap((message: OrderMessage) => message.attachments || [])
-              .filter((attachment: OrderMessageAttachment) => attachment && attachment.asset);
-
-            if (allAttachments.length > 0) {
-              return `
-                              <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
-                                <h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 16px; font-weight: 600;">🎨 Your Design Reference</h3>
-                                <p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px;">
-                                  We're using your design reference to create your perfect cake.
-                                </p>
-                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                  ${allAttachments.map((attachment: OrderMessageAttachment) => {
-                if (attachment.asset) {
-                  const imageUrl = urlFor(attachment.asset).width(400).height(300).url();
-                  return `
-                                        <div style="border: 2px solid #22c55e; border-radius: 8px; overflow: hidden; max-width: 200px;">
-                                          <img src="${imageUrl}" alt="Design Reference" style="width: 100%; height: auto; display: block;" />
-                                        </div>
-                                      `;
-                }
-                return '';
-              }).join('')}
-                                </div>
-                              </div>
-                            `;
-            }
-          }
-          return '';
-        })()}
-
-                      ${newStatus === 'out-delivery' && order.delivery.trackingNumber ? `
-                        <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
-                          <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 16px; font-weight: 600;">📦 Tracking Information</h3>
-                          ${order.delivery.deliveryMethod === 'postal-delivery' || order.delivery.deliveryMethod === 'postal' ? `
-                            <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;"><strong>Courier:</strong> Royal Mail</p>
-                            <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;">
-                              <strong>Tracking Number:</strong>
-                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}"
-                                 style="color: #1976d2; text-decoration: underline; font-weight: 600;">
-                                ${order.delivery.trackingNumber}
-                              </a>
-                            </p>
-                            <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                              <a href="https://www.royalmail.com/track-your-item#/tracking-results/${order.delivery.trackingNumber}"
-                                 style="color: #1976d2; text-decoration: none; font-weight: 500;">
-                                Track your package on Royal Mail website →
-                              </a>
-                            </p>
-                          ` : `
-                            <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;">
-                              <strong>Tracking Number:</strong> ${order.delivery.trackingNumber}
-                            </p>
-                            <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                              <strong>Delivery Method:</strong> ${order.delivery.deliveryMethod.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
-                            </p>
-                          `}
-                        </div>
-                      ` : ''}
-
-                      ${newStatus === 'completed' ? `
-                        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
-                          <h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">⭐ We'd Love Your Feedback!</h3>
-                          <p style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
-                            Thank you for choosing Olgish Cakes! We hope you enjoyed your order.
-                            Your feedback helps us continue to provide the best service and helps other customers discover our delicious Ukrainian cakes.
-                          </p>
-                          <p style="margin: 0; color: #0c4a6e; font-size: 14px;">
-                            <a href="https://uk.trustpilot.com/review/olgishcakes.co.uk"
-                               style="display: inline-block; background: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
-                              Leave a Review on Trustpilot →
-                            </a>
-                          </p>
-                        </div>
-                      ` : ''}
-
-                      <!-- Contact Information -->
-                      <div style="text-align: center; padding: 24px 0; border-top: 1px solid #e5e7eb;">
-                        <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px;">
-                          Questions about your order? We're here to help!
-                        </p>
-                        <p style="margin: 0 0 20px 0; color: #374151; font-size: 14px;">
-                          📧 <a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 500;">hello@olgishcakes.co.uk</a><br>
-                          📞 <a href="${PHONE_UTILS.telLink}" style="color: #2E3192; text-decoration: none; font-weight: 500;">${PHONE_UTILS.displayPhone}</a>
-                        </p>
-                        <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                          Reply to this email to track your order status
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background: #f8fafc; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                      <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 14px; font-weight: 500;">
-                        With love from Leeds, UK
-                      </p>
-                      <p style="margin: 0; color: #9ca3af; font-size: 12px;">
-                        © ${new Date().getFullYear()} Olgish Cakes. All rights reserved.<br>
-                        Traditional Ukrainian honey cakes made with love
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-    });
+    if (sendResult.error) {
+      throw new Error(sendResult.error.message)
+    }
   } catch (emailError) {
-    logger.error('Failed to send status update email', emailError);
+    logger.error('Failed to send status update email', emailError)
   }
 }
+
+

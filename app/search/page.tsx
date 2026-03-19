@@ -31,7 +31,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     { label: "All Cakes", href: "/cakes" },
     { label: "Wedding Cakes", href: "/wedding-cakes" },
     { label: "Birthday Cakes", href: "/birthday-cakes" },
-    { label: "Gift Hampers", href: "/gift-hampers" },
+    { label: "Cakes by post", href: "/cakes-by-post" },
     { label: "How to Order", href: "/how-to-order" },
     { label: "Contact", href: "/contact" },
   ];
@@ -66,8 +66,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           _id: h._id,
           type: "hamper" as const,
           title: h.name,
-          href: `/gift-hampers/${h.slug.current}`,
-          badge: "Gift Hamper",
+          href: `/cakes-by-post/${h.slug.current}`,
+          badge: "Cakes by post",
           subtitle: h.category,
         }))
     : [];

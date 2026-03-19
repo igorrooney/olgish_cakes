@@ -3,4 +3,5 @@ export type DisplayCollection = {
   name: string
   imageUrl: string
   imageAlt: string
+  href: string
 }

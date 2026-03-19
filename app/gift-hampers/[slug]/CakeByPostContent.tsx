@@ -170,7 +170,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
                     handcrafted in Leeds using time-honored recipes and premium ingredients.
                     Learn more about our <Link href="/honey-cake-history" style={{ textDecoration: 'none' }}>
               <MuiLink underline="none" sx={{ color: colors.primary.main }} aria-label="Learn about the history of honey cake">honey cake history</MuiLink>
-            </Link> and <Link href="/traditional-ukrainian-cakes" style={{ textDecoration: 'none' }}>
+            </Link> and <Link href="/ukrainian-cake" style={{ textDecoration: 'none' }}>
               <MuiLink underline="none" sx={{ color: colors.primary.main }} aria-label="Discover traditional Ukrainian baking traditions">traditional Ukrainian baking traditions</MuiLink>
             </Link>.
                   </Typography>
@@ -531,7 +531,7 @@ export function CakeByPostContent({ hamper }: CakeByPostContentProps) {
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/gift-hampers/cake-by-post" style={{ textDecoration: 'none' }}>
+            <Link href="/cakes-by-post/cake-by-post" style={{ textDecoration: 'none' }}>
               <Button variant="contained"
               size="large"
               sx={{

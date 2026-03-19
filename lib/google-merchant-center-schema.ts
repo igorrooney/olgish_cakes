@@ -39,6 +39,96 @@ export interface MerchantCenterProductData {
   reviewStats?: ReviewStats;
 }
 
+interface MerchantImageAssetRef {
+  _ref?: string | null;
+  url?: string;
+}
+
+interface MerchantImage {
+  asset?: MerchantImageAssetRef;
+  isMain?: boolean;
+}
+
+interface PortableTextChild {
+  text?: string | null;
+}
+
+interface PortableTextBlock {
+  children?: PortableTextChild[];
+}
+
+type PortableTextValue = PortableTextBlock[];
+
+interface MerchantPricing {
+  standard?: number;
+  from?: number;
+}
+
+interface MerchantDesigns {
+  standard?: MerchantImage[];
+  individual?: MerchantImage[];
+}
+
+export interface MerchantCakeInput {
+  _id?: string;
+  name: string;
+  slug: { current: string };
+  pricing?: MerchantPricing;
+  mainImage?: MerchantImage;
+  designs?: MerchantDesigns;
+  images?: MerchantImage[];
+  shortDescription?: string | PortableTextValue;
+  description?: string | PortableTextValue;
+}
+
+export interface MerchantHamperInput {
+  _id: string;
+  name: string;
+  slug?: { current?: string };
+  price?: number;
+  pricing?: MerchantPricing;
+  images?: MerchantImage[];
+  shortDescription?: string | PortableTextValue;
+  description?: string | PortableTextValue;
+}
+
+export interface MerchantSitemapProduct {
+  slug: { current: string };
+  _updatedAt?: string;
+  _createdAt?: string;
+}
+
+export interface MerchantValidationProduct {
+  _id?: string;
+  name?: string;
+  slug?: { current?: string };
+  pricing?: MerchantPricing;
+  price?: number;
+  mainImage?: MerchantImage;
+  designs?: MerchantDesigns;
+  images?: MerchantImage[];
+  shortDescription?: string | PortableTextValue;
+  description?: string | PortableTextValue;
+}
+
+function portableTextToPlainText(blocks: PortableTextValue) {
+  return blocks
+    .map((block) => block.children?.map((child) => child.text || "").join("") || "")
+    .join(" ");
+}
+
+function toPlainText(value: string | PortableTextValue | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    return portableTextToPlainText(value);
+  }
+
+  return value;
+}
+
 /**
  * Generate Google Merchant Center optimized Product schema
  */
@@ -227,21 +317,21 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
 /**
  * Generate enhanced structured data for cake products
  */
-export function generateCakeMerchantCenterSchema(cake: any): any {
+export function generateCakeMerchantCenterSchema(cake: MerchantCakeInput): ReturnType<typeof generateMerchantCenterProductSchema> {
   const baseUrl = "https://olgishcakes.co.uk";
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
   
   // Get the best available image
   const mainImage = cake.mainImage?.asset?._ref 
     ? cake.mainImage 
-    : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+    : cake.designs?.standard?.find((img: MerchantImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img: MerchantImage) => img.asset?._ref) ||
       cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.individual?.find((img: MerchantImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img: MerchantImage) => img.asset?._ref) ||
       cake.designs?.individual?.[0] ||
       // Fallback to images array (for legacy data like Honey Cake)
-      cake.images?.find((img: any) => img.asset?._ref) ||
+      cake.images?.find((img: MerchantImage) => img.asset?._ref) ||
       cake.images?.[0];
   
   const imageUrl = mainImage?.asset?._ref 
@@ -251,9 +341,7 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
   const price = cake.pricing?.standard || cake.pricing?.from || 25;
   
   // Enhanced description
-  let description = Array.isArray(cake.shortDescription) 
-    ? cake.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : cake.shortDescription || cake.description || '';
+  let description = toPlainText(cake.shortDescription) || toPlainText(cake.description) || '';
   
   if (!description || description.length < 100) {
     description = `${cake.name} - Traditional Ukrainian honey cake handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Available in various sizes with custom designs. Free delivery across Leeds and surrounding areas. Premium quality ingredients, expertly crafted by our experienced bakers.`;
@@ -287,12 +375,12 @@ export function generateCakeMerchantCenterSchema(cake: any): any {
 /**
  * Generate enhanced structured data for gift hamper products
  */
-export function generateHamperMerchantCenterSchema(hamper: any): any {
+export function generateHamperMerchantCenterSchema(hamper: MerchantHamperInput): ReturnType<typeof generateMerchantCenterProductSchema> {
   const baseUrl = "https://olgishcakes.co.uk";
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
+  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
   
-  const mainImage = hamper.images?.find((img: any) => img.isMain && img.asset?._ref) || 
-                   hamper.images?.find((img: any) => img.asset?._ref) || 
+  const mainImage = hamper.images?.find((img: MerchantImage) => img.isMain && img.asset?._ref) || 
+                   hamper.images?.find((img: MerchantImage) => img.asset?._ref) || 
                    hamper.images?.[0];
   
   const imageUrl = mainImage?.asset?._ref 
@@ -302,9 +390,7 @@ export function generateHamperMerchantCenterSchema(hamper: any): any {
   const price = hamper.price || hamper.pricing?.standard || 35;
   
   // Enhanced description
-  let description = Array.isArray(hamper.shortDescription) 
-    ? hamper.shortDescription.map((block: any) => block.children?.map((child: any) => child.text).join('') || '').join(' ')
-    : hamper.shortDescription || hamper.description || '';
+  let description = toPlainText(hamper.shortDescription) || toPlainText(hamper.description) || '';
   
   if (!description || description.length < 100) {
     description = `${hamper.name} - Beautiful Ukrainian gift hamper handmade with authentic recipes in Leeds, Yorkshire. Perfect for special occasions, birthdays, anniversaries, and celebrations. Thoughtfully curated selection of traditional treats. Free delivery across Leeds and surrounding areas. Premium quality ingredients, expertly crafted by our experienced bakers.`;
@@ -338,7 +424,7 @@ export function generateHamperMerchantCenterSchema(hamper: any): any {
 /**
  * Generate sitemap data for products
  */
-export function generateProductSitemapData(products: any[]) {
+export function generateProductSitemapData(products: MerchantSitemapProduct[]) {
   return products.map(product => ({
     url: `https://olgishcakes.co.uk/${product.slug.current}`,
     lastModified: product._updatedAt || product._createdAt,
@@ -350,7 +436,7 @@ export function generateProductSitemapData(products: any[]) {
 /**
  * Validate product data for Merchant Center compliance
  */
-export function validateMerchantCenterProduct(product: any): {
+export function validateMerchantCenterProduct(product: MerchantValidationProduct): {
   isValid: boolean;
   errors: string[];
   warnings: string[];
@@ -366,20 +452,20 @@ export function validateMerchantCenterProduct(product: any): {
   
   // Image validation
   const hasMainImage = product.mainImage?.asset?._ref;
-  const hasDesignImages = product.designs?.standard?.some((img: any) => img.asset?._ref) ||
-                         product.designs?.individual?.some((img: any) => img.asset?._ref);
-  const hasHamperImages = product.images?.some((img: any) => img.asset?._ref);
-  const hasLegacyImages = product.images?.some((img: any) => img.asset?._ref);
+  const hasDesignImages = product.designs?.standard?.some((img: MerchantImage) => img.asset?._ref) ||
+                         product.designs?.individual?.some((img: MerchantImage) => img.asset?._ref);
+  const hasHamperImages = product.images?.some((img: MerchantImage) => img.asset?._ref);
+  const hasLegacyImages = product.images?.some((img: MerchantImage) => img.asset?._ref);
   
   if (!hasMainImage && !hasDesignImages && !hasHamperImages && !hasLegacyImages) {
     errors.push('No product images found - this will cause Google Merchant Center validation failures');
   } else {
     // Check if images have valid asset references
-    if (hasMainImage && !product.mainImage.asset._ref) {
+    if (hasMainImage && !product.mainImage?.asset?._ref) {
       errors.push('Main image asset reference is invalid');
     }
     if (hasDesignImages) {
-      const invalidDesignImages = product.designs?.standard?.filter((img: any) => 
+      const invalidDesignImages = product.designs?.standard?.filter((img: MerchantImage) => 
         img.asset?._ref === undefined || img.asset?._ref === null
       ) || [];
       if (invalidDesignImages.length > 0) {
@@ -387,7 +473,7 @@ export function validateMerchantCenterProduct(product: any): {
       }
     }
     if (hasLegacyImages) {
-      const invalidLegacyImages = product.images?.filter((img: any) => 
+      const invalidLegacyImages = product.images?.filter((img: MerchantImage) => 
         img.asset?._ref === undefined || img.asset?._ref === null
       ) || [];
       if (invalidLegacyImages.length > 0) {

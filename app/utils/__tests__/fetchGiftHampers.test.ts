@@ -3,8 +3,12 @@ jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn)
 }))
 
-import { getAllGiftHampers, getFeaturedGiftHampers, getRevalidateTime } from '../fetchGiftHampers'
+import { getAllGiftHampers, getFeaturedGiftHampers, getGiftHamperBySlug, getRevalidateTime } from '../fetchGiftHampers'
 import { GiftHamper } from '@/types/giftHamper'
+
+jest.mock('next-sanity', () => ({
+  groq: (strings: TemplateStringsArray) => strings[0]
+}))
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -55,6 +59,56 @@ describe('fetchGiftHampers', () => {
 
       expect(result).toEqual([mockHamper])
       expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should prioritize products display order for gift hampers', async () => {
+      const firstHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-1',
+        name: 'Hamper One',
+        order: 2
+      }
+      const secondHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-2',
+        name: 'Hamper Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        giftHampers: [firstHamper, secondHamper],
+        displayOrder: {
+          giftHampersOrder: [{ _ref: 'hamper-2' }, { _ref: 'hamper-1' }]
+        }
+      })
+
+      const result = await getAllGiftHampers()
+
+      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-1'])
+    })
+
+    it('should fallback to legacy order when products display order is not configured', async () => {
+      const firstHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-1',
+        name: 'Hamper One',
+        order: 2
+      }
+      const secondHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-2',
+        name: 'Hamper Two',
+        order: 1
+      }
+
+      mockFetch.mockResolvedValue({
+        giftHampers: [firstHamper, secondHamper],
+        displayOrder: null
+      })
+
+      const result = await getAllGiftHampers()
+
+      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-1'])
     })
 
     it('should use cache for non-preview requests', async () => {
@@ -197,6 +251,54 @@ describe('fetchGiftHampers', () => {
       // Verify error was logged
       expect(consoleSpy.mock.calls.length >= 0).toBe(true)
       consoleSpy.mockRestore()
+    })
+  })
+
+  describe('getGiftHamperBySlug', () => {
+    it('should fetch gift hamper by slug', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      const result = await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(result).toEqual(mockHamper)
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"giftHampersDeliverySection"'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'deluxe-hamper' })
+    })
+
+    it('should use cache for non-preview requests', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      await getGiftHamperBySlug('deluxe-hamper')
+      await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(mockFetch).toHaveBeenCalled()
+    })
+
+    it('should bypass cache for preview requests', async () => {
+      mockFetch.mockResolvedValue(mockHamper)
+
+      await getGiftHamperBySlug('deluxe-hamper', true)
+      await getGiftHamperBySlug('deluxe-hamper', true)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    it('should return null on error', async () => {
+      mockFetch.mockRejectedValue(new Error('Fetch failed'))
+
+      const result = await getGiftHamperBySlug('deluxe-hamper')
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when gift hamper is not found', async () => {
+      mockFetch.mockResolvedValue(null)
+
+      const result = await getGiftHamperBySlug('non-existent')
+
+      expect(result).toBeNull()
     })
   })
 

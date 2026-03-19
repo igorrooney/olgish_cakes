@@ -15,8 +15,6 @@ const requiredFiles = [
   "app/robots.ts",
   "app/sitemap.ts",
   "app/layout.tsx",
-  "public/robots.txt",
-  "public/sitemap.xml",
 ];
 
 requiredFiles.forEach(file => {

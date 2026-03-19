@@ -137,7 +137,7 @@ export function AdminDashboard() {
       title: 'Email Testing',
       description: 'Test email templates and preview content',
       icon: <Email />,
-      href: '/test-emails',
+      href: '/admin/email-test',
       color: designTokens.colors.error.main,
       stats: 'Templates'
     },

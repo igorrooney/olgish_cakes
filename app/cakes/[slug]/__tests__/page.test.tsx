@@ -9,10 +9,14 @@ import CakeDetailPage, { generateMetadata, generateStaticParams } from '../page'
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
+  }),
+  permanentRedirect: jest.fn(() => {
+    throw new Error('NEXT_REDIRECT')
   })
 }))
 
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
+let capturedCakePageClientProps: Record<string, unknown> | null = null
 
 // Mock Sanity client
 jest.mock('@/sanity/lib/client', () => {
@@ -39,6 +43,7 @@ jest.mock('@/app/utils/fetchCakes', () => ({
 
 const { __mockFetch: mockFetch, __mockGetClient: mockGetClient } = jest.requireMock('@/sanity/lib/client')
 const { getAllCakes: mockGetAllCakes, getCakeBySlug: mockGetCakeBySlug } = jest.requireMock('@/app/utils/fetchCakes')
+const { getOfferShippingDetails: mockGetOfferShippingDetails } = jest.requireMock('@/app/utils/seo')
 
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
@@ -46,35 +51,17 @@ jest.mock('@/app/utils/seo', () => ({
   getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
 }))
 
-jest.mock('@/app/utils/review-stats', () => ({
-  buildAggregateRating: jest.fn(() => ({
-    '@type': 'AggregateRating',
-    ratingValue: '5.0',
-    reviewCount: '13',
-    bestRating: '5',
-    worstRating: '1'
-  }))
-}))
-
-jest.mock('@/app/utils/review-stats.server', () => ({
-  getReviewStats: jest.fn(async () => ({ count: 13, averageRating: 5 }))
-}))
-
 jest.mock('@/types/cake', () => ({
   blocksToText: jest.fn((blocks) => 'Converted text')
 }))
+const { blocksToText: mockBlocksToText } = jest.requireMock('@/types/cake')
 
 // Mock components
 jest.mock('../CakePageClient', () => ({
-  CakePageClient: () => <div data-testid="cake-page-client">Cake Page Client</div>
-}))
-
-jest.mock('@/app/components/Breadcrumbs', () => ({
-  Breadcrumbs: () => <nav>Breadcrumbs</nav>
-}))
-
-jest.mock('@mui/material', () => ({
-  Container: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  CakePageClient: (props: Record<string, unknown>) => {
+    capturedCakePageClientProps = props
+    return <div data-testid="cake-page-client">Cake Page Client</div>
+  }
 }))
 
 // Mock Sanity image URL builder
@@ -113,6 +100,8 @@ describe('CakeDetailPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    capturedCakePageClientProps = null
+    mockBlocksToText.mockReturnValue('Converted text')
     // Reset urlFor mock to default behavior
     mockUrlFor.mockReturnValue({
       width: jest.fn(() => ({
@@ -193,6 +182,57 @@ describe('CakeDetailPage', () => {
       expect(metadata.description).toContain('Converted text')
     })
 
+    it('should not truncate long shortDescription fallback and should normalize whitespace', async () => {
+      const longDescription = `${'A'.repeat(120)}   \n\n ${'B'.repeat(120)}`
+      const cakeWithoutSEO = {
+        ...mockCake,
+        name: 'Vanilla Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce(longDescription)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
+      const description = metadata.description as string
+
+      expect(description).toBe(`${'A'.repeat(120)} ${'B'.repeat(120)}`)
+      expect(description.length).toBeGreaterThan(160)
+    })
+
+    it('should fall back to default description when normalized shortDescription is empty', async () => {
+      const cakeWithoutSEO = {
+        ...mockCake,
+        name: 'Vanilla Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: '' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithoutSEO)
+      mockBlocksToText.mockReturnValueOnce('   \n\t   ')
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
+
+      expect(metadata.description).toBe('traditional Ukrainian honey cake - Vanilla Cake. Freshly baked in Leeds with real recipes. Free UK delivery.')
+    })
+
+    it('should prioritize normalized SEO metaDescription over shortDescription fallback', async () => {
+      const cakeWithSeoAndShortDescription = {
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: '  SEO   description \n value  ',
+          keywords: ['custom']
+        },
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithSeoAndShortDescription)
+      mockBlocksToText.mockReturnValueOnce(`${'C'.repeat(220)}`)
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+
+      expect(metadata.description).toBe('SEO description value')
+    })
+
     it('should optimize honey cake for "buy honey cake online" keyword', async () => {
       const honeyCake = {
         ...mockCake,
@@ -231,6 +271,47 @@ describe('CakeDetailPage', () => {
 
       expect(metadata.keywords).toBeDefined()
     })
+
+    it('should use minimum servings price in metadata other fields when available', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 30,
+          individual: 50
+        },
+        newDesignPricingByServings: {
+          servings2To4: 30,
+          servings4To8: 45,
+          servings8To12: 60,
+          servings2To4IsDefault: false,
+          servings4To8IsDefault: false,
+          servings8To12IsDefault: true
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const metadataOther = metadata.other as Record<string, string>
+
+      expect(metadataOther.price).toBe('30')
+      expect(metadataOther['og:price:amount']).toBe('30')
+    })
+
+    it('should fallback metadata other price fields to legacy standard when servings pricing is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 31,
+          individual: 50
+        },
+        newDesignPricingByServings: undefined
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const metadataOther = metadata.other as Record<string, string>
+
+      expect(metadataOther.price).toBe('31')
+      expect(metadataOther['og:price:amount']).toBe('31')
+    })
   })
 
   describe('Page Rendering', () => {
@@ -239,7 +320,9 @@ describe('CakeDetailPage', () => {
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
-      expect(() => render(page)).not.toThrow()
+      const { container } = render(page)
+
+      expect(container.querySelector('nav[aria-label="Breadcrumb navigation"]')).not.toBeInTheDocument()
     })
 
     it('should call notFound for missing cake', async () => {
@@ -261,9 +344,233 @@ describe('CakeDetailPage', () => {
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
     })
+
+    it('should escape html fragments in Product and Organization JSON-LD scripts', async () => {
+      const cakeWithUnsafeContent = {
+        ...mockCake,
+        name: 'Honey <script>alert("xss")</script> Cake',
+        seo: undefined,
+        shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
+      }
+      mockGetCakeBySlug.mockResolvedValue(cakeWithUnsafeContent)
+      mockBlocksToText.mockReturnValueOnce('Fresh <script>alert("xss")</script> notes')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const organizationScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"Organization"') &&
+        script.textContent?.includes('"hasOfferCatalog"')
+      )
+
+      expect(productScript).toBeDefined()
+      expect(organizationScript).toBeDefined()
+
+      const productScriptText = productScript?.textContent || ''
+      const organizationScriptText = organizationScript?.textContent || ''
+
+      expect(productScriptText).toContain('\\u003cscript')
+      expect(productScriptText).not.toContain('<script')
+      expect(organizationScriptText).toContain('\\u003cscript')
+      expect(organizationScriptText).not.toContain('<script')
+    })
+
+    it('should not include BreadcrumbList structured data', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const breadcrumbScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"BreadcrumbList"')
+      )
+
+      expect(breadcrumbScript).toBeUndefined()
+    })
+
+    it('passes fallback backHref to CakePageClient when from param is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({})
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('uses the originating cakes-by-post listing as backHref when from is valid', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?sort=priceLowToHigh&page=2'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes-by-post?sort=priceLowToHigh&page=2')
+    })
+
+    it('uses the originating category landing listing as backHref when from is a valid landing page', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/birthday-cakes?page=2'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/birthday-cakes?page=2')
+    })
+
+    it('falls back to /cakes when from includes disallowed query keys', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?sort=priceLowToHigh&page=2&evil=true'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('falls back to /cakes when from is external or fragment-based', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const externalPage = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: 'https://example.com/cakes-by-post?page=2'
+        })
+      })
+      render(externalPage)
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+
+      const fragmentPage = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          from: '/cakes-by-post?page=2#catalog'
+        })
+      })
+      render(fragmentPage)
+
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('passes fallback backHref to CakePageClient when from param is absent and other params exist', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({
+        params: Promise.resolve({ slug: 'honey-cake' }),
+        searchParams: Promise.resolve({
+          page: '2'
+        })
+      })
+      render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.backHref).toBe('/cakes')
+    })
+
+    it('omits FAQPage JSON-LD and does not pass faqItems to CakePageClient', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      expect(capturedCakePageClientProps).not.toBeNull()
+      expect(capturedCakePageClientProps?.faqItems).toBeUndefined()
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const faqScript = Array.from(scripts).find((script) =>
+        script.textContent?.includes('"@type":"FAQPage"')
+      )
+      expect(faqScript).toBeUndefined()
+    })
   })
 
   describe('Structured Data - GSC Merchant Listings Compliance', () => {
+    it('should use minimum servings price across Product and Organization offers when available', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 30,
+          individual: 50
+        },
+        newDesignPricingByServings: {
+          servings2To4: 30,
+          servings4To8: 45,
+          servings8To12: 60,
+          servings2To4IsDefault: false,
+          servings4To8IsDefault: false,
+          servings8To12IsDefault: true
+        }
+      })
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Product"')
+      })
+      const organizationScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Organization"') &&
+          script.textContent?.includes('"hasOfferCatalog"')
+      })
+
+      const productJsonLd = JSON.parse(productScript?.textContent || '{}')
+      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
+      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
+
+      expect(productJsonLd.offers.price).toBe(30)
+      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(30)
+      expect(organizationOffer?.price).toBe(30)
+    })
+
+    it('should fallback structured data prices to legacy standard when servings pricing is missing', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        pricing: {
+          standard: 34,
+          individual: 50
+        },
+        newDesignPricingByServings: undefined
+      })
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Product"')
+      })
+      const organizationScript = Array.from(scripts).find((script) => {
+        return script.textContent?.includes('"@type":"Organization"') &&
+          script.textContent?.includes('"hasOfferCatalog"')
+      })
+
+      const productJsonLd = JSON.parse(productScript?.textContent || '{}')
+      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
+      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
+
+      expect(productJsonLd.offers.price).toBe(34)
+      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(34)
+      expect(organizationOffer?.price).toBe(34)
+    })
+
     it('should include Product structured data with required fields', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
@@ -308,6 +615,7 @@ describe('CakeDetailPage', () => {
 
     it('should include shippingDetails in Offer', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
+      mockBlocksToText.mockReturnValue('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
       const { container } = render(page)
@@ -321,6 +629,217 @@ describe('CakeDetailPage', () => {
       
       expect(jsonLd.offers.shippingDetails).toBeDefined()
       expect(jsonLd.offers.shippingDetails['@type']).toBe('OfferShippingDetails')
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 0,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
+    })
+
+    it('omits shippingDetails when delivery text conflicts with policy values', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const previousNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'production'
+      const conflictingDeliveryCake = {
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: 'Custom Description'
+        },
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'We usually prepare cake orders within 5-7 working days. Free UK delivery is included.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      }
+      mockBlocksToText
+        .mockReturnValueOnce('We usually prepare cake orders within 5-7 working days. Free UK delivery is included.')
+        .mockReturnValueOnce('We usually prepare cake orders within 5-7 working days. Free UK delivery is included.')
+      mockGetCakeBySlug.mockResolvedValue(conflictingDeliveryCake)
+
+      try {
+        const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+        const { container } = render(page)
+
+        const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+        const productScript = Array.from(scripts).find(script =>
+          script.textContent?.includes('"@type":"Product"')
+        )
+
+        const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+        expect(jsonLd.offers.shippingDetails).toBeUndefined()
+        expect(jsonLd.offers.hasMerchantReturnPolicy).toBeDefined()
+        expect(consoleWarnSpy).not.toHaveBeenCalled()
+      } finally {
+        process.env.NODE_ENV = previousNodeEnv
+        consoleWarnSpy.mockRestore()
+      }
+    })
+
+    it('omits shippingDetails when explicit paid fee conflicts with policy fee', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Dispatch in 2-3 working days. UK delivery is \u00A35.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+        .mockReturnValueOnce('Dispatch in 2-3 working days. UK delivery is \u00A35.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+      expect(jsonLd.offers.shippingDetails).toBeUndefined()
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('shipping fee \u00A35'))
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('keeps shippingDetails when delivery text says UK and policy country input is non-GB', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'We usually prepare cake orders within 2-3 working days. Free UK delivery is included.'
+                }
+              ]
+            }
+          ]
+        },
+        cakesDeliverySection: {
+          name: 'Delivery',
+          policy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 0,
+            shippingDestinationCountry: 'DE',
+            deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+          }
+        }
+      })
+      mockBlocksToText
+        .mockReturnValueOnce('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
+        .mockReturnValueOnce('We usually prepare cake orders within 2-3 working days. Free UK delivery is included.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const jsonLd = JSON.parse(productScript!.textContent || '{}')
+
+      expect(jsonLd.offers.shippingDetails).toBeDefined()
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+
+      consoleWarnSpy.mockRestore()
+    })
+
+    it('normalizes unsupported deliveryMethod to default before emitting shippingDetails', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        deliverySection: {
+          descriptionSource: 'custom',
+          customDescription: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Dispatch in 2-3 working days. UK delivery is \u00A36.'
+                }
+              ]
+            }
+          ],
+          policySource: 'custom',
+          customPolicy: {
+            dispatchMinDays: 2,
+            dispatchMaxDays: 3,
+            shippingFeeGbp: 6,
+            shippingDestinationCountry: 'GB',
+            deliveryMethod: 'https://example.com/custom-delivery-method'
+          }
+        }
+      })
+      mockBlocksToText.mockReturnValue('Dispatch in 2-3 working days. UK delivery is \u00A36.')
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      render(page)
+
+      expect(mockGetOfferShippingDetails).toHaveBeenCalledWith({
+        dispatchMinDays: 2,
+        dispatchMaxDays: 3,
+        shippingFeeGbp: 6,
+        shippingDestinationCountry: 'GB',
+        deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+      }, {
+        timing: true,
+        shippingCost: true,
+        destinationCountry: true,
+        deliveryMethod: false
+      })
     })
 
     it('should include hasMerchantReturnPolicy in Offer', async () => {
@@ -340,7 +859,7 @@ describe('CakeDetailPage', () => {
       expect(jsonLd.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
     })
 
-    it('should include aggregateRating', async () => {
+    it('should not include aggregateRating in Product schema', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
@@ -352,14 +871,11 @@ describe('CakeDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      expect(jsonLd.aggregateRating).toBeDefined()
-      expect(jsonLd.aggregateRating['@type']).toBe('AggregateRating')
-      expect(jsonLd.aggregateRating.ratingValue).toBeDefined()
-      expect(jsonLd.aggregateRating.reviewCount).toBeDefined()
+
+      expect(jsonLd.aggregateRating).toBeUndefined()
     })
 
-    it('should include review array', async () => {
+    it('should not include review array in Product schema', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
@@ -371,10 +887,29 @@ describe('CakeDetailPage', () => {
       )
 
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      expect(jsonLd.review).toBeDefined()
-      expect(Array.isArray(jsonLd.review)).toBe(true)
-      expect(jsonLd.review.length).toBeGreaterThan(0)
+
+      expect(jsonLd.review).toBeUndefined()
+    })
+
+    it('should not include aggregateRating in nested itemOffered Product under Organization', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const organizationScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Organization"') &&
+        script.textContent?.includes('"hasOfferCatalog"')
+      )
+
+      expect(organizationScript).toBeDefined()
+
+      const organizationJsonLd = JSON.parse(organizationScript!.textContent || '{}')
+      const itemOffered = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered
+
+      expect(itemOffered).toBeDefined()
+      expect(itemOffered.aggregateRating).toBeUndefined()
     })
   })
 
@@ -636,3 +1171,7 @@ describe('CakeDetailPage', () => {
     })
   })
 })
+
+
+
+

@@ -1,7 +1,46 @@
 import { getClient } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
+import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
+import { CAKE_BY_SLUG_QUERY, CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
+import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
+
+interface FeaturedOfferImageQueryResult {
+  alt?: string
+  asset?: {
+    url?: string
+  }
+}
+
+interface CakesFeaturedOfferQueryResult {
+  isActive?: boolean
+  eyebrow?: string
+  title?: string
+  description?: string
+  ctaLabel?: string
+  overrideImage?: FeaturedOfferImageQueryResult
+  featuredCake?: {
+    name?: string
+    slug?: {
+      current?: string
+    }
+    mainImage?: FeaturedOfferImageQueryResult
+  }
+}
+
+interface ProductReference {
+  _ref: string
+}
+
+interface ProductsDisplayOrder {
+  cakesOrder?: ProductReference[]
+}
+
+interface CakesQueryResult {
+  cakes?: Cake[]
+  displayOrder?: ProductsDisplayOrder | null
+}
 
 // Helper function to validate Sanity environment variables at runtime
 function validateSanityConfig() {
@@ -22,54 +61,184 @@ function validateSanityConfig() {
 // Revalidation settings for backwards compatibility (no time-based revalidation)
 const REVALIDATE_TIME = 0
 
+function mapCakesFeaturedOffer(data: CakesFeaturedOfferQueryResult | null): CakesFeaturedOffer | null {
+  if (data?.isActive === false) {
+    return null
+  }
+
+  const cakeSlug = data?.featuredCake?.slug?.current
+
+  if (!cakeSlug) {
+    return null
+  }
+
+  const imageUrl = data.overrideImage?.asset?.url
+    || data.featuredCake?.mainImage?.asset?.url
+    || '/images/placeholder-cake.jpg'
+
+  const imageAlt = data.overrideImage?.alt
+    || data.featuredCake?.mainImage?.alt
+    || `${data.featuredCake?.name || 'Featured cake'} by Olgish Cakes`
+
+  return {
+    eyebrow: data.eyebrow?.trim() || 'Featured',
+    title: data.title?.trim() || 'FREE Honey Cake Offer',
+    description: data.description?.trim() || 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+    ctaLabel: data.ctaLabel?.trim() || 'Get free honey cake',
+    cakeSlug,
+    imageUrl,
+    imageAlt
+  }
+}
+
+function normalizeDocumentId(documentId: string) {
+  return documentId.startsWith('drafts.')
+    ? documentId.slice('drafts.'.length)
+    : documentId
+}
+
+function createManualOrderMap(references: ProductReference[] | undefined): Map<string, number> {
+  const manualOrderMap = new Map<string, number>()
+
+  if (!references) {
+    return manualOrderMap
+  }
+
+  references.forEach((reference, index) => {
+    if (!reference?._ref) {
+      return
+    }
+
+    const normalizedId = normalizeDocumentId(reference._ref)
+
+    if (!manualOrderMap.has(normalizedId)) {
+      manualOrderMap.set(normalizedId, index)
+    }
+  })
+
+  return manualOrderMap
+}
+
+function getLegacyOrderValue(cake: Cake) {
+  return typeof cake.order === 'number'
+    ? cake.order
+    : Number.MAX_SAFE_INTEGER
+}
+
+function sortCakesByDisplayOrder(cakes: Cake[], references: ProductReference[] | undefined) {
+  const manualOrderMap = createManualOrderMap(references)
+
+  return [...cakes].sort((firstCake, secondCake) => {
+    const firstManualRank = manualOrderMap.get(normalizeDocumentId(firstCake._id)) ?? Number.MAX_SAFE_INTEGER
+    const secondManualRank = manualOrderMap.get(normalizeDocumentId(secondCake._id)) ?? Number.MAX_SAFE_INTEGER
+
+    if (firstManualRank !== secondManualRank) {
+      return firstManualRank - secondManualRank
+    }
+
+    const firstLegacyOrder = getLegacyOrderValue(firstCake)
+    const secondLegacyOrder = getLegacyOrderValue(secondCake)
+
+    if (firstLegacyOrder !== secondLegacyOrder) {
+      return firstLegacyOrder - secondLegacyOrder
+    }
+
+    const firstCreatedAt = Date.parse(firstCake._createdAt)
+    const secondCreatedAt = Date.parse(secondCake._createdAt)
+    const hasValidCreatedAt = Number.isFinite(firstCreatedAt) && Number.isFinite(secondCreatedAt)
+
+    if (hasValidCreatedAt && firstCreatedAt !== secondCreatedAt) {
+      return secondCreatedAt - firstCreatedAt
+    }
+
+    return firstCake.name.localeCompare(secondCake.name)
+  })
+}
+
+function extractCakesAndOrder(
+  data: CakesQueryResult | Cake[] | null
+) {
+  if (Array.isArray(data)) {
+    return {
+      cakes: data,
+      references: undefined
+    }
+  }
+
+  return {
+    cakes: data?.cakes ?? [],
+    references: data?.displayOrder?.cakesOrder
+  }
+}
+
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
 
-  const query = `*[_type == "cake"] | order(order asc, _createdAt desc) {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    bestsellerCustomerStory,
-    bestsellerStoryDetails,
-    bestsellerShortDescription,
-    size,
-    pricing,
-    order,
-    isBestseller,
-    mainImage {
-      _type,
-      asset
-    },
-    images {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
+  const query = `{
+    "cakes": *[_type == "cake"] | order(order asc, _createdAt desc) {
+      _id,
+      _createdAt,
+      name,
+      slug,
+      description,
+      shortDescription,
+      bestsellerCustomerStory,
+      bestsellerStoryDetails,
+      bestsellerShortDescription,
+      size,
+      pricing,
+      newDesignPricingByServings,
+      order,
+      isBestseller,
+      mainImage {
         _type,
-        asset,
-        isMain
-      }
+        asset
+      },
+      images {
+        _type,
+        asset
+      },
+      designs {
+        standard[] {
+          _type,
+          asset,
+          isMain
+        }
+      },
+      "category": coalesce(category, collections[0]->name, "Traditional"),
+      collections[]->{
+        _id,
+        name,
+        isFeatured
+      },
+      ingredients,
+      allergens
     },
-    category,
-    ingredients,
-    allergens
+    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
   }`;
 
   try {
     if (preview) {
       // For preview, use direct fetch without caching
       const sanityClient = getClient(preview);
-      return await sanityClient.fetch(query);
+      const data = await sanityClient.fetch<CakesQueryResult | Cake[]>(query);
+      const {
+        cakes,
+        references
+      } = extractCakesAndOrder(data)
+
+      return sortCakesByDisplayOrder(cakes, references)
     }
 
     const config = getCacheConfig('cakes')
-    const data = await cachedSanityFetch<Cake[]>(query, {}, config)
-    return data
+    const data = await cachedSanityFetch<CakesQueryResult | Cake[]>(query, {}, config)
+    const {
+      cakes,
+      references
+    } = extractCakesAndOrder(data)
+
+    return sortCakesByDisplayOrder(cakes, references)
   } catch (error) {
     console.error("Error fetching all cakes:", error);
     return [];
@@ -86,7 +255,12 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
     description,
     shortDescription,
     pricing,
-    category,
+    "category": coalesce(category, collections[0]->name, "Traditional"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     slug,
     order,
     mainImage {
@@ -100,7 +274,7 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
         },
         isMain
       }
-    }
+    },
   }`;
 
   try {
@@ -119,46 +293,34 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   }
 }
 
+export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeaturedOffer | null> {
+  validateSanityConfig();
+
+  try {
+    if (preview) {
+      const sanityClient = getClient(preview);
+      const data = await sanityClient.fetch<CakesFeaturedOfferQueryResult | null>(CAKES_FEATURED_OFFER_QUERY);
+      return mapCakesFeaturedOffer(data)
+    }
+
+    const config = getCacheConfig('cakesFeaturedOffer')
+    const data = await cachedSanityFetch<CakesFeaturedOfferQueryResult | null>(
+      CAKES_FEATURED_OFFER_QUERY,
+      {},
+      config
+    )
+
+    return mapCakesFeaturedOffer(data)
+  } catch (error) {
+    console.error("Error fetching cakes featured offer:", error);
+    return null
+  }
+}
+
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-
-  const query = `*[_type == "cake" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    order,
-    mainImage {
-      _type,
-      asset
-    },
-    images {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      },
-      individual[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      }
-    },
-    category,
-    ingredients,
-    allergens
-  }`;
+  const query = CAKE_BY_SLUG_QUERY;
 
   try {
     if (preview) {
@@ -188,7 +350,7 @@ export function clearCache(): void {
   // No-op: cache is now managed by Next.js
 }
 
-export async function invalidateCache(pattern?: string): Promise<void> {
+export async function invalidateCache(_pattern?: string): Promise<void> {
   // No-op: cache is now managed by Next.js via tags
   // Use revalidateTag() from 'next/cache' in API routes instead
 }
