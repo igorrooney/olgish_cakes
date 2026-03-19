@@ -1,5 +1,16 @@
 import { groq } from 'next-sanity'
 
+const CAKE_COLLECTION_FIELDS = `
+  _id,
+  name,
+  isFeatured,
+  homepageOrder,
+  image {
+    asset,
+    alt
+  }
+`
+
 const COLLECTION_FIELDS = `
   _id,
   name,
@@ -12,7 +23,7 @@ const COLLECTION_FIELDS = `
 
 export const HOMEPAGE_CAKE_COLLECTIONS_QUERY = groq`
   *[_type == "collection"] | order(name asc) {
-    ${COLLECTION_FIELDS}
+    ${CAKE_COLLECTION_FIELDS}
   }
 `
 

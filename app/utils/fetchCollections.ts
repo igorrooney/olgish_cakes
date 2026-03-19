@@ -6,6 +6,10 @@ import {
 } from '@/lib/queries/collections'
 import type { HomepageCollection } from '@/app/types/collection'
 
+type CakeHomepageCollection = HomepageCollection & {
+  homepageOrder?: number | null
+}
+
 interface CollectionReference {
   _ref: string
 }
@@ -48,6 +52,41 @@ function createOrderMap(references: CollectionReference[] | undefined): Map<stri
   return orderMap
 }
 
+function getLegacyHomepageOrderValue(collection: CakeHomepageCollection) {
+  return typeof collection.homepageOrder === 'number'
+    ? collection.homepageOrder
+    : Number.MAX_SAFE_INTEGER
+}
+
+function sortCakeCollectionsByConfiguredOrder(
+  collections: CakeHomepageCollection[],
+  orderMap: Map<string, number>
+) {
+  return [...collections].sort((firstCollection, secondCollection) => {
+    const firstRank = orderMap.get(normalizeDocumentId(firstCollection._id))
+    const secondRank = orderMap.get(normalizeDocumentId(secondCollection._id))
+    const firstHasConfiguredRank = typeof firstRank === 'number'
+    const secondHasConfiguredRank = typeof secondRank === 'number'
+
+    if (firstHasConfiguredRank && secondHasConfiguredRank && firstRank !== secondRank) {
+      return firstRank - secondRank
+    }
+
+    if (firstHasConfiguredRank !== secondHasConfiguredRank) {
+      return firstHasConfiguredRank ? -1 : 1
+    }
+
+    const legacyOrderDifference =
+      getLegacyHomepageOrderValue(firstCollection) - getLegacyHomepageOrderValue(secondCollection)
+
+    if (legacyOrderDifference !== 0) {
+      return legacyOrderDifference
+    }
+
+    return firstCollection.name.localeCompare(secondCollection.name)
+  })
+}
+
 function sortCollectionsByConfiguredOrder(
   collections: HomepageCollection[],
   orderMap: Map<string, number>
@@ -86,12 +125,12 @@ export async function getHomepageCollections(): Promise<HomepageCollection[]> {
   try {
     const config = getCacheConfig('cakeCollections')
     const [collections, orderSettings] = await Promise.all([
-      cachedSanityFetch<HomepageCollection[]>(HOMEPAGE_CAKE_COLLECTIONS_QUERY, {}, config),
+      cachedSanityFetch<CakeHomepageCollection[]>(HOMEPAGE_CAKE_COLLECTIONS_QUERY, {}, config),
       fetchCollectionsDisplayOrder(config)
     ])
     const orderMap = createOrderMap(orderSettings?.cakeCollectionsOrder)
 
-    return sortCollectionsByConfiguredOrder(collections || [], orderMap)
+    return sortCakeCollectionsByConfiguredOrder(collections || [], orderMap)
   } catch (error) {
     console.error('Error fetching homepage collections:', error)
     return []

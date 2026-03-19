@@ -1,6 +1,10 @@
 import { getHomepageCollections, getHomepageGiftHamperCollections } from '../fetchCollections'
 import type { HomepageCollection } from '@/app/types/collection'
 
+type CakeHomepageCollection = HomepageCollection & {
+  homepageOrder?: number | null
+}
+
 // Mock unstable_cache to bypass Next.js context requirement
 jest.mock('next/cache', () => ({
   unstable_cache: jest.fn((fn) => fn)
@@ -67,43 +71,71 @@ describe('fetchCollections', () => {
 
     expect(collectionsQuery).toContain('_type == "collection"')
     expect(collectionsQuery).toContain('isFeatured')
+    expect(collectionsQuery).toContain('homepageOrder')
     expect(collectionsQuery).toContain('order(name asc)')
     expect(orderSettingsQuery).toContain('_type == "collectionsDisplayOrder"')
   })
 
-  it('prioritizes drag and drop order for cake collections', async () => {
-    const firstCollection: HomepageCollection = {
+  it('prioritizes drag and drop order over legacy homepageOrder for cake collections', async () => {
+    const firstCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-1',
-      name: 'Collection One'
+      name: 'Collection One',
+      homepageOrder: 2
     }
-    const secondCollection: HomepageCollection = {
+    const secondCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-2',
-      name: 'Collection Two'
+      name: 'Collection Two',
+      homepageOrder: 1
     }
 
     mockFetch
       .mockResolvedValueOnce([firstCollection, secondCollection])
       .mockResolvedValueOnce({
-        cakeCollectionsOrder: [{ _ref: 'collection-2' }, { _ref: 'collection-1' }]
+        cakeCollectionsOrder: [{ _ref: 'collection-1' }, { _ref: 'collection-2' }]
       })
+
+    const result = await getHomepageCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['collection-1', 'collection-2'])
+  })
+
+  it('falls back to legacy homepageOrder when drag and drop order is missing', async () => {
+    const firstCollection: CakeHomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-1',
+      name: 'Collection Z',
+      homepageOrder: 2
+    }
+    const secondCollection: CakeHomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-2',
+      name: 'Collection A',
+      homepageOrder: 1
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockResolvedValueOnce(null)
 
     const result = await getHomepageCollections()
 
     expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
   })
 
-  it('falls back to alphabetical order when drag and drop order is empty', async () => {
-    const firstCollection: HomepageCollection = {
+  it('falls back to legacy homepageOrder when drag and drop order is empty', async () => {
+    const firstCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-1',
-      name: 'Collection Z'
+      name: 'Collection Z',
+      homepageOrder: 2
     }
-    const secondCollection: HomepageCollection = {
+    const secondCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-2',
-      name: 'Collection A'
+      name: 'Collection A',
+      homepageOrder: 1
     }
 
     mockFetch
@@ -117,17 +149,54 @@ describe('fetchCollections', () => {
     expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
   })
 
-  it('keeps homepage collections visible when order settings request fails', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-    const firstCollection: HomepageCollection = {
+  it('uses legacy homepageOrder for cake collections not listed in drag and drop order', async () => {
+    const firstCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-1',
-      name: 'Collection Z'
+      name: 'Collection Z',
+      homepageOrder: 20
     }
-    const secondCollection: HomepageCollection = {
+    const secondCollection: CakeHomepageCollection = {
       ...mockCollection,
       _id: 'collection-2',
-      name: 'Collection A'
+      name: 'Collection A',
+      homepageOrder: 10
+    }
+    const thirdCollection: CakeHomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-3',
+      name: 'Collection B',
+      homepageOrder: 10
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection, thirdCollection])
+      .mockResolvedValueOnce({
+        cakeCollectionsOrder: [{ _ref: 'collection-1' }]
+      })
+
+    const result = await getHomepageCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual([
+      'collection-1',
+      'collection-2',
+      'collection-3'
+    ])
+  })
+
+  it('keeps homepage collections visible when order settings request fails', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    const firstCollection: CakeHomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-1',
+      name: 'Collection Z',
+      homepageOrder: 2
+    }
+    const secondCollection: CakeHomepageCollection = {
+      ...mockCollection,
+      _id: 'collection-2',
+      name: 'Collection A',
+      homepageOrder: 1
     }
 
     mockFetch
@@ -195,6 +264,29 @@ describe('fetchCollections', () => {
       .mockResolvedValueOnce([firstCollection, secondCollection])
       .mockResolvedValueOnce({
         giftHamperCollectionsOrder: [{ _ref: 'drafts.gift-2' }, { _ref: 'gift-1' }]
+      })
+
+    const result = await getHomepageGiftHamperCollections()
+
+    expect(result.map((collection) => collection._id)).toEqual(['gift-2', 'gift-1'])
+  })
+
+  it('falls back to alphabetical order when gift hamper drag and drop order is empty', async () => {
+    const firstCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-1',
+      name: 'Gift Z'
+    }
+    const secondCollection: HomepageCollection = {
+      ...mockCollection,
+      _id: 'gift-2',
+      name: 'Gift A'
+    }
+
+    mockFetch
+      .mockResolvedValueOnce([firstCollection, secondCollection])
+      .mockResolvedValueOnce({
+        giftHamperCollectionsOrder: []
       })
 
     const result = await getHomepageGiftHamperCollections()
