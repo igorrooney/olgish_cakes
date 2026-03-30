@@ -104,4 +104,20 @@ describe('next.config redirects', () => {
       }
     ]))
   })
+
+  it('redirects the old Learn articles path to the canonical blog archive', async () => {
+    if (!nextConfig.redirects) {
+      throw new Error('Expected nextConfig.redirects to be defined')
+    }
+
+    const redirects = await nextConfig.redirects()
+
+    expect(redirects).toEqual(expect.arrayContaining([
+      {
+        source: '/learn/articles',
+        destination: '/blog',
+        permanent: true
+      }
+    ]))
+  })
 })

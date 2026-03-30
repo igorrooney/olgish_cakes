@@ -20,7 +20,7 @@ const customJestConfig = {
   ],
   testPathIgnorePatterns: [...baseConfig.testPathIgnorePatterns, '/app/api/'],
   transformIgnorePatterns: [
-    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion|@sanity|next-sanity|nanoid)(?:/|$))',
+    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion|@sanity|next-sanity|nanoid|uuid)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$'
   ]
 }

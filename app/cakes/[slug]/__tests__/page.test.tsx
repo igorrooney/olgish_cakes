@@ -168,6 +168,20 @@ describe('CakeDetailPage', () => {
       expect(metadata.title).toContain('Honey Cake')
     })
 
+    it('should normalize a CMS title that already includes the Olgish Cakes suffix', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title | Olgish Cakes',
+          metaDescription: 'Custom Description'
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+
+      expect(metadata.title).toBe('Custom Title')
+    })
+
     it('should generate description from shortDescription', async () => {
       const cakeWithoutSEO = {
         ...mockCake,
@@ -253,7 +267,7 @@ describe('CakeDetailPage', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
-      expect(metadata.title).toContain('Not Found')
+      expect(metadata.title).toBe('Cake not found')
     })
 
     it('should include OpenGraph data', async () => {

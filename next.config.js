@@ -286,15 +286,6 @@ const nextConfig = {
         ],
       },
       {
-        source: "/api/publish-scheduled-posts",
-        headers: [
-          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
-          { key: "Pragma", value: "no-cache" },
-          { key: "Expires", value: "0" },
-          { key: "X-Robots-Tag", value: "noindex, nofollow" },
-        ],
-      },
-      {
         source: "/api/test-sanity-write",
         headers: [
           { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
@@ -471,6 +462,11 @@ const nextConfig = {
       {
         source: "/custom-cake-enquiry",
         destination: "/get-custom-quote",
+        permanent: true,
+      },
+      {
+        source: "/learn/articles",
+        destination: "/blog",
         permanent: true,
       },
     ];

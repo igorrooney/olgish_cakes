@@ -3,22 +3,35 @@
 import { useState, useEffect } from 'react';
 import { Fab, Zoom } from '@mui/material';
 import { KeyboardArrowUp as ArrowUpIcon } from '@mui/icons-material';
+import { KLARO_VISIBILITY_EVENT } from './KlaroA11yBridge';
 
 export const ScrollToTop: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isKlaroOpen, setIsKlaroOpen] = useState(
+    () => typeof document !== 'undefined' && document.body.dataset.klaroOpen === 'true'
+  );
 
   // Show button when page is scrolled down
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      setIsVisible(window.pageYOffset > 300);
     };
 
     window.addEventListener('scroll', toggleVisibility);
+    toggleVisibility();
+
     return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  useEffect(() => {
+    const handleKlaroVisibilityChange = () => {
+      setIsKlaroOpen(document.body.dataset.klaroOpen === 'true');
+    };
+
+    window.addEventListener(KLARO_VISIBILITY_EVENT, handleKlaroVisibilityChange);
+    handleKlaroVisibilityChange();
+
+    return () => window.removeEventListener(KLARO_VISIBILITY_EVENT, handleKlaroVisibilityChange);
   }, []);
 
   // Scroll to top smoothly
@@ -28,6 +41,10 @@ export const ScrollToTop: React.FC = () => {
       behavior: 'smooth',
     });
   };
+
+  if (isKlaroOpen) {
+    return null
+  }
 
   return (
     <Zoom in={isVisible}>

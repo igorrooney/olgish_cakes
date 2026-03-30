@@ -1,6 +1,7 @@
 import { getGiftHamperBySlug, getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { normalizeCmsTitle } from '@/lib/metadata'
 import { BRAND_ID } from '@/lib/schema-constants'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { urlFor as buildImageUrl, urlFor } from '@/sanity/lib/image'
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const hamper = await getGiftHamperBySlug(slug);
   if (!hamper) {
     return {
-      title: "Gift Hamper Not Found | Olgish Cakes",
+      title: 'Gift hamper not found',
       description: "The requested hamper could not be found.",
     };
   }
@@ -64,6 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     (isCakeByPost &&
       "Cake by Post Gift Hamper | Traditional Ukrainian Honey Cake UK Delivery") ||
     `${hamper.name} | Cakes by Post UK`;
+  const normalizedMetaTitle = normalizeCmsTitle(metaTitle) || hamper.name
   
   const metaDescription =
     normalizeMetaDescription(hamper.seo?.metaDescription) ||
@@ -86,7 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : `https://olgishcakes.co.uk/images/gift-hampers/${hamper.slug?.current || slug}.jpg`;
 
   return {
-    title: metaTitle,
+    title: normalizedMetaTitle,
     description: metaDescription,
     keywords,
     authors: [{ name: "Olgish Cakes" }],
@@ -95,7 +97,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: new URL("https://olgishcakes.co.uk"),
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       type: "website",
       url: canonicalUrl,
@@ -105,7 +107,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       images: [`/api/og/hampers/${hamper.slug?.current || slug}`],
       creator: "@olgish_cakes",

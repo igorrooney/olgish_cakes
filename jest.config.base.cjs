@@ -71,7 +71,8 @@ module.exports = {
     }
   },
   moduleDirectories: ['node_modules', '<rootDir>/'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', '<rootDir>/\\.tmp-script-run/'],
+  watchPathIgnorePatterns: ['<rootDir>/\\.tmp-script-run/'],
   transformIgnorePatterns: [
     'node_modules/(?!(jose|@mui|@babel/runtime|@emotion)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$'

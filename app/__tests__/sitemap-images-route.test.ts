@@ -24,7 +24,7 @@ describe('sitemap-images.xml route', () => {
       .mockResolvedValueOnce([{
         slug: { current: 'serialized-post' },
         title: 'Serialized Post',
-        featuredImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
+        coverImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
         _updatedAt: '2025-01-02'
       }])
       .mockResolvedValueOnce([])
@@ -45,18 +45,18 @@ describe('sitemap-images.xml route', () => {
         {
           slug: { current: 'test-post' },
           title: 'Test Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
           _updatedAt: '2025-01-02'
         },
         {
           title: 'No Slug Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
           _updatedAt: '2025-01-02'
         },
         {
           slug: { current: 'published-post' },
           title: 'Published Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
           _updatedAt: '2025-01-02'
         }
       ])

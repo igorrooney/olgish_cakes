@@ -25,7 +25,7 @@ describe('sitemap', () => {
   })
 
   describe('Data Fetching', () => {
-    it('should fetch cakes, blog posts, and gift hampers', async () => {
+    it('should fetch cakes, articles, and gift hampers', async () => {
       mockFetch.mockResolvedValue([])
 
       await sitemap()
@@ -76,14 +76,13 @@ describe('sitemap', () => {
       expect(cakeUrl).toBeDefined()
     })
 
-    it('should include blog routes', async () => {
+    it('should include article routes', async () => {
       mockFetch
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([{
           slug: { current: 'test-post' },
           _updatedAt: '2025-01-01',
-          publishDate: '2025-01-01',
-          featured: true
+          publishedAt: '2025-01-01'
         }])
         .mockResolvedValueOnce([])
 
@@ -181,31 +180,15 @@ describe('sitemap', () => {
   })
 
   describe('Priority Logic', () => {
-    it('should prioritize featured blog posts higher', async () => {
-      mockFetch
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          { slug: { current: 'featured' }, _updatedAt: '2025-01-01', featured: true },
-          { slug: { current: 'normal' }, _updatedAt: '2025-01-01', featured: false }
-        ])
-        .mockResolvedValueOnce([])
-
-      const result = await sitemap()
-      const featuredUrl = result.find((entry) => entry.url.includes('/blog/featured'))
-      const normalUrl = result.find((entry) => entry.url.includes('/blog/normal'))
-
-      expect(featuredUrl?.priority).toBeGreaterThan(normalUrl?.priority || 0)
-    })
-
-    it('should prioritize recent blog posts', async () => {
+    it('should prioritize recent articles', async () => {
       const recentDate = new Date().toISOString()
       const oldDate = '2020-01-01'
 
       mockFetch
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
-          { slug: { current: 'recent' }, _updatedAt: recentDate, publishDate: recentDate },
-          { slug: { current: 'old' }, _updatedAt: oldDate, publishDate: oldDate }
+          { slug: { current: 'recent' }, _updatedAt: recentDate, publishedAt: recentDate },
+          { slug: { current: 'old' }, _updatedAt: oldDate, publishedAt: oldDate }
         ])
         .mockResolvedValueOnce([])
 
@@ -214,6 +197,33 @@ describe('sitemap', () => {
       const oldUrl = result.find((entry) => entry.url.includes('/blog/old'))
 
       expect(recentUrl?.priority).toBeGreaterThan(oldUrl?.priority || 0)
+    })
+
+    it('should use weekly change frequency for trending article topics by default', async () => {
+      mockFetch
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([
+          {
+            slug: { current: 'trend' },
+            _updatedAt: '2025-01-01',
+            publishedAt: '2025-01-01',
+            topic: { slug: 'cake-by-post' }
+          },
+          {
+            slug: { current: 'standard' },
+            _updatedAt: '2025-01-01',
+            publishedAt: '2025-01-01',
+            topic: { slug: 'custom-cakes' }
+          }
+        ])
+        .mockResolvedValueOnce([])
+
+      const result = await sitemap()
+      const trendingUrl = result.find((entry) => entry.url.includes('/blog/trend'))
+      const standardUrl = result.find((entry) => entry.url.includes('/blog/standard'))
+
+      expect(trendingUrl?.changeFrequency).toBe('weekly')
+      expect(standardUrl?.changeFrequency).toBe('monthly')
     })
 
     it('should sort entries by priority', async () => {
@@ -266,13 +276,15 @@ describe('sitemap', () => {
       expect(cakesQuery).toContain('defined(slug.current)')
     })
 
-    it('should query with filters to exclude test items from blog posts', async () => {
+    it('should query with filters to exclude test items from articles', async () => {
       mockFetch.mockResolvedValue([])
 
       await sitemap()
 
       const blogQuery = mockFetch.mock.calls[1][0]
 
+      expect(blogQuery).toContain('_type == "article"')
+      expect(blogQuery).toContain('coalesce(publishedAt, _createdAt) <= now()')
       expect(blogQuery).toContain('!slug.current match "test*"')
       expect(blogQuery).toContain('!slug.current match "*test*"')
       expect(blogQuery).toContain('defined(slug.current)')

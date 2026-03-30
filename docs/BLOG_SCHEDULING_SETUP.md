@@ -1,179 +1,173 @@
 # Blog Scheduling Setup Guide
 
-## 🚀 What We've Built
+This guide describes the current article workflow for Olgish Cakes. The legacy `blogPost` API routes, `/admin/blog`, and manual scheduled-post publisher are retired.
 
-Your Next.js website now has a complete blog scheduling system using Sanity.io! Here's what's included:
+## What The Current System Uses
 
-### **1. Sanity Blog Post Schema**
-- **Content fields**: Title, excerpt, content, featured image
-- **SEO fields**: SEO title, description, keywords
-- **Scheduling**: Status (draft/scheduled/published), publish date
-- **Organization**: Categories, featured posts, read time
+### Sanity content types
+- `article`
+- `articleTopic`
 
-### **2. API Routes**
-- **`/api/blog-posts`** - Get/create blog posts
-- **`/api/blog-posts/[id]`** - Update/delete specific posts
-- **`/api/publish-scheduled-posts`** - Publish scheduled posts
+### Public routes
+- `/blog`
+- `/blog/[slug]`
 
-### **3. Automated Scheduling**
-- **Vercel Cron Jobs** - Runs 3 times daily (9 AM, 3 PM, 6 PM)
-- **Automatic publishing** of scheduled posts
-- **Status updates** from scheduled to published
+### Revalidation paths
+- Immediate publish and content edits: `/api/revalidate`
+- Future-dated article availability: `/api/cron/revalidate-articles`
 
-### **4. Admin Interface**
-- **`/admin/blog`** - Manage all blog posts
-- **Create/Edit/Delete** posts
-- **Schedule posts** for future publishing
-- **Manual publish** scheduled posts
+## How Scheduling Works Now
 
-## 📋 Setup Instructions
+### Publish immediately
+1. Create or edit an `article` in Sanity Studio.
+2. Publish it.
+3. Sanity webhook calls `/api/revalidate`.
+4. The app refreshes `/blog`, the article detail page, and sitemap caches.
 
-### **1. Environment Variables**
-Add these to your `.env.local`:
+### Schedule for a future date
+1. Create or edit an `article` in Sanity Studio.
+2. Set `publishedAt` to the future date and time you want.
+3. Publish the document in Sanity.
+4. The article stays hidden until `publishedAt <= now()`.
+5. Vercel cron calls `/api/cron/revalidate-articles` every 5 minutes and refreshes:
+   - `/blog`
+   - due `/blog/[slug]` pages
+   - sitemap caches
+
+## Required Production Setup
+
+### Environment variables
+Set these in Vercel production:
 
 ```bash
-# Sanity Configuration
 NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
-SANITY_API_TOKEN=your_api_token
+SANITY_API_TOKEN=your_sanity_api_token
+REVALIDATE_SECRET=your_random_revalidate_secret
+CRON_SECRET=your_random_cron_secret
+ARTICLE_PUBLISH_REVALIDATE_SECONDS=300
 ```
 
-### **2. Sanity Studio Setup**
-1. **Deploy your Sanity schema**:
-   ```bash
-   cd sanity
-   npm run deploy
-   ```
+Notes:
+- `SANITY_API_TOKEN` is required because the cron route uses the server Sanity client.
+- `CRON_SECRET` is required so Vercel cron requests can authenticate.
+- `REVALIDATE_SECRET` is used by the Sanity webhook and for manual revalidation calls.
 
-2. **Access Sanity Studio**:
-   - Go to `https://your-project.sanity.studio`
-   - Create your first blog post
-   - Set status to "scheduled" and choose a publish date
+### Sanity webhook
+Create a webhook in Sanity Management Console:
 
-### **3. Vercel Deployment**
-1. **Deploy to Vercel**:
-   ```bash
-   vercel --prod
-   ```
+- URL: `https://your-domain.com/api/revalidate`
+- Method: `POST`
+- Dataset: `production`
+- Events: `create`, `update`, `delete`
+- Header:
+  - `Authorization: Bearer YOUR_REVALIDATE_SECRET`
+- Filter:
 
-2. **Cron jobs will start automatically** - no additional setup needed!
-
-## 🎯 How to Use
-
-### **Creating Blog Posts**
-
-#### **Option 1: Sanity Studio (Recommended)**
-1. Go to `https://your-project.sanity.studio`
-2. Click "Create" → "Blog Post"
-3. Fill in all fields
-4. Set status to "Scheduled" and choose publish date
-5. Save - it will auto-publish at the scheduled time!
-
-#### **Option 2: Admin Interface**
-1. Go to `https://your-site.com/admin/blog`
-2. Click "Create Post"
-3. Fill in the form
-4. Choose "Scheduled" status and set publish date
-5. Save
-
-### **Scheduling Posts**
-1. **Set status** to "Scheduled"
-2. **Choose publish date** and time
-3. **Save** - the system will automatically publish it!
-
-### **Manual Publishing**
-- Go to `/admin/blog`
-- Click "Publish Scheduled" to manually trigger publishing
-- Or change status to "Published" in Sanity Studio
-
-## 📅 Daily Blogging Workflow
-
-### **Weekly Planning**
-1. **Plan 7 articles** using the content calendar
-2. **Write in Sanity Studio** (better writing experience)
-3. **Schedule each post** for different times
-4. **Set categories** and SEO fields
-5. **Publish** - they'll go live automatically!
-
-### **Content Calendar Integration**
-- Use the provided content calendar
-- **Monday**: Cake by Post Monday
-- **Tuesday**: Traditional Tuesday
-- **Wednesday**: Wedding Wednesday
-- **Thursday**: Throwback Thursday
-- **Friday**: Fresh Friday
-- **Saturday**: Success Saturday
-- **Sunday**: Sweet Sunday
-
-## 🔧 Customization
-
-### **Adding New Categories**
-Edit `sanity/schemas/blogPost.ts`:
-```typescript
-options: {
-  list: [
-    { title: 'Business Guide', value: 'Business Guide' },
-    { title: 'Cake by Post', value: 'Cake by Post' },
-    // Add your new category here
-    { title: 'New Category', value: 'New Category' },
-  ]
-}
+```text
+_type in ["cake","testimonial","faq","giftHamper","giftHamperCollection","article","articleTopic","marketSchedule","collection","cakesFeaturedOffer","cakesDeliverySection","giftHampersDeliverySection","collectionsDisplayOrder","productsDisplayOrder"]
 ```
 
-### **Changing Cron Schedule**
-Edit `vercel.json`:
+- Projection:
+
 ```json
 {
-  "crons": [
-    {
-      "path": "/api/publish-scheduled-posts",
-      "schedule": "0 8 * * *"  // 8 AM daily
-    }
-  ]
+  "_type": _type,
+  "_id": _id,
+  "slug": slug
 }
 ```
 
-### **Adding More Fields**
-Edit `sanity/schemas/blogPost.ts` to add new fields like:
-- Author information
-- Reading time calculation
-- Social media previews
-- Related posts
+### Vercel cron
+`vercel.json` already registers:
 
-## 📊 Monitoring
+```json
+{
+  "path": "/api/cron/revalidate-articles",
+  "schedule": "*/5 * * * *"
+}
+```
 
-### **Check Scheduled Posts**
-- Go to `/admin/blog` to see all posts
-- Filter by "Scheduled" status
-- See which posts are coming up
+After deployment, verify the cron exists in the Vercel dashboard.
 
-### **Manual Publishing**
-- Use "Publish Scheduled" button for immediate publishing
-- Check logs in Vercel dashboard for cron job status
+## Normal Editorial Workflow
 
-### **Troubleshooting**
-- Check Vercel function logs for errors
-- Verify Sanity API token permissions
-- Ensure cron jobs are enabled in Vercel
+### Create a new article
+1. Open Sanity Studio.
+2. Go to `Content Marketing -> Articles`.
+3. Create an `Article`.
+4. Fill in:
+   - title
+   - slug
+   - summary
+   - dek
+   - cover image or card image
+   - body content
+   - topic
+   - SEO fields
+   - optional linked product references
+5. Publish immediately, or set a future `publishedAt` and publish.
 
-## 🎉 Benefits
+### Create or edit topics
+1. Open Sanity Studio.
+2. Go to `Content Marketing -> Article Topics`.
+3. Create or edit the topic title, slug, description, and order.
+4. Publish changes.
 
-### **SEO Advantages**
-- **Fresh content** published automatically
-- **Consistent posting** schedule
-- **SEO-optimized** content structure
-- **Local SEO** with Leeds references
+## What To Expect On The Site
 
-### **Time Saving**
-- **Batch writing** - write multiple posts at once
-- **Automatic publishing** - no manual work needed
-- **Content calendar** - organized planning
-- **Admin interface** - easy management
+### Blog archive
+- `/blog` shows published articles only.
+- Topic filters use query params.
+- Pagination appears when the current archive view has more than 12 articles.
 
-### **Professional Setup**
-- **Headless CMS** - scalable and flexible
-- **API-driven** - works with your Next.js site
-- **Scheduled publishing** - professional content management
-- **SEO-ready** - optimized for search engines
+### Article detail pages
+- `/blog/[slug]` resolves only when the article is published and `publishedAt <= now()`.
+- Article pages and archive pages both use the same published-only visibility rule.
 
-Your blog is now ready for daily posting with automated scheduling! 🚀
+### Sitemap
+- New live articles appear in `sitemap.xml`.
+- Article images appear in `sitemap-images.xml` when article imagery exists.
+- Future-dated articles rely on the cron route to refresh sitemap caches when they become due.
+
+## Testing After Deployment
+
+### Manual webhook test
+```bash
+curl -X POST https://your-domain.com/api/revalidate \
+  -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
+  -H "Content-Type: application/json" \
+  -d "{\"_type\":\"article\",\"_id\":\"test\",\"slug\":{\"current\":\"your-article-slug\"}}"
+```
+
+### Manual cron test
+```bash
+curl https://your-domain.com/api/cron/revalidate-articles \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
+```
+
+### Scheduled article test
+1. Publish an article with `publishedAt` a few minutes in the future.
+2. Wait until that time passes.
+3. Confirm:
+   - `/blog` shows the article
+   - `/blog/your-slug` resolves
+   - `sitemap.xml` includes the article URL
+
+## Troubleshooting
+
+### Article is published in Sanity but not visible
+- Confirm it is `Published`, not just draft.
+- Confirm `publishedAt` is not still in the future.
+- Confirm anonymous published reads can see `article` and `articleTopic` documents.
+- Confirm the Sanity webhook filter includes `article` and `articleTopic`.
+
+### Future-dated article did not appear
+- Confirm `CRON_SECRET` exists in Vercel.
+- Confirm `SANITY_API_TOKEN` exists in Vercel.
+- Confirm the Vercel cron job is registered and running.
+- Check Vercel function logs for `/api/cron/revalidate-articles`.
+
+### Sitemap did not update
+- Confirm the webhook or cron route revalidated the `sitemaps` tag.
+- Check `sitemap.xml` after the article is due and after a cron run.

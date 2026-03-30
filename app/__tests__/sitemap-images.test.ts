@@ -31,13 +31,13 @@ describe('sitemap-images', () => {
       expect(Array.isArray(result)).toBe(true)
     })
 
-    it('should include blog images', async () => {
+    it('should include article images', async () => {
       mockFetch
         .mockResolvedValueOnce([{
           slug: { current: 'featured-post' },
           title: 'Test Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
-          publishDate: '2025-01-01',
+          coverImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
+          publishedAt: '2025-01-01',
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -51,14 +51,14 @@ describe('sitemap-images', () => {
       expect(blogEntry?.lastModified).toEqual(new Date('2025-01-01'))
     })
 
-    it('should include featured and card blog images in a single entry', async () => {
+    it('should include cover and card article images in a single entry', async () => {
       mockFetch
         .mockResolvedValueOnce([{
           slug: { current: 'two-images-post' },
           title: 'Two Images Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/featured.jpg' }, alt: 'Featured' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/featured.jpg' }, alt: 'Featured' },
           cardImage: { asset: { url: 'https://cdn.sanity.io/card.jpg' }, alt: 'Card' },
-          publishDate: '2025-01-01',
+          publishedAt: '2025-01-01',
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -74,14 +74,14 @@ describe('sitemap-images', () => {
       ])
     })
 
-    it('should dedupe identical featured and card blog images', async () => {
+    it('should dedupe identical cover and card article images', async () => {
       mockFetch
         .mockResolvedValueOnce([{
           slug: { current: 'duplicate-image-post' },
           title: 'Duplicate Image Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/shared.jpg' }, alt: 'Shared' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/shared.jpg' }, alt: 'Shared' },
           cardImage: { asset: { url: 'https://cdn.sanity.io/shared.jpg' }, alt: 'Shared card' },
-          publishDate: '2025-01-01',
+          publishedAt: '2025-01-01',
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -93,12 +93,12 @@ describe('sitemap-images', () => {
       expect(blogEntry?.images).toEqual(['https://cdn.sanity.io/shared.jpg'])
     })
 
-    it('should fall back to Sanity _updatedAt when a blog post is missing publishDate', async () => {
+    it('should fall back to Sanity _updatedAt when an article is missing publishedAt', async () => {
       mockFetch
         .mockResolvedValueOnce([{
           slug: { current: 'updated-post' },
           title: 'Updated Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/updated.jpg' }, alt: 'Updated' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/updated.jpg' }, alt: 'Updated' },
           _updatedAt: '2025-02-03T00:00:00.000Z'
         }])
         .mockResolvedValueOnce([])
@@ -193,9 +193,9 @@ describe('sitemap-images', () => {
         .mockResolvedValueOnce([{
           slug: { current: 'missing-image-post' },
           title: 'Missing Image Post',
-          featuredImage: { alt: 'No asset url' },
+          coverImage: { alt: 'No asset url' },
           cardImage: { alt: 'Still no asset url' },
-          publishDate: '2025-01-01',
+          publishedAt: '2025-01-01',
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -226,7 +226,7 @@ describe('sitemap-images', () => {
       mockFetch
         .mockResolvedValueOnce([{
           title: 'No Slug Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -258,19 +258,19 @@ describe('sitemap-images', () => {
           {
             slug: { current: 'test-post' },
             title: 'Test Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
             _updatedAt: '2025-01-02'
           },
           {
             slug: { current: 'guide-test-post' },
             title: 'Guide Test Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/guide-test-post.jpg' }, alt: 'Guide Test' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/guide-test-post.jpg' }, alt: 'Guide Test' },
             _updatedAt: '2025-01-02'
           },
           {
             slug: { current: 'published-post' },
             title: 'Published Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
             _updatedAt: '2025-01-02'
           }
         ])
@@ -382,18 +382,18 @@ describe('sitemap-images', () => {
           {
             slug: { current: 'test-post' },
             title: 'Test Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/test-post.jpg' }, alt: 'Test' },
             _updatedAt: '2025-01-02'
           },
           {
             title: 'No Slug Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/no-slug-post.jpg' }, alt: 'Post' },
             _updatedAt: '2025-01-02'
           },
           {
             slug: { current: 'published-post' },
             title: 'Published Post',
-            featuredImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
+            coverImage: { asset: { url: 'https://cdn.sanity.io/published-post.jpg' }, alt: 'Published' },
             _updatedAt: '2025-01-02'
           }
         ])
@@ -434,7 +434,7 @@ describe('sitemap-images', () => {
         .mockResolvedValueOnce([{
           slug: { current: 'serialized-post' },
           title: 'Serialized Post',
-          featuredImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
+          coverImage: { asset: { url: 'https://cdn.sanity.io/test.jpg' }, alt: 'Test' },
           _updatedAt: '2025-01-02'
         }])
         .mockResolvedValueOnce([])
@@ -459,7 +459,7 @@ describe('sitemap-images', () => {
   })
 
   describe('Query Filtering', () => {
-    it('should query blog images with filters to exclude missing and test slugs', async () => {
+    it('should query article images with filters to exclude missing and test slugs', async () => {
       mockFetch.mockResolvedValue([])
 
       await sitemapImages()
@@ -469,7 +469,8 @@ describe('sitemap-images', () => {
       expect(blogQuery).toContain('defined(slug.current)')
       expect(blogQuery).toContain('slug.current != "test"')
       expect(blogQuery).toContain('!slug.current match "test-*"')
-      expect(blogQuery).toContain('status == "published"')
+      expect(blogQuery).toContain('_type == "article"')
+      expect(blogQuery).toContain('coalesce(publishedAt, _createdAt) <= now()')
     })
 
     it('should query cake images with filters to exclude missing and test slugs', async () => {

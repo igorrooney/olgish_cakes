@@ -7,6 +7,7 @@ import { CakePageClient } from './CakePageClient'
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
 import { ensureAbsoluteImageUrl } from '@/lib/utils/image-url'
 import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
+import { normalizeCmsTitle } from '@/lib/metadata'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { urlFor } from '@/sanity/lib/image'
 import { resolveCakeDeliveryContent } from './delivery-content'
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!cake) {
     return {
-      title: "Cake Not Found | Olgish Cakes",
+      title: 'Cake not found',
       description: "The requested cake could not be found.",
     };
   }
@@ -72,6 +73,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const metaTitle = isHoneyCake
     ? (cake.seo?.metaTitle || `Buy Honey Cake Online | Authentic Ukrainian Medovik`)
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
+  const normalizedMetaTitle = normalizeCmsTitle(metaTitle) || cake.name
 
   const metaDescription = isHoneyCake
     ? (normalizeMetaDescription(cake.seo?.metaDescription) || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
@@ -88,7 +90,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
 
   return {
-    title: metaTitle,
+    title: normalizedMetaTitle,
     description: metaDescription,
     keywords,
     authors: [{ name: "Olgish Cakes" }],
@@ -104,7 +106,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       type: "website",
       url: canonicalUrl,
@@ -124,7 +126,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       images: [
         cake.mainImage?.asset?.url ||

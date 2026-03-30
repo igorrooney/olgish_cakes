@@ -26,10 +26,10 @@ interface SanityImageRef {
 
 interface BlogImageResult {
   slug?: { current: string }
-  featuredImage?: SanityImageRef
+  coverImage?: SanityImageRef
   cardImage?: SanityImageRef
   title: string
-  publishDate?: string
+  publishedAt?: string
   _updatedAt: string
 }
 
@@ -119,19 +119,19 @@ function toImageUrls(images?: SanityImageRef[]) {
 }
 
 function getBlogLastModified(post: BlogImageResult) {
-  return new Date(post.publishDate || post._updatedAt)
+  return new Date(post.publishedAt || post._updatedAt)
 }
 
 async function getBlogImages() {
   const query = `*[
-    _type == "blogPost" &&
-    status == "published" &&
+    _type == "article" &&
+    coalesce(publishedAt, _createdAt) <= now() &&
     defined(slug.current) &&
     slug.current != "test" &&
     !slug.current match "test-*"
   ] {
     slug,
-    featuredImage {
+    coverImage {
       asset->{
         _id,
         url,
@@ -152,7 +152,7 @@ async function getBlogImages() {
       alt
     },
     title,
-    publishDate,
+    "publishedAt": coalesce(publishedAt, _createdAt),
     _updatedAt
   }`
   const config = getCacheConfig('sitemaps')
@@ -224,7 +224,7 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
       const postUrl = `${baseUrl}/blog/${post.slug.current}`
       const lastModified = getBlogLastModified(post)
       const images = mergeUniqueUrls(
-        toSingleImageUrl(post.featuredImage),
+        toSingleImageUrl(post.coverImage),
         toSingleImageUrl(post.cardImage)
       )
 

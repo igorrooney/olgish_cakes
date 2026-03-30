@@ -4,6 +4,7 @@
 import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ScrollToTop } from '../ScrollToTop'
+import { KLARO_VISIBILITY_EVENT } from '../KlaroA11yBridge'
 
 // Mock MUI
 jest.mock('@mui/material', () => ({
@@ -39,6 +40,7 @@ describe('ScrollToTop', () => {
 
     // Mock scrollTo
     window.scrollTo = jest.fn()
+    document.body.dataset.klaroOpen = 'false'
   })
 
   describe('Visibility', () => {
@@ -102,6 +104,23 @@ describe('ScrollToTop', () => {
 
       const zoom = screen.getByTestId('zoom')
       expect(zoom.getAttribute('data-in')).toBe('false')
+    })
+
+    it('should hide while Klaro consent UI is open', () => {
+      render(<ScrollToTop />)
+
+      act(() => {
+        Object.defineProperty(window, 'pageYOffset', { value: 400, writable: true })
+        fireEvent.scroll(window)
+      })
+
+      act(() => {
+        document.body.dataset.klaroOpen = 'true'
+        window.dispatchEvent(new CustomEvent(KLARO_VISIBILITY_EVENT, { detail: { isOpen: true } }))
+      })
+
+      expect(screen.queryByTestId('zoom')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('fab')).not.toBeInTheDocument()
     })
   })
 

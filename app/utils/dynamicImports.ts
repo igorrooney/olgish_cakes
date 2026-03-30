@@ -20,12 +20,6 @@ export const dynamicImports = {
   //   ssr: false,
   // }),
 
-  // Blog components
-  // BlogClient: dynamic(() => import("@/app/blog/BlogClient"), {
-  //   loading: () => <div className="animate-pulse bg-gray-200 h-64 rounded" />,
-  //   ssr: false,
-  // }),
-
   // Admin components
   // AdminGuard: dynamic(() => import("@/app/components/AdminGuard"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded" />,

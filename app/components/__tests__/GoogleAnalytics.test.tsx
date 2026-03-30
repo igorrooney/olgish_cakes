@@ -194,8 +194,8 @@ describe('GoogleAnalytics', () => {
       expect(mockGtag).not.toHaveBeenCalled()
     })
 
-    it('should NOT track /admin/blog page', () => {
-      mockUsePathname.mockReturnValue('/admin/blog')
+    it('should NOT track /admin/email-test page', () => {
+      mockUsePathname.mockReturnValue('/admin/email-test')
 
       render(<GoogleAnalytics gaId="G-TEST123" />)
 

@@ -134,6 +134,21 @@ describe('HamperDetailPage', () => {
       expect(metadata.keywords).toBe('custom, seo, keywords')
     })
 
+    it('should normalize a CMS title that already includes the Olgish Cakes suffix', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        seo: {
+          metaTitle: 'Postal Medovik | Olgish Cakes',
+          metaDescription: 'Custom SEO Description for Testing',
+          keywords: ['custom']
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+
+      expect(metadata.title).toBe('Postal Medovik')
+    })
+
     it('should not truncate long shortDescription fallback and should normalize whitespace', async () => {
       const longDescription = `${'H'.repeat(110)}   \n\n ${'I'.repeat(120)}`
       const hamperWithoutSEO = {
@@ -222,7 +237,7 @@ describe('HamperDetailPage', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
-      expect(metadata.title).toContain('Not Found')
+      expect(metadata.title).toBe('Gift hamper not found')
     })
   })
 

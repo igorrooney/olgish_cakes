@@ -8,7 +8,8 @@ import productsDisplayOrder from './schemas/productsDisplayOrder'
 import testimonial from './schemas/testimonial'
 import faq from './schemas/faq'
 import marketSchedule from './schemas/marketSchedule'
-import blogPost from './schemas/blogPost'
+import article from './schemas/article'
+import articleTopic from './schemas/articleTopic'
 import order from './schemas/order'
 import cakesFeaturedOffer from './schemas/cakesFeaturedOffer'
 import ingredient from './schemas/ingredient'
@@ -17,5 +18,5 @@ import cakesDeliverySection from './schemas/cakesDeliverySection'
 import giftHampersDeliverySection from './schemas/giftHampersDeliverySection'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [cake, giftHamper, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, testimonial, faq, marketSchedule, blogPost, order, cakesFeaturedOffer, ingredient, cakeFillingType, cakesDeliverySection, giftHampersDeliverySection],
+  types: [cake, giftHamper, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, testimonial, faq, marketSchedule, article, articleTopic, order, cakesFeaturedOffer, ingredient, cakeFillingType, cakesDeliverySection, giftHampersDeliverySection],
 }
