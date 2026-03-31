@@ -280,7 +280,7 @@ describe("BlogPage", () => {
     expect(screen.getByRole("link", { name: "2" })).toHaveAttribute("href", "/blog?page=2");
     expect(screen.queryByText(/start here/i)).not.toBeInTheDocument();
     expect(screen.getByText(/shop postal medovik/i)).toBeInTheDocument();
-    expect(screen.getByText(/postal medovik is a solid option/i)).toBeInTheDocument();
+    expect(screen.getByText(/postal medovik is a good fit/i)).toBeInTheDocument();
     expect(screen.queryByText(/bakery notes from leeds/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/olgish journal/i)).not.toBeInTheDocument();
     expect(screen.queryByAltText("Custom cake travel image")).not.toBeInTheDocument();
@@ -317,6 +317,10 @@ describe("BlogPage", () => {
     const { container } = render(view);
 
     expect(screen.queryByText(/featured story/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no notes in this topic yet/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/there are no published notes in this topic yet/i)
+    ).not.toBeInTheDocument();
     expect(screen.getByText(/active topic: cake-by-post/i)).toBeInTheDocument();
     expect(screen.getByText("Browse by topic")).toBeInTheDocument();
     expect(screen.getByText(/page 2 of 2/i)).toBeInTheDocument();

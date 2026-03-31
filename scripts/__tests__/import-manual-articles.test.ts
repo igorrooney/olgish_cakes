@@ -67,6 +67,55 @@ describe('import-manual-articles', () => {
     expect(() => validateSeedConfiguration()).not.toThrow()
   })
 
+  it('allows explicit by-post wording when it is tied to standard honey cake, slice gifts, or delivery by agreement', () => {
+    const targetIndex = seedArticles.findIndex((article) => article.slug === 'best-cakes-you-can-send-by-post-uk')
+    const updatedArticles = seedArticles.map((article, index) => {
+      if (index !== targetIndex) {
+        return article
+      }
+
+      return {
+        ...article,
+        body: [
+          ...article.body,
+          {
+            _key: 'policy-check',
+            _type: 'block',
+            style: 'normal',
+            markDefs: [],
+            children: [
+              {
+                _key: 'policy-span',
+                _type: 'span',
+                marks: [],
+                text: 'Standard honey cake by post, gift hampers with honey cake slices, and caramel biscuits can go across the UK. If a whole celebration cake needs to travel further, I only offer that by agreement.'
+              }
+            ]
+          }
+        ]
+      }
+    })
+
+    expect(() => validateSeedConfiguration(updatedArticles)).not.toThrow()
+  })
+
+  it('rejects broad wording that treats any whole cake as a postal product', () => {
+    const updatedArticles = seedArticles.map((article) => {
+      if (article.slug !== 'best-cakes-you-can-send-by-post-uk') {
+        return article
+      }
+
+      return {
+        ...article,
+        dek: 'Any cake can be delivered across the UK by post, and a full cake by post is always the easiest option.'
+      }
+    })
+
+    expect(() => validateSeedConfiguration(updatedArticles)).toThrow(
+      'Disallowed delivery claim found for best-cakes-you-can-send-by-post-uk'
+    )
+  })
+
   it('keeps the archive on an exact daily backdated schedule from March 31, 2026', () => {
     expect(manualArticleScheduleBaseline).toBe('2026-03-31T00:01:00.000Z')
     expect(seedArticles).toHaveLength(expectedArchiveOrder.length)

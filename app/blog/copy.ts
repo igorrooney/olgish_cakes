@@ -111,23 +111,23 @@ export function getArchiveFilterCopy(
 export function getArchiveCommerceCopy(product?: ArticleProduct) {
   const heading = product
     ? isGenericPostalProduct(product)
-      ? 'Shop the cake-by-post range'
+      ? 'Shop the by-post options'
       : `Shop ${product.name}`
-    : 'Shop the range that suits the post'
+    : 'Shop the options that travel best'
   const body = product
     ? isGenericPostalProduct(product)
-      ? 'This is the simplest place to start for UK delivery. The range was built for posting, so ordering is more straightforward and the cake suits the journey.'
-      : `${product.name} is a solid option when you need to send cake by post in the UK. It travels well and still feels generous when it arrives.`
-    : 'If you need to send cake across the UK, start with the by-post range. It is the easiest option when delivery matters as much as the cake itself.'
+      ? 'Start here if you need a standard honey cake prepared for post, vacuum-packed slices in a gift hamper, or caramel biscuits that travel neatly across the UK.'
+      : `${product.name} is a good fit when the order is one of the by-post options, or when a wider UK cake delivery has been agreed in advance.`
+    : 'If you need something to travel, start with standard honey cake by post, cake slices in gift hampers, or caramel biscuits. For a whole celebration cake further afield, ask about UK delivery by agreement.'
 
   return {
     eyebrow: 'Need something that can travel?',
     heading,
     body,
     bullets: [
-      'Made with UK delivery in mind from the start',
-      'Easy to send for birthdays, thank-yous, and simple gift orders',
-      'Better suited to the post than a tall or highly detailed cake'
+      'Standard honey cake by post is prepared for travel and vacuum-packed before dispatch',
+      'Gift hampers and compact slice gifts work well when you want a posted cake surprise without sending a full centrepiece',
+      'Tall, chilled, or highly decorated cakes are usually better as local delivery, collection, or UK delivery by agreement'
     ]
   }
 }
@@ -135,14 +135,14 @@ export function getArchiveCommerceCopy(product?: ArticleProduct) {
 export function getArticleCommerceCopy(product?: ArticleProduct) {
   const heading = product
     ? isGenericPostalProduct(product)
-      ? 'Start with the cake-by-post range'
+      ? 'Start with the by-post options'
       : `Start with ${product.name}`
-    : 'Start with the postal range'
+    : 'Start with the format that fits the journey'
   const body = product
     ? isGenericPostalProduct(product)
-      ? 'This is the range Olga points people to when they want a cake that travels neatly and is easy to send.'
-      : `${product.name} is the kind of product Olga suggests when you want a gift that travels neatly and still feels special when it arrives.`
-    : 'If the order has to go across the UK, start with the cakes that were planned for the post. If the brief depends on height, fresh fillings, or a polished display finish, send a custom enquiry instead.'
+      ? 'This is where Olga points people when they need standard honey cake by post, cake slices inside a gift hamper, or caramel biscuits that are straightforward to send.'
+      : `${product.name} is the kind of product Olga suggests when the format suits by-post gifting, or when a wider UK delivery has already been agreed.`
+    : 'If the order has to go across the UK, start with the by-post options first. If the cake needs height, fresh fillings, or a polished celebration finish, ask about local delivery, collection, or UK delivery by agreement instead.'
 
   return {
     eyebrow: 'Useful if the cake has to travel',
@@ -210,6 +210,6 @@ export function getArticleClosingCtaCopy() {
     eyebrow: 'Need the practical answer?',
     heading: 'Choose the format that suits the journey',
     intro:
-      'If the parcel has to go across the UK, start with cakes by post. If the order depends on height, chilled fillings, or a detailed design brief, send a custom enquiry instead.'
+      'If the parcel has to go across the UK, start with standard honey cake by post, cake slices in gift hampers, or caramel biscuits. If the order depends on height, chilled fillings, or a detailed design brief, send an enquiry about local delivery, collection, or UK delivery by agreement.'
   }
 }

@@ -173,6 +173,34 @@ export function normalizeForComparison(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
+const deliveryPolicyArticleSlugs = new Set([
+  'best-cakes-you-can-send-by-post-uk',
+  'cake-by-post-uk-complete-guide',
+  'gift-cakes-by-post-guide',
+  'top-5-reasons-order-letterbox-cakes-online',
+  'birthday-gifts-by-post',
+  'cake-cards-and-cake-slice-gifts',
+  'how-surprise-someone-cake-delivery-post',
+  'medovik-honey-cake-near-me-guide',
+  'valentines-cake-delivery-guide',
+  'ukrainian-christmas-cakes-and-desserts-guide'
+])
+
+const disallowedDeliveryPolicyPatterns = [
+  /\bfull cake by post\b/i,
+  /\bfuller cake-?by-?post\b/i,
+  /\bpostal range\b/i,
+  /\bpostal cake box\b/i,
+  /\brange was built for posting\b/i,
+  /\bcakes that were planned for the post\b/i,
+  /\bany cake can be delivered across the uk\b/i,
+  /\bany cake can be sent by post\b/i
+]
+
+const postalClaimPattern = /\b(?:by post|postal|letterbox|parcel|uk delivery|across the uk)\b/i
+const allowedDeliveryQualifiersPattern =
+  /\b(?:by agreement|standard(?:-design)? honey cake|honey cake by post|vacuum-packed|gift hamper|cake card|slice gift|slice gifts|honey cake slice|caramel biscuits?)\b/i
+
 export function textSpan(text: string): PortableTextSpan {
   return {
     _key: createKey('span'),
@@ -837,7 +865,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Best cakes you can send by post in the UK',
     slug: 'best-cakes-you-can-send-by-post-uk',
     summary: 'A practical look at which cakes make sense by post, which ones do not, and why format matters more than marketing language.',
-    dek: 'The best cakes you can send by post are not always the most decorated ones. I explain which formats travel well, where honey cake slices and cake cards make sense, and when a local full cake is the better idea.',
+    dek: 'The best cakes you can send by post are not always the most decorated ones. I explain where standard honey cake by post, honey cake slices in gift hampers, and caramel biscuits make sense, and when a whole cake needs local delivery or UK delivery by agreement.',
     topicSlug: 'cake-by-post',
     primaryProductSlug: 'cake-by-post',
     relatedProductSlugs: ['honey-cake-by-post', 'birthday-gift-by-post', 'happy-birthday-cake-card', 'xmas-gift-boxes-cake-with-card'],
@@ -849,36 +877,36 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'What travels best',
         paragraphs: [
-          'Smaller portions, flatter formats, and cakes packed specifically for delivery usually travel best. Honey Cake by Post, gift slices, and cake-card formats all make sense because they are built around transport rather than around a tall display moment.',
-          'That is different from a larger local celebration cake, which can prioritise presence and generous slicing.'
+          'Smaller portions, flatter formats, and products packed specifically for delivery usually travel best. Standard honey cake by post, honey cake slices inside gift hampers, and caramel biscuits all make sense because they are built around transport rather than around a tall display moment.',
+          'That is different from a larger celebration cake, which usually needs local delivery or collection unless I have agreed a wider UK delivery plan in advance.'
         ]
       },
       {
         heading: 'Why honey cake works so well by post',
         paragraphs: [
-          'Honey cake slices hold their character well. They stay recognisable, satisfying, and easy to pack. That is one reason they appear so often in my postal range.',
-          'The flavour also helps. A honey-led cake still feels thoughtful when it arrives as a smaller gift.'
+          'Honey cake holds its character well once the format is chosen properly. That is why I trust standard honey cake by post and honey cake slices in compact gifts more than I trust a random whole cake packed at the last minute.',
+          'The flavour also helps. A honey-led cake still feels thoughtful when it arrives as a vacuum-packed postal parcel or as slices inside a hamper.'
         ]
       },
       {
         heading: 'When a full cake is the wrong postal choice',
         paragraphs: [
           'If the point of the cake is a highly detailed finish, a venue reveal, or a precise celebration setup, the conversation usually needs to move back to local delivery or collection instead.',
-          'Postal orders do best when reliability is more important than theatre.'
+          'If someone still needs a whole cake to travel further across the UK, I treat that as delivery by agreement, not as standard cake-by-post fulfilment.'
         ]
       },
       {
         heading: 'My rule for choosing the format',
         bullets: [
-          'Choose a postal slice or cake card when the gift is personal and easy handover matters.',
-          'Choose a postal cake box when you want more substance without a local setup requirement.',
-          'Choose local delivery or collection when the cake itself must perform as the centrepiece.'
+          'Choose a cake card, slice gift, or hamper when the gift is personal and easy handover matters.',
+          'Choose standard honey cake by post or caramel biscuits when you need a straightforward postal parcel.',
+          'Choose local delivery, collection, or UK delivery by agreement when the cake itself must perform as the centrepiece.'
         ]
       }
     ],
     faqItems: createFaqItems([
-      ['What is the best cake to send by post?', 'Usually a cake designed specifically for postal delivery, such as a honey cake slice gift or another format packed for travel.'],
-      ['Can I send a birthday cake by post?', 'Yes, but the best version is often a smaller postal gift rather than a large local-style celebration cake.'],
+      ['What is the best cake to send by post?', 'Usually standard honey cake by post, a honey cake slice gift inside a hamper, or caramel biscuits packed specifically for delivery.'],
+      ['Can I send a birthday cake by post?', 'Yes, if the format is one of the proper postal options. A larger birthday cake is usually better as local delivery, collection, or UK delivery by agreement.'],
       ['Why do honey cake slices work well by post?', 'They hold their flavour and presentation well in compact packaging and still feel like a proper treat.']
     ]),
     seo: {
@@ -894,7 +922,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Cake by post in the UK: a complete guide to choosing the right format',
     slug: 'cake-by-post-uk-complete-guide',
     summary: 'A fuller guide to postal cake orders in the UK, from choosing the right format to avoiding the mistakes that make delivery feel risky.',
-    dek: 'Customers usually ask one broad question about cake by post in the UK, but there are really three decisions hiding inside it: what format to send, what the recipient will find easiest to receive, and when local delivery is the better route. I break that down here.',
+    dek: 'When people ask about cake by post in the UK, I usually have to sort four different things: standard honey cake by post, slices in a gift hamper, caramel biscuits, and the point where a whole cake is better handled by local delivery or UK delivery by agreement.',
     topicSlug: 'cake-by-post',
     primaryProductSlug: 'cake-by-post',
     relatedProductSlugs: ['honey-cake-by-post', 'birthday-gift-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake'],
@@ -906,37 +934,38 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'Start with the recipient, not the cake',
         paragraphs: [
-          'If the parcel needs to slide easily into someone\'s week, a compact cake-card or postal slice gift is often stronger than a larger box. If it needs to feel more substantial, then a fuller cake-by-post box makes sense.',
-          'That is the lens I use before anything else.'
+          'If the parcel needs to slide easily into someone\'s week, a compact cake card, hamper-style slice gift, or caramel biscuit parcel is often stronger than anything bigger.',
+          'If it needs to feel more substantial, standard honey cake by post is the next step before you start discussing a whole celebration cake.',
+          'I start there before I get pulled into anything else.'
         ]
       },
       {
-        heading: 'What belongs in a postal range',
+        heading: 'What belongs in the by-post offer',
         paragraphs: [
-          'The best postal products are the ones that have been packed, portioned, and described with travel in mind. Cake by Post, Honey Cake by Post, and personalised honey cake gifts all fit that brief.',
-          'They are not trying to imitate a venue cake. They are solving a different problem.'
+          'The best postal products are the ones built for travel from the start. Standard honey cake by post, honey cake slices in gift hampers, compact cake-card gifts, and caramel biscuits all fit that brief.',
+          'They are doing a different job from a venue cake, and that is exactly why they work.'
         ]
       },
       {
         heading: 'Where people make the wrong assumption',
         paragraphs: [
-          'The mistake is assuming that because a cake looks lovely on a page, it should automatically be posted. I separate display cakes from posted gifts very deliberately, and sometimes I will send a customer back towards local delivery instead.',
-          'That saves disappointment, and it protects the product itself.'
+          'The mistake is assuming that because a cake looks lovely on a page, it should automatically be posted. I keep display cakes and posted gifts separate for that reason, and sometimes I send people straight back to local delivery instead.',
+          'If they still need the cake to travel further across the UK, we can discuss delivery by agreement, but that is a different logistics decision from standard postal fulfilment.'
         ]
       },
       {
         heading: 'My practical shortlist',
         bullets: [
-          'Choose Cake by Post when you want the broadest flexible postal option.',
-          'Choose Honey Cake by Post when flavour and layered texture matter more than novelty.',
-          'Choose a personalised honey cake gift when the message is part of the gesture.'
+          'Choose a cake card, slice gift, or hamper when easy receiving matters most.',
+          'Choose standard honey cake by post when you want a proper postal cake format rather than just a token bite.',
+          'Choose local delivery, collection, or UK delivery by agreement when the cake brief depends on scale, finish, or timing.'
         ]
       }
     ],
     faqItems: createFaqItems([
-      ['What does cake by post mean in practice?', 'It means a cake or cake gift packed specifically for postal delivery, not simply a local cake put in a box.'],
-      ['What is the easiest postal cake format to receive?', 'Usually a smaller, well-packed gift such as a cake card, slice gift, or compact postal cake box.'],
-      ['When should I avoid cake by post?', 'Avoid it when the cake needs to act as a large visual centrepiece or when a precise on-site setup matters more than convenience.']
+      ['What does cake by post mean in practice?', 'It means a proper postal format such as standard honey cake by post, cake slices in a compact gift, or caramel biscuits packed specifically for delivery, not simply a local cake put in a box.'],
+      ['What is the easiest postal cake format to receive?', 'Usually a smaller, well-packed gift such as a cake card, a slice gift, or a hamper with honey cake slices.'],
+      ['When should I avoid cake by post?', 'Avoid it when the cake needs to act as a large visual centrepiece or when a precise setup matters more than convenience. In those cases I would steer you towards local delivery, collection, or UK delivery by agreement.']
     ]),
     seo: {
       metaTitle: 'Cake by post UK guide | how to choose the right format',
@@ -948,15 +977,15 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     requiredAnchors: ['cake by post', 'Cake by Post', 'Honey Cake by Post', 'local delivery']
   },
   {
-    title: 'Gift cakes by post: when to send a hamper, a cake card, or a full cake',
+    title: 'Gift cakes by post: when to send a hamper, a cake card, or standard honey cake by post',
     slug: 'gift-cakes-by-post-guide',
     summary: 'A guide to choosing the right postal cake gift, from smaller cake cards to fuller gift boxes, without overbuying or underdelivering.',
-    dek: 'Not every occasion needs a full cake, and not every gift works as a tiny token either. This guide helps you choose between cake cards, slice gifts, postal cake boxes, and larger gifting formats so the parcel feels right when it arrives.',
+    dek: 'Not every occasion needs a whole cake, and not every gift works as a tiny token either. This guide helps you choose between cake cards, hamper-style slice gifts, standard honey cake by post, and larger cakes that need delivery by agreement or local handover.',
     topicSlug: 'gift-ideas',
     primaryProductSlug: 'birthday-gift-by-post',
     relatedProductSlugs: ['happy-birthday-cake-card', '50th-birthday-cake-slice-card', 'xmas-gift-boxes-cake-with-card', 'cake-by-post'],
     intro: [
-      'Gift cakes by post work best when the size of the gesture matches the relationship. That sounds emotional, but it is actually a practical buying decision.',
+      'Gift cakes by post work best when the size of the gesture matches the relationship. It sounds emotional, but it usually comes down to a practical buying decision.',
       'I would not send the same format to a close family birthday, a colleague, and a customer thank-you. The cake should fit the message.'
     ],
     sections: [
@@ -970,15 +999,15 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'When to move up to a fuller gift box',
         paragraphs: [
-          'Birthday Gift by Post makes more sense when you want a proper gift rather than a light touch. It still posts well, but it carries more weight in every sense.',
+          'Birthday Gift by Post makes more sense when you want a proper gift rather than a light touch. It still posts well, but it feels more generous when it arrives.',
           'I use that format when the occasion deserves a clearer statement.'
         ]
       },
       {
-        heading: 'What a full cake is for',
+        heading: 'When standard honey cake by post is the better step',
         paragraphs: [
-          'A full Cake by Post order is best when the cake itself is the present, not just the message around it. It suits a recipient who will genuinely sit down and enjoy the cake, not just open the parcel and smile at the idea.',
-          'That is the difference I keep in mind.'
+          'Standard honey cake by post is best when the cake itself is the present, not just the message around it. It suits a recipient who will genuinely sit down and enjoy a proper postal cake rather than just open the parcel and smile at the idea.',
+          'If the brief really needs a bigger whole cake, I would move the conversation towards local delivery, collection, or UK delivery by agreement.'
         ]
       },
       {
@@ -986,18 +1015,18 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         bullets: [
           'Cake card: small, personal, and easy to send.',
           'Slice gift box: stronger birthday or anniversary gesture without becoming oversized.',
-          'Full cake by post: the cake is the main event.'
+          'Standard honey cake by post: the cake is the main event without pretending every whole cake should travel by post.'
         ]
       }
     ],
     faqItems: createFaqItems([
       ['What is the difference between a cake card and a postal cake gift?', 'A cake card is a smaller gesture, while a fuller postal gift box feels more like a complete present.'],
       ['Is a full cake always better?', 'No. Sometimes a smaller, sharper gift feels more thoughtful because it suits the occasion better.'],
-      ['Which postal cake gift works for milestone birthdays?', 'The 50th Birthday Cake Slice Card and Birthday Gift by Post are both strong depending on whether you want lighter or fuller gifting.']
+      ['Which postal cake gift works for milestone birthdays?', 'The 50th Birthday Cake Slice Card, Birthday Gift by Post, and standard honey cake by post are all strong depending on whether you want lighter gifting, a hamper-style parcel, or a fuller posted cake.']
     ]),
     seo: {
-      metaTitle: 'Gift cakes by post | hamper, cake card or full cake?',
-      metaDescription: 'Choose the right postal cake gift with honest advice on cake cards, slice gifts, postal hampers, and full cake by post orders.',
+      metaTitle: 'Gift cakes by post | hamper, cake card or posted honey cake?',
+      metaDescription: 'Choose the right postal cake gift with honest advice on cake cards, slice gifts, postal hampers, and standard honey cake by post.',
       keywords: ['gift cakes by post', 'cake gift uk', 'cake cards', 'birthday gift by post']
     },
     coverImageAlt: 'Birthday Gift by Post box with honey cake gift ready to send',
@@ -1043,7 +1072,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         bullets: [
           'Use a cake card for the lightest gesture.',
           'Use a slice gift when you want more substance.',
-          'Use a bigger postal box only when the cake itself is the main present.'
+          'Use standard honey cake by post or a hamper only when the cake itself is the main present.'
         ]
       }
     ],
@@ -1065,13 +1094,13 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Birthday gifts by post that feel personal without sending a whole cake',
     slug: 'birthday-gifts-by-post',
     summary: 'A practical guide to choosing birthday cake gifts by post when you want them to feel personal, generous, and easy to receive.',
-    dek: 'Birthday gifts by post work best when the parcel feels intentional rather than oversized. I explain when I would send a personalised honey cake gift, when a cake card is enough, and when a full cake-by-post order makes sense.',
+    dek: 'Birthday gifts by post work best when the parcel feels intentional rather than oversized. I explain when I would send a personalised honey cake gift, when a cake card is enough, when standard honey cake by post makes sense, and when a bigger cake should move to local delivery or UK delivery by agreement.',
     topicSlug: 'gift-ideas',
     primaryProductSlug: 'birthday-gift-by-post',
     relatedProductSlugs: ['happy-birthday-cake-card', '50th-birthday-cake-slice-card', 'cake-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake'],
     intro: [
       'Birthday gifting by post is not about sending the biggest parcel possible. It is about sending something that feels warm, deliberate, and easy to enjoy on the other side.',
-      'Format decides whether the gift feels natural or overblown. The right product does a lot of the emotional work before the box is even opened.'
+      'The format decides whether the gift feels natural or overblown. You can usually tell before the box is even opened.'
     ],
     sections: [
       {
@@ -1089,10 +1118,10 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'When to move up to a full cake by post',
+        heading: 'When to move up to standard honey cake by post',
         paragraphs: [
-          'If the recipient genuinely loves cake and will share it or make a moment of it, Cake by Post becomes more attractive. That is when the cake is the gift, not just the message carrier.',
-          'There is a difference, and customers feel it immediately.'
+          'If the recipient genuinely loves cake and will share it or make a moment of it, standard honey cake by post becomes more attractive. That is when the cake is the gift, not just the message carrier.',
+          'If the brief needs a larger decorated cake, I would treat that as local delivery, collection, or UK delivery by agreement instead.'
         ]
       },
       {
@@ -1105,11 +1134,11 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     faqItems: createFaqItems([
       ['What is a good birthday cake gift to post?', 'A personalised honey cake gift or a cake card is usually the safest choice because the parcel still feels easy to receive.'],
       ['Is a cake card too small for a birthday?', 'Not if the relationship and occasion suit it. Smaller can feel more thoughtful when the format is right.'],
-      ['When should I send a full cake by post?', 'Send a fuller cake when the cake itself is the main present and the recipient will genuinely make time for it.']
+      ['When should I send standard honey cake by post?', 'Send it when the cake itself is the main present and the recipient will genuinely make time for it. For a larger decorated cake, ask about local delivery or UK delivery by agreement instead.']
     ]),
     seo: {
       metaTitle: 'Birthday gifts by post | personal cake gifts that work',
-      metaDescription: 'Choose better birthday gifts by post with honest advice on personalised honey cake gifts, cake cards, and when a full cake delivery makes sense.',
+      metaDescription: 'Choose better birthday gifts by post with honest advice on personalised honey cake gifts, cake cards, and when standard honey cake by post makes sense.',
       keywords: ['birthday gifts by post', 'cake birthday gift by post', 'personalised honey cake gift', 'birthday cake card']
     },
     coverImageAlt: 'Personalised birthday honey cake gift box ready to post',
@@ -1146,7 +1175,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'When not to choose the smaller format',
         paragraphs: [
-          'If the parcel needs to carry more weight emotionally, or if you want the cake itself to be the main event, move up to a fuller postal gift.',
+          'If the parcel needs to carry more weight emotionally, or if you want the cake itself to be the main event, move up to a fuller hamper or standard honey cake by post.',
           'The smaller format is strongest when it stays honest about what it is.'
         ]
       },
@@ -1162,7 +1191,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     faqItems: createFaqItems([
       ['What is a cake card?', 'It is a compact posted gift that combines the message and the cake into one neat parcel.'],
       ['Are cake slice gifts good for milestone birthdays?', 'Yes. A well-presented slice gift can feel thoughtful and specific, especially for milestone ages.'],
-      ['When should I choose a bigger postal gift instead?', 'Choose the bigger format when you want the cake itself to be the centre of the gift, not just the gesture around it.']
+      ['When should I choose a bigger postal gift instead?', 'Choose the bigger format when you want the cake itself to be the centre of the gift, not just the gesture around it. If you need a larger whole cake beyond the standard postal honey cake, ask about local delivery or UK delivery by agreement.']
     ]),
     seo: {
       metaTitle: 'Cake cards and cake slice gifts | when smaller works better',
@@ -1635,7 +1664,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     relatedProductSlugs: ['happy-birthday-cake-card', 'cake-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake', 'honey-cake-by-post'],
     intro: [
       'Surprise cake delivery is a lovely idea when the format matches the relationship and the timing is thought through.',
-      'The best surprises are rarely the biggest ones. They feel like somebody paid attention.'
+      'The best surprises are rarely the biggest ones. They feel chosen, not rushed.'
     ],
     sections: [
       {
@@ -1664,7 +1693,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         bullets: [
           'Birthday Gift by Post for a stronger birthday statement.',
           'Happy Birthday Cake Card for a lighter, neater surprise.',
-          'Personalised honey cake gift for anniversaries or more intimate occasions.'
+          'Personalised honey cake gift or standard honey cake by post when you want the cake itself to feel more substantial.'
         ]
       }
     ],
@@ -1675,7 +1704,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     ]),
     seo: {
       metaTitle: 'How to surprise someone with cake delivery by post',
-      metaDescription: 'Learn how to surprise someone with cake delivery by post using the right format, timing, and message so the gift feels personal.',
+      metaDescription: 'Learn how to surprise someone with cake delivery by post using the right format, timing, and message so the gift feels personal, whether that means a cake card, a hamper, or standard honey cake by post.',
       keywords: ['surprise cake delivery', 'cake delivery by post', 'send cake surprise', 'postal cake gift']
     },
     coverImageAlt: 'Posted birthday cake gift with personalised message prepared as a surprise',
@@ -1686,7 +1715,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Valentine\'s cake delivery: what to choose when you want romance without the cliche',
     slug: 'valentines-cake-delivery-guide',
     summary: 'A Valentine\'s cake guide for customers deciding between a full romantic cake, a posted honey cake slice, or a smaller gift box.',
-    dek: 'Valentine\'s cake delivery lands best when the gift feels affectionate but not forced. I explain when a full celebration cake is right, when a posted honey cake slice makes more sense, and why the gesture should stay personal.',
+    dek: 'Valentine\'s cake delivery lands best when the gift feels affectionate but not forced. I explain when a full celebration cake is right, when a posted honey cake slice or biscuit gift makes more sense, and when a cake further across the UK needs to be discussed by agreement rather than treated as standard post.',
     primaryProductSlug: 'a-valentine-s-day-cake',
     imageProductSlug: 'a-valentine-s-day-cake',
     relatedProductSlugs: ['valentine-s-day-honey-cake-slice', 'valentine-s-biscuit-gift-box', 'cake-by-post'],
@@ -1699,28 +1728,28 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'When a full Valentine\'s cake earns its place',
         paragraphs: [
           'A full Valentine\'s Day cake works when you are actually sharing the moment together or marking something bigger than a token gift. The flower-pot style cake is strongest when the recipient will enjoy the visual detail as much as the flavour itself.',
-          'It suits dinners, planned evenings, and occasions where the cake is part of the setting rather than a parcel left at the door.'
+          'It suits dinners, planned evenings, and occasions where the cake is part of the setting rather than a parcel left at the door. If it needs to travel further across the UK, I would discuss that by agreement instead of promising standard post.'
         ]
       },
       {
         heading: 'When a posted honey cake slice feels more personal',
         paragraphs: [
           'Valentine\'s Day Honey Cake Slice is better when you want a smaller posted surprise that still tastes like a real dessert. It feels intimate rather than performative.',
-          'That smaller scale often works better for newer relationships or for couples who would rather laugh and share tea than cut a big themed cake.'
+          'That smaller scale often works better in newer relationships, or for couples who would rather laugh over tea than cut a big themed cake.'
         ]
       },
       {
         heading: 'Where a biscuit box fits',
         paragraphs: [
           'A biscuit gift box is lighter again. I use it when the gesture should feel affectionate but low pressure.',
-          'Romance does not improve with overselling. The right format is the one that feels natural for the relationship.'
+          'Too much fuss can spoil it. The right format is the one that feels natural for the relationship.'
         ]
       }
     ],
     closingRule: 'For Valentine\'s, I want the gift to feel like you picked it for that person, not for the calendar. If that part is right, the cake does the rest.',
     faqItems: createFaqItems([
       ['What is the best Valentine\'s cake gift to post?', 'A honey cake slice or a smaller gift box is usually the easiest choice when you need a clean postal surprise.'],
-      ['When should I order a full Valentine\'s Day cake?', 'Order the full cake when you are sharing the occasion in person or want the cake to be the centre of the moment.'],
+      ['When should I order a full Valentine\'s Day cake?', 'Order the full cake when you are sharing the occasion in person or want the cake to be the centre of the moment. If it needs wider UK delivery, ask first so I can confirm whether delivery by agreement is realistic.'],
       ['Do romantic cake gifts need to be large?', 'No. A well-judged smaller gift often feels more personal than a larger generic one.']
     ]),
     seo: {
@@ -1817,7 +1846,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       }
     ],
-    closingRule: 'For Halloween, I keep the joke short and the cake serious. A cleaner party cake usually outlasts a fussy novelty idea once real people start cutting it.',
+    closingRule: 'For Halloween, I would rather make one good party cake than chase a fussy novelty idea that nobody really wants to eat.',
     faqItems: createFaqItems([
       ['What cake flavour works well for Halloween?', 'Darker chocolate-led cakes often suit the mood best, especially for parties.'],
       ['Should a Halloween cake be highly detailed?', 'Only if the timing and setup support it. Simpler, sharper design often travels and serves better.'],
@@ -1836,12 +1865,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Ukrainian Christmas cakes and desserts: what I actually recommend for gifting and the table',
     slug: 'ukrainian-christmas-cakes-and-desserts-guide',
     summary: 'A Christmas guide to the Ukrainian-inspired cakes and sweet gifts that work best for seasonal tables and posted parcels.',
-    dek: 'Christmas orders split into two clear jobs: something generous for the table and something warm to send by post. I explain which Ukrainian-style cakes and festive gifts I recommend for each without turning the season into a generic hamper list.',
+    dek: 'Christmas orders split into two clear jobs: something generous for the table and something warm to send by post. I explain which Ukrainian-style cakes and festive gifts I recommend for each, and when a larger cake needs local delivery or UK delivery by agreement instead.',
     primaryProductSlug: 'christmas-food-hamper-with-authentic-honey-cake',
     imageProductSlug: 'christmas-food-hamper-with-authentic-honey-cake',
     relatedProductSlugs: ['xmas-gift-boxes-cake-with-card', 'xmas-honey-cake-slice-in-festive-bag', 'honey-cake-medovik', 'christmas-cake-design-bespoke-cakes-made-just-for-you'],
     intro: [
-      'Christmas cake buying gets messy when every order is treated the same. A family table wants one thing, a postal present wants another, and a corporate or host gift wants something else again.',
+      'Christmas orders get muddled when every cake is treated as if it is doing the same job. A family table wants one thing, a posted gift wants another, and a host or corporate order wants something else again.',
       'I separate those jobs clearly and then choose the cake or dessert that suits each one.'
     ],
     sections: [
@@ -1849,25 +1878,25 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'What I send by post at Christmas',
         paragraphs: [
           'For posted gifts, the Christmas Food Hamper with Honey Cake and the Xmas Gift Boxes with Cake and Card make immediate sense because they have both substance and presentation.',
-          'They feel generous without asking the recipient to reorganise their whole day around the parcel.'
+          'They feel generous without making the parcel awkward to receive.'
         ]
       },
       {
         heading: 'What belongs on the Christmas table',
         paragraphs: [
           'For a Christmas table, I still think first about what people genuinely enjoy eating, which is why honey cake keeps returning to the conversation.',
-          'If the cake feels festive but nobody really wants the second slice, it has missed the point.'
+          'If the cake feels festive but nobody really wants the second slice, it has missed the point. For a larger decorated Christmas cake, I would usually keep the handover local or discuss UK delivery by agreement.'
         ]
       },
       {
         heading: 'Where smaller festive gifts fit',
         paragraphs: [
           'For smaller gestures, the Xmas Honey Cake Slice in Festive Bag is tidy, easy to hand over, and still rooted in real flavour rather than seasonal packaging alone.',
-          'That is the option I use when the gift should feel warm and thoughtful without becoming a large hamper moment.'
+          'That is the option I use when the gift should feel warm and thoughtful without turning into a big hamper.'
         ]
       }
     ],
-    closingRule: 'At Christmas, send one cake people genuinely want to eat, not a louder box that only looks festive for five minutes.',
+    closingRule: 'At Christmas, I would rather send one cake people genuinely want to eat than a box that only looks festive for five minutes.',
     faqItems: createFaqItems([
       ['What is a good Ukrainian-style Christmas cake gift?', 'A festive honey cake hamper or a cake-with-card box works well because it feels generous and still posts cleanly.'],
       ['What if I only need a small Christmas cake gift?', 'A festive honey cake slice gift is often enough for a smaller seasonal gesture.'],
@@ -1936,6 +1965,32 @@ function assertNoBannedPhrases(value: string, slug: string, fieldName: string) {
 function assertDistinctPair(a: string, b: string, labelA: string, labelB: string, slug: string) {
   if (normalizeForComparison(a) === normalizeForComparison(b)) {
     throw new Error(`${labelA} and ${labelB} are duplicated for ${slug}`)
+  }
+}
+
+function assertDeliveryPolicyAlignment(article: SeedArticle, bodyText: string) {
+  if (!deliveryPolicyArticleSlugs.has(article.slug)) {
+    return
+  }
+
+  const deliveryText = [
+    article.title,
+    article.summary,
+    article.dek,
+    bodyText,
+    article.seo.metaTitle,
+    article.seo.metaDescription,
+    ...(article.faqItems ?? []).flatMap((item) => [item.question, item.answer])
+  ].join('\n')
+
+  for (const pattern of disallowedDeliveryPolicyPatterns) {
+    if (pattern.test(deliveryText)) {
+      throw new Error(`Disallowed delivery claim found for ${article.slug}`)
+    }
+  }
+
+  if (postalClaimPattern.test(deliveryText) && !allowedDeliveryQualifiersPattern.test(deliveryText)) {
+    throw new Error(`Postal delivery wording is too broad for ${article.slug}`)
   }
 }
 
@@ -2041,6 +2096,8 @@ export function validateSeedConfiguration(seedArticlesInput = seedArticles) {
     if (!bodyText) {
       throw new Error(`Missing body content for ${article.slug}`)
     }
+
+    assertDeliveryPolicyAlignment(article, bodyText)
 
     assertNoBannedPhrases(article.title, article.slug, 'title')
     assertNoBannedPhrases(article.summary, article.slug, 'summary')

@@ -313,6 +313,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const archiveArticles = archivePage.articles;
   const leadArticle = currentPage === 1 ? archiveArticles[0] : undefined;
   const supportingArticles = currentPage === 1 ? archiveArticles.slice(1) : archiveArticles;
+  const showEmptyState = archiveArticles.length === 0;
   const commerceArticle = archiveArticles.find(article => article.primaryProduct);
   const commerceProduct = commerceArticle?.primaryProduct;
   const visibleArticles = leadArticle ? [leadArticle, ...supportingArticles] : supportingArticles;
@@ -462,7 +463,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               </div>
             </Link>
           </article>
-        ) : (
+        ) : showEmptyState ? (
           <section className="rounded-[28px] border border-base-300 bg-white p-8 text-center">
             <h2 className="font-oldenburg text-[30px] leading-tight tracking-[0.03em] text-primary-800">
               No notes in this topic yet
@@ -486,7 +487,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               </Link>
             </div>
           </section>
-        )}
+        ) : null}
 
         {supportingArticles.length > 0 ? (
           <section className="mt-2 space-y-5 border-t border-base-300 pt-8 tablet:pt-10">
