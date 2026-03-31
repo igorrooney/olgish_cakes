@@ -37,7 +37,6 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/order', '2026-02-09', 'daily', 0.95),
   createStaticSitemapEntry('/order/leeds', '2025-09-20', 'daily', 0.95),
   createStaticSitemapEntry('/cakes', '2026-03-17', 'daily', 0.9),
-  createStaticSitemapEntry('/ukrainian-cake', '2026-02-09', 'weekly', 0.85),
   createStaticSitemapEntry('/cake-in-leeds', '2026-02-09', 'weekly', 0.85),
   createStaticSitemapEntry('/honey-cake', '2026-02-09', 'weekly', 0.85),
   createStaticSitemapEntry('/market-schedule', '2025-11-12', 'weekly', 0.88),
@@ -52,7 +51,6 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
 ]
 
 export const deliveryStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/cake-delivery-leeds', '2026-02-09', 'weekly', 0.9),
   createStaticSitemapEntry('/delivery-areas', '2026-02-09', 'weekly', 0.9)
 ]
 
@@ -85,10 +83,7 @@ export const dietaryStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/vegan-cakes-leeds', '2026-02-09', 'weekly', 0.8),
   createStaticSitemapEntry('/dairy-free-cakes-leeds', '2026-02-09', 'weekly', 0.8),
   createStaticSitemapEntry('/gluten-friendly-ukrainian-cakes', '2025-11-12', 'weekly', 0.8),
-  createStaticSitemapEntry('/nut-free-cakes-leeds', '2026-02-09', 'weekly', 0.8),
-  createStaticSitemapEntry('/egg-free-cakes-leeds', '2026-02-09', 'weekly', 0.8),
-  createStaticSitemapEntry('/vegan-wedding-cakes-leeds', '2025-11-11', 'weekly', 0.8),
-  createStaticSitemapEntry('/gluten-friendly-wedding-cakes-leeds', '2025-11-11', 'weekly', 0.8)
+  createStaticSitemapEntry('/egg-free-cakes-leeds', '2026-02-09', 'weekly', 0.8)
 ]
 
 export const educationalStaticSitemapPages: StaticSitemapEntry[] = [
@@ -116,7 +111,6 @@ export const guideStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/how-to-order', '2025-11-18', 'monthly', 0.8),
   createStaticSitemapEntry('/best-cakes-for-weddings', '2025-11-18', 'monthly', 0.8),
   createStaticSitemapEntry('/best-cakes-for-birthdays', '2025-11-11', 'monthly', 0.8),
-  createStaticSitemapEntry('/cake-size-guide', '2025-11-18', 'monthly', 0.7),
   createStaticSitemapEntry('/cake-flavor-guide', '2025-11-12', 'monthly', 0.7),
   createStaticSitemapEntry('/ukrainian-cake-vs-british-cake', '2025-09-20', 'monthly', 0.7)
 ]
@@ -127,7 +121,6 @@ export const serviceStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/gift-cards', '2026-02-09', 'monthly', 0.7),
   createStaticSitemapEntry('/cake-decorating-services', '2025-11-12', 'monthly', 0.7),
   createStaticSitemapEntry('/cake-photography', '2025-11-12', 'monthly', 0.7),
-  createStaticSitemapEntry('/cake-preservation', '2025-11-18', 'monthly', 0.7),
   createStaticSitemapEntry('/cake-shipping', '2025-11-12', 'monthly', 0.7)
 ]
 

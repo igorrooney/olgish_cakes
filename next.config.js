@@ -456,7 +456,47 @@ const nextConfig = {
 
       {
         source: "/honey-cake-near-me",
-        destination: "/honey-cake",
+        destination: "/blog/medovik-honey-cake-near-me-guide",
+        permanent: true,
+      },
+      {
+        source: "/ukrainian-cake",
+        destination: "/blog/ukrainian-cakes-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-delivery-leeds",
+        destination: "/blog/cake-delivery-leeds-guide",
+        permanent: true,
+      },
+      {
+        source: "/nut-free-cakes-leeds",
+        destination: "/blog/nut-free-cakes-leeds-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-preservation",
+        destination: "/blog/cake-storage-and-preservation-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-size-guide",
+        destination: "/blog/cake-size-and-portions-guide",
+        permanent: true,
+      },
+      {
+        source: "/wakefield-wedding-cakes",
+        destination: "/wedding-cakes",
+        permanent: true,
+      },
+      {
+        source: "/vegan-wedding-cakes-leeds",
+        destination: "/wedding-cakes",
+        permanent: true,
+      },
+      {
+        source: "/gluten-friendly-wedding-cakes-leeds",
+        destination: "/wedding-cakes",
         permanent: true,
       },
       {

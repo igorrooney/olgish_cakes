@@ -40,7 +40,32 @@ describe('next.config redirects', () => {
     expect(redirects).toEqual(expect.arrayContaining([
       {
         source: '/honey-cake-near-me',
-        destination: '/honey-cake',
+        destination: '/blog/medovik-honey-cake-near-me-guide',
+        permanent: true
+      },
+      {
+        source: '/ukrainian-cake',
+        destination: '/blog/ukrainian-cakes-guide',
+        permanent: true
+      },
+      {
+        source: '/cake-delivery-leeds',
+        destination: '/blog/cake-delivery-leeds-guide',
+        permanent: true
+      },
+      {
+        source: '/nut-free-cakes-leeds',
+        destination: '/blog/nut-free-cakes-leeds-guide',
+        permanent: true
+      },
+      {
+        source: '/cake-preservation',
+        destination: '/blog/cake-storage-and-preservation-guide',
+        permanent: true
+      },
+      {
+        source: '/cake-size-guide',
+        destination: '/blog/cake-size-and-portions-guide',
         permanent: true
       }
     ]))
@@ -100,6 +125,40 @@ describe('next.config redirects', () => {
       {
         source: '/custom-cake-enquiry',
         destination: '/get-custom-quote',
+        permanent: true
+      }
+    ]))
+  })
+
+  it('keeps /wedding-cakes live while redirecting retired wedding variants back to it', async () => {
+    if (!nextConfig.redirects) {
+      throw new Error('Expected nextConfig.redirects to be defined')
+    }
+
+    const redirects = await nextConfig.redirects()
+
+    expect(redirects).toEqual(expect.arrayContaining([
+      {
+        source: '/wakefield-wedding-cakes',
+        destination: '/wedding-cakes',
+        permanent: true
+      },
+      {
+        source: '/vegan-wedding-cakes-leeds',
+        destination: '/wedding-cakes',
+        permanent: true
+      },
+      {
+        source: '/gluten-friendly-wedding-cakes-leeds',
+        destination: '/wedding-cakes',
+        permanent: true
+      }
+    ]))
+
+    expect(redirects).not.toEqual(expect.arrayContaining([
+      {
+        source: '/wedding-cakes',
+        destination: '/blog/wedding-cake-flavours-guide',
         permanent: true
       }
     ]))

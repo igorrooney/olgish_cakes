@@ -105,14 +105,23 @@ describe('sitemap', () => {
       expect(bradfordUrl).toBeDefined()
     })
 
-    it('should include cake delivery Leeds page', async () => {
+    it('should exclude retired article-replacement pages from the static sitemap', async () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
-      const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')
+      const retiredUrls = [
+        'https://olgishcakes.co.uk/ukrainian-cake',
+        'https://olgishcakes.co.uk/cake-delivery-leeds',
+        'https://olgishcakes.co.uk/nut-free-cakes-leeds',
+        'https://olgishcakes.co.uk/cake-size-guide',
+        'https://olgishcakes.co.uk/cake-preservation',
+        'https://olgishcakes.co.uk/vegan-wedding-cakes-leeds',
+        'https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds'
+      ]
 
-      expect(deliveryUrl).toBeDefined()
-      expect(deliveryUrl?.priority).toBe(0.9)
+      retiredUrls.forEach((url) => {
+        expect(result.find((entry) => entry.url === url)).toBeUndefined()
+      })
     })
 
     it('should include category landing pages with config-driven lastModified dates', async () => {
@@ -164,6 +173,9 @@ describe('sitemap', () => {
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/corporate-cakes-leeds')).toBeUndefined()
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/traditional-ukrainian-cakes')).toBeUndefined()
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/honey-cake-near-me')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/ukrainian-cake')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/nut-free-cakes-leeds')).toBeUndefined()
     })
 
     it('should filter out hampers without slug', async () => {

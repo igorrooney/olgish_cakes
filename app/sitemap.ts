@@ -98,7 +98,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const isRecent = article.publishedAt &&
         new Date(article.publishedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       const basePriority = isRecent ? 0.7 : 0.6
-      const trendingTopics = new Set(['cake-by-post', 'delivery-guides', 'celebration-planning'])
+      const trendingTopics = new Set([
+        'cake-by-post',
+        'celebration-planning',
+        'gift-ideas',
+        'local-cake-delivery',
+        'seasonal-cake-guides',
+        'ukrainian-cake-guides'
+      ])
       const isTrending = article.topic?.slug ? trendingTopics.has(article.topic.slug) : false
       const changeFrequency: SitemapChangeFrequency = isTrending ? 'weekly' : 'monthly'
 
