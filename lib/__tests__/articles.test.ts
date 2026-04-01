@@ -29,9 +29,13 @@ describe("lib/articles", () => {
 
     expect(mockGetCacheConfig).toHaveBeenCalledWith("articles");
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('_type == "article"');
-    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('editorialUpdatedAt');
-    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"modifiedAt": _updatedAt');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain("order(publishedAt desc, _createdAt desc)");
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"isPostableToUk": select(');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"united kingdom"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"u.k."');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('editorialUpdatedAt');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).not.toContain('"modifiedAt": _updatedAt');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).not.toContain("deliverySection {");
     expect(mockCachedSanityFetch.mock.calls[0][2]).toEqual({
       tags: ["articles"],
       revalidate: 300,
@@ -132,6 +136,24 @@ describe("lib/articles", () => {
     ]);
   });
 
+  it("treats editorialUpdatedAt as a material update only when it is later and on a different day", async () => {
+    const { hasMaterialArticleUpdate } = await import("../articles");
+
+    expect(hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z")).toBe(false);
+    expect(
+      hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-04-01T12:00:00.000Z")
+    ).toBe(false);
+    expect(
+      hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-04-01T09:00:00.000Z")
+    ).toBe(false);
+    expect(
+      hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-03-31T23:59:59.000Z")
+    ).toBe(false);
+    expect(
+      hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-04-02T08:00:00.000Z")
+    ).toBe(true);
+  });
+
   it("keeps visible editorial imagery separate from metadata fallbacks", async () => {
     const { getArticleImageUrl, getArticleMetadataImageUrl, getArticleVisibleImageUrl } =
       await import("../articles");
@@ -155,6 +177,80 @@ describe("lib/articles", () => {
     expect(getArticleVisibleImageUrl(article)).toBeUndefined();
     expect(getArticleMetadataImageUrl(article)).toBe("https://cdn.sanity.io/hamper.jpg");
     expect(getArticleImageUrl(article)).toBe("https://cdn.sanity.io/hamper.jpg");
+  });
+
+  it("builds transformed Sanity CDN image URLs and responsive loaders without touching non-Sanity assets", async () => {
+    const { getSanityCdnImageLoader, getSanityCdnImageUrl, isSanityCdnImageUrl } =
+      await import("../articles");
+
+    expect(isSanityCdnImageUrl("https://cdn.sanity.io/images/project/production/image.png")).toBe(
+      true
+    );
+    expect(isSanityCdnImageUrl("https://example.com/image.png")).toBe(false);
+    expect(
+      getSanityCdnImageUrl("https://cdn.sanity.io/images/project/production/image.png", {
+        width: 720,
+        height: 540,
+        fit: "crop",
+        quality: 80,
+      })
+    ).toBe(
+      "https://cdn.sanity.io/images/project/production/image.png?w=720&h=540&fit=crop&q=80&auto=format"
+    );
+    expect(getSanityCdnImageUrl("https://example.com/image.png", { width: 720 })).toBe(
+      "https://example.com/image.png"
+    );
+    expect(
+      getSanityCdnImageLoader({
+        width: 720,
+        height: 540,
+        fit: "crop",
+        quality: 80,
+      })({
+        src: "https://cdn.sanity.io/images/project/production/image.png",
+        width: 1200,
+      })
+    ).toBe(
+      "https://cdn.sanity.io/images/project/production/image.png?w=1200&h=900&fit=crop&q=80&auto=format"
+    );
+    expect(
+      getSanityCdnImageLoader({
+        width: 720,
+        height: 540,
+      })({
+        src: "https://example.com/image.png",
+        width: 1200,
+      })
+    ).toBe("https://example.com/image.png");
+  });
+
+  it("treats the derived isPostableToUk flag as the single source of truth for blog product posting", async () => {
+    const { isArticleProductPostableToUk } = await import("../articles");
+
+    const postableCake = {
+      _id: "cake-1",
+      _type: "cake" as const,
+      name: "Postal loaf cake",
+      slug: "postal-loaf-cake",
+      isPostableToUk: true,
+    };
+    const nonPostalHamper = {
+      _id: "hamper-1",
+      _type: "giftHamper" as const,
+      name: "Paris hamper",
+      slug: "paris-hamper",
+      isPostableToUk: false,
+    };
+    const unspecifiedProduct = {
+      _id: "hamper-2",
+      _type: "giftHamper" as const,
+      name: "Courier hamper",
+      slug: "courier-hamper",
+    };
+
+    expect(isArticleProductPostableToUk(postableCake)).toBe(true);
+    expect(isArticleProductPostableToUk(nonPostalHamper)).toBe(false);
+    expect(isArticleProductPostableToUk(unspecifiedProduct)).toBe(false);
   });
 
   it("turns portable text product details into readable article CTA copy", async () => {
@@ -214,7 +310,7 @@ describe("lib/articles", () => {
   });
 
   it("creates truncated pagination tokens for larger article archives", async () => {
-    const { getArticlePaginationTokens, hasMaterialArticleUpdate, isBlogArchivePageOutOfRange } =
+    const { getArticlePaginationTokens, isBlogArchivePageOutOfRange } =
       await import("../articles");
 
     expect(getArticlePaginationTokens(5, 10)).toEqual([
@@ -228,11 +324,5 @@ describe("lib/articles", () => {
     ]);
     expect(isBlogArchivePageOutOfRange(2, 0)).toBe(true);
     expect(isBlogArchivePageOutOfRange(1, 0)).toBe(false);
-    expect(hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-04-01T18:00:00.000Z")).toBe(
-      false
-    );
-    expect(hasMaterialArticleUpdate("2025-04-01T09:00:00.000Z", "2025-04-03T09:00:00.000Z")).toBe(
-      true
-    );
   });
 });

@@ -1,11 +1,18 @@
-import type { ArticleProduct, ArticleTopic } from '@/lib/articles'
+import {
+  getProductHref,
+  isArticleProductPostableToUk,
+  type ArticleProduct,
+  type ArticleTopic
+} from '@/lib/articles'
 
 type BlogTopicCopy = Pick<ArticleTopic, 'title' | 'slug' | 'description'>
+type BlogTopicSlug = BlogTopicCopy['slug']
 
 interface ArchiveFilterCopy {
   label: string
-  status?: string
+  status: string
   summary?: string
+  pageLabel?: string
 }
 
 interface ArchiveSectionCopy {
@@ -13,8 +20,55 @@ interface ArchiveSectionCopy {
   heading: string
 }
 
+interface CommerceCta {
+  href: string
+  label: string
+}
+
+interface ArchiveCommerceCopy {
+  eyebrow: string
+  heading: string
+  body: string
+  bullets: string[]
+  primaryCta: CommerceCta
+  secondaryCta: CommerceCta
+}
+
+interface ArchiveCommerceCopyInput {
+  activeTopicSlug?: BlogTopicSlug
+  product?: ArticleProduct
+}
+
+interface ArticleClosingCtaCopy {
+  eyebrow: string
+  heading: string
+  intro: string
+}
+
 function isGenericPostalProduct(product?: ArticleProduct) {
   return product?.name.trim().toLowerCase() === 'cake by post'
+}
+
+function isCustomCakeProduct(product?: ArticleProduct) {
+  return product?._type === 'cake'
+}
+
+function isBlogPostalProduct(product?: ArticleProduct) {
+  return isArticleProductPostableToUk(product)
+}
+
+function getArchiveDefaultSecondaryCta(activeTopicSlug?: BlogTopicSlug): CommerceCta {
+  if (activeTopicSlug === 'custom-cakes') {
+    return {
+      href: '/cakes-by-post',
+      label: 'Shop cakes by post'
+    }
+  }
+
+  return {
+    href: '/cakes',
+    label: 'See custom cakes'
+  }
 }
 
 export function getArchiveSectionCopy(currentPage: number): ArchiveSectionCopy {
@@ -92,60 +146,107 @@ export function getArchiveFilterCopy(
     totalPages: number
   }
 ): ArchiveFilterCopy {
-  const status = activeTopic ? undefined : 'All articles'
+  const status = activeTopic ? activeTopic.title : 'All topics'
 
-  if (totalCount === 0 || totalPages <= 1) {
+  if (totalCount === 0) {
     return {
       label: 'Browse by topic',
-      status
+      status,
+      summary: 'No published articles yet'
     }
   }
 
   return {
     label: 'Browse by topic',
     status,
-    summary: `Page ${currentPage} of ${totalPages}`
+    summary: `${totalCount} published ${totalCount === 1 ? 'article' : 'articles'}`,
+    pageLabel: totalPages > 1 ? `Page ${currentPage} of ${totalPages}` : undefined
   }
 }
 
-export function getArchiveCommerceCopy(product?: ArticleProduct) {
-  const heading = product
-    ? isGenericPostalProduct(product)
+export function getArchiveCommerceCopy({
+  activeTopicSlug,
+  product
+}: ArchiveCommerceCopyInput = {}): ArchiveCommerceCopy {
+  const isPostalProduct = isBlogPostalProduct(product)
+  const secondaryCta = getArchiveDefaultSecondaryCta(activeTopicSlug)
+
+  if (activeTopicSlug === 'custom-cakes' && !isPostalProduct) {
+    return {
+      eyebrow: 'Planning something more detailed?',
+      heading: 'Browse the custom cakes first',
+      body:
+        'If the cake depends on height, fresh fillings, or a proper design brief, start with the custom cakes range. That is the easiest way to compare celebration styles before deciding what should stay local and what might travel by agreement.',
+      bullets: [
+        'Custom cakes are the right starting point for birthdays, tiered cakes, and designs that need more than standard by-post packing',
+        'Collection and local delivery suit celebration cakes better when the finish matters as much as the flavour',
+        'If the order has to post across the UK, the cakes by post range is still the safer option for reliable travel'
+      ],
+      primaryCta: {
+        href: '/cakes',
+        label: 'Browse custom cakes'
+      },
+      secondaryCta
+    }
+  }
+
+  const postalProduct = isPostalProduct ? product : undefined
+  const heading = postalProduct
+    ? isGenericPostalProduct(postalProduct)
       ? 'Shop the by-post options'
-      : `Shop ${product.name}`
+      : `Shop ${postalProduct.name}`
     : 'Shop the options that travel best'
-  const body = product
-    ? isGenericPostalProduct(product)
-      ? 'Start here if you need a standard honey cake prepared for post, vacuum-packed slices in a gift hamper, or caramel biscuits that travel neatly across the UK.'
-      : `${product.name} is a good fit when the order is one of the by-post options, or when a wider UK cake delivery has been agreed in advance.`
-    : 'If you need something to travel, start with standard honey cake by post, cake slices in gift hampers, or caramel biscuits. For a whole celebration cake further afield, ask about UK delivery by agreement.'
+  const body = postalProduct
+    ? isGenericPostalProduct(postalProduct)
+      ? 'Start here if you need cakes by post with honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed and sent as a parcel across the UK.'
+      : `${postalProduct.name} is prepared as a vacuum-packed parcel for UK post when you need slices, biscuits, or standard-design honey cake that can travel neatly.`
+    : activeTopicSlug === 'celebration-planning'
+      ? 'If you are sending cake as a gift, start with the by-post options that travel cleanly, then compare custom cakes only if the occasion really needs a larger centrepiece.'
+      : 'If you need something to travel, start with the cakes by post range for honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed for parcel post. For full celebration cakes, ask about local delivery, collection, or UK delivery by agreement.'
 
   return {
     eyebrow: 'Need something that can travel?',
     heading,
     body,
     bullets: [
-      'Standard honey cake by post is prepared for travel and vacuum-packed before dispatch',
-      'Gift hampers and compact slice gifts work well when you want a posted cake surprise without sending a full centrepiece',
-      'Tall, chilled, or highly decorated cakes are usually better as local delivery, collection, or UK delivery by agreement'
-    ]
+      'The cakes by post range is prepared for post, with bakes vacuum-packed and dispatched as parcels',
+      'Honey cake slices, caramel biscuits, and standard-design honey cake work well when you want a posted surprise without sending a full celebration cake',
+      'Tall, chilled, or highly decorated cakes are better kept to local delivery, collection, or UK delivery by agreement'
+    ],
+    primaryCta: {
+      href: postalProduct ? getProductHref(postalProduct) : '/cakes-by-post',
+      label: postalProduct ? 'See this cake by post' : 'Shop cakes by post'
+    },
+    secondaryCta
   }
 }
 
 export function getArticleCommerceCopy(product?: ArticleProduct) {
+  const isPostalProduct = isBlogPostalProduct(product)
+  const eyebrow = product
+    ? isPostalProduct
+      ? 'Useful if the cake has to travel'
+      : isCustomCakeProduct(product)
+        ? 'Better for local delivery or collection'
+        : 'Better arranged directly'
+    : 'Useful if the cake has to travel'
   const heading = product
-    ? isGenericPostalProduct(product)
+    ? isPostalProduct && isGenericPostalProduct(product)
       ? 'Start with the by-post options'
       : `Start with ${product.name}`
     : 'Start with the format that fits the journey'
   const body = product
-    ? isGenericPostalProduct(product)
-      ? 'This is where Olga points people when they need standard honey cake by post, cake slices inside a gift hamper, or caramel biscuits that are straightforward to send.'
-      : `${product.name} is the kind of product Olga suggests when the format suits by-post gifting, or when a wider UK delivery has already been agreed.`
-    : 'If the order has to go across the UK, start with the by-post options first. If the cake needs height, fresh fillings, or a polished celebration finish, ask about local delivery, collection, or UK delivery by agreement instead.'
+    ? isPostalProduct && isGenericPostalProduct(product)
+      ? 'This is where Olga points people when they need standard-design honey cake, honey cake slices, or caramel biscuits vacuum-packed and sent as a parcel.'
+      : isPostalProduct
+        ? `${product.name} is prepared as a vacuum-packed parcel for UK post when you want slices, biscuits, or standard-design honey cake that can travel neatly.`
+        : isCustomCakeProduct(product)
+        ? `${product.name} is the kind of cake Olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing.`
+        : `${product.name} is better treated as a product to arrange directly, rather than a standard UK by-post option. If the parcel has to travel, compare the cakes by post range first.`
+    : 'If the order has to go across the UK, start with the cakes by post options first. Those cover standard-design honey cake, honey cake slices, and caramel biscuits vacuum-packed for parcel delivery. If the cake needs height, fresh fillings, or a polished celebration finish, ask about local delivery, collection, or UK delivery by agreement instead.'
 
   return {
-    eyebrow: 'Useful if the cake has to travel',
+    eyebrow,
     heading,
     body
   }
@@ -205,11 +306,11 @@ export function getRelatedArticlesCopy(topicSlug?: string) {
   }
 }
 
-export function getArticleClosingCtaCopy() {
+export function getArticleClosingCtaCopy(): ArticleClosingCtaCopy {
   return {
     eyebrow: 'Need the practical answer?',
     heading: 'Choose the format that suits the journey',
     intro:
-      'If the parcel has to go across the UK, start with standard honey cake by post, cake slices in gift hampers, or caramel biscuits. If the order depends on height, chilled fillings, or a detailed design brief, send an enquiry about local delivery, collection, or UK delivery by agreement.'
+      'If the parcel has to go across the UK, start with the cakes by post range for standard-design honey cake, honey cake slices, or caramel biscuits vacuum-packed for post. If the order depends on height, chilled fillings, or a detailed design brief, browse the custom cakes range for the celebration options that are better suited to local delivery, collection, or UK delivery by agreement.'
   }
 }

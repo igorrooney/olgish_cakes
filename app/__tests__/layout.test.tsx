@@ -49,6 +49,10 @@ jest.mock('../components/ConditionalMuiProviders', () => ({
   ConditionalMuiProviders: ({ children }: { children: ReactNode }) => <>{children}</>
 }))
 
+jest.mock('../components/ConditionalQueryProviders', () => ({
+  ConditionalQueryProviders: ({ children }: { children: ReactNode }) => <>{children}</>
+}))
+
 jest.mock('../components/KlaroA11yBridge', () => ({
   KlaroA11yBridge: () => <div data-testid='klaro-bridge' />
 }))
@@ -71,10 +75,6 @@ jest.mock('../components/SiteFooter', () => ({
 
 jest.mock('../components/WebVitalsMonitor', () => ({
   WebVitalsMonitor: () => <div data-testid='web-vitals-monitor' />
-}))
-
-jest.mock('../providers', () => ({
-  Providers: ({ children }: { children: ReactNode }) => <>{children}</>
 }))
 
 jest.mock('../utils/review-stats.server', () => ({
@@ -142,5 +142,12 @@ describe('RootLayout', () => {
     expect(markup).toContain('data-testid="klaro-script"')
     expect(markup).not.toContain('data-testid="vercel-analytics"')
     expect(markup).not.toContain('data-testid="vercel-speed-insights"')
+  })
+
+  it('does not emit SearchAction in the sitewide WebSite structured data', async () => {
+    const markup = await renderRootLayout()
+
+    expect(markup).not.toContain('"@type":"SearchAction"')
+    expect(markup).not.toContain('search_term_string')
   })
 })

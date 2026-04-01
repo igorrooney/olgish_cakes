@@ -219,6 +219,7 @@ export function SiteHeaderClient() {
                 src="/design/mobile-home/navbar-logo.png"
                 alt="Olgish Cakes logo"
                 fill
+                sizes="(min-width: 768px) 64px, 48px"
                 className="object-contain"
                 priority
               />

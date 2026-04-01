@@ -4,11 +4,11 @@ import type { ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 
-const MuiProviders = dynamic(
-  () => import('./MuiProviders').then((mod) => mod.MuiProviders)
+const Providers = dynamic(
+  () => import('../providers').then((mod) => mod.Providers)
 )
 
-interface ConditionalMuiProvidersProps {
+interface ConditionalQueryProvidersProps {
   children: ReactNode
 }
 
@@ -16,12 +16,12 @@ function isLightweightContentRoute(pathname: string | null) {
   return pathname === '/blog' || pathname?.startsWith('/blog/') === true
 }
 
-export function ConditionalMuiProviders({ children }: ConditionalMuiProvidersProps) {
+export function ConditionalQueryProviders({ children }: ConditionalQueryProvidersProps) {
   const pathname = usePathname()
 
   if (isLightweightContentRoute(pathname)) {
     return <>{children}</>
   }
 
-  return <MuiProviders>{children}</MuiProviders>
+  return <Providers>{children}</Providers>
 }

@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Fab, Zoom } from '@mui/material';
-import { KeyboardArrowUp as ArrowUpIcon } from '@mui/icons-material';
 import { KLARO_VISIBILITY_EVENT } from './KlaroA11yBridge';
 
 export const ScrollToTop: React.FC = () => {
@@ -47,65 +45,38 @@ export const ScrollToTop: React.FC = () => {
   }
 
   return (
-    <Zoom in={isVisible}>
-      <Fab
+    <div data-testid='zoom' data-in={isVisible ? 'true' : 'false'}>
+      <button
+        data-testid='fab'
+        data-size='medium'
+        type='button'
         onClick={scrollToTop}
-        size="medium"
-        sx={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          background: 'linear-gradient(135deg, rgba(46, 49, 146, 0.15) 0%, rgba(30, 36, 112, 0.25) 100%)',
-          color: 'rgba(255, 255, 255, 0.9)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '50%',
-          boxShadow: `
-            0 8px 32px rgba(46, 49, 146, 0.1),
-            0 4px 16px rgba(0, 0, 0, 0.05),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.1)
-          `,
-          '&:hover': {
-            background: 'linear-gradient(135deg, rgba(46, 49, 146, 0.25) 0%, rgba(30, 36, 112, 0.35) 100%)',
-            color: 'white',
-            transform: 'translateY(-3px) scale(1.05)',
-            boxShadow: `
-              0 12px 40px rgba(46, 49, 146, 0.2),
-              0 8px 24px rgba(0, 0, 0, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.4),
-              inset 0 -1px 0 rgba(0, 0, 0, 0.1)
-            `,
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-          },
-          '&:active': {
-            transform: 'translateY(-1px) scale(0.98)',
-            transition: 'all 0.1s ease',
-          },
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          zIndex: 1000,
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: '50%',
-            background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-            opacity: 0,
-            transition: 'opacity 0.3s ease',
-          },
-          '&:hover::before': {
-            opacity: 1,
-          },
-        }}
-        aria-label="Scroll to top"
-        title="Scroll to top"
+        tabIndex={isVisible ? 0 : -1}
+        aria-hidden={!isVisible}
+        aria-label='Scroll to top'
+        title='Scroll to top'
+        className={`btn btn-circle btn-ghost fixed bottom-6 right-6 z-[1000] h-12 min-h-12 w-12 border border-white/20 bg-[linear-gradient(135deg,rgba(46,49,146,0.15)_0%,rgba(30,36,112,0.25)_100%)] p-0 text-white/90 shadow-[0_8px_32px_rgba(46,49,146,0.1),0_4px_16px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.1)] backdrop-blur-[20px] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:border-white/30 hover:bg-[linear-gradient(135deg,rgba(46,49,146,0.25)_0%,rgba(30,36,112,0.35)_100%)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 active:scale-[0.98] ${
+          isVisible
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none translate-y-3 opacity-0'
+        }`}
       >
-        <ArrowUpIcon />
-      </Fab>
-    </Zoom>
+        <svg
+          aria-hidden='true'
+          viewBox='0 0 24 24'
+          className='h-5 w-5'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M12 5l-7 7m7-7 7 7m-7-7v14'
+            stroke='currentColor'
+            strokeWidth='2.2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
+      </button>
+    </div>
   );
 };

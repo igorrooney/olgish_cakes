@@ -69,6 +69,7 @@ export interface ArticleProduct {
   slug: string;
   price?: number | null;
   image?: ArticleImage;
+  isPostableToUk?: boolean;
   shortDescription?: PortableTextBlock[];
   description?: PortableTextBlock[];
 }
@@ -96,7 +97,6 @@ export interface ArticleCard {
   dek: string;
   publishedAt: string;
   editorialUpdatedAt?: string;
-  modifiedAt?: string;
   coverImage?: ArticleImage;
   cardImage?: ArticleImage;
   topic?: ArticleTopic;
@@ -210,6 +210,10 @@ export function getProductHref(product: ArticleProduct) {
     : `/cakes/${product.slug}`;
 }
 
+export function isArticleProductPostableToUk(product?: ArticleProduct) {
+  return product?.isPostableToUk === true;
+}
+
 export function toJsonLdScript(data: unknown) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
@@ -305,6 +309,94 @@ export function getArticleImage(article: ArticleImageSelectionInput) {
 
 export function getArticleImageUrl(article: ArticleImageSelectionInput) {
   return getArticleMetadataImageUrl(article);
+}
+
+type SanityCdnImageFit = "clip" | "crop" | "fill" | "fillmax" | "max" | "min" | "scale";
+
+interface SanityCdnImageOptions {
+  width?: number;
+  height?: number;
+  fit?: SanityCdnImageFit;
+  quality?: number;
+  autoFormat?: boolean;
+}
+
+interface SanityCdnImageLoaderOptions
+  extends Omit<SanityCdnImageOptions, "autoFormat"> {}
+
+export function isSanityCdnImageUrl(imageUrl?: string) {
+  if (!imageUrl) {
+    return false;
+  }
+
+  return imageUrl.startsWith("https://cdn.sanity.io/images/");
+}
+
+export function getSanityCdnImageUrl(
+  imageUrl: string | undefined,
+  {
+    width,
+    height,
+    fit,
+    quality,
+    autoFormat = true,
+  }: SanityCdnImageOptions = {}
+) {
+  if (!imageUrl || !isSanityCdnImageUrl(imageUrl)) {
+    return imageUrl;
+  }
+
+  const transformedUrl = new URL(imageUrl);
+
+  if (width) {
+    transformedUrl.searchParams.set("w", String(width));
+  }
+
+  if (height) {
+    transformedUrl.searchParams.set("h", String(height));
+  }
+
+  if (fit) {
+    transformedUrl.searchParams.set("fit", fit);
+  }
+
+  if (typeof quality === "number") {
+    transformedUrl.searchParams.set("q", String(quality));
+  }
+
+  if (autoFormat) {
+    transformedUrl.searchParams.set("auto", "format");
+  }
+
+  return transformedUrl.toString();
+}
+
+export function getSanityCdnImageLoader({
+  width,
+  height,
+  fit,
+  quality,
+}: SanityCdnImageLoaderOptions = {}) {
+  return ({ src, width: requestedWidth, quality: requestedQuality }: { src: string; width: number; quality?: number }) => {
+    if (!isSanityCdnImageUrl(src)) {
+      return src;
+    }
+
+    const resolvedHeight =
+      typeof width === "number" &&
+      Number.isFinite(width) &&
+      typeof height === "number" &&
+      Number.isFinite(height)
+        ? Math.max(1, Math.round((requestedWidth / width) * height))
+        : undefined;
+
+    return getSanityCdnImageUrl(src, {
+      width: requestedWidth,
+      height: resolvedHeight,
+      fit,
+      quality: requestedQuality ?? quality,
+    }) ?? src;
+  };
 }
 
 export function getArticleTopicTitle(article: Pick<ArticleCard, "topic">) {

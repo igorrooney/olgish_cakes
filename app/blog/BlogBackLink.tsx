@@ -1,11 +1,11 @@
 'use client'
 
 import type { MouseEvent } from 'react'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 import { BlogBackLinkBase } from './BlogBackLinkBase'
-import { buildBlogBackHref } from './navigation'
+import { buildBlogBackHref, readStoredBlogArchiveHref } from './navigation'
 
 function isPlainLeftClick(event: MouseEvent<HTMLAnchorElement>) {
   return event.button === 0 &&
@@ -25,22 +25,22 @@ function resolveNormalizedPathname(value: string, origin: string) {
   }
 }
 
-function getResolvedFromParam(fromValues: string[]) {
-  if (fromValues.length === 0) {
-    return undefined
-  }
-
-  return fromValues.length === 1
-    ? fromValues[0]
-    : fromValues
-}
-
 export function BlogBackLink() {
   const searchParams = useSearchParams()
-  const backHref = buildBlogBackHref({
-    fallbackHref: '/blog',
-    fromParam: getResolvedFromParam(searchParams.getAll('from'))
-  })
+
+  const backHref = useMemo(() => {
+    const fromParamValues = searchParams.getAll('from')
+    const fromParam = fromParamValues.length > 0
+      ? fromParamValues.length === 1
+        ? fromParamValues[0]
+        : fromParamValues
+      : readStoredBlogArchiveHref()
+
+    return buildBlogBackHref({
+      fallbackHref: '/blog',
+      fromParam
+    })
+  }, [searchParams])
 
   const handleClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     if (!isPlainLeftClick(event)) {

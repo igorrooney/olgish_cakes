@@ -23,10 +23,21 @@ jest.mock("next/image", () => ({
   default: ({
     alt = "",
     fill,
+    loader,
+    src,
     ...props
-  }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; fetchPriority?: string }) => (
-    <img alt={alt} {...props} />
-  ),
+  }: ImgHTMLAttributes<HTMLImageElement> & {
+    fill?: boolean;
+    fetchPriority?: string;
+    loader?: ({ src, width, quality }: { src: string; width: number; quality?: number }) => string;
+  }) => {
+    const resolvedSrc =
+      typeof src === "string" && typeof loader === "function"
+        ? loader({ src, width: 1200 })
+        : src;
+
+    return <img alt={alt} src={resolvedSrc} {...props} />
+  },
 }));
 
 jest.mock("../ArticleTopicFilter", () => ({
@@ -42,6 +53,29 @@ jest.mock("@/lib/articles", () => ({
   BLOG_ARCHIVE_PAGE_SIZE: 12,
   formatArticleDate: () => "1 April 2025",
   getArticleHref: (slug: string) => `/blog/${slug}`,
+  getSanityCdnImageLoader:
+    ({ width, height, fit, quality }: { width?: number; height?: number; fit?: string; quality?: number }) =>
+    ({ src, width: requestedWidth }: { src: string; width: number }) => {
+      const transformedUrl = new URL(src);
+
+      transformedUrl.searchParams.set("w", String(requestedWidth));
+
+      if (typeof width === "number" && typeof height === "number") {
+        transformedUrl.searchParams.set("h", String(Math.round((requestedWidth / width) * height)));
+      }
+
+      if (fit) {
+        transformedUrl.searchParams.set("fit", fit);
+      }
+
+      if (typeof quality === "number") {
+        transformedUrl.searchParams.set("q", String(quality));
+      }
+
+      transformedUrl.searchParams.set("auto", "format");
+
+      return transformedUrl.toString();
+    },
   getArticleVisibleImageUrl: (article: {
     coverImage?: { asset?: { url?: string } };
     cardImage?: { asset?: { url?: string } };
@@ -71,6 +105,7 @@ jest.mock("@/lib/articles", () => ({
     return queryString.length > 0 ? `/blog?${queryString}` : "/blog";
   },
   getPaginatedArchiveArticles: (...args: unknown[]) => mockGetPaginatedArchiveArticles(...args),
+  isArticleProductPostableToUk: (product?: { isPostableToUk?: boolean }) => product?.isPostableToUk === true,
   getProductHref: (product: { _type: string; slug: string }) =>
     product._type === "giftHamper" ? `/cakes-by-post/${product.slug}` : `/cakes/${product.slug}`,
   isBlogArchivePageOutOfRange: (page: number, totalPages: number) => {
@@ -150,6 +185,7 @@ const latestArticle = {
     _type: "giftHamper",
     name: "Postal Medovik",
     slug: "postal-medovik",
+    isPostableToUk: true,
     image: {
       asset: {
         url: "https://cdn.sanity.io/hamper.jpg",
@@ -172,6 +208,7 @@ const olderArticle = {
     _type: "cake",
     name: "Tall custom cake",
     slug: "tall-custom-cake",
+    isPostableToUk: false,
     image: {
       asset: {
         url: "https://cdn.sanity.io/custom-cake.jpg",
@@ -194,12 +231,29 @@ const secondaryArticle = {
     _type: "cake",
     name: "Tall custom cake",
     slug: "tall-custom-cake",
+    isPostableToUk: false,
     image: {
       asset: {
         url: "https://cdn.sanity.io/custom-cake.jpg",
       },
       alt: "Custom cake travel image",
     },
+  },
+};
+
+const imageSupportingArticle = {
+  _id: "article-4",
+  title: "Postal cake packing tips",
+  slug: "postal-cake-packing-tips",
+  summary: "Packing summary",
+  dek: "Packing dek",
+  publishedAt: "2025-03-05T09:00:00.000Z",
+  topic: topics[0],
+  coverImage: {
+    asset: {
+      url: "https://cdn.sanity.io/packing.jpg",
+    },
+    alt: "Packed cake slices",
   },
 };
 
@@ -221,8 +275,8 @@ describe("BlogPage", () => {
 
   it("renders the newest article as the lead story and keeps older posts in the archive grid", async () => {
     mockGetPaginatedArchiveArticles.mockResolvedValue({
-      articles: [latestArticle, olderArticle, secondaryArticle],
-      totalCount: 14,
+      articles: [latestArticle, olderArticle, secondaryArticle, imageSupportingArticle],
+      totalCount: 15,
       totalPages: 2,
       currentPage: 1,
       pageSize: 12,
@@ -237,19 +291,25 @@ describe("BlogPage", () => {
     const archiveHeading = screen.getByRole("heading", {
       name: /cake by post advice, delivery help, and gift ideas/i,
     });
-    const archiveIntro = screen.getByText(/these articles answer the questions olga gets most often/i);
     const summary = screen.getByText("Custom cake summary");
     const secondaryCard = screen.getByRole("link", { name: /custom cake planning/i });
 
     expect(archiveHeading).toBeInTheDocument();
-    expect(archiveHeading.className).toContain("font-oldenburg");
+    expect(archiveHeading.className).toContain("font-moreSugar");
     expect(archiveHeading.className).not.toContain("font-body");
-    expect(archiveIntro.className).toContain("font-body");
+    expect(archiveHeading.className).toContain("rotate-0");
+    expect(archiveHeading.className).toContain("tablet:rotate-[-2.4deg]");
+    expect(archiveHeading.className).not.toContain("max-w-[11ch]");
+    expect(screen.queryByText("Olga's notes")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/these articles answer the questions olga gets most often/i)
+    ).toBeInTheDocument();
     const leadHeading = screen.getByRole("heading", { name: /^latest article$/i });
 
     expect(leadHeading).toBeInTheDocument();
-    expect(archiveHeading.className).toContain("text-[38px]");
-    expect(leadHeading.className).toContain("text-[1.95rem]");
+    expect(archiveHeading.className).not.toContain("text-[38px]");
+    expect(leadHeading.className).toContain("text-[1.9rem]");
+    expect(leadHeading.className).toContain("tablet:text-[2.8rem]");
     expect(screen.getByText(/more from olga/i)).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
@@ -265,7 +325,7 @@ describe("BlogPage", () => {
     expect(supportingSection).not.toBeNull();
     expect(supportingSection?.className).toContain("border-t");
     expect(supportingSection?.className).toContain("border-base-300");
-    expect(supportingSection?.className).toContain("pt-8");
+    expect(supportingSection?.className).toContain("pt-6");
     expect(screen.queryByText(/what you will get here/i)).not.toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /custom cake planning/i })).toHaveLength(1);
     expect(secondaryCard).toHaveAttribute(
@@ -274,13 +334,18 @@ describe("BlogPage", () => {
     );
     expect(within(secondaryCard).queryByRole("img")).not.toBeInTheDocument();
     expect(screen.getByText(/active topic: all/i)).toBeInTheDocument();
-    expect(screen.getByText("Browse by topic")).toBeInTheDocument();
-    expect(screen.getByText("All articles")).toBeInTheDocument();
-    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+    expect(screen.queryByText("Browse by topic")).not.toBeInTheDocument();
+    expect(screen.queryByText("All topics")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "2" })).toHaveAttribute("href", "/blog?page=2");
     expect(screen.queryByText(/start here/i)).not.toBeInTheDocument();
     expect(screen.getByText(/shop postal medovik/i)).toBeInTheDocument();
-    expect(screen.getByText(/postal medovik is a good fit/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/postal medovik is prepared as a vacuum-packed parcel for uk post when you need slices, biscuits, or standard-design honey cake that can travel neatly/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
+      "href",
+      "/cakes-by-post/postal-medovik"
+    );
     expect(screen.queryByText(/bakery notes from leeds/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/olgish journal/i)).not.toBeInTheDocument();
     expect(screen.queryByAltText("Custom cake travel image")).not.toBeInTheDocument();
@@ -294,8 +359,33 @@ describe("BlogPage", () => {
     expect(summary.className).toContain("font-body");
 
     const leadImage = screen.getByAltText("Latest");
+    const supportingImage = screen.getByAltText("Packed cake slices");
+    const commerceImage = screen.getByAltText("Postal Medovik");
     expect(leadImage).toHaveAttribute("loading", "eager");
     expect(leadImage.getAttribute("fetchpriority")).toBe("high");
+    expect(leadImage).toHaveAttribute("sizes", "(min-width: 1280px) 600px, (min-width: 1024px) 48vw, 100vw");
+    expect(leadImage.getAttribute("src")).toContain("w=1200");
+    expect(leadImage.getAttribute("src")).toContain("h=900");
+    expect(leadImage.getAttribute("src")).toContain("fit=crop");
+    expect(leadImage.getAttribute("src")).toContain("auto=format");
+    expect(supportingImage).toHaveAttribute(
+      "sizes",
+      "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+    );
+    expect(supportingImage.getAttribute("src")).toContain("w=1200");
+    expect(supportingImage.getAttribute("src")).toContain("h=900");
+    expect(commerceImage).toHaveAttribute(
+      "sizes",
+      "(min-width: 1280px) 360px, (min-width: 1024px) 34vw, 100vw"
+    );
+    expect(commerceImage.getAttribute("src")).toContain("h=1500");
+
+    const commerceSection = screen.getByText(/shop postal medovik/i).closest("section");
+    expect(commerceSection).not.toBeNull();
+    expect(commerceSection?.className).toContain("grid");
+    expect(commerceSection?.className).toContain(
+      "small-laptop:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]"
+    );
 
     const main = container.querySelector("main");
     expect(main?.className).toContain("[font-family:var(--font-inter)]");
@@ -322,9 +412,9 @@ describe("BlogPage", () => {
       screen.queryByText(/there are no published notes in this topic yet/i)
     ).not.toBeInTheDocument();
     expect(screen.getByText(/active topic: cake-by-post/i)).toBeInTheDocument();
-    expect(screen.getByText("Browse by topic")).toBeInTheDocument();
-    expect(screen.getByText(/page 2 of 2/i)).toBeInTheDocument();
+    expect(screen.queryByText("Browse by topic")).not.toBeInTheDocument();
     expect(screen.getByText("Archive pages")).toBeInTheDocument();
+    expect(screen.queryByText("Cake by post notes")).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         name: "Page 2",
@@ -339,7 +429,7 @@ describe("BlogPage", () => {
     expect(paginatedArchiveSection).not.toBeNull();
     expect(paginatedArchiveSection?.className).toContain("border-t");
     expect(paginatedArchiveSection?.className).toContain("border-base-300");
-    expect(paginatedArchiveSection?.className).toContain("pt-8");
+    expect(paginatedArchiveSection?.className).toContain("pt-6");
     expect(screen.getByRole("link", { name: /page two article/i })).toHaveAttribute(
       "href",
       "/blog/page-two-article?from=%2Fblog%3Ftopic%3Dcake-by-post%26page%3D2"
@@ -355,6 +445,74 @@ describe("BlogPage", () => {
 
     const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
     expect(scripts[0]?.textContent).toContain('"position":13');
+  });
+
+  it("keeps custom-cakes archive commerce copy aligned with the custom cakes hub", async () => {
+    mockGetPaginatedArchiveArticles.mockResolvedValue({
+      articles: [olderArticle, secondaryArticle],
+      totalCount: 2,
+      totalPages: 1,
+      currentPage: 1,
+      pageSize: 12,
+    });
+
+    const view = await BlogPage({
+      searchParams: Promise.resolve({ topic: "custom-cakes" }),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/active topic: custom-cakes/i)).toBeInTheDocument();
+    expect(screen.getByText(/browse the custom cakes first/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/start with the custom cakes range\. that is the easiest way to compare celebration styles/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /browse custom cakes/i })).toHaveAttribute(
+      "href",
+      "/cakes"
+    );
+    expect(screen.getByRole("link", { name: /shop cakes by post/i })).toHaveAttribute(
+      "href",
+      "/cakes-by-post"
+    );
+    expect(screen.queryByText(/shop the options that travel best/i)).not.toBeInTheDocument();
+    expect(screen.queryByAltText("Custom cake travel image")).not.toBeInTheDocument();
+  });
+
+  it("uses by-post archive commerce copy for a cake when the delivery policy allows GB mail delivery", async () => {
+    mockGetPaginatedArchiveArticles.mockResolvedValue({
+      articles: [
+        {
+          ...olderArticle,
+          primaryProduct: {
+            ...olderArticle.primaryProduct,
+            name: "Postal loaf cake",
+            slug: "postal-loaf-cake",
+            isPostableToUk: true,
+          },
+        },
+      ],
+      totalCount: 1,
+      totalPages: 1,
+      currentPage: 1,
+      pageSize: 12,
+    });
+
+    const view = await BlogPage({
+      searchParams: Promise.resolve({ topic: "cake-by-post" }),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/shop postal loaf cake/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/postal loaf cake is prepared as a vacuum-packed parcel for uk post when you need slices, biscuits, or standard-design honey cake that can travel neatly/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
+      "href",
+      "/cakes/postal-loaf-cake"
+    );
+    expect(screen.getByAltText("Custom cake travel image")).toBeInTheDocument();
   });
 
   it("generates search-descriptive metadata for the main archive page", async () => {
@@ -407,9 +565,9 @@ describe("BlogPage", () => {
       "href",
       "/cakes-by-post"
     );
-    expect(screen.getAllByRole("link", { name: /request a custom cake/i })[0]).toHaveAttribute(
+    expect(screen.getAllByRole("link", { name: /see custom cakes/i })[0]).toHaveAttribute(
       "href",
-      "/get-custom-quote#quote-form"
+      "/cakes"
     );
   });
 
@@ -506,5 +664,62 @@ describe("BlogPage", () => {
     expect(metadata.alternates?.canonical).toBe(
       "https://olgishcakes.co.uk/blog?topic=cake-by-post"
     );
+  });
+
+  it("falls back to generic cakes-by-post copy when the archive only surfaces cake products", async () => {
+    mockGetPaginatedArchiveArticles.mockResolvedValue({
+      articles: [olderArticle, secondaryArticle],
+      totalCount: 2,
+      totalPages: 1,
+      currentPage: 1,
+      pageSize: 12,
+    });
+
+    const view = await BlogPage({
+      searchParams: Promise.resolve({}),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/shop the options that travel best/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/the cakes by post range for honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed for parcel post/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /shop cakes by post/i })).toHaveAttribute(
+      "href",
+      "/cakes-by-post"
+    );
+    expect(screen.queryByAltText("Custom cake travel image")).not.toBeInTheDocument();
+  });
+
+  it("does not treat gift-hamper products as postal when delivery metadata is not GB mail", async () => {
+    mockGetPaginatedArchiveArticles.mockResolvedValue({
+      articles: [
+        {
+          ...latestArticle,
+          primaryProduct: {
+            ...latestArticle.primaryProduct,
+            isPostableToUk: false,
+          },
+        },
+      ],
+      totalCount: 1,
+      totalPages: 1,
+      currentPage: 1,
+      pageSize: 12,
+    });
+
+    const view = await BlogPage({
+      searchParams: Promise.resolve({ topic: "cake-by-post" }),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/shop the options that travel best/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/the cakes by post range for honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed for parcel post/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /shop cakes by post/i })).toHaveAttribute("href", "/cakes-by-post");
+    expect(screen.queryByRole("link", { name: /see this cake by post/i })).not.toBeInTheDocument();
   });
 });

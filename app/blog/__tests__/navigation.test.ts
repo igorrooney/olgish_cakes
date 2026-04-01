@@ -1,6 +1,16 @@
-import { buildBlogArticleHref, buildBlogBackHref } from '../navigation'
+import {
+  BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY,
+  buildBlogArticleHref,
+  buildBlogBackHref,
+  readStoredBlogArchiveHref,
+  writeStoredBlogArchiveHref
+} from '../navigation'
 
 describe('blog navigation helpers', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear()
+  })
+
   it('builds article hrefs with the encoded archive return path', () => {
     expect(buildBlogArticleHref({
       href: '/blog/cake-by-post-uk-complete-guide',
@@ -41,5 +51,14 @@ describe('blog navigation helpers', () => {
       fallbackHref: '/blog',
       fromParam: '/blog?page=0'
     })).toBe('/blog')
+  })
+
+  it('writes and reads the stored blog archive href from sessionStorage', () => {
+    writeStoredBlogArchiveHref('/blog?topic=cake-by-post&page=2')
+
+    expect(window.sessionStorage.getItem(BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY)).toBe(
+      '/blog?topic=cake-by-post&page=2'
+    )
+    expect(readStoredBlogArchiveHref()).toBe('/blog?topic=cake-by-post&page=2')
   })
 })

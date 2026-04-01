@@ -14,6 +14,9 @@ const articleTopicFields = `
   order
 `
 
+const articleMailDeliveryMethod = 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+const articleSupportedPostalCountryCodes = ['gb', 'uk', 'u.k.', 'united kingdom', 'great britain']
+
 const articleProductFields = `
   _id,
   _type,
@@ -31,6 +34,21 @@ const articleProductFields = `
     _type == "cake" => coalesce(mainImage, designs.standard[isMain == true][0], designs.standard[0]) {
       ${articleImageFields}
     }
+  ),
+  "isPostableToUk": select(
+    deliverySection.policySource == "custom" => (
+      lower(coalesce(deliverySection.customPolicy.shippingDestinationCountry, "")) in ${JSON.stringify(articleSupportedPostalCountryCodes)} &&
+      deliverySection.customPolicy.deliveryMethod == "${articleMailDeliveryMethod}"
+    ),
+    _type == "cake" => (
+      lower(coalesce(*[_type == "cakesDeliverySection" && _id == "cakesDeliverySection"][0].policy.shippingDestinationCountry, "")) in ${JSON.stringify(articleSupportedPostalCountryCodes)} &&
+      *[_type == "cakesDeliverySection" && _id == "cakesDeliverySection"][0].policy.deliveryMethod == "${articleMailDeliveryMethod}"
+    ),
+    _type == "giftHamper" => (
+      lower(coalesce(*[_type == "giftHampersDeliverySection" && _id == "giftHampersDeliverySection"][0].policy.shippingDestinationCountry, "")) in ${JSON.stringify(articleSupportedPostalCountryCodes)} &&
+      *[_type == "giftHampersDeliverySection" && _id == "giftHampersDeliverySection"][0].policy.deliveryMethod == "${articleMailDeliveryMethod}"
+    ),
+    false
   ),
   shortDescription,
   description
@@ -53,7 +71,6 @@ const articleArchiveFields = `
   dek,
   "publishedAt": coalesce(publishedAt, _createdAt),
   editorialUpdatedAt,
-  "modifiedAt": _updatedAt,
   coverImage {
     ${articleImageFields}
   },

@@ -9,14 +9,13 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { SiteHeader } from "./components/homepage/SiteHeader";
 import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
+import { ConditionalQueryProviders } from "./components/ConditionalQueryProviders";
 import { KlaroA11yBridge } from "./components/KlaroA11yBridge";
-import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
 import { RouteScrollReset } from "./components/RouteScrollReset";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import "./globals.css";
-import { Providers } from "./providers";
 import { getReviewStats } from "./utils/review-stats.server";
 
 const alice = localFont({
@@ -403,14 +402,6 @@ export default async function RootLayout({
     description: baseSiteDescription,
     publisher: {
       '@id': 'https://olgishcakes.co.uk/#organization'
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: 'https://olgishcakes.co.uk/search?q={search_term_string}'
-      },
-      'query-input': 'required name=search_term_string'
     }
   }
 
@@ -490,7 +481,7 @@ export default async function RootLayout({
         <NuqsAdapter>
           <ConditionalMuiProviders>
             <ReviewStatsProvider stats={reviewStats}>
-              <Providers>
+              <ConditionalQueryProviders>
                 <div className="flex flex-col min-h-screen">
                   <RouteScrollReset />
                   <SiteHeader />
@@ -499,9 +490,8 @@ export default async function RootLayout({
                   <KlaroA11yBridge />
                   <ScrollToTop />
                   <WebVitalsMonitor />
-                  <PerformanceOptimizer />
                 </div>
-              </Providers>
+              </ConditionalQueryProviders>
             </ReviewStatsProvider>
           </ConditionalMuiProviders>
           {isVercelDeployment ? (

@@ -12,8 +12,9 @@ jest.mock('next/image', () => ({
     alt = '',
     fill,
     priority,
+    unoptimized,
     ...props
-  }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean, priority?: boolean }) => <img alt={alt} {...props} />
+  }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean, priority?: boolean, unoptimized?: boolean }) => <img alt={alt} {...props} />
 }))
 
 describe('ArticlePortableText', () => {

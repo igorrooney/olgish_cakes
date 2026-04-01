@@ -2,6 +2,7 @@ type SearchParamValue = string | string[] | undefined
 
 export const allowedBlogPathnames = ['/blog'] as const
 export const allowedBlogQueryKeys = ['topic', 'page'] as const
+export const BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY = 'olgishBlogArchiveHref'
 
 type AllowedBlogPathname = (typeof allowedBlogPathnames)[number]
 type AllowedBlogQueryKey = (typeof allowedBlogQueryKeys)[number]
@@ -95,4 +96,32 @@ export function buildBlogArticleHref({
   resolvedHref.searchParams.set('from', fromHref)
 
   return `${resolvedHref.pathname}${resolvedHref.search}${resolvedHref.hash}`
+}
+
+export function readStoredBlogArchiveHref() {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  try {
+    const storedHref = window.sessionStorage.getItem(BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY)
+
+    return typeof storedHref === 'string' && storedHref.length > 0
+      ? storedHref
+      : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function writeStoredBlogArchiveHref(archiveHref: string) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    window.sessionStorage.setItem(BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY, archiveHref)
+  } catch {
+    // Ignore sessionStorage failures in restricted browser contexts.
+  }
 }

@@ -7,8 +7,8 @@ import {
   type PortableTextMarkComponentProps
 } from '@portabletext/react'
 import { createArticleHeadingIdResolver } from '@/lib/article-heading-ids'
+import { getSanityCdnImageUrl, isSanityCdnImageUrl, type ArticleBodyNode, type PortableTextImage } from '@/lib/articles'
 import { urlFor } from '@/sanity/lib/image'
-import type { ArticleBodyNode, PortableTextImage } from '@/lib/articles'
 
 interface ArticlePortableTextProps {
   value: ArticleBodyNode[]
@@ -81,7 +81,11 @@ function PortableTextLink({ children, value }: PortableTextMarkComponentProps<Po
 function PortableTextImageBlock({ value }: { value: PortableTextImage }) {
   const imageUrl = value.asset?._ref
     ? urlFor(value).width(1440).fit('max').auto('format').url()
-    : null
+    : getSanityCdnImageUrl(value.asset?.url, {
+        width: 1440,
+        fit: 'max',
+        quality: 82
+      })
 
   if (!imageUrl) {
     return null
@@ -94,6 +98,7 @@ function PortableTextImageBlock({ value }: { value: PortableTextImage }) {
           src={imageUrl}
           alt={value.alt || ''}
           fill
+          unoptimized={isSanityCdnImageUrl(imageUrl)}
           sizes='(min-width: 1280px) 760px, (min-width: 768px) 70vw, 100vw'
           className='object-cover'
         />

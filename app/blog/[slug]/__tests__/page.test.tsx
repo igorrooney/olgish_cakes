@@ -21,8 +21,9 @@ jest.mock("next/image", () => ({
   default: ({
     alt = "",
     fill,
+    unoptimized,
     ...props
-  }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; fetchPriority?: string }) => (
+  }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; fetchPriority?: string; unoptimized?: boolean }) => (
     <img alt={alt} {...props} />
   ),
 }));
@@ -50,6 +51,7 @@ jest.mock("@/lib/articles", () => ({
     value.startsWith("2025-04-05") ? "5 April 2025" : "1 April 2025",
   getArticleBySlug: (...args: unknown[]) => mockGetArticleBySlug(...args),
   getArticleHref: (slug: string) => `/blog/${slug}`,
+  getSanityCdnImageUrl: (imageUrl?: string) => imageUrl,
   getArticleMetadataImageUrl: (article: {
     coverImage?: { asset?: { url?: string } };
     cardImage?: { asset?: { url?: string } };
@@ -69,6 +71,29 @@ jest.mock("@/lib/articles", () => ({
   },
   getArticleReadingTime: () => 7,
   getArticleSlugs: (...args: unknown[]) => mockGetArticleSlugs(...args),
+  hasMaterialArticleUpdate: (publishedAt: string, modifiedAt?: string | null) => {
+    if (!modifiedAt) {
+      return false;
+    }
+
+    const publishedTimestamp = Date.parse(publishedAt);
+    const modifiedTimestamp = Date.parse(modifiedAt);
+
+    if (
+      Number.isNaN(publishedTimestamp) ||
+      Number.isNaN(modifiedTimestamp) ||
+      modifiedTimestamp <= publishedTimestamp
+    ) {
+      return false;
+    }
+
+    return (
+      new Date(publishedTimestamp).toISOString().slice(0, 10) !==
+      new Date(modifiedTimestamp).toISOString().slice(0, 10)
+    );
+  },
+  isArticleProductPostableToUk: (product?: { isPostableToUk?: boolean }) => product?.isPostableToUk === true,
+  isSanityCdnImageUrl: (imageUrl?: string) => Boolean(imageUrl?.startsWith("https://cdn.sanity.io/images/")),
   getArticleTopicTitle: (article: { topic?: { title?: string } }) =>
     article.topic?.title || "Articles",
   getProductHref: (product: { _type: string; slug: string }) =>
@@ -84,8 +109,7 @@ const baseArticle = {
   summary: "Summary copy",
   dek: "Editorial introduction for the article.",
   publishedAt: "2025-04-01T09:00:00.000Z",
-  editorialUpdatedAt: "2025-04-05T10:30:00.000Z",
-  modifiedAt: "2025-04-05T10:30:00.000Z",
+  editorialUpdatedAt: "2025-04-05T09:00:00.000Z",
   coverImage: {
     asset: {
       url: "https://cdn.sanity.io/article-cover.jpg",
@@ -136,6 +160,7 @@ const baseArticle = {
     _type: "giftHamper",
     name: "Postal Medovik",
     slug: "postal-medovik",
+    isPostableToUk: true,
     image: {
       asset: {
         url: "https://cdn.sanity.io/hamper.jpg",
@@ -173,6 +198,7 @@ const relatedArticles = [
 describe("BlogArticlePage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.sessionStorage.clear();
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     mockGetArticleSlugs.mockResolvedValue(["how-to-order-cake-by-post"]);
     mockGetRelatedArticles.mockResolvedValue(relatedArticles);
@@ -195,7 +221,7 @@ describe("BlogArticlePage", () => {
     expect(metadata.alternates?.canonical).toBe(
       "https://olgishcakes.co.uk/blog/how-to-order-cake-by-post"
     );
-    expect(metadata.openGraph?.modifiedTime).toBe("2025-04-05T10:30:00.000Z");
+    expect(metadata.openGraph?.modifiedTime).toBe("2025-04-05T09:00:00.000Z");
   });
 
   it("falls back to the linked product image in metadata when the article has no dedicated cover image", async () => {
@@ -250,38 +276,51 @@ describe("BlogArticlePage", () => {
 
     expect(articleHeading).toBeInTheDocument();
     expect(articleHeading.className).toContain("font-oldenburg");
+    expect(articleHeading.className).toContain("text-[2.15rem]");
+    expect(articleHeading.className).toContain("tablet:text-[3.6rem]");
     expect(screen.getByText(/written by olga/i)).toBeInTheDocument();
     expect(backLink).toHaveAttribute("href", "/blog");
     expect(byline.className).toContain("font-body");
+    expect(screen.getByText(/from olga's archive/i)).toBeInTheDocument();
     expect(screen.getAllByText(/on this page/i)).toHaveLength(1);
     expect(screen.getByText(/jump to section/i)).toBeInTheDocument();
     expect(screen.getAllByText(/choose the right format/i)).toHaveLength(2);
     expect(screen.getByText(/portable text body/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /start with postal medovik/i })).toBeInTheDocument();
     expect(screen.getByText(/useful if the cake has to travel/i)).toBeInTheDocument();
-    expect(screen.getByText(/travels neatly and still feels special when it arrives/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/postal medovik is prepared as a vacuum-packed parcel for uk post when you want slices, biscuits, or standard-design honey cake that can travel neatly/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/the practical details that matter first/i)).toBeInTheDocument();
     expect(screen.getByText(/how long does it stay fresh/i)).toBeInTheDocument();
     expect(screen.getByText(/more notes if you are still weighing it up/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/browse the custom cakes range for the celebration options that are better suited/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/birthday cakes by post/i)).toBeInTheDocument();
     expect(screen.getByText(/last updated 5 april 2025/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /shop cakes by post/i })).toHaveAttribute(
       "href",
       "/cakes-by-post"
     );
-    expect(screen.getAllByRole("link", { name: /request a custom cake/i })[0]).toHaveAttribute(
+    expect(screen.getAllByRole("link", { name: /see custom cakes/i })[0]).toHaveAttribute(
       "href",
-      "/get-custom-quote#quote-form"
+      "/cakes"
     );
-    expect(screen.getByRole("link", { name: /see this postal cake/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
       "href",
       "/cakes-by-post/postal-medovik"
     );
     expect(screen.getAllByRole("link", { name: /birthday cakes by post/i })).toHaveLength(1);
     expect(screen.queryByAltText("Related product image")).not.toBeInTheDocument();
     expect(dek.className).toContain("font-body");
+    expect(dek.className).toContain("text-[17px]");
+    expect(dek.className).toContain("tablet:text-[23px]");
 
     expect(mobileToc.className).toContain("small-laptop:hidden");
+    expect(mobileToc.className).toContain("rounded-[20px]");
+    expect(mobileToc.className).toContain("shadow-[0_6px_16px_rgba(97,39,0,0.04)]");
+    expect(mobileToc.className).not.toContain("border-primary-200");
     expect(mobileToc).not.toHaveAttribute("open");
     expect(desktopToc.className).toContain("small-laptop:block");
 
@@ -290,12 +329,147 @@ describe("BlogArticlePage", () => {
       mobileToc.compareDocumentPosition(article as HTMLElement) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
 
+    const heroSection = articleHeading.closest("section");
+    expect(heroSection?.className).toContain("overflow-visible");
+    expect(heroSection?.className).toContain("space-y-4");
+    expect(heroSection?.className).toContain("tablet:space-y-5");
+
+    const articleShell = screen.getByText(/portable text body/i).closest("article");
+    expect(articleShell?.className).not.toContain("border-primary-200/80");
+    expect(articleShell?.className).toContain("shadow-[0_14px_30px_rgba(97,39,0,0.05)]");
+
+    const relatedLink = screen.getByRole("link", { name: /birthday cakes by post/i });
+    expect(relatedLink.className).toContain("hover:bg-primary-50/25");
+
+    const relatedSection = screen
+      .getByRole("heading", { name: /more notes if you are still weighing it up/i })
+      .closest("section");
+    expect(relatedSection?.className).toContain("border-t");
+    expect(relatedSection?.className).toContain("space-y-4");
+    expect(relatedSection?.className).toContain("pt-5");
+
+    const commerceSection = screen
+      .getByRole("heading", { name: /start with postal medovik/i })
+      .closest("section");
+    expect(commerceSection?.className).toContain("bg-base-100");
+    expect(commerceSection?.className).toContain("tablet:grid-cols-[200px_minmax(0,1.45fr)]");
+    expect(commerceSection?.className).not.toContain("border-primary-200/80");
+    expect(commerceSection?.className).not.toContain(
+      "bg-[linear-gradient(135deg,var(--color-base-100),var(--color-primary-50),var(--color-secondary)/0.18)]"
+    );
+    expect(
+      screen.getByRole("link", { name: /see this cake by post/i }).className
+    ).toContain("w-full");
+    expect(
+      screen.getAllByRole("link", { name: /see custom cakes/i })[0].className
+    ).toContain("w-full");
+
+    const faqSection = screen
+      .getByRole("heading", { name: /the practical details that matter first/i })
+      .closest("section");
+    expect(faqSection?.className).toContain("bg-base-100");
+    expect(faqSection?.className).not.toContain("border-base-300");
+    expect(
+      screen.getByText(/up to seven days when stored correctly/i).className
+    ).toContain("leading-7");
+
+    const faqAnswer = screen.getByText(/up to seven days when stored correctly/i);
+    const faqItem = faqAnswer.closest("details");
+    expect(faqItem?.className).toContain("not-first:border-t");
+    expect(faqItem?.className).not.toContain("rounded-[20px] border border-base-300");
+
+    const closingSection = screen
+      .getByRole("heading", { name: /choose the format that suits the journey/i })
+      .closest("section");
+    expect(closingSection?.className).toContain("rounded-[28px]");
+    expect(closingSection?.className).toContain("tablet:rounded-[36px]");
+    expect(closingSection?.className).toContain("bg-[linear-gradient(135deg,var(--color-base-100),var(--color-primary-50),var(--color-secondary)/0.12)]");
+    expect(closingSection?.className).toContain("tablet:bg-[linear-gradient(135deg,var(--color-base-100),var(--color-primary-50),var(--color-secondary)/0.18)]");
+    expect(
+      screen.getByRole("link", { name: /shop cakes by post/i }).className
+    ).toContain("w-full");
+    expect(
+      screen.getAllByRole("link", { name: /see custom cakes/i })[1].className
+    ).toContain("w-full");
+
     const main = container.querySelector("main");
     expect(main?.className).toContain("[font-family:var(--font-inter)]");
 
     const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
-    expect(scripts[0]?.textContent).toContain('"dateModified":"2025-04-05T10:30:00.000Z"');
+    expect(scripts[0]?.textContent).toContain('"dateModified":"2025-04-05T09:00:00.000Z"');
     expect(scripts[0]?.textContent).toContain('"url":"https://olgishcakes.co.uk/about"');
+  });
+
+  it("switches the article commerce cta label for custom cake products", async () => {
+    mockGetArticleBySlug.mockResolvedValue({
+      ...baseArticle,
+      primaryProduct: {
+        _id: "cake-1",
+        _type: "cake",
+        name: "Tall custom cake",
+        slug: "tall-custom-cake",
+        isPostableToUk: false,
+        image: {
+          asset: {
+            url: "https://cdn.sanity.io/custom-cake.jpg",
+          },
+          alt: "Tall custom cake",
+        },
+      },
+    });
+
+    const view = await BlogArticlePage({
+      params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/better for local delivery or collection/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /tall custom cake is the kind of cake olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /see this custom cake/i })).toHaveAttribute(
+      "href",
+      "/cakes/tall-custom-cake"
+    );
+    expect(screen.queryByRole("link", { name: /see this cake by post/i })).not.toBeInTheDocument();
+  });
+
+  it("treats a cake as by-post on the article page when policy allows GB mail delivery", async () => {
+    mockGetArticleBySlug.mockResolvedValue({
+      ...baseArticle,
+      primaryProduct: {
+        _id: "cake-2",
+        _type: "cake",
+        name: "Postal loaf cake",
+        slug: "postal-loaf-cake",
+        isPostableToUk: true,
+        image: {
+          asset: {
+            url: "https://cdn.sanity.io/postal-loaf-cake.jpg",
+          },
+          alt: "Postal loaf cake",
+        },
+      },
+    });
+
+    const view = await BlogArticlePage({
+      params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
+    });
+
+    render(view);
+
+    expect(screen.getByText(/useful if the cake has to travel/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/postal loaf cake is prepared as a vacuum-packed parcel for uk post when you want slices, biscuits, or standard-design honey cake that can travel neatly/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
+      "href",
+      "/cakes/postal-loaf-cake"
+    );
+    expect(screen.queryByRole("link", { name: /see this custom cake/i })).not.toBeInTheDocument();
   });
 
   it("uses the sanitized archive href for the back link when a safe from param is present", async () => {
@@ -344,11 +518,10 @@ describe("BlogArticlePage", () => {
     expect(screen.queryByText(/on this page/i)).not.toBeInTheDocument();
   });
 
-  it("hides the visible updated label when there is no editorial updated date", async () => {
+  it("keeps update labels absent when the article payload carries no update date", async () => {
     mockGetArticleBySlug.mockResolvedValue({
       ...baseArticle,
       editorialUpdatedAt: undefined,
-      modifiedAt: "2025-04-05T10:30:00.000Z",
     });
 
     const view = await BlogArticlePage({
@@ -358,6 +531,30 @@ describe("BlogArticlePage", () => {
     render(view);
 
     expect(screen.queryByText(/last updated/i)).not.toBeInTheDocument();
+  });
+
+  it("omits freshness signals when the update is on the same day as publication", async () => {
+    mockGetArticleBySlug.mockResolvedValue({
+      ...baseArticle,
+      editorialUpdatedAt: "2025-04-01T12:00:00.000Z",
+    });
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
+    });
+
+    expect(metadata.openGraph?.modifiedTime).toBeUndefined();
+
+    const view = await BlogArticlePage({
+      params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
+    });
+
+    const { container } = render(view);
+
+    expect(screen.queryByText(/last updated/i)).not.toBeInTheDocument();
+
+    const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
+    expect(scripts[0]?.textContent).not.toContain('"dateModified"');
   });
 
   it("calls notFound when the article does not exist", async () => {

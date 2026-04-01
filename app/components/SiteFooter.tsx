@@ -98,6 +98,7 @@ export function SiteFooter() {
                   src='/images/olgish-cakes-logo-bakery-brand.png'
                   alt='Olgish Cakes Logo'
                   fill
+                  sizes='(min-width: 768px) 64px, 48px'
                   className='object-contain'
                 />
               </div>
