@@ -1,5 +1,4 @@
 import type { Metadata, ResolvingMetadata } from 'next'
-import Image from 'next/image'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
 import type { Testimonial } from './types/testimonial'
@@ -485,65 +484,15 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
       />
-      <div className="min-h-screen bg-base-100 overflow-x-hidden">
-        <div className="flex flex-col">
+      <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#008080', paddingBottom: '12px' }}>
+        <div className="flex flex-col" style={{ gap: '0' }}>
           <HomeHero />
-          <div className="w-full flex justify-center bg-base-100">
-            <div className="homepage-divider relative h-auto">
-              <Image
-                src="/design/homepage_divider.png"
-                alt=""
-                aria-hidden="true"
-                width={430}
-                height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
           <OlgishCakesFounder />
           <Bestsellers />
           <Markets />
           <Reviews testimonials={testimonials} />
-          <div className="homepage-divider relative h-auto">
-            <Image
-              src="/design/occasions_divider.png"
-              alt=""
-              aria-hidden="true"
-              width={430}
-              height={100}
-              sizes="(min-width: 768px) 430px, 100vw"
-              className="w-full h-auto object-contain"
-            />
-          </div>
           <Occasions collections={collections} />
-          <div className="w-full flex justify-center bg-base-100">
-            <div className="homepage-divider relative h-auto">
-              <Image
-                src="/design/homepage_divider_2.png"
-                alt=""
-                aria-hidden="true"
-                width={430}
-                height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
           <EnquiryForm occasionOptions={occasionOptions} />
-          <div className="w-full flex justify-center bg-base-100">
-            <div className="homepage-divider relative h-auto">
-              <Image
-                src="/design/instagram-section-divider.png"
-                alt=""
-                aria-hidden="true"
-                width={430}
-                height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
           <Instagram />
           <HomeFaq />
         </div>

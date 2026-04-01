@@ -302,8 +302,8 @@
 }
 
 :root {
-  --background: #FFFBEB;
-  --foreground: #171717;
+  --background: #008080;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -321,17 +321,17 @@
 }
 
 body {
-  background: var(--background);
+  background: #008080;
   color: var(--foreground);
-  font-family: var(--font-inter), system-ui, sans-serif;
-  line-height: 1.6;
+  font-family: 'Tahoma', 'Arial', 'Helvetica', system-ui, sans-serif;
+  line-height: 1.4;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 html {
-  background: var(--background);
+  background: #008080;
   scroll-behavior: smooth;
 }
 
@@ -834,4 +834,357 @@ img:not([data-nimg]) {
 :root,
 [data-theme="olgish-cakes"] {
   --color-base-100: #FFFBEB !important;
+}
+
+/* =============================================
+   WINDOWS 2000 THEME OVERRIDE
+   ============================================= */
+[data-theme="win2k"] {
+  /* System colors */
+  --win2k-desktop: #008080;
+  --win2k-gray: #D4D0C8;
+  --win2k-gray-dark: #808080;
+  --win2k-gray-darker: #404040;
+  --win2k-white: #FFFFFF;
+  --win2k-black: #000000;
+  --win2k-titlebar-start: #000080;
+  --win2k-titlebar-end: #1084D0;
+  --win2k-titlebar-text: #FFFFFF;
+  --win2k-text: #000000;
+  --win2k-link: #0000EE;
+  --win2k-link-visited: #800080;
+  --win2k-highlight: #000080;
+  --win2k-highlight-text: #FFFFFF;
+  --win2k-button-face: #D4D0C8;
+  --win2k-button-text: #000000;
+  --win2k-button-shadow: #808080;
+  --win2k-button-dark-shadow: #404040;
+  --win2k-button-light: #FFFFFF;
+  --win2k-button-highlight: #F0EFE7;
+  --win2k-scrollbar: #D4D0C8;
+  --win2k-menu: #D4D0C8;
+  --win2k-menu-text: #000000;
+  --win2k-window: #FFFFFF;
+  --win2k-window-frame: #808080;
+}
+
+/* Win2K body styles */
+.win2k-mode {
+  background-color: #008080 !important;
+  font-family: 'Tahoma', 'Arial', 'Helvetica', sans-serif !important;
+}
+
+.win2k-mode * {
+  font-family: 'Tahoma', 'Arial', 'Helvetica', sans-serif !important;
+}
+
+/* Win2K raised button style (outset border) */
+.win2k-btn {
+  background-color: #D4D0C8;
+  color: #000000;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: 'Tahoma', 'Arial', sans-serif;
+  cursor: pointer;
+  min-height: 23px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-shadow: inset 1px 1px 0 #F0EFE7, inset -1px -1px 0 #808080;
+}
+
+.win2k-btn:active,
+.win2k-btn-pressed {
+  border-top: 2px solid #404040;
+  border-left: 2px solid #404040;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #F0EFE7;
+  padding-top: 4px;
+  padding-left: 11px;
+}
+
+.win2k-btn-primary {
+  background-color: #D4D0C8;
+  color: #000000;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
+  box-shadow: inset 1px 1px 0 #F0EFE7, inset -1px -1px 0 #808080, 0 0 0 1px #000000;
+  padding: 3px 10px;
+  min-height: 23px;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Win2K window frame (the main wrapper) */
+.win2k-window {
+  background-color: #D4D0C8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
+  box-shadow: inset 1px 1px 0 #F0EFE7, inset -1px -1px 0 #808080;
+}
+
+.win2k-window-inner {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
+}
+
+/* Win2K title bar */
+.win2k-titlebar {
+  background: linear-gradient(to right, #000080, #1084D0);
+  color: #FFFFFF;
+  padding: 3px 4px;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.win2k-titlebar-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.win2k-titlebar-text {
+  flex: 1;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.win2k-titlebar-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.win2k-titlebar-btn {
+  width: 16px;
+  height: 14px;
+  background-color: #D4D0C8;
+  border-top: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+  font-size: 9px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #000000;
+  box-shadow: inset 1px 1px 0 #F0EFE7;
+  line-height: 1;
+}
+
+/* Win2K menu bar */
+.win2k-menubar {
+  background-color: #D4D0C8;
+  border-bottom: 1px solid #808080;
+  padding: 1px 2px;
+  display: flex;
+  gap: 0;
+}
+
+.win2k-menubar-item {
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #000000;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.win2k-menubar-item:hover {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+/* Win2K inset panel */
+.win2k-inset {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 2px solid #FFFFFF;
+  border-right: 2px solid #FFFFFF;
+  background-color: #FFFFFF;
+  padding: 4px;
+}
+
+/* Win2K status bar */
+.win2k-statusbar {
+  background-color: #D4D0C8;
+  border-top: 2px solid #808080;
+  padding: 2px 6px;
+  font-size: 11px;
+  color: #000000;
+  display: flex;
+  gap: 8px;
+}
+
+.win2k-statusbar-panel {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+/* Win2K taskbar */
+.win2k-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background-color: #D4D0C8;
+  border-top: 2px solid #FFFFFF;
+  box-shadow: inset 0 1px 0 #F0EFE7;
+  display: flex;
+  align-items: center;
+  z-index: 9999;
+  padding: 2px 4px;
+}
+
+.win2k-start-btn {
+  background-color: #D4D0C8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #404040;
+  border-right: 2px solid #404040;
+  box-shadow: inset 1px 1px 0 #F0EFE7, inset -1px -1px 0 #808080;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+}
+
+.win2k-taskbar-clock {
+  margin-left: auto;
+  background-color: #D4D0C8;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  padding: 2px 8px;
+  font-size: 11px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* Win2K scrollbar style */
+.win2k-scrollbar::-webkit-scrollbar {
+  width: 16px;
+}
+
+.win2k-scrollbar::-webkit-scrollbar-track {
+  background-color: #D4D0C8;
+}
+
+.win2k-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #D4D0C8;
+  border-top: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-bottom: 1px solid #404040;
+  border-right: 1px solid #404040;
+}
+
+/* Win2K tab/panel header */
+.win2k-tab {
+  background-color: #D4D0C8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid #404040;
+  padding: 3px 12px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.win2k-tab-active {
+  background-color: #D4D0C8;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #D4D0C8;
+  border-right: 2px solid #404040;
+  margin-bottom: -1px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Win2K tooltip */
+.win2k-tooltip {
+  background-color: #FFFFE1;
+  border: 1px solid #000000;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+/* Win2K selection highlight */
+.win2k-selected {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+/* Marquee text (classic web 2000) */
+@keyframes win2k-marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.win2k-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.win2k-marquee-inner {
+  display: inline-block;
+  animation: win2k-marquee 20s linear infinite;
+}
+
+/* Win2K desktop icons */
+.win2k-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 4px;
+  width: 64px;
+  text-align: center;
+}
+
+.win2k-icon:hover .win2k-icon-label {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+.win2k-icon-label {
+  font-size: 11px;
+  color: #FFFFFF;
+  text-shadow: 1px 1px #000000;
+  word-break: break-word;
+  line-height: 1.2;
 }

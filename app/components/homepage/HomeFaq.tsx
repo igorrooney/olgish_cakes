@@ -37,27 +37,90 @@ const collapseContentClassName = 'collapse-content font-oldenburg text-[15px] le
 
 export function HomeFaq() {
   return (
-    <section className="bg-base-100 px-4 py-8" aria-labelledby="homepage-faq-title">
-      <div className="homepage-container flex flex-col gap-6">
-        <div className="flex justify-center">
-          <h2 id="homepage-faq-title" className={sectionTitleClassName}>
-            Cake FAQ
-          </h2>
+    <section style={{ padding: '12px' }} aria-labelledby="homepage-faq-title">
+      <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Title bar */}
+        <div className="win2k-titlebar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ fontSize: '14px' }}>❓</span>
+            <span className="win2k-titlebar-text">Help - Frequently Asked Questions</span>
+          </div>
+          <div className="win2k-titlebar-controls">
+            <div className="win2k-titlebar-btn" aria-hidden="true">_</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">□</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+          </div>
         </div>
-        <p className={introClassName}>
-          Quick answers from a Ukrainian bakery in Leeds — Medovik honey cake, Napoleon cake and delivery
-          options.
-        </p>
-        <div className="flex flex-col gap-4">
-          {faqItems.map((item) => (
-            <div key={item.question} className={collapseClassName}>
-              <input type="checkbox" />
-              <div className={collapseTitleClassName}>{item.question}</div>
-              <div className={collapseContentClassName}>
-                <p>{item.answer}</p>
+
+        <div style={{ padding: '8px', backgroundColor: '#D4D0C8' }}>
+          {/* Help header */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#000080',
+              color: '#FFFFFF',
+              padding: '6px 8px',
+              marginBottom: '8px',
+            }}
+          >
+            <span style={{ fontSize: '20px' }}>&#8505;</span>
+            <div>
+              <div id="homepage-faq-title" style={{ fontWeight: 'bold', fontSize: '12px' }}>Cake FAQ</div>
+              <div style={{ fontSize: '10px' }}>
+                Quick answers from a Ukrainian bakery in Leeds
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* FAQ items as expandable sections */}
+          <div
+            className="win2k-inset"
+            style={{ backgroundColor: '#FFFFFF', padding: '0' }}
+          >
+            {faqItems.map((item, index) => (
+              <details
+                key={item.question}
+                style={{
+                  borderBottom: index < faqItems.length - 1 ? '1px solid #D4D0C8' : 'none',
+                }}
+              >
+                <summary
+                  style={{
+                    padding: '6px 10px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    listStyle: 'none',
+                    fontFamily: 'Tahoma, Arial, sans-serif',
+                  }}
+                >
+                  <span style={{ color: '#000080', fontSize: '10px' }}>&#9658;</span>
+                  {item.question}
+                </summary>
+                <div style={{
+                  padding: '4px 10px 8px 22px',
+                  fontSize: '11px',
+                  backgroundColor: '#FFFBEB',
+                  borderTop: '1px solid #D4D0C8',
+                  fontFamily: 'Tahoma, Arial, sans-serif',
+                }}>
+                  {item.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          {/* Footer buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px', marginTop: '8px' }}>
+            <button type="button" className="win2k-btn" style={{ fontSize: '11px' }}>
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </section>

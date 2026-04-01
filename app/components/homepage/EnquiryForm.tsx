@@ -181,11 +181,39 @@ export function EnquiryForm({
   }
 
   return (
-    <section id='custom-cake-enquiry-form' className='bg-base-100 px-4 py-8'>
+    <section id='custom-cake-enquiry-form' style={{ padding: '12px' }}>
+      <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Title bar */}
+        <div className="win2k-titlebar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ fontSize: '14px' }}>📝</span>
+            <span className="win2k-titlebar-text">Custom Cake Enquiry Form</span>
+          </div>
+          <div className="win2k-titlebar-controls">
+            <div className="win2k-titlebar-btn" aria-hidden="true">_</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">□</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+          </div>
+        </div>
+
+        <div style={{ padding: '8px', backgroundColor: '#D4D0C8' }}>
+          {/* Header */}
+          <div style={{
+            backgroundColor: '#000080',
+            color: '#FFFFFF',
+            padding: '4px 8px',
+            marginBottom: '8px',
+            fontSize: '11px',
+          }}>
+            <span style={{ fontWeight: 'bold' }}>&#128203; Fill in the form below to enquire about a custom cake</span>
+          </div>
+
+          <div className="win2k-inset" style={{ backgroundColor: '#FFFFFF', padding: '12px' }}>
       <div className='homepage-container flex flex-col items-center gap-6 tablet:max-w-[696px]'>
         <h2
           id='custom-cake-enquiry-heading'
           className='scroll-mt-24 tablet:scroll-mt-36 font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px] tablet:max-w-[331px] tablet:mx-auto'
+          style={{ fontFamily: 'Tahoma, Arial, sans-serif', color: '#000080', transform: 'none', fontSize: '16px', letterSpacing: '2px' }}
         >
           Custom cake enquiry form
         </h2>
@@ -382,6 +410,9 @@ export function EnquiryForm({
             </span>
           </button>
         </form>
+      </div>
+          </div>
+        </div>
       </div>
     </section>
   )

@@ -4,9 +4,197 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
 
-const mobileVisibleCount = 2
-const largeLaptopVisibleCount = 3
 const marketDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/London',
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long'
+})
+
+function formatMarketDate(date: string): string {
+  const dateParts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date)
+
+  if (dateParts) {
+    const [, year, month, day] = dateParts
+    const eventDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 12))
+    return marketDateFormatter.format(eventDate)
+  }
+
+  const parsedDate = new Date(date)
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return marketDateFormatter.format(parsedDate)
+  }
+
+  return date
+}
+
+function formatMarketTime(startTime: string, endTime: string): string {
+  return `${startTime} - ${endTime}`
+}
+
+type MarketCardProps = {
+  market: MarketSchedule
+  index: number
+}
+
+function MarketCard({ market, index }: MarketCardProps) {
+  return (
+    <div
+      className="win2k-window"
+      style={{ flex: '1', minWidth: '220px', maxWidth: '280px' }}
+    >
+      <div className="win2k-titlebar" style={{ padding: '2px 4px' }}>
+        <span style={{ fontSize: '10px' }}>&#128205; {market.title}</span>
+        <div className="win2k-titlebar-controls">
+          <div className="win2k-titlebar-btn" style={{ fontSize: '8px' }} aria-hidden="true">×</div>
+        </div>
+      </div>
+      <div style={{ padding: '6px', backgroundColor: '#D4D0C8' }}>
+        <div className="win2k-inset" style={{ backgroundColor: '#FFFFFF', padding: '6px' }}>
+          <table style={{ width: '100%', fontSize: '10px', borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr>
+                <td style={{ color: '#808080', width: '60px', paddingBottom: '3px' }}>Date:</td>
+                <td style={{ paddingBottom: '3px', fontWeight: 'bold' }}>{formatMarketDate(market.date)}</td>
+              </tr>
+              <tr>
+                <td style={{ color: '#808080', paddingBottom: '3px' }}>Time:</td>
+                <td style={{ paddingBottom: '3px' }}>{formatMarketTime(market.startTime, market.endTime)}</td>
+              </tr>
+              <tr>
+                <td style={{ color: '#808080', paddingBottom: '3px' }}>Location:</td>
+                <td style={{ paddingBottom: '3px' }}>{market.location}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
+          {market.website && (
+            <Link
+              href={market.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="win2k-btn"
+              style={{ fontSize: '10px', textDecoration: 'none', color: '#000000' }}
+            >
+              &#127760; Website
+            </Link>
+          )}
+          <Link
+            href={market.googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="win2k-btn"
+            aria-label={`Get directions to ${market.title}`}
+            style={{ fontSize: '10px', textDecoration: 'none', color: '#000000' }}
+          >
+            &#128205; Directions
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+type MarketsClientProps = {
+  upcomingMarkets: MarketSchedule[]
+}
+
+export function MarketsClient({ upcomingMarkets }: MarketsClientProps) {
+  const [showAllMarkets, setShowAllMarkets] = useState(false)
+  const visibleMarkets = showAllMarkets ? upcomingMarkets : upcomingMarkets.slice(0, 3)
+
+  if (upcomingMarkets.length === 0) {
+    return (
+      <section style={{ padding: '12px' }}>
+        <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div className="win2k-titlebar">
+            <span style={{ fontSize: '14px' }}>&#128197;</span>
+            <span className="win2k-titlebar-text">&nbsp;Upcoming Farmers Markets</span>
+            <div className="win2k-titlebar-controls">
+              <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+            </div>
+          </div>
+          <div style={{ padding: '12px', backgroundColor: '#D4D0C8', textAlign: 'center' }}>
+            <p style={{ fontSize: '11px', marginBottom: '8px' }}>
+              No upcoming market dates found. Check back soon!
+            </p>
+            <Link href="/market-schedule" className="win2k-btn" style={{ textDecoration: 'none', color: '#000000', fontSize: '11px' }}>
+              See Market Schedule
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section style={{ padding: '12px' }}>
+      <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div className="win2k-titlebar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ fontSize: '14px' }}>&#128197;</span>
+            <span className="win2k-titlebar-text">Upcoming Farmers Markets - Calendar</span>
+          </div>
+          <div className="win2k-titlebar-controls">
+            <div className="win2k-titlebar-btn" aria-hidden="true">_</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">□</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+          </div>
+        </div>
+
+        <div style={{ padding: '8px', backgroundColor: '#D4D0C8' }}>
+          {/* Win2K toolbar */}
+          <div style={{
+            display: 'flex',
+            gap: '4px',
+            marginBottom: '6px',
+            borderBottom: '1px solid #808080',
+            paddingBottom: '4px',
+          }}>
+            <button type="button" className="win2k-btn" style={{ fontSize: '10px' }}>&#9664; Prev Month</button>
+            <button type="button" className="win2k-btn" style={{ fontSize: '10px' }}>&#9654; Next Month</button>
+            <Link href="/market-schedule" className="win2k-btn" style={{ fontSize: '10px', textDecoration: 'none', color: '#000000' }}>
+              &#128197; Full Schedule
+            </Link>
+          </div>
+
+          {/* Market cards */}
+          <div
+            id="homepage-markets-list"
+            style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}
+          >
+            {visibleMarkets.map((market, index) => (
+              <MarketCard key={market._id} market={market} index={index} />
+            ))}
+          </div>
+
+          {upcomingMarkets.length > 3 && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px' }}>
+              <button
+                type="button"
+                className="win2k-btn"
+                style={{ fontSize: '11px' }}
+                aria-expanded={showAllMarkets}
+                aria-controls="homepage-markets-list"
+                onClick={() => setShowAllMarkets((current) => !current)}
+              >
+                {showAllMarkets ? '&#9650; Show fewer markets' : '&#9660; Show all markets'}
+              </button>
+            </div>
+          )}
+
+          <div className="win2k-statusbar" style={{ marginTop: '8px' }}>
+            <div className="win2k-statusbar-panel">{upcomingMarkets.length} event(s)</div>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>
+              Leeds &amp; West Yorkshire farmers markets
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
   timeZone: 'Europe/London',
   weekday: 'long',
   day: 'numeric',

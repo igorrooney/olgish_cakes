@@ -343,120 +343,181 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
   }
 
   return (
-    <section className='bg-base-100 px-4 py-8 tablet:py-12'>
-      <div className='homepage-container flex flex-col gap-6'>
-        <h2 className='font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px]'>
-          Our reviews
-        </h2>
-
-        <div className='relative -mx-4 tablet:mx-0'>
-          <div
-            ref={mobileCarouselRef}
-            className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5 tablet:hidden'
-          >
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={testimonial._id}
-                id={`${baseId}-reviews-mobile-${index + 1}`}
-                className='carousel-item flex-shrink-0'
-                style={{
-                  width: '342px',
-                  minWidth: '342px',
-                  maxWidth: '342px',
-                  scrollSnapAlign: 'start'
-                }}
-              >
-                <ReviewCard
-                  testimonial={testimonial}
-                  reviewTextId={`${baseId}-mobile-review-text-${index + 1}-${testimonial._id}`}
-                />
-              </div>
-            ))}
+    <section style={{ padding: '12px' }}>
+      <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Title bar */}
+        <div className="win2k-titlebar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ fontSize: '14px' }}>⭐</span>
+            <span className="win2k-titlebar-text">Customer Reviews - Olgish Cakes</span>
           </div>
-          <CarouselControls
-            className='mt-5 flex justify-center gap-3 tablet:hidden'
-            carouselRef={mobileCarouselRef}
-            currentIndex={mobileIndex}
-            idPrefix={`${baseId}-reviews-mobile`}
-            nextLabel='Next review'
-            prevLabel='Previous review'
-            total={mobileSlideCount}
-          />
+          <div className="win2k-titlebar-controls">
+            <div className="win2k-titlebar-btn" aria-hidden="true">_</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">□</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+          </div>
+        </div>
 
-          <div className='relative hidden tablet:block small-laptop:hidden'>
-            <div className='relative p-6'>
-              <div
-                ref={tabletCarouselRef}
-                className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
-              >
-                {tabletSlides.map((slide, slideIndex) => (
-                  <div
-                    key={`reviews-slide-${slideIndex}`}
-                    id={`${baseId}-reviews-tablet-${slideIndex + 1}`}
-                    className='carousel-item w-full flex-shrink-0'
-                    style={{ scrollSnapAlign: 'start' }}
-                  >
-                    <div className='flex w-full flex-wrap items-stretch justify-center gap-5'>
-                      {slide.map((testimonial) => (
-                        <div key={testimonial._id} className='w-full max-w-[342px]'>
-                          <ReviewCard
-                            testimonial={testimonial}
-                            reviewTextId={`${baseId}-tablet-review-text-${slideIndex + 1}-${testimonial._id}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <CarouselControls
-              className='mt-5 flex justify-center gap-3'
-              carouselRef={tabletCarouselRef}
-              currentIndex={tabletIndex}
-              idPrefix={`${baseId}-reviews-tablet`}
-              nextLabel='Next reviews'
-              prevLabel='Previous reviews'
-              total={tabletSlideCount}
-            />
+        <div style={{ padding: '8px', backgroundColor: '#D4D0C8' }}>
+          {/* Header panel */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#000080',
+            color: '#FFFFFF',
+            padding: '4px 8px',
+            marginBottom: '6px',
+            fontSize: '11px',
+          }}>
+            <span>&#11088;&#11088;&#11088;&#11088;&#11088;</span>
+            <span style={{ fontWeight: 'bold' }}>5-Star Rated Ukrainian Bakery in Leeds</span>
           </div>
 
-          <div className='relative hidden small-laptop:block'>
-            <div className='relative p-6'>
-              <div
-                ref={smallLaptopCarouselRef}
-                className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
-              >
-                {smallLaptopSlides.map((slide, slideIndex) => (
-                  <div
-                    key={`reviews-small-laptop-slide-${slideIndex}`}
-                    id={`${baseId}-reviews-small-laptop-${slideIndex + 1}`}
-                    className='carousel-item w-full flex-shrink-0'
-                    style={{ scrollSnapAlign: 'start' }}
-                  >
-                    <div className='grid w-full grid-cols-[repeat(3,_342px)] justify-start gap-5'>
-                      {slide.map((testimonial) => (
-                        <div key={testimonial._id} className='w-full max-w-[342px]'>
-                          <ReviewCard
-                            testimonial={testimonial}
-                            reviewTextId={`${baseId}-small-laptop-review-text-${slideIndex + 1}-${testimonial._id}`}
-                          />
-                        </div>
-                      ))}
+          {/* Reviews carousel */}
+          <div className='relative -mx-4 tablet:mx-0'>
+            <div
+              ref={mobileCarouselRef}
+              className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-3 tablet:hidden'
+            >
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={testimonial._id}
+                  id={`${baseId}-reviews-mobile-${index + 1}`}
+                  className='carousel-item flex-shrink-0'
+                  style={{
+                    width: '280px',
+                    minWidth: '280px',
+                    maxWidth: '280px',
+                    scrollSnapAlign: 'start'
+                  }}
+                >
+                  <div className="win2k-window" style={{ width: '100%' }}>
+                    <div className="win2k-titlebar" style={{ padding: '2px 4px' }}>
+                      <span style={{ fontSize: '10px' }}>&#11088; {testimonial.customerName || 'Anonymous'}</span>
+                    </div>
+                    <div style={{ padding: '6px', backgroundColor: '#D4D0C8' }}>
+                      <div className="win2k-inset" style={{ backgroundColor: '#FFFBEB', padding: '6px', fontSize: '10px' }}>
+                        <div style={{ marginBottom: '4px', color: '#008000' }}>★★★★★</div>
+                        {testimonial.title && (
+                          <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '11px' }}>{testimonial.title}</div>
+                        )}
+                        <p style={{ margin: '0', lineHeight: '1.4' }}>{testimonial.text}</p>
+                        <div style={{ marginTop: '4px', color: '#808080', fontSize: '9px' }}>{testimonial.date}</div>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
             <CarouselControls
-              className='mt-5 flex justify-center gap-3'
-              carouselRef={smallLaptopCarouselRef}
-              currentIndex={smallLaptopIndex}
-              idPrefix={`${baseId}-reviews-small-laptop`}
-              nextLabel='Next reviews'
-              prevLabel='Previous reviews'
-              total={smallLaptopSlideCount}
+              className='mt-3 flex justify-center gap-3 tablet:hidden'
+              carouselRef={mobileCarouselRef}
+              currentIndex={mobileIndex}
+              idPrefix={`${baseId}-reviews-mobile`}
+              nextLabel='Next review'
+              prevLabel='Previous review'
+              total={mobileSlideCount}
             />
+
+            <div className='relative hidden tablet:block small-laptop:hidden'>
+              <div className='relative p-4'>
+                <div
+                  ref={tabletCarouselRef}
+                  className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
+                >
+                  {tabletSlides.map((slide, slideIndex) => (
+                    <div
+                      key={`reviews-slide-${slideIndex}`}
+                      id={`${baseId}-reviews-tablet-${slideIndex + 1}`}
+                      className='carousel-item w-full flex-shrink-0'
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center' }}>
+                        {slide.map((testimonial) => (
+                          <div key={testimonial._id} className="win2k-window" style={{ width: '280px', flexShrink: 0 }}>
+                            <div className="win2k-titlebar" style={{ padding: '2px 4px' }}>
+                              <span style={{ fontSize: '10px' }}>&#11088; {testimonial.customerName || 'Anonymous'}</span>
+                            </div>
+                            <div style={{ padding: '6px', backgroundColor: '#D4D0C8' }}>
+                              <div className="win2k-inset" style={{ backgroundColor: '#FFFBEB', padding: '6px', fontSize: '10px' }}>
+                                <div style={{ marginBottom: '4px', color: '#008000' }}>★★★★★</div>
+                                {testimonial.title && (
+                                  <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '11px' }}>{testimonial.title}</div>
+                                )}
+                                <p style={{ margin: '0', lineHeight: '1.4' }}>{testimonial.text}</p>
+                                <div style={{ marginTop: '4px', color: '#808080', fontSize: '9px' }}>{testimonial.date}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <CarouselControls
+                className='mt-3 flex justify-center gap-3'
+                carouselRef={tabletCarouselRef}
+                currentIndex={tabletIndex}
+                idPrefix={`${baseId}-reviews-tablet`}
+                nextLabel='Next reviews'
+                prevLabel='Previous reviews'
+                total={tabletSlideCount}
+              />
+            </div>
+
+            <div className='relative hidden small-laptop:block'>
+              <div className='relative p-4'>
+                <div
+                  ref={smallLaptopCarouselRef}
+                  className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
+                >
+                  {smallLaptopSlides.map((slide, slideIndex) => (
+                    <div
+                      key={`reviews-small-laptop-slide-${slideIndex}`}
+                      id={`${baseId}-reviews-small-laptop-${slideIndex + 1}`}
+                      className='carousel-item w-full flex-shrink-0'
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {slide.map((testimonial) => (
+                          <div key={testimonial._id} className="win2k-window" style={{ width: '270px', flexShrink: 0 }}>
+                            <div className="win2k-titlebar" style={{ padding: '2px 4px' }}>
+                              <span style={{ fontSize: '10px' }}>&#11088; {testimonial.customerName || 'Anonymous'}</span>
+                            </div>
+                            <div style={{ padding: '6px', backgroundColor: '#D4D0C8' }}>
+                              <div className="win2k-inset" style={{ backgroundColor: '#FFFBEB', padding: '6px', fontSize: '10px' }}>
+                                <div style={{ marginBottom: '4px', color: '#008000' }}>★★★★★</div>
+                                {testimonial.title && (
+                                  <div style={{ fontWeight: 'bold', marginBottom: '3px', fontSize: '11px' }}>{testimonial.title}</div>
+                                )}
+                                <p style={{ margin: '0', lineHeight: '1.4' }}>{testimonial.text}</p>
+                                <div style={{ marginTop: '4px', color: '#808080', fontSize: '9px' }}>{testimonial.date}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <CarouselControls
+                className='mt-3 flex justify-center gap-3'
+                carouselRef={smallLaptopCarouselRef}
+                currentIndex={smallLaptopIndex}
+                idPrefix={`${baseId}-reviews-small-laptop`}
+                nextLabel='Next reviews'
+                prevLabel='Previous reviews'
+                total={smallLaptopSlideCount}
+              />
+            </div>
+          </div>
+
+          <div className="win2k-statusbar" style={{ marginTop: '6px' }}>
+            <div className="win2k-statusbar-panel">{testimonials.length} review(s)</div>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>All reviews verified</div>
           </div>
         </div>
       </div>

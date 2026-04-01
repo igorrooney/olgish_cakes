@@ -15,6 +15,7 @@ import { RouteScrollReset } from "./components/RouteScrollReset";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
+import { Win2KDesktop } from "./components/Win2KDesktop";
 import "./globals.css";
 import { getReviewStats } from "./utils/review-stats.server";
 
@@ -477,20 +478,25 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
+      <body className={`${alice.className} ${alice.variable} critical-loading win2k-mode`} suppressHydrationWarning style={{ background: '#008080', margin: 0, padding: 0 }}>
         <NuqsAdapter>
           <ConditionalMuiProviders>
             <ReviewStatsProvider stats={reviewStats}>
               <ConditionalQueryProviders>
-                <div className="flex flex-col min-h-screen">
-                  <RouteScrollReset />
-                  <SiteHeader />
-                  <main className="flex-grow">{children}</main>
-                  <SiteFooter />
-                  <KlaroA11yBridge />
-                  <ScrollToTop />
-                  <WebVitalsMonitor />
-                </div>
+                <Win2KDesktop>
+                  <div className="flex flex-col min-h-screen">
+                    <RouteScrollReset />
+                    <SiteHeader />
+                    <main className="flex-grow">{children}</main>
+                    <div style={{ backgroundColor: '#D4D0C8', borderTop: '2px solid #808080', padding: '12px', fontSize: '10px', textAlign: 'center', fontFamily: 'Tahoma, Arial, sans-serif' }}>
+                      <p style={{ margin: '0 0 2px 0', color: '#000080', fontWeight: 'bold' }}>Olgish Cakes &copy; {new Date().getFullYear()}</p>
+                      <p style={{ margin: '0', color: '#808080' }}>Handmade Ukrainian Cakes from Leeds, UK | hello@olgishcakes.co.uk</p>
+                    </div>
+                    <KlaroA11yBridge />
+                    <ScrollToTop />
+                    <WebVitalsMonitor />
+                  </div>
+                </Win2KDesktop>
               </ConditionalQueryProviders>
             </ReviewStatsProvider>
           </ConditionalMuiProviders>

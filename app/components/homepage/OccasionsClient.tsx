@@ -9,53 +9,20 @@ type OccasionsClientProps = {
   collections: DisplayCollection[]
 }
 
-const sectionClassName = 'bg-base-100 px-4 py-8 tablet:px-10 tablet:py-12'
-const containerClassName = 'homepage-container relative flex flex-col items-center gap-6 tablet:gap-8'
-const headingClassName =
-  'font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px]'
-const gridClassName =
-  'grid w-full grid-cols-3 gap-4 justify-items-center max-w-[342px] tablet:gap-6 tablet:max-w-[696px] small-laptop:grid-cols-4 small-laptop:max-w-[936px]'
-const cardBaseClassName = 'w-full tablet:max-w-[344px] small-laptop:max-w-none'
-const cardLinkClassName =
-  'flex w-full flex-col items-center gap-2 text-center tablet:gap-3 focus-visible:!outline-none'
-const imageWrapperClassName =
-  'relative h-[100px] w-[100px] overflow-hidden rounded-[16px] border border-primary-50 bg-base-100 tablet:h-[218px] tablet:w-[218px] tablet:shadow-sm'
-const labelClassName = 'font-oldenburg text-xs text-base-content leading-[15px] tablet:text-base tablet:leading-[18px]'
-
 const MOBILE_INITIAL_COLLECTIONS = 6
 const SMALL_LAPTOP_INITIAL_COLLECTIONS = 8
-const moreButtonClassName =
-  'font-oldenburg cursor-pointer text-[24px] text-base-content text-center transition-colors hover:text-primary-500 focus-visible:text-primary-500'
-
-const getVisibilityClassName = (index: number, showAll: boolean) => {
-  if (showAll) {
-    return 'flex'
-  }
-
-  if (index >= SMALL_LAPTOP_INITIAL_COLLECTIONS) {
-    return 'hidden'
-  }
-
-  if (index >= MOBILE_INITIAL_COLLECTIONS) {
-    return 'hidden small-laptop:flex'
-  }
-
-  return 'flex'
-}
 
 export function OccasionsClient({ collections }: OccasionsClientProps) {
   const [showAll, setShowAll] = useState(false)
   const sectionRef = useRef<HTMLElement | null>(null)
   const canExpand = collections.length > MOBILE_INITIAL_COLLECTIONS
-  const hideButtonOnSmallLaptop = collections.length <= SMALL_LAPTOP_INITIAL_COLLECTIONS
+  const visibleCollections = showAll ? collections : collections.slice(0, MOBILE_INITIAL_COLLECTIONS)
 
   const handleToggle = () => {
     const wasShowingAll = showAll
     setShowAll(!showAll)
 
-    if (!wasShowingAll) {
-      return
-    }
+    if (!wasShowingAll) return
 
     const scrollToSection = () => {
       sectionRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
@@ -70,45 +37,86 @@ export function OccasionsClient({ collections }: OccasionsClientProps) {
   }
 
   return (
-    <section ref={sectionRef} className={sectionClassName}>
-      <div className={containerClassName}>
-        <h2 className={headingClassName}>
-          <span className='inline tablet:block'>Cakes for any</span>{' '}
-          <span className='inline tablet:block'>occasion</span>
-        </h2>
-        <div className={gridClassName}>
-          {collections.map((collection, index) => (
-            <div
-              key={collection._id}
-              className={`${cardBaseClassName} ${getVisibilityClassName(index, showAll)}`.trim()}
-            >
-              <Link href={collection.href} scroll className={cardLinkClassName}>
-                <div className={imageWrapperClassName}>
-                  <Image
-                    src={collection.imageUrl}
-                    alt={collection.imageAlt}
-                    fill
-                    className='object-cover'
-                    sizes='(min-width: 1024px) 216px, (min-width: 768px) 216px, 98px'
-                  />
-                </div>
-                <p className={labelClassName}>
-                  {collection.name}
-                </p>
-              </Link>
-            </div>
-          ))}
+    <section ref={sectionRef} style={{ padding: '12px' }}>
+      <div className="win2k-window" style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div className="win2k-titlebar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ fontSize: '14px' }}>🎉</span>
+            <span className="win2k-titlebar-text">Cakes for Any Occasion - Category Browser</span>
+          </div>
+          <div className="win2k-titlebar-controls">
+            <div className="win2k-titlebar-btn" aria-hidden="true">_</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">□</div>
+            <div className="win2k-titlebar-btn" aria-hidden="true">×</div>
+          </div>
         </div>
-        {canExpand ? (
-          <button
-            type='button'
-            className={`${moreButtonClassName} ${hideButtonOnSmallLaptop ? 'small-laptop:hidden' : ''}`.trim()}
-            onClick={handleToggle}
-            aria-expanded={showAll}
-          >
-            {showAll ? 'Show less' : '+ many more!'}
-          </button>
-        ) : null}
+
+        <div style={{ padding: '8px', backgroundColor: '#D4D0C8' }}>
+          <div className="win2k-inset" style={{ backgroundColor: '#FFFFFF', padding: '12px' }}>
+            <h2 style={{
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: '#000080',
+              marginBottom: '8px',
+              fontFamily: 'Tahoma, Arial, sans-serif',
+              textTransform: 'uppercase',
+            }}>
+              Select a Cake Category:
+            </h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+              gap: '8px',
+            }}>
+              {visibleCollections.map((collection) => (
+                <Link
+                  key={collection._id}
+                  href={collection.href}
+                  style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}
+                  className="win2k-icon"
+                >
+                  <div className="win2k-inset" style={{ width: '80px', height: '80px', position: 'relative', overflow: 'hidden' }}>
+                    <Image
+                      src={collection.imageUrl}
+                      alt={collection.imageAlt}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="80px"
+                    />
+                  </div>
+                  <span style={{
+                    fontSize: '10px',
+                    color: '#000000',
+                    textAlign: 'center',
+                    fontFamily: 'Tahoma, Arial, sans-serif',
+                    lineHeight: '1.2',
+                  }}>
+                    {collection.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            {canExpand && (
+              <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  className="win2k-btn"
+                  style={{ fontSize: '11px' }}
+                  onClick={handleToggle}
+                  aria-expanded={showAll}
+                >
+                  {showAll ? 'Show fewer occasions' : 'Show all occasions'}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="win2k-statusbar" style={{ marginTop: '4px' }}>
+            <div className="win2k-statusbar-panel">{collections.length} categories</div>
+            <div className="win2k-statusbar-panel" style={{ flex: 1 }}>Select a category to browse cakes</div>
+          </div>
+        </div>
       </div>
     </section>
   )
