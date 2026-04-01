@@ -79,8 +79,6 @@ export interface ArticleSeo {
   metaDescription?: string;
   keywords?: string[];
   canonicalUrl?: string;
-  priority?: number;
-  changefreq?: string;
 }
 
 export interface ArticleFaqItem {

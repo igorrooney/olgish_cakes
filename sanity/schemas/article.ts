@@ -272,25 +272,8 @@ export default defineType({
           name: 'canonicalUrl',
           title: 'Canonical URL',
           type: 'url',
-          ...articleFieldHelpComponents('seo.canonicalUrl')
-        }),
-        defineField({
-          name: 'priority',
-          title: 'Sitemap Priority',
-          type: 'number',
-          ...articleFieldHelpComponents('seo.priority'),
-          options: {
-            list: [1.0, 0.9, 0.8, 0.7, 0.6]
-          }
-        }),
-        defineField({
-          name: 'changefreq',
-          title: 'Sitemap Change Frequency',
-          type: 'string',
-          ...articleFieldHelpComponents('seo.changefreq'),
-          options: {
-            list: ['daily', 'weekly', 'monthly']
-          }
+          ...articleFieldHelpComponents('seo.canonicalUrl'),
+          description: 'Usually leave blank. Only add a full URL when this article should canonically point to another page.'
         })
       ]
     })

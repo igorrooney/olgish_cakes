@@ -26,8 +26,6 @@ export const articleHelpFieldPaths = [
   'seo.metaDescription',
   'seo.keywords',
   'seo.canonicalUrl',
-  'seo.priority',
-  'seo.changefreq',
 ] as const
 
 export type ArticleHelpFieldPath = (typeof articleHelpFieldPaths)[number]
@@ -377,7 +375,7 @@ export const articleFieldHelpContent = {
   'seo.canonicalUrl': {
     title: 'Canonical URL',
     whatItIs: 'This tells search engines which URL should be treated as the main version of the page.',
-    whatToEnter: 'Usually leave this blank. Only add a full URL when you deliberately want search engines to treat another page as the main version of the content.',
+    whatToEnter: 'Usually leave this blank. Only add a full absolute URL when this article is intentionally a duplicate, republished, or alternate version and another page should be treated as the main one.',
     whyItMatters: 'This field is powerful and easy to misuse. If you point it at the wrong page, you can accidentally tell Google to ignore this article in favour of another URL.',
     whereUsed: [
       'Canonical metadata output',
@@ -386,34 +384,6 @@ export const articleFieldHelpContent = {
     examples: [
       'Leave blank for a normal article',
       'Use a full URL only if there is a very specific duplicate-page reason',
-    ],
-  },
-  'seo.priority': {
-    title: 'Sitemap Priority',
-    whatItIs: 'This is a sitemap hint about how important the page is compared with others.',
-    whatToEnter: 'Choose a value only if you have a clear reason. Higher values are for your strongest, most important evergreen pages. Lower values are for supporting pages. If you are unsure, leave it on the normal default choice for the kind of article you are publishing.',
-    whyItMatters: 'This does not boost rankings by itself. It is only a sitemap hint that helps describe relative importance across your own site.',
-    whereUsed: [
-      'XML sitemap output',
-    ],
-    examples: [
-      '1.0 is for your most important pages only, and most articles should not use it',
-      '0.8 suits a strong evergreen guide you want to keep promoting',
-      '0.6 suits a useful supporting article that is not a core landing page',
-    ],
-  },
-  'seo.changefreq': {
-    title: 'Sitemap Change Frequency',
-    whatItIs: 'This is a sitemap hint about how often the page is likely to change.',
-    whatToEnter: 'Pick the option that honestly matches how often you expect to make meaningful updates to the article. Choose based on reality, not on how often you want Google to visit.',
-    whyItMatters: 'This does not force Google to come back on that schedule. It simply tells search engines what sort of update rhythm the page usually has.',
-    whereUsed: [
-      'XML sitemap output',
-    ],
-    examples: [
-      'Use daily only if the article genuinely changes very often, which is rare for blog articles',
-      'Use weekly for an article you expect to refresh regularly with new advice or new product examples',
-      'Use monthly for a stable evergreen article that may still get occasional editorial updates',
     ],
   },
 } satisfies Record<ArticleHelpFieldPath, FieldHelpContent>

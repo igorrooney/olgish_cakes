@@ -58,9 +58,7 @@ const articleSeoFields = `
   metaTitle,
   metaDescription,
   keywords,
-  canonicalUrl,
-  priority,
-  changefreq
+  canonicalUrl
 `
 
 const articleArchiveFields = `
