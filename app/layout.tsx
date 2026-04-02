@@ -9,14 +9,13 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { SiteHeader } from "./components/homepage/SiteHeader";
 import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
 import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
-import { PerformanceOptimizer } from "./components/PerformanceOptimizer";
+import { ConditionalQueryProviders } from "./components/ConditionalQueryProviders";
+import { KlaroA11yBridge } from "./components/KlaroA11yBridge";
 import { RouteScrollReset } from "./components/RouteScrollReset";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
 import "./globals.css";
-import { Providers } from "./providers";
-import { buildAggregateRating, formatRatingValue, formatReviewCount } from "./utils/review-stats";
 import { getReviewStats } from "./utils/review-stats.server";
 
 const alice = localFont({
@@ -59,7 +58,7 @@ const oldenburg = localFont({
   ],
   variable: '--font-oldenburg',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['Georgia', 'serif'],
   adjustFontFallback: 'Times New Roman'
 })
@@ -74,7 +73,7 @@ const moreSugar = localFont({
   ],
   variable: '--font-more-sugar',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['cursive', 'fantasy']
 })
 
@@ -82,6 +81,7 @@ const primary = designTokens.colors.primary.main;
 const primaryDark = designTokens.colors.primary.dark;
 const secondary = designTokens.colors.secondary.main;
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+const isVercelDeployment = process.env.VERCEL === '1'
 const isConsentEnabled = Boolean(gtmId)
 const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
 const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
@@ -274,56 +274,18 @@ export const viewport: Viewport = {
   viewportFit: "cover"
 };
 
-type OtherMetadata = Record<string, string | number | (string | number)[]>
-
-const baseOther: OtherMetadata = {
-  "geo.region": "GB-ENG",
-  "geo.placename": "Leeds",
-  "geo.position": "53.8008;-1.5491",
-  ICBM: "53.8008, -1.5491",
-  price_range: "££",
-  cuisine: "Ukrainian",
-  payment: "cash, credit card, bank transfer",
-  delivery: "yes",
-  takeout: "yes",
-  "business:contact_data:street_address": "Allerton Grange",
-  "business:contact_data:locality": "Leeds",
-  "business:contact_data:postal_code": "LS17",
-  "business:contact_data:country_name": "United Kingdom",
-  "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
-  "business:contact_data:email": "hello@olgishcakes.co.uk",
-}
+const baseSiteTitle = 'Olgish Cakes | Handmade Ukrainian cakes from Leeds'
+const baseSiteDescription =
+  'Handmade Ukrainian cakes from Leeds, with postal bakes across the UK and custom celebration cakes for local orders.'
+const siteLogoUrl = 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
+const toJsonLdScript = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c')
 
 const baseMetadata: Metadata = {
   title: {
-    default:
-      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
+    default: baseSiteTitle,
     template: '%s | Olgish Cakes',
   },
-  description:
-    'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
-  keywords: [
-    "Ukrainian cakes Leeds",
-    "honey cake",
-    "Medovik",
-    "Kyiv cake",
-    "traditional Ukrainian desserts",
-    "Ukrainian bakery Leeds",
-    "custom cakes Leeds",
-    "wedding cakes Leeds",
-    "birthday cakes Leeds",
-    "best Ukrainian cakes Leeds",
-    "honey cake delivery Yorkshire",
-    "Ukrainian bakery near me",
-    "authentic Ukrainian cakes",
-    "traditional medovik",
-    "Ukrainian honey cake recipe",
-    "Leeds cake delivery",
-    "Yorkshire Ukrainian bakery",
-    "custom wedding cakes Leeds",
-    "birthday cake delivery Leeds",
-    "Ukrainian dessert shop Leeds",
-  ].join(", "),
+  description: baseSiteDescription,
   authors: [{ name: "Olgish Cakes", url: "https://olgishcakes.co.uk" }],
   creator: "Olgish Cakes",
   publisher: "Olgish Cakes",
@@ -353,10 +315,8 @@ const baseMetadata: Metadata = {
     ],
   },
   openGraph: {
-    title:
-      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
-    description:
-      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
+    title: baseSiteTitle,
+    description: baseSiteDescription,
     type: "website",
     locale: "en_GB",
     url: "https://olgishcakes.co.uk",
@@ -366,17 +326,15 @@ const baseMetadata: Metadata = {
         url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
         width: 1200,
         height: 630,
-        alt: "Olgish Cakes - #1 Ukrainian Cakes Leeds | Authentic Honey Cake (Medovik) | Cake by Post UK | Letterbox Delivery | Traditional Ukrainian Bakery",
+        alt: "Olgish Cakes logo and bakery branding",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title:
-      'Olgish Cakes - Ukrainian Cakes in Leeds | Honey Cake',
-    description:
-      "🏆 #1 Rated Ukrainian Bakery in Leeds! Authentic honey cake (Medovik), Kyiv cake & traditional Ukrainian desserts. 5★ rating.",
+    title: baseSiteTitle,
+    description: baseSiteDescription,
     images: ["https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png"],
     creator: "@olgish_cakes",
     site: "@olgish_cakes",
@@ -395,7 +353,6 @@ const baseMetadata: Metadata = {
   verification: {
     google: "ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64",
   },
-  other: baseOther,
   alternates: {
     canonical: "https://olgishcakes.co.uk",
     languages: {
@@ -405,18 +362,7 @@ const baseMetadata: Metadata = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const reviewStats = await getReviewStats()
-  const other: OtherMetadata = { ...baseOther }
-
-  if (reviewStats.count > 0) {
-    other.rating = formatRatingValue(reviewStats.averageRating)
-    other.rating_count = formatReviewCount(reviewStats.count)
-  }
-
-  return {
-    ...baseMetadata,
-    other
-  }
+  return baseMetadata
 }
 
 export default async function RootLayout({
@@ -425,7 +371,39 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const reviewStats = await getReviewStats()
-  const aggregateRating = buildAggregateRating(reviewStats)
+  const organizationStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': 'https://olgishcakes.co.uk/#organization',
+    name: 'Olgish Cakes',
+    alternateName: 'Olgish Ukrainian Cakes',
+    description: baseSiteDescription,
+    url: BUSINESS_CONSTANTS.BASE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: siteLogoUrl,
+      width: 1200,
+      height: 630
+    },
+    image: siteLogoUrl,
+    email: 'hello@olgishcakes.co.uk',
+    telephone: BUSINESS_CONSTANTS.PHONE,
+    sameAs: [
+      'https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB',
+      'https://www.instagram.com/olgish_cakes/'
+    ]
+  }
+  const websiteStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://olgishcakes.co.uk/#website',
+    url: BUSINESS_CONSTANTS.BASE_URL,
+    name: BUSINESS_CONSTANTS.NAME,
+    description: baseSiteDescription,
+    publisher: {
+      '@id': 'https://olgishcakes.co.uk/#organization'
+    }
+  }
 
   return (
     <html
@@ -485,187 +463,17 @@ export default async function RootLayout({
           </>
         ) : null}
 
-        {/* Enhanced Organization Schema */}
+        {/* Sitewide structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Bakery",
-              "@id": "https://olgishcakes.co.uk/#organization",
-              name: "Olgish Cakes",
-              alternateName: "Olgish Ukrainian Cakes",
-    description:
-      'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5★ reviews, same-day local delivery, and custom designs across West Yorkshire.',
-              url: "https://olgishcakes.co.uk",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-                width: 1200,
-                height: 630,
-              },
-              image: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-              telephone: BUSINESS_CONSTANTS.PHONE,
-              email: "hello@olgishcakes.co.uk",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "Allerton Grange",
-                addressLocality: "Leeds",
-                addressRegion: "West Yorkshire",
-                postalCode: "LS17",
-                addressCountry: "GB",
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: "53.8008",
-                longitude: "-1.5491",
-              },
-              openingHoursSpecification: [
-                {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: [
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                    "Sunday",
-                  ],
-                  opens: "00:00",
-                  closes: "23:59",
-                },
-              ],
-              priceRange: "££",
-              servesCuisine: ["Ukrainian", "Traditional", "Honey Cake", "Medovik", "Kyiv Cake"],
-              hasMenu: "https://olgishcakes.co.uk/cakes",
-              areaServed: [
-                { "@type": "City", name: "Leeds" },
-                { "@type": "City", name: "York" },
-                { "@type": "City", name: "Bradford" },
-                { "@type": "City", name: "Halifax" },
-                { "@type": "City", name: "Huddersfield" },
-                { "@type": "City", name: "Wakefield" },
-                { "@type": "City", name: "Otley" },
-                { "@type": "City", name: "Pudsey" },
-                { "@type": "City", name: "Skipton" },
-                { "@type": "City", name: "Ilkley" },
-              ],
-              sameAs: [
-                "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
-                "https://www.instagram.com/olgish_cakes/",
-              ],
-              ...(aggregateRating ? { aggregateRating } : {}),
-              hasOfferCatalog: {
-                "@type": "OfferCatalog",
-                name: "Ukrainian Cakes Menu",
-                itemListElement: [
-                  {
-                    "@type": "Offer",
-                    itemOffered: {
-                      "@type": "Service",
-                      name: "Traditional Honey Cake (Medovik)",
-                      category: "Ukrainian Honey Cake",
-                      description: "Authentic Ukrainian honey cake with traditional recipe",
-                    },
-                    hasMerchantReturnPolicy: {
-                      "@type": "MerchantReturnPolicy",
-                      applicableCountry: "GB",
-                      returnFees: "https://schema.org/FreeReturn",
-                      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                      merchantReturnDays: 14,
-                      returnMethod: "https://schema.org/ReturnByMail",
-                    },
-                  },
-                  {
-                    "@type": "Offer",
-                    itemOffered: {
-                      "@type": "Service",
-                      name: "Kyiv Cake",
-                      category: "Ukrainian Traditional Cake",
-                      description: "Classic Kyiv cake with hazelnut meringue",
-                    },
-                    hasMerchantReturnPolicy: {
-                      "@type": "MerchantReturnPolicy",
-                      applicableCountry: "GB",
-                      returnFees: "https://schema.org/FreeReturn",
-                      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                      merchantReturnDays: 14,
-                      returnMethod: "https://schema.org/ReturnByMail",
-                    },
-                  },
-                  {
-                    "@type": "Offer",
-                    itemOffered: {
-                      "@type": "Service",
-                      name: "Custom Wedding Cakes",
-                      category: "Wedding Cake Design",
-                      description: "Personalized wedding cakes with Ukrainian flavors",
-                    },
-                    hasMerchantReturnPolicy: {
-                      "@type": "MerchantReturnPolicy",
-                      applicableCountry: "GB",
-                      returnFees: "https://schema.org/FreeReturn",
-                      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                      merchantReturnDays: 14,
-                      returnMethod: "https://schema.org/ReturnByMail",
-                    },
-                  },
-                  {
-                    "@type": "Offer",
-                    itemOffered: {
-                      "@type": "Service",
-                      name: "Birthday Cakes",
-                      category: "Birthday Cake Design",
-                      description: "Custom birthday cakes for all ages",
-                    },
-                    hasMerchantReturnPolicy: {
-                      "@type": "MerchantReturnPolicy",
-                      applicableCountry: "GB",
-                      returnFees: "https://schema.org/FreeReturn",
-                      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-                      merchantReturnDays: 14,
-                      returnMethod: "https://schema.org/ReturnByMail",
-                    },
-                  },
-                ],
-              },
-              paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
-              deliveryAvailable: true,
-              takeoutAvailable: true,
-              foundingDate: "2023",
-              award: [
-                "Best Ukrainian Bakery Leeds 2024",
-                "5★ Customer Rating",
-                "Same-day Delivery Service",
-              ],
-            }),
+            __html: toJsonLdScript(organizationStructuredData),
           }}
         />
-
-        {/* Website Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": "https://olgishcakes.co.uk/#website",
-              url: "https://olgishcakes.co.uk",
-              name: "Olgish Cakes",
-              description: "Authentic Ukrainian honey cakes and traditional desserts in Leeds",
-              publisher: {
-                "@id": "https://olgishcakes.co.uk/#organization",
-              },
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: "https://olgishcakes.co.uk/search?q={search_term_string}",
-                },
-                "query-input": "required name=search_term_string",
-              },
-            }),
+            __html: toJsonLdScript(websiteStructuredData),
           }}
         />
       </head>
@@ -673,21 +481,25 @@ export default async function RootLayout({
         <NuqsAdapter>
           <ConditionalMuiProviders>
             <ReviewStatsProvider stats={reviewStats}>
-              <Providers>
+              <ConditionalQueryProviders>
                 <div className="flex flex-col min-h-screen">
                   <RouteScrollReset />
                   <SiteHeader />
                   <main className="flex-grow">{children}</main>
                   <SiteFooter />
+                  <KlaroA11yBridge />
                   <ScrollToTop />
                   <WebVitalsMonitor />
-                  <PerformanceOptimizer />
                 </div>
-              </Providers>
+              </ConditionalQueryProviders>
             </ReviewStatsProvider>
           </ConditionalMuiProviders>
-          <Analytics />
-          <SpeedInsights />
+          {isVercelDeployment ? (
+            <>
+              <Analytics />
+              <SpeedInsights />
+            </>
+          ) : null}
         </NuqsAdapter>
 
         {/* Critical CSS loading script */}
@@ -749,3 +561,5 @@ export default async function RootLayout({
     </html>
   );
 }
+
+

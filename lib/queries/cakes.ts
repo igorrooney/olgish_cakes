@@ -97,6 +97,11 @@ export const CAKE_BY_SLUG_QUERY = groq`
       isFeatured
     },
     ingredients,
+    ingredientReference->{
+      _id,
+      cakeName,
+      ingredients
+    },
     allergens,
     "cakesDeliverySection": *[_type == "cakesDeliverySection" && _id == "cakesDeliverySection"][0] {
       name,

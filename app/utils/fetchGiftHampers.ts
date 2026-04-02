@@ -46,12 +46,6 @@ function createManualOrderMap(references: ProductReference[] | undefined): Map<s
   return manualOrderMap
 }
 
-function getLegacyOrderValue(giftHamper: GiftHamper) {
-  return typeof giftHamper.order === 'number'
-    ? giftHamper.order
-    : Number.MAX_SAFE_INTEGER
-}
-
 function sortGiftHampersByDisplayOrder(
   giftHampers: GiftHamper[],
   references: ProductReference[] | undefined
@@ -66,11 +60,10 @@ function sortGiftHampersByDisplayOrder(
       return firstManualRank - secondManualRank
     }
 
-    const firstLegacyOrder = getLegacyOrderValue(firstGiftHamper)
-    const secondLegacyOrder = getLegacyOrderValue(secondGiftHamper)
+    const nameComparison = firstGiftHamper.name.localeCompare(secondGiftHamper.name)
 
-    if (firstLegacyOrder !== secondLegacyOrder) {
-      return firstLegacyOrder - secondLegacyOrder
+    if (nameComparison !== 0) {
+      return nameComparison
     }
 
     const firstCreatedAt = Date.parse(firstGiftHamper._createdAt)
@@ -103,7 +96,7 @@ function extractGiftHampersAndOrder(
 
 export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> {
   const query = `{
-    "giftHampers": *[_type == "giftHamper"] | order(order asc, _createdAt desc) {
+    "giftHampers": *[_type == "giftHamper"] | order(name asc, _createdAt desc) {
       _id,
       _createdAt,
       name,
@@ -111,7 +104,6 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
       shortDescription,
       description,
       price,
-      order,
       images[] { _type, asset, alt, isMain, caption },
       isFeatured,
       "category": coalesce(category, collections[0]->name, "Gift Hampers"),
@@ -175,31 +167,45 @@ export async function getGiftHamperBySlug(slug: string, preview = false): Promis
 }
 
 export async function getFeaturedGiftHampers(preview = false): Promise<GiftHamper[]> {
-  const query = `*[_type == "giftHamper" && isFeatured == true] | order(order asc, _createdAt desc) {
-    _id,
-    name,
-    slug,
-    price,
-    order,
-    images[] { _type, asset, alt, isMain },
-    "category": coalesce(category, collections[0]->name, "Gift Hampers"),
-    collections[]->{
+  const query = `{
+    "giftHampers": *[_type == "giftHamper" && isFeatured == true] | order(name asc, _createdAt desc) {
       _id,
+      _createdAt,
       name,
-      isFeatured
-    }
+      slug,
+      price,
+      images[] { _type, asset, alt, isMain },
+      "category": coalesce(category, collections[0]->name, "Gift Hampers"),
+      collections[]->{
+        _id,
+        name,
+        isFeatured
+      }
+    },
+    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
   }`;
   
   try {
     if (preview) {
       // For preview, use direct fetch without caching
       const sanityClient = getClient(preview);
-      return await sanityClient.fetch(query);
+      const data = await sanityClient.fetch<GiftHampersQueryResult | GiftHamper[]>(query);
+      const {
+        giftHampers,
+        references
+      } = extractGiftHampersAndOrder(data)
+
+      return sortGiftHampersByDisplayOrder(giftHampers, references)
     }
 
     const config = getCacheConfig('giftHampers')
-    const data = await cachedSanityFetch<GiftHamper[]>(query, {}, config)
-    return data
+    const data = await cachedSanityFetch<GiftHampersQueryResult | GiftHamper[]>(query, {}, config)
+    const {
+      giftHampers,
+      references
+    } = extractGiftHampersAndOrder(data)
+
+    return sortGiftHampersByDisplayOrder(giftHampers, references)
   } catch (e) {
     console.error("Error fetching featured hampers:", e);
     return [];

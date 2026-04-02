@@ -1,0 +1,68 @@
+{
+  "sourceFile": "olgishcakes.co.uk-Performance-on-Search-2026-03-30.xlsx",
+  "sourceDate": "2026-03-30",
+  "filters": {
+    "Search type": "Web",
+    "Date": "Last 16 months",
+    "Country": "United Kingdom"
+  },
+  "queryCount": 4,
+  "brandedExcludedCount": 1,
+  "clusters": [
+    {
+      "slug": "cake-by-post-canonical",
+      "title": "Broad cakes by post",
+      "action": "support_existing_page",
+      "target": "/cakes-by-post",
+      "clicks": 2,
+      "impressions": 200,
+      "ctr": 0.01,
+      "position": 21.3,
+      "matchedQueries": [
+        "cake by post"
+      ]
+    },
+    {
+      "slug": "ukrainian-cakes-guide",
+      "title": "Ukrainian cakes",
+      "action": "new_article",
+      "target": "/blog/ukrainian-cakes-guide",
+      "clicks": 4,
+      "impressions": 120,
+      "ctr": 0.03333333333333333,
+      "position": 8.4,
+      "matchedQueries": [
+        "ukrainian cakes"
+      ]
+    },
+    {
+      "slug": "wedding-cakes-canonical",
+      "title": "Broad wedding cakes",
+      "action": "support_existing_page",
+      "target": "/wedding-cakes",
+      "clicks": 1,
+      "impressions": 90,
+      "ctr": 0.011111111111111112,
+      "position": 12.2,
+      "matchedQueries": [
+        "wedding cakes leeds"
+      ]
+    }
+  ],
+  "topPages": [
+    {
+      "page": "/cakes-by-post",
+      "clicks": 10,
+      "impressions": 500,
+      "ctr": 0.02,
+      "position": 15.5
+    },
+    {
+      "page": "/wedding-cakes",
+      "clicks": 9,
+      "impressions": 450,
+      "ctr": 0.02,
+      "position": 11.2
+    }
+  ]
+}

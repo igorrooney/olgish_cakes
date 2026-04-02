@@ -1,259 +1,179 @@
 # Production Content Updates Guide
 
-This guide explains how content updates work in production and how to set up immediate updates.
+This guide explains how production content updates work in the current app.
 
-## 🚀 **Production Update Strategies**
+## Update Paths In Production
 
-### **1. Automatic Revalidation (Default)**
+### Immediate updates from Sanity webhook
+Use this for normal publish and edit events:
+- cakes
+- gift hampers
+- articles
+- article topics
+- testimonials
+- FAQs
+- merchandising and collection documents
 
-- **Time-based**: Pages revalidate every 5 minutes
-- **CDN Caching**: Fast delivery with Sanity CDN
-- **ISR**: Incremental Static Regeneration for static pages
+Endpoint:
 
-### **2. Webhook-Based Updates (Recommended)**
+```text
+/api/revalidate
+```
 
-- **Instant updates**: Content updates immediately when published
-- **Selective revalidation**: Only affected pages are updated
-- **Zero downtime**: Updates happen in the background
+### Scheduled updates for future-dated articles
+Use this when an article was already published in Sanity but should only become visible once `publishedAt` is reached.
 
-### **3. Manual Cache Clearing**
+Endpoint:
 
-- **Admin tools**: Clear cache from admin panel
-- **API endpoints**: Programmatic cache invalidation
-- **Command line**: Scripts for cache management
+```text
+/api/cron/revalidate-articles
+```
 
-## 🔧 **Setup Instructions**
+This route refreshes:
+- `/blog`
+- due `/blog/[slug]` pages
+- `articles`, `article`, and `sitemaps` cache tags
 
-### **Step 1: Configure Sanity Webhook**
-
-1. **Go to Sanity Management Console**
-
-   ```
-   https://www.sanity.io/manage
-   ```
-
-2. **Navigate to your project → API → Webhooks**
-
-3. **Create a new webhook:**
-
-   - **Name**: `Content Revalidation`
-   - **URL**: `https://your-domain.com/api/revalidate`
-   - **HTTP Method**: `POST`
-   - **Dataset**: `production`
-   - **Filter**: `_type in ["cake","testimonial","faq","giftHamper","giftHamperCollection","blogPost","marketSchedule","collection","cakesFeaturedOffer","cakesDeliverySection","giftHampersDeliverySection","collectionsDisplayOrder","productsDisplayOrder"]`
-   - **Events**: `create`, `update`, `delete`
-   - **HTTP headers**:
-     - `Authorization: Bearer YOUR_REVALIDATE_SECRET`
-   - **Projection**:
-     ```json
-     {
-       "_type": _type,
-       "_id": _id,
-       "slug": slug
-     }
-     ```
-
-4. **Save the webhook**
-
-### **Step 2: Environment Variables**
-
-Add these to your production environment:
+## Required Production Environment Variables
 
 ```bash
-# Required for webhook authentication
-REVALIDATE_SECRET=your_random_revalidate_secret_token_here
-
-# Optional: Custom revalidation time (in seconds)
-NEXT_PUBLIC_REVALIDATE_TIME=300
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=your_sanity_api_token
+REVALIDATE_SECRET=your_random_revalidate_secret
+CRON_SECRET=your_random_cron_secret
+ARTICLE_PUBLISH_REVALIDATE_SECONDS=300
 ```
 
-### **Step 3: Test the Webhook**
+Notes:
+- `SANITY_API_TOKEN` is required for write-enabled and server-authenticated Sanity operations used by cron/migration paths.
+- `REVALIDATE_SECRET` protects `/api/revalidate`.
+- `CRON_SECRET` protects `/api/cron/revalidate-articles`.
+- `ARTICLE_PUBLISH_REVALIDATE_SECONDS` is the fallback time-based refresh window for article data.
 
-1. **Test locally:**
+## Sanity Webhook Setup
 
-   ```bash
-   curl -X POST http://localhost:3000/api/revalidate \
-     -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
-     -H "Content-Type: application/json" \
-     -d '{"_type":"cake","_id":"test","slug":{"current":"honey-cake-medovik"}}'
-   ```
+### Webhook target
 
-2. **Test in production:**
-   ```bash
-   curl -X POST https://your-domain.com/api/revalidate \
-     -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
-     -H "Content-Type: application/json" \
-     -d '{"_type":"cake","_id":"test","slug":{"current":"honey-cake-medovik"}}'
-   ```
+```text
+https://your-domain.com/api/revalidate
+```
 
-## 📊 **How It Works**
+### Method
 
-### **Content Update Flow**
+```text
+POST
+```
 
-1. **Content Published in Sanity Studio**
-2. **Sanity sends webhook to your app**
-3. **App revalidates affected pages**
-4. **Cache is cleared for updated content**
-5. **Users see updated content immediately**
+### Dataset
 
-### **Revalidation Logic**
+```text
+production
+```
 
-```typescript
-// When a cake is updated:
-if (_type === "cake") {
-  revalidatePath(`/cakes/${slug.current}`); // Individual cake page
-  revalidatePath("/cakes"); // Cakes list page
-  revalidatePath("/"); // Home page
-  invalidateCache(`cake-${slug.current}`); // Clear specific cache
+### Filter
+
+```text
+_type in ["cake","testimonial","faq","giftHamper","giftHamperCollection","article","articleTopic","marketSchedule","collection","cakesFeaturedOffer","cakesDeliverySection","giftHampersDeliverySection","collectionsDisplayOrder","productsDisplayOrder"]
+```
+
+### Events
+- create
+- update
+- delete
+
+### Header
+
+```text
+Authorization: Bearer YOUR_REVALIDATE_SECRET
+```
+
+### Projection
+
+```json
+{
+  "_type": _type,
+  "_id": _id,
+  "slug": slug
 }
 ```
 
-## 🛠 **Production Tools**
+## Vercel Cron Setup
 
-### **1. Admin Cache Management**
+`vercel.json` should include:
 
-Create an admin panel for cache management:
-
-```typescript
-// app/admin/cache/page.tsx
-"use client";
-
-import { Button } from '@mui/material';
-
-export default function AdminCachePage() {
-  const clearCache = async () => {
-    await fetch('/api/admin/clear-cache', { method: 'POST' });
-  };
-
-  return (
-    <div>
-      <Button onClick={clearCache}>Clear All Cache</Button>
-    </div>
-  );
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/revalidate-articles",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
 ```
 
-### **2. API Endpoints for Cache Management**
+After deployment:
+1. Open the Vercel project dashboard.
+2. Check that the cron job is registered.
+3. Confirm `CRON_SECRET` is set in the project environment variables.
 
-```typescript
-// app/api/admin/clear-cache/route.ts
-import { NextResponse } from "next/server";
-import { invalidateCache } from "@/app/utils/fetchCakes";
+## How Production Updates Behave
 
-export async function POST() {
-  await invalidateCache();
-  return NextResponse.json({ success: true });
-}
+### Cakes and gift hampers
+- They appear when published and revalidated via the normal Sanity webhook.
+- Their URLs are included in `sitemap-products.xml`.
+- Their images are included in `sitemap-images.xml` when image data exists.
+
+### Articles published now
+- Sanity webhook revalidates `/blog`, the article URL, and sitemap caches immediately.
+
+### Articles scheduled for the future
+- The article remains hidden until `publishedAt <= now()`.
+- Vercel cron revalidates blog pages and sitemap caches every 5 minutes.
+- The article also benefits from the 5-minute article cache fallback on the page data path.
+
+## Manual Tests
+
+### Test the webhook route
+```bash
+curl -X POST https://your-domain.com/api/revalidate \
+  -H "Authorization: Bearer YOUR_REVALIDATE_SECRET" \
+  -H "Content-Type: application/json" \
+  -d "{\"_type\":\"article\",\"_id\":\"test\",\"slug\":{\"current\":\"your-article-slug\"}}"
 ```
 
-### **3. Monitoring and Logs**
-
-Monitor webhook activity:
-
-```typescript
-// Add to your webhook handler
-console.log("🔄 Webhook received:", {
-  timestamp: new Date().toISOString(),
-  type: body._type,
-  id: body._id,
-  userAgent: request.headers.get("user-agent"),
-});
+### Test the cron route
+```bash
+curl https://your-domain.com/api/cron/revalidate-articles \
+  -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
-## 🔍 **Troubleshooting**
+## Troubleshooting
 
-### **Webhook Not Working?**
+### Webhook is not updating content
+- Confirm `REVALIDATE_SECRET` matches between Sanity and Vercel.
+- Confirm the Sanity webhook filter includes `article` and `articleTopic`.
+- Confirm the affected document is published.
+- Check Vercel function logs for `/api/revalidate`.
 
-1. **Check webhook URL**
+### Scheduled article is not appearing
+- Confirm the article is published in Sanity.
+- Confirm `publishedAt` is now in the past.
+- Confirm `CRON_SECRET` exists in Vercel.
+- Confirm `SANITY_API_TOKEN` exists in Vercel.
+- Check Vercel logs for `/api/cron/revalidate-articles`.
 
-   - Ensure it's accessible from the internet
-   - Verify HTTPS in production
+### Sitemap is not updating
+- Confirm webhook revalidation or cron revalidation ran after the content became live.
+- Check `sitemap.xml`, `sitemap-images.xml`, and `sitemap-products.xml` after the revalidation event.
 
-2. **Check authentication**
-   - Verify `REVALIDATE_SECRET` is set in your app environment
-   - Verify Sanity webhook header matches exactly: `Authorization: Bearer <REVALIDATE_SECRET>`
+## Deployment Checklist
 
-3. **Check logs**
-   - Monitor Vercel/Netlify logs
-   - Look for webhook errors
-
-### **Content Not Updating?**
-
-1. **Verify webhook is triggered**
-
-   - Check Sanity webhook logs
-   - Monitor your app logs
-
-2. **Check revalidation**
-
-   - Verify `revalidatePath()` is called
-   - Check cache invalidation
-
-3. **Test manually**
-   ```bash
-   pnpm run clear-cache
-   ```
-
-### **Performance Issues?**
-
-1. **Optimize revalidation**
-
-   - Only revalidate affected pages
-   - Use selective cache clearing
-
-2. **Monitor API usage**
-   - Track Sanity API calls
-   - Optimize query patterns
-
-## 📈 **Performance Optimization**
-
-### **Cache Strategy**
-
-```typescript
-// Development: Fast updates
-const CACHE_DURATION = 30 * 1000; // 30 seconds
-
-// Production: Performance optimized
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-```
-
-### **Selective Revalidation**
-
-```typescript
-// Only revalidate what's needed
-if (_type === "cake") {
-  revalidatePath(`/cakes/${slug.current}`);
-  invalidateCache(`cake-${slug.current}`);
-}
-```
-
-### **CDN Optimization**
-
-```typescript
-// Use CDN for performance
-export const client = createClient({
-  useCdn: true, // Fast delivery
-  perspective: "published", // Only published content
-});
-```
-
-## 🚀 **Deployment Checklist**
-
-- [ ] Webhook configured in Sanity
-- [ ] Environment variables set
-- [ ] API endpoint accessible
-- [ ] Cache management tools ready
-- [ ] Monitoring in place
-- [ ] Error handling implemented
-- [ ] Performance optimized
-- [ ] Documentation updated
-
-## 📞 **Support**
-
-If you need help with production updates:
-
-1. Check the webhook logs in Sanity
-2. Monitor your application logs
-3. Test the revalidation endpoint
-4. Verify environment variables
-5. Contact support with specific error messages
+- [ ] `REVALIDATE_SECRET` set in production
+- [ ] `CRON_SECRET` set in production
+- [ ] `SANITY_API_TOKEN` set in production
+- [ ] Sanity webhook configured with the current filter
+- [ ] Vercel cron job registered
+- [ ] Manual webhook test passes
+- [ ] Manual cron test passes

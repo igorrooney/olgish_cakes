@@ -173,13 +173,11 @@ describe('design-system', () => {
   describe('typography', () => {
     describe('fontFamily', () => {
       it('should have primary font family', () => {
-        expect(typography.fontFamily.primary).toBeDefined()
-        expect(typeof typography.fontFamily.primary).toBe('string')
+        expect(typography.fontFamily.primary).toBe('var(--font-inter), system-ui, sans-serif')
       })
 
       it('should have display font family', () => {
-        expect(typography.fontFamily.display).toBeDefined()
-        expect(typeof typography.fontFamily.display).toBe('string')
+        expect(typography.fontFamily.display).toBe('var(--font-oldenburg), Georgia, serif')
       })
 
       it('should have monospace font family', () => {

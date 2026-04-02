@@ -92,7 +92,8 @@ function resolveGlobalGiftHamperDeliveryPolicy(hamper: GiftHamper) {
 }
 
 export function resolveGiftHamperDeliveryPolicy(hamper: GiftHamper): DeliveryPolicy {
-  const shouldUseCustomPolicy = hamper.deliverySection?.policySource === 'custom'
+  const shouldUseCustomPolicy = hamper.deliverySection?.descriptionSource === 'custom' ||
+    hamper.deliverySection?.policySource === 'custom'
 
   if (shouldUseCustomPolicy && hamper.deliverySection?.customPolicy) {
     return normalizeDeliveryPolicy(hamper.deliverySection.customPolicy)

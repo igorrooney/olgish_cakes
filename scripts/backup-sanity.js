@@ -22,6 +22,11 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import {
+  BACKUP_ASSET_QUERY,
+  BACKUP_DOCUMENT_QUERY,
+  createBackupClientConfig
+} from './backup-document-scope.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,13 +75,7 @@ class SanityBackup {
       throw new Error('Missing required Sanity configuration. Please check your environment variables.');
     }
 
-    this.client = createClient({
-      projectId: config.projectId,
-      dataset: config.dataset,
-      token: config.token,
-      apiVersion: config.apiVersion,
-      useCdn: false
-    });
+    this.client = createClient(createBackupClientConfig(config));
 
     // Create output directory
     await fs.mkdir(this.options.outputDir, { recursive: true });
@@ -88,8 +87,7 @@ class SanityBackup {
   async fetchAllDocuments() {
     console.log('📄 Fetching all documents...');
     
-    const query = `*[_type in ["cake", "giftHamper", "testimonial", "faq", "marketSchedule", "blogPost"]] | order(_createdAt desc)`;
-    const documents = await this.client.fetch(query);
+    const documents = await this.client.fetch(BACKUP_DOCUMENT_QUERY);
     
     this.backupInfo.records.documents = documents.length;
     console.log(`✅ Found ${documents.length} documents`);
@@ -104,8 +102,7 @@ class SanityBackup {
 
     console.log('🖼️  Fetching assets metadata...');
     
-    const query = `*[_type == "sanity.imageAsset" || _type == "sanity.fileAsset"] | order(_createdAt desc)`;
-    const assets = await this.client.fetch(query);
+    const assets = await this.client.fetch(BACKUP_ASSET_QUERY);
     
     this.backupInfo.records.assets = assets.length;
     console.log(`✅ Found ${assets.length} assets`);

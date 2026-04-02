@@ -941,7 +941,6 @@ describe('CakePageClient', () => {
                 ]
               }
             ],
-            policySource: 'custom',
             customPolicy: {
               dispatchMinDays: 2,
               dispatchMaxDays: 3,
@@ -977,7 +976,6 @@ describe('CakePageClient', () => {
                 ]
               }
             ],
-            policySource: 'custom',
             customPolicy: {
               dispatchMinDays: 2,
               dispatchMaxDays: 3,
@@ -1087,5 +1085,78 @@ describe('CakePageClient', () => {
     const deliveryContent = deliverySection?.content as React.ReactElement<{ value: unknown }>
 
     expect(deliveryContent.props.value).toEqual(customDeliveryDescription)
+  })
+
+  it('prefers ingredient reference rich text over legacy arrays in the ingredients section', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          ingredientReference: {
+            _id: 'ingredient-1',
+            ingredients: [
+              {
+                _type: 'block',
+                style: 'normal',
+                children: [
+                  {
+                    _type: 'span',
+                    text: 'Reference ingredient copy'
+                  }
+                ]
+              }
+            ]
+          }
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Reference ingredient copy')).toBeInTheDocument()
+    expect(screen.queryByText('Flour')).not.toBeInTheDocument()
+    expect(screen.queryByText('Allergens')).not.toBeInTheDocument()
+  })
+
+  it('falls back to legacy ingredient and allergen arrays when no ingredient reference exists', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          ingredientReference: undefined
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Flour')).toBeInTheDocument()
+    expect(screen.getByText('Honey')).toBeInTheDocument()
+    expect(screen.getByText('Cream')).toBeInTheDocument()
+    expect(screen.getByText('Allergens')).toBeInTheDocument()
+    expect(screen.getByText('Gluten')).toBeInTheDocument()
+  })
+
+  it('shows the generic ingredients fallback only when both reference and legacy arrays are empty', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          ingredientReference: undefined,
+          ingredients: [],
+          allergens: []
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Ingredient details are available on request before ordering.')).toBeInTheDocument()
   })
 })

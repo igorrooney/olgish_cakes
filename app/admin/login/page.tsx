@@ -41,7 +41,7 @@ export default function AdminLogin() {
       if (response.ok) {
         // Store auth token in localStorage
         localStorage.setItem('admin_token', data.token);
-        router.push('/admin/blog');
+        router.push('/admin');
       } else {
         setError(data.error || 'Invalid credentials');
       }
@@ -62,7 +62,7 @@ export default function AdminLogin() {
               Admin Login
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Access the blog management system
+              Access the admin dashboard and Sanity publishing tools
             </Typography>
           </Box>
 

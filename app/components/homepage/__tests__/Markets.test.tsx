@@ -108,7 +108,7 @@ describe('Markets', () => {
       createMarket({
         _id: 'market-1',
         title: 'Market 1',
-        date: '2026-04-01'
+        date: '2099-04-01'
       })
     ])
 

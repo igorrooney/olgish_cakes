@@ -147,6 +147,51 @@ describe('/api/revalidate', () => {
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })
 
+  it('revalidates article detail and archive paths for article updates', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'article',
+        slug: {
+          current: 'cake-by-post-guide'
+        }
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/blog/cake-by-post-guide')
+    expect(revalidatePath).toHaveBeenCalledWith('/blog')
+    expect(revalidateTag).toHaveBeenCalledWith('articles', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('article', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
+  it('revalidates the archive when article topics change', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'articleTopic'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/blog')
+    expect(revalidateTag).toHaveBeenCalledWith('articles', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
   it('revalidates category landing pages for collection updates', async () => {
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',

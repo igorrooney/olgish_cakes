@@ -25,7 +25,7 @@ const ORDERABLE_DOCUMENT_QUERY: Record<OrderableDocumentType, string> = {
   cake: `*[_type == "cake"] | order(order asc, _createdAt desc, name asc) {
     _id
   }`,
-  giftHamper: `*[_type == "giftHamper"] | order(order asc, _createdAt desc, name asc) {
+  giftHamper: `*[_type == "giftHamper"] | order(name asc, _createdAt desc) {
     _id
   }`
 }

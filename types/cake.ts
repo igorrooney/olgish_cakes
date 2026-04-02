@@ -49,19 +49,22 @@ export interface CakeSEO {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
-  canonicalUrl?: string;
 }
 
 export interface CakeStructuredData {
   enableProductSchema?: boolean;
-  brand?: string;
-  availability?: "InStock" | "OutOfStock" | "PreOrder" | "Discontinued";
 }
 
 export interface CakeCollection {
   _id: string;
   name: string;
   isFeatured?: boolean;
+}
+
+export interface CakeIngredientReference {
+  _id: string
+  cakeName?: string
+  ingredients: RichTextBlock[]
 }
 
 export type CakeDeliveryDescriptionSource = 'global' | 'custom'
@@ -142,6 +145,7 @@ export interface Cake {
   collections?: CakeCollection[];
   ingredients: string[];
   allergens?: string[];
+  ingredientReference?: CakeIngredientReference
   structuredData?: CakeStructuredData;
   order?: number;
   isBestseller?: boolean;

@@ -15,6 +15,11 @@ import path from 'path';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import {
+  BACKUP_ASSET_QUERY,
+  BACKUP_DOCUMENT_QUERY,
+  createBackupClientConfig
+} from './backup-document-scope.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,13 +48,7 @@ async function createBackup() {
     throw new Error('Missing required Sanity configuration');
   }
 
-  const client = createClient({
-    projectId: config.projectId,
-    dataset: config.dataset,
-    token: config.token,
-    apiVersion: config.apiVersion,
-    useCdn: false
-  });
+  const client = createClient(createBackupClientConfig(config));
 
   // Create backup directory
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -70,16 +69,14 @@ async function createBackup() {
   // Fetch documents (unless assets-only)
   if (!assetsOnly) {
     console.log('📄 Fetching all documents...');
-    const query = `*[_type in ["cake", "giftHamper", "testimonial", "faq", "marketSchedule", "blogPost"]] | order(_createdAt desc)`;
-    documents = await client.fetch(query);
+    documents = await client.fetch(BACKUP_DOCUMENT_QUERY);
     console.log(`✅ Found ${documents.length} documents`);
   }
 
   // Fetch and download assets (if requested)
   if (includeAssets || assetsOnly) {
     console.log('🖼️  Fetching all assets...');
-    const assetsQuery = `*[_type == "sanity.imageAsset" || _type == "sanity.fileAsset"] | order(_createdAt desc)`;
-    assets = await client.fetch(assetsQuery);
+    assets = await client.fetch(BACKUP_ASSET_QUERY);
     console.log(`✅ Found ${assets.length} assets`);
 
     // Create assets directory

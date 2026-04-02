@@ -1,1118 +1,630 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
-import { groq } from "next-sanity";
-import { urlFor } from "@/sanity/lib/image";
-import { PortableText } from "@portabletext/react";
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ViewTracker } from "@/app/components/ViewTracker";
-import { RelatedPosts } from "@/app/components/RelatedPosts";
-import { CategoryLinks } from "@/app/components/CategoryLinks";
-import { getRelatedPosts, getBlogPost, getBlogCategories } from "@/lib/sanity-blog";
+import { notFound } from "next/navigation";
+import { cache, Suspense, type ComponentProps } from "react";
+import { BUSINESS_CONSTANTS } from "@/lib/constants";
+import { normalizeCmsTitle } from "@/lib/metadata";
+import {
+  extractArticleTableOfContents,
+  formatArticleDate,
+  getArticleBySlug,
+  getArticleCardImageUrl,
+  getArticleHref,
+  getArticleMetadataImageUrl,
+  getArticleReadingTime,
+  getSanityCdnImageUrl,
+  getArticleSlugs,
+  getArticleTopicTitle,
+  getArticleVisibleImageUrl,
+  hasMaterialArticleUpdate,
+  getProductHref,
+  getRelatedArticles,
+  isSanityCdnImageUrl,
+  isArticleProductPostableToUk,
+  type ArticleProduct,
+  type ArticleTableOfContentsItem,
+  toJsonLdScript,
+} from "@/lib/articles";
+import {
+  getArticleClosingCtaCopy,
+  getArticleCommerceCopy,
+  getArticleFaqCopy,
+  getRelatedArticlesCopy,
+} from "../copy";
+import { ArticlePortableText } from "../ArticlePortableText";
+import { BlogBackLink } from "../BlogBackLink";
+import { BlogBackLinkBase } from "../BlogBackLinkBase";
 
-// Simple markdown parser function
-function parseMarkdown(content: string) {
-  // Helper function to process inline formatting
-  const processInlineFormatting = (text: string) => {
-    // Check if the entire text is wrapped in bold markers
-    const isBoldWrapped = text.startsWith('**') && text.endsWith('**');
+interface BlogArticlePageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
 
-    // First split by links to handle them separately
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    const parts = text.split(linkRegex);
+function ArticlePageLink(props: ComponentProps<typeof Link>) {
+  return <Link {...props} prefetch={false} />;
+}
 
-    const result = parts.map((part, index) => {
-      // Check if this part is a link text (odd indices after splitting by linkRegex)
-      if (index % 3 === 1) {
-        const url = parts[index + 1];
-        return (
-          <Link
-            key={index}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`External link: ${text} (opens in new tab)`}
-            style={{
-              color: "#2E3192",
-              textDecoration: "underline",
-              fontWeight: 600,
-            }}
-          >
-            {part}
-          </Link>
-        );
-      }
-      // Check if this part is a URL (even indices after splitting by linkRegex, but skip the text)
-      if (index % 3 === 2) {
-        return null; // Skip URL parts as they're handled with the text
-      }
-      // Regular text - process for bold formatting
-      if (part) {
-        // If the entire text is bold-wrapped, treat all parts as bold
-        if (isBoldWrapped) {
-          // Remove leading ** from first part and trailing ** from last part
-          let processedPart = part;
-          if (index === 0) {
-            processedPart = part.replace(/^\*\*/, '');
-          }
-          if (index === parts.length - 1) {
-            processedPart = processedPart.replace(/\*\*$/, '');
-          }
+const getArticlePageData = cache(async (slug: string) => {
+  const article = await getArticleBySlug(slug);
 
-          return (
-            <Box key={index} component="strong" sx={{ fontWeight: 600 }}>
-              {processedPart}
-            </Box>
-          );
-        } else {
-          // Normal bold processing
-          const boldParts = part.split(/(\*\*[^*]+\*\*)/g);
-          return boldParts.map((boldPart, boldIndex) => {
-            if (boldPart.startsWith('**') && boldPart.endsWith('**')) {
-              const boldText = boldPart.slice(2, -2);
-              return (
-                <Box key={`${index}-${boldIndex}`} component="strong" sx={{ fontWeight: 600 }}>
-                  {boldText}
-                </Box>
-              );
-            }
-            return boldPart;
-          });
-        }
-      }
-      return part;
-    }).filter(Boolean);
+  if (!article) {
+    return null;
+  }
 
-    return result;
+  const [relatedArticles] = await Promise.all([
+    getRelatedArticles(article._id, article.topic?.slug, 3),
+  ]);
+
+  return {
+    article,
+    relatedArticles,
+    tableOfContents: extractArticleTableOfContents(article.body),
   };
+});
 
-  const lines = content.split('\n');
-  const elements: React.JSX.Element[] = [];
-  let currentList: React.JSX.Element[] = [];
+function getArticlePrimaryCtaLabel(featuredProduct: ArticleProduct) {
+  if (isArticleProductPostableToUk(featuredProduct)) {
+    return "See this cake by post";
+  }
 
-  lines.forEach((line, index) => {
-    // Headers
-    if (line.startsWith('### ')) {
-      if (currentList.length > 0) {
-        elements.push(
-          <Box key={`list-${index}`} component="ul" sx={{ pl: 3, mb: 2 }}>
-            {currentList}
-          </Box>
-        );
-        currentList = [];
-      }
-      elements.push(
-        <Typography
-          key={index}
-          variant="h5"
-          sx={{
-            color: "#2E3192",
-            fontWeight: 600,
-            mb: 2,
-            mt: 2,
-            fontSize: { xs: "1.1rem", md: "1.25rem" },
-          }}
-        >
-          {processInlineFormatting(line.replace('### ', ''))}
-        </Typography>
-      );
-    } else if (line.startsWith('## ')) {
-      if (currentList.length > 0) {
-        elements.push(
-          <Box key={`list-${index}`} component="ul" sx={{ pl: 3, mb: 2 }}>
-            {currentList}
-          </Box>
-        );
-        currentList = [];
-      }
-      elements.push(
-        <Typography
-          key={index}
-          variant="h4"
-          sx={{
-            color: "#2E3192",
-            fontWeight: 600,
-            mb: 2,
-            mt: 3,
-            fontSize: { xs: "1.25rem", md: "1.5rem" },
-          }}
-        >
-          {processInlineFormatting(line.replace('## ', ''))}
-        </Typography>
-      );
-    } else if (line.startsWith('# ')) {
-      if (currentList.length > 0) {
-        elements.push(
-          <Box key={`list-${index}`} component="ul" sx={{ pl: 3, mb: 2 }}>
-            {currentList}
-          </Box>
-        );
-        currentList = [];
-      }
-      elements.push(
-        <Typography
-          key={index}
-          variant="h3"
-          sx={{
-            color: "#2E3192",
-            fontWeight: 600,
-            mb: 2,
-            mt: 4,
-            fontSize: { xs: "1.5rem", md: "2rem" },
-          }}
-        >
-          {processInlineFormatting(line.replace('# ', ''))}
-        </Typography>
-      );
-    } else if (line.startsWith('- ')) {
-      // Unordered lists
-      currentList.push(
-        <Box key={index} component="li" sx={{ mb: 1 }}>
-          <Typography
-            variant="body1"
-            sx={{
-              lineHeight: 1.7,
-              color: "#374151",
-              fontSize: "1rem",
-            }}
-          >
-            {processInlineFormatting(line.replace('- ', ''))}
-          </Typography>
-        </Box>
-      );
-    } else if (/^\d+\.\s/.test(line)) {
-      // Numbered lists
-      currentList.push(
-        <Box key={index} component="li" sx={{ mb: 1 }}>
-          <Typography
-            variant="body1"
-            sx={{
-              lineHeight: 1.7,
-              color: "#374151",
-              fontSize: "1rem",
-            }}
-          >
-            {processInlineFormatting(line.replace(/^\d+\.\s/, ''))}
-          </Typography>
-        </Box>
-      );
-    } else if (line.trim() === '') {
-      // Empty lines
-      if (currentList.length > 0) {
-        elements.push(
-          <Box key={`list-${index}`} component="ul" sx={{ pl: 3, mb: 2 }}>
-            {currentList}
-          </Box>
-        );
-        currentList = [];
-      }
-      elements.push(<Box key={index} sx={{ mb: 1 }} />);
-    } else {
-      // Regular paragraphs
-      if (currentList.length > 0) {
-        elements.push(
-          <Box key={`list-${index}`} component="ul" sx={{ pl: 3, mb: 2 }}>
-            {currentList}
-          </Box>
-        );
-        currentList = [];
-      }
-      elements.push(
-        <Typography
-          key={index}
-          variant="body1"
-          sx={{
-            mb: 2,
-            lineHeight: 1.7,
-            color: "#374151",
-            fontSize: "1rem",
-          }}
-        >
-          {processInlineFormatting(line)}
-        </Typography>
-      );
-    }
-  });
+  return featuredProduct._type === "cake" ? "See this custom cake" : "See this cake";
+}
 
-  // Add any remaining list items
-  if (currentList.length > 0) {
-    elements.push(
-      <Box key="final-list" component="ul" sx={{ pl: 3, mb: 2 }}>
-        {currentList}
-      </Box>
+function ArticleHeroImage({
+  imageUrl,
+  imageAlt,
+  title,
+}: {
+  imageUrl?: string;
+  imageAlt?: string;
+  title: string;
+}) {
+  if (!imageUrl) {
+    return null;
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-[30px] border border-primary-100/70 bg-base-100 shadow-[0_16px_36px_rgba(97,39,0,0.08)]">
+      <div className="relative aspect-[16/9]">
+        <Image
+          src={imageUrl}
+          alt={imageAlt || title}
+          fill
+          loading="eager"
+          fetchPriority="high"
+          unoptimized={isSanityCdnImageUrl(imageUrl)}
+          sizes="(min-width: 1280px) 1060px, 100vw"
+          className="object-cover"
+        />
+      </div>
+    </div>
+  );
+}
+
+function ArticleTableOfContentsCard({
+  items,
+  className = "",
+  heading = "On this page",
+}: {
+  items: ArticleTableOfContentsItem[];
+  className?: string;
+  heading?: string | null;
+}) {
+  return (
+    <div
+      className={`rounded-[24px] bg-[linear-gradient(135deg,var(--color-base-100),rgba(255,250,244,0.86))] p-5 shadow-[0_10px_24px_rgba(97,39,0,0.05)] ${className}`.trim()}
+    >
+      {heading ? (
+        <p className="font-sans text-sm uppercase tracking-[0.16em] text-base-content/75">
+          {heading}
+        </p>
+      ) : null}
+      <ul className="mt-4 space-y-3">
+        {items.map(item => (
+          <li key={item.id}>
+            <a
+              href={`#${item.id}`}
+              className="font-sans text-sm leading-6 text-base-content/80 transition-colors hover:text-primary-500"
+            >
+              {item.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function RelatedArticleMedia({
+  imageUrl,
+  imageAlt,
+  topicTitle,
+}: {
+  imageUrl?: string;
+  imageAlt?: string;
+  topicTitle: string;
+}) {
+  if (imageUrl) {
+    return (
+      <div className="relative aspect-[4/3] bg-base-200">
+        <Image
+          src={imageUrl}
+          alt={imageAlt || topicTitle}
+          fill
+          unoptimized={isSanityCdnImageUrl(imageUrl)}
+          sizes="(min-width: 1280px) 320px, (min-width: 1024px) calc(50vw - 3rem), calc(100vw - 3rem)"
+          className="object-cover"
+        />
+      </div>
     );
   }
 
-  return elements;
+  return null;
 }
 
-// PortableText components configuration
-const portableTextComponents = {
-  types: {
-    image: ({ value }: any) => {
-      const getImageDimensions = (size: string) => {
-        switch (size) {
-          case 'small':
-            return { width: 400, height: 300, maxWidth: '300px' };
-          case 'medium':
-            return { width: 800, height: 500, maxWidth: '600px' };
-          case 'large':
-            return { width: 1200, height: 600, maxWidth: '800px' };
-          case 'full':
-            return { width: 1400, height: 700, maxWidth: '100%' };
-          default:
-            return { width: 800, height: 500, maxWidth: '600px' };
-        }
-      };
+function RelatedArticleCard({
+  article,
+}: {
+  article: Awaited<ReturnType<typeof getRelatedArticles>>[number];
+}) {
+  const imageUrl = getSanityCdnImageUrl(getArticleCardImageUrl(article), {
+    width: 720,
+    height: 540,
+    fit: "crop",
+    quality: 80,
+  });
+  const imageAlt = article.cardImage?.alt || article.coverImage?.alt || article.title;
 
-      const dimensions = getImageDimensions(value.size || 'medium');
+  return (
+    <article className="h-full">
+      <ArticlePageLink
+        href={getArticleHref(article.slug)}
+        className="group flex h-full flex-col gap-4 rounded-[24px] bg-transparent p-2 transition-colors duration-200 hover:bg-primary-50/25 hover:[&_h3]:text-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-500"
+      >
+        {imageUrl ? (
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[22px] bg-base-200 shadow-[0_18px_40px_rgba(97,39,0,0.08)]">
+            <RelatedArticleMedia
+              imageUrl={imageUrl}
+              imageAlt={imageAlt}
+              topicTitle={getArticleTopicTitle(article)}
+            />
+          </div>
+        ) : null}
+        <div className={`flex flex-1 flex-col gap-4 pb-2 ${imageUrl ? "" : "pt-2"}`}>
+          <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/62">
+            <span className="inline-flex items-center border-b border-primary-300 pb-1 font-semibold text-primary-700">
+              {getArticleTopicTitle(article)}
+            </span>
+            <span>{formatArticleDate(article.publishedAt)}</span>
+          </div>
+          <div className="space-y-3">
+            <h3 className="font-oldenburg text-[1.78rem] leading-[1.06] tracking-[0.018em] text-primary-800 transition-colors group-hover:text-primary-500">
+              {article.title}
+            </h3>
+            <p className="max-w-[36ch] font-body text-[16px] leading-8 tracking-[0.01em] text-base-content/80 tablet:text-[17px]">
+              {article.summary}
+            </p>
+          </div>
+        </div>
+      </ArticlePageLink>
+    </article>
+  );
+}
 
-      return (
-        <Box sx={{
-          my: 4,
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}>
-          <Image
-            src={urlFor(value).width(dimensions.width).height(dimensions.height).url()}
-            alt={value.alt || 'Blog image'}
-            width={dimensions.width}
-            height={dimensions.height}
-            style={{
-              borderRadius: value.size === 'full' ? '0' : '12px',
-              maxWidth: dimensions.maxWidth,
-              width: '100%',
-              height: 'auto',
-              boxShadow: value.size === 'full' ? 'none' : '0 8px 32px rgba(0,0,0,0.1)',
-            }}
-            sizes={value.size === 'full'
-              ? '100vw'
-              : '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px'
-            }
-          />
-          {value.caption && (
-            <Typography
-              variant="body2"
-              sx={{
-                mt: 2,
-                color: '#64748b',
-                fontStyle: 'italic',
-                fontSize: '0.9rem',
-                maxWidth: dimensions.maxWidth,
-              }}
-            >
-              {value.caption}
-            </Typography>
-          )}
-        </Box>
-      );
-    },
-  },
-  block: {
-    h2: ({ children }: any) => (
-      <Typography
-        variant="h3"
-        sx={{
-          color: "#2E3192",
-          fontWeight: 600,
-          mb: 2,
-          mt: 4,
-          fontSize: { xs: "1.5rem", md: "2rem" },
-        }}
-      >
-        {children}
-      </Typography>
-    ),
-    h3: ({ children }: any) => (
-      <Typography
-        variant="h4"
-        sx={{
-          color: "#2E3192",
-          fontWeight: 600,
-          mb: 2,
-          mt: 3,
-          fontSize: { xs: "1.25rem", md: "1.5rem" },
-        }}
-      >
-        {children}
-      </Typography>
-    ),
-    h4: ({ children }: any) => (
-      <Typography
-        variant="h5"
-        sx={{
-          color: "#2E3192",
-          fontWeight: 600,
-          mb: 2,
-          mt: 2,
-          fontSize: { xs: "1.1rem", md: "1.25rem" },
-        }}
-      >
-        {children}
-      </Typography>
-    ),
-    normal: ({ children }: any) => (
-      <Typography
-        variant="body1"
-        sx={{
-          mb: 2,
-          lineHeight: 1.7,
-          color: "#374151",
-          fontSize: "1rem",
-        }}
-      >
-        {children}
-      </Typography>
-    ),
-  },
-  list: {
-    bullet: ({ children }: any) => (
-      <Box component="ul" sx={{ pl: 3, mb: 2 }}>
-        {children}
-      </Box>
-    ),
-    number: ({ children }: any) => (
-      <Box component="ol" sx={{ pl: 3, mb: 2 }}>
-        {children}
-      </Box>
-    ),
-  },
-  listItem: {
-    bullet: ({ children }: any) => (
-      <Box component="li" sx={{ mb: 1 }}>
-        {children}
-      </Box>
-    ),
-    number: ({ children }: any) => (
-      <Box component="li" sx={{ mb: 1 }}>
-        {children}
-      </Box>
-    ),
-  },
-  marks: {
-    strong: ({ children }: any) => (
-      <Box component="strong" sx={{ fontWeight: 600 }}>
-        {children}
-      </Box>
-    ),
-    em: ({ children }: any) => (
-      <Box component="em" sx={{ fontStyle: 'italic' }}>
-        {children}
-      </Box>
-    ),
-    link: ({ children, value }: any) => (
-      <Link
-        href={value.href}
-        style={{
-          color: "#2E3192",
-          textDecoration: "underline",
-        }}
-      >
-        {children}
-      </Link>
-    ),
-  },
-};
-import Image from "next/image";
-import {
-  Button,
-  Typography,
-  Card,
-  CardContent,
-  Chip,
-  Box,
-  Container,
-  Avatar,
-  Divider,
-  Stack,
-  Paper,
-  Grid,
-} from "@mui/material";
-import { Breadcrumbs } from "../../components/Breadcrumbs";
-
-// Generate static params for all blog posts at build time
 export async function generateStaticParams() {
-  const query = groq`*[_type == "blogPost" && status == "published" && defined(slug.current)] {
-    "slug": slug.current
-  }`;
+  const slugs = await getArticleSlugs();
 
-  try {
-    const config = getCacheConfig('blogPosts')
-    const posts = await cachedSanityFetch<Array<{ slug: string }>>(query, {}, config)
-    return posts.map((post: { slug: string }) => ({
-      slug: post.slug,
-    }));
-  } catch (error) {
-    console.error("Error generating static params for blog posts:", error);
-    return [];
-  }
+  return slugs.map(slug => ({ slug }));
 }
 
-interface BlogPost {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  excerpt: string;
-  content: any;
-  publishDate: string;
-  author: {
-    name: string;
-    image?: any;
-  };
-  category: string;
-  featuredImage?: any;
-  readTime: string;
-  seoTitle?: string;
-  seoDescription?: string;
-}
-
-interface BlogPostPageProps {
-  params: Promise<{ slug: string }>;
-}
-
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: BlogArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPost(slug);
+  const data = await getArticlePageData(slug);
 
-  if (!post) {
+  if (!data) {
     return {
-      title: "Blog Post Not Found",
-      description: "The requested blog post could not be found.",
+      title: "Article not found",
+      description: "The requested article could not be found.",
     };
   }
 
-  // Type assertion after null check
-  const blogPost = post as any;
-
-  const imageUrl = blogPost.featuredImage
-    ? urlFor(blogPost.featuredImage).url()
-    : "/images/placeholder-cake.jpg";
+  const { article } = data;
+  const imageUrl =
+    getArticleMetadataImageUrl(article) ||
+    `${BUSINESS_CONSTANTS.BASE_URL}/images/olgish-cakes-logo-bakery-brand.png`;
+  const canonicalUrl =
+    article.seo?.canonicalUrl || `${BUSINESS_CONSTANTS.BASE_URL}${getArticleHref(article.slug)}`;
+  const description = article.seo?.metaDescription || article.dek || article.summary;
+  const metadataTitle = normalizeCmsTitle(article.seo?.metaTitle || article.title) || article.title;
+  const modifiedAt = article.editorialUpdatedAt;
+  const hasMaterialUpdate = hasMaterialArticleUpdate(article.publishedAt, modifiedAt);
 
   return {
-    title: blogPost.seoTitle || `${blogPost.title} | Olgish Cakes Blog`,
-    description: blogPost.seoDescription || blogPost.excerpt,
-    keywords: blogPost.keywords ? (Array.isArray(blogPost.keywords) ? blogPost.keywords.join(", ") : blogPost.keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes, wedding cakes, professional baker",
+    title: metadataTitle,
+    description,
+    keywords: article.seo?.keywords?.join(", "),
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: blogPost.title,
-      description: blogPost.excerpt,
+      title: metadataTitle,
+      description,
       type: "article",
-      publishedTime: blogPost.publishDate,
-      authors: [blogPost.author?.name || "Olga"],
+      url: canonicalUrl,
+      siteName: BUSINESS_CONSTANTS.NAME,
+      publishedTime: article.publishedAt,
+      ...(hasMaterialUpdate && modifiedAt ? { modifiedTime: modifiedAt } : {}),
       images: [
         {
           url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: blogPost.title,
+          alt:
+            article.coverImage?.alt ||
+            article.cardImage?.alt ||
+            article.primaryProduct?.image?.alt ||
+            article.title,
         },
       ],
-      siteName: "Olgish Cakes",
-      locale: "en_GB",
     },
     twitter: {
       card: "summary_large_image",
-      title: blogPost.title,
-      description: blogPost.excerpt,
+      title: metadataTitle,
+      description,
       images: [imageUrl],
-      creator: "@olgishcakes",
-      site: "@olgishcakes",
-    },
-    alternates: {
-      canonical: `https://olgishcakes.co.uk/blog/${slug}`,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
     },
   };
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
   const { slug } = await params;
-  const post = await getBlogPost(slug);
+  const data = await getArticlePageData(slug);
 
-  if (!post) {
+  if (!data) {
     notFound();
   }
 
-  const relatedPosts = await getRelatedPosts(post._id, post.category, 3);
-  const categories = await getBlogCategories();
-  const imageUrl = post.featuredImage
-    ? urlFor(post.featuredImage).url()
-    : "/images/placeholder-cake.jpg";
-
-  const structuredData = {
+  const { article, relatedArticles, tableOfContents } = data;
+  const visibleImageUrl = getArticleVisibleImageUrl(article);
+  const renderedVisibleImageUrl = getSanityCdnImageUrl(visibleImageUrl, {
+    width: 1440,
+    height: 810,
+    fit: "crop",
+    quality: 82,
+  });
+  const readingTime = getArticleReadingTime(article.body);
+  const showTableOfContents = tableOfContents.length >= 3;
+  const faqItems = (article.faqItems ?? []).filter(
+    item => item.question.trim().length > 0 && item.answer.trim().length > 0
+  );
+  const featuredProduct = article.primaryProduct ?? article.relatedProducts?.[0];
+  const featuredProductImageUrl = getSanityCdnImageUrl(featuredProduct?.image?.asset?.url, {
+    width: 480,
+    height: 600,
+    fit: "crop",
+    quality: 82,
+  });
+  const articleCommerceCopy = getArticleCommerceCopy(featuredProduct);
+  const articleFaqCopy = getArticleFaqCopy(article.topic?.slug);
+  const relatedArticlesCopy = getRelatedArticlesCopy(article.topic?.slug);
+  const closingCtaCopy = getArticleClosingCtaCopy();
+  const canonicalUrl =
+    article.seo?.canonicalUrl || `${BUSINESS_CONSTANTS.BASE_URL}${getArticleHref(article.slug)}`;
+  const modifiedAt = article.editorialUpdatedAt;
+  const showVisibleUpdatedDate = hasMaterialArticleUpdate(article.publishedAt, modifiedAt);
+  const articleStructuredData = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
-    image: imageUrl,
+    "@type": "Article",
+    headline: article.title,
+    description: article.dek,
+    image: visibleImageUrl ? [visibleImageUrl] : undefined,
+    datePublished: article.publishedAt,
+    ...(showVisibleUpdatedDate && modifiedAt ? { dateModified: modifiedAt } : {}),
+    articleSection: getArticleTopicTitle(article),
+    mainEntityOfPage: canonicalUrl,
     author: {
       "@type": "Person",
-      name: post.author?.name || "Olga",
-      url: "https://olgishcakes.co.uk/about",
-      jobTitle: "Professional Baker",
-      worksFor: {
-        "@type": "Organization",
-        name: "Olgish Cakes"
-      }
+      name: "Olga",
+      jobTitle: "Founder and baker",
+      url: `${BUSINESS_CONSTANTS.BASE_URL}/about`,
+      sameAs: ["https://www.instagram.com/olgish_cakes/"],
     },
     publisher: {
       "@type": "Organization",
-      name: "Olgish Cakes",
-      url: "https://olgishcakes.co.uk",
+      name: BUSINESS_CONSTANTS.NAME,
       logo: {
         "@type": "ImageObject",
-        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-        width: 200,
-        height: 60
+        url: `${BUSINESS_CONSTANTS.BASE_URL}/images/olgish-cakes-logo-bakery-brand.png`,
       },
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Allerton Grange",
-        addressLocality: "Leeds",
-        addressRegion: "West Yorkshire",
-        postalCode: "LS17",
-        addressCountry: "GB"
-      }
     },
-    datePublished: post.publishDate,
-    dateModified: post.publishDate,
-    wordCount: post.content ? post.content.length : 0,
-    timeRequired: `PT${post.readTime}M`,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://olgishcakes.co.uk/blog/${slug}`,
-    },
-    articleBody: post.content ? post.content : post.excerpt,
-    keywords: (post as any).keywords ? (Array.isArray((post as any).keywords) ? (post as any).keywords.join(", ") : (post as any).keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
-    inLanguage: "en-GB",
-    isPartOf: {
-      "@type": "Blog",
-      name: "Olgish Cakes Blog",
-      url: "https://olgishcakes.co.uk/blog"
-    }
+    keywords: article.seo?.keywords?.join(", "),
   };
-
   const breadcrumbStructuredData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://olgishcakes.co.uk"
+        position: 1,
+        name: "Home",
+        item: BUSINESS_CONSTANTS.BASE_URL,
       },
       {
         "@type": "ListItem",
-        "position": 2,
-        "name": "Blog",
-        "item": "https://olgishcakes.co.uk/blog"
+        position: 2,
+        name: "Articles",
+        item: `${BUSINESS_CONSTANTS.BASE_URL}/blog`,
       },
       {
         "@type": "ListItem",
-        "position": 3,
-        "name": post.title,
-        "item": `https://olgishcakes.co.uk/blog/${slug}`
-      }
-    ]
+        position: 3,
+        name: article.title,
+        item: canonicalUrl,
+      },
+    ],
   };
-
-  // Image structured data for better image search
-  const imageStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "ImageGallery",
-    "name": `${post.title} - Image Gallery`,
-    "description": `Images related to ${post.title}`,
-    "url": `https://olgishcakes.co.uk/blog/${slug}`,
-    "mainEntity": {
-      "@type": "ImageObject",
-      "contentUrl": imageUrl,
-      "name": post.title,
-      "description": post.excerpt,
-      "caption": post.featuredImage?.alt || post.title,
-      "creator": {
-        "@type": "Person",
-        "name": post.author?.name || "Olga"
-      },
-      "creditText": `Photography by Olgish Cakes - Professional Ukrainian Bakery in Leeds`,
-      "copyrightNotice": `© ${new Date().getFullYear()} Olgish Cakes. All rights reserved. Traditional Ukrainian honey cake photography.`,
-      "copyrightHolder": {
-        "@type": "Organization",
-        "name": "Olgish Cakes"
-      },
-      "license": "https://olgishcakes.co.uk/terms",
-      "acquireLicensePage": "https://olgishcakes.co.uk/contact",
-      "thumbnailUrl": imageUrl,
-      "width": "1200",
-      "height": "630",
-      "encodingFormat": "image/jpeg",
-      "isFamilyFriendly": true,
-      "keywords": (post as any).keywords ? (Array.isArray((post as any).keywords) ? (post as any).keywords.join(", ") : (post as any).keywords) : "Ukrainian cakes, honey cake, Leeds bakery, custom cakes",
-      "datePublished": post.publishDate,
-      "dateModified": post.publishDate
-    }
-  };
+  const faqStructuredData =
+    faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map(item => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
 
   return (
-    <>
-      <ViewTracker postId={post._id} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageStructuredData) }}
-      />
-      <Box
-        sx={{
-          background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)",
-          minHeight: "100vh",
-          py: { xs: 4, md: 8 },
-        }}
-      >
-        <Container maxWidth="lg">
-          {/* Breadcrumbs */}
-          <Box sx={{ mb: 4 }}>
-            <Breadcrumbs
-              items={[
-                { label: "Home", href: "/" },
-                { label: "Blog", href: "/blog" },
-                { label: post.title, href: `/blog/${slug}` },
-              ]}
-            />
-          </Box>
+    <main className="min-h-screen bg-base-100 text-base-content [font-family:var(--font-inter)]">
+      <section className="mx-auto flex w-full max-w-[1180px] flex-col gap-8 px-4 pb-20 pt-8 tablet:px-10 tablet:pt-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: toJsonLdScript(articleStructuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: toJsonLdScript(breadcrumbStructuredData) }}
+        />
+        {faqStructuredData ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: toJsonLdScript(faqStructuredData) }}
+          />
+        ) : null}
 
-          {/* Back to Blog Button */}
-          <Box sx={{ mb: 4 }}>
-            <Link href="/blog" style={{ textDecoration: 'none' }}>
-              <Button variant="outlined"
-              startIcon={
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M19 12H5M12 19L5 12L12 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+        <Suspense fallback={<BlogBackLinkBase href="/blog" />}>
+          <BlogBackLink />
+        </Suspense>
+
+        <section className="relative space-y-4 overflow-visible tablet:space-y-5">
+          <div className="relative">
+            <header className="flex flex-col gap-5 pt-1">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/62">
+                  <span className="inline-flex items-center border-b border-primary-300 pb-1 font-semibold text-primary-700">
+                    {getArticleTopicTitle(article)}
+                  </span>
+                  <time dateTime={article.publishedAt}>
+                    Published {formatArticleDate(article.publishedAt)}
+                  </time>
+                  {showVisibleUpdatedDate && modifiedAt ? (
+                    <time dateTime={modifiedAt}>
+                      Last updated {formatArticleDate(modifiedAt)}
+                    </time>
+                  ) : null}
+                  <span>{readingTime} min read</span>
+                </div>
+                <div className="space-y-2 tablet:space-y-3">
+                  <p className="font-moreSugar text-[0.9rem] uppercase tracking-[0.18em] text-primary-500 tablet:text-sm">
+                    From Olga&apos;s archive
+                  </p>
+                  <h1 className="w-full font-oldenburg text-[2.15rem] leading-[1.01] tracking-[0.015em] text-primary-800 tablet:text-[3.6rem]">
+                    {article.title}
+                  </h1>
+                  <p className="w-full font-body text-[17px] leading-7 tracking-[0.01em] text-base-content/80 tablet:text-[23px] tablet:leading-8">
+                    {article.dek}
+                  </p>
+                </div>
+              </div>
+            </header>
+          </div>
+          {renderedVisibleImageUrl ? (
+            <div className="relative">
+              <ArticleHeroImage
+                imageUrl={renderedVisibleImageUrl}
+                imageAlt={article.coverImage?.alt || article.cardImage?.alt || article.title}
+                title={article.title}
+              />
+            </div>
+          ) : null}
+        </section>
+
+        <section className="grid gap-10 small-laptop:grid-cols-[220px_minmax(0,1fr)]">
+          {showTableOfContents ? (
+            <aside
+              data-testid="article-toc-desktop"
+              className="hidden small-laptop:sticky small-laptop:top-28 small-laptop:block small-laptop:h-fit"
+            >
+              <ArticleTableOfContentsCard items={tableOfContents} />
+            </aside>
+          ) : null}
+
+          <div className="space-y-8 tablet:space-y-10">
+            {showTableOfContents ? (
+              <details
+                data-testid="article-toc-mobile"
+                className="rounded-[20px] bg-[linear-gradient(180deg,var(--color-base-100),rgba(255,250,244,0.72))] p-4 shadow-[0_6px_16px_rgba(97,39,0,0.04)] small-laptop:hidden"
+              >
+                <summary className="cursor-pointer list-none font-sans text-sm font-semibold uppercase tracking-[0.16em] text-primary-800 [&::-webkit-details-marker]:hidden">
+                  Jump to section
+                </summary>
+                <div className="mt-4">
+                  <ArticleTableOfContentsCard
+                    items={tableOfContents}
+                    heading={null}
+                    className="border-0 bg-transparent p-0 shadow-none"
                   />
-                </svg>
-              }
-              sx={{
-                borderColor: "#2E3192",
-                color: "#2E3192",
-                px: 3,
-                py: 1.5,
-                fontSize: "0.95rem",
-                fontWeight: 500,
-                borderRadius: 2,
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "#2E3192",
-                  color: "white",
-                  borderColor: "#2E3192",
-                },
-                transition: "all 0.3s ease",
-              }}
-            >
-              Back to Blog
-            </Button>
-            </Link>
-          </Box>
+                </div>
+              </details>
+            ) : null}
 
-          <Box sx={{ maxWidth: "800px", mx: "auto" }}>
-            {/* Article Header */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 4, md: 6 },
-                mb: 6,
-                borderRadius: 4,
-                border: "1px solid #e2e8f0",
-              }}
-            >
-              {/* Categories */}
-              <Box sx={{ mb: 3 }}>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
-                  {[post.category].map(category => (
-                    <Chip
-                      key={category}
-                      label={category}
-                      sx={{
-                        backgroundColor: "#2E3192",
-                        color: "white",
-                        fontSize: "0.8rem",
-                        mb: 1,
-                      }}
-                    />
-                  ))}
-                </Stack>
-              </Box>
+            <article className="rounded-[22px] bg-[linear-gradient(180deg,var(--color-base-100),rgba(255,250,244,0.76))] px-5 py-8 shadow-[0_14px_30px_rgba(97,39,0,0.05)] tablet:px-10 tablet:py-10">
+              <ArticlePortableText value={article.body} />
+            </article>
 
-              {/* Title */}
-              <Typography
-                variant="h1"
-                component="h1"
-                sx={{
-                  fontFamily: "var(--font-alice)",
-                  fontSize: { xs: "2rem", md: "3rem" },
-                  fontWeight: 700,
-                  color: "#1e293b",
-                  mb: 3,
-                  lineHeight: 1.2,
-                }}
+            <section className="rounded-[18px] bg-[linear-gradient(180deg,rgba(255,250,244,0.5),rgba(255,250,244,0.22))] px-5 py-6 tablet:px-8">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="rounded-full bg-primary-50 px-4 py-2 font-sans text-sm font-semibold text-primary-800">
+                  Written by Olga
+                </div>
+                <p className="w-full font-body text-[16px] leading-7 tracking-[0.01em] text-base-content/72 tablet:text-[17px]">
+                  These are the sorts of things Olga ends up explaining in messages before she confirms
+                  an order: what travels well, what complicates delivery, and what is better kept local.
+                </p>
+              </div>
+            </section>
+
+            {featuredProduct ? (
+              <section
+                className={`grid gap-4 rounded-[24px] bg-base-100 p-6 text-base-content shadow-[0_12px_28px_rgba(97,39,0,0.05)] tablet:gap-5 ${
+                  featuredProductImageUrl ? "tablet:grid-cols-[200px_minmax(0,1.45fr)] tablet:items-start" : ""
+                }`}
               >
-                {post.title}
-              </Typography>
-
-              {/* Excerpt */}
-              <Typography
-                variant="h2"
-                sx={{
-                  fontSize: { xs: "1.1rem", md: "1.3rem" },
-                  color: "#64748b",
-                  mb: 4,
-                  lineHeight: 1.6,
-                  fontWeight: 400,
-                }}
-              >
-                {post.excerpt}
-              </Typography>
-
-              {/* Author and Meta Info */}
-              <Box sx={{ display: "flex", alignItems: "center", gap: 3, flexWrap: "wrap" }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar sx={{ width: 48, height: 48, backgroundColor: "#2E3192" }}>
+                {featuredProductImageUrl ? (
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[18px] bg-base-100 shadow-[0_8px_20px_rgba(97,39,0,0.05)] tablet:mt-1">
                     <Image
-                      src="/android-chrome-192x192.png"
-                      alt="Author Avatar"
-                      width={48}
-                      height={48}
-                      style={{
-                        borderRadius: '50%',
-                        objectFit: 'cover'
-                      }}
+                      src={featuredProductImageUrl}
+                      alt={featuredProduct.image?.alt || featuredProduct.name}
+                      fill
+                      unoptimized={isSanityCdnImageUrl(featuredProductImageUrl)}
+                      sizes="240px"
+                      className="object-cover"
                     />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 600, color: "#1e293b" }}>
-                      {post.author?.name || "Olga"}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "#64748b" }}>
-                      Professional baker
-                    </Typography>
-                  </Box>
-                </Box>
-                <Divider orientation="vertical" flexItem />
-                <Typography variant="body2" sx={{ color: "#64748b" }}>
-                  {post.publishDate ? new Date(post.publishDate).toLocaleDateString("en-GB", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }) : "No date"}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#64748b" }}>
-                  • {post.readTime} min read
-                </Typography>
-              </Box>
-            </Paper>
+                  </div>
+                ) : null}
+                <div className="flex flex-col justify-between gap-4 tablet:gap-5">
+                  <div className="space-y-3 tablet:space-y-4">
+                    <p className="font-moreSugar text-sm uppercase tracking-[0.16em] text-primary-500">
+                      {articleCommerceCopy.eyebrow}
+                    </p>
+                    <div className="space-y-3">
+                      <h2 className="max-w-[18ch] font-oldenburg text-[2.15rem] leading-[1.02] tracking-[0.03em] text-primary-800 tablet:max-w-[20ch]">
+                        {articleCommerceCopy.heading}
+                      </h2>
+                      <p className="max-w-[58ch] font-body text-[17px] leading-7 tracking-[0.01em] text-base-content/80 tablet:text-[20px] tablet:leading-8">
+                        {articleCommerceCopy.body}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3 pt-1 tablet:flex-row tablet:flex-wrap">
+                    <ArticlePageLink
+                      href={getProductHref(featuredProduct)}
+                      className="btn btn-primary w-full rounded-full px-5 normal-case shadow-none tablet:w-auto"
+                    >
+                      {getArticlePrimaryCtaLabel(featuredProduct)}
+                    </ArticlePageLink>
+                    <ArticlePageLink
+                      href="/cakes"
+                      className="btn btn-outline w-full rounded-full border-primary-500 px-5 normal-case text-primary-500 shadow-none hover:bg-primary-500 hover:text-primary-content tablet:w-auto"
+                    >
+                      See custom cakes
+                    </ArticlePageLink>
+                  </div>
+                </div>
+              </section>
+            ) : null}
 
-            {/* Featured Image */}
-            {post.featuredImage && (
-              <Box sx={{ mb: 6 }}>
-                <Image
-                  src={imageUrl}
-                  alt={post.featuredImage?.alt || `${post.title} - Featured image showing ${post.category} cake design`}
-                  width={1200}
-                  height={600}
-                  style={{
-                    width: "100%",
-                    height: "400px",
-                    objectFit: "cover",
-                    borderRadius: "16px",
-                  }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                  priority
-                  title={`${post.title} - Professional ${post.category} cake`}
-                />
-              </Box>
-            )}
+            {faqItems.length > 0 ? (
+              <section className="rounded-[16px] bg-base-100 p-6 tablet:p-8">
+                <div className="max-w-[46rem] space-y-2">
+                  <p className="font-sans text-sm uppercase tracking-[0.16em] text-base-content/75">
+                    {articleFaqCopy.eyebrow}
+                  </p>
+                  <h2 className="font-oldenburg text-[30px] leading-tight tracking-[0.03em] text-primary-800">
+                    {articleFaqCopy.heading}
+                  </h2>
+                  <p className="font-body text-[16px] leading-7 tracking-[0.01em] text-base-content/76 tablet:text-[17px] tablet:leading-8">
+                    {articleFaqCopy.intro}
+                  </p>
+                </div>
+                <div className="mt-6 space-y-4">
+                  {faqItems.map(item => (
+                    <details
+                      key={item._key || item.question}
+                      className="group rounded-[10px] bg-base-100 px-0 py-5 first:pt-0 not-first:border-t not-first:border-base-300"
+                    >
+                      <summary className="cursor-pointer list-none font-oldenburg text-[24px] leading-tight tracking-[0.03em] text-primary-800 [&::-webkit-details-marker]:hidden">
+                        {item.question}
+                      </summary>
+                      <p className="mt-4 font-body text-[16px] leading-7 tracking-[0.01em] text-base-content/80 tablet:text-[17px] tablet:leading-8">
+                        {item.answer}
+                      </p>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </div>
+        </section>
 
-            {/* Article Content */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 4, md: 6 },
-                mb: 8,
-                borderRadius: 4,
-                border: "1px solid #e2e8f0",
-              }}
-            >
-              <Box
-                sx={{
-                  "& .prose": {
-                    color: "#374151",
-                    fontSize: "1.1rem",
-                    lineHeight: 1.7,
-                    "& h1, & h2, & h3, & h4, & h5, & h6": {
-                      color: "#1e293b",
-                      fontWeight: 600,
-                      mt: 4,
-                      mb: 2,
-                    },
-                    "& h2": {
-                      fontSize: "1.8rem",
-                      borderBottom: "2px solid #e2e8f0",
-                      pb: 1,
-                    },
-                    "& h3": {
-                      fontSize: "1.5rem",
-                    },
-                    "& p": {
-                      mb: 3,
-                    },
-                    "& ul, & ol": {
-                      mb: 3,
-                      pl: 3,
-                    },
-                    "& li": {
-                      mb: 1,
-                    },
-                    "& blockquote": {
-                      borderLeft: "4px solid #2E3192",
-                      pl: 3,
-                      py: 2,
-                      backgroundColor: "#f8fafc",
-                      borderRadius: "0 8px 8px 0",
-                      fontStyle: "italic",
-                      mb: 3,
-                    },
-                    "& img": {
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    },
-                  },
-                }}
+        {relatedArticles.length > 0 ? (
+          <section className="mt-1 space-y-4 border-t border-base-300 pt-5 tablet:space-y-6 tablet:pt-10">
+            <div>
+              <p className="font-sans text-sm uppercase tracking-[0.16em] text-base-content/75">
+                {relatedArticlesCopy.eyebrow}
+              </p>
+              <h2 className="mt-2 font-oldenburg text-[30px] leading-tight tracking-[0.03em] text-primary-800">
+                {relatedArticlesCopy.heading}
+              </h2>
+              <p className="mt-2 max-w-[46rem] font-body text-[16px] leading-7 tracking-[0.01em] text-base-content/76 tablet:text-[17px] tablet:leading-8">
+                {relatedArticlesCopy.intro}
+              </p>
+            </div>
+            <div className="grid gap-x-8 gap-y-8 tablet:grid-cols-2 tablet:gap-y-10 small-laptop:grid-cols-3">
+              {relatedArticles.map(relatedArticle => (
+                <RelatedArticleCard key={relatedArticle._id} article={relatedArticle} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="relative overflow-hidden rounded-[28px] border border-primary-200/55 bg-[linear-gradient(135deg,var(--color-base-100),var(--color-primary-50),var(--color-secondary)/0.12)] p-6 text-base-content shadow-[0_14px_30px_rgba(46,49,146,0.06)] tablet:rounded-[36px] tablet:border-primary-200/70 tablet:bg-[linear-gradient(135deg,var(--color-base-100),var(--color-primary-50),var(--color-secondary)/0.18)] tablet:p-8 tablet:shadow-[0_20px_48px_rgba(46,49,146,0.08)]">
+          <div className="absolute -right-10 top-0 hidden h-32 w-32 rounded-full bg-secondary/20 blur-2xl tablet:block" />
+          <div className="absolute bottom-0 left-0 hidden h-24 w-24 rounded-full bg-primary-100/60 blur-2xl tablet:block" />
+          <div className="grid gap-6 small-laptop:grid-cols-[minmax(0,1fr)_auto] small-laptop:items-end">
+            <div className="relative max-w-[46rem] space-y-3">
+              <p className="font-moreSugar text-sm uppercase tracking-[0.16em] text-primary-500">
+                {closingCtaCopy.eyebrow}
+              </p>
+              <h2 className="font-oldenburg text-[2.3rem] leading-tight tracking-[0.03em] text-primary-800">
+                {closingCtaCopy.heading}
+              </h2>
+              <p className="font-body text-[17px] leading-7 tracking-[0.01em] text-base-content/80 tablet:text-[21px] tablet:leading-8">
+                {closingCtaCopy.intro}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 tablet:flex-row tablet:flex-wrap">
+              <ArticlePageLink
+                href="/cakes-by-post"
+                className="btn btn-primary w-full rounded-full px-5 normal-case shadow-none tablet:w-auto"
               >
-                {typeof post.content === 'string' ? (
-                  <Box>
-                    {parseMarkdown(post.content)}
-                  </Box>
-                ) : (
-                  <Box>
-                    <PortableText value={post.content} components={portableTextComponents} />
-                  </Box>
-                )}
-              </Box>
-            </Paper>
-
-            {/* Related Posts Section */}
-            <RelatedPosts
-              posts={relatedPosts}
-              currentPostId={post._id}
-              currentCategory={post.category}
-            />
-
-            {/* Category Links Section */}
-            <CategoryLinks
-              currentCategory={post.category}
-              categories={categories.map(cat => cat.name)}
-            />
-
-            {/* Professional CTA Section */}
-            <Paper
-              elevation={3}
-              sx={{
-                p: { xs: 5, md: 8 },
-                borderRadius: 3,
-                background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-                color: "#1a202c",
-                textAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-                border: "1px solid #e2e8f0",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: "linear-gradient(45deg, rgba(46, 49, 146, 0.02) 0%, rgba(254, 241, 2, 0.02) 100%)",
-                  pointerEvents: "none",
-                },
-              }}
-            >
-              <Box sx={{ position: "relative", zIndex: 1 }}>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    mb: 2,
-                    fontWeight: 700,
-                    fontSize: { xs: "2rem", md: "2.8rem" },
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Let's Create Something Special
-                </Typography>
-
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mb: 4,
-                    opacity: 0.95,
-                    fontSize: { xs: "1.1rem", md: "1.3rem" },
-                    fontWeight: 400,
-                    maxWidth: "700px",
-                    mx: "auto",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Transform your vision into an exquisite custom cake. From intimate celebrations to grand events,
-                  I deliver exceptional Ukrainian craftsmanship tailored to your unique occasion.
-                </Typography>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    justifyContent: "center",
-                    gap: 2,
-                    mb: 4,
-                    maxWidth: "500px",
-                    mx: "auto",
-                  }}
-                >
-                  <Chip
-                    label="Wedding Cakes"
-                    sx={{
-                      backgroundColor: "#2E3192",
-                      color: "white",
-                      fontWeight: 500,
-                      px: 2,
-                      "&:hover": {
-                        backgroundColor: "#1e2470",
-                      },
-                    }}
-                  />
-                  <Chip
-                    label="Corporate Events"
-                    sx={{
-                      backgroundColor: "#2E3192",
-                      color: "white",
-                      fontWeight: 500,
-                      px: 2,
-                      "&:hover": {
-                        backgroundColor: "#1e2470",
-                      },
-                    }}
-                  />
-                  <Chip
-                    label="Special Occasions"
-                    sx={{
-                      backgroundColor: "#2E3192",
-                      color: "white",
-                      fontWeight: 500,
-                      px: 2,
-                      "&:hover": {
-                        backgroundColor: "#1e2470",
-                      },
-                    }}
-                  />
-                </Box>
-
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Link href="/get-custom-quote" style={{ textDecoration: 'none' }}>
-              <Button variant="contained"
-                    size="large"
-                    sx={{
-                      backgroundColor: "#FEF102",
-                      color: "#2E3192",
-                      px: 5,
-                      py: 2,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      textTransform: "none",
-                      boxShadow: "0 4px 14px rgba(254, 241, 2, 0.3)",
-                      "&:hover": {
-                        backgroundColor: "rgba(254, 241, 2, 0.9)",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 6px 20px rgba(254, 241, 2, 0.4)",
-                      },
-                      transition: "all 0.3s ease",
-                    }}>
-                    Request Custom Quote
-                  </Button>
-            </Link>
-                  <Link href="/contact" style={{ textDecoration: 'none' }}>
-              <Button variant="outlined"
-                    size="large"
-                    sx={{
-                      borderColor: "#2E3192",
-                      color: "#2E3192",
-                      px: 5,
-                      py: 2,
-                      fontSize: "1.1rem",
-                      fontWeight: 500,
-                      borderRadius: 2,
-                      textTransform: "none",
-                      borderWidth: 2,
-                      "&:hover": {
-                        backgroundColor: "#2E3192",
-                        color: "white",
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 6px 20px rgba(46, 49, 146, 0.3)",
-                      },
-                      transition: "all 0.3s ease",
-                    }}>
-                    Schedule Consultation
-                  </Button>
-            </Link>
-                </Stack>
-
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 3,
-                    color: "#64748b",
-                    fontSize: "0.9rem",
-                    fontStyle: "italic",
-                  }}
-                >
-                  Free consultation • Custom design • Professional delivery
-                </Typography>
-              </Box>
-            </Paper>
-          </Box>
-        </Container>
-      </Box>
-    </>
+                Shop cakes by post
+              </ArticlePageLink>
+              <ArticlePageLink
+                href="/cakes"
+                className="btn btn-outline w-full rounded-full border-primary-500 px-5 normal-case text-primary-500 shadow-none hover:bg-primary-500 hover:text-primary-content tablet:w-auto"
+              >
+                See custom cakes
+              </ArticlePageLink>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
   );
 }

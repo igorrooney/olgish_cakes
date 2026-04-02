@@ -5,6 +5,7 @@ import { structureTool } from "sanity/structure";
 import { apiVersion, dataset, projectId } from "../sanity/env";
 import { schema } from "../sanity/schema";
 import { structure } from "../sanity/structure";
+import { createArticlePublishAction } from "./articlePublishAction";
 
 const singletonTypes = new Set(['cakesFeaturedOffer', 'cakesDeliverySection', 'giftHampersDeliverySection', 'collectionsDisplayOrder', 'productsDisplayOrder'])
 
@@ -23,11 +24,19 @@ export default defineConfig({
       return previousOptions.filter((option) => !singletonTypes.has(option.templateId))
     },
     actions: (previousActions, context) => {
-      if (!singletonTypes.has(context.schemaType)) {
-        return previousActions
+      let actions = previousActions
+
+      if (singletonTypes.has(context.schemaType)) {
+        actions = actions.filter((action) => action.action !== 'duplicate')
       }
 
-      return previousActions.filter((action) => action.action !== 'duplicate')
+      if (context.schemaType === 'article') {
+        actions = actions.map((action) =>
+          action.action === 'publish' ? createArticlePublishAction(action) : action
+        )
+      }
+
+      return actions
     }
   }
 });

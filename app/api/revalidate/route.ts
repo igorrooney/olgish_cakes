@@ -119,14 +119,20 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('sitemaps')
-    } else if (_type === "blogPost") {
-      // Revalidate blog pages
+    } else if (_type === 'article') {
+      // Revalidate article pages
       if (slug?.current) {
         addPath(`/blog/${slug.current}`)
-        addPath("/blog") // Revalidate blog list
+        addPath('/blog')
       }
-      await invalidateCache("blog-posts");
-      addTag('blog-posts')
+      await invalidateCache('articles')
+      addTag('articles')
+      addTag('article')
+      addTag('sitemaps')
+    } else if (_type === 'articleTopic') {
+      addPath('/blog')
+      await invalidateCache('articles')
+      addTag('articles')
       addTag('sitemaps')
     } else if (_type === "marketSchedule") {
       // Revalidate market schedule page
@@ -179,7 +185,7 @@ async function handlePOST(request: NextRequest) {
     });
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.error("❌ Revalidation error:", error);
+      console.error('Revalidation error:', error);
     }
     return NextResponse.json(
       {
@@ -216,3 +222,4 @@ export async function GET(request: NextRequest) {
     usage: "POST with Sanity webhook payload",
   });
 }
+

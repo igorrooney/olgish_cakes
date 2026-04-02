@@ -126,12 +126,22 @@ export function AdminDashboard() {
       stats: stats ? `£${stats.totalRevenue.toLocaleString()}` : 'Loading...'
     },
     {
-      title: 'Blog Management',
-      description: 'Create and manage blog posts and content',
+      title: 'Article publishing',
+      description: 'Manage articles, topics, and editorial content in Sanity Studio',
       icon: <Article />,
-      href: '/admin/blog',
+      href: '/studio',
       color: designTokens.colors.ukrainian.honey,
-      stats: 'Content'
+      stats: 'Studio',
+      external: true
+    },
+    {
+      title: 'Content Studio',
+      description: 'Manage products, collections, and merchandising content in Sanity',
+      icon: <ContentPaste />,
+      href: '/studio',
+      color: designTokens.colors.warning.main,
+      stats: 'CMS',
+      external: true
     },
     {
       title: 'Email Testing',
@@ -140,15 +150,6 @@ export function AdminDashboard() {
       href: '/admin/email-test',
       color: designTokens.colors.error.main,
       stats: 'Templates'
-    },
-    {
-      title: 'Content Studio',
-      description: 'Manage products, categories, and content in Sanity',
-      icon: <ContentPaste />,
-      href: '/studio',
-      color: designTokens.colors.warning.main,
-      stats: 'CMS',
-      external: true
     },
     {
       title: 'Website Analytics',

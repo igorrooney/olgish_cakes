@@ -27,29 +27,62 @@ describe('SiteHeader', () => {
   })
 
   it('hydrates the canonical desktop header without changing the quote link or sticky classes', () => {
-    const { MessageChannel } = require('worker_threads')
-    const originalMessageChannel = global.MessageChannel
+    class TestMessagePort {
+      counterpart: TestMessagePort | null = null
+      onmessage: ((event: { data: undefined }) => void) | null = null
+
+      postMessage() {
+        queueMicrotask(() => {
+          this.counterpart?.onmessage?.({ data: undefined })
+        })
+      }
+
+      start() {}
+      close() {}
+      addEventListener() {}
+      removeEventListener() {}
+    }
+
+    class TestMessageChannel {
+      port1 = new TestMessagePort()
+      port2 = new TestMessagePort()
+
+      constructor() {
+        this.port1.counterpart = this.port2
+        this.port2.counterpart = this.port1
+      }
+    }
+
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-    global.MessageChannel = MessageChannel
+    const originalMessageChannel = global.MessageChannel
+    global.MessageChannel = TestMessageChannel as typeof MessageChannel
     const { hydrateRoot } = require('react-dom/client')
     const { renderToString } = require('react-dom/server')
     const container = document.createElement('div')
+    document.body.appendChild(container)
     container.innerHTML = renderToString(<SiteHeader />)
+    let root: { unmount: () => void } | undefined
 
-    act(() => {
-      hydrateRoot(container, <SiteHeader />)
-    })
+    try {
+      act(() => {
+        root = hydrateRoot(container, <SiteHeader />)
+      })
 
-    const header = container.querySelector('header')
-    const quoteLink = Array.from(container.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Get a quote')
+      const header = container.querySelector('header')
+      const quoteLink = Array.from(container.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Get a quote')
 
-    expect(consoleErrorSpy).not.toHaveBeenCalled()
-    expect(header?.className).toContain('tablet:sticky')
-    expect(header?.className).not.toContain('sticky top-0 z-[9999] relative')
-    expect(quoteLink?.getAttribute('href')).toBe('/get-custom-quote#quote-form')
-
-    global.MessageChannel = originalMessageChannel
-    consoleErrorSpy.mockRestore()
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
+      expect(header?.className).toContain('tablet:sticky')
+      expect(header?.className).not.toContain('sticky top-0 z-[9999] relative')
+      expect(quoteLink?.getAttribute('href')).toBe('/get-custom-quote#quote-form')
+    } finally {
+      act(() => {
+        root?.unmount()
+      })
+      container.remove()
+      global.MessageChannel = originalMessageChannel
+      consoleErrorSpy.mockRestore()
+    }
   })
 
   it('uses tablet-only sticky classes so mobile header is not sticky', () => {
@@ -269,6 +302,28 @@ describe('SiteHeader', () => {
 
     const mobileFarmersLink = screen.getByRole('menuitem', { name: /find us at farmers markets/i })
     expect(mobileFarmersLink).toHaveAttribute('href', '/farmers-markets')
+  })
+
+  it('points Articles navigation to the canonical blog archive', () => {
+    render(<SiteHeader />)
+
+    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummary = learnSummaryText.closest('summary')
+
+    if (!learnSummary) {
+      throw new Error('Learn & visit summary not found')
+    }
+
+    fireEvent.click(learnSummary)
+
+    const desktopArticlesLink = screen.getByRole('link', { name: /^articles$/i })
+    expect(desktopArticlesLink).toHaveAttribute('href', '/blog')
+
+    const button = screen.getByLabelText(/open menu/i)
+    fireEvent.click(button)
+
+    const mobileArticlesLink = screen.getByRole('menuitem', { name: /^articles$/i })
+    expect(mobileArticlesLink).toHaveAttribute('href', '/blog')
   })
 
   it('menu items have proper role', () => {

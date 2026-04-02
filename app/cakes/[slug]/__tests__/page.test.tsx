@@ -168,6 +168,20 @@ describe('CakeDetailPage', () => {
       expect(metadata.title).toContain('Honey Cake')
     })
 
+    it('should normalize a CMS title that already includes the Olgish Cakes suffix', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        seo: {
+          metaTitle: 'Custom Title | Olgish Cakes',
+          metaDescription: 'Custom Description'
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+
+      expect(metadata.title).toBe('Custom Title')
+    })
+
     it('should generate description from shortDescription', async () => {
       const cakeWithoutSEO = {
         ...mockCake,
@@ -245,7 +259,6 @@ describe('CakeDetailPage', () => {
 
       expect(metadata.title).toContain('Buy Honey Cake Online')
       expect(metadata.description).toContain('Buy authentic honey cake')
-      expect(metadata.keywords).toContain('buy honey cake online')
     })
 
     it('should return 404 metadata for missing cake', async () => {
@@ -253,7 +266,7 @@ describe('CakeDetailPage', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'non-existent' }) })
 
-      expect(metadata.title).toContain('Not Found')
+      expect(metadata.title).toBe('Cake not found')
     })
 
     it('should include OpenGraph data', async () => {
@@ -264,12 +277,30 @@ describe('CakeDetailPage', () => {
       expect(metadata.openGraph).toBeDefined()
     })
 
-    it('should include keywords', async () => {
+    it('should keep cakes self-canonical even when legacy canonical data exists in CMS payloads', async () => {
+      mockGetCakeBySlug.mockResolvedValue({
+        ...mockCake,
+        slug: { current: 'honey-cake' },
+        seo: {
+          metaTitle: 'Custom Title',
+          metaDescription: 'Custom Description',
+          keywords: ['legacy'],
+          canonicalUrl: 'https://legacy.example.com/cakes/honey-cake'
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
+
+      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes/honey-cake')
+      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes/honey-cake')
+    })
+
+    it('should not include metadata keywords', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake' }) })
 
-      expect(metadata.keywords).toBeDefined()
+      expect(metadata.keywords).toBeUndefined()
     })
 
     it('should use minimum servings price in metadata other fields when available', async () => {
@@ -813,7 +844,6 @@ describe('CakeDetailPage', () => {
               ]
             }
           ],
-          policySource: 'custom',
           customPolicy: {
             dispatchMinDays: 2,
             dispatchMaxDays: 3,

@@ -89,7 +89,8 @@ function resolveGlobalCakeDeliveryPolicy(cake: Cake) {
 }
 
 export function resolveCakeDeliveryPolicy(cake: Cake): DeliveryPolicy {
-  const shouldUseCustomPolicy = cake.deliverySection?.policySource === 'custom'
+  const shouldUseCustomPolicy = cake.deliverySection?.descriptionSource === 'custom' ||
+    cake.deliverySection?.policySource === 'custom'
 
   if (shouldUseCustomPolicy && cake.deliverySection?.customPolicy) {
     return normalizeDeliveryPolicy(cake.deliverySection.customPolicy)

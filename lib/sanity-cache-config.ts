@@ -4,9 +4,9 @@
  */
 const NO_REVALIDATE = false
 
-const blogCacheConfig = {
+const articleCacheConfig = {
   revalidate: NO_REVALIDATE,
-  tags: ['blog-posts']
+  tags: ['articles']
 } as const
 
 export const SANITY_CACHE_CONFIG = {
@@ -46,8 +46,11 @@ export const SANITY_CACHE_CONFIG = {
     revalidate: NO_REVALIDATE,
     tags: ['faqs']
   },
-  blogPosts: blogCacheConfig,
-  blogPost: blogCacheConfig,
+  articles: articleCacheConfig,
+  article: {
+    revalidate: NO_REVALIDATE,
+    tags: ['articles', 'article']
+  },
   sitemaps: {
     revalidate: NO_REVALIDATE,
     tags: ['sitemaps']

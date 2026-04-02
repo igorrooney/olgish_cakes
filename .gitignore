@@ -72,4 +72,9 @@ next-env.d.ts
 *.tar.gz
 *.zip
 backup-*.json
+.tmp-script-run/
 .cursor/mcp.json
+/tmp/
+.tmp-lighthouse-profile/
+.tmp-lighthouse-blog-mobile/
+.tmp-lighthouse-blog-mobile-2/

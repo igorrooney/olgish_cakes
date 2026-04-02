@@ -7,67 +7,53 @@ import { staticSitemapPages, toStaticSitemapEntry } from './sitemap-static-pages
 interface SitemapCake {
   slug: { current: string }
   _updatedAt: string
-  seo?: { priority?: number, changefreq?: string }
 }
 
-interface SitemapBlogPost {
+interface SitemapArticle {
   slug: { current: string }
   _updatedAt: string
-  publishDate?: string
-  featured?: boolean
-  category?: string
-  seo?: { priority?: number, changefreq?: string }
+  publishedAt?: string
 }
 
 interface SitemapGiftHamper {
   slug: { current: string }
   _updatedAt: string
-  seo?: { priority?: number, changefreq?: string }
 }
 
-type SitemapChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>
+function getArticleLastModified(article: SitemapArticle) {
+  const publishedAt = article.publishedAt ? new Date(article.publishedAt) : null
+  const updatedAt = new Date(article._updatedAt)
 
-function toSitemapChangeFrequency(value: string | undefined, fallback: SitemapChangeFrequency) {
-  return (value as SitemapChangeFrequency | undefined) || fallback
+  if (!publishedAt) {
+    return updatedAt
+  }
+
+  return updatedAt > publishedAt ? updatedAt : publishedAt
 }
 
 async function getCakes() {
   const query = `*[_type == "cake" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
-    _updatedAt,
-    seo {
-      priority,
-      changefreq
-    }
+    _updatedAt
   }`
   const config = getCacheConfig('sitemaps')
   return cachedSanityFetch<SitemapCake[]>(query, {}, config)
 }
 
-async function getBlogPosts() {
-  const query = `*[_type == "blogPost" && status == "published" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
+async function getArticles() {
+  const query = `*[_type == "article" && coalesce(publishedAt, _createdAt) <= now() && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
     _updatedAt,
-    publishDate,
-    featured,
-    category,
-    seo {
-      priority,
-      changefreq
-    }
+    "publishedAt": coalesce(publishedAt, _createdAt)
   }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<SitemapBlogPost[]>(query, {}, config)
+  return cachedSanityFetch<SitemapArticle[]>(query, {}, config)
 }
 
 async function getGiftHampers() {
   const query = `*[_type == "giftHamper" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
     slug,
-    _updatedAt,
-    seo {
-      priority,
-      changefreq
-    }
+    _updatedAt
   }`
   const config = getCacheConfig('sitemaps')
   return cachedSanityFetch<SitemapGiftHamper[]>(query, {}, config)
@@ -75,9 +61,9 @@ async function getGiftHampers() {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = BUSINESS_CONSTANTS.BASE_URL
-  const [cakes, blogPosts, giftHampers] = await Promise.all([
+  const [cakes, articles, giftHampers] = await Promise.all([
     getCakes(),
-    getBlogPosts(),
+    getArticles(),
     getGiftHampers()
   ])
 
@@ -86,35 +72,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .map((cake) => ({
       url: `${baseUrl}/cakes/${cake.slug.current}`,
       lastModified: new Date(cake._updatedAt),
-      changeFrequency: toSitemapChangeFrequency(cake.seo?.changefreq, 'weekly'),
-      priority: cake.seo?.priority || 0.8
+      changeFrequency: 'weekly' as const,
+      priority: 0.8
     }))
 
-  const blogRoutes = blogPosts
-    .filter((post) => post.slug?.current)
-    .map((post) => {
-      const isRecent = post.publishDate &&
-        new Date(post.publishDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      const basePriority = post.featured ? 0.8 : (isRecent ? 0.7 : 0.6)
-      const trendingCategories = ['wedding-cakes', 'birthday-cakes', 'custom-cakes', 'ukrainian-cakes']
-      const isTrending = post.category && trendingCategories.includes(post.category.toLowerCase())
-      const changeFrequency: SitemapChangeFrequency = isTrending ? 'weekly' : 'monthly'
-
-      return {
-        url: `${baseUrl}/blog/${post.slug.current}`,
-        lastModified: new Date(post.publishDate || post._updatedAt),
-        changeFrequency: toSitemapChangeFrequency(post.seo?.changefreq, changeFrequency),
-        priority: post.seo?.priority || basePriority
-      }
-    })
+  const articleRoutes = articles
+    .filter((article) => article.slug?.current)
+    .map((article) => ({
+      url: `${baseUrl}/blog/${article.slug.current}`,
+      lastModified: getArticleLastModified(article),
+      priority: 0.6
+    }))
 
   const giftHamperRoutes = giftHampers
     .filter((hamper) => hamper.slug?.current)
     .map((hamper) => ({
       url: `${baseUrl}/cakes-by-post/${hamper.slug.current}`,
       lastModified: new Date(hamper._updatedAt),
-      changeFrequency: toSitemapChangeFrequency(hamper.seo?.changefreq, 'weekly'),
-      priority: hamper.seo?.priority || 0.7
+      changeFrequency: 'weekly' as const,
+      priority: 0.7
     }))
 
   const categoryLandingPages = Object.values(categoryLandingConfig).map((config) =>
@@ -128,6 +104,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages = staticSitemapPages.map((entry) => toStaticSitemapEntry(baseUrl, entry))
 
-  return [...staticPages, ...categoryLandingPages, ...cakeRoutes, ...giftHamperRoutes, ...blogRoutes]
+  return [...staticPages, ...categoryLandingPages, ...cakeRoutes, ...giftHamperRoutes, ...articleRoutes]
     .sort((a, b) => (b.priority || 0) - (a.priority || 0))
 }

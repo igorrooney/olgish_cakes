@@ -1,99 +1,78 @@
-# How to Add Blog Post to Sanity Studio (NO RECIPES)
+# How to Add a Blog Article in Sanity
 
-The blog post content is ready in `BLOG_POST_1_NO_RECIPES.md`, but due to image requirements in your Sanity schema, it's best to add it manually through Sanity Studio where you can upload proper images.
+Use this workflow for every new article.
 
-## Quick Steps to Add Blog Post
+Do not paste a full AI draft straight into Sanity.
+Start with the markdown brief, then write the article.
+Run the GSC planner first when you are working from a fresh Search Console export:
 
-### 1. Open Sanity Studio
-Go to your Sanity Studio URL (likely https://olgishcakes.sanity.studio or similar)
+`pnpm articles:plan:gsc -- --file "C:\Users\igorr\Downloads\olgishcakes.co.uk-Performance-on-Search-2026-03-30.xlsx"`
 
-### 2. Create New Blog Post
-Click "Blog Post" → "Create new Blog Post"
+## 1. Open Sanity Studio
 
-### 3. Fill in the Fields
+Create a new `Article` document.
 
-**Title:**
-```
-Ultimate Guide to Ukrainian Cakes: Honey Cake vs Kyiv Cake vs Napoleon
-```
+## 2. Start with the markdown brief
 
-**Slug:** (auto-generates from title)
-```
-ultimate-guide-ukrainian-cakes-honey-cake-vs-kyiv-cake-vs-napoleon
-```
+Use [SEARCH_CONSOLE_ARTICLE_BRIEFS.md](/c:/Users/igorr/olgish_cakes/docs/blog/SEARCH_CONSOLE_ARTICLE_BRIEFS.md) as the planning document before you touch the public article fields.
 
-**Excerpt:**
-```
-Discover the rich history and unique characteristics of Ukraine's three most beloved cakes - Medovik, Kyiv Cake, and Napoleon. Learn what makes each special and how to choose the perfect one for your celebration.
-```
+Each article should have:
 
-**Content:** 
-Copy the full content from `BLOG_POST_1_NO_RECIPES.md` (NO RECIPES INCLUDED)
+- primary query
+- query cluster
+- search intent
+- reader problem
+- Olga angle
+- product tie-in
+- internal links
+- FAQ candidates
+- evidence checklist
+- assets needed
+- AI usage notes
 
-**Featured Image:** Upload a nice photo of your Ukrainian cakes
+## 3. Choose article positioning in Sanity
 
-**Card Image:** Upload a cake photo for the blog card
+- Pick the correct `Topic`
+- Set one `Primary Product` only if it genuinely fits
+- Add up to four `Related Products` only if they help the reader
 
-**Categories:** Traditional Ukrainian
+If the keyword is mainly local or transactional, stop and check whether it belongs on a landing page instead of the blog.
 
-**Description:**
-```
-Complete guide to authentic Ukrainian cakes. Discover the differences between Medovik (honey cake), Kyiv cake, and Napoleon. History, traditions, and where to order in Leeds from £25.
-```
+## 4. Write the public article fields
 
-**Read Time:** 12
+Complete these fields in order:
 
-**Status:** Published
+1. `Title`
+2. `Summary`
+3. `Dek`
+4. `Cover Image` and alt text
+5. `Card Image` if needed
+6. `Body`
+7. `FAQ Items`
+8. `SEO`
 
-**SEO Title:**
-```
-Ultimate Guide to Ukrainian Cakes: Medovik vs Kyiv vs Napoleon
-```
+## 5. Run the required voice QA
 
-**SEO Description:**
-```
-Complete guide to authentic Ukrainian cakes. Discover the differences between Medovik (honey cake), Kyiv cake, and Napoleon. History, traditions, and where to order in Leeds from £25.
-```
+Before publishing, check all four passes:
 
-**Keywords:** (add these)
-- Ukrainian cakes guide
-- medovik vs kyiv cake
-- honey cake comparison
-- traditional Ukrainian desserts
-- authentic Ukrainian cakes
-- ukrainian bakery leeds
+- Factual pass:
+  Every claim must be supportable from real products, current delivery rules, or the live canonical pages.
+- Olga voice pass:
+  Keep at least one clear first-person judgement and at least two bakery-specific details.
+- Anti-AI pass:
+  Remove generic filler, repeated openings, repeated CTA language, and title/dek/meta duplication.
+- Read-aloud pass:
+  Read the article aloud and rewrite anything that sounds over-smoothed or interchangeable with another bakery.
 
-**Author Name:** Olga
+## 6. Publish carefully
 
-**Featured:** No (or Yes if you want it highlighted)
+- Set `Published At`
+- Only refresh `Editorial Updated At` if readers would care about the change
+- Publish when the article is factually accurate and commercially honest
 
-### 4. Save and Publish
+## Notes
 
-Click "Publish" to make it live!
-
----
-
-## Alternative: Wait for Cache to Clear
-
-Your blog post IS published in Sanity (I can see it in the database), but your website is showing cached data. The new post will appear automatically within:
-- **5-10 minutes** (typical CDN cache)
-- **Up to 60 minutes** (maximum cache time)
-
-Just check back shortly and it should appear!
-
----
-
-## Verify Blog Post is Published
-
-Check your Sanity Studio dashboard - you should see:
-- "Ultimate Guide to Ukrainian Cakes..." in the blog posts list
-- Status: Published
-- Created: October 18, 2025
-
-If you see it there, it's working! The website just needs to refresh its cache.
-
----
-
-**Note:** The blog content in `BLOG_POST_1_NO_RECIPES.md` contains NO recipes - only history, descriptions, and comparisons. Your family secrets are completely safe!
-
-
+- Search Console helps choose topics, not write the article for you.
+- Use only claims you can support with real products, delivery rules, and bakery process.
+- For nut-free or allergen-related content, accuracy matters more than volume.
+- Keep `/cakes-by-post` and `/wedding-cakes` as canonical commercial pages. Use the blog to support them or replace retired informational pages, not to compete with them.

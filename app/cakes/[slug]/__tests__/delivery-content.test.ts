@@ -129,10 +129,40 @@ describe('delivery-content', () => {
     expect(resolveCakeDeliveryDescription(cake)).toEqual(customDescription)
   })
 
-  it('uses custom policy when source is custom and policy exists', () => {
+  it('uses custom policy when description source is custom and policy exists', () => {
     const cake: Cake = {
       ...baseCake,
       deliverySection: {
+        descriptionSource: 'custom',
+        customPolicy: {
+          dispatchMinDays: 4,
+          dispatchMaxDays: 6,
+          shippingFeeGbp: 3.5,
+          shippingDestinationCountry: 'GB',
+          deliveryMethod: defaultDeliveryMethod
+        }
+      },
+      cakesDeliverySection: {
+        name: 'Shipping & delivery',
+        description: globalDescription,
+        policy: globalPolicy
+      }
+    }
+
+    expect(resolveCakeDeliveryPolicy(cake)).toEqual({
+      dispatchMinDays: 4,
+      dispatchMaxDays: 6,
+      shippingFeeGbp: 3.5,
+      shippingDestinationCountry: 'GB',
+      deliveryMethod: defaultDeliveryMethod
+    })
+  })
+
+  it('uses custom policy when legacy policy source is custom and policy exists', () => {
+    const cake: Cake = {
+      ...baseCake,
+      deliverySection: {
+        descriptionSource: 'global',
         policySource: 'custom',
         customPolicy: {
           dispatchMinDays: 4,
