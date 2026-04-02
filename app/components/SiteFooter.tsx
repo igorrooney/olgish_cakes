@@ -32,9 +32,6 @@ export function SiteFooter() {
               <Link href='/custom-cakes' className={footerLinkClassName}>
                 Custom cakes
               </Link>
-              <Link href='/farmers-markets' className={footerLinkClassName}>
-                Farmers Markets
-              </Link>
               <Link href='/learn' className={footerLinkClassName}>
                 Learn hub
               </Link>

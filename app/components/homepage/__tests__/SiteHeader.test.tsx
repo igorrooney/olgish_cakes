@@ -280,38 +280,38 @@ describe('SiteHeader', () => {
     expect(mobileByPostLink).toHaveAttribute('href', '/cakes-by-post')
   })
 
-  it('moves farmers markets into Learn & visit links', () => {
+  it('does not render removed placeholder learn links', () => {
     render(<SiteHeader />)
 
-    expect(screen.queryByRole('link', { name: /^farmers markets$/i })).not.toBeInTheDocument()
-
-    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummaryText = screen.getByText(/^learn$/i)
     const learnSummary = learnSummaryText.closest('summary')
 
     if (!learnSummary) {
-      throw new Error('Learn & visit summary not found')
+      throw new Error('Learn summary not found')
     }
 
     fireEvent.click(learnSummary)
 
-    const desktopFarmersLink = screen.getByRole('link', { name: /find us at farmers markets/i })
-    expect(desktopFarmersLink).toHaveAttribute('href', '/farmers-markets')
+    expect(screen.queryByRole('link', { name: /^guides$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /customer stories/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /find us at farmers markets/i })).not.toBeInTheDocument()
 
     const button = screen.getByLabelText(/open menu/i)
     fireEvent.click(button)
 
-    const mobileFarmersLink = screen.getByRole('menuitem', { name: /find us at farmers markets/i })
-    expect(mobileFarmersLink).toHaveAttribute('href', '/farmers-markets')
+    expect(screen.queryByRole('menuitem', { name: /^guides$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /customer stories/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /find us at farmers markets/i })).not.toBeInTheDocument()
   })
 
   it('points Articles navigation to the canonical blog archive', () => {
     render(<SiteHeader />)
 
-    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummaryText = screen.getByText(/^learn$/i)
     const learnSummary = learnSummaryText.closest('summary')
 
     if (!learnSummary) {
-      throw new Error('Learn & visit summary not found')
+      throw new Error('Learn summary not found')
     }
 
     fireEvent.click(learnSummary)
@@ -340,7 +340,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     expect(screen.getByText(/custom cakes/i)).toBeInTheDocument()
-    expect(screen.getByText(/learn\s*&\s*visit/i)).toBeInTheDocument()
+    expect(screen.getByText(/^learn$/i)).toBeInTheDocument()
     expect(screen.getByText(/get a quote/i)).toBeInTheDocument()
   })
 
@@ -348,7 +348,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummaryText = screen.getByText(/^learn$/i)
 
     const customSummary = customSummaryText.closest('summary')
     const learnSummary = learnSummaryText.closest('summary')
@@ -435,7 +435,7 @@ describe('SiteHeader', () => {
     render(<SiteHeader />)
 
     const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/learn\s*&\s*visit/i)
+    const learnSummaryText = screen.getByText(/^learn$/i)
 
     const customSummary = customSummaryText.closest('summary')
     const learnSummary = learnSummaryText.closest('summary')

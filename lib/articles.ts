@@ -327,8 +327,8 @@ interface SanityCdnImageOptions {
   autoFormat?: boolean;
 }
 
-interface SanityCdnImageLoaderOptions
-  extends Omit<SanityCdnImageOptions, "autoFormat"> {}
+type SanityCdnImageLoaderOptions =
+  Omit<SanityCdnImageOptions, 'autoFormat'>
 
 export function isSanityCdnImageUrl(imageUrl?: string) {
   if (!imageUrl) {

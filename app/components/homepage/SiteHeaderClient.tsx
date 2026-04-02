@@ -351,7 +351,7 @@ export function SiteHeaderClient() {
                     aria-expanded={openDropdownId === "learn-hub"}
                   >
                     <span className="group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8">
-                      Learn & visit
+                      Learn
                     </span>
                     <svg
                       width="16"
@@ -387,38 +387,11 @@ export function SiteHeaderClient() {
                       </li>
                       <li>
                         <Link
-                          href="/learn/guides"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Guides
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
                           href="/learn/workshops"
                           className={dropdownItemClassName}
                           onClick={handleDesktopDropdownNavigation}
                         >
                           Workshops
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/learn/customer-stories"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Customer stories
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/farmers-markets"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Find us at farmers markets
                         </Link>
                       </li>
                     </ul>
@@ -536,7 +509,7 @@ export function SiteHeaderClient() {
             <div className="flex flex-col items-start">
               <div className="w-full min-h-[36px] px-4 flex items-center rounded-btn">
                 <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
-                  LEARN & VISIT
+                  LEARN
                 </p>
               </div>
               <Link
@@ -548,36 +521,12 @@ export function SiteHeaderClient() {
                 Articles
               </Link>
               <Link
-                href="/learn/guides"
-                role="menuitem"
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Guides
-              </Link>
-              <Link
                 href="/learn/workshops"
                 role="menuitem"
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Workshops
-              </Link>
-              <Link
-                href="/learn/customer-stories"
-                role="menuitem"
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Customer stories
-              </Link>
-              <Link
-                href="/farmers-markets"
-                role="menuitem"
-                className={mobileMenuItemClassName}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Find us at farmers markets
               </Link>
             </div>
           </div>
