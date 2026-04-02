@@ -247,6 +247,14 @@ export function getComingSoonMetadata(page: ComingSoonPageContent): Metadata {
   return {
     title,
     description: page.description,
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    },
     alternates: {
       canonical: canonicalUrl,
     },

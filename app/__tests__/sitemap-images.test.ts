@@ -48,7 +48,7 @@ describe('sitemap-images', () => {
 
       expect(blogEntry).toBeDefined()
       expect(blogEntry?.images).toEqual(['https://cdn.sanity.io/test.jpg'])
-      expect(blogEntry?.lastModified).toEqual(new Date('2025-01-01'))
+      expect(blogEntry?.lastModified).toEqual(new Date('2025-01-02'))
     })
 
     it('should include cover and card article images in a single entry', async () => {
@@ -106,6 +106,24 @@ describe('sitemap-images', () => {
 
       const result = await sitemapImages()
       const blogEntry = result.find((entry) => entry.url.includes('/blog/updated-post'))
+
+      expect(blogEntry?.lastModified).toEqual(new Date('2025-02-03T00:00:00.000Z'))
+    })
+
+    it('should preserve the later updated timestamp when article imagery changes after publication', async () => {
+      mockFetch
+        .mockResolvedValueOnce([{
+          slug: { current: 'refreshed-post' },
+          title: 'Refreshed Post',
+          coverImage: { asset: { url: 'https://cdn.sanity.io/refreshed.jpg' }, alt: 'Refreshed' },
+          publishedAt: '2025-01-01T00:00:00.000Z',
+          _updatedAt: '2025-02-03T00:00:00.000Z'
+        }])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+
+      const result = await sitemapImages()
+      const blogEntry = result.find((entry) => entry.url.includes('/blog/refreshed-post'))
 
       expect(blogEntry?.lastModified).toEqual(new Date('2025-02-03T00:00:00.000Z'))
     })

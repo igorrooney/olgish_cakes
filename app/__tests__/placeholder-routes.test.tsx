@@ -49,6 +49,10 @@ describe("placeholder routes", () => {
 
     expect(metadata.title).toBe("The full FAQ page is on the way");
     expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/faqs");
+    expect(metadata.robots?.index).toBe(false);
+    expect(typeof metadata.robots === "object" && "googleBot" in metadata.robots
+      ? metadata.robots.googleBot?.index
+      : undefined).toBe(false);
   });
 
   it("renders the learn root placeholder and uses blog links as the live fallback", async () => {
@@ -81,6 +85,10 @@ describe("placeholder routes", () => {
 
     expect(metadata.title).toBe("Workshop details are coming soon");
     expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/learn/workshops");
+    expect(metadata.robots?.index).toBe(false);
+    expect(typeof metadata.robots === "object" && "googleBot" in metadata.robots
+      ? metadata.robots.googleBot?.index
+      : undefined).toBe(false);
   });
 
   it("calls notFound for unknown placeholder routes", async () => {

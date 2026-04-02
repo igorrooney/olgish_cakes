@@ -61,6 +61,14 @@ const articleSeoFields = `
   canonicalUrl
 `
 
+const publicArticleVisibilityFilter = `
+  _type == "article" &&
+  defined(slug.current) &&
+  slug.current != "test" &&
+  !(slug.current match "test-*") &&
+  coalesce(publishedAt, _createdAt) <= now()
+`
+
 const articleArchiveFields = `
   _id,
   title,
@@ -93,7 +101,7 @@ export const ARTICLE_TOPICS_QUERY = `
 `
 
 export const ARTICLE_ARCHIVE_QUERY = `
-  *[_type == "article" && defined(slug.current) && coalesce(publishedAt, _createdAt) <= now()] |
+  *[${publicArticleVisibilityFilter}] |
   order(publishedAt desc, _createdAt desc) {
     ${articleArchiveFields}
   }
@@ -101,18 +109,14 @@ export const ARTICLE_ARCHIVE_QUERY = `
 
 export const ARTICLE_ARCHIVE_COUNT_QUERY = `
   count(*[
-    _type == "article" &&
-    defined(slug.current) &&
-    coalesce(publishedAt, _createdAt) <= now() &&
+    ${publicArticleVisibilityFilter} &&
     ($topic == null || topic->slug.current == $topic)
   ])
 `
 
 export const ARTICLE_ARCHIVE_PAGE_QUERY = `
   *[
-    _type == "article" &&
-    defined(slug.current) &&
-    coalesce(publishedAt, _createdAt) <= now() &&
+    ${publicArticleVisibilityFilter} &&
     ($topic == null || topic->slug.current == $topic)
   ] |
   order(publishedAt desc, _createdAt desc)[$start...$end] {
@@ -122,9 +126,8 @@ export const ARTICLE_ARCHIVE_PAGE_QUERY = `
 
 export const ARTICLE_BY_SLUG_QUERY = `
   *[
-    _type == "article" &&
-    slug.current == $slug &&
-    coalesce(publishedAt, _createdAt) <= now()
+    ${publicArticleVisibilityFilter} &&
+    slug.current == $slug
   ] |
   order(dateTime(coalesce(publishedAt, _createdAt)) desc, dateTime(_updatedAt) desc, _createdAt desc)[0] {
     ${articleArchiveFields},
@@ -141,7 +144,7 @@ export const ARTICLE_BY_SLUG_QUERY = `
 `
 
 export const ARTICLE_SLUGS_QUERY = `
-  *[_type == "article" && defined(slug.current) && coalesce(publishedAt, _createdAt) <= now()] |
+  *[${publicArticleVisibilityFilter}] |
   order(coalesce(publishedAt, _createdAt) desc) {
     "slug": slug.current
   }
@@ -151,6 +154,8 @@ export const RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY = `
   *[
     _type == "article" &&
     defined(slug.current) &&
+    slug.current != "test" &&
+    !(slug.current match "test-*") &&
     dateTime(coalesce(publishedAt, _createdAt)) > dateTime($since) &&
     dateTime(coalesce(publishedAt, _createdAt)) <= now()
   ] |

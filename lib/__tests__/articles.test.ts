@@ -29,6 +29,8 @@ describe("lib/articles", () => {
 
     expect(mockGetCacheConfig).toHaveBeenCalledWith("articles");
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('_type == "article"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain("order(publishedAt desc, _createdAt desc)");
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"isPostableToUk": select(');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"united kingdom"');
@@ -61,6 +63,8 @@ describe("lib/articles", () => {
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain(
       "order(publishedAt desc, _createdAt desc)[$start...$end]"
     );
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
     expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining("count(*["),
@@ -70,6 +74,8 @@ describe("lib/articles", () => {
         revalidate: 300,
       }
     );
+    expect(mockCachedSanityFetch.mock.calls[1][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[1][0]).toContain('!(slug.current match "test-*")');
     expect(result).toEqual({
       articles: [{ _id: "article-1" }],
       totalCount: 14,
@@ -89,6 +95,8 @@ describe("lib/articles", () => {
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain(
       "order(dateTime(coalesce(publishedAt, _createdAt)) desc, dateTime(_updatedAt) desc, _createdAt desc)[0]"
     );
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
     expect(mockCachedSanityFetch.mock.calls[0][1]).toEqual({ slug: "cake-by-post-guide" });
     expect(mockCachedSanityFetch.mock.calls[0][2]).toEqual({
       tags: ["article"],
@@ -107,6 +115,26 @@ describe("lib/articles", () => {
       tags: ["articles"],
       revalidate: 120,
     });
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
+  });
+
+  it("keeps test article slugs out of shared article queries and revalidation lookups", async () => {
+    const {
+      ARTICLE_ARCHIVE_QUERY,
+      ARTICLE_BY_SLUG_QUERY,
+      ARTICLE_SLUGS_QUERY,
+      RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY,
+    } = await import("../queries/articles");
+
+    expect(ARTICLE_ARCHIVE_QUERY).toContain('slug.current != "test"');
+    expect(ARTICLE_ARCHIVE_QUERY).toContain('!(slug.current match "test-*")');
+    expect(ARTICLE_BY_SLUG_QUERY).toContain('slug.current != "test"');
+    expect(ARTICLE_BY_SLUG_QUERY).toContain('!(slug.current match "test-*")');
+    expect(ARTICLE_SLUGS_QUERY).toContain('slug.current != "test"');
+    expect(ARTICLE_SLUGS_QUERY).toContain('!(slug.current match "test-*")');
+    expect(RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY).toContain('slug.current != "test"');
+    expect(RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY).toContain('!(slug.current match "test-*")');
   });
 
   it("extracts a table of contents from h2 blocks only", async () => {

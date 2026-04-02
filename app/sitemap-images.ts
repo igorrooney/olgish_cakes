@@ -119,7 +119,14 @@ function toImageUrls(images?: SanityImageRef[]) {
 }
 
 function getBlogLastModified(post: BlogImageResult) {
-  return new Date(post.publishedAt || post._updatedAt)
+  const publishedAt = post.publishedAt ? new Date(post.publishedAt) : null
+  const updatedAt = new Date(post._updatedAt)
+
+  if (!publishedAt) {
+    return updatedAt
+  }
+
+  return updatedAt > publishedAt ? updatedAt : publishedAt
 }
 
 async function getBlogImages() {
