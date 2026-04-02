@@ -142,8 +142,20 @@ const baseHamper: GiftHamper = {
     }
   ],
   category: 'Gift Hamper',
-  ingredients: ['Honey', 'Flour'],
-  allergens: ['Gluten']
+  ingredientReference: {
+    _id: 'ingredient-1',
+    cakeName: 'Christmas Gift Box & Card',
+    ingredients: [
+      {
+        _type: 'block',
+        children: [
+          {
+            text: 'Honey, Flour'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 describe('GiftHamperPageClient', () => {
@@ -304,7 +316,6 @@ describe('GiftHamperPageClient', () => {
                 ]
               }
             ],
-            policySource: 'custom',
             customPolicy: {
               dispatchMinDays: 2,
               dispatchMaxDays: 3,
@@ -340,7 +351,6 @@ describe('GiftHamperPageClient', () => {
                 ]
               }
             ],
-            policySource: 'custom',
             customPolicy: {
               dispatchMinDays: 2,
               dispatchMaxDays: 3,
@@ -450,6 +460,83 @@ describe('GiftHamperPageClient', () => {
     const deliveryContent = deliverySection?.content as React.ReactElement<{ value: unknown }>
 
     expect(deliveryContent.props.value).toEqual(customDeliveryDescription)
+  })
+
+  it('prefers ingredient reference rich text over legacy arrays in the ingredients section', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          ingredientReference: {
+            _id: 'ingredient-2',
+            cakeName: 'Christmas Gift Box & Card',
+            ingredients: [
+              {
+                _type: 'block',
+                style: 'normal',
+                children: [
+                  {
+                    _type: 'span',
+                    text: 'Reference hamper ingredient copy'
+                  }
+                ]
+              }
+            ]
+          },
+          ingredients: ['Legacy flour'],
+          allergens: ['Legacy gluten']
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Reference hamper ingredient copy')).toBeInTheDocument()
+    expect(screen.queryByText('Legacy flour')).not.toBeInTheDocument()
+    expect(screen.queryByText('Allergens')).not.toBeInTheDocument()
+  })
+
+  it('falls back to legacy ingredient and allergen arrays when no ingredient reference exists', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          ingredientReference: undefined,
+          ingredients: ['Legacy flour', 'Legacy honey'],
+          allergens: ['Legacy gluten']
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Legacy flour')).toBeInTheDocument()
+    expect(screen.getByText('Legacy honey')).toBeInTheDocument()
+    expect(screen.getByText('Allergens')).toBeInTheDocument()
+    expect(screen.getByText('Legacy gluten')).toBeInTheDocument()
+  })
+
+  it('shows the generic ingredients fallback only when both reference and legacy arrays are empty', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          ingredientReference: undefined,
+          ingredients: [],
+          allergens: []
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const ingredientsSection = getLatestSections().find((section) => section.id === 'ingredients')
+    render(<>{ingredientsSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByText('Ingredient details are available on request before ordering.')).toBeInTheDocument()
   })
 
   it('forces the first isMain hamper image to index 0 in the gallery payload', () => {

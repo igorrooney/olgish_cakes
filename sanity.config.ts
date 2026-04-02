@@ -5,6 +5,7 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { AutomaticFieldHelpField } from "./sanity/components/FieldHelpField";
 
 // NOTE: For hosted Studio builds, avoid reading process.env at runtime in the browser.
 // Hardcode the Sanity project configuration here to ensure the hosted Studio works
@@ -30,6 +31,11 @@ export default defineConfig({
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
   ],
+  form: {
+    components: {
+      field: AutomaticFieldHelpField,
+    },
+  },
   document: {
     newDocumentOptions: (previousOptions, context) => {
       if (context.creationContext.type !== 'global') {

@@ -164,12 +164,14 @@ function renderDescriptionSectionContent(text: string): ReactNode {
 }
 
 function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
-  const ingredients = hamper.ingredients ?? []
-  const allergens = hamper.allergens ?? []
-  const hasIngredients = ingredients.length > 0
-  const hasAllergens = allergens.length > 0
+  const referencedIngredients = hamper.ingredientReference?.ingredients
+  const hasReferencedIngredients = Array.isArray(referencedIngredients) && referencedIngredients.length > 0
+  const legacyIngredients = Array.isArray(hamper.ingredients) ? hamper.ingredients : []
+  const legacyAllergens = Array.isArray(hamper.allergens) ? hamper.allergens : []
+  const hasLegacyIngredients = legacyIngredients.length > 0
+  const hasLegacyAllergens = legacyAllergens.length > 0
 
-  if (!hasIngredients && !hasAllergens) {
+  if (!hasReferencedIngredients && !hasLegacyIngredients && !hasLegacyAllergens) {
     return (
       <p>
         Ingredient details are available on request before ordering.
@@ -179,22 +181,28 @@ function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
 
   return (
     <div className='space-y-3'>
-      {hasIngredients ? (
-        <div>
-          <p className='font-semibold text-base-content'>Ingredients</p>
+      <div>
+        <p className='font-semibold text-base-content'>Ingredients</p>
+        {hasReferencedIngredients ? (
+          <div className='mt-2'>
+            <PortableText
+              value={referencedIngredients}
+              components={deliveryPortableTextComponents}
+            />
+          </div>
+        ) : (
           <ul className='list-disc space-y-1 pl-5'>
-            {ingredients.map((ingredient) => (
+            {legacyIngredients.map((ingredient) => (
               <li key={ingredient}>{ingredient}</li>
             ))}
           </ul>
-        </div>
-      ) : null}
-
-      {hasAllergens ? (
+        )}
+      </div>
+      {!hasReferencedIngredients && hasLegacyAllergens ? (
         <div>
           <p className='font-semibold text-base-content'>Allergens</p>
           <ul className='list-disc space-y-1 pl-5'>
-            {allergens.map((allergen) => (
+            {legacyAllergens.map((allergen) => (
               <li key={allergen}>{allergen}</li>
             ))}
           </ul>

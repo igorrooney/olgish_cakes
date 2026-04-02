@@ -166,9 +166,12 @@ export default {
     },
     {
       name: "order",
-      title: "Display Order",
+      title: "[Not used] Display Order",
       type: "number",
-      description: "Set the order in which this cake appears on the frontend. Lower numbers appear first. Leave empty to use creation date.",
+      deprecated: {
+        reason: 'Not used by the current website as the primary sorting control. Products Display Order is the active sorting source. Keep for legacy fallback compatibility until release branch no longer depends on it.'
+      },
+      description: "Not used by the current website as the primary sorting control. Products Display Order is the active sorting source. Keep for legacy fallback compatibility until the release branch no longer depends on it.",
       validation: (Rule: ValidationRule) =>
         Rule.min(0)
           .integer()
@@ -334,16 +337,13 @@ export default {
         },
         {
           name: "keywords",
-          title: "Keywords",
+          title: "[Not needed for Google SEO] Keywords",
           type: "array",
+          deprecated: {
+            reason: 'Not needed for Google SEO because Google does not use the meta keywords tag. Keep only for old design compatibility until release branch no longer depends on it.'
+          },
           of: [{ type: "string" }],
-          description: "Relevant keywords for this cake",
-        },
-        {
-          name: "canonicalUrl",
-          title: "Canonical URL",
-          type: "url",
-          description: "Canonical URL if different from the page URL",
+          description: "Not needed for Google SEO because Google does not use the meta keywords tag. Keep only for old design compatibility until the release branch no longer depends on it.",
         },
       ],
     },
@@ -407,6 +407,9 @@ export default {
               name: "caption",
               title: "Caption",
               type: "string",
+              deprecated: {
+                reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+              },
               description: "Optional caption for the image",
             },
           ],
@@ -465,7 +468,7 @@ export default {
       name: 'deliverySection',
       title: 'Delivery Section',
       type: 'object',
-      description: 'Configure delivery section content for this cake page.',
+      description: 'Configure delivery content for this cake page. The current website follows Description Source for both delivery text and delivery policy.',
       initialValue: {
         descriptionSource: 'global',
         policySource: 'global'
@@ -476,6 +479,7 @@ export default {
           title: 'Description Source',
           type: 'string',
           initialValue: 'global',
+          description: 'Current website switch for both delivery text and delivery policy.',
           options: {
             list: [
               { title: 'Use global cakes delivery description', value: 'global' },
@@ -518,9 +522,13 @@ export default {
         },
         {
           name: 'policySource',
-          title: 'Policy Source',
+          title: '[Not used] Policy Source',
           type: 'string',
           initialValue: 'global',
+          deprecated: {
+            reason: 'Not used by the current website. Current cake pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until release branch no longer depends on it.'
+          },
+          description: 'Not used by the current website. Current cake pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until the release branch no longer depends on it.',
           options: {
             list: [
               { title: 'Use global cakes delivery policy', value: 'global' },
@@ -534,7 +542,7 @@ export default {
           name: 'customPolicy',
           title: 'Custom Delivery Policy',
           type: 'object',
-          hidden: ({ parent }: { parent?: { policySource?: string } }) => parent?.policySource !== 'custom',
+          hidden: ({ parent }: { parent?: { descriptionSource?: string } }) => parent?.descriptionSource !== 'custom',
           initialValue: {
             dispatchMinDays: 2,
             dispatchMaxDays: 3,
@@ -602,12 +610,12 @@ export default {
           ],
           validation: (Rule: ValidationRule) =>
             Rule.custom((value: unknown, context: ValidationContext) => {
-              if (context.parent?.policySource !== 'custom') {
+              if (context.parent?.descriptionSource !== 'custom') {
                 return true
               }
 
               if (typeof value !== 'object' || value === null) {
-                return 'Custom delivery policy is required when custom policy source is selected.'
+                return 'Custom delivery policy is required when custom description source is selected.'
               }
 
               return true
@@ -617,8 +625,12 @@ export default {
     },
     {
       name: "size",
-      title: "Size",
+      title: "[Not used] Size",
       type: "string",
+      deprecated: {
+        reason: 'Not used by the current website cake design. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website cake design. Keep for old design compatibility until the release branch no longer depends on it.',
       options: {
         list: [
           { title: "6 inch", value: "6" },
@@ -631,8 +643,12 @@ export default {
     },
     {
       name: "pricing",
-      title: "Pricing",
+      title: "[Not used] Pricing",
       type: "object",
+      deprecated: {
+        reason: 'Not used by the current website as the primary pricing source. New Design Pricing by Servings is the active pricing source. Keep for legacy fallback compatibility until release branch no longer depends on it.'
+      },
+      description: "Not used by the current website as the primary pricing source. New Design Pricing by Servings is the active pricing source. Keep for legacy fallback compatibility until the release branch no longer depends on it.",
       fields: [
         {
           name: "standard",
@@ -749,6 +765,9 @@ export default {
           name: "caption",
           title: "Caption",
           type: "string",
+          deprecated: {
+            reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+          },
           description: "Optional caption for the image",
         },
       ],
@@ -776,6 +795,9 @@ export default {
               name: "caption",
               title: "Caption",
               type: "string",
+              deprecated: {
+                reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+              },
               description: "Optional caption for the image",
             },
           ],
@@ -890,15 +912,23 @@ export default {
     },
     {
       name: "ingredients",
-      title: "Ingredients",
+      title: "[Not used] Ingredients",
       type: "array",
+      deprecated: {
+        reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Keep for old design compatibility until the release branch no longer depends on it.',
       of: [{ type: "string" }],
       validation: (Rule: ValidationRule) => Rule.required(),
     },
     {
       name: "allergens",
-      title: "Allergens",
+      title: "[Not used] Allergens",
       type: "array",
+      deprecated: {
+        reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Keep for old design compatibility until the release branch no longer depends on it.',
       of: [{ type: "string" }],
     },
     {
@@ -906,7 +936,7 @@ export default {
       title: 'Ingredients Source (New Design)',
       type: 'reference',
       to: [{ type: 'ingredient' }],
-      description: 'New design only. Select an Ingredients entry to reuse its rich-text ingredients.',
+      description: 'Used on the current cake page as the primary ingredients source. If empty, the website shows a generic ingredients message.',
       options: {
         disableNew: true
       }
@@ -944,6 +974,9 @@ export default {
                   name: "caption",
                   title: "Caption",
                   type: "string",
+                  deprecated: {
+                    reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+                  },
                   description: "Optional caption for the image",
                 },
               ],
@@ -978,6 +1011,9 @@ export default {
                   name: "caption",
                   title: "Caption",
                   type: "string",
+                  deprecated: {
+                    reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+                  },
                   description: "Optional caption for the image",
                 },
               ],
@@ -988,36 +1024,22 @@ export default {
     },
     {
       name: "structuredData",
-      title: "Structured Data",
+      title: "[Not used] Structured Data",
       type: "object",
+      deprecated: {
+        reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Keep for old design compatibility until the release branch no longer depends on it.',
       fields: [
         {
           name: "enableProductSchema",
           title: "Enable Product Schema",
           type: "boolean",
+          deprecated: {
+            reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+          },
           initialValue: true,
           description: "Add structured data for product information",
-        },
-        {
-          name: "brand",
-          title: "Brand",
-          type: "string",
-          initialValue: "Olgish Cakes",
-          description: "Brand name for structured data",
-        },
-        {
-          name: "availability",
-          title: "Availability",
-          type: "string",
-          options: {
-            list: [
-              { title: "In Stock", value: "InStock" },
-              { title: "Out of Stock", value: "OutOfStock" },
-              { title: "Preorder", value: "PreOrder" },
-              { title: "Discontinued", value: "Discontinued" },
-            ],
-          },
-          initialValue: "InStock",
         },
       ],
     },

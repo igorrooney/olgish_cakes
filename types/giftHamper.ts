@@ -25,7 +25,6 @@ export interface GiftHamperSEO {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
-  canonicalUrl?: string;
   faq?: GiftHamperFAQItem[];
 }
 
@@ -70,6 +69,12 @@ export interface GiftHampersDeliverySectionContent {
   policy?: Partial<DeliveryPolicy>
 }
 
+export interface GiftHamperIngredientReference {
+  _id: string
+  cakeName?: string
+  ingredients: RichTextBlock[]
+}
+
 export interface GiftHamper {
   _id: string;
   _createdAt: string;
@@ -91,5 +96,6 @@ export interface GiftHamper {
   category?: string;
   ingredients?: string[];
   allergens?: string[];
+  ingredientReference?: GiftHamperIngredientReference
   order?: number;
 }

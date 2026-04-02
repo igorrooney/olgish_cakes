@@ -219,10 +219,14 @@ function renderDescriptionSectionContent(descriptionText: string): ReactNode {
 }
 
 function renderIngredientsSectionContent(cake: Cake): ReactNode {
-  const hasIngredients = cake.ingredients.length > 0
-  const hasAllergens = Array.isArray(cake.allergens) && cake.allergens.length > 0
+  const referencedIngredients = cake.ingredientReference?.ingredients
+  const hasReferencedIngredients = Array.isArray(referencedIngredients) && referencedIngredients.length > 0
+  const legacyIngredients = Array.isArray(cake.ingredients) ? cake.ingredients : []
+  const legacyAllergens = Array.isArray(cake.allergens) ? cake.allergens : []
+  const hasLegacyIngredients = legacyIngredients.length > 0
+  const hasLegacyAllergens = legacyAllergens.length > 0
 
-  if (!hasIngredients && !hasAllergens) {
+  if (!hasReferencedIngredients && !hasLegacyIngredients && !hasLegacyAllergens) {
     return (
       <p>
         Ingredient details are available on request before ordering.
@@ -232,22 +236,28 @@ function renderIngredientsSectionContent(cake: Cake): ReactNode {
 
   return (
     <div className='space-y-3'>
-      {hasIngredients ? (
-        <div>
-          <p className='font-semibold text-base-content'>Ingredients</p>
+      <div>
+        <p className='font-semibold text-base-content'>Ingredients</p>
+        {hasReferencedIngredients ? (
+          <div className='mt-2'>
+            <PortableText
+              value={referencedIngredients}
+              components={deliveryPortableTextComponents}
+            />
+          </div>
+        ) : (
           <ul className='list-disc space-y-1 pl-5'>
-            {cake.ingredients.map((ingredient) => (
+            {legacyIngredients.map((ingredient) => (
               <li key={ingredient}>{ingredient}</li>
             ))}
           </ul>
-        </div>
-      ) : null}
-
-      {hasAllergens ? (
+        )}
+      </div>
+      {!hasReferencedIngredients && hasLegacyAllergens ? (
         <div>
           <p className='font-semibold text-base-content'>Allergens</p>
           <ul className='list-disc space-y-1 pl-5'>
-            {cake.allergens?.map((allergen) => (
+            {legacyAllergens.map((allergen) => (
               <li key={allergen}>{allergen}</li>
             ))}
           </ul>

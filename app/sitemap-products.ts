@@ -54,11 +54,7 @@ async function getProducts() {
       designs,
       category,
       shortDescription,
-      description,
-      seo {
-        priority,
-        changefreq
-      }
+      description
     }`, {}, config),
     cachedSanityFetch<SitemapGiftHamper[]>(`*[
       _type == "giftHamper" &&

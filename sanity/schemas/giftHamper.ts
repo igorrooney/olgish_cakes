@@ -119,51 +119,22 @@ export default {
   fields: [
     {
       name: "isFeatured",
-      title: "Featured",
+      title: "[Not used] Featured",
       type: "boolean",
-      description: "Show this hamper in the Featured Gift Hampers section on the homepage",
+      deprecated: {
+        reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Keep for old design compatibility until the release branch no longer depends on it.',
       initialValue: false,
     },
     {
       name: "order",
-      title: "Display Order",
+      title: "[Not used] Display Order",
       type: "number",
-      description: "Set the order in which this hamper appears on the frontend. Lower numbers appear first. Leave empty to use creation date.",
-      validation: (Rule: ValidationRule) =>
-        Rule.min(0)
-          .integer()
-          .custom(async (orderNumber: unknown, context: ValidationContext): Promise<true | string> => {
-            // If no order value provided, validation passes
-            if (orderNumber === undefined || orderNumber === null || typeof orderNumber !== 'number') {
-              return true
-            }
-            
-            // Check for duplicate order numbers
-            const { document, getClient } = context
-            const client = getClient({ apiVersion: '2025-03-31' })
-            const currentId = document?._id
-            
-            try {
-              const duplicates = await client.fetch<DuplicateDocument[]>(
-                `*[_type == "giftHamper" && order == $order && _id != $currentId] {
-                  _id,
-                  name,
-                  order
-                }`,
-                { order: orderNumber, currentId: currentId || '' }
-              )
-              
-              if (duplicates.length > 0) {
-                const duplicateNames = duplicates.map((d: DuplicateDocument) => d.name).join(', ')
-                return `Order number ${orderNumber} is already used by: ${duplicateNames}. Please use a unique order number.`
-              }
-            } catch (error: unknown) {
-              // If fetch fails, just pass validation (don't block)
-              console.warn('Failed to check for duplicate order numbers:', error)
-            }
-            
-            return true
-          }),
+      deprecated: {
+        reason: 'Ignored by the current website. Products Display Order is the only active sorting source. Keep only for legacy content compatibility until release branch no longer depends on it.'
+      },
+      description: 'Ignored by the current website. Products Display Order is the only active sorting source. Keep only for legacy content compatibility until the release branch no longer depends on it.',
     },
     {
       name: "name",
@@ -204,36 +175,44 @@ export default {
         },
         {
           name: "keywords",
-          title: "Keywords",
+          title: "[Not needed for Google SEO] Keywords",
           type: "array",
+          deprecated: {
+            reason: 'Not needed for Google SEO because Google does not use the meta keywords tag. Keep only for old design compatibility until release branch no longer depends on it.'
+          },
           of: [{ type: "string" }],
-          description: "Relevant keywords for this hamper",
-        },
-        {
-          name: "canonicalUrl",
-          title: "Canonical URL",
-          type: "url",
-          description: "Canonical URL if different from the page URL",
+          description: "Not needed for Google SEO because Google does not use the meta keywords tag. Keep only for old design compatibility until the release branch no longer depends on it.",
         },
         {
           name: "priority",
-          title: "Sitemap Priority",
+          title: "[Not needed for Google SEO] Sitemap Priority",
           type: "number",
+          deprecated: {
+            reason: 'Not needed for Google SEO because Google ignores sitemap priority. Keep only for old design compatibility until release branch no longer depends on it.'
+          },
+          description: 'Not needed for Google SEO because Google ignores sitemap priority. Keep only for old design compatibility until the release branch no longer depends on it.',
           options: { list: [1.0, 0.9, 0.8, 0.7, 0.6] },
         },
         {
           name: "changefreq",
-          title: "Sitemap Change Frequency",
+          title: "[Not needed for Google SEO] Sitemap Change Frequency",
           type: "string",
+          deprecated: {
+            reason: 'Not needed for Google SEO because Google ignores sitemap changefreq. Keep only for old design compatibility until release branch no longer depends on it.'
+          },
+          description: 'Not needed for Google SEO because Google ignores sitemap changefreq. Keep only for old design compatibility until the release branch no longer depends on it.',
           options: {
             list: ["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"],
           },
         },
         {
           name: "faq",
-          title: "FAQ",
+          title: "[Not used] FAQ",
           type: "array",
-          description: "Optional FAQs to display as rich results",
+          deprecated: {
+            reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+          },
+          description: 'Not used by the current website. Keep for old design compatibility until the release branch no longer depends on it.',
           of: [
             {
               type: "object",
@@ -319,9 +298,13 @@ export default {
         },
         {
           name: 'policySource',
-          title: 'Policy Source',
+          title: '[Not used] Policy Source',
           type: 'string',
           initialValue: 'global',
+          deprecated: {
+            reason: 'Not used by the current website. Current gift hamper pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until release branch no longer depends on it.'
+          },
+          description: 'Not used by the current website. Current gift hamper pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until the release branch no longer depends on it.',
           options: {
             list: [
               { title: 'Use global gift hampers delivery policy', value: 'global' },
@@ -335,7 +318,7 @@ export default {
           name: 'customPolicy',
           title: 'Custom Delivery Policy',
           type: 'object',
-          hidden: ({ parent }: { parent?: { policySource?: string } }) => parent?.policySource !== 'custom',
+          hidden: ({ parent }: { parent?: { descriptionSource?: string } }) => parent?.descriptionSource !== 'custom',
           initialValue: {
             dispatchMinDays: 2,
             dispatchMaxDays: 3,
@@ -403,7 +386,7 @@ export default {
           ],
           validation: (Rule: ValidationRule) =>
             Rule.custom((value: unknown, context: ValidationContext) => {
-              if (context.parent?.policySource !== 'custom') {
+              if (context.parent?.descriptionSource !== 'custom') {
                 return true
               }
 
@@ -449,15 +432,33 @@ export default {
     },
     {
       name: "ingredients",
-      title: "Ingredients",
+      title: "[Not used] Ingredients",
       type: "array",
+      deprecated: {
+        reason: 'Not used by the current website. Ingredient Reference is the active ingredients source. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Ingredient Reference is the active ingredients source. Keep for old design compatibility until the release branch no longer depends on it.',
       of: [{ type: "string" }],
     },
     {
-      name: "allergens",
-      title: "Allergens",
-      type: "array",
-      of: [{ type: "string" }],
+      name: 'ingredientReference',
+      title: 'Ingredients Source (New Design)',
+      type: 'reference',
+      to: [{ type: 'ingredient' }],
+      description: 'Used on the current gift hamper page as the primary ingredients source. If empty, the website shows a generic ingredients message.',
+      options: {
+        disableNew: true
+      }
+    },
+    {
+      name: 'allergens',
+      title: '[Not used] Allergens',
+      type: 'array',
+      deprecated: {
+        reason: 'Not used by the current website. Ingredient Reference is the active ingredients source and allergen details are handled there or shared on request. Keep for old design compatibility until release branch no longer depends on it.'
+      },
+      description: 'Not used by the current website. Ingredient Reference is the active ingredients source and allergen details are handled there or shared on request. Keep for old design compatibility until the release branch no longer depends on it.',
+      of: [{ type: 'string' }]
     },
     {
       name: "images",
@@ -469,7 +470,15 @@ export default {
           options: { hotspot: true },
           fields: [
             { name: "alt", title: "Alt text", type: "string" },
-            { name: "caption", title: "Caption", type: "string" },
+            {
+              name: "caption",
+              title: "Caption",
+              type: "string",
+              deprecated: {
+                reason: 'Not used by the current website. Keep for old design compatibility until release branch no longer depends on it.'
+              },
+              description: "Optional caption for the image",
+            },
             { name: "isMain", title: "Use as main image", type: "boolean" },
           ],
         },

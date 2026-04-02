@@ -143,11 +143,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           name: "Ingredients",
           value: cake.ingredients?.join(", ") || "Traditional Ukrainian ingredients",
         },
-        {
-          "@type": "PropertyValue",
-          name: "Allergens",
-          value: cake.allergens?.join(", ") || "Contains gluten, dairy, eggs",
-        },
       ],
       ...(aggregateRating ? { aggregateRating } : {}),
       review: [

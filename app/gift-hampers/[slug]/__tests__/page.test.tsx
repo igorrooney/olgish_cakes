@@ -121,8 +121,7 @@ describe('HamperDetailPage', () => {
         ...mockHamper,
         seo: {
           metaTitle: 'Custom SEO Title for Testing',
-          metaDescription: 'Custom SEO Description for Testing',
-          keywords: ['custom', 'seo', 'keywords']
+          metaDescription: 'Custom SEO Description for Testing'
         }
       }
       mockGetGiftHamperBySlug.mockResolvedValue(hamperWithSEO)
@@ -131,7 +130,6 @@ describe('HamperDetailPage', () => {
 
       expect(metadata.title).toBe('Custom SEO Title for Testing')
       expect(metadata.description).toBe('Custom SEO Description for Testing')
-      expect(metadata.keywords).toBe('custom, seo, keywords')
     })
 
     it('should normalize a CMS title that already includes the Olgish Cakes suffix', async () => {
@@ -139,8 +137,7 @@ describe('HamperDetailPage', () => {
         ...mockHamper,
         seo: {
           metaTitle: 'Postal Medovik | Olgish Cakes',
-          metaDescription: 'Custom SEO Description for Testing',
-          keywords: ['custom']
+          metaDescription: 'Custom SEO Description for Testing'
         }
       })
 
@@ -185,8 +182,7 @@ describe('HamperDetailPage', () => {
         ...mockHamper,
         seo: {
           metaTitle: 'Custom SEO Title for Testing',
-          metaDescription: '  Custom  SEO \n Description for Testing  ',
-          keywords: ['custom', 'seo', 'keywords']
+          metaDescription: '  Custom  SEO \n Description for Testing  '
         },
         shortDescription: [{ children: [{ text: 'Ignored by blocksToText mock' }] }]
       }
@@ -218,8 +214,7 @@ describe('HamperDetailPage', () => {
         slug: { current: 'cake-by-post' },
         seo: {
           metaTitle: 'My Custom Cake by Post Title',
-          metaDescription: 'My custom description',
-          keywords: ['custom', 'keywords']
+          metaDescription: 'My custom description'
         }
       }
       mockGetGiftHamperBySlug.mockResolvedValue(cakeByPostWithSEO)
@@ -229,7 +224,23 @@ describe('HamperDetailPage', () => {
       // Custom SEO should override the hardcoded "cake-by-post" optimization
       expect(metadata.title).toBe('My Custom Cake by Post Title')
       expect(metadata.description).toBe('My custom description')
-      expect(metadata.keywords).toBe('custom, keywords')
+    })
+
+    it('should keep gift hampers self-canonical even when legacy canonical data exists in CMS payloads', async () => {
+      mockGetGiftHamperBySlug.mockResolvedValue({
+        ...mockHamper,
+        slug: { current: 'deluxe-hamper' },
+        seo: {
+          metaTitle: 'Custom SEO Title for Testing',
+          metaDescription: 'Custom SEO Description for Testing',
+          canonicalUrl: 'https://legacy.example.com/gift-hampers/deluxe-hamper'
+        }
+      })
+
+      const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
+
+      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post/deluxe-hamper')
+      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post/deluxe-hamper')
     })
 
     it('should return 404 metadata for missing hamper', async () => {
@@ -532,7 +543,6 @@ describe('HamperDetailPage', () => {
         deliverySection: {
           descriptionSource: 'custom',
           customDescription: [{ _type: 'block', children: [{ text: 'Dispatch in 2-3 working days. UK delivery is \u00A36.' }] }],
-          policySource: 'custom',
           customPolicy: {
             dispatchMinDays: 2,
             dispatchMaxDays: 3,
@@ -824,67 +834,7 @@ describe('HamperDetailPage', () => {
       expect(product.nutrition).toBeUndefined()
     })
 
-    it('should include ingredient properties when present', async () => {
-      const hamperWithIngredients = {
-        ...mockHamper,
-        ingredients: ['Flour', 'Honey', 'Eggs', 'Sugar'],
-        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
-      }
-      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithIngredients)
-
-      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const productScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"Product"')
-      )
-
-      const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      // Extract Product from @graph if present
-      const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
-        : jsonLd
-      
-      const properties = product.additionalProperty
-      
-      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
-      expect(ingredients).toBeDefined()
-      expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
-    })
-
-    it('should include allergen properties when present', async () => {
-      const hamperWithAllergens = {
-        ...mockHamper,
-        allergens: ['Gluten', 'Eggs', 'Dairy'],
-        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
-      }
-      mockGetGiftHamperBySlug.mockResolvedValue(hamperWithAllergens)
-
-      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const productScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"Product"')
-      )
-
-      const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      // Extract Product from @graph if present
-      const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
-        : jsonLd
-      
-      const properties = product.additionalProperty
-      
-      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
-      expect(allergens).toBeDefined()
-      expect(allergens.value).toBe('Gluten, Eggs, Dairy')
-    })
-
-    it('CRITICAL: should preserve only visible additionalProperty fields when multiple conditions are true', async () => {
+    it('should not include additionalProperty even when legacy ingredients or allergens are present in data', async () => {
       const fullHamper = {
         ...mockHamper,
         slug: { current: 'cake-by-post' },
@@ -895,54 +845,6 @@ describe('HamperDetailPage', () => {
       mockGetGiftHamperBySlug.mockResolvedValue(fullHamper)
 
       const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'cake-by-post' }) })
-      const { container } = render(page)
-
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      const productScript = Array.from(scripts).find(script => 
-        script.textContent?.includes('"@type":"Product"')
-      )
-
-      const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      // Extract Product from @graph if present
-      const product = jsonLd['@graph'] 
-        ? jsonLd['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
-        : jsonLd
-      
-      const properties = product.additionalProperty
-      
-      expect(properties).toHaveLength(2)
-
-      const ingredients = properties.find((p: UnknownRecord) => p.name === 'Ingredients')
-      expect(ingredients).toBeDefined()
-      expect(ingredients.value).toBe('Flour, Honey, Eggs, Sugar')
-
-      const allergens = properties.find((p: UnknownRecord) => p.name === 'Allergens')
-      expect(allergens).toBeDefined()
-      expect(allergens.value).toBe('Gluten, Eggs, Dairy')
-
-      const deliveryMethod = properties.find((p: UnknownRecord) => p.name === 'Delivery Method')
-      const packaging = properties.find((p: UnknownRecord) => p.name === 'Packaging')
-      const shelfLife = properties.find((p: UnknownRecord) => p.name === 'Shelf Life')
-      expect(deliveryMethod).toBeUndefined()
-      expect(packaging).toBeUndefined()
-      expect(shelfLife).toBeUndefined()
-
-      const propertyNames = properties.map((p: UnknownRecord) => p.name)
-      const uniqueNames = [...new Set(propertyNames)]
-      expect(propertyNames.length).toBe(uniqueNames.length)
-    })
-
-    it('should not include additionalProperty when visible fields are absent', async () => {
-      const basicHamper = {
-        ...mockHamper,
-        ingredients: [],
-        allergens: [],
-        images: [{ asset: { _ref: 'image-Tb9Ew8CXIwaY6R1kjMvI0uRR-2000x3000-jpg' }, isMain: true }]
-      }
-      mockGetGiftHamperBySlug.mockResolvedValue(basicHamper)
-
-      const page = await HamperDetailPage({ params: Promise.resolve({ slug: 'deluxe-hamper' }) })
       const { container } = render(page)
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')

@@ -31,12 +31,14 @@ export const GIFT_HAMPER_BY_SLUG_QUERY = groq`
       isFeatured
     },
     ingredients,
-    allergens,
+    ingredientReference->{
+      _id,
+      cakeName,
+      ingredients
+    },
     seo {
       metaTitle,
       metaDescription,
-      keywords,
-      canonicalUrl,
       faq[] {
         question,
         answer

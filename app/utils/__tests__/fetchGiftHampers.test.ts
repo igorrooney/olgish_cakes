@@ -65,14 +65,12 @@ describe('fetchGiftHampers', () => {
       const firstHamper: GiftHamper = {
         ...mockHamper,
         _id: 'hamper-1',
-        name: 'Hamper One',
-        order: 2
+        name: 'Hamper One'
       }
       const secondHamper: GiftHamper = {
         ...mockHamper,
         _id: 'hamper-2',
-        name: 'Hamper Two',
-        order: 1
+        name: 'Hamper Two'
       }
 
       mockFetch.mockResolvedValue({
@@ -87,28 +85,58 @@ describe('fetchGiftHampers', () => {
       expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-1'])
     })
 
-    it('should fallback to legacy order when products display order is not configured', async () => {
+    it('should use stable non-editorial fallback ordering when products display order is not configured', async () => {
       const firstHamper: GiftHamper = {
         ...mockHamper,
         _id: 'hamper-1',
-        name: 'Hamper One',
-        order: 2
+        _createdAt: '2025-01-03',
+        name: 'Bravo Hamper'
       }
       const secondHamper: GiftHamper = {
         ...mockHamper,
         _id: 'hamper-2',
-        name: 'Hamper Two',
-        order: 1
+        _createdAt: '2025-01-02',
+        name: 'Alpha Hamper'
+      }
+      const thirdHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-3',
+        _createdAt: '2025-01-04',
+        name: 'Bravo Hamper'
       }
 
       mockFetch.mockResolvedValue({
-        giftHampers: [firstHamper, secondHamper],
+        giftHampers: [firstHamper, secondHamper, thirdHamper],
         displayOrder: null
       })
 
       const result = await getAllGiftHampers()
 
-      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-1'])
+      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-3', 'hamper-1'])
+    })
+
+    it('should normalize draft references in products display order for gift hampers', async () => {
+      const firstHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-1',
+        name: 'Alpha Hamper'
+      }
+      const secondHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-2',
+        name: 'Bravo Hamper'
+      }
+
+      mockFetch.mockResolvedValue({
+        giftHampers: [firstHamper, secondHamper],
+        displayOrder: {
+          giftHampersOrder: [{ _ref: 'drafts.hamper-1' }, { _ref: 'hamper-2' }]
+        }
+      })
+
+      const result = await getAllGiftHampers()
+
+      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-1', 'hamper-2'])
     })
 
     it('should use cache for non-preview requests', async () => {
@@ -196,7 +224,10 @@ describe('fetchGiftHampers', () => {
 
   describe('getFeaturedGiftHampers', () => {
     it('should fetch featured gift hampers', async () => {
-      mockFetch.mockResolvedValue([mockHamper])
+      mockFetch.mockResolvedValue({
+        giftHampers: [mockHamper],
+        displayOrder: null
+      })
 
       const result = await getFeaturedGiftHampers()
 
@@ -204,8 +235,39 @@ describe('fetchGiftHampers', () => {
       expect(mockFetch).toHaveBeenCalled()
     })
 
+    it('should follow products display order for featured gift hampers', async () => {
+      const firstHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-1',
+        _createdAt: '2025-01-01',
+        name: 'Featured Alpha',
+        isFeatured: true
+      }
+      const secondHamper: GiftHamper = {
+        ...mockHamper,
+        _id: 'hamper-2',
+        _createdAt: '2025-01-02',
+        name: 'Featured Bravo',
+        isFeatured: true
+      }
+
+      mockFetch.mockResolvedValue({
+        giftHampers: [firstHamper, secondHamper],
+        displayOrder: {
+          giftHampersOrder: [{ _ref: 'hamper-2' }, { _ref: 'hamper-1' }]
+        }
+      })
+
+      const result = await getFeaturedGiftHampers()
+
+      expect(result.map((hamper) => hamper._id)).toEqual(['hamper-2', 'hamper-1'])
+    })
+
     it('should use cache for non-preview requests', async () => {
-      mockFetch.mockResolvedValue([mockHamper])
+      mockFetch.mockResolvedValue({
+        giftHampers: [mockHamper],
+        displayOrder: null
+      })
 
       const result1 = await getFeaturedGiftHampers()
       const result2 = await getFeaturedGiftHampers()
@@ -216,7 +278,10 @@ describe('fetchGiftHampers', () => {
     })
 
     it('should bypass cache for preview requests', async () => {
-      mockFetch.mockResolvedValue([mockHamper])
+      mockFetch.mockResolvedValue({
+        giftHampers: [mockHamper],
+        displayOrder: null
+      })
 
       await getFeaturedGiftHampers(true)
       await getFeaturedGiftHampers(true)
@@ -225,7 +290,10 @@ describe('fetchGiftHampers', () => {
     })
 
     it('should filter featured hampers only', async () => {
-      mockFetch.mockResolvedValue([mockHamper])
+      mockFetch.mockResolvedValue({
+        giftHampers: [mockHamper],
+        displayOrder: null
+      })
 
       const result = await getFeaturedGiftHampers()
 
@@ -368,7 +436,10 @@ describe('fetchGiftHampers', () => {
     })
 
     it('should include fewer fields in getFeaturedGiftHampers', async () => {
-      mockFetch.mockResolvedValue([mockHamper])
+      mockFetch.mockResolvedValue({
+        giftHampers: [mockHamper],
+        displayOrder: null
+      })
 
       const result = await getFeaturedGiftHampers(true) // Use preview mode
 

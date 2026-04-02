@@ -100,15 +100,7 @@ function generateCakeItem(cake: Cake, baseUrl: string): string {
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || cake.pricing?.individual || 25;
-  const availability = cake.structuredData?.availability === 'InStock' 
-    ? 'in stock' 
-    : cake.structuredData?.availability === 'OutOfStock' 
-      ? 'out of stock' 
-      : cake.structuredData?.availability === 'PreOrder' 
-        ? 'preorder' 
-        : cake.structuredData?.availability === 'Discontinued' 
-          ? 'discontinued' 
-          : 'in stock';
+  const availability = 'in stock'
 
   // Handle description properly (could be array or string)
   let description = Array.isArray(cake.shortDescription)

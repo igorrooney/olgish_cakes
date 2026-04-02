@@ -56,8 +56,20 @@ const baseHamper: GiftHamper = {
   ],
   shortDescription: [],
   price: 9,
-  ingredients: ['Flour'],
-  allergens: ['Gluten']
+  ingredientReference: {
+    _id: 'ingredient-1',
+    ingredients: [
+      {
+        _type: 'block',
+        children: [
+          {
+            _type: 'span',
+            text: 'Flour'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 describe('gift-hampers delivery-content', () => {
@@ -124,6 +136,36 @@ describe('gift-hampers delivery-content', () => {
     const hamper: GiftHamper = {
       ...baseHamper,
       deliverySection: {
+        descriptionSource: 'custom',
+        customPolicy: {
+          dispatchMinDays: 4,
+          dispatchMaxDays: 6,
+          shippingFeeGbp: 2.75,
+          shippingDestinationCountry: 'GB',
+          deliveryMethod: defaultDeliveryMethod
+        }
+      },
+      giftHampersDeliverySection: {
+        name: 'Shipping & delivery',
+        description: globalDescription,
+        policy: globalPolicy
+      }
+    }
+
+    expect(resolveGiftHamperDeliveryPolicy(hamper)).toEqual({
+      dispatchMinDays: 4,
+      dispatchMaxDays: 6,
+      shippingFeeGbp: 2.75,
+      shippingDestinationCountry: 'GB',
+      deliveryMethod: defaultDeliveryMethod
+    })
+  })
+
+  it('uses custom policy when legacy policy source is custom and policy exists', () => {
+    const hamper: GiftHamper = {
+      ...baseHamper,
+      deliverySection: {
+        descriptionSource: 'global',
         policySource: 'custom',
         customPolicy: {
           dispatchMinDays: 4,

@@ -92,6 +92,52 @@ describe('sitemap', () => {
       expect(blogUrl).toBeDefined()
     })
 
+    it('should use the most recent article date for lastModified', async () => {
+      mockFetch
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([{
+          slug: { current: 'updated-post' },
+          _updatedAt: '2025-02-10T12:00:00.000Z',
+          publishedAt: '2025-01-15T09:00:00.000Z'
+        }])
+        .mockResolvedValueOnce([])
+
+      const result = await sitemap()
+      const blogUrl = result.find((entry) => entry.url.includes('/blog/updated-post'))
+
+      expect(blogUrl?.lastModified).toEqual(new Date('2025-02-10T12:00:00.000Z'))
+    })
+
+    it('should assign a fixed article priority so sitemap sorting stays type-safe', async () => {
+      mockFetch
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([{
+          slug: { current: 'priority-post' },
+          _updatedAt: '2025-02-10T12:00:00.000Z',
+          publishedAt: '2025-01-15T09:00:00.000Z'
+        }])
+        .mockResolvedValueOnce([])
+
+      const result = await sitemap()
+      const blogUrl = result.find((entry) => entry.url.includes('/blog/priority-post'))
+
+      expect(blogUrl?.priority).toBe(0.6)
+    })
+
+    it('should not emit legacy gift-hampers URLs in the sitemap', async () => {
+      mockFetch
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([{ slug: { current: 'deluxe-hamper' }, _updatedAt: '2025-01-01T00:00:00.000Z' }])
+
+      const result = await sitemap()
+
+      expect(result.find((entry) => entry.url.includes('/gift-hampers/'))).toBeUndefined()
+      expect(
+        result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post/deluxe-hamper')
+      ).toBeDefined()
+    })
+
     it('should include location pages', async () => {
       mockFetch.mockResolvedValue([])
 
@@ -192,52 +238,6 @@ describe('sitemap', () => {
   })
 
   describe('Priority Logic', () => {
-    it('should prioritize recent articles', async () => {
-      const recentDate = new Date().toISOString()
-      const oldDate = '2020-01-01'
-
-      mockFetch
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          { slug: { current: 'recent' }, _updatedAt: recentDate, publishedAt: recentDate },
-          { slug: { current: 'old' }, _updatedAt: oldDate, publishedAt: oldDate }
-        ])
-        .mockResolvedValueOnce([])
-
-      const result = await sitemap()
-      const recentUrl = result.find((entry) => entry.url.includes('/blog/recent'))
-      const oldUrl = result.find((entry) => entry.url.includes('/blog/old'))
-
-      expect(recentUrl?.priority).toBeGreaterThan(oldUrl?.priority || 0)
-    })
-
-    it('should use weekly change frequency for trending article topics by default', async () => {
-      mockFetch
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          {
-            slug: { current: 'trend' },
-            _updatedAt: '2025-01-01',
-            publishedAt: '2025-01-01',
-            topic: { slug: 'cake-by-post' }
-          },
-          {
-            slug: { current: 'standard' },
-            _updatedAt: '2025-01-01',
-            publishedAt: '2025-01-01',
-            topic: { slug: 'custom-cakes' }
-          }
-        ])
-        .mockResolvedValueOnce([])
-
-      const result = await sitemap()
-      const trendingUrl = result.find((entry) => entry.url.includes('/blog/trend'))
-      const standardUrl = result.find((entry) => entry.url.includes('/blog/standard'))
-
-      expect(trendingUrl?.changeFrequency).toBe('weekly')
-      expect(standardUrl?.changeFrequency).toBe('monthly')
-    })
-
     it('should sort entries by priority', async () => {
       mockFetch.mockResolvedValue([])
 
@@ -250,7 +250,7 @@ describe('sitemap', () => {
   })
 
   describe('SEO Fields', () => {
-    it('should use custom priority from SEO', async () => {
+    it('should use fixed cake priority instead of legacy SEO priority', async () => {
       mockFetch
         .mockResolvedValueOnce([{ slug: { current: 'test' }, _updatedAt: '2025-01-01', seo: { priority: 0.95 } }])
         .mockResolvedValueOnce([])
@@ -259,10 +259,10 @@ describe('sitemap', () => {
       const result = await sitemap()
       const entry = result.find((item) => item.url.includes('/cakes/test'))
 
-      expect(entry?.priority).toBe(0.95)
+      expect(entry?.priority).toBe(0.8)
     })
 
-    it('should use custom changeFrequency from SEO', async () => {
+    it('should use fixed cake changeFrequency instead of legacy SEO changefreq', async () => {
       mockFetch
         .mockResolvedValueOnce([{ slug: { current: 'test' }, _updatedAt: '2025-01-01', seo: { changefreq: 'daily' } }])
         .mockResolvedValueOnce([])
@@ -271,7 +271,7 @@ describe('sitemap', () => {
       const result = await sitemap()
       const entry = result.find((item) => item.url.includes('/cakes/test'))
 
-      expect(entry?.changeFrequency).toBe('daily')
+      expect(entry?.changeFrequency).toBe('weekly')
     })
   })
 
@@ -300,6 +300,8 @@ describe('sitemap', () => {
       expect(blogQuery).toContain('!slug.current match "test*"')
       expect(blogQuery).toContain('!slug.current match "*test*"')
       expect(blogQuery).toContain('defined(slug.current)')
+      expect(blogQuery).not.toContain('seo {')
+      expect(blogQuery).not.toContain('"topic": topic->')
     })
 
     it('should query with filters to exclude test items from gift hampers', async () => {

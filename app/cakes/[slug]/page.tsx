@@ -81,18 +81,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       normalizedShortDescription ||
       `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
 
-  const keywords = isHoneyCake
-    ? `buy honey cake online, order honey cake, honey cake delivery, buy medovik online, ukrainian honey cake online, order medovik, honey cake uk, buy honey cake uk, medovik delivery, online honey cake, ${cake.name}, Ukrainian honey cake, Medovik, Leeds cake, traditional Ukrainian cake, fresh cake delivery, UK cake delivery`
-    : (cake.seo?.keywords?.join(", ") ||
-      `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`);
-
-  const canonicalUrl =
-    cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
+  const canonicalUrl = `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
 
   return {
     title: normalizedMetaTitle,
     description: metaDescription,
-    keywords,
     authors: [{ name: "Olgish Cakes" }],
     creator: "Olgish Cakes",
     publisher: "Olgish Cakes",

@@ -1,7 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { FieldProps } from 'sanity'
 import type { ReactNode } from 'react'
-import { FieldHelpField, createFieldHelpFieldComponent, type FieldHelpContent } from '../FieldHelpField'
+import {
+  AutomaticFieldHelpField,
+  FieldHelpField,
+  createAutomaticFieldHelpContent,
+  createFieldHelpFieldComponent,
+  type FieldHelpContent
+} from '../FieldHelpField'
 
 jest.mock('@sanity/ui', () => {
   const React = require('react')
@@ -112,5 +118,77 @@ describe('createFieldHelpFieldComponent', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Help' }))
 
     expect(screen.getByText('Title help')).toBeInTheDocument()
+  })
+})
+
+describe('createAutomaticFieldHelpContent', () => {
+  it('creates slug-specific guidance for editors', () => {
+    const help = createAutomaticFieldHelpContent(createFieldProps({
+      name: 'slug',
+      schemaType: {
+        name: 'slug',
+        title: 'Slug',
+        jsonType: 'object',
+        type: { name: 'slug', title: 'Slug', jsonType: 'object' },
+      } as FieldProps['schemaType'],
+      title: 'Slug',
+      description: 'Used in the page URL',
+      path: ['slug'],
+    }))
+
+    expect(help.whatItIs).toContain('short web address part')
+    expect(help.whatToEnter).toContain('lowercase words with hyphens')
+    expect(help.examples).toContain('honey-cake-by-post')
+  })
+
+  it('creates section guidance for object fields', () => {
+    const help = createAutomaticFieldHelpContent(createFieldProps({
+      name: 'seo',
+      schemaType: {
+        name: 'object',
+        title: 'Object',
+        jsonType: 'object',
+        type: { name: 'object', title: 'Object', jsonType: 'object' },
+      } as FieldProps['schemaType'],
+      title: 'SEO Settings',
+      description: 'Optional search settings',
+      path: ['seo'],
+    }))
+
+    expect(help.whatItIs).toContain('section groups together settings')
+    expect(help.whereUsed).toContain('Search and social metadata when relevant')
+  })
+})
+
+describe('AutomaticFieldHelpField', () => {
+  it('renders the default field and generated help dialog', () => {
+    const renderDefault = jest.fn(() => <input aria-label='Auto help input' />)
+
+    render(
+      <AutomaticFieldHelpField
+        {...createFieldProps({
+          children: undefined,
+          renderDefault,
+          name: 'slug',
+          title: 'Slug',
+          description: 'Used in the page URL',
+          path: ['slug'],
+          schemaType: {
+            name: 'slug',
+            title: 'Slug',
+            jsonType: 'object',
+            type: { name: 'slug', title: 'Slug', jsonType: 'object' },
+          } as FieldProps['schemaType'],
+        })}
+      />
+    )
+
+    expect(renderDefault).toHaveBeenCalled()
+    expect(screen.getByLabelText('Auto help input')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Help' }))
+
+    expect(screen.getByText('Slug help')).toBeInTheDocument()
+    expect(screen.getByText('What to enter')).toBeInTheDocument()
   })
 })
