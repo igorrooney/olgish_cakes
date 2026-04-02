@@ -183,7 +183,12 @@ describe("lib/articles", () => {
   });
 
   it("keeps visible editorial imagery separate from metadata fallbacks", async () => {
-    const { getArticleImageUrl, getArticleMetadataImageUrl, getArticleVisibleImageUrl } =
+    const {
+      getArticleCardImageUrl,
+      getArticleImageUrl,
+      getArticleMetadataImageUrl,
+      getArticleVisibleImageUrl,
+    } =
       await import("../articles");
 
     const article = {
@@ -203,8 +208,59 @@ describe("lib/articles", () => {
     };
 
     expect(getArticleVisibleImageUrl(article)).toBeUndefined();
+    expect(getArticleCardImageUrl(article)).toBeUndefined();
     expect(getArticleMetadataImageUrl(article)).toBe("https://cdn.sanity.io/hamper.jpg");
     expect(getArticleImageUrl(article)).toBe("https://cdn.sanity.io/hamper.jpg");
+  });
+
+  it("prefers card imagery for archive cards while keeping cover imagery for hero surfaces", async () => {
+    const {
+      getArticleCardImageUrl,
+      getArticleMetadataImageUrl,
+      getArticleVisibleImageUrl,
+    } = await import("../articles");
+
+    const article = {
+      cardImage: {
+        asset: {
+          url: "https://cdn.sanity.io/card.jpg",
+        },
+      },
+      coverImage: {
+        asset: {
+          url: "https://cdn.sanity.io/cover.jpg",
+        },
+      },
+      primaryProduct: {
+        _id: "hamper-1",
+        _type: "giftHamper" as const,
+        name: "Postal Medovik",
+        slug: "postal-medovik",
+        image: {
+          asset: {
+            url: "https://cdn.sanity.io/hamper.jpg",
+          },
+        },
+      },
+    };
+
+    expect(getArticleCardImageUrl(article)).toBe("https://cdn.sanity.io/card.jpg");
+    expect(getArticleVisibleImageUrl(article)).toBe("https://cdn.sanity.io/cover.jpg");
+    expect(getArticleMetadataImageUrl(article)).toBe("https://cdn.sanity.io/cover.jpg");
+  });
+
+  it("falls back to the cover image for archive cards when no card crop exists", async () => {
+    const { getArticleCardImageUrl } = await import("../articles");
+
+    expect(
+      getArticleCardImageUrl({
+        coverImage: {
+          asset: {
+            url: "https://cdn.sanity.io/cover.jpg",
+          },
+        },
+      })
+    ).toBe("https://cdn.sanity.io/cover.jpg");
   });
 
   it("builds transformed Sanity CDN image URLs and responsive loaders without touching non-Sanity assets", async () => {

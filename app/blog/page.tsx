@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import {
   BLOG_ARCHIVE_PAGE_SIZE,
+  getArticleCardImageUrl,
   formatArticleDate,
   getArticleHref,
   getArticleVisibleImageUrl,
@@ -144,8 +145,8 @@ function ArchiveArticleCard({
   index: number;
 }) {
   const isLeadSupportingCard = index === 0;
-  const imageUrl = getArticleVisibleImageUrl(article);
-  const imageAlt = article.coverImage?.alt || article.cardImage?.alt || article.title;
+  const imageUrl = getArticleCardImageUrl(article);
+  const imageAlt = article.cardImage?.alt || article.coverImage?.alt || article.title;
   const hasImage = Boolean(imageUrl);
   const articleClassName = isLeadSupportingCard
     ? "h-full tablet:col-span-2"

@@ -50,6 +50,12 @@ jest.mock("@/lib/articles", () => ({
   formatArticleDate: (value: string) =>
     value.startsWith("2025-04-05") ? "5 April 2025" : "1 April 2025",
   getArticleBySlug: (...args: unknown[]) => mockGetArticleBySlug(...args),
+  getArticleCardImageUrl: (article: {
+    coverImage?: { asset?: { url?: string } };
+    cardImage?: { asset?: { url?: string } };
+  }) => {
+    return article.cardImage?.asset?.url || article.coverImage?.asset?.url;
+  },
   getArticleHref: (slug: string) => `/blog/${slug}`,
   getSanityCdnImageUrl: (imageUrl?: string) => imageUrl,
   getArticleMetadataImageUrl: (article: {
@@ -184,6 +190,18 @@ const relatedArticles = [
       title: "Cake by post",
       slug: "cake-by-post",
     },
+    cardImage: {
+      asset: {
+        url: "https://cdn.sanity.io/related-card.jpg",
+      },
+      alt: "Related card crop",
+    },
+    coverImage: {
+      asset: {
+        url: "https://cdn.sanity.io/related-cover.jpg",
+      },
+      alt: "Related cover crop",
+    },
     primaryProduct: {
       image: {
         asset: {
@@ -255,7 +273,12 @@ describe("BlogArticlePage", () => {
 
     const { container } = render(view);
 
-    expect(container.querySelectorAll("img")).toHaveLength(1);
+    expect(screen.queryByAltText("Cover image")).not.toBeInTheDocument();
+    expect(screen.getByAltText("Related card crop")).toHaveAttribute(
+      "src",
+      "https://cdn.sanity.io/related-card.jpg"
+    );
+    expect(container.querySelectorAll("img")).toHaveLength(2);
     expect(screen.getAllByText("How to order cake by post")).toHaveLength(1);
     expect(screen.queryByText(/reached the box before it reached the camera/i)).not.toBeInTheDocument();
   });
@@ -312,7 +335,16 @@ describe("BlogArticlePage", () => {
       "/cakes-by-post/postal-medovik"
     );
     expect(screen.getAllByRole("link", { name: /birthday cakes by post/i })).toHaveLength(1);
+    expect(screen.getByAltText("Cover image")).toHaveAttribute(
+      "src",
+      "https://cdn.sanity.io/article-cover.jpg"
+    );
+    expect(screen.getByAltText("Related card crop")).toHaveAttribute(
+      "src",
+      "https://cdn.sanity.io/related-card.jpg"
+    );
     expect(screen.queryByAltText("Related product image")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("Related cover crop")).not.toBeInTheDocument();
     expect(dek.className).toContain("font-body");
     expect(dek.className).toContain("text-[17px]");
     expect(dek.className).toContain("tablet:text-[23px]");

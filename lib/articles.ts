@@ -293,6 +293,14 @@ export function getArticleVisibleImageUrl(article: ArticleImageSelectionInput) {
   return getArticleVisibleImage(article)?.asset?.url;
 }
 
+export function getArticleCardImage(article: ArticleImageSelectionInput) {
+  return article.cardImage ?? article.coverImage;
+}
+
+export function getArticleCardImageUrl(article: ArticleImageSelectionInput) {
+  return getArticleCardImage(article)?.asset?.url;
+}
+
 export function getArticleMetadataImage(article: ArticleImageSelectionInput) {
   return getArticleVisibleImage(article) ?? article.primaryProduct?.image;
 }

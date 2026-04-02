@@ -52,6 +52,12 @@ const mockGetPaginatedArchiveArticles = jest.fn();
 jest.mock("@/lib/articles", () => ({
   BLOG_ARCHIVE_PAGE_SIZE: 12,
   formatArticleDate: () => "1 April 2025",
+  getArticleCardImageUrl: (article: {
+    coverImage?: { asset?: { url?: string } };
+    cardImage?: { asset?: { url?: string } };
+  }) => {
+    return article.cardImage?.asset?.url || article.coverImage?.asset?.url;
+  },
   getArticleHref: (slug: string) => `/blog/${slug}`,
   getSanityCdnImageLoader:
     ({ width, height, fit, quality }: { width?: number; height?: number; fit?: string; quality?: number }) =>
@@ -249,11 +255,17 @@ const imageSupportingArticle = {
   dek: "Packing dek",
   publishedAt: "2025-03-05T09:00:00.000Z",
   topic: topics[0],
+  cardImage: {
+    asset: {
+      url: "https://cdn.sanity.io/packing-card.jpg",
+    },
+    alt: "Packed cake slices card crop",
+  },
   coverImage: {
     asset: {
-      url: "https://cdn.sanity.io/packing.jpg",
+      url: "https://cdn.sanity.io/packing-cover.jpg",
     },
-    alt: "Packed cake slices",
+    alt: "Packed cake slices cover crop",
   },
 };
 
@@ -359,7 +371,7 @@ describe("BlogPage", () => {
     expect(summary.className).toContain("font-body");
 
     const leadImage = screen.getByAltText("Latest");
-    const supportingImage = screen.getByAltText("Packed cake slices");
+    const supportingImage = screen.getByAltText("Packed cake slices card crop");
     const commerceImage = screen.getByAltText("Postal Medovik");
     expect(leadImage).toHaveAttribute("loading", "eager");
     expect(leadImage.getAttribute("fetchpriority")).toBe("high");
@@ -372,6 +384,8 @@ describe("BlogPage", () => {
       "sizes",
       "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
     );
+    expect(supportingImage.getAttribute("src")).toContain("packing-card.jpg");
+    expect(supportingImage.getAttribute("src")).not.toContain("packing-cover.jpg");
     expect(supportingImage.getAttribute("src")).toContain("w=1200");
     expect(supportingImage.getAttribute("src")).toContain("h=900");
     expect(commerceImage).toHaveAttribute(

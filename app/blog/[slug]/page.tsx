@@ -9,6 +9,7 @@ import {
   extractArticleTableOfContents,
   formatArticleDate,
   getArticleBySlug,
+  getArticleCardImageUrl,
   getArticleHref,
   getArticleMetadataImageUrl,
   getArticleReadingTime,
@@ -168,13 +169,13 @@ function RelatedArticleCard({
 }: {
   article: Awaited<ReturnType<typeof getRelatedArticles>>[number];
 }) {
-  const imageUrl = getSanityCdnImageUrl(getArticleVisibleImageUrl(article), {
+  const imageUrl = getSanityCdnImageUrl(getArticleCardImageUrl(article), {
     width: 720,
     height: 540,
     fit: "crop",
     quality: 80,
   });
-  const imageAlt = article.coverImage?.alt || article.cardImage?.alt || article.title;
+  const imageAlt = article.cardImage?.alt || article.coverImage?.alt || article.title;
 
   return (
     <article className="h-full">
