@@ -1,6 +1,6 @@
 import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
-import { MarketsClient } from './MarketsClient'
+import { DeferredMarketsClient } from './DeferredMarketsClient'
 
 type MarketEventSchema = {
   '@type': 'Event'
@@ -24,7 +24,7 @@ type MarketEventSchema = {
   }
 }
 
-const marketScheduleUrl = 'https://olgishcakes.co.uk/market-schedule'
+const marketScheduleUrl = 'https://olgishcakes.co.uk/#markets'
 const maxStructuredDataMarkets = 10
 
 function buildMarketTimeValue(time: string): string | null {
@@ -113,7 +113,7 @@ export async function Markets() {
           }}
         />
       ) : null}
-      <MarketsClient upcomingMarkets={upcomingMarkets} />
+      <DeferredMarketsClient upcomingMarkets={upcomingMarkets} />
     </>
   )
 }

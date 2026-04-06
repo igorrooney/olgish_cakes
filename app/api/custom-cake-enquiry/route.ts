@@ -1,31 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@supabase/supabase-js'
 import { validateCsrfToken } from '@/lib/csrf'
+import {
+  applyEnquiryRateLimitHeaders,
+  getEnquiryRateLimitIdentifier,
+  takeEnquiryRateLimit
+} from '@/lib/enquiry-rate-limit'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import {
+  getSupabaseAdminClient,
+  type SupabaseAdminClient
+} from '@/lib/supabase-admin-client'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 const notificationFailureErrorMessage =
   'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
-
-const getSupabaseAdminClient = () => {
-  const supabaseUrl = process.env.SUPABASE_URL
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
-    throw new Error('Supabase admin client not configured')
-  }
-
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  })
-}
-
-type SupabaseAdminClient = ReturnType<typeof getSupabaseAdminClient>
 
 const getReferenceImageBucket = () =>
   process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
@@ -308,73 +298,8 @@ const formSchema = z.object({
   })
 })
 
-const rateLimitMap = new Map<string, { count: number, resetTime: number }>()
 const RATE_LIMIT = 5
 const RATE_LIMIT_WINDOW = 60 * 1000
-const RATE_LIMIT_CLEANUP_INTERVAL = 5 * 60 * 1000
-const RATE_LIMIT_MAX_ENTRIES = 10000
-let lastRateLimitCleanup = 0
-
-const cleanupRateLimitMap = (now: number) => {
-  const shouldRunScheduledCleanup =
-    now - lastRateLimitCleanup >= RATE_LIMIT_CLEANUP_INTERVAL
-  const shouldRunSizeCleanup = rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES
-
-  if (!shouldRunScheduledCleanup && !shouldRunSizeCleanup) {
-    return
-  }
-
-  for (const [storedIp, record] of rateLimitMap.entries()) {
-    if (now > record.resetTime) {
-      rateLimitMap.delete(storedIp)
-    }
-  }
-
-  if (rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES) {
-    const overflowCount = rateLimitMap.size - RATE_LIMIT_MAX_ENTRIES
-    let removed = 0
-    for (const storedIp of rateLimitMap.keys()) {
-      rateLimitMap.delete(storedIp)
-      removed += 1
-      if (removed >= overflowCount) {
-        break
-      }
-    }
-  }
-
-  lastRateLimitCleanup = now
-}
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  cleanupRateLimitMap(now)
-  const record = rateLimitMap.get(ip)
-
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
-    return true
-  }
-
-  if (record.count >= RATE_LIMIT) {
-    return false
-  }
-
-  record.count += 1
-  return true
-}
-
-const getClientIp = (request: NextRequest) => {
-  const forwardedFor = request.headers.get('x-forwarded-for')
-  if (forwardedFor) {
-    const firstIp = forwardedFor.split(',')[0]?.trim()
-    if (firstIp) {
-      return firstIp
-    }
-  }
-
-  const realIp = request.headers.get('x-real-ip')?.trim()
-  return realIp || 'unknown'
-}
 
 const occasionLabels: Record<string, string> = {
   birthday: 'Birthday',
@@ -388,6 +313,24 @@ const occasionLabels: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseAdminClient()
+    const rateLimitResult = await takeEnquiryRateLimit(supabase, {
+      scope: 'custom-cake-enquiry',
+      identifier: getEnquiryRateLimitIdentifier(request),
+      maxRequests: RATE_LIMIT,
+      windowMs: RATE_LIMIT_WINDOW
+    })
+
+    if (rateLimitResult.rateLimited) {
+      return applyEnquiryRateLimitHeaders(
+        NextResponse.json(
+          { error: 'Too many requests. Please try again later.' },
+          { status: 429 }
+        ),
+        rateLimitResult
+      )
+    }
+
     const emailMode = getEmailTransportMode()
     const canSendLiveEmail =
       !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
@@ -396,14 +339,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
-      )
-    }
-
-    const ip = getClientIp(request)
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
       )
     }
 
@@ -467,7 +402,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = getSupabaseAdminClient()
     let referenceImageBucket: string | null = null
     let referenceImagePath: string | null = null
 
@@ -659,20 +593,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Custom cake enquiry received:', {
-        fullName: formData.fullName,
-        email: formData.email || null,
-        date: formData.date,
-        customerEmailSent,
-        adminEmailSent,
-        failureAlertSent
-      })
-    }
-
-    return NextResponse.json(
-      { message: 'Enquiry submitted successfully' },
-      { status: 200 }
+    return applyEnquiryRateLimitHeaders(
+      NextResponse.json(
+        { message: 'Enquiry submitted successfully' },
+        { status: 200 }
+      ),
+      rateLimitResult
     )
   } catch (error) {
     if (error instanceof z.ZodError) {

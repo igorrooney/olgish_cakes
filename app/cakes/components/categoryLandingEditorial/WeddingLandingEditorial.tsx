@@ -41,9 +41,9 @@ export function WeddingLandingEditorial({ config }: WeddingLandingEditorialProps
           Venue access, setup windows and the point in the schedule when the cake needs to look its best all shape what is sensible to build.
         </p>
         <p className='mt-4'>
-          It helps to compare the practical details on the{' '}
-          <Link href='/cake-delivery-leeds' className='link link-hover text-primary'>
-            Leeds delivery guide
+          It helps to confirm the venue access window and delivery details on the{' '}
+          <Link href='/contact' className='link link-hover text-primary'>
+            contact page
           </Link>{' '}
           before you finalise the finish or send a detailed enquiry.
         </p>

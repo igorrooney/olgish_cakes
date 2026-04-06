@@ -182,24 +182,6 @@ const learnSectionComingSoonPages: Record<string, ComingSoonPageContent> = {
       { href: "/contact", label: "Ask a question", variant: "secondary" },
     ],
   },
-  workshops: {
-    path: "/learn/workshops",
-    eyebrow: "Learn hub",
-    title: "Workshop details are coming soon",
-    description:
-      "Workshop information will be published here once formats, dates, and locations are confirmed.",
-    body: "I am still working out the right structure for workshops so the page is useful when it goes live. Until then, the bakery is open for orders and direct enquiries rather than workshop bookings.",
-    bullets: [
-      "When workshops launch, this page will cover format, level, and how to book.",
-      "If you want to hear about workshops first, contact me and I can keep your details.",
-      "Cake orders and quotes are already live through the usual pages.",
-    ],
-    links: [
-      { href: "/contact", label: "Ask about workshops", variant: "primary" },
-      { href: "/cakes", label: "Browse celebration cakes", variant: "secondary" },
-      { href: "/blog", label: "Read the blog", variant: "secondary" },
-    ],
-  },
   "customer-stories": {
     path: "/learn/customer-stories",
     eyebrow: "Learn hub",

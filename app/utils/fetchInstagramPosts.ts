@@ -20,11 +20,50 @@ const MIN_POST_LIMIT = 3
 const MAX_POST_LIMIT = 3
 const DEFAULT_REVALIDATE_SECONDS = 1800
 const DEFAULT_GRAPH_API_VERSION = 'v19.0'
+const DEFAULT_GRAPH_API_BASE_URL = 'https://graph.instagram.com'
 const MAX_API_FETCH_LIMIT = 25
 const IMAGE_FETCH_MULTIPLIER = 3
+const INSTAGRAM_FETCH_TIMEOUT_MS = 8000
+const RECOVERABLE_INSTAGRAM_ERROR_PATTERN = /Missing required Instagram environment variables|Error validating access token|Invalid OAuth access token/i
 
 const isInstagramMediaType = (value?: string): value is InstagramMediaType =>
   value === 'IMAGE' || value === 'VIDEO' || value === 'CAROUSEL_ALBUM'
+
+const createTimeoutSignal = (): AbortSignal => {
+  if (typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(INSTAGRAM_FETCH_TIMEOUT_MS)
+  }
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), INSTAGRAM_FETCH_TIMEOUT_MS)
+
+  controller.signal.addEventListener('abort', () => clearTimeout(timeoutId), { once: true })
+
+  return controller.signal
+}
+
+const createFallbackAnySignal = (signals: AbortSignal[]): AbortSignal => {
+  const controller = new AbortController()
+
+  const abortWithSignal = (signal: AbortSignal) => {
+    if (controller.signal.aborted) {
+      return
+    }
+
+    controller.abort(signal.reason)
+  }
+
+  for (const signal of signals) {
+    if (signal.aborted) {
+      abortWithSignal(signal)
+      return controller.signal
+    }
+
+    signal.addEventListener('abort', () => abortWithSignal(signal), { once: true })
+  }
+
+  return controller.signal
+}
 
 const clampPostLimit = (value: number): number =>
   Math.min(MAX_POST_LIMIT, Math.max(MIN_POST_LIMIT, value))
@@ -55,6 +94,24 @@ export const getInstagramRevalidateSeconds = (): number => {
   return DEFAULT_REVALIDATE_SECONDS
 }
 
+export const isRecoverableInstagramError = (error: unknown): boolean =>
+  error instanceof Error &&
+  (error.name === 'AbortError' || RECOVERABLE_INSTAGRAM_ERROR_PATTERN.test(error.message))
+
+const getInstagramRequestSignal = (signal?: AbortSignal): AbortSignal => {
+  const timeoutSignal = createTimeoutSignal()
+
+  if (!signal) {
+    return timeoutSignal
+  }
+
+  if (typeof AbortSignal.any === 'function') {
+    return AbortSignal.any([signal, timeoutSignal])
+  }
+
+  return createFallbackAnySignal([signal, timeoutSignal])
+}
+
 const getInstagramApiBaseUrl = (): string => {
   const baseUrl = process.env.INSTAGRAM_GRAPH_API_BASE_URL?.trim()
   if (baseUrl) {
@@ -63,7 +120,7 @@ const getInstagramApiBaseUrl = (): string => {
 
   const apiVersion = process.env.INSTAGRAM_GRAPH_API_VERSION?.trim() || DEFAULT_GRAPH_API_VERSION
   const normalizedVersion = apiVersion.startsWith('v') ? apiVersion : `v${apiVersion}`
-  return `https://graph.facebook.com/${normalizedVersion}`
+  return `${DEFAULT_GRAPH_API_BASE_URL}/${normalizedVersion}`
 }
 
 const getInstagramConfig = () => {
@@ -134,7 +191,7 @@ const mapInstagramPost = (item: InstagramApiMediaItem): InstagramPost | null => 
 }
 
 export async function getLatestInstagramPosts(
-  { limit }: { limit?: number } = {}
+  { limit, signal }: { limit?: number, signal?: AbortSignal } = {}
 ): Promise<InstagramPost[]> {
   const { accessToken, userId } = getInstagramConfig()
   const resolvedLimit = getInstagramPostLimit(limit)
@@ -160,7 +217,8 @@ export async function getLatestInstagramPosts(
   })
 
   const response = await fetch(`${baseUrl}/${userId}/media?${searchParams.toString()}`, {
-    next: { revalidate: revalidateSeconds }
+    next: { revalidate: revalidateSeconds },
+    signal: getInstagramRequestSignal(signal)
   })
 
   if (!response.ok) {

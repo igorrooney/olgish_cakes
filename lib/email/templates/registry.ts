@@ -3,12 +3,16 @@ import { contactTemplateDefinitions } from './contact'
 import { customCakeTemplateDefinitions } from './custom-cake-enquiry'
 import { ordersTemplateDefinitions } from './orders'
 import { quoteTemplateDefinitions } from './quote'
+import { workshopTemplateDefinitions } from './workshop-enquiry'
+import { instagramTokenTemplateDefinitions } from './instagram-token'
 
 const definitions = {
   ...contactTemplateDefinitions,
   ...ordersTemplateDefinitions,
   ...quoteTemplateDefinitions,
-  ...customCakeTemplateDefinitions
+  ...customCakeTemplateDefinitions,
+  ...workshopTemplateDefinitions,
+  ...instagramTokenTemplateDefinitions
 }
 
 export type EmailTemplateRegistry = {

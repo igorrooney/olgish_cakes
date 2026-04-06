@@ -460,16 +460,8 @@ export function generateWebSiteSchema() {
     description: SEO_CONFIG.siteDescription,
     publisher: {
       "@id": `${SEO_CONFIG.siteUrl}/#organization`,
-    },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SEO_CONFIG.siteUrl}/search?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
-  };
+    }
+  }
 }
 
 export function generateWebPageSchema(page: {

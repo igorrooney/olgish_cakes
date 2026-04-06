@@ -92,6 +92,27 @@ describe('/api/revalidate', () => {
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })
 
+  it('revalidates testimonial-dependent pages and tags for testimonial updates', async () => {
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'testimonial'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
+    expect(revalidatePath).toHaveBeenCalledWith('/get-custom-quote')
+    expect(revalidateTag).toHaveBeenCalledWith('testimonials', 'max')
+  })
+
   it('revalidates product paths and tags for productsDisplayOrder', async () => {
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',

@@ -62,14 +62,14 @@ describe('sitemap-products', () => {
       const result = await sitemapProducts()
       const cakesPage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes')
       const hampersPage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post')
-      const orderPage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/order')
+      const quotePage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
 
       expect(cakesPage).toBeDefined()
       expect(hampersPage).toBeDefined()
-      expect(orderPage).toBeDefined()
+      expect(quotePage).toBeDefined()
       expect(cakesPage?.lastModified).toEqual(getStaticSitemapLastModified('/cakes'))
       expect(hampersPage?.lastModified).toEqual(getStaticSitemapLastModified('/cakes-by-post'))
-      expect(orderPage?.lastModified).toEqual(getStaticSitemapLastModified('/order'))
+      expect(quotePage?.lastModified).toEqual(getStaticSitemapLastModified('/get-custom-quote'))
     })
 
     it('should keep central static sitemap lastModified values in sync for key category pages', () => {

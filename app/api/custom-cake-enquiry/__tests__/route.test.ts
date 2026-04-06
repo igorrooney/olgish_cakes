@@ -3,6 +3,8 @@
  */
 import { NextRequest } from 'next/server'
 import { validateCsrfToken } from '@/lib/csrf'
+import type { EnquiryRateLimitResult } from '@/lib/enquiry-rate-limit'
+import { takeEnquiryRateLimit } from '@/lib/enquiry-rate-limit'
 import { POST } from '../route'
 
 const mockSendEmail = jest.fn()
@@ -17,10 +19,20 @@ const mockCreateClient = jest.fn(() => ({
   from: mockFrom,
   storage: { from: mockStorageFrom }
 }))
+const mockedTakeEnquiryRateLimit = takeEnquiryRateLimit as jest.MockedFunction<typeof takeEnquiryRateLimit>
 
 jest.mock('@/lib/csrf', () => ({
   validateCsrfToken: jest.fn()
 }))
+
+jest.mock('@/lib/enquiry-rate-limit', () => {
+  const actual = jest.requireActual('@/lib/enquiry-rate-limit')
+
+  return {
+    ...actual,
+    takeEnquiryRateLimit: jest.fn()
+  }
+})
 
 jest.mock('@supabase/supabase-js', () => ({
   createClient: (...args: unknown[]) => mockCreateClient(...args)
@@ -33,6 +45,18 @@ jest.mock('@/lib/email/service', () => ({
 }))
 
 type StringOverrides = Partial<Record<string, string | null>>
+
+const createRateLimitResult = (
+  overrides: Partial<EnquiryRateLimitResult> = {}
+): EnquiryRateLimitResult => ({
+  limit: 5,
+  currentCount: 1,
+  remaining: 4,
+  resetAt: Date.parse('2026-12-25T10:00:00.000Z'),
+  retryAfterSeconds: 60,
+  rateLimited: false,
+  ...overrides
+})
 
 const createSendResult = (accepted = true, error: { message: string } | null = null) => ({
   mode: 'disabled',
@@ -79,6 +103,7 @@ describe('/api/custom-cake-enquiry', () => {
     process.env.SUPABASE_URL = 'https://example.supabase.co'
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
     process.env.SUPABASE_ENQUIRY_BUCKET = 'custom-cake-enquiries'
+    mockedTakeEnquiryRateLimit.mockResolvedValue(createRateLimitResult())
     mockGetEmailTransportMode.mockReturnValue('disabled')
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
@@ -115,7 +140,6 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(403)
     expect(data.error).toBe('CSRF token missing')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
@@ -139,7 +163,6 @@ describe('/api/custom-cake-enquiry', () => {
     expect(response.status).toBe(403)
     expect(data.error).toBe('Invalid CSRF token')
     expect(validateCsrfToken).toHaveBeenCalledWith('invalid-token', 'invalid-token')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
@@ -162,6 +185,10 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(200)
     expect(data.message).toBe('Enquiry submitted successfully')
+    expect(response.headers.get('X-RateLimit-Limit')).toBe('5')
+    expect(response.headers.get('X-RateLimit-Remaining')).toBe('4')
+    expect(response.headers.get('X-RateLimit-Reset')).toBe('1798192800')
+    expect(response.headers.get('Retry-After')).toBeNull()
     expect(validateCsrfToken).toHaveBeenCalledWith('valid-token', 'valid-token')
     expect(mockCreateClient).toHaveBeenCalledWith(
       'https://example.supabase.co',
@@ -202,6 +229,18 @@ describe('/api/custom-cake-enquiry', () => {
         occasion: 'Birthday'
       })
     }))
+    expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        from: mockFrom,
+        storage: expect.objectContaining({ from: mockStorageFrom })
+      }),
+      expect.objectContaining({
+        scope: 'custom-cake-enquiry',
+        identifier: '10.0.0.3',
+        maxRequests: 5,
+        windowMs: 60000
+      })
+    )
     expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templateId: 'custom-cake-enquiry-customer',
       message: expect.objectContaining({
@@ -241,7 +280,6 @@ describe('/api/custom-cake-enquiry', () => {
         path: ['phone']
       })
     ]))
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
@@ -336,7 +374,6 @@ describe('/api/custom-cake-enquiry', () => {
         path: ['postcode']
       })
     ]))
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
@@ -362,7 +399,6 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(500)
     expect(data.error).toBe('Email service not configured')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockInsert).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
@@ -392,7 +428,6 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(500)
     expect(data.error).toBe('Email service not configured')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
@@ -730,7 +765,6 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(400)
     expect(data.error).toBe('Reference image must be a JPEG, PNG, or HEIC file')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
@@ -760,7 +794,6 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(response.status).toBe(400)
     expect(data.error).toBe('Reference image must be 5MB or smaller')
-    expect(mockCreateClient).not.toHaveBeenCalled()
     expect(mockUpload).not.toHaveBeenCalled()
     expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
@@ -892,21 +925,11 @@ describe('/api/custom-cake-enquiry', () => {
   it('rate limits by client IP even when proxy chain changes', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
     const clientIp = '10.0.0.250'
-
-    for (let index = 0; index < 5; index += 1) {
-      const formData = buildFormData()
-      const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Cookie: 'csrf-token=valid-token',
-          'x-forwarded-for': `${clientIp}, 192.168.0.${index}`
-        }
-      })
-
-      const response = await POST(request)
-      expect(response.status).toBe(200)
-    }
+    mockedTakeEnquiryRateLimit.mockResolvedValueOnce(createRateLimitResult({
+      currentCount: 6,
+      remaining: 0,
+      rateLimited: true
+    }))
 
     const blockedFormData = buildFormData()
     const blockedRequest = new NextRequest('http://localhost/api/custom-cake-enquiry', {
@@ -923,6 +946,20 @@ describe('/api/custom-cake-enquiry', () => {
 
     expect(blockedResponse.status).toBe(429)
     expect(blockedData.error).toBe('Too many requests. Please try again later.')
+    expect(blockedResponse.headers.get('X-RateLimit-Limit')).toBe('5')
+    expect(blockedResponse.headers.get('X-RateLimit-Remaining')).toBe('0')
+    expect(blockedResponse.headers.get('X-RateLimit-Reset')).toBe('1798192800')
+    expect(blockedResponse.headers.get('Retry-After')).toBe('60')
+    expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        from: mockFrom,
+        storage: expect.objectContaining({ from: mockStorageFrom })
+      }),
+      expect.objectContaining({
+        scope: 'custom-cake-enquiry',
+        identifier: clientIp
+      })
+    )
   })
 })
 

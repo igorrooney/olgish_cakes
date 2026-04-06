@@ -70,6 +70,22 @@ describe('email renderers', () => {
     expect(sample.customerEmail).toBeDefined()
     expect(sample.productName).toBeDefined()
   })
+  it('renders Instagram token reminder alerts with expiry guidance', () => {
+    const rendered = renderEmailTemplate('instagram-token-refresh-alert', {
+      customerName: 'Olgish Cakes team',
+      productName: 'Instagram access token',
+      dateNeeded: '2026-06-05T08:00:00.000Z',
+      titleOverride: 'Instagram token expires in 5 days',
+      message: 'The current Instagram token expires in 5 days.',
+      note: 'Run pnpm instagram:refresh-token and update INSTAGRAM_TOKEN_EXPIRES_AT.'
+    })
+
+    expect(rendered.subject).toBe('Instagram token expires in 5 days')
+    expect(rendered.text).toContain('Instagram access token')
+    expect(rendered.text).toContain('05/06/2026')
+    expect(rendered.html).toContain('Instagram access token')
+    expect(rendered.html).toContain('Run pnpm instagram:refresh-token')
+  })
   it('renders tracking number for out-for-delivery status updates', () => {
     const rendered = renderEmailTemplate('orders-status-update', {
       customerName: 'Jane',

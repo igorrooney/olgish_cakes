@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { emailTemplateIds, type EmailTemplateId, type RenderedEmail } from '@/lib/email/types'
 import { listTemplateScenarioOptions } from '@/lib/email/scenarios'
@@ -101,7 +101,11 @@ const templateLabels: Record<EmailTemplateId, string> = {
   'quote-admin-request': 'Quote: Admin request',
   'custom-cake-enquiry-admin': 'Custom enquiry: Admin',
   'custom-cake-enquiry-customer': 'Custom enquiry: Customer',
-  'custom-cake-enquiry-failure-alert': 'Custom enquiry: Failure alert'
+  'custom-cake-enquiry-failure-alert': 'Custom enquiry: Failure alert',
+  'workshop-enquiry-admin': 'Workshop enquiry: Admin',
+  'workshop-enquiry-customer': 'Workshop enquiry: Customer',
+  'workshop-enquiry-failure-alert': 'Workshop enquiry: Failure alert',
+  'instagram-token-refresh-alert': 'Instagram: Token refresh alert'
 }
 
 const commonFields: EditableFieldKey[] = [
@@ -121,6 +125,16 @@ const orderFields: EditableFieldKey[] = [
   'quantity',
   'unitPrice',
   'totalPrice',
+  'dateNeeded'
+]
+
+const instagramTokenAlertFields: EditableFieldKey[] = [
+  'customerName',
+  'customerEmail',
+  'message',
+  'note',
+  'orderType',
+  'productName',
   'dateNeeded'
 ]
 
@@ -252,7 +266,26 @@ const templateFieldMap: Record<EmailTemplateId, EditableFieldKey[]> = {
     ...orderFields,
     ...preferenceFields,
     'attachmentNames'
-  ]
+  ],
+  'workshop-enquiry-admin': [
+    ...commonFields,
+    ...orderFields,
+    ...preferenceFields,
+    'attachmentNames'
+  ],
+  'workshop-enquiry-customer': [
+    ...commonFields,
+    ...orderFields,
+    ...preferenceFields,
+    ...listFields
+  ],
+  'workshop-enquiry-failure-alert': [
+    ...commonFields,
+    ...orderFields,
+    ...preferenceFields,
+    'attachmentNames'
+  ],
+  'instagram-token-refresh-alert': instagramTokenAlertFields
 }
 
 const sections: FieldSection[] = [
@@ -550,7 +583,11 @@ export function EmailTestPageClient() {
     return JSON.stringify(previewData.rendered.metadata, null, 2)
   }, [previewData])
 
-  const previewMutation = useMutation({
+  const {
+    mutate: runPreviewMutation,
+    isPending: isPreviewPending,
+    error: previewError
+  } = useMutation({
     mutationFn: async (params: PreviewMutationInput) => {
       const requestId = ++previewRequestIdRef.current
 
@@ -597,7 +634,11 @@ export function EmailTestPageClient() {
     }
   })
 
-  const realSendMutation = useMutation({
+  const {
+    mutate: runRealSendMutation,
+    isPending: isRealSendPending,
+    error: realSendError
+  } = useMutation({
     mutationFn: async () => {
       if (sendAbortRef.current) {
         sendAbortRef.current.abort()
@@ -636,19 +677,20 @@ export function EmailTestPageClient() {
       sendAbortRef.current?.abort()
     }
   }, [])
-  const loadTemplateDefaults = (scenarioIdOverride?: string) => {
+
+  const loadTemplateDefaults = useCallback((scenarioIdOverride?: string) => {
     setPreviewData(null)
     setRealSendData(null)
-    previewMutation.mutate({
+    runPreviewMutation({
       useCurrentInput: false,
       syncFormValues: true,
       scenarioId: scenarioIdOverride || selectedScenario || undefined
     })
-  }
+  }, [runPreviewMutation, selectedScenario])
 
   useEffect(() => {
     loadTemplateDefaults()
-  }, [selectedTemplate])
+  }, [loadTemplateDefaults, selectedScenario, selectedTemplate])
   const hasInvalidForm = numericValidationErrors.length > 0
   const hasRecipient = recipient.trim().length > 0
 
@@ -660,7 +702,6 @@ export function EmailTestPageClient() {
 
   const handleScenarioChange = (scenarioId: string) => {
     setSelectedScenario(scenarioId)
-    loadTemplateDefaults(scenarioId)
   }
 
   const handleFieldChange = (key: EditableFieldKey, value: string) => {
@@ -681,7 +722,7 @@ export function EmailTestPageClient() {
 
   const handlePreview = () => {
     setRealSendData(null)
-    previewMutation.mutate({
+    runPreviewMutation({
       useCurrentInput: true,
       syncFormValues: true
     })
@@ -693,7 +734,7 @@ export function EmailTestPageClient() {
 
   const handleConfirmRealSend = () => {
     setIsConfirmModalOpen(false)
-    realSendMutation.mutate()
+    runRealSendMutation()
   }
 
   const handleCancelRealSend = () => {
@@ -731,7 +772,7 @@ export function EmailTestPageClient() {
                   type='button'
                   className='btn btn-ghost btn-sm rounded-full text-primary-700'
                   onClick={() => loadTemplateDefaults()}
-                  disabled={previewMutation.isPending}
+                  disabled={isPreviewPending}
                 >
                   Reset to defaults
                 </button>
@@ -847,15 +888,15 @@ export function EmailTestPageClient() {
                 </div>
               ) : null}
 
-              {previewMutation.error ? (
+              {previewError ? (
                 <div className='alert alert-error' role='alert'>
-                  <span>{previewMutation.error.message}</span>
+                  <span>{previewError.message}</span>
                 </div>
               ) : null}
 
-              {realSendMutation.error ? (
+              {realSendError ? (
                 <div className='alert alert-error' role='alert'>
-                  <span>{realSendMutation.error.message}</span>
+                  <span>{realSendError.message}</span>
                 </div>
               ) : null}
 
@@ -878,19 +919,19 @@ export function EmailTestPageClient() {
                   type='button'
                   className='btn rounded-full border-none bg-primary-500 text-primary-content hover:bg-primary-700'
                   onClick={handlePreview}
-                  disabled={previewMutation.isPending || hasInvalidForm}
-                  aria-busy={previewMutation.isPending}
+                  disabled={isPreviewPending || hasInvalidForm}
+                  aria-busy={isPreviewPending}
                 >
-                  {previewMutation.isPending ? 'Loading preview...' : 'Preview email'}
+                  {isPreviewPending ? 'Loading preview...' : 'Preview email'}
                 </button>
                 <button
                   type='button'
                   className='btn btn-outline rounded-full border-warning text-warning hover:bg-warning hover:text-warning-content'
                   onClick={handleRequestRealSend}
-                  disabled={realSendMutation.isPending || hasInvalidForm || !hasRecipient}
-                  aria-busy={realSendMutation.isPending}
+                  disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
+                  aria-busy={isRealSendPending}
                 >
-                  {realSendMutation.isPending ? 'Sending...' : 'Send real test email'}
+                  {isRealSendPending ? 'Sending...' : 'Send real test email'}
                 </button>
               </div>
             </div>
@@ -907,7 +948,7 @@ export function EmailTestPageClient() {
 
               {!previewData ? (
                 <div className='rounded-box border border-dashed border-primary-50 bg-base-200/40 px-6 py-12 text-center text-sm text-base-content/70'>
-                  {previewMutation.isPending
+                  {isPreviewPending
                     ? 'Loading template defaults...'
                     : 'Select a template and run preview to view subject, text, and HTML output.'}
                 </div>
@@ -1009,7 +1050,7 @@ export function EmailTestPageClient() {
               type='button'
               className='btn btn-warning rounded-full'
               onClick={handleConfirmRealSend}
-              disabled={realSendMutation.isPending || hasInvalidForm || !hasRecipient}
+              disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
             >
               Confirm and send
             </button>

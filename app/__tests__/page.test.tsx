@@ -85,34 +85,33 @@ jest.mock('../components/AnimatedSection', () => ({
   AnimatedDiv: ({ children, ...props }: AnimatedComponentProps) => <div {...props}>{children}</div>
 }))
 
-jest.mock('../components/MarketSchedule', () => ({
-  __esModule: true,
-  default: () => <div data-testid="market-schedule">Market Schedule</div>
-}))
-
 // Mock mobile homepage components
 // Note: Markets is async in real code but mocked as sync for tests
 jest.mock('../components/homepage', () => ({
   faqItems: [],
   HomeHero: () => <div data-testid="home-hero">Home Hero</div>,
   OlgishCakesFounder: () => <div data-testid="mobile-about">Mobile About</div>,
-  Bestsellers: () => <div data-testid="bestsellers">Bestsellers</div>,
-  Markets: () => {
-    // Mock as regular component - returns JSX for test rendering
-    // In real code, this is async and might return null, but for tests we need content
-    return <div data-testid="mobile-markets">Mobile Markets</div>
-  },
-  Reviews: () => <div data-testid="reviews">Reviews</div>,
-  Occasions: (props: Record<string, unknown>) => {
+  HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
+  Instagram: () => <div data-testid="instagram">Instagram</div>
+}))
+
+jest.mock('../components/homepage/deferredSections', () => ({
+  DeferredBestsellers: () => <div data-testid='bestsellers'>Bestsellers</div>,
+  DeferredMarkets: () => <div data-testid='mobile-markets'>Mobile Markets</div>,
+  DeferredReviews: () => <div data-testid='reviews'>Reviews</div>,
+  DeferredOccasions: (props: Record<string, unknown>) => {
     capturedOccasionsProps = props
     return <div data-testid='occasions'>Occasions</div>
   },
-  HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
-  EnquiryForm: (props: Record<string, unknown>) => {
+  DeferredHomeEnquirySection: (props: Record<string, unknown>) => {
     capturedEnquiryFormProps = props
-    return <div data-testid="enquiry-form">Enquiry Form</div>
+    return (
+      <div data-testid='query-providers'>
+        <div data-testid='enquiry-form'>Enquiry Form</div>
+      </div>
+    )
   },
-  Instagram: () => <div data-testid="instagram">Instagram</div>
+  DeferredInstagram: () => <div data-testid='instagram'>Instagram</div>
 }))
 
 // Mock Next.js components
@@ -284,6 +283,7 @@ describe('HomePage', () => {
           { label: 'Other', value: 'other' }
         ]
       })
+      expect(document.querySelectorAll('[data-testid="query-providers"]')).toHaveLength(1)
     })
 
     it('should include structured data scripts when testimonials exist', async () => {

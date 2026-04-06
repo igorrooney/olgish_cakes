@@ -1,9 +1,9 @@
-import { OccasionsClient } from './OccasionsClient'
 import { getHomepageCollections } from '@/app/utils/fetchCollections'
 import { createCollectionQueryValueMap, normalizeDocumentId } from '@/app/utils/collectionQueryValue'
 import { getCategoryLandingPathByQueryValue } from '@/app/cakes/categoryLandingConfig'
 import type { HomepageCollection } from '@/app/types/collection'
 import { urlFor } from '@/sanity/lib/image'
+import { DeferredOccasionsClient } from './DeferredOccasionsClient'
 import type { DisplayCollection } from './occasions.types'
 
 interface OccasionsProps {
@@ -53,5 +53,5 @@ export async function Occasions({ collections }: OccasionsProps = {}) {
     return null
   }
 
-  return <OccasionsClient collections={displayCollections} />
+  return <DeferredOccasionsClient collections={displayCollections} />
 }

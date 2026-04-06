@@ -168,6 +168,10 @@ jest.mock('nuqs', () => {
   }
 })
 
+jest.mock('nuqs/adapters/next/app', () => ({
+  NuqsAdapter: ({ children }: { children: React.ReactNode }) => <>{children}</>
+}))
+
 jest.mock('next/navigation', () => ({
   usePathname: () => window.location.pathname,
   useSearchParams: () => new URLSearchParams(window.location.search)

@@ -293,13 +293,6 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1.0,
       images: [`${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`]
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: getStaticSitemapLastModified('/about'),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-      images: [`${baseUrl}/android-chrome-192x192.png`]
     }
   ]
 

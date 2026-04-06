@@ -42,8 +42,8 @@ export function BirthdayLandingEditorial({ config }: BirthdayLandingEditorialPro
         </p>
         <p className='mt-4'>
           The{' '}
-          <Link href='/cake-delivery-leeds' className='link link-hover text-primary'>
-            local cake delivery page
+          <Link href='/contact' className='link link-hover text-primary'>
+            contact page
           </Link>{' '}
           helps you decide what is practical before the finish becomes too delicate for an easy journey.
         </p>

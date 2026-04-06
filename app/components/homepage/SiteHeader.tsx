@@ -1,5 +1,5 @@
-import { SiteHeaderClient } from "./SiteHeaderClient";
+import { SiteHeaderClient } from './SiteHeaderClient'
 
 export function SiteHeader() {
-  return <SiteHeaderClient />;
+  return <SiteHeaderClient />
 }

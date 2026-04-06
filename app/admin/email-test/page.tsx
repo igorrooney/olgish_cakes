@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { EmailTestPageClient } from './EmailTestPageClient'
+import { Providers } from '@/app/providers'
 import { isAdminAuthenticated } from '@/lib/admin/auth.server'
 
 export const metadata: Metadata = {
@@ -19,5 +20,9 @@ export default async function EmailTestPage() {
     redirect('/admin/auth')
   }
 
-  return <EmailTestPageClient />
+  return (
+    <Providers>
+      <EmailTestPageClient />
+    </Providers>
+  )
 }

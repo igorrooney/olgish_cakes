@@ -333,75 +333,19 @@ const nextConfig = {
       },
     ];
   },
-  // Enhanced webpack configuration
   webpack: (config, { dev, isServer }) => {
-    // Optimize bundle size
     if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: "all",
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
-            chunks: "all",
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-          mui: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]/,
-            name: "mui",
-            chunks: "all",
-            priority: 20,
-            reuseExistingChunk: true,
-          },
-          sanity: {
-            test: /[\\/]node_modules[\\/]@sanity[\\/]/,
-            name: "sanity",
-            chunks: "all",
-            priority: 15,
-            reuseExistingChunk: true,
-          },
-          icons: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]icons-material[\\/]/,
-            name: "mui-icons",
-            chunks: "all",
-            priority: 25,
-            reuseExistingChunk: true,
-          },
-          common: {
-            name: "common",
-            minChunks: 2,
-            chunks: "all",
-            priority: 5,
-            reuseExistingChunk: true,
-          },
-          // Separate emotion cache
-          emotion: {
-            test: /[\\/]node_modules[\\/]@emotion[\\/]/,
-            name: "emotion",
-            chunks: "all",
-            priority: 15,
-            reuseExistingChunk: true,
-          },
-        },
-      };
-
-      // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
 
-      // Enhanced performance optimizations
       config.optimization.mergeDuplicateChunks = true;
       config.optimization.removeAvailableModules = true;
       config.optimization.removeEmptyChunks = true;
       config.optimization.providedExports = true;
 
-      // Optimize module resolution
       config.resolve.symlinks = false;
       config.resolve.cacheWithContext = false;
     }
-
-    // Rely on Next.js built-in Image Optimization instead of custom loaders
 
     // Optimize CSS
     if (!dev) {
@@ -412,6 +356,13 @@ const nextConfig = {
   },
   // Enhanced redirects for SEO
   async redirects() {
+    const createRedirects = (sources, destination) =>
+      sources.map((source) => ({
+        source,
+        destination,
+        permanent: true,
+      }));
+
     return [
       {
         source: "/home",
@@ -435,7 +386,7 @@ const nextConfig = {
       },
       {
         source: "/order/amp",
-        destination: "/order",
+        destination: "/get-custom-quote",
         permanent: true,
       },
       {
@@ -444,16 +395,10 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/cake-by-post-service",
-        destination: "/cakes-by-post",
+        source: "/honey-cake",
+        destination: "/cakes/honey-cake",
         permanent: true,
       },
-      {
-        source: "/cake-postal-delivery",
-        destination: "/cakes-by-post",
-        permanent: true,
-      },
-
       {
         source: "/honey-cake-near-me",
         destination: "/blog/medovik-honey-cake-near-me-guide",
@@ -485,21 +430,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/wakefield-wedding-cakes",
-        destination: "/wedding-cakes",
-        permanent: true,
-      },
-      {
-        source: "/vegan-wedding-cakes-leeds",
-        destination: "/wedding-cakes",
-        permanent: true,
-      },
-      {
-        source: "/gluten-friendly-wedding-cakes-leeds",
-        destination: "/wedding-cakes",
-        permanent: true,
-      },
-      {
         source: "/custom-cake-enquiry",
         destination: "/get-custom-quote",
         permanent: true,
@@ -509,6 +439,104 @@ const nextConfig = {
         destination: "/blog",
         permanent: true,
       },
+      ...createRedirects(
+        [
+          "/market-schedule",
+          "/reviews-awards",
+          "/about",
+          "/accessibility",
+          "/customer-stories"
+        ],
+        "/"
+      ),
+      ...createRedirects(["/allergen-information"], "/allergens"),
+      ...createRedirects(["/faq"], "/faqs"),
+      ...createRedirects(["/custom-cake-design"], "/custom-cakes"),
+      ...createRedirects(["/delivery-areas", "/return-policy"], "/delivery"),
+      ...createRedirects(
+        [
+          "/buy-cake",
+          "/cake-gallery",
+          "/cake-in-leeds",
+          "/cake-photography",
+          "/cakes-bradford",
+          "/cakes-halifax",
+          "/cakes-huddersfield",
+          "/cakes-ilkley",
+          "/cakes-leeds",
+          "/cakes-otley",
+          "/cakes-pudsey",
+          "/cakes-skipton",
+          "/cakes-wakefield",
+          "/cakes-york",
+          "/gift-cards",
+          "/seasonal-cakes",
+          "/cake-delivery",
+          "/cake-tasting-sessions",
+          "/charity-events",
+          "/christmas-cakes-leeds",
+          "/dairy-free-cakes-leeds",
+          "/easter-cakes-leeds",
+          "/egg-free-cakes-leeds",
+          "/father-day-cakes-leeds",
+          "/gluten-friendly-ukrainian-cakes",
+          "/gluten-friendly-wedding-cakes-leeds",
+          "/graduation-cakes-leeds",
+            "/halloween-cakes-leeds",
+            "/mother-day-cakes-leeds",
+            "/retirement-cakes-leeds",
+            "/celebration-cakes",
+            "/search",
+            "/valentines-cakes-leeds",
+            "/vegan-cakes-leeds",
+            "/vegan-wedding-cakes-leeds",
+          "/wakefield-wedding-cakes",
+          "/wedding-cake-gallery",
+        ],
+        "/cakes"
+      ),
+      ...createRedirects(["/order", "/order/leeds", "/cake-pricing"], "/get-custom-quote"),
+      {
+        source: "/gift-hampers/:slug",
+        destination: "/cakes-by-post/:slug",
+        permanent: true,
+      },
+      ...createRedirects(
+        ["/gift-hampers", "/cake-by-post-service", "/cake-postal-delivery"],
+        "/cakes-by-post"
+      ),
+      ...createRedirects(
+        [
+          "/best-cakes-for-birthdays",
+          "/best-cakes-for-weddings",
+          "/best-cakes-leeds",
+          "/birthday-cake-gallery",
+          "/cake-care-storage",
+          "/cake-decorating-services",
+          "/cake-flavor-guide",
+          "/cake-flavors",
+          "/cake-shipping",
+          "/cake-sizes-guide",
+          "/honey-cake-history",
+          "/honey-cake-vs-kyiv-cake",
+          "/how-to-make-honey-cake",
+          "/how-to-order",
+          "/leeds-bakery",
+          "/testimonials",
+          "/ukrainian-bakery-leeds",
+          "/ukrainian-baking-classes",
+          "/ukrainian-baking-traditions",
+          "/ukrainian-cake-recipes",
+          "/ukrainian-cake-vs-british-cake",
+          "/ukrainian-celebrations",
+          "/ukrainian-christmas-traditions",
+          "/ukrainian-community-leeds",
+          "/ukrainian-culture-baking",
+          "/ukrainian-wedding-traditions",
+          "/ultimate-ukrainian-cake-guide",
+        ],
+        "/blog"
+      ),
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml

@@ -29,8 +29,8 @@ describe('category landing editorial components', () => {
       'text-center'
     )
     expect(container.querySelector('article')).not.toHaveClass('text-center')
-    expect(screen.getByRole('link', { name: /cake size guide/i })).toHaveAttribute('href', '/cake-size-guide')
-    expect(screen.getAllByRole('link', { name: /Leeds delivery guide/i }).every((element) => element.getAttribute('href') === '/cake-delivery-leeds')).toBe(true)
+    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
@@ -42,7 +42,8 @@ describe('category landing editorial components', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Collection or local delivery in Leeds should be decided before the finish gets more delicate' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'A better birthday cake brief usually comes together in four simple steps' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: "Children's birthdays need a readable theme" })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Cake pricing' }).closest('a')).toHaveAttribute('href', '/cake-pricing')
+    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
@@ -54,7 +55,8 @@ describe('category landing editorial components', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Collection and local delivery in Leeds should match the timing and setting of the celebration' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Useful pages for a more refined anniversary brief' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Intimate anniversary dinners need restraint' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /Leeds delivery guide/i }).every((element) => element.getAttribute('href') === '/cake-delivery-leeds')).toBe(true)
+    expect(screen.getByRole('heading', { level: 3, name: 'Contact' }).closest('a')).toHaveAttribute('href', '/contact')
+    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
@@ -67,6 +69,7 @@ describe('category landing editorial components', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'A practical baby shower order usually comes together in four simple steps' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Baby shower tables need a softer design language' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 

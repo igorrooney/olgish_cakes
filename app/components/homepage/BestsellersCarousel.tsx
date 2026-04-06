@@ -6,21 +6,21 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-interface CakeWithImage extends Cake {
-    imageUrl: string
-    mainImage?: {
-        _type: string
-        asset?: {
-            _ref: string
-            url?: string
-        }
-        alt?: string
-        caption?: string
+export interface CakeWithImage extends Cake {
+  imageUrl: string
+  mainImage?: {
+    _type: string
+    asset?: {
+      _ref: string
+      url?: string
     }
+    alt?: string
+    caption?: string
+  }
 }
 
-interface BestsellersCarouselProps {
-    cakes: CakeWithImage[]
+export interface BestsellersCarouselProps {
+  cakes: CakeWithImage[]
 }
 
 const formatCategoryLabel = (category?: string) => {

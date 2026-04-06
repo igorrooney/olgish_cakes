@@ -30,7 +30,7 @@ describe('sitemap-products.xml route', () => {
     expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600, s-maxage=86400')
     expect(body).toContain('<urlset')
     expect(body).toContain('<loc>https://olgishcakes.co.uk/cakes/honey-cake</loc>')
-    expect(body).toContain('<loc>https://olgishcakes.co.uk/order</loc>')
+    expect(body).toContain('<loc>https://olgishcakes.co.uk/get-custom-quote</loc>')
   })
 
   it('returns 200 and omits malformed or test cake entries', async () => {

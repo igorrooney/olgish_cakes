@@ -169,14 +169,11 @@ describe('sitemap-images', () => {
 
       const result = await sitemapImages()
       const homeEntry = result.find((entry) => entry.url === 'https://olgishcakes.co.uk')
-      const aboutEntry = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/about')
 
       expect(homeEntry).toBeDefined()
-      expect(aboutEntry).toBeDefined()
       expect(homeEntry?.images).toEqual(['https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'])
-      expect(aboutEntry?.images).toEqual(['https://olgishcakes.co.uk/android-chrome-192x192.png'])
       expect(homeEntry?.lastModified).toEqual(getStaticSitemapLastModified('/'))
-      expect(aboutEntry?.lastModified).toEqual(getStaticSitemapLastModified('/about'))
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/about')).toBeUndefined()
     })
 
     it('should keep image sitemap helpers aligned with committed cakes and cakes by post dates', () => {

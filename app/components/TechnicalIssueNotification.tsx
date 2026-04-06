@@ -121,7 +121,7 @@ export function TechnicalIssueNotification() {
             >
               <Button
                 component={Link}
-                href="/order"
+                href="/get-custom-quote"
                 variant="contained"
                 sx={{
                   backgroundColor: colors.primary.main,
@@ -138,7 +138,7 @@ export function TechnicalIssueNotification() {
                   minHeight: { xs: "32px", md: "auto" },
                 }}
               >
-                Place New Order
+                Start New Enquiry
               </Button>
 
               <Button

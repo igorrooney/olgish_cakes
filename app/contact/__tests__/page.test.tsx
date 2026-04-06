@@ -15,6 +15,12 @@ jest.mock('../../components/Breadcrumbs', () => ({
   Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
 }))
 
+jest.mock('../../components/MuiProviders', () => ({
+  MuiProviders: ({ children }: MockProps) => (
+    <div data-testid='mui-providers'>{children}</div>
+  )
+}))
+
 // Mock Next.js Link
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -154,6 +160,12 @@ describe('ContactPage', () => {
       render(await ContactPage())
 
       expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
+    })
+
+    it('wraps the route in MuiProviders', async () => {
+      render(await ContactPage())
+
+      expect(screen.getByTestId('mui-providers')).toBeInTheDocument()
     })
   })
 

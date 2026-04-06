@@ -19,8 +19,8 @@ jest.mock('next/link', () => ({
   )
 }))
 
-jest.mock('../BestsellersCarousel', () => ({
-  BestsellersCarousel: ({ cakes }: { cakes: Cake[] }) => (
+jest.mock('../DeferredBestsellersCarousel', () => ({
+  DeferredBestsellersCarousel: ({ cakes }: { cakes: Cake[] }) => (
     <div data-testid="bestsellers-carousel" data-count={cakes.length} />
   )
 }))

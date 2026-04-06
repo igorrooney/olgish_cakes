@@ -13,8 +13,8 @@ jest.mock('@/app/utils/fetchTestimonials', () => ({
 }))
 
 
-jest.mock('../ReviewsCarousel', () => ({
-  ReviewsCarousel: ({ testimonials }: { testimonials: Testimonial[] }) => (
+jest.mock('../DeferredReviewsCarousel', () => ({
+  DeferredReviewsCarousel: ({ testimonials }: { testimonials: Testimonial[] }) => (
     <div data-testid="reviews-carousel" data-count={testimonials.length} />
   )
 }))

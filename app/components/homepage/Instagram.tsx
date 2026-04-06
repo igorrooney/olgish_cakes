@@ -1,6 +1,10 @@
 import type { InstagramPost } from '@/app/types/instagram'
-import { getInstagramPostLimit, getLatestInstagramPosts } from '@/app/utils/fetchInstagramPosts'
-import { InstagramCarousel } from './InstagramCarousel'
+import {
+  getInstagramPostLimit,
+  getLatestInstagramPosts,
+  isRecoverableInstagramError
+} from '@/app/utils/fetchInstagramPosts'
+import { DeferredInstagramCarousel } from './DeferredInstagramCarousel'
 
 const instagramProfileUrl = 'https://www.instagram.com/olgish_cakes/'
 const instagramProfileName = 'Olgish Cakes'
@@ -26,7 +30,14 @@ export async function Instagram({ limit }: InstagramProps = {}) {
     posts = await getLatestInstagramPosts({ limit: resolvedLimit })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('Error fetching Instagram posts:', message)
+    if (isRecoverableInstagramError(error)) {
+      console.warn(
+        'Instagram posts unavailable. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
+        message
+      )
+    } else {
+      console.error('Error fetching Instagram posts:', message)
+    }
   }
 
   const displayPosts = posts.length > 0 ? posts : [placeholderPost]
@@ -40,7 +51,7 @@ export async function Instagram({ limit }: InstagramProps = {}) {
             <span className="inline tablet:block">on Instagram</span>
           </h2>
         </div>
-        <InstagramCarousel
+        <DeferredInstagramCarousel
           posts={displayPosts}
           profileUrl={instagramProfileUrl}
           profileName={instagramProfileName}

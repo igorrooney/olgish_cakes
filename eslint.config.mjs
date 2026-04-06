@@ -12,11 +12,13 @@ const eslintConfig = [
     ignores: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/.tmp-script-run/**",
       "**/dist/**",
       "**/build/**",
       "**/coverage/**",
       "**/.turbo/**",
       "**/out/**",
+      "**/reports/**",
       "**/*.config.js",
       "**/*.config.mjs",
       "**/*.config.cjs",

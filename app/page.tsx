@@ -5,16 +5,18 @@ import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data
 import type { Testimonial } from './types/testimonial'
 import {
   OlgishCakesFounder,
-  Bestsellers,
-  EnquiryForm,
   faqItems,
   HomeFaq,
   HomeHero,
-  Instagram,
-  Markets,
-  Occasions,
-  Reviews,
 } from './components/homepage'
+import {
+  DeferredBestsellers,
+  DeferredHomeEnquirySection,
+  DeferredInstagram,
+  DeferredMarkets,
+  DeferredOccasions,
+  DeferredReviews
+} from './components/homepage/deferredSections'
 import { getAllTestimonials } from './utils/fetchTestimonials'
 import { getHomepageCollections } from './utils/fetchCollections'
 import { buildOccasionOptionsFromCollections } from './components/homepage/formOptions'
@@ -502,9 +504,9 @@ export default async function Home() {
             </div>
           </div>
           <OlgishCakesFounder />
-          <Bestsellers />
-          <Markets />
-          <Reviews testimonials={testimonials} />
+          <DeferredBestsellers />
+          <DeferredMarkets />
+          <DeferredReviews testimonials={testimonials} />
           <div className="homepage-divider relative h-auto">
             <Image
               src="/design/occasions_divider.png"
@@ -516,7 +518,7 @@ export default async function Home() {
               className="w-full h-auto object-contain"
             />
           </div>
-          <Occasions collections={collections} />
+          <DeferredOccasions collections={collections} />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image
@@ -530,7 +532,7 @@ export default async function Home() {
               />
             </div>
           </div>
-          <EnquiryForm occasionOptions={occasionOptions} />
+          <DeferredHomeEnquirySection occasionOptions={occasionOptions} />
           <div className="w-full flex justify-center bg-base-100">
             <div className="homepage-divider relative h-auto">
               <Image
@@ -544,7 +546,7 @@ export default async function Home() {
               />
             </div>
           </div>
-          <Instagram />
+          <DeferredInstagram />
           <HomeFaq />
         </div>
       </div>

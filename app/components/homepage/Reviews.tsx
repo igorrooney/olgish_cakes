@@ -1,6 +1,6 @@
 import type { Testimonial } from '@/app/types/testimonial'
 import { getAllTestimonials } from '@/app/utils/fetchTestimonials'
-import { ReviewsCarousel } from './ReviewsCarousel'
+import { DeferredReviewsCarousel } from './DeferredReviewsCarousel'
 
 interface ReviewsProps {
   testimonials?: Testimonial[]
@@ -13,5 +13,5 @@ export async function Reviews({ testimonials }: ReviewsProps = {}) {
     return null
   }
 
-  return <ReviewsCarousel testimonials={resolvedTestimonials} />
+  return <DeferredReviewsCarousel testimonials={resolvedTestimonials} />
 }

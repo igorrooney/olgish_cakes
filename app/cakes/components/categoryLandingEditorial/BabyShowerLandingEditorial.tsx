@@ -42,8 +42,8 @@ export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditoria
         </p>
         <p className='mt-4'>
           The{' '}
-          <Link href='/cake-delivery-leeds' className='link link-hover text-primary'>
-            Leeds delivery guide
+          <Link href='/contact' className='link link-hover text-primary'>
+            contact page
           </Link>{' '}
           helps you compare the safer option before the brief gets more specific.
         </p>

@@ -1,0 +1,6 @@
+export { Bestsellers as DeferredBestsellers } from './Bestsellers'
+export { Markets as DeferredMarkets } from './Markets'
+export { Reviews as DeferredReviews } from './Reviews'
+export { Occasions as DeferredOccasions } from './Occasions'
+export { Instagram as DeferredInstagram } from './Instagram'
+export { HomeEnquirySection as DeferredHomeEnquirySection } from './HomeEnquirySection'
