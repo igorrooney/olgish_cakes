@@ -11,8 +11,8 @@ const mockCarousel = jest.fn(({ posts }: { posts: InstagramPost[] }) => (
   <div data-testid="instagram-carousel" data-count={posts.length} />
 ))
 
-jest.mock('../InstagramCarousel', () => ({
-  InstagramCarousel: (props: { posts: InstagramPost[] }) => mockCarousel(props)
+jest.mock('../DeferredInstagramCarousel', () => ({
+  DeferredInstagramCarousel: (props: { posts: InstagramPost[] }) => mockCarousel(props)
 }))
 
 jest.mock('@/app/utils/fetchInstagramPosts', () => {
@@ -71,5 +71,23 @@ describe('Instagram', () => {
     expect(mockGetLatestInstagramPosts).toHaveBeenCalled()
 
     consoleSpy.mockRestore()
+  })
+
+  it('logs a warning instead of an error for recoverable Instagram failures', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    mockGetLatestInstagramPosts.mockRejectedValueOnce(
+      new Error('Instagram API error (400): Error validating access token: Session has expired')
+    )
+
+    const element = await Instagram()
+    render(element)
+
+    expect(screen.getByTestId('instagram-carousel')).toHaveAttribute('data-count', '1')
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Instagram posts unavailable. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
+      'Instagram API error (400): Error validating access token: Session has expired'
+    )
+
+    consoleWarnSpy.mockRestore()
   })
 })

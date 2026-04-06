@@ -218,7 +218,7 @@ export function generateLocalContentStrategy() {
   return {
     locationPages: [
       {
-        url: "/cakes-leeds",
+        url: "/cakes",
         title: "Custom Cakes Leeds | Ukrainian Bakery | Same Day Delivery",
         targetKeywords: ["cakes leeds", "custom cakes leeds", "cake delivery leeds"],
         content: {
@@ -230,7 +230,7 @@ export function generateLocalContentStrategy() {
         },
       },
       {
-        url: "/wedding-cakes-leeds",
+        url: "/wedding-cakes",
         title: "Wedding Cakes Leeds | Bespoke Designs | Free Consultation",
         targetKeywords: [
           "wedding cakes leeds",

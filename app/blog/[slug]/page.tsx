@@ -326,7 +326,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
       "@type": "Person",
       name: "Olga",
       jobTitle: "Founder and baker",
-      url: `${BUSINESS_CONSTANTS.BASE_URL}/about`,
+      url: BUSINESS_CONSTANTS.BASE_URL,
       sameAs: ["https://www.instagram.com/olgish_cakes/"],
     },
     publisher: {

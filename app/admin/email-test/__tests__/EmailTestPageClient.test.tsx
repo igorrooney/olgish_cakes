@@ -278,6 +278,106 @@ describe('EmailTestPageClient', () => {
     ]))
   })
 
+  it('supports the Instagram token refresh alert template with minimal editable fields', async () => {
+    ;(global.fetch as jest.Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse()
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
+          templateId: 'instagram-token-refresh-alert',
+          subject: 'Instagram token refresh reminder',
+          input: {
+            customerName: 'Olgish Cakes team',
+            customerEmail: 'hello@olgishcakes.co.uk',
+            orderType: 'system-alert',
+            productName: 'Instagram access token',
+            dateNeeded: '2026-06-05',
+            message: 'Refresh the token before it expires.',
+            note: 'Update Vercel env values after refreshing.'
+          }
+        })
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
+          templateId: 'instagram-token-refresh-alert',
+          subject: 'Instagram token refresh reminder',
+          input: {
+            customerName: 'Updated team',
+            customerEmail: 'hello@olgishcakes.co.uk',
+            orderType: 'system-alert',
+            productName: 'Instagram access token',
+            dateNeeded: '2026-06-05',
+            message: 'Refresh the token before it expires.',
+            note: 'Update Vercel env values after refreshing.'
+          }
+        })
+      } as Response)
+
+    renderWithQueryClient()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Template')).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Template'), {
+      target: { value: 'instagram-token-refresh-alert' }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: 'Instagram: Token refresh alert' })).toBeInTheDocument()
+      expect(screen.getByLabelText('Customer name')).toHaveValue('Olgish Cakes team')
+    })
+
+    expect(screen.getByLabelText('Customer email')).toHaveValue('hello@olgishcakes.co.uk')
+    expect(screen.getByLabelText('Submitted message')).toHaveValue('Refresh the token before it expires.')
+    expect(screen.getByLabelText('Internal note')).toHaveValue('Update Vercel env values after refreshing.')
+    expect(screen.getByLabelText('Order type')).toHaveValue('system-alert')
+    expect(screen.getByLabelText('Product name')).toHaveValue('Instagram access token')
+    expect(screen.getByLabelText('Date needed')).toHaveValue('2026-06-05')
+    expect(screen.queryByLabelText('Customer phone')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Quantity')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Attachment names')).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Customer name'), {
+      target: { value: 'Updated team' }
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Instagram token refresh reminder')).toBeInTheDocument()
+    })
+
+    const requestBodies = (global.fetch as jest.Mock).mock.calls
+      .map((call) => JSON.parse(String(call[1]?.body)))
+
+    expect(requestBodies).toEqual(expect.arrayContaining([
+      {
+        templateId: 'instagram-token-refresh-alert',
+        scenarioId: 'default'
+      }
+    ]))
+
+    const previewBody = requestBodies.at(-1)
+    expect(previewBody).toEqual({
+      templateId: 'instagram-token-refresh-alert',
+      scenarioId: 'default',
+      input: {
+        customerName: 'Updated team',
+        customerEmail: 'hello@olgishcakes.co.uk',
+        message: 'Refresh the token before it expires.',
+        note: 'Update Vercel env values after refreshing.',
+        orderType: 'system-alert',
+        productName: 'Instagram access token',
+        dateNeeded: '2026-06-05'
+      }
+    })
+  })
+
   it('blocks actions with invalid numeric field values', async () => {
     ;(global.fetch as jest.Mock)
       .mockResolvedValueOnce({

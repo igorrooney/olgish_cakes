@@ -12,7 +12,11 @@ export const emailTemplateIds = [
   'quote-admin-request',
   'custom-cake-enquiry-admin',
   'custom-cake-enquiry-customer',
-  'custom-cake-enquiry-failure-alert'
+  'custom-cake-enquiry-failure-alert',
+  'workshop-enquiry-admin',
+  'workshop-enquiry-customer',
+  'workshop-enquiry-failure-alert',
+  'instagram-token-refresh-alert'
 ] as const
 
 export type EmailTemplateId = (typeof emailTemplateIds)[number]
@@ -91,6 +95,10 @@ export type QuoteAdminRequestInput = EmailTemplateCommonInput
 export type CustomCakeEnquiryAdminInput = EmailTemplateCommonInput
 export type CustomCakeEnquiryCustomerInput = EmailTemplateCommonInput
 export type CustomCakeEnquiryFailureAlertInput = EmailTemplateCommonInput
+export type WorkshopEnquiryAdminInput = EmailTemplateCommonInput
+export type WorkshopEnquiryCustomerInput = EmailTemplateCommonInput
+export type WorkshopEnquiryFailureAlertInput = EmailTemplateCommonInput
+export type InstagramTokenRefreshAlertInput = EmailTemplateCommonInput
 
 export type EmailRenderInputMap = {
   'contact-admin-inquiry': ContactAdminInquiryInput
@@ -105,6 +113,10 @@ export type EmailRenderInputMap = {
   'custom-cake-enquiry-admin': CustomCakeEnquiryAdminInput
   'custom-cake-enquiry-customer': CustomCakeEnquiryCustomerInput
   'custom-cake-enquiry-failure-alert': CustomCakeEnquiryFailureAlertInput
+  'workshop-enquiry-admin': WorkshopEnquiryAdminInput
+  'workshop-enquiry-customer': WorkshopEnquiryCustomerInput
+  'workshop-enquiry-failure-alert': WorkshopEnquiryFailureAlertInput
+  'instagram-token-refresh-alert': InstagramTokenRefreshAlertInput
 }
 
 export interface RenderedEmail {

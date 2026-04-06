@@ -208,16 +208,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     internalLinks: [
       {
-        href: '/cake-size-guide',
-        label: 'Cake size guide',
-        description: 'Check tier and portion expectations before finalising the scale of your wedding cake.'
-      },
-      {
-        href: '/cake-delivery-leeds',
-        label: 'Leeds delivery guide',
-        description: 'Review local delivery and setup considerations for wedding cakes travelling to Leeds venues.'
-      },
-      {
         href: customQuotePagePath,
         label: 'Get a custom quote',
         description: 'Send your date, venue and serving details when you want pricing shaped around your own brief.'
@@ -361,16 +351,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       }
     ],
     internalLinks: [
-      {
-        href: '/cake-size-guide',
-        label: 'Cake size guide',
-        description: 'Check portions and scale before choosing the final birthday cake design.'
-      },
-      {
-        href: '/cake-pricing',
-        label: 'Cake pricing',
-        description: 'Compare likely budget expectations with the size and level of detail you want.'
-      },
       {
         href: customQuotePagePath,
         label: 'Get a custom quote',
@@ -517,16 +497,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     internalLinks: [
       {
-        href: '/cake-size-guide',
-        label: 'Cake size guide',
-        description: 'Sense-check portions before choosing the final anniversary cake scale.'
-      },
-      {
-        href: '/cake-delivery-leeds',
-        label: 'Leeds delivery guide',
-        description: 'Review collection and local delivery details for anniversary cakes travelling to Leeds venues or homes.'
-      },
-      {
         href: '/contact',
         label: 'Contact',
         description: 'Use the contact page if you already know the celebration details and want to discuss the brief directly.'
@@ -670,16 +640,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       }
     ],
     internalLinks: [
-      {
-        href: '/cake-size-guide',
-        label: 'Cake size guide',
-        description: 'Compare portion sizes before choosing the final baby shower cake scale.'
-      },
-      {
-        href: '/cake-pricing',
-        label: 'Cake pricing',
-        description: 'Sense-check likely budget expectations against the size and finish you want.'
-      },
       {
         href: customQuotePagePath,
         label: 'Get a custom quote',

@@ -114,7 +114,7 @@ export function MarketsClient({ upcomingMarkets }: MarketsClientProps) {
 
   if (upcomingMarkets.length === 0) {
     return (
-      <section className='relative mt-8 bg-base-100 px-4 py-8 pt-0'>
+      <section id='markets' className='relative mt-8 bg-base-100 px-4 py-8 pt-0'>
         <div className='homepage-container relative flex flex-col items-center gap-6 text-center'>
           <h2 className='mt-10 font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px]'>
             Upcoming
@@ -122,13 +122,13 @@ export function MarketsClient({ upcomingMarkets }: MarketsClientProps) {
             Farmers markets
           </h2>
           <p className='font-oldenburg text-[15px] leading-7 text-base-content tablet:text-base'>
-            Market dates are announced soon. Check our schedule for the latest updates.
+            Market dates are announced soon. Contact us for the latest updates.
           </p>
           <Link
-            href='/market-schedule'
+            href='/contact'
             className='flex items-center gap-2 text-black'
           >
-            <span className='font-oldenburg tablet:text-[20px]'>See market schedule</span>
+            <span className='font-oldenburg tablet:text-[20px]'>Contact us about dates</span>
             <span className='mt-1 font-oldenburg text-lg text-primary-500 tablet:text-[20px]'>{'>'}</span>
           </Link>
         </div>
@@ -137,7 +137,7 @@ export function MarketsClient({ upcomingMarkets }: MarketsClientProps) {
   }
 
   return (
-    <section className='relative mt-8 bg-base-100 px-4 py-8 pt-0'>
+    <section id='markets' className='relative mt-8 bg-base-100 px-4 py-8 pt-0'>
       <div className='homepage-container relative flex flex-col gap-6'>
         <h2 className='mt-10 font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px]'>
           Upcoming

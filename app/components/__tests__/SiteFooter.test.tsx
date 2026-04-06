@@ -19,14 +19,14 @@ const originalGtmId = process.env.NEXT_PUBLIC_GTM_ID
 
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ href, children, ...props }: LinkProps) => (
+  default: ({ href, children, prefetch, ...props }: LinkProps & { prefetch?: boolean | null }) => (
     <a href={href} {...props}>{children}</a>
   )
 }))
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: ImageProps) => {
+  default: ({ alt, src, fill, ...props }: ImageProps & { fill?: boolean }) => {
     const resolvedSrc = typeof src === 'string' ? src : src?.src || ''
     return <img alt={alt} src={resolvedSrc} {...props} />
   }

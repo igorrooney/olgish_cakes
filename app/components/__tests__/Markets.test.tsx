@@ -26,6 +26,13 @@ jest.mock('@/app/utils/fetchMarketSchedule', () => ({
   getMarketSchedule: () => mockGetMarketSchedule()
 }))
 
+jest.mock('../homepage/DeferredMarketsClient', () => ({
+  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: MarketSchedule[] }) => {
+    const { MarketsClient } = jest.requireActual('../homepage/MarketsClient') as typeof import('../homepage/MarketsClient')
+    return <MarketsClient upcomingMarkets={upcomingMarkets} />
+  }
+}))
+
 const fixedNow = new Date('2026-01-15T09:00:00.000Z')
 
 const buildDate = (offsetDays: number): string => {
@@ -233,9 +240,9 @@ describe('Markets', () => {
       screen.getByRole('heading', { level: 2, name: /Upcoming\s+Farmers markets/i })
     ).toBeInTheDocument()
     expect(screen.getByText(/Market dates are announced soon/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /See market schedule/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Contact us about dates/i })).toHaveAttribute(
       'href',
-      '/market-schedule'
+      '/contact'
     )
   })
 })

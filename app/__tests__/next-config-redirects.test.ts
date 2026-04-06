@@ -130,7 +130,7 @@ describe('next.config redirects', () => {
     ]))
   })
 
-  it('keeps /wedding-cakes live while redirecting retired wedding variants back to it', async () => {
+  it('keeps /wedding-cakes live while redirecting retired wedding variants to the main cakes catalog', async () => {
     if (!nextConfig.redirects) {
       throw new Error('Expected nextConfig.redirects to be defined')
     }
@@ -140,17 +140,17 @@ describe('next.config redirects', () => {
     expect(redirects).toEqual(expect.arrayContaining([
       {
         source: '/wakefield-wedding-cakes',
-        destination: '/wedding-cakes',
+        destination: '/cakes',
         permanent: true
       },
       {
         source: '/vegan-wedding-cakes-leeds',
-        destination: '/wedding-cakes',
+        destination: '/cakes',
         permanent: true
       },
       {
         source: '/gluten-friendly-wedding-cakes-leeds',
-        destination: '/wedding-cakes',
+        destination: '/cakes',
         permanent: true
       }
     ]))
@@ -159,6 +159,60 @@ describe('next.config redirects', () => {
       {
         source: '/wedding-cakes',
         destination: '/blog/wedding-cake-flavours-guide',
+        permanent: true
+      }
+    ]))
+  })
+
+  it('redirects the retired public route surface to the approved canonical destinations', async () => {
+    if (!nextConfig.redirects) {
+      throw new Error('Expected nextConfig.redirects to be defined')
+    }
+
+    const redirects = await nextConfig.redirects()
+
+    expect(redirects).toEqual(expect.arrayContaining([
+      { source: '/market-schedule', destination: '/', permanent: true },
+      { source: '/reviews-awards', destination: '/', permanent: true },
+      { source: '/allergen-information', destination: '/allergens', permanent: true },
+      { source: '/faq', destination: '/faqs', permanent: true },
+      { source: '/custom-cake-design', destination: '/custom-cakes', permanent: true },
+      { source: '/delivery-areas', destination: '/delivery', permanent: true },
+      { source: '/return-policy', destination: '/delivery', permanent: true },
+      { source: '/buy-cake', destination: '/cakes', permanent: true },
+      { source: '/cake-gallery', destination: '/cakes', permanent: true },
+      { source: '/cake-in-leeds', destination: '/cakes', permanent: true },
+      { source: '/search', destination: '/cakes', permanent: true },
+      { source: '/order', destination: '/get-custom-quote', permanent: true },
+      { source: '/order/leeds', destination: '/get-custom-quote', permanent: true },
+      { source: '/cake-pricing', destination: '/get-custom-quote', permanent: true },
+      { source: '/gift-hampers', destination: '/cakes-by-post', permanent: true },
+      { source: '/honey-cake', destination: '/cakes/honey-cake', permanent: true },
+      { source: '/best-cakes-for-birthdays', destination: '/blog', permanent: true },
+      { source: '/cake-care-storage', destination: '/blog', permanent: true },
+      { source: '/ukrainian-bakery-leeds', destination: '/blog', permanent: true },
+      { source: '/charity-events', destination: '/cakes', permanent: true }
+    ]))
+  })
+
+  it('keeps the retired honey cake landing page pointed at the live honey cake product', async () => {
+    if (!nextConfig.redirects) {
+      throw new Error('Expected nextConfig.redirects to be defined')
+    }
+
+    const redirects = await nextConfig.redirects()
+
+    expect(redirects).toEqual(expect.arrayContaining([
+      {
+        source: '/honey-cake',
+        destination: '/cakes/honey-cake',
+        permanent: true
+      }
+    ]))
+    expect(redirects).not.toEqual(expect.arrayContaining([
+      {
+        source: '/honey-cake',
+        destination: '/blog',
         permanent: true
       }
     ]))

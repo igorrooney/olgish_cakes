@@ -138,17 +138,15 @@ describe('sitemap', () => {
       ).toBeDefined()
     })
 
-    it('should include location pages', async () => {
+    it('should include the kept static public pages', async () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
-      const leedsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-leeds')
-      const wakefieldUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-wakefield')
-      const bradfordUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-bradford')
+      const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
+      const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
 
-      expect(leedsUrl).toBeDefined()
-      expect(wakefieldUrl).toBeDefined()
-      expect(bradfordUrl).toBeDefined()
+      expect(quoteUrl).toBeDefined()
+      expect(contactUrl).toBeDefined()
     })
 
     it('should exclude retired article-replacement pages from the static sitemap', async () => {
@@ -161,6 +159,11 @@ describe('sitemap', () => {
         'https://olgishcakes.co.uk/nut-free-cakes-leeds',
         'https://olgishcakes.co.uk/cake-size-guide',
         'https://olgishcakes.co.uk/cake-preservation',
+        'https://olgishcakes.co.uk/about',
+        'https://olgishcakes.co.uk/order',
+        'https://olgishcakes.co.uk/market-schedule',
+        'https://olgishcakes.co.uk/reviews-awards',
+        'https://olgishcakes.co.uk/celebration-cakes',
         'https://olgishcakes.co.uk/vegan-wedding-cakes-leeds',
         'https://olgishcakes.co.uk/gluten-friendly-wedding-cakes-leeds'
       ]
@@ -188,15 +191,29 @@ describe('sitemap', () => {
 
       const result = await sitemap()
       const homeUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk')
-      const aboutUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/about')
+      const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
       const homeEntry = getStaticSitemapEntry('/')
-      const aboutEntry = getStaticSitemapEntry('/about')
+      const contactEntry = getStaticSitemapEntry('/contact')
       const runtimeDate = new Date('2026-03-17T12:00:00.000Z')
 
       expect(homeUrl?.lastModified).toEqual(new Date(homeEntry?.lastModified || ''))
-      expect(aboutUrl?.lastModified).toEqual(new Date(aboutEntry?.lastModified || ''))
+      expect(contactUrl?.lastModified).toEqual(new Date(contactEntry?.lastModified || ''))
       expect(homeUrl?.lastModified).not.toEqual(runtimeDate)
-      expect(aboutUrl?.lastModified).not.toEqual(runtimeDate)
+      expect(contactUrl?.lastModified).not.toEqual(runtimeDate)
+    })
+
+    it('should include the workshops landing page with the committed sitemap metadata', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+      const workshopsUrl = result.find(
+        (entry) => entry.url === 'https://olgishcakes.co.uk/learn/workshops'
+      )
+
+      expect(workshopsUrl?.priority).toBe(0.75)
+      expect(workshopsUrl?.changeFrequency).toBe('monthly')
+      expect(workshopsUrl?.lastModified).toEqual(new Date('2026-04-02'))
+      expect(getStaticSitemapLastModified('/learn/workshops')).toEqual(new Date('2026-04-02'))
     })
 
     it('should expose the updated committed lastModified values for cakes and cakes by post', async () => {
@@ -222,6 +239,9 @@ describe('sitemap', () => {
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/ukrainian-cake')).toBeUndefined()
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cake-delivery-leeds')).toBeUndefined()
       expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/nut-free-cakes-leeds')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/about')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/order')).toBeUndefined()
+      expect(result.find((entry) => entry.url === 'https://olgishcakes.co.uk/reviews-awards')).toBeUndefined()
     })
 
     it('should filter out hampers without slug', async () => {

@@ -1,3 +1,4 @@
+import { Providers } from '../providers'
 import type { OccasionOption } from '../components/homepage/formOptions'
 import { GetCustomQuoteForm } from './GetCustomQuoteForm'
 
@@ -28,7 +29,9 @@ export function GetCustomQuoteFormSection({
           </div>
 
           <div className='mx-auto w-full max-w-[760px] rounded-[32px] border border-base-300 bg-base-100 px-6 py-7 shadow-[0_10px_24px_rgba(15,23,42,0.03)] tablet:px-8 tablet:py-8'>
-            <GetCustomQuoteForm occasionOptions={occasionOptions} />
+            <Providers>
+              <GetCustomQuoteForm occasionOptions={occasionOptions} />
+            </Providers>
           </div>
         </div>
       </div>

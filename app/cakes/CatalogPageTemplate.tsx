@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Suspense } from 'react'
+import { CatalogClientProviders } from './CatalogClientProviders'
 import { CakesTabletCatalog } from './components/CakesTabletCatalog'
 import type { CatalogFilterDefaults, CatalogMode } from './components/types'
 import type { CatalogPageData } from './catalogPageData'
@@ -214,24 +215,26 @@ export function CatalogPageTemplate({
         {preCatalogContent}
         {catalogSectionIntro}
         <Suspense fallback={<CatalogCatalogSkeletonFallback showDesktopFilters={showDesktopFilters} />}>
-          <CakesTabletCatalog
-            cakes={catalogData.cakesForUi}
-            featuredOffer={catalogData.featuredOffer}
-            collectionOptions={catalogData.collectionOptions}
-            initialFilterDefaults={initialFilterDefaults}
-            lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
-            lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
-            lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
-            lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
-            catalogMode={catalogMode}
-            lockedCollectionQueryValues={lockedCollectionQueryValues}
-            showProductTypeFilters={showProductTypeFilters}
-            showDesktopFilters={showDesktopFilters}
-            showMobileFilterSheet={showMobileFilterSheet}
-            showPriceFilter={showPriceFilter}
-            showCollectionFilters={showCollectionFilters}
-            mobileToolbarVariant={mobileToolbarVariant}
-          />
+          <CatalogClientProviders>
+            <CakesTabletCatalog
+              cakes={catalogData.cakesForUi}
+              featuredOffer={catalogData.featuredOffer}
+              collectionOptions={catalogData.collectionOptions}
+              initialFilterDefaults={initialFilterDefaults}
+              lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
+              lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
+              lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
+              lazyByPostCakesPriceCeilingHint={lazyByPostCakesPriceCeilingHint}
+              catalogMode={catalogMode}
+              lockedCollectionQueryValues={lockedCollectionQueryValues}
+              showProductTypeFilters={showProductTypeFilters}
+              showDesktopFilters={showDesktopFilters}
+              showMobileFilterSheet={showMobileFilterSheet}
+              showPriceFilter={showPriceFilter}
+              showCollectionFilters={showCollectionFilters}
+              mobileToolbarVariant={mobileToolbarVariant}
+            />
+          </CatalogClientProviders>
         </Suspense>
         {postCatalogContent}
       </main>

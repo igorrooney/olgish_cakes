@@ -38,14 +38,6 @@ export const DynamicCakeImageGallery = dynamic(
   }
 );
 
-export const DynamicTestimonialsList = dynamic(
-  () => import("../testimonials/TestimonialsList").then(mod => ({ default: mod.TestimonialsList })),
-  {
-    loading: DynamicLoading,
-    ssr: true,
-  }
-);
-
 export const DynamicCookieConsent = dynamic(
   () => import("./CookieConsent").then(mod => ({ default: mod.default })),
   {

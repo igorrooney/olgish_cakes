@@ -3,7 +3,7 @@ import { urlFor } from '@/sanity/lib/image'
 import { blocksToText, Cake } from '@/types/cake'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BestsellersCarousel } from './BestsellersCarousel'
+import { DeferredBestsellersCarousel } from './DeferredBestsellersCarousel'
 
 const formatCategoryLabel = (category?: string) => {
   if (!category) {
@@ -83,7 +83,7 @@ export async function Bestsellers() {
         {displayCakes.length > 0 ? (
           <>
             <div className="tablet:hidden">
-              <BestsellersCarousel cakes={displayCakes} />
+              <DeferredBestsellersCarousel cakes={displayCakes} />
             </div>
             <div className="hidden tablet:flex tablet:flex-col tablet:gap-[83px]">
               {displayCakes.map((cake, index) => {

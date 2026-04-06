@@ -22,6 +22,13 @@ jest.mock('@/app/utils/fetchMarketSchedule', () => ({
   getMarketSchedule: jest.fn()
 }))
 
+jest.mock('../DeferredMarketsClient', () => ({
+  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: MarketSchedule[] }) => {
+    const { MarketsClient } = jest.requireActual('../MarketsClient') as typeof import('../MarketsClient')
+    return <MarketsClient upcomingMarkets={upcomingMarkets} />
+  }
+}))
+
 const mockGetMarketSchedule = getMarketSchedule as jest.MockedFunction<typeof getMarketSchedule>
 
 const createMarket = (overrides: Partial<MarketSchedule> = {}): MarketSchedule => ({
@@ -177,7 +184,7 @@ describe('Markets', () => {
     const element = await Markets()
     render(element)
 
-    expect(screen.getByText('Market dates are announced soon. Check our schedule for the latest updates.')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /see market schedule/i })).toHaveAttribute('href', '/market-schedule')
+    expect(screen.getByText('Market dates are announced soon. Contact us for the latest updates.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /contact us about dates/i })).toHaveAttribute('href', '/contact')
   })
 })

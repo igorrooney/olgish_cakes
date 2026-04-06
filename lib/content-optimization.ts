@@ -324,13 +324,13 @@ export function generateInternalLinkingStrategy() {
         anchorTexts: ["custom cakes", "wedding cakes", "birthday cakes"],
       },
       {
-        page: "/about",
+        page: "/blog",
         purpose: "Authority building",
         linkTo: ["process pages", "quality standards", "team information"],
         anchorTexts: ["our baking process", "quality commitment", "meet our team"],
       },
       {
-        page: "/testimonials",
+        page: "/",
         purpose: "Social proof hub",
         linkTo: ["featured cakes", "case studies", "ordering process"],
         anchorTexts: ["featured wedding cake", "customer story", "order similar cake"],

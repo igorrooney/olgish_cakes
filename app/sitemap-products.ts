@@ -106,9 +106,9 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
       priority: 0.9
     },
     {
-      url: `${baseUrl}/order`,
-      lastModified: getStaticSitemapLastModified('/order'),
-      changeFrequency: 'daily' as const,
+      url: `${baseUrl}/get-custom-quote`,
+      lastModified: getStaticSitemapLastModified('/get-custom-quote'),
+      changeFrequency: 'weekly' as const,
       priority: 0.95
     }
   ]

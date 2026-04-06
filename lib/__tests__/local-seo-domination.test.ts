@@ -201,17 +201,17 @@ describe('local-seo-domination', () => {
       expect(result.locationPages).toBeInstanceOf(Array)
     })
 
-    it('should have cakes-leeds location page', () => {
+    it('should have cakes location page', () => {
       const result = generateLocalContentStrategy()
-      const cakesLeeds = result.locationPages.find(p => p.url === '/cakes-leeds')
+      const cakesLeeds = result.locationPages.find(p => p.url === '/cakes')
 
       expect(cakesLeeds).toBeDefined()
       expect(cakesLeeds?.title).toContain('Leeds')
     })
 
-    it('should have wedding-cakes-leeds page', () => {
+    it('should have wedding-cakes page', () => {
       const result = generateLocalContentStrategy()
-      const weddingLeeds = result.locationPages.find(p => p.url === '/wedding-cakes-leeds')
+      const weddingLeeds = result.locationPages.find(p => p.url === '/wedding-cakes')
 
       expect(weddingLeeds).toBeDefined()
     })

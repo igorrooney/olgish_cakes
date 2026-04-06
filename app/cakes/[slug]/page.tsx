@@ -2,6 +2,7 @@ import { getAllCakes, getCakeBySlug } from '@/app/utils/fetchCakes'
 import { Cake, blocksToText } from '@/types/cake'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Providers } from '@/app/providers'
 import { CakePageClient } from './CakePageClient'
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
@@ -351,10 +352,12 @@ export default async function CakePage({ params, searchParams }: PageProps) {
       </a>
 
       <main id="main-content" tabIndex={-1}>
-        <CakePageClient
-          cake={cake}
-          backHref={backHref}
-        />
+        <Providers>
+          <CakePageClient
+            cake={cake}
+            backHref={backHref}
+          />
+        </Providers>
       </main>
     </>
   );

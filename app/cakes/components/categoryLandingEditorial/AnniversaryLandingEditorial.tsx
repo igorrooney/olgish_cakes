@@ -42,8 +42,8 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
         </p>
         <p className='mt-4'>
           The{' '}
-          <Link href='/cake-delivery-leeds' className='link link-hover text-primary'>
-            Leeds delivery guide
+          <Link href='/contact' className='link link-hover text-primary'>
+            contact page
           </Link>{' '}
           helps you judge whether collection or delivery is the better fit for the setting.
         </p>

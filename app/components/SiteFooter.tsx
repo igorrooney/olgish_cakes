@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ManageCookiesLink } from './ManageCookiesLink'
+import { DeferredManageCookiesLink } from './DeferredManageCookiesLink'
 
 const footerSectionHeadingClassName = 'mb-2 font-moreSugar text-sm font-normal uppercase leading-5 tracking-normal text-left text-[color:var(--color-navigation)] tablet:text-xl'
 const footerLinkClassName = 'link link-hover font-sans text-sm text-base-content tablet:text-base'
+const deferredFooterStyle = {
+  contentVisibility: 'auto',
+  containIntrinsicSize: '960px'
+} as const
 
 export function SiteFooter() {
   const isConsentEnabled = Boolean(process.env.NEXT_PUBLIC_GTM_ID)
@@ -16,29 +20,30 @@ export function SiteFooter() {
           alt='Decorative yellow wavy divider with dots'
           width={430}
           height={100}
+          fetchPriority='low'
           className='h-auto w-full object-contain'
         />
       </div>
-      <footer className='bg-base-100 text-base-content'>
+      <footer className='bg-base-100 text-base-content' style={deferredFooterStyle}>
         <div className='footer w-full px-6 py-8 tablet:px-20 tablet:py-10'>
           <div className='grid grid-cols-2 gap-x-6 gap-y-8 text-left tablet:grid-cols-3 tablet:items-start tablet:justify-items-start tablet:justify-start tablet:gap-x-10'>
             <nav className='flex flex-col gap-2'>
               <p className={footerSectionHeadingClassName}>
                 Navigation
               </p>
-              <Link href='/cakes-by-post' className={footerLinkClassName}>
+              <Link href='/cakes-by-post' prefetch={false} className={footerLinkClassName}>
                 Cakes by post
               </Link>
-              <Link href='/custom-cakes' className={footerLinkClassName}>
+              <Link href='/custom-cakes' prefetch={false} className={footerLinkClassName}>
                 Custom cakes
               </Link>
-              <Link href='/learn' className={footerLinkClassName}>
+              <Link href='/learn' prefetch={false} className={footerLinkClassName}>
                 Learn hub
               </Link>
-              <Link href='/faqs' className={footerLinkClassName}>
+              <Link href='/faqs' prefetch={false} className={footerLinkClassName}>
                 FAQs
               </Link>
-              <Link href='/contact' className={footerLinkClassName}>
+              <Link href='/contact' prefetch={false} className={footerLinkClassName}>
                 Contact
               </Link>
             </nav>
@@ -63,25 +68,25 @@ export function SiteFooter() {
               <p className={footerSectionHeadingClassName}>
                 Footer
               </p>
-              <Link href='/delivery' className={footerLinkClassName}>
+              <Link href='/delivery' prefetch={false} className={footerLinkClassName}>
                 Delivery & returns
               </Link>
-              <Link href='/allergens' className={footerLinkClassName}>
+              <Link href='/allergens' prefetch={false} className={footerLinkClassName}>
                 Allergens
               </Link>
-              <Link href='/ingredients' className={footerLinkClassName}>
+              <Link href='/ingredients' prefetch={false} className={footerLinkClassName}>
                 Ingredients
               </Link>
-              <Link href='/terms' className={footerLinkClassName}>
+              <Link href='/terms' prefetch={false} className={footerLinkClassName}>
                 Terms
               </Link>
-              <Link href='/privacy' className={footerLinkClassName}>
+              <Link href='/privacy' prefetch={false} className={footerLinkClassName}>
                 Privacy policy
               </Link>
               {isConsentEnabled ? (
-                <ManageCookiesLink className='link link-hover text-left font-sans text-sm text-base-content tablet:text-base' />
+                <DeferredManageCookiesLink className='link link-hover text-left font-sans text-sm text-base-content tablet:text-base' />
               ) : null}
-              <Link href='/sitemap.xml' className={footerLinkClassName}>
+              <Link href='/sitemap.xml' prefetch={false} className={footerLinkClassName}>
                 Sitemap
               </Link>
             </nav>

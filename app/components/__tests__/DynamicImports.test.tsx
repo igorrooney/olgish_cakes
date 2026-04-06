@@ -7,7 +7,6 @@ import {
   DynamicContactForm,
   DynamicQuoteForm,
   DynamicCakeImageGallery,
-  DynamicTestimonialsList,
   DynamicCookieConsent,
   DynamicDevTools,
   DynamicComponentWrapper
@@ -74,16 +73,6 @@ describe('DynamicImports', () => {
     })
   })
 
-  describe('DynamicTestimonialsList', () => {
-    it('should be defined', () => {
-      expect(DynamicTestimonialsList).toBeDefined()
-    })
-
-    it('should be a React component', () => {
-      expect(typeof DynamicTestimonialsList).toBe('function')
-    })
-  })
-
   describe('DynamicCookieConsent', () => {
     it('should be defined', () => {
       expect(DynamicCookieConsent).toBeDefined()
@@ -138,7 +127,6 @@ describe('DynamicImports', () => {
       expect(DynamicContactForm).toBeDefined()
       expect(DynamicQuoteForm).toBeDefined()
       expect(DynamicCakeImageGallery).toBeDefined()
-      expect(DynamicTestimonialsList).toBeDefined()
       expect(DynamicCookieConsent).toBeDefined()
       expect(DynamicDevTools).toBeDefined()
       expect(DynamicComponentWrapper).toBeDefined()

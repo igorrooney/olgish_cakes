@@ -1,457 +1,381 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { HoverPrefetchLink } from '../HoverPrefetchLink'
 
-type DropdownId = "custom-cakes" | "learn-hub";
+type DropdownId = 'custom-cakes' | 'learn-hub'
+
+type DropdownLink = {
+  href: string
+  label: string
+}
+
+type DropdownConfig = {
+  id: DropdownId
+  label: string
+  alignmentClassName: string
+  columns: DropdownLink[][]
+}
+
+const topNavItemClassName =
+  'rounded-btn px-3 py-2 text-lg font-body text-base-content transition-colors whitespace-nowrap hover:bg-transparent hover:text-navigation active:!bg-transparent'
+const topNavButtonClassName =
+  'rounded-btn px-3 py-2 text-lg font-body text-base-content transition-colors whitespace-nowrap flex items-center gap-2 hover:bg-transparent hover:text-navigation active:!bg-transparent'
+const topNavButtonOpenClassName = 'text-navigation'
+const dropdownItemClassName =
+  'flex h-7 items-center rounded-btn px-4 text-base leading-5 font-body text-base-content whitespace-nowrap transition-colors hover:bg-base-200 active:!bg-transparent shadow-none active:shadow-none focus:shadow-none focus-visible:shadow-none tablet:h-9'
+const dropdownMenuListClassName =
+  'menu menu-md !m-0 !p-0 items-start [&::before]:hidden [&>li]:w-full'
+const mobileMenuItemClassName =
+  'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
+const quotePageHref = '/get-custom-quote#quote-form'
+
+const desktopDropdowns: DropdownConfig[] = [
+  {
+    id: 'custom-cakes',
+    label: 'Custom cakes',
+    alignmentClassName: 'left-0 flex w-[378px] gap-3',
+    columns: [
+      [
+        { href: '/cakes', label: 'All cakes' },
+        { href: '/wedding-cakes', label: 'Wedding cakes' },
+        { href: '/birthday-cakes', label: 'Birthday cakes' },
+        { href: '/anniversary-cakes-leeds', label: 'Anniversary cakes' },
+        { href: '/baby-shower-cakes', label: 'Baby shower cakes' }
+      ],
+      [{ href: quotePageHref, label: 'Get a quote' }]
+    ]
+  },
+  {
+    id: 'learn-hub',
+    label: 'Learn',
+    alignmentClassName: 'left-1/2 -translate-x-1/2',
+    columns: [[
+      { href: '/blog', label: 'Articles' },
+      { href: '/learn/workshops', label: 'Workshops' }
+    ]]
+  }
+]
+
+const getDesktopDropdownButtonId = (dropdownId: DropdownId) => `${dropdownId}-desktop-button`
+const getDesktopDropdownPanelId = (dropdownId: DropdownId) => `${dropdownId}-desktop-panel`
 
 export function SiteHeaderClient() {
-  const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const customCakesDropdownRef = useRef<HTMLDetailsElement>(null);
-  const learnHubDropdownRef = useRef<HTMLDetailsElement>(null);
-  const lastTouchToggleRef = useRef<number | null>(null);
+  const pathname = usePathname()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [openDropdownId, setOpenDropdownId] = useState<DropdownId | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const customCakesDropdownRef = useRef<HTMLLIElement>(null)
+  const learnHubDropdownRef = useRef<HTMLLIElement>(null)
 
-  const topNavItemClassName =
-    "rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent transition-colors whitespace-nowrap";
-  const topNavSummaryClassName =
-    'rounded-btn px-3 py-2 text-lg font-body text-base-content hover:bg-transparent hover:text-navigation active:!bg-transparent active:text-navigation group-open:text-navigation transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer list-none before:hidden after:hidden [&::-webkit-details-marker]:hidden [&::marker]:content-[""]';
-  const dropdownItemClassName =
-    "flex items-center h-7 px-4 text-base leading-5 font-body text-base-content rounded-btn hover:bg-base-200 active:!bg-transparent transition-colors whitespace-nowrap shadow-none active:shadow-none focus:shadow-none focus-visible:shadow-none";
-  const dropdownMenuListClassName =
-    "menu menu-md [&::before]:hidden !m-0 !p-0 items-start [&>li]:w-full";
-  const mobileMenuItemClassName =
-    "w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent";
-  const quotePageHref = "/get-custom-quote#quote-form";
+  const getDropdownRef = (dropdownId: DropdownId) => (
+    dropdownId === 'custom-cakes' ? customCakesDropdownRef : learnHubDropdownRef
+  )
 
   const toggleDropdown = (dropdownId: DropdownId) => {
-    setOpenDropdownId(current => (current === dropdownId ? null : dropdownId));
-  };
+    setOpenDropdownId((current) => (current === dropdownId ? null : dropdownId))
+  }
+
+  const closeDesktopDropdown = () => {
+    setOpenDropdownId(null)
+  }
 
   const handleDesktopDropdownNavigation = () => {
-    setOpenDropdownId(null);
-    lastTouchToggleRef.current = null;
-  };
+    closeDesktopDropdown()
+  }
 
-  const handleSummaryClick = (event: React.MouseEvent<HTMLElement>, dropdownId: DropdownId) => {
-    const lastTouchToggle = lastTouchToggleRef.current;
-
-    if (lastTouchToggle && Date.now() - lastTouchToggle < 500) {
-      lastTouchToggleRef.current = null;
-      event.preventDefault();
-      return;
-    }
-
-    event.preventDefault();
-    toggleDropdown(dropdownId);
-  };
-
-  const handleSummaryPointerDown = (
-    event: React.PointerEvent<HTMLElement>,
+  const handleDesktopDropdownKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
     dropdownId: DropdownId
   ) => {
-    if (event.pointerType !== "touch") {
-      return;
-    }
-
-    event.preventDefault();
-    lastTouchToggleRef.current = Date.now();
-    toggleDropdown(dropdownId);
-  };
-
-  const handleSummaryKeyDown = (
-    event: React.KeyboardEvent<HTMLElement>,
-    dropdownId: DropdownId
-  ) => {
-    const isToggleKey = event.key === "Enter" || event.key === " ";
+    const isToggleKey =
+      event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown'
 
     if (!isToggleKey) {
-      return;
+      return
     }
 
-    event.preventDefault();
-    toggleDropdown(dropdownId);
-  };
+    event.preventDefault()
 
-  const handleDropdownToggle =
-    (dropdownId: DropdownId) => (event: React.SyntheticEvent<HTMLDetailsElement>) => {
-      const { open } = event.currentTarget;
+    if (event.key === 'ArrowDown') {
+      setOpenDropdownId(dropdownId)
+      return
+    }
 
-      if (open) {
-        setOpenDropdownId(dropdownId);
-        return;
-      }
-
-      setOpenDropdownId(current => (current === dropdownId ? null : current));
-    };
+    toggleDropdown(dropdownId)
+  }
 
   useEffect(() => {
-    setOpenDropdownId(null);
-    setIsMenuOpen(false);
-    lastTouchToggleRef.current = null;
-  }, [pathname]);
+    setOpenDropdownId(null)
+    setIsMenuOpen(false)
+  }, [pathname])
 
-  // Close desktop dropdowns when clicking outside
   useEffect(() => {
     if (openDropdownId === null) {
-      return;
+      return
     }
 
-    const handleClickOutsideDropdown = (event: Event) => {
-      const target = event.target;
+    const handleDesktopPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target
 
       if (!(target instanceof Node)) {
-        return;
+        return
       }
 
-      const openDropdown =
-        openDropdownId === "custom-cakes"
-          ? customCakesDropdownRef.current
-          : openDropdownId === "learn-hub"
-            ? learnHubDropdownRef.current
-            : null;
+      const openDropdown = getDropdownRef(openDropdownId).current
 
       if (!openDropdown) {
-        return;
+        return
       }
 
-      const eventPath = typeof event.composedPath === "function" ? event.composedPath() : [];
-
-      if (eventPath.includes(openDropdown) || openDropdown.contains(target)) {
-        return;
+      if (openDropdown.contains(target)) {
+        return
       }
 
-      setOpenDropdownId(null);
-    };
+      closeDesktopDropdown()
+    }
 
-    const captureOptions = { capture: true };
-    const passiveCaptureOptions = { capture: true, passive: true };
+    const handleDesktopEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return
+      }
 
-    document.addEventListener("pointerdown", handleClickOutsideDropdown, passiveCaptureOptions);
-    document.addEventListener("touchstart", handleClickOutsideDropdown, passiveCaptureOptions);
-    document.addEventListener("click", handleClickOutsideDropdown, captureOptions);
+      closeDesktopDropdown()
+      const trigger = document.getElementById(getDesktopDropdownButtonId(openDropdownId))
+
+      if (trigger instanceof HTMLButtonElement) {
+        trigger.focus()
+      }
+    }
+
+    document.addEventListener('mousedown', handleDesktopPointerDown)
+    document.addEventListener('touchstart', handleDesktopPointerDown)
+    document.addEventListener('keydown', handleDesktopEscape)
 
     return () => {
-      document.removeEventListener(
-        "pointerdown",
-        handleClickOutsideDropdown,
-        passiveCaptureOptions
-      );
-      document.removeEventListener("touchstart", handleClickOutsideDropdown, passiveCaptureOptions);
-      document.removeEventListener("click", handleClickOutsideDropdown, captureOptions);
-    };
-  }, [openDropdownId]);
+      document.removeEventListener('mousedown', handleDesktopPointerDown)
+      document.removeEventListener('touchstart', handleDesktopPointerDown)
+      document.removeEventListener('keydown', handleDesktopEscape)
+    }
+  }, [openDropdownId])
 
-  // Handle click outside to close menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (!isMenuOpen) return;
+      if (!isMenuOpen) {
+        return
+      }
 
-      const target = event.target;
+      const target = event.target
 
-      // Type guard instead of assertion
       if (!(target instanceof Node)) {
-        return;
+        return
       }
 
-      // Don't close if clicking on the menu button
       if (buttonRef.current?.contains(target)) {
-        return;
+        return
       }
 
-      // Close if clicking outside the menu
       if (menuRef.current && !menuRef.current.contains(target)) {
-        setIsMenuOpen(false);
+        setIsMenuOpen(false)
       }
-    };
+    }
 
-    // Add event listeners
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [isMenuOpen]);
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [isMenuOpen])
 
-  // Handle keyboard navigation
   useEffect(() => {
-    if (!isMenuOpen) return;
+    if (!isMenuOpen) {
+      return
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsMenuOpen(false);
-        buttonRef.current?.focus();
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        buttonRef.current?.focus()
       }
-    };
+    }
 
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown)
+
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isMenuOpen]);
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isMenuOpen])
 
   return (
-    <header className="relative z-[9999] tablet:sticky tablet:top-0">
+    <header className='relative z-[9999] tablet:sticky tablet:top-0'>
       {openDropdownId !== null && (
         <div
           data-nav-overlay
-          aria-hidden="true"
-          className="hidden tablet:block absolute top-full left-0 right-0 h-screen z-0 bg-transparent"
-          onPointerDown={() => setOpenDropdownId(null)}
-          onClick={() => setOpenDropdownId(null)}
+          aria-hidden='true'
+          className='absolute left-0 right-0 top-full z-0 hidden h-screen bg-transparent tablet:block'
+          onPointerDown={closeDesktopDropdown}
         />
       )}
-      <div className="navbar relative z-[9999] bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16">
-        <div className="navbar-start">
+      <div className='navbar relative z-[9999] bg-base-100 px-4 py-3 tablet:px-10 tablet:py-5 small-laptop:px-12 large-laptop:px-16'>
+        <div className='navbar-start'>
           <Link
-            href="/"
-            className="btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:!outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none"
+            href='/'
+            className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:!outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'
           >
-            <div className="relative h-12 w-12 tablet:h-16 tablet:w-16">
+            <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
               <Image
-                src="/design/mobile-home/navbar-logo.png"
-                alt="Olgish Cakes logo"
+                src='/design/mobile-home/navbar-logo.png'
+                alt='Olgish Cakes logo'
                 fill
-                sizes="(min-width: 768px) 64px, 48px"
-                className="object-contain"
-                priority
+                sizes='(min-width: 768px) 64px, 48px'
+                className='object-contain'
               />
             </div>
           </Link>
         </div>
-        <div className="navbar-center hidden tablet:flex absolute left-1/2 -translate-x-1/2">
-          <nav aria-label="Main navigation">
-            <ul className="menu menu-horizontal px-1 !list-none gap-6 large-laptop:gap-8 flex-nowrap whitespace-nowrap overflow-visible [&>li]:list-none [&>li]:marker:text-transparent [&>li]:before:hidden [&>li]:after:hidden">
+        <div className='navbar-center absolute left-1/2 hidden -translate-x-1/2 tablet:flex'>
+          <nav aria-label='Main navigation'>
+            <ul className='menu menu-horizontal px-1 !list-none gap-6 large-laptop:gap-8 flex-nowrap whitespace-nowrap overflow-visible [&>li]:list-none [&>li]:marker:text-transparent [&>li]:before:hidden [&>li]:after:hidden'>
               <li>
-                <Link href="/cakes-by-post" className={topNavItemClassName}>
+                <HoverPrefetchLink href='/cakes-by-post' className={topNavItemClassName}>
                   Cakes by post
-                </Link>
+                </HoverPrefetchLink>
               </li>
-              <li className="overflow-visible">
-                <details
-                  className="dropdown dropdown-bottom group overflow-visible"
-                  data-nav-dropdown
-                  ref={customCakesDropdownRef}
-                  open={openDropdownId === "custom-cakes"}
-                  onToggle={handleDropdownToggle("custom-cakes")}
-                >
-                  <summary
-                    className={topNavSummaryClassName}
-                    onPointerDown={event => handleSummaryPointerDown(event, "custom-cakes")}
-                    onClick={event => handleSummaryClick(event, "custom-cakes")}
-                    onKeyDown={event => handleSummaryKeyDown(event, "custom-cakes")}
-                    aria-expanded={openDropdownId === "custom-cakes"}
+              {desktopDropdowns.map((dropdown) => {
+                const isOpen = openDropdownId === dropdown.id
+
+                return (
+                  <li
+                    key={dropdown.id}
+                    className='relative overflow-visible'
+                    data-nav-dropdown
+                    ref={getDropdownRef(dropdown.id)}
                   >
-                    <span className="group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8">
-                      Custom cakes
-                    </span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                      className="text-base-content group-open:text-navigation"
+                    <button
+                      id={getDesktopDropdownButtonId(dropdown.id)}
+                      type='button'
+                      className={`${topNavButtonClassName} ${isOpen ? topNavButtonOpenClassName : ''}`}
+                      onClick={() => toggleDropdown(dropdown.id)}
+                      onKeyDown={(event) => handleDesktopDropdownKeyDown(event, dropdown.id)}
+                      aria-expanded={isOpen}
+                      aria-controls={getDesktopDropdownPanelId(dropdown.id)}
+                      aria-haspopup='true'
                     >
-                      <path
-                        d="M6 9l6 6 6-6"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </summary>
-                  <div
-                    tabIndex={-1}
-                    className="dropdown-content bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] rounded-box z-1 mt-3 p-4 shadow-[0px_4px_6px_-1px_#0000001A] flex gap-3 w-[378px]"
-                  >
-                    <ul className={`${dropdownMenuListClassName} flex-1`}>
-                      <li>
-                        <Link
-                          href="/cakes"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          All cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/wedding-cakes"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Wedding cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/birthday-cakes"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Birthday cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/anniversary-cakes-leeds"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Anniversary cakes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/baby-shower-cakes"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Baby shower cakes
-                        </Link>
-                      </li>
-                    </ul>
-                    <ul className={`${dropdownMenuListClassName} flex-1`}>
-                      <li>
-                        <Link
-                          href={quotePageHref}
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Get a quote
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </details>
-              </li>
-              <li className="overflow-visible">
-                <details
-                  className="dropdown dropdown-bottom dropdown-center group overflow-visible"
-                  data-nav-dropdown
-                  ref={learnHubDropdownRef}
-                  open={openDropdownId === "learn-hub"}
-                  onToggle={handleDropdownToggle("learn-hub")}
-                >
-                  <summary
-                    className={topNavSummaryClassName}
-                    onPointerDown={event => handleSummaryPointerDown(event, "learn-hub")}
-                    onClick={event => handleSummaryClick(event, "learn-hub")}
-                    onKeyDown={event => handleSummaryKeyDown(event, "learn-hub")}
-                    aria-expanded={openDropdownId === "learn-hub"}
-                  >
-                    <span className="group-open:text-navigation group-open:underline group-open:decoration-dotted group-open:decoration-2 group-open:underline-offset-8">
-                      Learn
-                    </span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                      className="text-base-content group-open:text-navigation"
+                      <span
+                        className={`${isOpen ? 'text-navigation underline decoration-dotted decoration-2 underline-offset-8' : ''}`}
+                      >
+                        {dropdown.label}
+                      </span>
+                      <svg
+                        width='16'
+                        height='16'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                        aria-hidden='true'
+                        className={`transition-transform ${isOpen ? 'rotate-180 text-navigation' : 'text-base-content'}`}
+                      >
+                        <path
+                          d='M6 9l6 6 6-6'
+                          stroke='currentColor'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                    </button>
+                    <div
+                      id={getDesktopDropdownPanelId(dropdown.id)}
+                      hidden={!isOpen}
+                      className={`absolute top-full z-[10000] mt-3 rounded-box bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] p-4 shadow-[0px_4px_6px_-1px_#0000001A] ${dropdown.alignmentClassName} ${
+                        isOpen ? 'block' : 'hidden'
+                      }`}
+                      aria-labelledby={getDesktopDropdownButtonId(dropdown.id)}
                     >
-                      <path
-                        d="M6 9l6 6 6-6"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </summary>
-                  <div
-                    tabIndex={-1}
-                    className="dropdown-content bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] rounded-box z-1 mt-3 p-4 shadow-[0px_4px_6px_-1px_#0000001A]"
-                  >
-                    <ul className={dropdownMenuListClassName}>
-                      <li>
-                        <Link
-                          href="/blog"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
+                      {dropdown.columns.map((column, columnIndex) => (
+                        <ul
+                          key={`${dropdown.id}-${columnIndex}`}
+                          className={`${dropdownMenuListClassName} ${
+                            dropdown.columns.length > 1 ? 'flex-1' : ''
+                          } ${dropdown.id === 'custom-cakes' && columnIndex > 0 ? 'self-start' : ''}`}
                         >
-                          Articles
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/learn/workshops"
-                          className={dropdownItemClassName}
-                          onClick={handleDesktopDropdownNavigation}
-                        >
-                          Workshops
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </details>
-              </li>
+                          {column.map((item) => (
+                            <li key={item.href}>
+                              <HoverPrefetchLink
+                                href={item.href}
+                                className={dropdownItemClassName}
+                                onClick={handleDesktopDropdownNavigation}
+                              >
+                                {item.label}
+                              </HoverPrefetchLink>
+                            </li>
+                          ))}
+                        </ul>
+                      ))}
+                    </div>
+                  </li>
+                )
+              })}
               <li>
-                <Link href="/contact" className={topNavItemClassName}>
+                <HoverPrefetchLink href='/contact' className={topNavItemClassName}>
                   Contact
-                </Link>
+                </HoverPrefetchLink>
               </li>
             </ul>
           </nav>
         </div>
-        <div className="navbar-end tablet:hidden">
+        <div className='navbar-end tablet:hidden'>
           <button
             ref={buttonRef}
-            type="button"
-            className="h-12 w-12 rounded-btn shadow-btn bg-base-100 hover:bg-base-200 flex items-center justify-center p-0"
+            type='button'
+            className='flex h-12 w-12 items-center justify-center rounded-btn bg-base-100 p-0 shadow-btn hover:bg-base-200'
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-            aria-haspopup="true"
-            style={{ minWidth: "48px", minHeight: "48px" }}
+            aria-controls='mobile-menu'
+            aria-haspopup='true'
+            style={{ minWidth: '48px', minHeight: '48px' }}
           >
             {isMenuOpen ? (
               <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="text-primary-700"
+                width='24'
+                height='24'
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                aria-hidden='true'
+                className='text-primary-700'
               >
                 <path
-                  d="M6 18L18 6M6 6l12 12"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  d='M6 18L18 6M6 6l12 12'
+                  stroke='currentColor'
+                  strokeWidth='3'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                 />
               </svg>
             ) : (
               <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="text-primary-700"
+                width='24'
+                height='24'
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                aria-hidden='true'
+                className='text-primary-700'
               >
                 <path
-                  d="M4 6h16M4 12h16M4 18h16"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  d='M4 6h16M4 12h16M4 18h16'
+                  stroke='currentColor'
+                  strokeWidth='3'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                 />
               </svg>
             )}
@@ -461,77 +385,77 @@ export function SiteHeaderClient() {
       {isMenuOpen && (
         <div
           ref={menuRef}
-          id="mobile-menu"
-          role="menu"
-          className="absolute top-full left-0 right-0 bg-base-100 rounded-b-box shadow-xl z-[60] overflow-visible tablet:hidden"
-          aria-label="Main navigation"
+          id='mobile-menu'
+          role='menu'
+          className='absolute left-0 right-0 top-full z-[60] overflow-visible rounded-b-box bg-base-100 shadow-xl tablet:hidden'
+          aria-label='Main navigation'
         >
-          <div className="grid grid-cols-2 gap-2 p-2">
-            <div className="flex flex-col items-start">
-              <div className="w-full min-h-[36px] px-4 flex items-center rounded-btn">
-                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
+          <div className='grid grid-cols-2 gap-2 p-2'>
+            <div className='flex flex-col items-start'>
+              <div className='flex min-h-[36px] w-full items-center rounded-btn px-4'>
+                <p className='font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]'>
                   MENU
                 </p>
               </div>
-              <Link
-                href="/cakes-by-post"
-                role="menuitem"
+              <HoverPrefetchLink
+                href='/cakes-by-post'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Cakes by post
-              </Link>
-              <Link
-                href="/cakes"
-                role="menuitem"
+              </HoverPrefetchLink>
+              <HoverPrefetchLink
+                href='/cakes'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Custom cakes
-              </Link>
-              <Link
-                href="/faqs"
-                role="menuitem"
+              </HoverPrefetchLink>
+              <HoverPrefetchLink
+                href='/faqs'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 FAQs
-              </Link>
-              <Link
-                href="/contact"
-                role="menuitem"
+              </HoverPrefetchLink>
+              <HoverPrefetchLink
+                href='/contact'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
-              </Link>
+              </HoverPrefetchLink>
             </div>
-            <div className="flex flex-col items-start">
-              <div className="w-full min-h-[36px] px-4 flex items-center rounded-btn">
-                <p className="font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]">
+            <div className='flex flex-col items-start'>
+              <div className='flex min-h-[36px] w-full items-center rounded-btn px-4'>
+                <p className='font-moreSugar text-sm leading-none text-[color:var(--color-navigation)]'>
                   LEARN
                 </p>
               </div>
-              <Link
-                href="/blog"
-                role="menuitem"
+              <HoverPrefetchLink
+                href='/blog'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Articles
-              </Link>
-              <Link
-                href="/learn/workshops"
-                role="menuitem"
+              </HoverPrefetchLink>
+              <HoverPrefetchLink
+                href='/learn/workshops'
+                role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Workshops
-              </Link>
+              </HoverPrefetchLink>
             </div>
           </div>
         </div>
       )}
     </header>
-  );
+  )
 }

@@ -1,22 +1,24 @@
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { designTokens } from "@/lib/design-system";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import Script from "next/script";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { SiteHeader } from "./components/homepage/SiteHeader";
-import { ReviewStatsProvider } from "./components/ReviewStatsProvider";
-import { ConditionalMuiProviders } from "./components/ConditionalMuiProviders";
-import { ConditionalQueryProviders } from "./components/ConditionalQueryProviders";
-import { KlaroA11yBridge } from "./components/KlaroA11yBridge";
-import { RouteScrollReset } from "./components/RouteScrollReset";
-import { ScrollToTop } from "./components/ScrollToTop";
-import { SiteFooter } from "./components/SiteFooter";
-import { WebVitalsMonitor } from "./components/WebVitalsMonitor";
-import "./globals.css";
-import { getReviewStats } from "./utils/review-stats.server";
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { designTokens } from '@/lib/design-system'
+import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
+import Script from 'next/script'
+import { SiteHeader } from './components/homepage/SiteHeader'
+import { ReviewStatsProvider } from './components/ReviewStatsProvider'
+import { DeferredVercelObservability } from './components/DeferredVercelObservability'
+import { NonCriticalClientFeatures } from './components/NonCriticalClientFeatures'
+import { SiteFooter } from './components/SiteFooter'
+import { WebVitalsMonitor } from './components/WebVitalsMonitor'
+import {
+  consentDefaultsScript,
+  gtmSnippet,
+  isConsentRuntimeEnabled,
+  klaroConfigScript,
+  klaroScriptSrc,
+  klaroStyleHref
+} from './lib/consent-runtime-config'
+import './globals.css'
+import { getReviewStats } from './utils/review-stats.server'
 
 const alice = localFont({
   src: [
@@ -58,7 +60,7 @@ const oldenburg = localFont({
   ],
   variable: '--font-oldenburg',
   display: 'swap',
-  preload: false,
+  preload: true,
   fallback: ['Georgia', 'serif'],
   adjustFontFallback: 'Times New Roman'
 })
@@ -77,193 +79,10 @@ const moreSugar = localFont({
   fallback: ['cursive', 'fantasy']
 })
 
-const primary = designTokens.colors.primary.main;
-const primaryDark = designTokens.colors.primary.dark;
-const secondary = designTokens.colors.secondary.main;
-const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+const primary = designTokens.colors.primary.main
+const primaryDark = designTokens.colors.primary.dark
+const secondary = designTokens.colors.secondary.main
 const isVercelDeployment = process.env.VERCEL === '1'
-const isConsentEnabled = Boolean(gtmId)
-const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
-const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
-const klaroStyleInitScript = `
-  (function () {
-    var link = document.querySelector('link[data-klaro-style]')
-    if (link) {
-      link.media = 'all'
-    }
-  })()
-`
-const consentDefaultsScript = `
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function(){dataLayer.push(arguments)}
-  gtag('consent', 'default', {
-    'ad_storage': 'denied',
-    'analytics_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied'
-  })
-  gtag('set', 'ads_data_redaction', true)
-`
-
-const klaroServices = isConsentEnabled ? [
-  {
-    name: 'google-tag-manager',
-    default: true,
-    required: true,
-    purposes: ['necessary'],
-    onlyOnce: true,
-    translations: {
-      zz: {
-        title: 'Google Tag Manager'
-      },
-      en: {
-        description: 'Loads the tag manager to apply your consent choices.'
-      }
-    },
-    onAccept: `
-      for (let k of Object.keys(opts.consents)) {
-        if (opts.consents[k]) {
-          dataLayer.push({ event: 'klaro-' + k + '-accepted' })
-        }
-      }
-    `
-  },
-  {
-    name: 'google-analytics',
-    purposes: ['analytics'],
-    cookies: ['_ga', '_gid', '_gat'],
-    translations: {
-      zz: {
-        title: 'Google Analytics'
-      },
-      en: {
-        description: 'Helps us understand how people use the site.'
-      }
-    },
-    onAccept: `
-      gtag('consent', 'update', {
-        'analytics_storage': 'granted'
-      })
-    `,
-    onDecline: `
-      gtag('consent', 'update', {
-        'analytics_storage': 'denied'
-      })
-    `
-  },
-  {
-    name: 'microsoft-clarity',
-    purposes: ['analytics'],
-    translations: {
-      zz: {
-        title: 'Microsoft Clarity'
-      },
-      en: {
-        description: 'Helps us understand how people use the site with session insights.'
-      }
-    }
-  },
-  {
-    name: 'google-ads',
-    purposes: ['marketing'],
-    cookies: ['_gcl_au', '_gcl_aw', '_gcl_dc'],
-    translations: {
-      zz: {
-        title: 'Google Ads'
-      },
-      en: {
-        description: 'Shows personalised ads and measures ad performance.'
-      }
-    },
-    onAccept: `
-      gtag('consent', 'update', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted'
-      })
-    `,
-    onDecline: `
-      gtag('consent', 'update', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied'
-      })
-    `
-  }
-] : []
-
-const klaroConfig = {
-  elementID: 'klaro',
-  storageMethod: 'cookie',
-  storageName: 'klaro',
-  default: false,
-  mustConsent: false,
-  acceptAll: true,
-  hideDeclineAll: false,
-  hideLearnMore: false,
-  translations: {
-    zz: {
-      privacyPolicyUrl: '/privacy'
-    },
-    en: {
-      consentNotice: {
-        title: 'Cookie preferences',
-        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
-        learnMore: 'Choose cookies'
-      },
-      consentModal: {
-        title: 'Cookie preferences',
-        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
-      },
-      purposes: {
-        analytics: {
-          title: 'Analytics'
-        },
-        necessary: {
-          title: 'Necessary',
-          description: 'Required to store your cookie choices and keep the site secure.'
-        },
-        marketing: {
-          title: 'Marketing'
-        }
-      }
-    },
-    'en-GB': {
-      consentNotice: {
-        title: 'Cookie preferences',
-        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
-        learnMore: 'Choose cookies'
-      },
-      consentModal: {
-        title: 'Cookie preferences',
-        description: 'Choose which cookies you are happy for us to use. You can change your mind anytime.'
-      },
-      purposes: {
-        analytics: {
-          title: 'Analytics'
-        },
-        necessary: {
-          title: 'Necessary',
-          description: 'Required to store your cookie choices and keep the site secure.'
-        },
-        marketing: {
-          title: 'Marketing'
-        }
-      }
-    }
-  },
-  services: klaroServices
-}
-
-const klaroConfigScript = `var klaroConfig = ${JSON.stringify(klaroConfig)}`
-
-const gtmSnippet = gtmId
-  ? `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');`
-  : ''
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -415,49 +234,32 @@ export default async function RootLayout({
       <head>
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
 
-        {/* DNS prefetch for external domains */}
-        <link rel="dns-prefetch" href="//cdn.sanity.io" />
-        {isConsentEnabled ? (
-          <link rel="dns-prefetch" href="//cdn.kiprotect.com" />
-        ) : null}
-
-        {/* Preconnect for critical domains */}
-        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
-        {isConsentEnabled ? (
-          <link rel="preconnect" href="https://cdn.kiprotect.com" crossOrigin="anonymous" />
-        ) : null}
-
         {/* Fonts are self-hosted via next/font/local - see font definitions at top of file */}
-
-        {isConsentEnabled ? (
+        {isConsentRuntimeEnabled ? (
           <>
-            <link rel="preload" as="style" href={klaroStyleHref} />
-            <link rel="stylesheet" href={klaroStyleHref} media="print" data-klaro-style="true" />
+            <link rel='preload' as='style' href={klaroStyleHref} />
+            <link rel='stylesheet' href={klaroStyleHref} data-klaro-style='true' />
             <Script
-              id="klaro-style-init"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{ __html: klaroStyleInitScript }}
-            />
-            <Script
-              id="gtag-consent-default"
-              strategy="beforeInteractive"
+              id='gtag-consent-default'
+              strategy='beforeInteractive'
               dangerouslySetInnerHTML={{ __html: consentDefaultsScript }}
             />
             <Script
-              id="klaro-config"
-              strategy="beforeInteractive"
+              id='klaro-config'
+              strategy='beforeInteractive'
               dangerouslySetInnerHTML={{ __html: klaroConfigScript }}
             />
             <Script
-              id="klaro-script"
-              strategy="afterInteractive"
-              data-config="klaroConfig"
+              id='klaro-script'
+              strategy='afterInteractive'
+              data-config='klaroConfig'
               src={klaroScriptSrc}
             />
             <script
-              type="text/plain"
-              data-type="application/javascript"
-              data-name="google-tag-manager"
+              id='google-tag-manager-template'
+              type='text/plain'
+              data-type='application/javascript'
+              data-name='google-tag-manager'
               dangerouslySetInnerHTML={{ __html: gtmSnippet }}
             />
           </>
@@ -477,86 +279,18 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${alice.className} ${alice.variable} critical-loading`} suppressHydrationWarning>
-        <NuqsAdapter>
-          <ConditionalMuiProviders>
-            <ReviewStatsProvider stats={reviewStats}>
-              <ConditionalQueryProviders>
-                <div className="flex flex-col min-h-screen">
-                  <RouteScrollReset />
-                  <SiteHeader />
-                  <main className="flex-grow">{children}</main>
-                  <SiteFooter />
-                  <KlaroA11yBridge />
-                  <ScrollToTop />
-                  <WebVitalsMonitor />
-                </div>
-              </ConditionalQueryProviders>
-            </ReviewStatsProvider>
-          </ConditionalMuiProviders>
-          {isVercelDeployment ? (
-            <>
-              <Analytics />
-              <SpeedInsights />
-            </>
-          ) : null}
-        </NuqsAdapter>
+      <body className={`${alice.className} ${alice.variable}`} suppressHydrationWarning>
+        <ReviewStatsProvider stats={reviewStats}>
+          <div className="flex flex-col min-h-screen">
+            <SiteHeader />
+            <main className="flex-grow">{children}</main>
+            <SiteFooter />
+            <WebVitalsMonitor />
+            {isVercelDeployment ? <DeferredVercelObservability /> : null}
+            <NonCriticalClientFeatures />
+          </div>
+        </ReviewStatsProvider>
 
-        {/* Critical CSS loading script */}
-        <Script id="critical-css-loader" strategy="afterInteractive">
-          {`
-            document.body.classList.remove('critical-loading');
-            document.body.classList.add('critical-loaded');
-          `}
-        </Script>
-
-        {/* Service Worker Registration */}
-        {process.env.NODE_ENV === "production" && (
-          <Script id="sw-register" strategy="afterInteractive">
-            {`
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js', {
-                    scope: '/',
-                    updateViaCache: 'none'
-                  })
-                    .then((registration) => {
-                      // Service worker registered successfully
-                    })
-                    .catch((registrationError) => {
-                      // Service worker registration failed
-                    });
-                });
-              }
-            `}
-          </Script>
-        )}
-
-        {/* Suppress MetaMask extension errors */}
-        <Script id="suppress-extension-errors" strategy="afterInteractive">
-          {`
-            // Suppress MetaMask and other extension errors that are expected
-            const originalError = console.error;
-            console.error = function(...args) {
-              const message = args.join(' ');
-              // Suppress MetaMask extension errors
-              if (message.includes('MetaMask') || message.includes('Failed to connect to MetaMask')) {
-                return;
-              }
-              originalError.apply(console, args);
-            };
-
-            // Suppress unhandled promise rejections from extensions
-            window.addEventListener('unhandledrejection', (event) => {
-              if (event.reason && typeof event.reason === 'object') {
-                const reason = event.reason.toString();
-                if (reason.includes('MetaMask') || reason.includes('extension not found')) {
-                  event.preventDefault();
-                }
-              }
-            });
-          `}
-        </Script>
       </body>
     </html>
   );

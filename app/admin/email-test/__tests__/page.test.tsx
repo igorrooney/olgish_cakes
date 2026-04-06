@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import EmailTestPage from '../page'
 
@@ -12,6 +13,12 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@/lib/admin/auth.server', () => ({
   isAdminAuthenticated: jest.fn()
+}))
+
+jest.mock('@/app/providers', () => ({
+  Providers: ({ children }: { children: ReactNode }) => (
+    <div data-testid='query-providers'>{children}</div>
+  )
 }))
 
 jest.mock('../EmailTestPageClient', () => ({
@@ -39,6 +46,7 @@ describe('admin email test page auth gate', () => {
     const page = await EmailTestPage()
     render(page)
 
+    expect(screen.getByTestId('query-providers')).toBeInTheDocument()
     expect(screen.getByTestId('email-test-page-client')).toBeInTheDocument()
     expect(mockRedirect).not.toHaveBeenCalled()
   })

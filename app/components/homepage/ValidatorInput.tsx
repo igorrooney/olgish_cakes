@@ -1,6 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 
 type SelectOption = {
   label: string
@@ -20,6 +28,7 @@ type ValidatorInputProps =
       labelAlt?: string
       labelPlacement?: 'inside' | 'outside'
       labelLayout?: 'between' | 'stacked'
+      autoComplete?: string
       icon?: ReactNode
       trailingIcon?: ReactNode
       inputClassName?: string
@@ -50,6 +59,7 @@ type ValidatorInputProps =
       label: string
       labelAlt?: string
       labelLayout?: 'between' | 'stacked'
+      autoComplete?: string
       placeholder: string
       inputClassName?: string
       error?: string
@@ -79,7 +89,7 @@ const tokenizedInputStyle = (hasError: boolean) => ({
   borderStyle: 'solid',
   borderColor: hasError
     ? 'var(--color-error)'
-    : 'color-mix(in srgb, var(--d-color-base-content) calc(var(--u-opacity-stroke-20) * 100%), transparent)'
+    : 'color-mix(in srgb, var(--d-color-base-content) calc(var(--u-opacity-stroke-20) * 100%), transparent)',
 })
 
 const errorCardClassName =
@@ -106,13 +116,15 @@ function getOptionValue(option: SelectOption) {
 }
 
 function getInitialHighlightedIndex(options: SelectOption[], value: string) {
-  const selectedIndex = options.findIndex((option) => getOptionValue(option) === value && !option.disabled)
+  const selectedIndex = options.findIndex(
+    option => getOptionValue(option) === value && !option.disabled
+  )
 
   if (selectedIndex !== -1) {
     return selectedIndex
   }
 
-  return options.findIndex((option) => !option.disabled)
+  return options.findIndex(option => !option.disabled)
 }
 
 type SelectFieldProps = Extract<ValidatorInputProps, { fieldType: 'select' }>
@@ -127,15 +139,17 @@ function SelectField({
   options,
   error,
   required = false,
-  onValueChange
+  onValueChange,
 }: SelectFieldProps) {
   const hasError = Boolean(error)
   const [isOpen, setIsOpen] = useState(false)
-  const [highlightedIndex, setHighlightedIndex] = useState(() => getInitialHighlightedIndex(options, value))
+  const [highlightedIndex, setHighlightedIndex] = useState(() =>
+    getInitialHighlightedIndex(options, value)
+  )
   const containerRef = useRef<HTMLDivElement | null>(null)
   const listboxId = `${id}-listbox`
   const selectedOption = useMemo(
-    () => options.find((option) => getOptionValue(option) === value),
+    () => options.find(option => getOptionValue(option) === value),
     [options, value]
   )
   const displayLabel = selectedOption?.label ?? options[0]?.label ?? ''
@@ -148,8 +162,10 @@ function SelectField({
     labelLayout === 'stacked'
       ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
       : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
-  const resolvedSelectClassName = `input w-full cursor-pointer bg-white text-base-content opacity-100 relative justify-between ${hasError ? '' : 'focus-visible:ring-1 focus-visible:ring-primary/30'} ${selectClassName ?? ''}`.trim()
-  const activeOptionId = isOpen && highlightedIndex !== -1 ? `${listboxId}-option-${highlightedIndex}` : undefined
+  const resolvedSelectClassName =
+    `input w-full cursor-pointer bg-white text-base-content opacity-100 relative justify-between ${hasError ? '' : 'focus-visible:ring-1 focus-visible:ring-primary/30'} ${selectClassName ?? ''}`.trim()
+  const activeOptionId =
+    isOpen && highlightedIndex !== -1 ? `${listboxId}-option-${highlightedIndex}` : undefined
 
   useEffect(() => {
     setHighlightedIndex(getInitialHighlightedIndex(options, value))
@@ -228,13 +244,18 @@ function SelectField({
     const currentIndex = enabledOptionIndexes.indexOf(highlightedIndex)
 
     if (currentIndex === -1) {
-      setHighlightedIndex(direction === 'next' ? enabledOptionIndexes[0] : enabledOptionIndexes[enabledOptionIndexes.length - 1])
+      setHighlightedIndex(
+        direction === 'next'
+          ? enabledOptionIndexes[0]
+          : enabledOptionIndexes[enabledOptionIndexes.length - 1]
+      )
       return
     }
 
-    const nextEnabledIndex = direction === 'next'
-      ? Math.min(currentIndex + 1, enabledOptionIndexes.length - 1)
-      : Math.max(currentIndex - 1, 0)
+    const nextEnabledIndex =
+      direction === 'next'
+        ? Math.min(currentIndex + 1, enabledOptionIndexes.length - 1)
+        : Math.max(currentIndex - 1, 0)
 
     setHighlightedIndex(enabledOptionIndexes[nextEnabledIndex])
   }
@@ -300,14 +321,8 @@ function SelectField({
   return (
     <div className='form-control w-full' ref={containerRef}>
       <label className={resolvedLabelClassName} htmlFor={id}>
-        <span className='label-text font-sans text-sm text-base-content opacity-100'>
-          {label}
-        </span>
-        {labelAlt ? (
-          <span className={resolvedLabelAltClassName}>
-            {labelAlt}
-          </span>
-        ) : null}
+        <span className='label-text font-sans text-sm text-base-content opacity-100'>{label}</span>
+        {labelAlt ? <span className={resolvedLabelAltClassName}>{labelAlt}</span> : null}
       </label>
       <div className='relative'>
         <button
@@ -352,12 +367,7 @@ function SelectField({
           </span>
         </button>
         {isOpen ? (
-          <div
-            id={listboxId}
-            role='listbox'
-            aria-labelledby={id}
-            className={selectPanelClassName}
-          >
+          <div id={listboxId} role='listbox' aria-labelledby={id} className={selectPanelClassName}>
             <div className='max-h-64 overflow-y-auto'>
               {options.map((option, index) => {
                 const optionValue = getOptionValue(option)
@@ -370,8 +380,10 @@ function SelectField({
                     : 'cursor-pointer text-base-content',
                   isSelected ? 'bg-primary-50 text-primary-700' : '',
                   isHighlighted && !option.disabled ? 'bg-base-100/90 shadow-sm' : '',
-                  !isSelected && !isHighlighted && !option.disabled ? 'hover:bg-base-100/80' : ''
-                ].filter(Boolean).join(' ')
+                  !isSelected && !isHighlighted && !option.disabled ? 'hover:bg-base-100/80' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
 
                 return (
                   <button
@@ -408,12 +420,7 @@ function renderErrorCard(id: string, error?: string) {
   }
 
   return (
-    <div
-      className={errorCardClassName}
-      id={`${id}-error`}
-      role='alert'
-      aria-live='assertive'
-    >
+    <div className={errorCardClassName} id={`${id}-error`} role='alert' aria-live='assertive'>
       <span
         className='mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
         aria-hidden='true'
@@ -455,11 +462,12 @@ export function ValidatorInput(props: ValidatorInputProps) {
       label,
       labelAlt,
       labelLayout: textAreaLabelLayout,
+      autoComplete,
       placeholder,
       inputClassName,
       error,
       required = false,
-      onValueChange
+      onValueChange,
     } = props
     const resolvedLabelClassName = textAreaLabelLayout
       ? textAreaLabelLayout === 'stacked'
@@ -480,23 +488,18 @@ export function ValidatorInput(props: ValidatorInputProps) {
     return (
       <div className='form-control w-full'>
         <label className={resolvedLabelClassName} htmlFor={id}>
-          <span className={labelTextClassName}>
-            {label}
-          </span>
-          {labelAlt ? (
-            <span className={resolvedLabelAltClassName}>
-              {labelAlt}
-            </span>
-          ) : null}
+          <span className={labelTextClassName}>{label}</span>
+          {labelAlt ? <span className={resolvedLabelAltClassName}>{labelAlt}</span> : null}
         </label>
         <textarea
           id={id}
           className={mergedTextAreaClassName}
           style={tokenizedInputStyle(hasError)}
           placeholder={placeholder}
+          autoComplete={autoComplete}
           required={required}
           value={value}
-          onChange={(e) => onValueChange(e.target.value)}
+          onChange={e => onValueChange(e.target.value)}
           aria-invalid={hasError}
           aria-describedby={hasError ? `${id}-error` : undefined}
         />
@@ -517,7 +520,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       selectedFileName,
       error,
       inputRef,
-      onFileChange
+      onFileChange,
     } = props
     const resolvedLabelClassName = uploadLabelLayout
       ? uploadLabelLayout === 'stacked'
@@ -533,14 +536,8 @@ export function ValidatorInput(props: ValidatorInputProps) {
     return (
       <div className='form-control w-full'>
         <label className={resolvedLabelClassName} htmlFor={id}>
-          <span className={labelTextClassName}>
-            {label}
-          </span>
-          {labelAlt ? (
-            <span className={resolvedLabelAltClassName}>
-              {labelAlt}
-            </span>
-          ) : null}
+          <span className={labelTextClassName}>{label}</span>
+          {labelAlt ? <span className={resolvedLabelAltClassName}>{labelAlt}</span> : null}
         </label>
         <input
           id={id}
@@ -548,7 +545,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
           className='file-input file-input-primary w-full file-input-theme text-base-content opacity-100'
           accept={accept}
           ref={inputRef}
-          onChange={(event) => onFileChange?.(event.target.files)}
+          onChange={event => onFileChange?.(event.target.files)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
         />
@@ -561,9 +558,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
         ) : null}
         {(infoLeft || infoRight) && (
           <div className='label w-full justify-between'>
-            <span className='label-text-alt text-xs text-base-content opacity-100'>
-              {infoLeft}
-            </span>
+            <span className='label-text-alt text-xs text-base-content opacity-100'>{infoLeft}</span>
             <span className='label-text-alt text-xs text-base-content opacity-100'>
               {infoRight}
             </span>
@@ -584,12 +579,13 @@ export function ValidatorInput(props: ValidatorInputProps) {
     labelAlt,
     labelPlacement = 'inside',
     labelLayout: inputLabelLayout,
+    autoComplete,
     icon,
     trailingIcon,
     inputClassName,
     error,
     required = false,
-    onValueChange
+    onValueChange,
   } = props
   const resolvedLabelClassName = inputLabelLayout
     ? inputLabelLayout === 'stacked'
@@ -615,14 +611,8 @@ export function ValidatorInput(props: ValidatorInputProps) {
     <div className='form-control w-full'>
       {labelPlacement === 'outside' ? (
         <label className={resolvedLabelClassName} htmlFor={id}>
-          <span className={labelTextClassName}>
-            {label}
-          </span>
-          {labelAlt ? (
-            <span className={resolvedLabelAltClassName}>
-              {labelAlt}
-            </span>
-          ) : null}
+          <span className={labelTextClassName}>{label}</span>
+          {labelAlt ? <span className={resolvedLabelAltClassName}>{labelAlt}</span> : null}
         </label>
       ) : null}
       <label
@@ -638,17 +628,16 @@ export function ValidatorInput(props: ValidatorInputProps) {
           type={type}
           placeholder={placeholder}
           min={min}
+          autoComplete={autoComplete}
           className={mergedInputClassName}
           required={required}
           value={value}
-          onChange={(e) => onValueChange(e.target.value)}
+          onChange={e => onValueChange(e.target.value)}
           aria-invalid={hasError}
           aria-describedby={hasError ? `${id}-error` : undefined}
         />
         {shouldShowTrailingIcon ? (
-          <span className='ml-2 flex items-center pointer-events-none'>
-            {trailingIcon}
-          </span>
+          <span className='ml-2 flex items-center pointer-events-none'>{trailingIcon}</span>
         ) : null}
       </label>
       {renderErrorCard(id, error)}

@@ -1,10 +1,25 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { SiteHeader } from '../SiteHeader'
 import React, { act } from 'react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { usePathname } from 'next/navigation'
+import { SiteHeader } from '../SiteHeader'
+
+type MockLinkProps = {
+  children: React.ReactNode
+  href: string
+  prefetch?: boolean | null
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ children, href, prefetch, ...props }: MockLinkProps) => {
+    void prefetch
+
+    return <a href={href} {...props}>{children}</a>
+  }
+}))
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn()
@@ -14,16 +29,21 @@ describe('SiteHeader', () => {
   const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
   let mockPathname = '/'
 
+  const getCustomCakesButton = () => screen.getByRole('button', { name: /custom cakes/i })
+  const getLearnButton = () => screen.getByRole('button', { name: /^learn$/i })
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockPathname = '/'
     mockUsePathname.mockImplementation(() => mockPathname)
   })
+
   it('renders logo and menu button', () => {
     render(<SiteHeader />)
 
     expect(screen.getByLabelText(/open menu/i)).toBeInTheDocument()
     expect(screen.getByAltText(/olgish cakes logo/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /olgish cakes logo/i })).toHaveAttribute('href', '/')
   })
 
   it('hydrates the canonical desktop header without changing the quote link or sticky classes', () => {
@@ -69,7 +89,14 @@ describe('SiteHeader', () => {
       })
 
       const header = container.querySelector('header')
-      const quoteLink = Array.from(container.querySelectorAll('a')).find((link) => link.textContent?.trim() === 'Get a quote')
+
+      act(() => {
+        fireEvent.click(within(container).getByRole('button', { name: /custom cakes/i }))
+      })
+
+      const quoteLink = Array.from(container.querySelectorAll('a')).find(
+        (link) => link.textContent?.trim() === 'Get a quote'
+      )
 
       expect(consoleErrorSpy).not.toHaveBeenCalled()
       expect(header?.className).toContain('tablet:sticky')
@@ -98,7 +125,7 @@ describe('SiteHeader', () => {
     expect(header).not.toHaveClass('top-0')
   })
 
-  it('opens and closes menu on button click', () => {
+  it('opens and closes the mobile menu on button click', () => {
     render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
@@ -113,21 +140,7 @@ describe('SiteHeader', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('closes menu when clicking outside', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const menu = screen.getByRole('menu')
-    expect(menu).toBeInTheDocument()
-
-    fireEvent.mouseDown(document.body)
-
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-  })
-
-  it('closes menu on Escape key', () => {
+  it('closes the mobile menu when clicking outside or pressing escape', () => {
     render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
@@ -135,12 +148,17 @@ describe('SiteHeader', () => {
 
     expect(screen.getByRole('menu')).toBeInTheDocument()
 
-    fireEvent.keyDown(document, { key: 'Escape' })
+    fireEvent.mouseDown(document.body)
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
+    fireEvent.click(button)
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('has proper ARIA attributes', () => {
+  it('has proper mobile ARIA attributes and closes the menu when clicking a link', () => {
     render(<SiteHeader />)
 
     const button = screen.getByLabelText(/open menu/i)
@@ -148,31 +166,16 @@ describe('SiteHeader', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false')
     expect(button).toHaveAttribute('aria-controls', 'mobile-menu')
     expect(button).toHaveAttribute('aria-haspopup', 'true')
-  })
-
-  it('updates aria-expanded when menu opens', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
 
     fireEvent.click(button)
 
     expect(button).toHaveAttribute('aria-expanded', 'true')
-  })
 
-  it('closes menu when clicking on a link', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const link = screen.getByRole('menuitem', { name: /cakes by post/i })
-    fireEvent.click(link)
-
+    fireEvent.click(screen.getByRole('menuitem', { name: /cakes by post/i }))
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('orders desktop navigation with cakes by post first', () => {
+  it('orders desktop navigation with cakes by post first and custom cakes second', () => {
     render(<SiteHeader />)
 
     const mainNav = screen.getByRole('navigation', { name: /main navigation/i })
@@ -189,236 +192,44 @@ describe('SiteHeader', () => {
         return ''
       }
 
-      if (firstChild.tagName === 'A') {
-        return firstChild.textContent?.trim() ?? ''
-      }
-
-      if (firstChild.tagName === 'DETAILS') {
-        const summaryLabel = firstChild.querySelector('summary span')
-        return summaryLabel?.textContent?.trim() ?? ''
-      }
-
-      return ''
+      return firstChild.textContent?.trim() ?? ''
     })
 
     expect(topLevelLabels[0]).toBe('Cakes by post')
-    expect(topLevelLabels[1]).toBe('Custom cakes')
+    expect(topLevelLabels[1]).toContain('Custom cakes')
   })
 
-  it('orders custom cakes dropdown with all cakes first and get a quote last', () => {
+  it('renders desktop dropdown buttons and toggles them by click', () => {
     render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
+    const customCakesButton = getCustomCakesButton()
+    const learnButton = getLearnButton()
 
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
+    expect(learnButton).toHaveAttribute('aria-expanded', 'false')
 
-    const customDetails = customSummary.closest('details')
+    fireEvent.click(customCakesButton)
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('link', { name: /all cakes/i })).toBeInTheDocument()
 
-    if (!customDetails) {
-      throw new Error('Custom cakes details not found')
-    }
-
-    const dropdownLinks = Array.from(customDetails.querySelectorAll('.dropdown-content a'))
-      .map((link) => link.textContent?.trim() ?? '')
-
-    expect(dropdownLinks[0]).toBe('All cakes')
-    expect(dropdownLinks[dropdownLinks.length - 1]).toBe('Get a quote')
-    expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
-    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute('href', '/get-custom-quote#quote-form')
+    fireEvent.click(learnButton)
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
+    expect(learnButton).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('link', { name: /^articles$/i })).toBeInTheDocument()
   })
 
-  it('points the desktop get a quote link to the canonical quote page on non-home routes', () => {
-    mockPathname = '/birthday-cakes'
-
+  it('closes the desktop dropdown when clicking outside or tapping the overlay', () => {
     render(<SiteHeader />)
 
-    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute('href', '/get-custom-quote#quote-form')
-  })
+    const customCakesButton = getCustomCakesButton()
+    fireEvent.click(customCakesButton)
 
-  it('points wedding cakes navigation to the canonical category page', () => {
-    render(<SiteHeader />)
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'true')
 
-    const weddingCakesLink = screen.getByRole('link', { name: /wedding cakes/i })
+    fireEvent.mouseDown(document.body)
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
 
-    expect(weddingCakesLink).toHaveAttribute('href', '/wedding-cakes')
-  })
-
-  it('points birthday, anniversary and baby shower navigation to canonical category page links', () => {
-    render(<SiteHeader />)
-
-    expect(screen.getByRole('link', { name: /birthday cakes/i })).toHaveAttribute('href', '/birthday-cakes')
-    expect(screen.getByRole('link', { name: /anniversary cakes/i })).toHaveAttribute('href', '/anniversary-cakes-leeds')
-    expect(screen.getByRole('link', { name: /baby shower cakes/i })).toHaveAttribute('href', '/baby-shower-cakes')
-  })
-
-  it('removes all cakes from mobile menu and points custom cakes to /cakes', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const mobileCustomCakesLink = screen.getByRole('menuitem', { name: /custom cakes/i })
-
-    expect(mobileCustomCakesLink).toHaveAttribute('href', '/cakes')
-    expect(screen.queryByRole('menuitem', { name: /all cakes/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: /order form/i })).not.toBeInTheDocument()
-  })
-
-  it('keeps cakes by post navigation pointed to /cakes-by-post', () => {
-    render(<SiteHeader />)
-
-    const desktopByPostLinks = screen.getAllByRole('link', { name: /cakes by post/i })
-    expect(desktopByPostLinks.some((link) => link.getAttribute('href') === '/cakes-by-post')).toBe(true)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const mobileByPostLink = screen.getByRole('menuitem', { name: /cakes by post/i })
-    expect(mobileByPostLink).toHaveAttribute('href', '/cakes-by-post')
-  })
-
-  it('does not render removed placeholder learn links', () => {
-    render(<SiteHeader />)
-
-    const learnSummaryText = screen.getByText(/^learn$/i)
-    const learnSummary = learnSummaryText.closest('summary')
-
-    if (!learnSummary) {
-      throw new Error('Learn summary not found')
-    }
-
-    fireEvent.click(learnSummary)
-
-    expect(screen.queryByRole('link', { name: /^guides$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /customer stories/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /find us at farmers markets/i })).not.toBeInTheDocument()
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    expect(screen.queryByRole('menuitem', { name: /^guides$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: /customer stories/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: /find us at farmers markets/i })).not.toBeInTheDocument()
-  })
-
-  it('points Articles navigation to the canonical blog archive', () => {
-    render(<SiteHeader />)
-
-    const learnSummaryText = screen.getByText(/^learn$/i)
-    const learnSummary = learnSummaryText.closest('summary')
-
-    if (!learnSummary) {
-      throw new Error('Learn summary not found')
-    }
-
-    fireEvent.click(learnSummary)
-
-    const desktopArticlesLink = screen.getByRole('link', { name: /^articles$/i })
-    expect(desktopArticlesLink).toHaveAttribute('href', '/blog')
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const mobileArticlesLink = screen.getByRole('menuitem', { name: /^articles$/i })
-    expect(mobileArticlesLink).toHaveAttribute('href', '/blog')
-  })
-
-  it('menu items have proper role', () => {
-    render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
-    const menuItems = screen.getAllByRole('menuitem')
-    expect(menuItems.length).toBeGreaterThan(0)
-  })
-
-  it('renders tablet navigation dropdowns', () => {
-    render(<SiteHeader />)
-
-    expect(screen.getByText(/custom cakes/i)).toBeInTheDocument()
-    expect(screen.getByText(/^learn$/i)).toBeInTheDocument()
-    expect(screen.getByText(/get a quote/i)).toBeInTheDocument()
-  })
-
-  it('toggles desktop dropdowns and closes when clicking outside', () => {
-    render(<SiteHeader />)
-
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/^learn$/i)
-
-    const customSummary = customSummaryText.closest('summary')
-    const learnSummary = learnSummaryText.closest('summary')
-
-    if (!customSummary || !learnSummary) {
-      throw new Error('Dropdown summaries not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-    const learnDetails = learnSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-
-    expect(customDetails.open).toBe(true)
-    expect(learnDetails.open).toBe(false)
-
-    fireEvent.click(learnSummary)
-
-    expect(customDetails.open).toBe(false)
-    expect(learnDetails.open).toBe(true)
-
-    fireEvent.click(document.body)
-
-    expect(learnDetails.open).toBe(false)
-  })
-
-  it('toggles dropdown on touch pointerdown without double toggling', async () => {
-    render(<SiteHeader />)
-
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
-
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    act(() => {
-      const pointerEvent = new Event('pointerdown', { bubbles: true, cancelable: true })
-      Object.defineProperty(pointerEvent, 'pointerType', { value: 'touch' })
-      customSummary.dispatchEvent(pointerEvent)
-    })
-
-    await waitFor(() => {
-      expect(customDetails.open).toBe(true)
-    })
-
-    act(() => {
-      fireEvent.click(customSummary)
-    })
-
-    expect(customDetails.open).toBe(true)
-  })
-
-  it('closes dropdown when tapping the overlay', () => {
-    render(<SiteHeader />)
-
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
-
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-
-    expect(customDetails.open).toBe(true)
+    fireEvent.click(customCakesButton)
 
     const overlay = document.querySelector('[data-nav-overlay]')
 
@@ -427,181 +238,132 @@ describe('SiteHeader', () => {
     }
 
     fireEvent.pointerDown(overlay)
-
-    expect(customDetails.open).toBe(false)
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('syncs dropdown state with native toggle events', () => {
+  it('supports desktop keyboard toggles and escape close', () => {
     render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const learnSummaryText = screen.getByText(/^learn$/i)
+    const customCakesButton = getCustomCakesButton()
 
-    const customSummary = customSummaryText.closest('summary')
-    const learnSummary = learnSummaryText.closest('summary')
+    fireEvent.keyDown(customCakesButton, { key: 'Enter' })
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'true')
 
-    if (!customSummary || !learnSummary) {
-      throw new Error('Dropdown summaries not found')
-    }
+    fireEvent.keyDown(customCakesButton, { key: ' ' })
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
 
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-    const learnDetails = learnSummary.closest('details') as HTMLDetailsElement
+    fireEvent.keyDown(customCakesButton, { key: 'ArrowDown' })
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'true')
 
-    customDetails.open = true
-    fireEvent(customDetails, new Event('toggle'))
-
-    expect(customSummary).toHaveAttribute('aria-expanded', 'true')
-
-    learnDetails.open = true
-    fireEvent(learnDetails, new Event('toggle'))
-
-    expect(learnSummary).toHaveAttribute('aria-expanded', 'true')
-    expect(customSummary).toHaveAttribute('aria-expanded', 'false')
-
-    customDetails.open = false
-    fireEvent(customDetails, new Event('toggle'))
-
-    expect(learnSummary).toHaveAttribute('aria-expanded', 'true')
-
-    learnDetails.open = false
-    fireEvent(learnDetails, new Event('toggle'))
-
-    expect(learnSummary).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(customCakesButton).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('closes desktop dropdown when clicking a custom cakes category link on the same pathname', () => {
+  it('keeps the desktop custom cakes dropdown order and quote link canonical', () => {
     render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
+    fireEvent.click(getCustomCakesButton())
 
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
+    const links = screen.getAllByRole('link')
+      .filter((link) => link.closest('#custom-cakes-desktop-panel'))
+      .map((link) => ({
+        href: link.getAttribute('href'),
+        label: link.textContent?.trim() ?? ''
+      }))
 
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-
-    expect(customDetails.open).toBe(true)
-
-    const weddingCakesLink = screen.getByRole('link', { name: /wedding cakes/i })
-    fireEvent.click(weddingCakesLink)
-
-    expect(customDetails.open).toBe(false)
+    expect(links[0]?.label).toBe('All cakes')
+    expect(links[links.length - 1]?.label).toBe('Get a quote')
+    expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
+    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute(
+      'href',
+      '/get-custom-quote#quote-form'
+    )
   })
 
-  it('closes desktop dropdown when clicking another cakes category while already on /cakes', () => {
-    mockPathname = '/cakes'
+  it('points category links to the canonical custom cake pages', () => {
     render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
+    fireEvent.click(getCustomCakesButton())
 
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-
-    expect(customDetails.open).toBe(true)
-
-    const birthdayCakesLink = screen.getByRole('link', { name: /birthday cakes/i })
-    fireEvent.click(birthdayCakesLink)
-
-    expect(customDetails.open).toBe(false)
+    expect(screen.getByRole('link', { name: /wedding cakes/i })).toHaveAttribute(
+      'href',
+      '/wedding-cakes'
+    )
+    expect(screen.getByRole('link', { name: /birthday cakes/i })).toHaveAttribute(
+      'href',
+      '/birthday-cakes'
+    )
+    expect(screen.getByRole('link', { name: /anniversary cakes/i })).toHaveAttribute(
+      'href',
+      '/anniversary-cakes-leeds'
+    )
+    expect(screen.getByRole('link', { name: /baby shower cakes/i })).toHaveAttribute(
+      'href',
+      '/baby-shower-cakes'
+    )
   })
 
-  it('toggles desktop dropdowns with keyboard', () => {
+  it('points articles navigation to the canonical blog archive and removes old learn placeholders', () => {
     render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
+    fireEvent.click(getLearnButton())
 
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
+    expect(screen.getByRole('link', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
+    expect(screen.queryByRole('link', { name: /^guides$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /customer stories/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /find us at farmers markets/i })).not.toBeInTheDocument()
 
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
+    fireEvent.click(screen.getByLabelText(/open menu/i))
 
-    fireEvent.keyDown(customSummary, { key: 'Enter' })
-    expect(customDetails.open).toBe(true)
-
-    fireEvent.keyDown(customSummary, { key: ' ' })
-    expect(customDetails.open).toBe(false)
-
-    fireEvent.keyDown(customSummary, { key: 'ArrowDown' })
-    expect(customDetails.open).toBe(false)
+    expect(screen.getByRole('menuitem', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
+    expect(screen.queryByRole('menuitem', { name: /^guides$/i })).not.toBeInTheDocument()
   })
 
-  it('closes desktop dropdown when pathname changes', () => {
+  it('removes all cakes from the mobile menu and keeps cakes by post canonical', () => {
+    render(<SiteHeader />)
+
+    fireEvent.click(screen.getByLabelText(/open menu/i))
+
+    expect(screen.getByRole('menuitem', { name: /custom cakes/i })).toHaveAttribute('href', '/cakes')
+    expect(screen.getByRole('menuitem', { name: /cakes by post/i })).toHaveAttribute('href', '/cakes-by-post')
+    expect(screen.queryByRole('menuitem', { name: /all cakes/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /order form/i })).not.toBeInTheDocument()
+  })
+
+  it('closes the desktop dropdown when clicking a dropdown link on the current pathname', () => {
+    render(<SiteHeader />)
+
+    fireEvent.click(getCustomCakesButton())
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.click(screen.getByRole('link', { name: /wedding cakes/i }))
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('closes the desktop dropdown and mobile menu when pathname changes', () => {
     const { rerender } = render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
+    fireEvent.click(getCustomCakesButton())
+    fireEvent.click(screen.getByLabelText(/open menu/i))
 
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-    expect(customDetails.open).toBe(true)
-
-    mockPathname = '/cakes'
-    rerender(<SiteHeader />)
-
-    const updatedCustomDetails = screen
-      .getByText(/custom cakes/i)
-      .closest('summary')
-      ?.closest('details') as HTMLDetailsElement
-
-    expect(updatedCustomDetails.open).toBe(false)
-  })
-
-  it('closes mobile menu when pathname changes', () => {
-    const { rerender } = render(<SiteHeader />)
-
-    const button = screen.getByLabelText(/open menu/i)
-    fireEvent.click(button)
-
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('menu')).toBeInTheDocument()
 
     mockPathname = '/contact'
     rerender(<SiteHeader />)
 
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('does not close desktop dropdown on rerender when pathname is unchanged', () => {
+  it('does not close the desktop dropdown on rerender when pathname is unchanged', () => {
     const { rerender } = render(<SiteHeader />)
 
-    const customSummaryText = screen.getByText(/custom cakes/i)
-    const customSummary = customSummaryText.closest('summary')
-
-    if (!customSummary) {
-      throw new Error('Custom cakes summary not found')
-    }
-
-    const customDetails = customSummary.closest('details') as HTMLDetailsElement
-
-    fireEvent.click(customSummary)
-    expect(customDetails.open).toBe(true)
+    fireEvent.click(getCustomCakesButton())
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'true')
 
     rerender(<SiteHeader />)
 
-    const updatedCustomDetails = screen
-      .getByText(/custom cakes/i)
-      .closest('summary')
-      ?.closest('details') as HTMLDetailsElement
-
-    expect(updatedCustomDetails.open).toBe(true)
+    expect(getCustomCakesButton()).toHaveAttribute('aria-expanded', 'true')
   })
 })
-
-
-
-

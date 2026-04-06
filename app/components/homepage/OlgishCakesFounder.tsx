@@ -76,24 +76,6 @@ export function OlgishCakesFounder() {
                 </Link>
               </li>
               <li>
-                <Link href='/market-schedule' className={linkClassName}>
-                  <span>Visit our market stall</span>
-                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
-              </li>
-              <li>
-                <Link href='/reviews-awards' className={linkClassName}>
-                  <span>Check our reviews</span>
-                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
-              </li>
-              <li>
-                <Link href='/celebration-cakes' className={linkClassName}>
-                  <span>Browse occasion cakes</span>
-                  <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
-              </li>
-              <li>
                 <Link href='/get-custom-quote' className={linkClassName}>
                   <span>Custom cake enquiry</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>

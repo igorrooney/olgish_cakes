@@ -34,7 +34,10 @@ describe('instagram posts route', () => {
 
     expect(response.status).toBe(200)
     expect(body.data).toHaveLength(1)
-    expect(mockGetLatestInstagramPosts).toHaveBeenCalledWith({ limit: 3 })
+    expect(mockGetLatestInstagramPosts).toHaveBeenCalledWith({
+      limit: 3,
+      signal: expect.any(AbortSignal)
+    })
   })
 
   it('returns a 500 response when fetching fails', async () => {
@@ -48,5 +51,24 @@ describe('instagram posts route', () => {
     expect(body.error).toBe('Unable to fetch Instagram posts')
 
     consoleSpy.mockRestore()
+  })
+
+  it('returns an empty response for recoverable Instagram failures', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    mockGetLatestInstagramPosts.mockRejectedValueOnce(
+      new Error('Instagram API error (400): Error validating access token: Session has expired')
+    )
+
+    const response = await GET(new Request('http://localhost/api/instagram/posts'))
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.data).toEqual([])
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Instagram API route warning. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
+      'Instagram API error (400): Error validating access token: Session has expired'
+    )
+
+    consoleWarnSpy.mockRestore()
   })
 })

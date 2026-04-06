@@ -88,17 +88,15 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes')
       addTag('sitemaps')
     } else if (_type === "testimonial") {
-      // Revalidate testimonial pages
-      addPath("/testimonials")
+      // Revalidate pages that surface testimonial stats or reviews
       addPath("/") // Home page might show testimonials
-      addPath("/about")
-      addPath("/order")
       addPath("/cakes-by-post")
+      addPath("/get-custom-quote")
       await invalidateCache("testimonials");
       addTag('testimonials')
     } else if (_type === "faq") {
       // Revalidate FAQ pages
-      addPath("/faq")
+      addPath("/faqs")
       await invalidateCache("faqs");
       addTag('faqs')
     } else if (_type === "giftHamper") {
@@ -135,9 +133,8 @@ async function handlePOST(request: NextRequest) {
       addTag('articles')
       addTag('sitemaps')
     } else if (_type === "marketSchedule") {
-      // Revalidate market schedule page
-      addPath("/market-schedule")
-      addPath("/") // Home page might link to market schedule
+      // Revalidate homepage markets section
+      addPath("/")
       await invalidateCache("market-schedule");
       addTag('market-schedule')
     } else if (_type === 'collection') {

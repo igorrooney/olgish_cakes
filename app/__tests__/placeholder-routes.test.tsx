@@ -80,11 +80,11 @@ describe("placeholder routes", () => {
     ).toBeInTheDocument();
 
     const metadata = await generateLearnMetadata({
-      params: Promise.resolve({ slug: ["workshops"] }),
+      params: Promise.resolve({ slug: ["customer-stories"] }),
     });
 
-    expect(metadata.title).toBe("Workshop details are coming soon");
-    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/learn/workshops");
+    expect(metadata.title).toBe("Customer stories are being gathered");
+    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/learn/customer-stories");
     expect(metadata.robots?.index).toBe(false);
     expect(typeof metadata.robots === "object" && "googleBot" in metadata.robots
       ? metadata.robots.googleBot?.index
@@ -105,6 +105,12 @@ describe("placeholder routes", () => {
     await expect(
       LearnPlaceholderPage({
         params: Promise.resolve({ slug: ["guides", "extra"] }),
+      })
+    ).rejects.toThrow("NEXT_NOT_FOUND");
+
+    await expect(
+      LearnPlaceholderPage({
+        params: Promise.resolve({ slug: ["workshops"] }),
       })
     ).rejects.toThrow("NEXT_NOT_FOUND");
 

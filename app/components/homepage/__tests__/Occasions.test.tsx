@@ -6,6 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { Occasions } from '../Occasions'
 import { getHomepageCollections } from '@/app/utils/fetchCollections'
 import type { HomepageCollection } from '@/app/types/collection'
+import type { DisplayCollection } from '../occasions.types'
 
 jest.mock('next/image', () => ({
   __esModule: true,
@@ -37,6 +38,13 @@ jest.mock('@/sanity/lib/image', () => {
 
 jest.mock('@/app/utils/fetchCollections', () => ({
   getHomepageCollections: jest.fn()
+}))
+
+jest.mock('../DeferredOccasionsClient', () => ({
+  DeferredOccasionsClient: ({ collections }: { collections: DisplayCollection[] }) => {
+    const { OccasionsClient } = jest.requireActual('../OccasionsClient') as typeof import('../OccasionsClient')
+    return <OccasionsClient collections={collections} />
+  }
 }))
 
 const mockGetHomepageCollections = getHomepageCollections as jest.MockedFunction<typeof getHomepageCollections>

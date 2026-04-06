@@ -429,7 +429,7 @@ describe("BlogArticlePage", () => {
 
     const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
     expect(scripts[0]?.textContent).toContain('"dateModified":"2025-04-05T09:00:00.000Z"');
-    expect(scripts[0]?.textContent).toContain('"url":"https://olgishcakes.co.uk/about"');
+    expect(scripts[0]?.textContent).toContain('"url":"https://olgishcakes.co.uk"');
   });
 
   it("switches the article commerce cta label for custom cake products", async () => {

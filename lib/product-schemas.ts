@@ -88,7 +88,7 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${BUSINESS_INFO.url}/order#${cakeSlug}`,
+    "@id": `${BUSINESS_INFO.url}/get-custom-quote#${cakeSlug}`,
     name: cakeName,
     description: cakeDescription,
     sku,
@@ -137,12 +137,12 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
     },
     offers: {
       "@type": "Offer",
-      "@id": `${BUSINESS_INFO.url}/order#${cakeSlug}-offer`,
+      "@id": `${BUSINESS_INFO.url}/get-custom-quote#${cakeSlug}-offer`,
       price: formatStructuredDataPrice(cakePrice, FALLBACK_PRICE),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       priceValidUntil: getPriceValidUntil(DEFAULT_PRICE_VALID_DAYS),
-      url: `${BUSINESS_INFO.url}/order`,
+      url: `${BUSINESS_INFO.url}/get-custom-quote`,
       seller: {
         "@type": "Organization",
         name: BUSINESS_INFO.name,
