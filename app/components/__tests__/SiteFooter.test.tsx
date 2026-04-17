@@ -60,7 +60,8 @@ describe('SiteFooter', () => {
 
     expect(screen.getByRole('link', { name: 'Cakes by post' })).toHaveAttribute('href', '/cakes-by-post')
     expect(screen.getByRole('link', { name: 'Custom cakes' })).toHaveAttribute('href', '/custom-cakes')
-    expect(screen.getByRole('link', { name: 'Learn hub' })).toHaveAttribute('href', '/learn')
+    expect(screen.getByRole('link', { name: 'Articles' })).toHaveAttribute('href', '/blog')
+    expect(screen.queryByRole('link', { name: 'Learn hub' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sitemap' })).toHaveAttribute('href', '/sitemap.xml')
     expect(screen.queryByRole('link', { name: 'Farmers Markets' })).not.toBeInTheDocument()
   })

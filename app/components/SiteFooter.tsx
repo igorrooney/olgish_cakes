@@ -32,8 +32,8 @@ export function SiteFooter() {
               <Link href='/custom-cakes' prefetch={false} className={footerLinkClassName}>
                 Custom cakes
               </Link>
-              <Link href='/learn' prefetch={false} className={footerLinkClassName}>
-                Learn hub
+              <Link href='/blog' prefetch={false} className={footerLinkClassName}>
+                Articles
               </Link>
               <Link href='/faqs' prefetch={false} className={footerLinkClassName}>
                 FAQs
