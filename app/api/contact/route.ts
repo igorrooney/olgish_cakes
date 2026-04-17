@@ -1,12 +1,15 @@
 import { logger } from '@/lib/logger'
 import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
+import { validateCsrfToken } from '@/lib/csrf'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
 import { contactFormSchema, formatValidationErrors, validateRequest } from '@/lib/validation'
 import { serverClient } from '@/sanity/lib/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
+const contactEnquiriesTable = 'contact_enquiries'
 
 type InlineOrderProductType = 'cake' | 'gift-hamper'
 type InlineOrderRequestMode = 'message' | 'custom-design'
@@ -21,6 +24,22 @@ interface SanityImageReference {
     _type: 'reference'
     _ref: string
   }
+}
+
+type ContactEnquiryInsertParams = {
+  name: string
+  email: string
+  phone?: string
+  address: string
+  city: string
+  postcode: string
+  cakeInterest: string
+  dateNeeded: string
+  message: string
+  note: string
+  giftNote: string
+  referrer: string
+  attachmentNames: string[]
 }
 
 function toNonEmptyString(value: FormDataEntryValue | null): string {
@@ -176,6 +195,116 @@ function getDesignImageError(file: File): string | null {
   return null
 }
 
+function buildContactEnquiryInsertHints(errorDetails: string) {
+  const normalizedDetails = errorDetails.toLowerCase()
+  const hints = new Set<string>([
+    'Verify the contact_enquiries table exists in Supabase.',
+    'Verify the table contains every column expected by the route insert payload.',
+    'Verify the service-role key has insert permission for contact_enquiries.'
+  ])
+
+  if (normalizedDetails.includes('does not exist')) {
+    hints.add('The table or one of the referenced columns may not exist yet.')
+  }
+
+  if (normalizedDetails.includes('column')) {
+    hints.add('A missing or renamed column is a likely cause of this insert failure.')
+  }
+
+  if (normalizedDetails.includes('permission') || normalizedDetails.includes('policy')) {
+    hints.add('Check database permissions or row-level security policies for this table.')
+  }
+
+  if (normalizedDetails.includes('invalid input syntax') || normalizedDetails.includes('type')) {
+    hints.add('Check that the column data types match the values inserted by the route.')
+  }
+
+  if (normalizedDetails.includes('violates') || normalizedDetails.includes('constraint')) {
+    hints.add('Check not-null, unique, or check constraints on contact_enquiries.')
+  }
+
+  return [...hints]
+}
+
+function logContactEnquiryInsertFailure(error: unknown) {
+  const errorRecord = typeof error === 'object' && error !== null
+    ? error as Record<string, unknown>
+    : null
+  const details = JSON.stringify(errorRecord ?? error)
+
+  logger.error('Contact enquiry insert failed', {
+    operation: 'contact_enquiries.insert',
+    table: contactEnquiriesTable,
+    errorName: errorRecord?.name ?? null,
+    errorCode: errorRecord?.code ?? null,
+    errorMessage: errorRecord?.message ?? null,
+    errorDetails: errorRecord?.details ?? null,
+    errorHint: errorRecord?.hint ?? null,
+    rawError: errorRecord ?? error,
+    expectedColumns: [
+      'full_name',
+      'email',
+      'phone',
+      'address',
+      'city',
+      'postcode',
+      'cake_interest',
+      'date_needed',
+      'message',
+      'note',
+      'gift_note',
+      'referrer',
+      'attachment_names'
+    ],
+    troubleshootingHints: buildContactEnquiryInsertHints(details)
+  })
+}
+
+function isSupabaseAdminClientConfigured() {
+  const supabaseUrl = process.env.SUPABASE_URL?.trim()
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+
+  return Boolean(supabaseUrl && supabaseServiceRoleKey)
+}
+
+async function saveContactEnquiry(params: ContactEnquiryInsertParams) {
+  if (!isSupabaseAdminClientConfigured()) {
+    logger.warn('Skipping contact enquiry persistence because Supabase admin client is not configured', {
+      operation: 'contact_enquiries.insert',
+      table: contactEnquiriesTable
+    })
+    return false
+  }
+
+  const supabase = getSupabaseAdminClient()
+  const { error } = await supabase
+    .from(contactEnquiriesTable)
+    .insert({
+      full_name: params.name,
+      email: params.email,
+      phone: params.phone || null,
+      address: params.address || null,
+      city: params.city || null,
+      postcode: params.postcode || null,
+      cake_interest: params.cakeInterest || null,
+      date_needed: params.dateNeeded || null,
+      message: params.message,
+      note: params.note || null,
+      gift_note: params.giftNote || null,
+      referrer: params.referrer || null,
+      attachment_names: params.attachmentNames.length > 0
+        ? params.attachmentNames
+        : null
+    })
+
+  if (error) {
+    logContactEnquiryInsertFailure(error)
+    throw new Error('Failed to save contact enquiry')
+  }
+
+  return true
+}
+
 async function handlePOST(request: NextRequest) {
   if (requiresLiveEmailConfiguration(getEmailTransportMode()) && !process.env.RESEND_API_KEY) {
     return NextResponse.json(
@@ -186,10 +315,27 @@ async function handlePOST(request: NextRequest) {
 
   try {
     const formData = await request.formData()
+    const submittedCsrfToken = toNonEmptyString(formData.get('csrfToken'))
+    const cookieCsrfToken = request.cookies.get('csrf-token')?.value || ''
+
+    if (!cookieCsrfToken || !submittedCsrfToken) {
+      return NextResponse.json(
+        { error: 'CSRF token missing' },
+        { status: 403 }
+      )
+    }
+
+    if (!validateCsrfToken(submittedCsrfToken, cookieCsrfToken)) {
+      return NextResponse.json(
+        { error: 'Invalid CSRF token' },
+        { status: 403 }
+      )
+    }
 
     const name = toNonEmptyString(formData.get('name'))
     const email = toNonEmptyString(formData.get('email'))
     const phone = toNonEmptyString(formData.get('phone'))
+    const normalizedPhone = phone || undefined
     const message = toNonEmptyString(formData.get('message'))
     const address = toNonEmptyString(formData.get('address'))
     const city = toNonEmptyString(formData.get('city'))
@@ -295,13 +441,101 @@ async function handlePOST(request: NextRequest) {
       })
     }
 
-    if (!isOrderInquiry || isLegacyOrderInquiry) {
+    if (!isOrderInquiry) {
+      let enquiryPersisted = false
+      let adminEmailAccepted = false
+
+      try {
+        enquiryPersisted = await saveContactEnquiry({
+          name,
+          email,
+          phone: normalizedPhone,
+          address,
+          city,
+          postcode,
+          cakeInterest,
+          dateNeeded,
+          message,
+          note,
+          giftNote,
+          referrer,
+          attachmentNames: designImage ? [designImage.name] : []
+        })
+      } catch (persistenceError) {
+        logger.error('Continuing contact enquiry flow after persistence failure', {
+          persistenceError,
+          customerEmail: email,
+          referrer: referrer || null
+        })
+      }
+
+      try {
+        const adminEmailResult = await sendEmail({
+          templateId: 'contact-admin-inquiry',
+          input: {
+            customerName: name,
+            customerEmail: email,
+            customerPhone: normalizedPhone,
+            address: address || undefined,
+            city: city || undefined,
+            postcode: postcode || undefined,
+            dateNeeded: dateNeeded || undefined,
+            cakeInterest: cakeInterest || undefined,
+            message: message || undefined,
+            note: note || undefined,
+            giftNote: giftNote || undefined,
+            referrer: referrer || undefined,
+            attachmentNames: designImage ? [designImage.name] : [],
+            titleOverride: `New Contact: ${name}`
+          },
+          modeOverride: emailMode,
+          message: {
+            from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+            to: recipientEmail,
+            bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+            replyTo: email,
+            attachments: designImage && imageBuffer
+              ? [
+                  {
+                    filename: designImage.name,
+                    content: Buffer.from(imageBuffer)
+                  }
+                ]
+              : []
+          }
+        })
+
+        if (!adminEmailResult.accepted || adminEmailResult.error) {
+          throw new Error(adminEmailResult.error?.message || 'Transport did not accept admin email')
+        }
+
+        adminEmailAccepted = true
+      } catch (emailError) {
+        logger.error('Contact enquiry email failed after persistence', {
+          emailError,
+          customerEmail: email,
+          referrer: referrer || null
+        })
+      }
+
+      if (!enquiryPersisted && !adminEmailAccepted) {
+        logger.error('Contact enquiry was not persisted or emailed', {
+          customerEmail: email,
+          referrer: referrer || null
+        })
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+      }
+
+      return NextResponse.json({ success: true })
+    }
+
+    if (isLegacyOrderInquiry) {
       const adminEmailResult = await sendEmail({
         templateId: 'contact-admin-inquiry',
         input: {
           customerName: name,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: normalizedPhone,
           address: address || undefined,
           city: city || undefined,
           postcode: postcode || undefined,
@@ -312,7 +546,7 @@ async function handlePOST(request: NextRequest) {
           giftNote: giftNote || undefined,
           referrer: referrer || undefined,
           attachmentNames: designImage ? [designImage.name] : [],
-          titleOverride: isLegacyOrderInquiry ? `New Order Inquiry: ${name}` : `New Contact: ${name}`
+          titleOverride: `New Order Inquiry: ${name}`
         },
         modeOverride: emailMode,
         message: {
@@ -464,7 +698,7 @@ async function handlePOST(request: NextRequest) {
         input: {
           customerName: name,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: normalizedPhone,
           address: address || undefined,
           city: city || undefined,
           postcode: postcode || undefined,
@@ -508,7 +742,7 @@ async function handlePOST(request: NextRequest) {
         input: {
           customerName: name,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: normalizedPhone,
           address: address || undefined,
           city: city || undefined,
           postcode: postcode || undefined,
@@ -599,7 +833,7 @@ async function handlePOST(request: NextRequest) {
         input: {
           customerName: name,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: normalizedPhone,
           address: address || undefined,
           city: city || undefined,
           postcode: postcode || undefined,
@@ -655,7 +889,7 @@ async function handlePOST(request: NextRequest) {
         input: {
           customerName: name,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: normalizedPhone,
           dateNeeded: dateNeeded || undefined,
           occasion: occasion || undefined,
           designType: fallbackDesignTypeLabel,

@@ -100,6 +100,7 @@ const selectPanelClassName =
 
 const selectOptionBaseClassName =
   'w-full rounded-[18px] px-4 py-3 text-left text-sm leading-6 transition-colors duration-150'
+const hintTextClassName = 'mt-2 text-xs leading-5 text-base-content/70'
 
 function getEnabledOptionIndexes(options: SelectOption[]) {
   return options.reduce<number[]>((indexes, option, index) => {
@@ -129,6 +130,35 @@ function getInitialHighlightedIndex(options: SelectOption[], value: string) {
 
 type SelectFieldProps = Extract<ValidatorInputProps, { fieldType: 'select' }>
 
+function getHintId(id: string) {
+  return `${id}-hint`
+}
+
+function getErrorId(id: string) {
+  return `${id}-error`
+}
+
+function getDescribedBy(id: string, hintText?: string, error?: string) {
+  const ids = [
+    hintText ? getHintId(id) : null,
+    error ? getErrorId(id) : null
+  ].filter(Boolean)
+
+  return ids.length > 0 ? ids.join(' ') : undefined
+}
+
+function renderHintText(id: string, hintText?: string) {
+  if (!hintText) {
+    return null
+  }
+
+  return (
+    <p id={getHintId(id)} className={hintTextClassName}>
+      {hintText}
+    </p>
+  )
+}
+
 function SelectField({
   id,
   value,
@@ -138,6 +168,7 @@ function SelectField({
   selectClassName,
   options,
   error,
+  hintText,
   required = false,
   onValueChange,
 }: SelectFieldProps) {
@@ -336,7 +367,7 @@ function SelectField({
           aria-controls={listboxId}
           aria-activedescendant={activeOptionId}
           aria-invalid={hasError}
-          aria-describedby={hasError ? `${id}-error` : undefined}
+          aria-describedby={getDescribedBy(id, hintText, error)}
           aria-required={required}
           onClick={() => {
             if (isOpen) {
@@ -409,6 +440,7 @@ function SelectField({
           </div>
         ) : null}
       </div>
+      {renderHintText(id, hintText)}
       {renderErrorCard(id, error)}
     </div>
   )
@@ -420,7 +452,7 @@ function renderErrorCard(id: string, error?: string) {
   }
 
   return (
-    <div className={errorCardClassName} id={`${id}-error`} role='alert' aria-live='assertive'>
+    <div className={errorCardClassName} id={getErrorId(id)} role='alert' aria-live='assertive'>
       <span
         className='mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
         aria-hidden='true'
@@ -466,6 +498,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       placeholder,
       inputClassName,
       error,
+      hintText,
       required = false,
       onValueChange,
     } = props
@@ -501,8 +534,9 @@ export function ValidatorInput(props: ValidatorInputProps) {
           value={value}
           onChange={e => onValueChange(e.target.value)}
           aria-invalid={hasError}
-          aria-describedby={hasError ? `${id}-error` : undefined}
+          aria-describedby={getDescribedBy(id, hintText, error)}
         />
+        {renderHintText(id, hintText)}
         {renderErrorCard(id, error)}
       </div>
     )
@@ -519,6 +553,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
       infoRight,
       selectedFileName,
       error,
+      hintText,
       inputRef,
       onFileChange,
     } = props
@@ -547,8 +582,9 @@ export function ValidatorInput(props: ValidatorInputProps) {
           ref={inputRef}
           onChange={event => onFileChange?.(event.target.files)}
           aria-invalid={Boolean(error)}
-          aria-describedby={error ? `${id}-error` : undefined}
+          aria-describedby={getDescribedBy(id, hintText, error)}
         />
+        {renderHintText(id, hintText)}
         {selectedFileName ? (
           <div className='label w-full'>
             <span className='label-text-alt text-xs text-base-content opacity-100 truncate'>
@@ -584,6 +620,7 @@ export function ValidatorInput(props: ValidatorInputProps) {
     trailingIcon,
     inputClassName,
     error,
+    hintText,
     required = false,
     onValueChange,
   } = props
@@ -634,12 +671,13 @@ export function ValidatorInput(props: ValidatorInputProps) {
           value={value}
           onChange={e => onValueChange(e.target.value)}
           aria-invalid={hasError}
-          aria-describedby={hasError ? `${id}-error` : undefined}
+          aria-describedby={getDescribedBy(id, hintText, error)}
         />
         {shouldShowTrailingIcon ? (
           <span className='ml-2 flex items-center pointer-events-none'>{trailingIcon}</span>
         ) : null}
       </label>
+      {renderHintText(id, hintText)}
       {renderErrorCard(id, error)}
     </div>
   )

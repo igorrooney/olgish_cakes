@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { ValidatorInput } from '@/app/components/homepage/ValidatorInput'
 import { getTodayDateInputValue } from '@/app/components/homepage/mobileForm.utils'
 import { useWorkshopEnquiry } from '@/app/hooks/useWorkshopEnquiry'
-import { buildWorkshopEnquiryFormData, isSubmissionError } from '@/app/services/workshopEnquiry'
+import {
+  buildWorkshopEnquiryFormData,
+  isCsrfTokenLoadError,
+  isSubmissionError
+} from '@/app/services/workshopEnquiry'
 import { workshopEnquirySchema } from '@/lib/validation'
 import {
   buildWorkshopEnquirySubmission,
@@ -78,7 +82,7 @@ export function WorkshopEnquiryForm() {
     clearFieldError(field)
   }
 
-  const { csrfToken, isCsrfLoading, submitMutation, submit } = useWorkshopEnquiry({
+  const { isCsrfLoading, refreshCsrfToken, submitMutation, submit } = useWorkshopEnquiry({
     onSuccess: () => {
       setErrors({})
       setHasAttemptedSubmit(false)
@@ -100,18 +104,20 @@ export function WorkshopEnquiryForm() {
 
   const isSubmitting = submitMutation.isPending
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setHasAttemptedSubmit(true)
     setErrors({})
     submitMutation.reset()
 
     try {
-      if (isCsrfLoading || !csrfToken) {
+      const nextCsrfToken = await refreshCsrfToken()
+
+      if (!nextCsrfToken) {
         throw new Error('CSRF token not loaded. Please refresh the page and try again.')
       }
 
-      const parsed = workshopEnquirySchema.safeParse({ ...formData, csrfToken })
+      const parsed = workshopEnquirySchema.safeParse({ ...formData, csrfToken: nextCsrfToken })
       const fieldErrors: Record<string, string> = {}
 
       if (!parsed.success) {
@@ -133,13 +139,17 @@ export function WorkshopEnquiryForm() {
           ...parsed.data,
           decorationTheme: parsed.data.decorationTheme ?? '',
         },
-        csrfToken
+        nextCsrfToken
       )
       const submissionData = buildWorkshopEnquiryFormData(submission)
       submit(submissionData)
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to submit the workshop enquiry.',
+        submit: isCsrfTokenLoadError(error)
+          ? 'CSRF token not loaded. Please refresh the page and try again.'
+          : error instanceof Error
+            ? error.message
+            : 'Failed to submit the workshop enquiry.',
       })
     }
   }
@@ -283,8 +293,8 @@ export function WorkshopEnquiryForm() {
         <button
           type='submit'
           className={`btn btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base ${submitClassName}`}
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
+          disabled={isSubmitting || isCsrfLoading}
+          aria-busy={isSubmitting || isCsrfLoading}
         >
           {isSubmitting ? 'Sending...' : submitLabel}
         </button>

@@ -4,6 +4,10 @@
 import { act, render } from '@testing-library/react'
 import { DeferredRuntimeSetup } from '../DeferredRuntimeSetup'
 
+jest.mock('@/app/lib/consent-runtime', () => ({
+  loadConsentRuntime: jest.fn(() => Promise.resolve())
+}))
+
 function setDocumentReadyState(value: DocumentReadyState) {
   Object.defineProperty(document, 'readyState', {
     configurable: true,
@@ -17,6 +21,7 @@ describe('DeferredRuntimeSetup', () => {
 
   beforeEach(() => {
     jest.useFakeTimers()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
@@ -55,6 +60,18 @@ describe('DeferredRuntimeSetup', () => {
       scope: '/',
       updateViaCache: 'none'
     })
+  })
+
+  it('loads the consent runtime immediately on mount', async () => {
+    const { loadConsentRuntime } = await import('@/app/lib/consent-runtime')
+
+    render(<DeferredRuntimeSetup />)
+
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(loadConsentRuntime).toHaveBeenCalledTimes(1)
   })
 
   it('skips service worker registration outside production', () => {

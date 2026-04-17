@@ -14,8 +14,7 @@ export default function robots(): MetadataRoute.Robots {
         '/admin/',
         '/test-lists',
         '/test-lists/'
-      ],
-      crawlDelay: 1
+      ]
     },
     sitemap: [
       `${BUSINESS_CONSTANTS.BASE_URL}/sitemap.xml`,

@@ -331,6 +331,7 @@ describe('fetchGiftHampers', () => {
       expect(result).toEqual(mockHamper)
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'deluxe-hamper' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'deluxe-hamper' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policySource'), { slug: 'deluxe-hamper' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"giftHampersDeliverySection"'), { slug: 'deluxe-hamper' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'deluxe-hamper' })
     })

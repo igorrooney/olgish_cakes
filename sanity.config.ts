@@ -6,6 +6,7 @@ import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { AutomaticFieldHelpField } from "./sanity/components/FieldHelpField";
+import { DocumentPublishValidationLayout } from "./sanity/components/DocumentPublishValidationLayout";
 
 // NOTE: For hosted Studio builds, avoid reading process.env at runtime in the browser.
 // Hardcode the Sanity project configuration here to ensure the hosted Studio works
@@ -37,6 +38,9 @@ export default defineConfig({
     },
   },
   document: {
+    components: {
+      unstable_layout: DocumentPublishValidationLayout,
+    },
     newDocumentOptions: (previousOptions, context) => {
       if (context.creationContext.type !== 'global') {
         return previousOptions

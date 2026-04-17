@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '../hooks/useCustomCakeEnquiry'
 import {
   buildCustomCakeEnquiryFormData,
+  isCsrfTokenLoadError,
   isSubmissionError
 } from '../services/customCakeEnquiry'
 import {
@@ -123,7 +124,7 @@ export function GetCustomQuoteForm({
     updateField('date', value, true)
   }
 
-  const { csrfToken, isCsrfLoading, submitMutation, submit } = useCustomCakeEnquiry({
+  const { isCsrfLoading, refreshCsrfToken, submitMutation, submit } = useCustomCakeEnquiry({
     onSuccess: () => {
       setErrors({})
       setHasAttemptedSubmit(false)
@@ -156,11 +157,13 @@ export function GetCustomQuoteForm({
     submitMutation.reset()
 
     try {
-      if (isCsrfLoading || !csrfToken) {
+      const nextCsrfToken = await refreshCsrfToken()
+
+      if (!nextCsrfToken) {
         throw new Error('CSRF token not loaded. Please refresh the page and try again.')
       }
 
-      const parsed = quoteFormSchema.safeParse({ ...formData, csrfToken })
+      const parsed = quoteFormSchema.safeParse({ ...formData, csrfToken: nextCsrfToken })
       const fieldErrors: Record<string, string> = {}
 
       if (!parsed.success) {
@@ -182,13 +185,17 @@ export function GetCustomQuoteForm({
         return
       }
 
-      const submission = buildGetCustomQuoteSubmission(parsed.data, csrfToken)
+      const submission = buildGetCustomQuoteSubmission(parsed.data, nextCsrfToken)
       const submissionData = buildCustomCakeEnquiryFormData(submission, referenceImage)
 
       submit(submissionData)
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.'
+        submit: isCsrfTokenLoadError(error)
+          ? 'CSRF token not loaded. Please refresh the page and try again.'
+          : error instanceof Error
+            ? error.message
+            : 'Failed to submit form. Please try again.'
       })
     }
   }
@@ -338,8 +345,8 @@ export function GetCustomQuoteForm({
         <button
           type='submit'
           className={`btn btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base ${submitClassName}`}
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
+          disabled={isSubmitting || isCsrfLoading}
+          aria-busy={isSubmitting || isCsrfLoading}
         >
           {isSubmitting ? 'Sending...' : submitLabel}
         </button>

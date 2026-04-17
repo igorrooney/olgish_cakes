@@ -58,8 +58,8 @@ export const CAKE_BY_SLUG_QUERY = groq`
     },
     deliverySection {
       descriptionSource,
-      customDescription,
       policySource,
+      customDescription,
       customPolicy {
         dispatchMinDays,
         dispatchMaxDays,

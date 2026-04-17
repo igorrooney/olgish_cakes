@@ -2,11 +2,12 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { fireEvent, render as rtlRender, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render as rtlRender, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductOrderInlineForm } from '../ProductOrderInlineForm'
 import { OCCASION_OPTIONS, type OccasionOption } from '../formOptions'
 import { fetchOccasionOptions } from '@/app/services/occasionOptions'
+import { csrfTokenLoadErrorMessage, fetchCsrfToken } from '@/app/services/csrfToken'
 
 jest.mock('@/app/services/occasionOptions', () => {
   const actual = jest.requireActual('@/app/services/occasionOptions') as typeof import('@/app/services/occasionOptions')
@@ -17,7 +18,20 @@ jest.mock('@/app/services/occasionOptions', () => {
   }
 })
 
+jest.mock('@/app/services/csrfToken', () => ({
+  csrfTokenLoadErrorMessage: 'CSRF token not loaded. Please refresh the page and try again.',
+  isCsrfTokenLoadError: (error: unknown) => (
+    error instanceof Error && (
+      error.message === 'CSRF token not loaded. Please refresh the page and try again.' ||
+      error.message === 'Failed to fetch CSRF token' ||
+      error.message === 'Missing CSRF token'
+    )
+  ),
+  fetchCsrfToken: jest.fn()
+}))
+
 const mockedFetchOccasionOptions = fetchOccasionOptions as jest.MockedFunction<typeof fetchOccasionOptions>
+const mockedFetchCsrfToken = fetchCsrfToken as jest.MockedFunction<typeof fetchCsrfToken>
 
 function createTestQueryClient() {
   return new QueryClient({
@@ -41,6 +55,16 @@ function render(ui: React.ReactElement) {
       {ui}
     </QueryClientProvider>
   )
+}
+
+async function renderWithCsrfReady(ui: React.ReactElement) {
+  const view = render(ui)
+
+  await act(async () => {
+    await Promise.resolve()
+  })
+
+  return view
 }
 
 describe('ProductOrderInlineForm', () => {
@@ -71,6 +95,8 @@ describe('ProductOrderInlineForm', () => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     mockedFetchOccasionOptions.mockReset()
     mockedFetchOccasionOptions.mockResolvedValue(OCCASION_OPTIONS)
+    mockedFetchCsrfToken.mockReset()
+    mockedFetchCsrfToken.mockResolvedValue('csrf-token-123')
     global.fetch = jest.fn().mockResolvedValue({
       ok: true
     })
@@ -177,7 +203,7 @@ describe('ProductOrderInlineForm', () => {
       })
     })
 
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -266,7 +292,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('submits custom-design mode when date is not provided', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -290,6 +316,7 @@ describe('ProductOrderInlineForm', () => {
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
 
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('dateNeeded')).toBeNull()
   })
 
@@ -324,7 +351,7 @@ describe('ProductOrderInlineForm', () => {
       json: async () => ({ error: 'Reference image must be a JPEG, PNG, or HEIC file' })
     })
 
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -352,7 +379,7 @@ describe('ProductOrderInlineForm', () => {
       json: async () => ({ error: 'Failed to send email' })
     })
 
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -379,7 +406,7 @@ describe('ProductOrderInlineForm', () => {
       }
     })
 
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -397,7 +424,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('submits with only full name, email, and phone', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -418,6 +445,7 @@ describe('ProductOrderInlineForm', () => {
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
 
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('address')).toBeNull()
     expect(body.get('city')).toBeNull()
     expect(body.get('postcode')).toBeNull()
@@ -469,7 +497,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('submits compact v2 payload to /api/contact in default mode', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -505,6 +533,7 @@ describe('ProductOrderInlineForm', () => {
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
 
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('isOrderForm')).toBe('true')
     expect(body.get('productType')).toBe('cake')
     expect(body.get('productId')).toBe('cake-slug')
@@ -527,7 +556,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('shows success next steps after submit and keeps success button label', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -555,7 +584,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('clears success state when user edits a field after successful submit', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -629,7 +658,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('submits custom-design payload with requirements message and designImage', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -698,7 +727,7 @@ describe('ProductOrderInlineForm', () => {
   })
 
   it('includes gift note in payload for gift-hamper orders when provided', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
         productId='hamper-slug'
@@ -722,11 +751,12 @@ describe('ProductOrderInlineForm', () => {
 
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('giftNote')).toBe('Happy birthday from us!')
   })
 
   it('omits gift note from payload for gift-hamper orders when empty', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
         productId='hamper-slug'
@@ -749,11 +779,12 @@ describe('ProductOrderInlineForm', () => {
 
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('giftNote')).toBeNull()
   })
 
   it('blocks submission when gift note is longer than 500 characters', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
         productId='hamper-slug'
@@ -777,7 +808,7 @@ describe('ProductOrderInlineForm', () => {
     expect(global.fetch).not.toHaveBeenCalled()
   })
   it('sends fetch requests with AbortSignal support', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
         productId='hamper-slug'
@@ -800,8 +831,30 @@ describe('ProductOrderInlineForm', () => {
     expect(requestInit.signal).toBeInstanceOf(AbortSignal)
   })
 
+  it('shows the refresh message and skips /api/contact when csrf token is unavailable', async () => {
+    mockedFetchCsrfToken.mockRejectedValue(new Error('Failed to fetch CSRF token'))
+
+    await renderWithCsrfReady(
+      <ProductOrderInlineForm
+        productType='cake'
+        productId='cake-slug'
+        productName='Honey Cake'
+        totalPrice={45}
+      />
+    )
+
+    fillRequiredFields()
+    fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(csrfTokenLoadErrorMessage)).toBeInTheDocument()
+    })
+
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
   it('hides occasion field when showOccasionField is false and still submits', async () => {
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
         productId='hamper-slug'
@@ -827,7 +880,7 @@ describe('ProductOrderInlineForm', () => {
   it('fetches occasion options on mount when prop is omitted and showOccasionField is true', async () => {
     mockedFetchOccasionOptions.mockClear()
 
-    render(
+    await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
         productId='cake-slug'
@@ -979,6 +1032,7 @@ describe('ProductOrderInlineForm', () => {
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
 
+    expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('occasion')).toBe('birthday')
   })
 })

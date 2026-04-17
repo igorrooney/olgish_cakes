@@ -2,6 +2,7 @@ const gtmId = process.env.NEXT_PUBLIC_GTM_ID
 
 export const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
 export const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
+export const klaroOverridesHref = '/styles/klaro-overrides.css'
 export const isConsentRuntimeEnabled = Boolean(gtmId)
 
 export const consentDefaultsScript = `
@@ -116,12 +117,27 @@ const klaroConfig = {
   hideLearnMore: false,
   translations: {
     zz: {
-      privacyPolicyUrl: '/privacy'
+      privacyPolicyUrl: '/cookies',
+      privacyPolicy: {
+        name: 'cookie policy'
+      },
+      ok: 'Accept optional cookies',
+      decline: 'Reject optional cookies',
+      acceptAll: 'Accept optional cookies',
+      acceptSelected: 'Accept selected cookies'
     },
     en: {
+      privacyPolicyUrl: '/cookies',
+      privacyPolicy: {
+        name: 'cookie policy'
+      },
+      ok: 'Accept optional cookies',
+      decline: 'Reject optional cookies',
+      acceptAll: 'Accept optional cookies',
+      acceptSelected: 'Accept selected cookies',
       consentNotice: {
         title: 'Cookie preferences',
-        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        description: 'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.',
         learnMore: 'Choose cookies'
       },
       consentModal: {
@@ -142,9 +158,17 @@ const klaroConfig = {
       }
     },
     'en-GB': {
+      privacyPolicyUrl: '/cookies',
+      privacyPolicy: {
+        name: 'cookie policy'
+      },
+      ok: 'Accept optional cookies',
+      decline: 'Reject optional cookies',
+      acceptAll: 'Accept optional cookies',
+      acceptSelected: 'Accept selected cookies',
       consentNotice: {
         title: 'Cookie preferences',
-        description: 'We use cookies to improve your experience, understand site traffic, and support marketing.',
+        description: 'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.',
         learnMore: 'Choose cookies'
       },
       consentModal: {

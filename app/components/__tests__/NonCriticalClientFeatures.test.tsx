@@ -20,6 +20,10 @@ jest.mock('../ScrollToTop', () => ({
   ScrollToTop: () => <div data-testid='scroll-to-top' />
 }))
 
+jest.mock('../WebVitalsMonitor', () => ({
+  WebVitalsMonitor: () => <div data-testid='web-vitals-monitor' />
+}))
+
 function setDocumentReadyState(value: DocumentReadyState) {
   Object.defineProperty(document, 'readyState', {
     configurable: true,
@@ -51,8 +55,9 @@ describe('NonCriticalClientFeatures', () => {
     render(<NonCriticalClientFeatures />)
 
     expect(screen.getByTestId('route-scroll-reset')).toBeInTheDocument()
+    expect(screen.getByTestId('deferred-runtime-setup')).toBeInTheDocument()
+    expect(screen.getByTestId('web-vitals-monitor')).toBeInTheDocument()
     expect(screen.queryByTestId('klaro-bridge')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('deferred-runtime-setup')).not.toBeInTheDocument()
     expect(screen.queryByTestId('scroll-to-top')).not.toBeInTheDocument()
 
     act(() => {
@@ -63,6 +68,7 @@ describe('NonCriticalClientFeatures', () => {
     expect(await screen.findByTestId('klaro-bridge')).toBeInTheDocument()
     expect(screen.getByTestId('deferred-runtime-setup')).toBeInTheDocument()
     expect(screen.getByTestId('route-scroll-reset')).toBeInTheDocument()
+    expect(screen.getByTestId('web-vitals-monitor')).toBeInTheDocument()
     expect(screen.getByTestId('scroll-to-top')).toBeInTheDocument()
   })
 
@@ -90,6 +96,8 @@ describe('NonCriticalClientFeatures', () => {
     render(<NonCriticalClientFeatures />)
 
     expect(screen.getByTestId('route-scroll-reset')).toBeInTheDocument()
+    expect(screen.getByTestId('deferred-runtime-setup')).toBeInTheDocument()
+    expect(screen.getByTestId('web-vitals-monitor')).toBeInTheDocument()
     expect(screen.queryByTestId('klaro-bridge')).not.toBeInTheDocument()
 
     act(() => {
@@ -100,6 +108,7 @@ describe('NonCriticalClientFeatures', () => {
     expect(await screen.findByTestId('klaro-bridge')).toBeInTheDocument()
     expect(screen.getByTestId('deferred-runtime-setup')).toBeInTheDocument()
     expect(screen.getByTestId('route-scroll-reset')).toBeInTheDocument()
+    expect(screen.getByTestId('web-vitals-monitor')).toBeInTheDocument()
     expect(screen.getByTestId('scroll-to-top')).toBeInTheDocument()
   })
 })

@@ -74,28 +74,36 @@ const requiredWorkshopEmailSchema = z
   .min(1, 'Please add an email address')
   .pipe(z.string().email('Invalid email address'))
 
-const optionalWorkshopPhoneSchema = z.union([
-  z.literal(''),
-  z
-    .string()
-    .trim()
-    .min(10, 'Phone number must be at least 10 digits')
-    .max(20, 'Phone number must not exceed 20 characters')
-    .refine((val) => validateUKPhone(val), {
-      message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
-    })
-])
+const optionalUkPhoneSchema = z
+  .string()
+  .trim()
+  .max(20, 'Phone number must not exceed 20 characters')
+  .superRefine((value, context) => {
+    if (value.length === 0) {
+      return
+    }
+
+    if (value.length < 10) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Phone number must be at least 10 digits'
+      })
+      return
+    }
+
+    if (!validateUKPhone(value)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
+      })
+    }
+  })
 
 // Contact form validation
 export const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
-  phone: z.string()
-    .min(10, 'Phone number must be at least 10 digits')
-    .max(20, 'Phone number must not exceed 20 characters')
-    .refine((val) => validateUKPhone(val), {
-      message: 'Please enter a valid UK phone number (e.g., +44 7911 123456 or 07911 123456)'
-    }),
+  phone: optionalUkPhoneSchema,
   message: z.string().max(2000).optional(), // Optional when order form, required otherwise
   address: z.string().optional(),
   city: z.string().optional(),
@@ -112,6 +120,14 @@ export const contactFormSchema = z.object({
 }, {
   message: 'Message must be at least 10 characters when not submitting an order',
   path: ['message']
+}).refine((data) => {
+  if (data.isOrderForm && data.phone.trim().length === 0) {
+    return false
+  }
+  return true
+}, {
+  message: 'Phone number is required for order enquiries',
+  path: ['phone']
 })
 
 // Quote form validation
@@ -138,7 +154,7 @@ export const quoteFormSchema = z.object({
 export const workshopEnquirySchema = z.object({
   fullName: z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
   email: requiredWorkshopEmailSchema,
-  phone: optionalWorkshopPhoneSchema,
+  phone: optionalUkPhoneSchema,
   eventType: z.string().trim().min(1, 'Please select the event type'),
   groupSize: z.string().trim().min(1, 'Please add the group size').max(80),
   location: z.string().trim().min(2, 'Please add the location').max(160),

@@ -10,6 +10,8 @@ import {
 } from '@/app/services/workshopEnquiry'
 
 jest.mock('@/app/services/workshopEnquiry', () => ({
+  csrfTokenQueryKey: ['csrf-token'],
+  csrfTokenStaleTimeMs: 5 * 60 * 1000,
   fetchCsrfToken: jest.fn(),
   submitWorkshopEnquiry: jest.fn()
 }))
@@ -109,5 +111,46 @@ describe('useWorkshopEnquiry', () => {
     unmount()
 
     expect(activeSignal?.aborted).toBe(true)
+  })
+
+  it('reports csrf loading while a token refresh is in flight', async () => {
+    let resolveRefresh: ((value: string) => void) | null = null
+    mockedFetchCsrfToken
+      .mockResolvedValueOnce('csrf-token-123')
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        resolveRefresh = resolve
+      }))
+
+    const { result } = renderHook(() => useWorkshopEnquiry(), {
+      wrapper: createWrapper()
+    })
+
+    await waitFor(() => {
+      expect(result.current.csrfToken).toBe('csrf-token-123')
+    })
+
+    let refreshPromise: Promise<string> | undefined
+
+    act(() => {
+      refreshPromise = result.current.refreshCsrfToken()
+    })
+
+    await waitFor(() => {
+      expect(result.current.isCsrfLoading).toBe(true)
+      expect(result.current.isRefreshingCsrf).toBe(true)
+    })
+
+    act(() => {
+      resolveRefresh?.('csrf-token-456')
+    })
+
+    await act(async () => {
+      await refreshPromise
+    })
+
+    await waitFor(() => {
+      expect(result.current.isCsrfLoading).toBe(false)
+      expect(result.current.isRefreshingCsrf).toBe(false)
+    })
   })
 })

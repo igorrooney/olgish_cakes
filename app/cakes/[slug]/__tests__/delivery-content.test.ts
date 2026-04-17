@@ -156,6 +156,13 @@ describe('delivery-content', () => {
       shippingDestinationCountry: 'GB',
       deliveryMethod: defaultDeliveryMethod
     })
+    expect(resolveCakeDeliveryContent(cake).policy).toEqual({
+      dispatchMinDays: 4,
+      dispatchMaxDays: 6,
+      shippingFeeGbp: 3.5,
+      shippingDestinationCountry: 'GB',
+      deliveryMethod: defaultDeliveryMethod
+    })
   })
 
   it('uses custom policy when legacy policy source is custom and policy exists', () => {
@@ -180,6 +187,13 @@ describe('delivery-content', () => {
     }
 
     expect(resolveCakeDeliveryPolicy(cake)).toEqual({
+      dispatchMinDays: 4,
+      dispatchMaxDays: 6,
+      shippingFeeGbp: 3.5,
+      shippingDestinationCountry: 'GB',
+      deliveryMethod: defaultDeliveryMethod
+    })
+    expect(resolveCakeDeliveryContent(cake).policy).toEqual({
       dispatchMinDays: 4,
       dispatchMaxDays: 6,
       shippingFeeGbp: 3.5,
@@ -212,6 +226,23 @@ describe('delivery-content', () => {
     expect(resolveCakeDeliveryTitle(cake)).toBe(defaultCakeDeliveryTitle)
     expect(resolveCakeDeliveryDescription(cake)).toEqual(fallbackCakeDeliveryDescription)
     expect(resolveCakeDeliveryPolicy(cake)).toEqual(fallbackCakeDeliveryPolicy)
+  })
+
+  it('falls back to the global policy when custom source is selected without a custom policy override', () => {
+    const cake: Cake = {
+      ...baseCake,
+      deliverySection: {
+        descriptionSource: 'custom',
+        customDescription
+      },
+      cakesDeliverySection: {
+        name: 'Shipping & delivery',
+        description: globalDescription,
+        policy: globalPolicy
+      }
+    }
+
+    expect(resolveCakeDeliveryPolicy(cake)).toEqual(globalPolicy)
   })
 
   it('treats unknown description source as global and keeps global content', () => {

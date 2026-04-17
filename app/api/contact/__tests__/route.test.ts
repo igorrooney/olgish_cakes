@@ -1,15 +1,27 @@
 /**
  * @jest-environment node
  */
+import { validateCsrfToken } from '@/lib/csrf'
 import { NextRequest } from 'next/server'
 import { POST } from '../route'
 
 // Mock Resend
 const mockSend = jest.fn()
+const mockSupabaseInsert = jest.fn()
+const mockSupabaseFrom = jest.fn(() => ({ insert: mockSupabaseInsert }))
+const mockGetSupabaseAdminClient = jest.fn(() => ({ from: mockSupabaseFrom }))
 jest.mock('resend', () => ({
   Resend: jest.fn(() => ({
     emails: { send: mockSend }
   }))
+}))
+
+jest.mock('@/lib/supabase-admin-client', () => ({
+  getSupabaseAdminClient: () => mockGetSupabaseAdminClient()
+}))
+
+jest.mock('@/lib/csrf', () => ({
+  validateCsrfToken: jest.fn()
 }))
 
 // Mock Sanity
@@ -41,18 +53,55 @@ const {
   __mockPatchCommit: mockPatchCommitFromMock
 } = jest.requireMock('@/sanity/lib/client')
 
+const defaultCsrfToken = 'valid-token'
+
+function createRequest(
+  formData: FormData,
+  options: {
+    csrfToken?: string | null
+    cookieToken?: string | null
+  } = {}
+) {
+  const {
+    csrfToken = defaultCsrfToken,
+    cookieToken = defaultCsrfToken
+  } = options
+
+  if (csrfToken === null) {
+    formData.delete('csrfToken')
+  } else {
+    formData.set('csrfToken', csrfToken)
+  }
+
+  const headers = new Headers()
+
+  if (cookieToken !== null) {
+    headers.set('Cookie', `csrf-token=${cookieToken}`)
+  }
+
+  return new NextRequest('http://localhost/api/contact', {
+    method: 'POST',
+    body: formData,
+    headers
+  })
+}
+
 describe('/api/contact', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
     process.env.EMAIL_TRANSPORT_MODE = 'live'
     process.env.CONTACT_EMAIL_TO = 'test@example.com'
+    process.env.SUPABASE_URL = 'https://example.supabase.co'
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key'
     process.env.SANITY_API_TOKEN = 'test-token'
     process.env.ORDER_EMAIL_BCC = 'orders-bcc@example.com'
     mockSend.mockResolvedValue({ data: { id: 'test-email-id' }, error: null })
+    mockSupabaseInsert.mockResolvedValue({ error: null })
     mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id' })
     mockUploadFromMock.mockResolvedValue({ _id: 'test-asset-id' })
     mockPatchCommitFromMock.mockResolvedValue({ _id: 'test-order-id' })
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
   })
 
   describe('POST - Environment Validation', () => {
@@ -64,10 +113,7 @@ describe('/api/contact', () => {
       formData.append('email', 'john@example.com')
       formData.append('message', 'Test')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -84,13 +130,65 @@ describe('/api/contact', () => {
       formData.append('email', 'john@example.com')
       formData.append('message', 'Test')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       // Route should handle missing env vars gracefully
       await expect(POST(request)).resolves.toBeDefined()
+    })
+  })
+
+  describe('POST - CSRF', () => {
+    it('should return 403 when csrf token is missing from the form data', async () => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData, { csrfToken: null })
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(json).toEqual({ error: 'CSRF token missing' })
+      expect(validateCsrfToken).not.toHaveBeenCalled()
+    })
+
+    it('should return 403 when csrf cookie is missing', async () => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData, { cookieToken: null })
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(json).toEqual({ error: 'CSRF token missing' })
+      expect(validateCsrfToken).not.toHaveBeenCalled()
+    })
+
+    it('should return 403 when csrf token validation fails', async () => {
+      ;(validateCsrfToken as jest.Mock).mockReturnValue(false)
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData, {
+        csrfToken: 'invalid-token',
+        cookieToken: 'valid-cookie-token'
+      })
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(json).toEqual({ error: 'Invalid CSRF token' })
+      expect(validateCsrfToken).toHaveBeenCalledWith('invalid-token', 'valid-cookie-token')
     })
   })
 
@@ -101,10 +199,7 @@ describe('/api/contact', () => {
       formData.append('phone', '07123456789')
       formData.append('message', 'Test message with enough characters')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -117,10 +212,7 @@ describe('/api/contact', () => {
       formData.append('phone', '07123456789')
       formData.append('message', 'Test message with enough characters')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -133,14 +225,99 @@ describe('/api/contact', () => {
       formData.append('email', 'john@example.com')
       formData.append('phone', '07123456789')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
       expect(response.status).toBe(400)
+    })
+
+    it('should accept a general contact enquiry without a phone number', async () => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
+      expect(mockGetSupabaseAdminClient).toHaveBeenCalledTimes(1)
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('contact_enquiries')
+      expect(mockSupabaseInsert).toHaveBeenCalledWith({
+        full_name: 'John',
+        email: 'john@example.com',
+        phone: null,
+        address: null,
+        city: null,
+        postcode: null,
+        cake_interest: null,
+        date_needed: null,
+        message: 'Test message with enough characters',
+        note: null,
+        gift_note: null,
+        referrer: null,
+        attachment_names: null
+      })
+      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend.mock.calls[0]?.[0]?.html).not.toContain('>Phone<')
+    })
+
+    it('should still send the contact email when Supabase admin env vars are absent', async () => {
+      delete process.env.SUPABASE_URL
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
+      expect(mockGetSupabaseAdminClient).not.toHaveBeenCalled()
+      expect(mockSupabaseInsert).not.toHaveBeenCalled()
+      expect(mockSend).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return 400 when a general contact phone number is invalid', async () => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('phone', '123')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(json.error).toBe('Validation failed')
+      expect(json.details).toContain('phone')
+    })
+
+    it('should return 400 when an order enquiry is missing a phone number', async () => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('isOrderForm', 'true')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(json.error).toBe('Validation failed')
+      expect(json.details).toContain('Phone number is required for order enquiries')
     })
 
     it('should accept legacy order forms without compact v2 payload and send admin inquiry email only', async () => {
@@ -150,10 +327,7 @@ describe('/api/contact', () => {
       formData.append('phone', '07123456789')
       formData.append('isOrderForm', 'true')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -161,6 +335,7 @@ describe('/api/contact', () => {
       expect(response.status).toBe(200)
       expect(json).toEqual({ success: true })
       expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSupabaseInsert).not.toHaveBeenCalled()
       const firstEmailPayload = mockSend.mock.calls[0]?.[0]
       expect(firstEmailPayload).toEqual(expect.objectContaining({
         subject: expect.stringContaining('New Order Inquiry:')
@@ -180,10 +355,7 @@ describe('/api/contact', () => {
       formData.append('message', 'Test message with enough characters')
       formData.append('designImage', new File(['file'], 'design.pdf', { type: 'application/pdf' }))
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -200,10 +372,7 @@ describe('/api/contact', () => {
       formData.append('message', 'Test message with enough characters')
       formData.append('designImage', new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'design.png', { type: 'image/png' }))
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -223,10 +392,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -251,10 +417,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -278,10 +441,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -306,10 +466,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -338,10 +495,7 @@ describe('/api/contact', () => {
       formData.append('referrer', 'instagram')
       formData.append('designImage', file)
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const adminEmailCall = mockSend.mock.calls[0]?.[0]
@@ -374,10 +528,7 @@ describe('/api/contact', () => {
       formData.append('message', 'Test message with enough characters')
       formData.append('designImage', file)
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -407,10 +558,7 @@ describe('/api/contact', () => {
       formData.append('filling', 'Sour cream')
       formData.append('servings', 'Serves 8-12 people')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       await POST(request)
 
@@ -492,10 +640,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Custom Order')
       formData.append('totalPrice', '0')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -526,10 +671,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Custom Order')
       formData.append('totalPrice', '0')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -560,10 +702,7 @@ describe('/api/contact', () => {
       formData.append('totalPrice', '25')
       formData.append('designImage', new File(['file'], 'design.jpg', { type: 'image/jpeg' }))
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -588,10 +727,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       await POST(request)
 
@@ -623,7 +759,7 @@ describe('/api/contact', () => {
   })
 
   describe('POST - Error Handling', () => {
-    it('should return 500 when Resend fails', async () => {
+    it('should still return 200 for persisted general enquiries when Resend fails', async () => {
       mockSend.mockResolvedValue({ error: { message: 'Send failed' } })
 
       const formData = new FormData()
@@ -632,17 +768,15 @@ describe('/api/contact', () => {
       formData.append('phone', '07123456789')
       formData.append('message', 'Test message with enough characters')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
-      expect(response.status).toBe(500)
+      expect(response.status).toBe(200)
+      expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
     })
 
-    it('should return 500 for non-order contact submissions when transport does not accept delivery', async () => {
+    it('should still return 200 for persisted general enquiries when transport does not accept delivery', async () => {
       process.env.EMAIL_TRANSPORT_MODE = 'disabled'
 
       const formData = new FormData()
@@ -651,15 +785,87 @@ describe('/api/contact', () => {
       formData.append('phone', '07123456789')
       formData.append('message', 'Test message with enough characters')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
-      expect(response.status).toBe(500)
+      expect(response.status).toBe(200)
+      expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
       expect(mockSend).not.toHaveBeenCalled()
+    })
+
+    it('should still send the contact email when saving a general contact enquiry to Supabase fails', async () => {
+      mockSupabaseInsert.mockResolvedValue({
+        error: {
+          message: 'Insert failed',
+          code: '23502',
+          details: 'null value in column "message"',
+          hint: null
+        }
+      })
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
+      expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return 500 when a general contact enquiry is neither persisted nor emailed', async () => {
+      delete process.env.SUPABASE_URL
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY
+      mockSend.mockResolvedValue({ error: { message: 'Send failed' } })
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(json).toEqual({ error: 'Failed to send email' })
+      expect(mockGetSupabaseAdminClient).not.toHaveBeenCalled()
+      expect(mockSend).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return 500 when both Supabase persistence and contact email fail', async () => {
+      mockSupabaseInsert.mockResolvedValue({
+        error: {
+          message: 'Insert failed',
+          code: '23502',
+          details: 'null value in column "message"',
+          hint: null
+        }
+      })
+      mockSend.mockResolvedValue({ error: { message: 'Send failed' } })
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(json).toEqual({ error: 'Failed to send email' })
+      expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(1)
     })
 
     it('should mark inline order emails as unsent when transport does not accept delivery', async () => {
@@ -677,10 +883,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Cake')
       formData.append('totalPrice', '25')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 
@@ -718,10 +921,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Cake')
       formData.append('totalPrice', '25')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const fallbackAdminEmailCall = mockSend.mock.calls
@@ -765,10 +965,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Hamper')
       formData.append('totalPrice', '12.5')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const fallbackCustomerEmailCall = mockSend.mock.calls
@@ -797,10 +994,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Cake')
       formData.append('totalPrice', '25')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
       const json = await response.json()
@@ -825,10 +1019,7 @@ describe('/api/contact', () => {
       formData.append('productName', 'Honey Cake')
       formData.append('totalPrice', '25')
 
-      const request = new NextRequest('http://localhost/api/contact', {
-        method: 'POST',
-        body: formData
-      })
+      const request = createRequest(formData)
 
       const response = await POST(request)
 

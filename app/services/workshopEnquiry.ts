@@ -1,3 +1,10 @@
+export {
+  isCsrfTokenLoadError,
+  csrfTokenQueryKey,
+  csrfTokenStaleTimeMs,
+  fetchCsrfToken
+} from './csrfToken'
+
 export type WorkshopEnquirySubmission = {
   fullName: string
   email: string
@@ -57,22 +64,6 @@ const createSubmissionError = (message: string, fieldErrors?: Record<string, str
 
 export const isSubmissionError = (error: unknown): error is SubmissionError =>
   typeof error === 'object' && error !== null && 'fieldErrors' in error
-
-export const fetchCsrfToken = async (signal?: AbortSignal) => {
-  const response = await fetch('/api/csrf-token', { signal })
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch CSRF token')
-  }
-
-  const data = (await response.json()) as { token?: string }
-
-  if (!data.token) {
-    throw new Error('Missing CSRF token')
-  }
-
-  return data.token
-}
 
 export const buildWorkshopEnquiryFormData = (values: WorkshopEnquirySubmission) => {
   const submissionData = new FormData()

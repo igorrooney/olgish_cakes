@@ -46,11 +46,13 @@ describe('SiteFooter', () => {
     delete process.env.NEXT_PUBLIC_GTM_ID
   })
 
-  it('renders the divider image', () => {
+  it('renders the divider art as a decorative desktop-only container', () => {
     render(<SiteFooter />)
 
-    const divider = screen.getByAltText('Decorative yellow wavy divider with dots')
-    expect(divider).toHaveAttribute('src', '/design/mobile-home/footer-image.png')
+    const divider = document.querySelector('.footer-divider-art')
+
+    expect(divider).not.toBeNull()
+    expect(divider).toHaveAttribute('aria-hidden', 'true')
   })
 
   it('renders navigation links', () => {
@@ -98,10 +100,29 @@ describe('SiteFooter', () => {
   it('renders the copyright notice', () => {
     render(<SiteFooter />)
 
-    const year = new Date().getFullYear()
-    expect(
-      screen.getByText((content) => content.includes(`${year} Olgish Cakes. All rights reserved.`))
-    ).toBeInTheDocument()
+    const year = new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      timeZone: 'UTC'
+    }).format(new Date())
+    expect(screen.getByText(`© ${year} Olgish Cakes. All rights reserved.`)).toBeInTheDocument()
+    expect(screen.queryByText(/Â©/i)).not.toBeInTheDocument()
+  })
+
+  it('recomputes the copyright year on each render', () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-12-31T23:00:00.000Z'))
+
+    const { rerender } = render(<SiteFooter />)
+
+    expect(screen.getByText('© 2026 Olgish Cakes. All rights reserved.')).toBeInTheDocument()
+
+    jest.setSystemTime(new Date('2027-01-01T00:00:00.000Z'))
+    rerender(<SiteFooter />)
+
+    expect(screen.getByText('© 2027 Olgish Cakes. All rights reserved.')).toBeInTheDocument()
+    expect(screen.queryByText('© 2026 Olgish Cakes. All rights reserved.')).not.toBeInTheDocument()
+
+    jest.useRealTimers()
   })
 
   it('renders design and development credits with external links', () => {

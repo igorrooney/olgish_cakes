@@ -58,8 +58,8 @@ export type GiftHamperDeliveryPolicySource = 'global' | 'custom'
 
 export interface GiftHamperDeliverySectionOverride {
   descriptionSource?: GiftHamperDeliveryDescriptionSource
-  customDescription?: RichTextBlock[]
   policySource?: GiftHamperDeliveryPolicySource
+  customDescription?: RichTextBlock[]
   customPolicy?: Partial<DeliveryPolicy>
 }
 

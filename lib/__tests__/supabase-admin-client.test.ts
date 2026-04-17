@@ -34,7 +34,8 @@ describe('getSupabaseAdminClient', () => {
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
+          persistSession: false,
+          detectSessionInUrl: false
         }
       }
     )

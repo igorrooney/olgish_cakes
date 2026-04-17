@@ -72,8 +72,8 @@ export type CakeDeliveryPolicySource = 'global' | 'custom'
 
 export interface CakeDeliverySectionOverride {
   descriptionSource?: CakeDeliveryDescriptionSource
-  customDescription?: RichTextBlock[]
   policySource?: CakeDeliveryPolicySource
+  customDescription?: RichTextBlock[]
   customPolicy?: Partial<DeliveryPolicy>
 }
 

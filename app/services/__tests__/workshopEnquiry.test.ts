@@ -24,7 +24,11 @@ describe('workshopEnquiry service', () => {
     }) as jest.Mock
 
     await expect(fetchCsrfToken(signal)).resolves.toBe('csrf-token-123')
-    expect(global.fetch).toHaveBeenCalledWith('/api/csrf-token', { signal })
+    expect(global.fetch).toHaveBeenCalledWith('/api/csrf-token', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+      signal
+    })
   })
 
   it('throws when the csrf response does not include a token', async () => {

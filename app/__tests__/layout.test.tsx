@@ -58,10 +58,6 @@ jest.mock('../components/DeferredVercelObservability', () => ({
   DeferredVercelObservability: () => <div data-testid='deferred-vercel-observability' />
 }))
 
-jest.mock('../components/WebVitalsMonitor', () => ({
-  WebVitalsMonitor: () => <div data-testid='web-vitals-monitor' />
-}))
-
 jest.mock('../components/RouteScrollReset', () => ({
   RouteScrollReset: () => <div data-testid='route-scroll-reset' />
 }))
@@ -124,18 +120,17 @@ describe('RootLayout', () => {
     expect(markup).not.toContain('data-testid="deferred-vercel-observability"')
   })
 
-  it('renders the consent bootstrap in the initial HTML when GTM is configured', async () => {
+  it('keeps the consent runtime out of the initial HTML when GTM is configured', async () => {
     const markup = await renderRootLayout({
       gtmId: 'GTM-TEST123'
     })
 
-    expect(markup).toContain('id="gtag-consent-default"')
-    expect(markup).toContain('id="klaro-config"')
-    expect(markup).toContain('id="klaro-script"')
-    expect(markup).toContain('id="google-tag-manager-template"')
-    expect(markup).toContain('data-name="google-tag-manager"')
+    expect(markup).not.toContain('id="gtag-consent-default"')
+    expect(markup).not.toContain('id="klaro-config"')
+    expect(markup).not.toContain('id="klaro-script"')
+    expect(markup).not.toContain('id="google-tag-manager-template"')
+    expect(markup).not.toContain('data-name="google-tag-manager"')
     expect(markup).toContain('data-testid="non-critical-client-features"')
-    expect(markup).toContain('data-testid="web-vitals-monitor"')
     expect(markup).not.toContain('data-testid="deferred-vercel-observability"')
   })
 
@@ -158,8 +153,8 @@ describe('RootLayout', () => {
     const markup = await renderRootLayout()
 
     expect(markup).toContain('data-testid="non-critical-client-features"')
-    expect(markup).toContain('data-testid="web-vitals-monitor"')
     expect(markup).not.toContain('data-testid="klaro-bridge"')
     expect(markup).not.toContain('data-testid="scroll-to-top"')
+    expect(markup).not.toContain('data-testid="web-vitals-monitor"')
   })
 })
