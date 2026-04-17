@@ -226,6 +226,7 @@ export function SiteHeaderClient() {
         <div className='navbar-start'>
           <Link
             href='/'
+            prefetch={false}
             className='btn btn-ghost normal-case px-2 hover:bg-transparent hover:text-inherit hover:border-transparent focus:bg-transparent focus:text-inherit focus:border-transparent focus:!outline-none focus-visible:bg-transparent focus-visible:text-inherit focus-visible:border-transparent focus-visible:outline-none'
           >
             <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>

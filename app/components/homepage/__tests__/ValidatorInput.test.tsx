@@ -6,6 +6,26 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { ValidatorInput } from '../ValidatorInput'
 
 describe('ValidatorInput error card', () => {
+  it('renders helper text for standard inputs and wires aria-describedby', () => {
+    render(
+      <ValidatorInput
+        id='fullName'
+        type='text'
+        placeholder='Enter name'
+        value=''
+        label='Full Name:'
+        hintText='Enter your full name'
+        onValueChange={() => {}}
+      />
+    )
+
+    expect(screen.getByText('Enter your full name')).toBeInTheDocument()
+    expect(screen.getByLabelText('Full Name:')).toHaveAttribute(
+      'aria-describedby',
+      'fullName-hint'
+    )
+  })
+
   it('renders a visible error card for input field', () => {
     render(
       <ValidatorInput
@@ -24,6 +44,10 @@ describe('ValidatorInput error card', () => {
     expect(alert).toBeVisible()
     expect(alert).toHaveAttribute('aria-live', 'assertive')
     expect(alert).toHaveTextContent('Name is required')
+    expect(screen.getByLabelText('Full Name:')).toHaveAttribute(
+      'aria-describedby',
+      'fullName-hint fullName-error'
+    )
   })
 
   it('renders a visible error card for select field', () => {
@@ -47,6 +71,10 @@ describe('ValidatorInput error card', () => {
     expect(alert).toBeVisible()
     expect(alert).toHaveAttribute('aria-live', 'assertive')
     expect(alert).toHaveTextContent('Please select an occasion')
+    expect(screen.getByRole('combobox', { name: 'Occasion' })).toHaveAttribute(
+      'aria-describedby',
+      'occasion-hint occasion-error'
+    )
   })
 
   it('applies custom className to select field when provided', () => {
@@ -309,6 +337,10 @@ describe('ValidatorInput error card', () => {
     expect(alert).toBeVisible()
     expect(alert).toHaveAttribute('aria-live', 'assertive')
     expect(alert).toHaveTextContent('Requirements are required')
+    expect(screen.getByRole('textbox', { name: 'Requirements' })).toHaveAttribute(
+      'aria-describedby',
+      'requirements-hint requirements-error'
+    )
   })
 
   it('renders a visible error card for upload field', () => {

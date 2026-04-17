@@ -4,6 +4,12 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ContactForm } from '../ContactForm'
+import { csrfTokenLoadErrorMessage, fetchCsrfToken } from '@/app/services/csrfToken'
+
+jest.mock('@/app/services/csrfToken', () => ({
+  csrfTokenLoadErrorMessage: 'CSRF token not loaded. Please refresh the page and try again.',
+  fetchCsrfToken: jest.fn()
+}))
 
 // Mock dayjs
 jest.mock('dayjs', () => {
@@ -131,8 +137,11 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 describe('ContactForm', () => {
+  const mockedFetchCsrfToken = fetchCsrfToken as jest.MockedFunction<typeof fetchCsrfToken>
+
   beforeEach(() => {
     jest.clearAllMocks()
+    mockedFetchCsrfToken.mockResolvedValue('csrf-token-123')
     
     // Mock fetch with proper response
     global.fetch = jest.fn(() => Promise.resolve({
@@ -361,6 +370,49 @@ describe('ContactForm', () => {
 
       const submitButton = screen.getByTestId('primary-button')
       expect(submitButton).toBeDisabled()
+    })
+
+    it('appends csrfToken before posting to /api/contact', async () => {
+      render(<ContactForm />)
+
+      fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Jane Doe' } })
+      fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: 'jane@example.com' } })
+      fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: '07123456789' } })
+      fireEvent.change(screen.getByLabelText(/message/i), { target: { value: 'Need help with a cake order' } })
+
+      fireEvent.click(screen.getByTestId('primary-button'))
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({
+          method: 'POST',
+          credentials: 'same-origin',
+          signal: expect.any(AbortSignal)
+        }))
+      })
+
+      expect(mockedFetchCsrfToken).toHaveBeenCalledWith(expect.any(AbortSignal))
+      const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
+      const body = requestInit.body as FormData
+
+      expect(body.get('csrfToken')).toBe('csrf-token-123')
+    })
+
+    it('shows the refresh message and skips /api/contact when csrf loading fails', async () => {
+      mockedFetchCsrfToken.mockRejectedValueOnce(new Error('Failed to fetch CSRF token'))
+      render(<ContactForm />)
+
+      fireEvent.change(screen.getByLabelText(/full name/i), { target: { value: 'Jane Doe' } })
+      fireEvent.change(screen.getByLabelText(/email address/i), { target: { value: 'jane@example.com' } })
+      fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: '07123456789' } })
+      fireEvent.change(screen.getByLabelText(/message/i), { target: { value: 'Need help with a cake order' } })
+
+      fireEvent.click(screen.getByTestId('primary-button'))
+
+      await waitFor(() => {
+        expect(screen.getByText(csrfTokenLoadErrorMessage)).toBeInTheDocument()
+      })
+
+      expect(global.fetch).not.toHaveBeenCalled()
     })
   })
 

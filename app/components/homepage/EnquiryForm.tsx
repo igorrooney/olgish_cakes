@@ -2,7 +2,11 @@
 
 import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '@/app/hooks/useCustomCakeEnquiry'
-import { buildCustomCakeEnquiryFormData, isSubmissionError } from '@/app/services/customCakeEnquiry'
+import {
+  buildCustomCakeEnquiryFormData,
+  isCsrfTokenLoadError,
+  isSubmissionError
+} from '@/app/services/customCakeEnquiry'
 import { AddressIcon } from '../icons/AddressIcon'
 import { EmailIcon } from '../icons/EmailIcon'
 import { PhoneIcon } from '../icons/PhoneIcon'
@@ -64,7 +68,7 @@ export function EnquiryForm({
     fieldElement.focus()
   }
 
-  const { csrfToken, isCsrfLoading, submitMutation, submit } = useCustomCakeEnquiry({
+  const { isCsrfLoading, refreshCsrfToken, submitMutation, submit } = useCustomCakeEnquiry({
     onSuccess: () => {
       setErrors({})
       setHasAttemptedSubmit(false)
@@ -142,11 +146,13 @@ export function EnquiryForm({
     submitMutation.reset()
 
     try {
-      if (isCsrfLoading || !csrfToken) {
+      const nextCsrfToken = await refreshCsrfToken()
+
+      if (!nextCsrfToken) {
         throw new Error('CSRF token not loaded. Please refresh the page and try again.')
       }
 
-      const parsed = formSchema.safeParse({ ...formData, csrfToken })
+      const parsed = formSchema.safeParse({ ...formData, csrfToken: nextCsrfToken })
       const fieldErrors: Record<string, string> = {}
 
       if (!parsed.success) {
@@ -175,7 +181,11 @@ export function EnquiryForm({
       submit(submissionData)
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.'
+        submit: isCsrfTokenLoadError(error)
+          ? 'CSRF token not loaded. Please refresh the page and try again.'
+          : error instanceof Error
+            ? error.message
+            : 'Failed to submit form. Please try again.'
       })
     }
   }

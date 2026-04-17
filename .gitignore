@@ -78,3 +78,8 @@ backup-*.json
 .tmp-lighthouse-profile/
 .tmp-lighthouse-blog-mobile/
 .tmp-lighthouse-blog-mobile-2/
+.playwright-cli/
+.codex-artifacts/
+/output/
+.codex-*.log
+.next-start-*.out.log

@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
+import { useMutation, useQuery, useQueryClient, type UseMutationOptions } from '@tanstack/react-query'
 import {
+  csrfTokenQueryKey,
+  csrfTokenStaleTimeMs,
   fetchCsrfToken,
   submitWorkshopEnquiry,
   type SubmissionError
@@ -15,10 +17,12 @@ type UseWorkshopEnquiryOptions = UseMutationOptions<
 >
 
 export const useWorkshopEnquiry = (options?: UseWorkshopEnquiryOptions) => {
+  const queryClient = useQueryClient()
+  const [isRefreshingCsrf, setIsRefreshingCsrf] = useState(false)
   const csrfQuery = useQuery<string, Error>({
-    queryKey: ['csrf-token'],
+    queryKey: csrfTokenQueryKey,
     queryFn: ({ signal }) => fetchCsrfToken(signal),
-    staleTime: 5 * 60 * 1000,
+    staleTime: csrfTokenStaleTimeMs,
     refetchOnWindowFocus: false
   })
 
@@ -54,10 +58,26 @@ export const useWorkshopEnquiry = (options?: UseWorkshopEnquiryOptions) => {
     return () => abortSubmit()
   }, [])
 
+  const refreshCsrfToken = async () => {
+    setIsRefreshingCsrf(true)
+
+    try {
+      return await queryClient.fetchQuery({
+        queryKey: csrfTokenQueryKey,
+        queryFn: ({ signal }) => fetchCsrfToken(signal),
+        staleTime: 0
+      })
+    } finally {
+      setIsRefreshingCsrf(false)
+    }
+  }
+
   return {
     csrfToken: csrfQuery.data,
-    isCsrfLoading: csrfQuery.isLoading,
+    isCsrfLoading: csrfQuery.isLoading || isRefreshingCsrf,
+    isRefreshingCsrf,
     csrfError: csrfQuery.error,
+    refreshCsrfToken,
     submitMutation,
     submit,
     abortSubmit

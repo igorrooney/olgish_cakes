@@ -3,6 +3,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
 import { apiVersion, dataset, projectId } from "../sanity/env";
+import { DocumentPublishValidationLayout } from "../sanity/components/DocumentPublishValidationLayout";
 import { schema } from "../sanity/schema";
 import { structure } from "../sanity/structure";
 import { createArticlePublishAction } from "./articlePublishAction";
@@ -16,6 +17,9 @@ export default defineConfig({
   schema,
   plugins: [structureTool({ structure }), visionTool({ defaultApiVersion: apiVersion })],
   document: {
+    components: {
+      unstable_layout: DocumentPublishValidationLayout,
+    },
     newDocumentOptions: (previousOptions, context) => {
       if (context.creationContext.type !== 'global') {
         return previousOptions

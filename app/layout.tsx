@@ -2,21 +2,11 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { designTokens } from '@/lib/design-system'
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import Script from 'next/script'
 import { SiteHeader } from './components/homepage/SiteHeader'
 import { ReviewStatsProvider } from './components/ReviewStatsProvider'
 import { DeferredVercelObservability } from './components/DeferredVercelObservability'
 import { NonCriticalClientFeatures } from './components/NonCriticalClientFeatures'
 import { SiteFooter } from './components/SiteFooter'
-import { WebVitalsMonitor } from './components/WebVitalsMonitor'
-import {
-  consentDefaultsScript,
-  gtmSnippet,
-  isConsentRuntimeEnabled,
-  klaroConfigScript,
-  klaroScriptSrc,
-  klaroStyleHref
-} from './lib/consent-runtime-config'
 import './globals.css'
 import { getReviewStats } from './utils/review-stats.server'
 
@@ -45,7 +35,7 @@ const inter = localFont({
   ],
   variable: '--font-inter',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['system-ui', 'sans-serif'],
   adjustFontFallback: 'Arial'
 })
@@ -60,7 +50,7 @@ const oldenburg = localFont({
   ],
   variable: '--font-oldenburg',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['Georgia', 'serif'],
   adjustFontFallback: 'Times New Roman'
 })
@@ -234,37 +224,6 @@ export default async function RootLayout({
       <head>
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
 
-        {/* Fonts are self-hosted via next/font/local - see font definitions at top of file */}
-        {isConsentRuntimeEnabled ? (
-          <>
-            <link rel='preload' as='style' href={klaroStyleHref} />
-            <link rel='stylesheet' href={klaroStyleHref} data-klaro-style='true' />
-            <Script
-              id='gtag-consent-default'
-              strategy='beforeInteractive'
-              dangerouslySetInnerHTML={{ __html: consentDefaultsScript }}
-            />
-            <Script
-              id='klaro-config'
-              strategy='beforeInteractive'
-              dangerouslySetInnerHTML={{ __html: klaroConfigScript }}
-            />
-            <Script
-              id='klaro-script'
-              strategy='afterInteractive'
-              data-config='klaroConfig'
-              src={klaroScriptSrc}
-            />
-            <script
-              id='google-tag-manager-template'
-              type='text/plain'
-              data-type='application/javascript'
-              data-name='google-tag-manager'
-              dangerouslySetInnerHTML={{ __html: gtmSnippet }}
-            />
-          </>
-        ) : null}
-
         {/* Sitewide structured data */}
         <script
           type="application/ld+json"
@@ -279,15 +238,14 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${alice.className} ${alice.variable}`} suppressHydrationWarning>
+      <body className={alice.variable} suppressHydrationWarning>
         <ReviewStatsProvider stats={reviewStats}>
           <div className="flex flex-col min-h-screen">
+            <NonCriticalClientFeatures />
             <SiteHeader />
             <main className="flex-grow">{children}</main>
             <SiteFooter />
-            <WebVitalsMonitor />
             {isVercelDeployment ? <DeferredVercelObservability /> : null}
-            <NonCriticalClientFeatures />
           </div>
         </ReviewStatsProvider>
 

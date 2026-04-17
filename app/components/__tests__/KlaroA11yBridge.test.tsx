@@ -109,4 +109,59 @@ describe('syncKlaroDialogState', () => {
 
     window.removeEventListener(KLARO_VISIBILITY_EVENT, eventListener)
   })
+
+  it('anchors the Klaro notice to the lower centre on tablet and larger viewports', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 768
+    })
+
+    document.body.innerHTML = `
+      <div id="klaro" class="klaro">
+        <div class="cn">
+          <p>Cookie notice</p>
+        </div>
+      </div>
+    `
+
+    syncKlaroDialogState(document)
+
+    const notice = document.querySelector<HTMLElement>('.cn')
+
+    expect(notice?.style.position).toBe('fixed')
+    expect(notice?.style.left).toBe('50%')
+    expect(notice?.style.right).toBe('')
+    expect(notice?.style.bottom).toBe('1.25rem')
+    expect(notice?.style.maxWidth).toBe('42rem')
+    expect(notice?.style.width).toBe('calc(100vw - 2rem)')
+    expect(notice?.style.transform).toBe('translateX(-50%)')
+  })
+
+  it('compresses the Klaro notice into a slim bottom chip on mobile viewports', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 390
+    })
+
+    document.body.innerHTML = `
+      <div id="klaro" class="klaro">
+        <div class="cookie-notice">
+          <p>Cookie notice</p>
+        </div>
+      </div>
+    `
+
+    syncKlaroDialogState(document)
+
+    const notice = document.querySelector<HTMLElement>('.cookie-notice')
+
+    expect(notice?.style.position).toBe('fixed')
+    expect(notice?.style.left).toBe('0.5rem')
+    expect(notice?.style.right).toBe('0.5rem')
+    expect(notice?.style.bottom).toBe('0.75rem')
+    expect(notice?.style.width).toBe('calc(100vw - 1rem)')
+    expect(notice?.style.maxWidth).toBe('24rem')
+    expect(notice?.style.padding).toBe('0.75rem 0.875rem')
+    expect(notice?.style.transform).toBe('')
+  })
 })

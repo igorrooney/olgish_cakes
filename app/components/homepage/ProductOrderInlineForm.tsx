@@ -17,6 +17,11 @@ import {
   referenceImageAccept
 } from './mobileForm.utils'
 import { fetchOccasionOptions, occasionOptionsQueryKey, occasionOptionsStaleTimeMs } from '@/app/services/occasionOptions'
+import {
+  isCsrfTokenLoadError,
+  csrfTokenLoadErrorMessage,
+  fetchCsrfToken
+} from '@/app/services/csrfToken'
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 
@@ -340,7 +345,14 @@ export function ProductOrderInlineForm({
     abortControllerRef.current = controller
 
     try {
+      const csrfToken = await fetchCsrfToken(controller.signal)
+
+      if (!csrfToken) {
+        throw new Error(csrfTokenLoadErrorMessage)
+      }
+
       const payload = new FormData()
+      payload.append('csrfToken', csrfToken)
       payload.append('name', parsed.data.fullName)
       payload.append('email', parsed.data.email)
       payload.append('phone', parsed.data.phone)
@@ -395,6 +407,7 @@ export function ProductOrderInlineForm({
       const response = await fetch('/api/contact', {
         method: 'POST',
         body: payload,
+        credentials: 'same-origin',
         signal: controller.signal
       })
 
@@ -427,7 +440,7 @@ export function ProductOrderInlineForm({
       }
 
       const submitError = error instanceof Error && error.message.trim().length > 0
-        ? error.message
+        ? (isCsrfTokenLoadError(error) ? csrfTokenLoadErrorMessage : error.message)
         : 'Failed to submit order. Please try again.'
 
       setErrors({

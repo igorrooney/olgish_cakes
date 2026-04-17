@@ -33,6 +33,10 @@ describe("lib/articles", () => {
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain("order(publishedAt desc, _createdAt desc)");
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"isPostableToUk": select(');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain(
+      '(deliverySection.descriptionSource == "custom" || deliverySection.policySource == "custom") && defined(deliverySection.customPolicy)'
+    );
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('deliverySection.policySource');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"united kingdom"');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('"u.k."');
     expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('editorialUpdatedAt');
@@ -135,6 +139,19 @@ describe("lib/articles", () => {
     expect(ARTICLE_SLUGS_QUERY).toContain('!(slug.current match "test-*")');
     expect(RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY).toContain('slug.current != "test"');
     expect(RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY).toContain('!(slug.current match "test-*")');
+  });
+
+  it("falls back to the singleton delivery policy when custom copy has no custom policy", async () => {
+    const { ARTICLE_ARCHIVE_QUERY, ARTICLE_BY_SLUG_QUERY } = await import("../queries/articles");
+
+    expect(ARTICLE_ARCHIVE_QUERY).toContain(
+      '(deliverySection.descriptionSource == "custom" || deliverySection.policySource == "custom") && defined(deliverySection.customPolicy)'
+    );
+    expect(ARTICLE_ARCHIVE_QUERY).toContain('_type == "cake" => (');
+    expect(ARTICLE_ARCHIVE_QUERY).toContain('_type == "giftHamper" => (');
+    expect(ARTICLE_BY_SLUG_QUERY).toContain(
+      '(deliverySection.descriptionSource == "custom" || deliverySection.policySource == "custom") && defined(deliverySection.customPolicy)'
+    );
   });
 
   it("extracts a table of contents from h2 blocks only", async () => {

@@ -10,8 +10,8 @@ export const GIFT_HAMPER_BY_SLUG_QUERY = groq`
     description,
     deliverySection {
       descriptionSource,
-      customDescription,
       policySource,
+      customDescription,
       customPolicy {
         dispatchMinDays,
         dispatchMaxDays,

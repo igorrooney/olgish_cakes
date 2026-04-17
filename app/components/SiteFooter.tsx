@@ -3,30 +3,25 @@ import Image from 'next/image'
 import { DeferredManageCookiesLink } from './DeferredManageCookiesLink'
 
 const footerSectionHeadingClassName = 'mb-2 font-moreSugar text-sm font-normal uppercase leading-5 tracking-normal text-left text-[color:var(--color-navigation)] tablet:text-xl'
-const footerLinkClassName = 'link link-hover font-sans text-sm text-base-content tablet:text-base'
+const footerLinkClassName = 'link link-hover text-sm text-base-content tablet:text-base'
 const deferredFooterStyle = {
   contentVisibility: 'auto',
-  containIntrinsicSize: '960px'
+  containIntrinsicSize: '520px'
 } as const
 
 export function SiteFooter() {
   const isConsentEnabled = Boolean(process.env.NEXT_PUBLIC_GTM_ID)
+  const currentYear = new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).format(new Date())
 
   return (
     <>
-      <div className='relative h-auto w-full bg-base-100'>
-        <Image
-          src='/design/mobile-home/footer-image.png'
-          alt='Decorative yellow wavy divider with dots'
-          width={430}
-          height={100}
-          fetchPriority='low'
-          className='h-auto w-full object-contain'
-        />
-      </div>
+      <div aria-hidden='true' className='footer-divider-art relative hidden w-full bg-base-100 tablet:block' />
       <footer className='bg-base-100 text-base-content' style={deferredFooterStyle}>
-        <div className='footer w-full px-6 py-8 tablet:px-20 tablet:py-10'>
-          <div className='grid grid-cols-2 gap-x-6 gap-y-8 text-left tablet:grid-cols-3 tablet:items-start tablet:justify-items-start tablet:justify-start tablet:gap-x-10'>
+        <div className='footer w-full px-6 py-6 tablet:px-20 tablet:py-8'>
+          <div className='grid grid-cols-2 gap-x-6 gap-y-6 text-left tablet:grid-cols-3 tablet:items-start tablet:justify-items-start tablet:justify-start tablet:gap-x-10 tablet:gap-y-8'>
             <nav className='flex flex-col gap-2'>
               <p className={footerSectionHeadingClassName}>
                 Navigation
@@ -57,10 +52,10 @@ export function SiteFooter() {
               <a href='mailto:hello@olgishcakes.co.uk' className={footerLinkClassName}>
                 hello@olgishcakes.co.uk
               </a>
-              <span className='font-sans text-sm text-base-content tablet:text-base'>
+              <span className='text-sm text-base-content tablet:text-base'>
                 Allerton Grange
               </span>
-              <span className='font-sans text-sm text-base-content tablet:text-base'>
+              <span className='text-sm text-base-content tablet:text-base'>
                 Leeds, LS17
               </span>
             </nav>
@@ -84,7 +79,7 @@ export function SiteFooter() {
                 Privacy policy
               </Link>
               {isConsentEnabled ? (
-                <DeferredManageCookiesLink className='link link-hover text-left font-sans text-sm text-base-content tablet:text-base' />
+                <DeferredManageCookiesLink className='link link-hover text-left text-sm text-base-content tablet:text-base' />
               ) : null}
               <Link href='/sitemap.xml' prefetch={false} className={footerLinkClassName}>
                 Sitemap
@@ -93,7 +88,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className='border-t border-base-300'>
-          <div className='footer place-items-start px-6 py-6 text-left tablet:!grid-flow-col tablet:flex-start tablet:items-center tablet:py-6 lg:px-20'>
+          <div className='footer place-items-start px-6 py-5 text-left tablet:!grid-flow-col tablet:flex-start tablet:items-center tablet:py-6 lg:px-20'>
             <aside className='flex items-center gap-3'>
               <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
                 <Image
@@ -108,12 +103,12 @@ export function SiteFooter() {
                 <p className='font-moreSugar text-base text-primary-500 tablet:text-2xl'>
                   Olgish Cakes
                 </p>
-                <p className='font-body text-sm text-base-content tablet:text-base'>
+                <p className='text-sm text-base-content tablet:text-base'>
                   Made with Ukrainian heart
                 </p>
               </div>
             </aside>
-            <nav className='mt-4 w-full tablet:mt-0 tablet:w-auto'>
+            <nav className='mt-3 w-full tablet:mt-0 tablet:w-auto'>
               <div className='mx-auto flex items-center justify-center gap-4'>
                 <a
                   href='https://www.facebook.com/p/Olgish-Cakes-61557043820222'
@@ -151,11 +146,11 @@ export function SiteFooter() {
               </div>
             </nav>
           </div>
-          <div className='px-6 pb-6 tablet:pb-6 lg:px-20'>
-            <p className='text-center font-body text-sm text-base-content tablet:text-base'>
-              &copy; {new Date().getFullYear()} Olgish Cakes. All rights reserved.
+          <div className='px-6 pb-5 tablet:pb-6 lg:px-20'>
+            <p className='text-center text-sm text-base-content tablet:text-base'>
+              &copy; {currentYear} Olgish Cakes. All rights reserved.
             </p>
-            <div className='mt-2 flex flex-col items-center gap-1 text-center font-body text-xs text-base-content tablet:flex-row tablet:gap-3'>
+            <div className='mt-2 flex flex-col items-center gap-1 text-center text-xs text-base-content tablet:flex-row tablet:gap-3'>
               <span>
                 Design by{' '}
                 <a

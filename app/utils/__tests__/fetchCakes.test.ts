@@ -285,6 +285,7 @@ describe('fetchCakes', () => {
       expect(result).toEqual(mockCake)
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('deliverySection'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('customPolicy'), { slug: 'honey-cake' })
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policySource'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('"cakesDeliverySection"'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('policy {'), { slug: 'honey-cake' })
       expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('fillingTypes[]->{\n      _id,\n      name,\n      image {'), { slug: 'honey-cake' })

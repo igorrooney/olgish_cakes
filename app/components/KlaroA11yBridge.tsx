@@ -42,6 +42,47 @@ function hasValidAriaLabelledBy(
   })
 }
 
+function isNoticeDialog(dialog: HTMLElement) {
+  return dialog.matches('.cookie-notice, .cn, #id-cookie-notice')
+}
+
+function syncKlaroNoticePosition(dialog: HTMLElement, ownerDocument: Document) {
+  if (!isNoticeDialog(dialog)) {
+    return
+  }
+
+  const viewportWidth = ownerDocument.defaultView?.innerWidth ?? 0
+
+  if (viewportWidth >= 640) {
+    dialog.style.setProperty('position', 'fixed', 'important')
+    dialog.style.setProperty('top', 'auto', 'important')
+    dialog.style.setProperty('right', 'auto', 'important')
+    dialog.style.setProperty('bottom', '1.25rem', 'important')
+    dialog.style.setProperty('left', '50%', 'important')
+    dialog.style.setProperty('width', 'calc(100vw - 2rem)', 'important')
+    dialog.style.setProperty(
+      'max-width',
+      viewportWidth >= 1024 ? '44rem' : '42rem',
+      'important'
+    )
+    dialog.style.setProperty('padding', '0.875rem 1rem', 'important')
+    dialog.style.setProperty('transform', 'translateX(-50%)', 'important')
+    dialog.style.setProperty('inset', 'auto auto 1.25rem 50%', 'important')
+    return
+  }
+
+  dialog.style.setProperty('position', 'fixed', 'important')
+  dialog.style.setProperty('top', 'auto', 'important')
+  dialog.style.setProperty('bottom', '0.75rem', 'important')
+  dialog.style.setProperty('width', 'calc(100vw - 1rem)', 'important')
+  dialog.style.setProperty('max-width', '24rem', 'important')
+  dialog.style.setProperty('padding', '0.75rem 0.875rem', 'important')
+  dialog.style.setProperty('left', '0.5rem', 'important')
+  dialog.style.setProperty('right', '0.5rem', 'important')
+  dialog.style.setProperty('transform', '', 'important')
+  dialog.style.setProperty('inset', 'auto 0.5rem 0.75rem 0.5rem', 'important')
+}
+
 export function syncKlaroDialogState(root: ParentNode | Document = document) {
   const ownerDocument = getOwnerDocument(root)
   const dialogs = Array.from(root.querySelectorAll<HTMLElement>(klaroDialogSelector)).filter(
@@ -66,6 +107,7 @@ export function syncKlaroDialogState(root: ParentNode | Document = document) {
     }
 
     dialog.setAttribute('aria-modal', 'true')
+    syncKlaroNoticePosition(dialog, ownerDocument)
   })
 
   const nextValue = isOpen ? 'true' : 'false'
@@ -86,6 +128,10 @@ export function KlaroA11yBridge() {
   useEffect(() => {
     syncKlaroDialogState(document)
 
+    const handleResize = () => {
+      syncKlaroDialogState(document)
+    }
+
     const observer = new MutationObserver(() => {
       syncKlaroDialogState(document)
     })
@@ -97,8 +143,11 @@ export function KlaroA11yBridge() {
       attributeFilter: ['class', 'role', 'aria-hidden', 'aria-label', 'aria-labelledby'],
     })
 
+    window.addEventListener('resize', handleResize)
+
     return () => {
       observer.disconnect()
+      window.removeEventListener('resize', handleResize)
       document.body.dataset.klaroOpen = 'false'
       window.dispatchEvent(
         new CustomEvent(KLARO_VISIBILITY_EVENT, {

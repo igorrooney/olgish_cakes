@@ -2,10 +2,11 @@
 
 import type { ComponentType } from 'react'
 import { useEffect, useState } from 'react'
+import { DeferredRuntimeSetup } from './DeferredRuntimeSetup'
 import { RouteScrollReset } from './RouteScrollReset'
+import { WebVitalsMonitor } from './WebVitalsMonitor'
 
 type LoadedFeatures = {
-  DeferredRuntimeSetup: ComponentType
   KlaroA11yBridge: ComponentType
   ScrollToTop: ComponentType
 }
@@ -41,11 +42,9 @@ export function NonCriticalClientFeatures() {
 
     const loadFeatures = async () => {
       const [
-        { DeferredRuntimeSetup },
         { KlaroA11yBridge },
         { ScrollToTop }
       ] = await Promise.all([
-        import('./DeferredRuntimeSetup'),
         import('./KlaroA11yBridge'),
         import('./ScrollToTop')
       ])
@@ -55,7 +54,6 @@ export function NonCriticalClientFeatures() {
       }
 
       setLoadedFeatures({
-        DeferredRuntimeSetup,
         KlaroA11yBridge,
         ScrollToTop
       })
@@ -83,9 +81,10 @@ export function NonCriticalClientFeatures() {
   return (
     <>
       <RouteScrollReset />
+      <DeferredRuntimeSetup />
+      <WebVitalsMonitor />
       {loadedFeatures ? (
         <>
-          <loadedFeatures.DeferredRuntimeSetup />
           <loadedFeatures.KlaroA11yBridge />
           <loadedFeatures.ScrollToTop />
         </>

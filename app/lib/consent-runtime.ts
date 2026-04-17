@@ -3,6 +3,7 @@ import {
   gtmSnippet,
   isConsentRuntimeEnabled as consentRuntimeEnabled,
   klaroConfigScript,
+  klaroOverridesHref,
   klaroScriptSrc,
   klaroStyleHref,
   serializedKlaroConfig
@@ -56,15 +57,15 @@ function appendTemplateScriptIfMissing(id: string, contents: string) {
   document.body.appendChild(script)
 }
 
-function appendStyleIfMissing() {
-  if (document.querySelector('link[data-klaro-style]')) {
+function appendStylesheetIfMissing(href: string, dataAttribute: string) {
+  if (document.querySelector(`link[${dataAttribute}]`)) {
     return
   }
 
   const link = document.createElement('link')
   link.rel = 'stylesheet'
-  link.href = klaroStyleHref
-  link.setAttribute('data-klaro-style', 'true')
+  link.href = href
+  link.setAttribute(dataAttribute, 'true')
   document.head.appendChild(link)
 }
 
@@ -155,7 +156,8 @@ export async function loadConsentRuntime(options: ConsentRuntimeOptions = {}) {
 
   if (runtimeLoadPromise === null) {
     runtimeLoadPromise = (async () => {
-      appendStyleIfMissing()
+      appendStylesheetIfMissing(klaroStyleHref, 'data-klaro-style')
+      appendStylesheetIfMissing(klaroOverridesHref, 'data-klaro-overrides-style')
       appendScriptIfMissing('gtag-consent-default', consentDefaultsScript)
       appendScriptIfMissing('klaro-config', klaroConfigScript)
       getConsentWindow().klaroConfig = serializedKlaroConfig

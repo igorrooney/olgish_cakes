@@ -13,15 +13,8 @@ interface ValidationContext {
   parent?: {
     order?: number
     descriptionSource?: string
-    policySource?: string
     dispatchMinDays?: number
   }
-}
-
-interface DuplicateDocument {
-  _id: string
-  name: string
-  order: number
 }
 
 interface ValidationRule {
@@ -245,10 +238,9 @@ export default {
       name: 'deliverySection',
       title: 'Delivery Section',
       type: 'object',
-      description: 'Configure delivery section content for this gift hamper page.',
+      description: 'Configure delivery content for this gift hamper page. Description Source controls both delivery text and delivery policy.',
       initialValue: {
-        descriptionSource: 'global',
-        policySource: 'global'
+        descriptionSource: 'global'
       },
       fields: [
         {
@@ -295,24 +287,6 @@ export default {
               return 'Custom delivery description includes explicit timing or shipping-cost claims. Keep these aligned with delivery policy fields.'
             }).warning('Review custom delivery text against policy fields.')
           ]
-        },
-        {
-          name: 'policySource',
-          title: '[Not used] Policy Source',
-          type: 'string',
-          initialValue: 'global',
-          deprecated: {
-            reason: 'Not used by the current website. Current gift hamper pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until release branch no longer depends on it.'
-          },
-          description: 'Not used by the current website. Current gift hamper pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until the release branch no longer depends on it.',
-          options: {
-            list: [
-              { title: 'Use global gift hampers delivery policy', value: 'global' },
-              { title: 'Use custom policy for this gift hamper', value: 'custom' }
-            ],
-            layout: 'dropdown'
-          },
-          validation: (Rule: ValidationRule) => Rule.required()
         },
         {
           name: 'customPolicy',
@@ -391,7 +365,7 @@ export default {
               }
 
               if (typeof value !== 'object' || value === null) {
-                return 'Custom delivery policy is required when custom policy source is selected.'
+                return 'Custom delivery policy is required when custom description source is selected.'
               }
 
               return true

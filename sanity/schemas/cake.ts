@@ -18,7 +18,6 @@ interface ValidationContext {
   parent?: {
     order?: number
     descriptionSource?: 'global' | 'custom'
-    policySource?: 'global' | 'custom'
     dispatchMinDays?: number
   }
 }
@@ -470,8 +469,7 @@ export default {
       type: 'object',
       description: 'Configure delivery content for this cake page. The current website follows Description Source for both delivery text and delivery policy.',
       initialValue: {
-        descriptionSource: 'global',
-        policySource: 'global'
+        descriptionSource: 'global'
       },
       fields: [
         {
@@ -519,24 +517,6 @@ export default {
               return 'Custom delivery description includes explicit timing or shipping-cost claims. Keep these aligned with delivery policy fields.'
             }).warning('Review custom delivery text against policy fields.')
           ]
-        },
-        {
-          name: 'policySource',
-          title: '[Not used] Policy Source',
-          type: 'string',
-          initialValue: 'global',
-          deprecated: {
-            reason: 'Not used by the current website. Current cake pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until release branch no longer depends on it.'
-          },
-          description: 'Not used by the current website. Current cake pages follow Description Source for both delivery text and delivery policy. Keep for old design compatibility until the release branch no longer depends on it.',
-          options: {
-            list: [
-              { title: 'Use global cakes delivery policy', value: 'global' },
-              { title: 'Use custom policy for this cake', value: 'custom' }
-            ],
-            layout: 'dropdown'
-          },
-          validation: (Rule: ValidationRule) => Rule.required()
         },
         {
           name: 'customPolicy',

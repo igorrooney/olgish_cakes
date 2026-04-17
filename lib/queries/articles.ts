@@ -36,7 +36,7 @@ const articleProductFields = `
     }
   ),
   "isPostableToUk": select(
-    deliverySection.policySource == "custom" => (
+    (deliverySection.descriptionSource == "custom" || deliverySection.policySource == "custom") && defined(deliverySection.customPolicy) => (
       lower(coalesce(deliverySection.customPolicy.shippingDestinationCountry, "")) in ${JSON.stringify(articleSupportedPostalCountryCodes)} &&
       deliverySection.customPolicy.deliveryMethod == "${articleMailDeliveryMethod}"
     ),
