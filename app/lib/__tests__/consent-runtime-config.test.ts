@@ -36,13 +36,13 @@ describe('consent-runtime-config', () => {
 
   it('uses explicit first-layer cookie notice copy in English locales', () => {
     expect(getLocaleTranslations('en')?.consentNotice?.description).toBe(
-      'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.'
+      'We use cookies to run the site. Optional analytics and marketing only run if you say yes.'
     )
-    expect(getLocaleTranslations('en')?.consentNotice?.learnMore).toBe('Choose cookies')
+    expect(getLocaleTranslations('en')?.consentNotice?.learnMore).toBe('Choose')
     expect(getLocaleTranslations('en-GB')?.consentNotice?.description).toBe(
-      'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.'
+      'We use cookies to run the site. Optional analytics and marketing only run if you say yes.'
     )
-    expect(getLocaleTranslations('en-GB')?.consentNotice?.learnMore).toBe('Choose cookies')
+    expect(getLocaleTranslations('en-GB')?.consentNotice?.learnMore).toBe('Choose')
   })
 
   it('uses explicit accept and reject wording for optional cookies', () => {

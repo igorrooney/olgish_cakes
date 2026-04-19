@@ -144,9 +144,11 @@ describe('sitemap', () => {
       const result = await sitemap()
       const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
       const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
+      const faqsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/faqs')
 
       expect(quoteUrl).toBeDefined()
       expect(contactUrl).toBeDefined()
+      expect(faqsUrl).toBeDefined()
     })
 
     it('should exclude retired article-replacement pages from the static sitemap', async () => {

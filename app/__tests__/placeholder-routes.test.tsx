@@ -44,11 +44,11 @@ describe("placeholder routes", () => {
 
   it("generates metadata for top-level placeholder pages", async () => {
     const metadata = await generateTopLevelMetadata({
-      params: Promise.resolve({ placeholderSlug: "faqs" }),
+      params: Promise.resolve({ placeholderSlug: "allergens" }),
     });
 
-    expect(metadata.title).toBe("The full FAQ page is on the way");
-    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/faqs");
+    expect(metadata.title).toBe("Detailed allergen guidance is coming soon");
+    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/allergens");
     expect(metadata.robots?.index).toBe(false);
     expect(typeof metadata.robots === "object" && "googleBot" in metadata.robots
       ? metadata.robots.googleBot?.index

@@ -137,8 +137,8 @@ const klaroConfig = {
       acceptSelected: 'Accept selected cookies',
       consentNotice: {
         title: 'Cookie preferences',
-        description: 'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.',
-        learnMore: 'Choose cookies'
+        description: 'We use cookies to run the site. Optional analytics and marketing only run if you say yes.',
+        learnMore: 'Choose'
       },
       consentModal: {
         title: 'Cookie preferences',
@@ -168,8 +168,8 @@ const klaroConfig = {
       acceptSelected: 'Accept selected cookies',
       consentNotice: {
         title: 'Cookie preferences',
-        description: 'We use cookies to run the site. Analytics and marketing cookies only run if you say yes.',
-        learnMore: 'Choose cookies'
+        description: 'We use cookies to run the site. Optional analytics and marketing only run if you say yes.',
+        learnMore: 'Choose'
       },
       consentModal: {
         title: 'Cookie preferences',

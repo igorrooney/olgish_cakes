@@ -36,24 +36,6 @@ export const topLevelComingSoonPages: Record<string, ComingSoonPageContent> = {
       { href: "/blog", label: "Read the blog", variant: "secondary" },
     ],
   },
-  faqs: {
-    path: "/faqs",
-    eyebrow: "FAQs",
-    title: "The full FAQ page is on the way",
-    description:
-      "I am collecting the questions that come up most often about ordering, delivery, allergens, and custom cakes so they can live in one place.",
-    body: "The proper FAQ page is being written from real customer questions rather than a generic template. In the meantime, the links below will get you to the pages people usually need first.",
-    bullets: [
-      "Delivery-friendly orders are covered on the cakes-by-post range and in the blog.",
-      "Custom cake requests can go straight through the quote form with as much detail as you have.",
-      "If you need a direct answer now, contact me and I will point you to the right option.",
-    ],
-    links: [
-      { href: "/contact", label: "Contact the bakery", variant: "primary" },
-      { href: "/cakes-by-post", label: "See cakes by post", variant: "secondary" },
-      { href: "/blog", label: "Read practical guides", variant: "secondary" },
-    ],
-  },
   "farmers-markets": {
     path: "/farmers-markets",
     eyebrow: "Farmers markets",
