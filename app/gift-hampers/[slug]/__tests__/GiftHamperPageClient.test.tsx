@@ -391,6 +391,45 @@ describe('GiftHamperPageClient', () => {
     expect(sections.map((section) => section.id)).toEqual(['full-description', 'ingredients', 'delivery'])
   })
 
+  it('renders full description from portable text blocks without flattening formatting away', () => {
+    render(
+      <GiftHamperPageClient
+        hamper={{
+          ...baseHamper,
+          description: [
+            {
+              _type: 'block',
+              style: 'h2',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Hamper details'
+                }
+              ]
+            },
+            {
+              _type: 'block',
+              listItem: 'bullet',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Gift-ready packaging'
+                }
+              ]
+            }
+          ]
+        }}
+        backHref='/cakes-by-post'
+      />
+    )
+
+    const fullDescriptionSection = getLatestSections().find((section) => section.id === 'full-description')
+    render(<>{fullDescriptionSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Hamper details' })).toBeInTheDocument()
+    expect(screen.getByText('Gift-ready packaging')).toBeInTheDocument()
+  })
+
   it('uses the global gift hampers delivery section name as the delivery accordion title', () => {
     render(
       <GiftHamperPageClient

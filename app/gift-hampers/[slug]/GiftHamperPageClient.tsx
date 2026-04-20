@@ -2,13 +2,17 @@
 
 import dynamic from 'next/dynamic'
 import { useMemo, useState, type ReactNode } from 'react'
-import { PortableText, type PortableTextComponents } from '@portabletext/react'
+import { PortableText } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
+import { portableTextComponents } from '@/app/components/portableTextComponents'
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
 import { urlFor } from '@/sanity/lib/image'
-import { getGiftHamperVisibleDescriptionText, giftHamperVisibleDescriptionFallback } from './description-content'
+import {
+  getGiftHamperVisibleDescriptionBlocks,
+  giftHamperVisibleDescriptionFallback
+} from './description-content'
 import { getGiftHamperDeliveryFallbackKeyPoint, resolveGiftHamperDeliveryContent } from './delivery-content'
 
 interface GiftHamperPageClientProps {
@@ -143,8 +147,19 @@ function mapHamperImagesToGallery(hamper: GiftHamper): CatalogProductDetailImage
   return mappedImages
 }
 
-function renderDescriptionSectionContent(text: string): ReactNode {
-  const paragraphs = toParagraphs(text)
+function renderDescriptionSectionContent(
+  description: GiftHamper['description'] | GiftHamper['shortDescription'] | null
+): ReactNode {
+  if (description) {
+    return (
+      <PortableText
+        value={description}
+        components={portableTextComponents}
+      />
+    )
+  }
+
+  const paragraphs = toParagraphs('')
 
   if (paragraphs.length === 0) {
     return (
@@ -185,10 +200,7 @@ function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
         <p className='font-semibold text-base-content'>Ingredients</p>
         {hasReferencedIngredients ? (
           <div className='mt-2'>
-            <PortableText
-              value={referencedIngredients}
-              components={deliveryPortableTextComponents}
-            />
+            <PortableText value={referencedIngredients} components={portableTextComponents} />
           </div>
         ) : (
           <ul className='list-disc space-y-1 pl-5'>
@@ -209,33 +221,6 @@ function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
         </div>
       ) : null}
     </div>
-  )
-}
-
-const deliveryPortableTextComponents: PortableTextComponents = {
-  block: {
-    normal: ({
-      children
-    }) => (
-      <p className='mb-3 last:mb-0'>{children}</p>
-    )
-  },
-  list: {
-    bullet: ({
-      children
-    }) => (
-      <ul className='mb-3 list-disc space-y-1 pl-5 last:mb-0'>{children}</ul>
-    ),
-    number: ({
-      children
-    }) => (
-      <ol className='mb-3 list-decimal space-y-1 pl-5 last:mb-0'>{children}</ol>
-    )
-  },
-  listItem: ({
-    children
-  }) => (
-    <li>{children}</li>
   )
 }
 
@@ -271,15 +256,15 @@ export function GiftHamperPageClient({
     }
 
     return resolveKeyPoints(extractedPoints, fallbackPoints)
-  }, [hamper.shortDescription, resolvedDeliveryContent.policy])
+  }, [hamper.shortDescription, resolvedDeliveryContent.policy, resolvedDeliveryContent.shouldEmitShippingDetails])
   const sections = useMemo<CatalogProductDetailSection[]>(() => {
-    const descriptionText = getGiftHamperVisibleDescriptionText(hamper)
+    const description = getGiftHamperVisibleDescriptionBlocks(hamper)
 
     return [
       {
         id: 'full-description',
         title: 'Full description',
-        content: renderDescriptionSectionContent(descriptionText)
+        content: renderDescriptionSectionContent(description)
       },
       {
         id: 'ingredients',
@@ -292,7 +277,7 @@ export function GiftHamperPageClient({
         content: (
           <PortableText
             value={resolvedDeliveryContent.description}
-            components={deliveryPortableTextComponents}
+            components={portableTextComponents}
           />
         )
       }

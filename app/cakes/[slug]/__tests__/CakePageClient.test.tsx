@@ -1016,6 +1016,84 @@ describe('CakePageClient', () => {
     expect(sections.map((section) => section.id)).toEqual(['full-description', 'ingredients', 'delivery'])
   })
 
+  it('renders full description from portable text blocks without flattening formatting away', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          description: [
+            {
+              _type: 'block',
+              style: 'h2',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Cake details'
+                }
+              ]
+            },
+            {
+              _type: 'block',
+              listItem: 'bullet',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'First formatted point'
+                }
+              ]
+            }
+          ]
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const fullDescriptionSection = getLatestSections().find((section) => section.id === 'full-description')
+    render(<>{fullDescriptionSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Cake details' })).toBeInTheDocument()
+    expect(screen.getByText('First formatted point')).toBeInTheDocument()
+  })
+
+  it('falls back to short description when description blocks contain no visible text', () => {
+    render(
+      <CakePageClient
+        cake={{
+          ...baseCake,
+          description: [
+            {
+              _type: 'block',
+              children: [
+                {
+                  _type: 'span',
+                  text: '   '
+                }
+              ]
+            }
+          ],
+          shortDescription: [
+            {
+              _type: 'block',
+              style: 'h2',
+              children: [
+                {
+                  _type: 'span',
+                  text: 'Fallback details'
+                }
+              ]
+            }
+          ]
+        }}
+        backHref='/cakes'
+      />
+    )
+
+    const fullDescriptionSection = getLatestSections().find((section) => section.id === 'full-description')
+    render(<>{fullDescriptionSection?.content as React.ReactNode}</>)
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Fallback details' })).toBeInTheDocument()
+  })
+
   it('uses the global cakes delivery section name as the delivery accordion title', () => {
     render(
       <CakePageClient

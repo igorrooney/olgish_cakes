@@ -3,9 +3,10 @@
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ChangeEvent, type ReactNode } from 'react'
-import { PortableText, type PortableTextComponents } from '@portabletext/react'
+import { PortableText } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '../components/CatalogProductDetailLayout'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
+import { portableTextComponents } from '@/app/components/portableTextComponents'
 import {
   getCakeServingsPricingOptions,
   resolveCakeBasePrice,
@@ -50,6 +51,14 @@ interface FillingOption {
   id: string
   name: string
   image: CakeImage | undefined
+}
+
+function hasPortableTextContent(value: Cake['description'] | Cake['shortDescription'] | undefined): value is NonNullable<Cake['description']> {
+  return Array.isArray(value) && value.length > 0
+}
+
+function hasVisiblePortableTextContent(value: Cake['description'] | Cake['shortDescription'] | undefined): value is NonNullable<Cake['description']> {
+  return hasPortableTextContent(value) && blocksToText(value).trim().length > 0
 }
 
 function toParagraphs(text: string) {
@@ -198,8 +207,17 @@ function resolveFillingCarouselImage({
   }
 }
 
-function renderDescriptionSectionContent(descriptionText: string): ReactNode {
-  const paragraphs = toParagraphs(descriptionText)
+function renderDescriptionSectionContent(description: Cake['description'] | Cake['shortDescription'] | undefined): ReactNode {
+  if (hasVisiblePortableTextContent(description)) {
+    return (
+      <PortableText
+        value={description}
+        components={portableTextComponents}
+      />
+    )
+  }
+
+  const paragraphs = toParagraphs('')
 
   if (paragraphs.length === 0) {
     return (
@@ -240,10 +258,7 @@ function renderIngredientsSectionContent(cake: Cake): ReactNode {
         <p className='font-semibold text-base-content'>Ingredients</p>
         {hasReferencedIngredients ? (
           <div className='mt-2'>
-            <PortableText
-              value={referencedIngredients}
-              components={deliveryPortableTextComponents}
-            />
+            <PortableText value={referencedIngredients} components={portableTextComponents} />
           </div>
         ) : (
           <ul className='list-disc space-y-1 pl-5'>
@@ -264,33 +279,6 @@ function renderIngredientsSectionContent(cake: Cake): ReactNode {
         </div>
       ) : null}
     </div>
-  )
-}
-
-const deliveryPortableTextComponents: PortableTextComponents = {
-  block: {
-    normal: ({
-      children
-    }) => (
-      <p className='mb-3 last:mb-0'>{children}</p>
-    )
-  },
-  list: {
-    bullet: ({
-      children
-    }) => (
-      <ul className='mb-3 list-disc space-y-1 pl-5 last:mb-0'>{children}</ul>
-    ),
-    number: ({
-      children
-    }) => (
-      <ol className='mb-3 list-decimal space-y-1 pl-5 last:mb-0'>{children}</ol>
-    )
-  },
-  listItem: ({
-    children
-  }) => (
-    <li>{children}</li>
   )
 }
 
@@ -503,15 +491,19 @@ export function CakePageClient({
     }
 
     return resolveKeyPoints(extractedPoints, fallbackPoints)
-  }, [cake.shortDescription, resolvedDeliveryContent.policy])
+  }, [cake.shortDescription, resolvedDeliveryContent.policy, resolvedDeliveryContent.shouldEmitShippingDetails])
   const sections = useMemo<CatalogProductDetailSection[]>(() => {
-    const descriptionText = blocksToText(cake.description)
+    const description = hasVisiblePortableTextContent(cake.description)
+      ? cake.description
+      : hasVisiblePortableTextContent(cake.shortDescription)
+        ? cake.shortDescription
+        : undefined
 
     return [
       {
         id: 'full-description',
         title: 'Full description',
-        content: renderDescriptionSectionContent(descriptionText)
+        content: renderDescriptionSectionContent(description)
       },
       {
         id: 'ingredients',
@@ -524,7 +516,7 @@ export function CakePageClient({
         content: (
           <PortableText
             value={resolvedDeliveryContent.description}
-            components={deliveryPortableTextComponents}
+            components={portableTextComponents}
           />
         )
       }

@@ -27,6 +27,20 @@ function getNormalizedPortableText(
     : null
 }
 
+export function getGiftHamperVisibleDescriptionBlocks(
+  hamper: GiftHamper
+): GiftHamper['description'] | GiftHamper['shortDescription'] | null {
+  if (hasPortableTextContent(hamper.description) && normalizeDescriptionText(blocksToText(hamper.description)).length > 0) {
+    return hamper.description
+  }
+
+  if (hasPortableTextContent(hamper.shortDescription) && normalizeDescriptionText(blocksToText(hamper.shortDescription)).length > 0) {
+    return hamper.shortDescription
+  }
+
+  return null
+}
+
 export function getGiftHamperVisibleDescriptionText(hamper: GiftHamper): string {
   const normalizedDescription = getNormalizedPortableText(hamper.description)
   if (normalizedDescription) {
