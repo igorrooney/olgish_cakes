@@ -54,32 +54,6 @@ export const topLevelComingSoonPages: Record<string, ComingSoonPageContent> = {
       { href: "/blog", label: "Read bakery notes", variant: "secondary" },
     ],
   },
-  delivery: {
-    path: "/delivery",
-    eyebrow: "Delivery and returns",
-    title: "Delivery guidance is being written up properly",
-    description:
-      "I am turning the day-to-day delivery notes into a clearer page covering dispatch timing, local orders, and what to do if something arrives damaged.",
-    body: "A proper delivery page needs practical detail, not filler. I am still writing the version that reflects how postal orders, local cakes, and timing around weekends actually work in the bakery.",
-    bullets: [
-      "Postal cake timing is covered in the blog if you need help working backwards from an occasion date.",
-      "If your order is local and bespoke, the quote form is still the best place to start.",
-      "Contact me directly if you need an answer about a live order rather than general guidance.",
-    ],
-    links: [
-      {
-        href: "/blog/cake-by-post-uk-complete-guide",
-        label: "Read the postal cake guide",
-        variant: "primary",
-      },
-      {
-        href: "/get-custom-quote#quote-form",
-        label: "Ask about a custom cake",
-        variant: "secondary",
-      },
-      { href: "/contact", label: "Contact the bakery", variant: "secondary" },
-    ],
-  },
   allergens: {
     path: "/allergens",
     eyebrow: "Allergens",

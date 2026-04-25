@@ -35,6 +35,7 @@
 - All colors, fonts, spacing from design system
 - Tailwind for layout and utilities
 - Do not duplicate styles; extract shared class strings or utilities and reuse
+- Cookie consent UI must appear immediately on initial page load; do not defer or delay the banner for performance optimization
 
 ## React Best Practices
 - Function components
@@ -106,6 +107,7 @@
 - Use Context7 MCP for library integration
 - Use React Query for all data requests
 - For all `fetch` requests, always pass an `AbortSignal` via the `signal` option and support cancellation
+- Keep non-essential cookies/scripts blocked until consent, but keep the consent banner visible immediately on first load
 - During every code review, explicitly check and report compliance with all project rules in this file
 
 ## Application

@@ -69,9 +69,6 @@ export function SiteFooter() {
               <Link href='/allergens' prefetch={false} className={footerLinkClassName}>
                 Allergens
               </Link>
-              <Link href='/ingredients' prefetch={false} className={footerLinkClassName}>
-                Ingredients
-              </Link>
               <Link href='/terms' prefetch={false} className={footerLinkClassName}>
                 Terms
               </Link>
