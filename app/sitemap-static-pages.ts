@@ -42,7 +42,9 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/blog', '2025-10-04', 'weekly', 0.7)
 ]
 
-export const deliveryStaticSitemapPages: StaticSitemapEntry[] = []
+export const deliveryStaticSitemapPages: StaticSitemapEntry[] = [
+  createStaticSitemapEntry('/delivery', '2026-04-24', 'monthly', 0.65)
+]
 
 export const locationStaticSitemapPages: StaticSitemapEntry[] = []
 
