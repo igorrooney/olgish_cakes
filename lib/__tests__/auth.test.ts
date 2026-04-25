@@ -10,8 +10,29 @@ import { AdminUser, isAdmin, verifyToken } from '../auth'
 const joseMock = jest.requireMock('jose') as { jwtVerify: jest.MockedFunction<typeof import('jose').jwtVerify> }
 const mockJwtVerifyFn = joseMock.jwtVerify
 
-// Skip auth tests - internal functionality only, not user-facing
-describe.skip('auth', () => {
+const expectJwtVerifyCalledWith = (token: string, secret: string) => {
+  expect(mockJwtVerifyFn).toHaveBeenCalledWith(
+    token,
+    expect.anything(),
+    expect.objectContaining({
+      algorithms: ['HS256'],
+      audience: 'olgish-cakes-admin',
+      issuer: 'olgish-cakes',
+      clockTolerance: '5s'
+    })
+  )
+
+  const call = mockJwtVerifyFn.mock.calls.at(-1)
+  expect(call).toBeDefined()
+
+  if (!call) {
+    return
+  }
+
+  expect(Array.from(call[1] as Uint8Array)).toEqual(Array.from(new TextEncoder().encode(secret)))
+}
+
+describe('auth', () => {
   const validToken = 'valid.jwt.token'
   const invalidToken = 'invalid.jwt.token'
   const mockAdminUser: AdminUser = {
@@ -55,15 +76,7 @@ describe.skip('auth', () => {
         const result = await verifyToken(validToken)
 
         expect(result).toEqual(mockNonAdminUser)
-        expect(mockJwtVerifyFn).toHaveBeenCalledWith(
-          validToken,
-          expect.any(Uint8Array),
-          expect.objectContaining({
-            algorithms: ['HS256'],
-            audience: 'olgish-cakes-admin',
-            issuer: 'olgish-cakes'
-          })
-        )
+        expectJwtVerifyCalledWith(validToken, 'test-secret-key')
       })
 
       it('should use JWT_SECRET from environment', async () => {
@@ -73,23 +86,21 @@ describe.skip('auth', () => {
         const result = await verifyToken(validToken)
 
         expect(result).toEqual(mockAdminUser)
-        expect(mockJwtVerifyFn).toHaveBeenCalledWith(
-          validToken,
-          expect.any(Uint8Array),
-          expect.objectContaining({
-            algorithms: ['HS256'],
-            audience: 'olgish-cakes-admin',
-            issuer: 'olgish-cakes'
-          })
-        )
+        expectJwtVerifyCalledWith(validToken, 'custom-secret')
       })
 
       it('should return null if JWT_SECRET not set', async () => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
         delete process.env.JWT_SECRET
 
         const result = await verifyToken(validToken)
 
         expect(result).toBeNull()
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'JWT_SECRET environment variable error:',
+          'JWT_SECRET environment variable is required'
+        )
+        consoleErrorSpy.mockRestore()
       })
     })
 
@@ -160,15 +171,7 @@ describe.skip('auth', () => {
         const result = await isAdmin(validToken)
 
         expect(result).toBe(true)
-        expect(mockJwtVerifyFn).toHaveBeenCalledWith(
-          validToken,
-          expect.any(Uint8Array),
-          expect.objectContaining({
-            algorithms: ['HS256'],
-            audience: 'olgish-cakes-admin',
-            issuer: 'olgish-cakes'
-          })
-        )
+        expectJwtVerifyCalledWith(validToken, 'test-secret-key')
       })
 
       it('should verify token before checking role', async () => {
@@ -176,15 +179,7 @@ describe.skip('auth', () => {
 
         await isAdmin(validToken)
 
-        expect(mockJwtVerifyFn).toHaveBeenCalledWith(
-          validToken,
-          expect.any(Uint8Array),
-          expect.objectContaining({
-            algorithms: ['HS256'],
-            audience: 'olgish-cakes-admin',
-            issuer: 'olgish-cakes'
-          })
-        )
+        expectJwtVerifyCalledWith(validToken, 'test-secret-key')
       })
     })
 

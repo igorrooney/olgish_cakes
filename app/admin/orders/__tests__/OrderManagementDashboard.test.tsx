@@ -287,6 +287,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
   beforeEach(() => {
     originalFetch = global.fetch
+    mockFetch.mockReset()
     global.fetch = mockFetch
     jest.clearAllMocks()
 
@@ -306,26 +307,19 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       }),
     })
 
-    // Mock earnings API - must be second
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        currentMonth: 0,
-        lastMonth: 0,
-        totalOrders: orders.length,
-        averageOrderValue: orders.length > 0
-          ? orders.reduce((sum, o) => sum + (o.pricing?.total || 0), 0) / orders.length
-          : 0,
-      }),
-    })
-
-    // Mock cakes API - must be third
+    // Mock cakes API - must be second
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         cakes: [],
       }),
     })
+  }
+
+  const clickEditOrderButton = () => {
+    const editTooltip = screen.getByTitle('Edit Order')
+    const editButton = within(editTooltip).getByRole('button')
+    fireEvent.click(editButton)
   }
 
   afterEach(() => {
@@ -336,10 +330,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
 
   describe('Date Picker in Edit Form', () => {
-    it.skip('should display date picker in edit form', async () => {
-      // Skipped: Requires complex dialog interaction mocking
-      // Functionality verified through manual testing in admin interface
-      return
+    it('should display date picker in edit form', async () => {
       const order = createMockOrder({
         delivery: {
           dateNeeded: '2025-12-08',
@@ -355,12 +346,8 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find and click edit button (second icon button in table row)
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
+        clickEditOrderButton()
       })
 
       // Wait for edit dialog to appear and find date picker directly
@@ -373,7 +360,9 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       expect(datePicker).toBeInTheDocument()
 
       const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveValue('2025-12-08')
+      await waitFor(() => {
+        expect(dateInput).toHaveValue('2025-12-08')
+      })
     })
 
     it('should allow changing date in edit form', async () => {
@@ -391,12 +380,8 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find edit button in table - second button in row
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
+        clickEditOrderButton()
       }, { timeout: 5000 })
 
       await waitFor(() => {
@@ -424,12 +409,8 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find edit button in table - second button in row
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
+        clickEditOrderButton()
       }, { timeout: 5000 })
 
       await waitFor(() => {
@@ -457,12 +438,8 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find edit button in table - second button in row
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
+        clickEditOrderButton()
       }, { timeout: 5000 })
 
       await waitFor(() => {
@@ -490,10 +467,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       }, { timeout: 5000 })
 
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1])
+        clickEditOrderButton()
       }, { timeout: 5000 })
 
       await waitFor(() => {
@@ -527,10 +501,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       }, { timeout: 5000 })
 
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1])
+        clickEditOrderButton()
       }, { timeout: 5000 })
 
       await waitFor(() => {
