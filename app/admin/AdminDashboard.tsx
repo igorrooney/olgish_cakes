@@ -186,9 +186,9 @@ export function AdminDashboard() {
         const response = await fetch('/api/admin/clear-cache', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_ADMIN_SECRET_TOKEN || 'dev-token'}`
+            'Content-Type': 'application/json'
           },
+          credentials: 'include',
           body: JSON.stringify({ pattern: '*' })
         });
 
