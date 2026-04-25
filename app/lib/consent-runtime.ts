@@ -1,6 +1,6 @@
 import {
   consentDefaultsScript,
-  gtmSnippet,
+  gtmLoaderScript,
   isConsentRuntimeEnabled as consentRuntimeEnabled,
   klaroConfigScript,
   klaroOverridesHref,
@@ -43,16 +43,13 @@ function appendScriptIfMissing(id: string, contents: string) {
   document.head.appendChild(script)
 }
 
-function appendTemplateScriptIfMissing(id: string, contents: string) {
+function appendBodyScriptIfMissing(id: string, contents: string) {
   if (!contents || document.getElementById(id)) {
     return
   }
 
   const script = document.createElement('script')
   script.id = id
-  script.type = 'text/plain'
-  script.dataset.type = 'application/javascript'
-  script.dataset.name = 'google-tag-manager'
   script.textContent = contents
   document.body.appendChild(script)
 }
@@ -161,7 +158,7 @@ export async function loadConsentRuntime(options: ConsentRuntimeOptions = {}) {
       appendScriptIfMissing('gtag-consent-default', consentDefaultsScript)
       appendScriptIfMissing('klaro-config', klaroConfigScript)
       getConsentWindow().klaroConfig = serializedKlaroConfig
-      appendTemplateScriptIfMissing('google-tag-manager-template', gtmSnippet)
+      appendBodyScriptIfMissing('gtm-consent-loader', gtmLoaderScript)
 
       await loadExternalScript('klaro-script', klaroScriptSrc, {
         'data-config': 'klaroConfig'

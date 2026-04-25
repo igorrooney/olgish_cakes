@@ -146,11 +146,13 @@ describe('sitemap', () => {
       const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
       const faqsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/faqs')
       const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/delivery')
+      const allergensUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/allergens')
 
       expect(quoteUrl).toBeDefined()
       expect(contactUrl).toBeDefined()
       expect(faqsUrl).toBeDefined()
       expect(deliveryUrl).toBeDefined()
+      expect(allergensUrl).toBeDefined()
     })
 
     it('should exclude retired article-replacement pages from the static sitemap', async () => {
@@ -227,13 +229,16 @@ describe('sitemap', () => {
       const cakesUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes')
       const hampersUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post')
       const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/delivery')
+      const allergensUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/allergens')
 
       expect(cakesUrl?.lastModified).toEqual(new Date('2026-03-17'))
       expect(hampersUrl?.lastModified).toEqual(new Date('2026-03-12'))
       expect(deliveryUrl?.lastModified).toEqual(new Date('2026-04-24'))
+      expect(allergensUrl?.lastModified).toEqual(new Date('2026-04-25'))
       expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
       expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
       expect(getStaticSitemapLastModified('/delivery')).toEqual(new Date('2026-04-24'))
+      expect(getStaticSitemapLastModified('/allergens')).toEqual(new Date('2026-04-25'))
     })
     it('should exclude retired legacy landing pages from sitemap coverage', async () => {
       mockFetch.mockResolvedValue([])

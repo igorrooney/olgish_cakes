@@ -50,7 +50,7 @@ const oldenburg = localFont({
   ],
   variable: '--font-oldenburg',
   display: 'swap',
-  preload: false,
+  preload: true,
   fallback: ['Georgia', 'serif'],
   adjustFontFallback: 'Times New Roman'
 })

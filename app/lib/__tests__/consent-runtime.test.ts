@@ -41,7 +41,8 @@ describe('consent-runtime', () => {
     expect(document.querySelector('link[data-klaro-overrides-style]')).toBeTruthy()
     expect(document.getElementById('gtag-consent-default')).toBeTruthy()
     expect(document.getElementById('klaro-config')).toBeTruthy()
-    expect(document.getElementById('google-tag-manager-template')).toHaveAttribute('type', 'text/plain')
+    expect(document.getElementById('google-tag-manager-template')).toBeNull()
+    expect(document.getElementById('gtm-consent-loader')).toBeTruthy()
 
     const klaroScript = document.getElementById('klaro-script') as HTMLScriptElement | null
     expect(klaroScript).toBeTruthy()

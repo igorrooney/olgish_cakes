@@ -349,7 +349,11 @@ html {
 @media (min-width: 768px) {
   .footer-divider-art {
     aspect-ratio: 1024 / 107;
-    background-image: url('/design/mobile-home/footer-image.png');
+    background-image: image-set(
+      url('/design/mobile-home/footer-image.avif') type('image/avif'),
+      url('/design/mobile-home/footer-image.webp') type('image/webp'),
+      url('/design/mobile-home/footer-image.png') type('image/png')
+    );
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;

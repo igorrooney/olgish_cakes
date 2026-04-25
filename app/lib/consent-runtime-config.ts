@@ -17,30 +17,26 @@ export const consentDefaultsScript = `
   gtag('set', 'ads_data_redaction', true)
 `
 
+const loadGtmOnConsentScript = `
+  window.__loadOlgishGtmOnce = window.__loadOlgishGtmOnce || function() {
+    if (window.__olgishGtmLoaded) return;
+    window.__olgishGtmLoaded = true;
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','${gtmId}');
+  };
+`
+
+const loadGtmConsentSnippet = `
+  if (window.__loadOlgishGtmOnce) {
+    window.__loadOlgishGtmOnce()
+  }
+`
+
 const klaroServices = gtmId
   ? [
-      {
-        name: 'google-tag-manager',
-        default: true,
-        required: true,
-        purposes: ['necessary'],
-        onlyOnce: true,
-        translations: {
-          zz: {
-            title: 'Google Tag Manager'
-          },
-          en: {
-            description: 'Loads the tag manager to apply your consent choices.'
-          }
-        },
-        onAccept: `
-          for (let k of Object.keys(opts.consents)) {
-            if (opts.consents[k]) {
-              dataLayer.push({ event: 'klaro-' + k + '-accepted' })
-            }
-          }
-        `
-      },
       {
         name: 'google-analytics',
         purposes: ['analytics'],
@@ -57,6 +53,7 @@ const klaroServices = gtmId
           gtag('consent', 'update', {
             'analytics_storage': 'granted'
           })
+          ${loadGtmConsentSnippet}
         `,
         onDecline: `
           gtag('consent', 'update', {
@@ -74,7 +71,8 @@ const klaroServices = gtmId
           en: {
             description: 'Helps us understand how people use the site with session insights.'
           }
-        }
+        },
+        onAccept: loadGtmConsentSnippet
       },
       {
         name: 'google-ads',
@@ -94,6 +92,7 @@ const klaroServices = gtmId
             'ad_user_data': 'granted',
             'ad_personalization': 'granted'
           })
+          ${loadGtmConsentSnippet}
         `,
         onDecline: `
           gtag('consent', 'update', {
@@ -194,10 +193,4 @@ const klaroConfig = {
 
 export const klaroConfigScript = `var klaroConfig = ${JSON.stringify(klaroConfig)}`
 export const serializedKlaroConfig = klaroConfig as Record<string, unknown>
-export const gtmSnippet = gtmId
-  ? `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');`
-  : ''
+export const gtmLoaderScript = gtmId ? loadGtmOnConsentScript : ''

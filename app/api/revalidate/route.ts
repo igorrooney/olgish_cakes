@@ -117,6 +117,9 @@ async function handlePOST(request: NextRequest) {
       addTag('cakes-by-post')
       addTag('gift-hampers')
       addTag('sitemaps')
+    } else if (_type === 'ingredient') {
+      addPath('/allergens')
+      addTag('ingredients')
     } else if (_type === 'article') {
       // Revalidate article pages
       if (slug?.current) {
