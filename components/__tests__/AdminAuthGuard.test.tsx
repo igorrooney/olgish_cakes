@@ -8,6 +8,7 @@ import { AdminAuthGuard } from '../AdminAuthGuard'
 // Mock Next.js navigation
 const mockPush = jest.fn()
 jest.mock('next/navigation', () => ({
+  usePathname: () => '/admin',
   useRouter: () => ({
     push: mockPush
   })
@@ -21,7 +22,7 @@ jest.mock('next/link', () => {
 })
 
 // Mock MUI components
-jest.mock('@mui/material', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
   Typography: ({ children, variant, color, ...props }: MockProps) => (
@@ -81,10 +82,11 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('/api/admin/auth', {
+        expect(fetch).toHaveBeenCalledWith('/api/admin/auth', expect.objectContaining({
           method: 'GET',
-          credentials: 'include'
-        })
+          credentials: 'include',
+          signal: expect.any(AbortSignal)
+        }))
       })
     })
 
@@ -200,7 +202,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🎂 Olgish Cakes Admin')).toBeInTheDocument()
+        expect(screen.getByText('Olgish Cakes Admin')).toBeInTheDocument()
       })
     })
 
@@ -208,7 +210,19 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🏠 Dashboard')).toBeInTheDocument()
+        expect(screen.getByText('Dashboard')).toBeInTheDocument()
+      })
+    })
+
+    it('should make the active navigation item visible and announce the current page', async () => {
+      render(<AdminAuthGuard>Content</AdminAuthGuard>)
+
+      await waitFor(() => {
+        const dashboardLink = screen.getByText('Dashboard').closest('a')
+        expect(dashboardLink).toHaveAttribute('aria-current', 'page')
+        expect(dashboardLink).toHaveClass('bg-primary-50')
+        expect(dashboardLink).toHaveClass('text-primary-800')
+        expect(dashboardLink).toHaveClass('border-primary-400')
       })
     })
 
@@ -216,7 +230,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('📦 Orders')).toBeInTheDocument()
+        expect(screen.getByText('Orders')).toBeInTheDocument()
       })
     })
 
@@ -224,7 +238,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('📊 Earnings')).toBeInTheDocument()
+        expect(screen.getByText('Earnings')).toBeInTheDocument()
       })
     })
 
@@ -232,7 +246,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('📧 Test Emails')).toBeInTheDocument()
+        expect(screen.getByText('Email test')).toBeInTheDocument()
       })
     })
 
@@ -240,7 +254,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('✏️ Content Studio')).toBeInTheDocument()
+        expect(screen.getByText('Content Studio')).toBeInTheDocument()
       })
     })
 
@@ -248,7 +262,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🌐 View Website')).toBeInTheDocument()
+        expect(screen.getByText('View Website')).toBeInTheDocument()
       })
     })
 
@@ -256,7 +270,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🚪 Logout')).toBeInTheDocument()
+        expect(screen.getByText('Logout')).toBeInTheDocument()
       })
     })
 
@@ -281,17 +295,18 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🚪 Logout')).toBeInTheDocument()
+        expect(screen.getByText('Logout')).toBeInTheDocument()
       })
 
-      const logoutButton = screen.getByText('🚪 Logout')
+      const logoutButton = screen.getByText('Logout')
       fireEvent.click(logoutButton)
 
       await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('/api/admin/logout', {
+        expect(fetch).toHaveBeenCalledWith('/api/admin/logout', expect.objectContaining({
           method: 'POST',
-          credentials: 'include'
-        })
+          credentials: 'include',
+          signal: expect.any(AbortSignal)
+        }))
       })
     })
 
@@ -299,10 +314,10 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🚪 Logout')).toBeInTheDocument()
+        expect(screen.getByText('Logout')).toBeInTheDocument()
       })
 
-      const logoutButton = screen.getByText('🚪 Logout')
+      const logoutButton = screen.getByText('Logout')
       fireEvent.click(logoutButton)
 
       await waitFor(() => {
@@ -314,12 +329,12 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🚪 Logout')).toBeInTheDocument()
+        expect(screen.getByText('Logout')).toBeInTheDocument()
       })
 
       ;(fetch as jest.Mock).mockRejectedValueOnce(new Error('Logout failed'))
 
-      const logoutButton = screen.getByText('🚪 Logout')
+      const logoutButton = screen.getByText('Logout')
       fireEvent.click(logoutButton)
 
       await waitFor(() => {
@@ -333,13 +348,13 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        expect(screen.getByText('🚪 Logout')).toBeInTheDocument()
+        expect(screen.getByText('Logout')).toBeInTheDocument()
       })
 
       const error = new Error('Logout failed')
       ;(fetch as jest.Mock).mockRejectedValueOnce(error)
 
-      const logoutButton = screen.getByText('🚪 Logout')
+      const logoutButton = screen.getByText('Logout')
       fireEvent.click(logoutButton)
 
       await waitFor(() => {
@@ -397,7 +412,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const dashboardLink = screen.getByText('🏠 Dashboard').closest('a')
+        const dashboardLink = screen.getByText('Dashboard').closest('a')
         expect(dashboardLink).toHaveAttribute('href', '/admin')
       })
     })
@@ -406,7 +421,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const ordersLink = screen.getByText('📦 Orders').closest('a')
+        const ordersLink = screen.getByText('Orders').closest('a')
         expect(ordersLink).toHaveAttribute('href', '/admin/orders')
       })
     })
@@ -415,7 +430,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const earningsLink = screen.getByText('📊 Earnings').closest('a')
+        const earningsLink = screen.getByText('Earnings').closest('a')
         expect(earningsLink).toHaveAttribute('href', '/admin/earnings')
       })
     })
@@ -424,7 +439,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const emailsLink = screen.getByText('📧 Test Emails').closest('a')
+        const emailsLink = screen.getByText('Email test').closest('a')
         expect(emailsLink).toHaveAttribute('href', '/admin/email-test')
       })
     })
@@ -433,7 +448,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const studioLink = screen.getByText('✏️ Content Studio').closest('a')
+        const studioLink = screen.getByText('Content Studio').closest('a')
         expect(studioLink).toHaveAttribute('href', '/studio')
         expect(studioLink).toHaveAttribute('target', '_blank')
         expect(studioLink).toHaveAttribute('rel', 'noopener noreferrer')
@@ -444,7 +459,7 @@ describe('AdminAuthGuard', () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
       await waitFor(() => {
-        const websiteLink = screen.getByText('🌐 View Website').closest('a')
+        const websiteLink = screen.getByText('View Website').closest('a')
         expect(websiteLink).toHaveAttribute('href', '/')
         expect(websiteLink).toHaveAttribute('target', '_blank')
         expect(websiteLink).toHaveAttribute('rel', 'noopener noreferrer')

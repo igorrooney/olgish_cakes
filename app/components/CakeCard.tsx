@@ -2,7 +2,7 @@
 
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { designTokens } from "@/lib/design-system";
-import { Box, CardContent, Typography } from "@/lib/mui-optimization";
+import { Box, CardContent, Typography } from "@/lib/daisy-ui";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";

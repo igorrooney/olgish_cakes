@@ -11,7 +11,7 @@ jest.mock('next/link', () => {
 })
 
 // Mock MUI and UI components
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   Button: ({ children, onClick, disabled, ...props }: MockProps) => (
     <button onClick={onClick} disabled={disabled} {...props}>{children}</button>

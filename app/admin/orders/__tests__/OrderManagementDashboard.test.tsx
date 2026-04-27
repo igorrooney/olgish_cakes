@@ -25,8 +25,8 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock MUI components - more comprehensive mocking
-jest.mock('@mui/material', () => {
-  const actual = jest.requireActual('@mui/material')
+jest.mock('@/lib/daisy-ui', () => {
+  const actual = jest.requireActual('@/lib/daisy-ui')
   return {
     ...actual,
     Dialog: ({ children, open, onClose, ...props }: MockProps) => {
@@ -106,38 +106,28 @@ jest.mock('@mui/material', () => {
     Button: ({ children, onClick, ...props }: MockProps) => (
       <button onClick={onClick} {...props}>{children}</button>
     ),
-  }
+    DatePicker: ({ label, value, onChange, ...props }: MockProps) => (
+      <div data-testid="date-picker">
+        <label htmlFor="date-picker-input">{label}</label>
+        <input
+          id="date-picker-input"
+          type="date"
+          data-testid="date-picker-input"
+          aria-label={label || 'Date picker'}
+          aria-required="false"
+          value={value ? value.format('YYYY-MM-DD') : ''}
+          onChange={(e) => {
+            const dayjs = require('dayjs')
+            onChange(dayjs(e.target.value))
+          }}
+          {...props}
+        />
+      </div>
+    ),
+    LocalizationProvider: ({ children }: MockProps) => children,
+    AdapterDayjs: {},  }
 })
 
-// Mock MUI Date Pickers
-jest.mock('@mui/x-date-pickers/DatePicker', () => ({
-  DatePicker: ({ label, value, onChange, ...props }: MockProps) => (
-    <div data-testid="date-picker">
-      <label htmlFor="date-picker-input">{label}</label>
-      <input
-        id="date-picker-input"
-        type="date"
-        data-testid="date-picker-input"
-        aria-label={label || 'Date picker'}
-        aria-required="false"
-        value={value ? value.format('YYYY-MM-DD') : ''}
-        onChange={(e) => {
-          const dayjs = require('dayjs')
-          onChange(dayjs(e.target.value))
-        }}
-        {...props}
-      />
-    </div>
-  ),
-}))
-
-jest.mock('@mui/x-date-pickers/LocalizationProvider', () => ({
-  LocalizationProvider: ({ children }: MockProps) => children,
-}))
-
-jest.mock('@mui/x-date-pickers/AdapterDayjs', () => ({
-  AdapterDayjs: ({ children }: MockProps) => children,
-}))
 
 // Mock dayjs
 jest.mock('dayjs', () => {
@@ -420,9 +410,94 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       const dateInput = screen.getByTestId('date-picker-input')
       expect(dateInput).toHaveValue('')
     })
+
+    it('should permanently delete an order from the admin edit dialog', async () => {
+      const order = createMockOrder()
+
+      setupFetchMocks([order])
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            success: true,
+            message: 'Order permanently deleted from Supabase'
+          })
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            orders: [],
+            totalCount: 0,
+            hasMore: false
+          })
+        })
+
+      render(<OrderManagementDashboard />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        clickEditOrderButton()
+      }, { timeout: 5000 })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Order' }))
+      fireEvent.change(screen.getByLabelText('Admin Password'), {
+        target: { value: 'admin-password' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Delete Permanently' }))
+
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalledWith('/api/orders/order-1', expect.objectContaining({
+          method: 'DELETE',
+          body: JSON.stringify({
+            password: 'admin-password',
+            permanent: true
+          })
+        }))
+      }, { timeout: 5000 })
+
+      await waitFor(() => {
+        expect(screen.queryByText('#25112015431792')).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+    })
   })
 
   describe('Accessibility', () => {
+    it('should show image thumbnails on orders that have sent images', async () => {
+      const order = createMockOrderWithCake({
+        messages: [
+          {
+            message: 'Please use this reference image',
+            attachments: [
+              {
+                _type: 'image',
+                asset: {
+                  _type: 'supabase-file',
+                  _id: 'orders/25112015431792/references/design.jpg',
+                  _ref: 'orders/25112015431792/references/design.jpg',
+                  url: 'https://example.supabase.co/storage/v1/object/public/custom-cake-enquiries/orders/design.jpg'
+                },
+                alt: 'Customer design reference'
+              }
+            ]
+          }
+        ]
+      })
+
+      setupFetchMocks([order])
+
+      render(<OrderManagementDashboard />)
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
+      }, { timeout: 5000 })
+
+      expect(screen.getAllByAltText('Customer design reference').length).toBeGreaterThan(0)
+      expect(screen.getAllByLabelText(/1 image attached to order/i).length).toBeGreaterThan(0)
+    })
+
     it('should have accessible date picker with aria-label', async () => {
       const order = createMockOrder({
         delivery: {

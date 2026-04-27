@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MobileBreadcrumbs } from '../MobileBreadcrumbs'
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>

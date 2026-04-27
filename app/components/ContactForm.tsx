@@ -18,8 +18,8 @@ import {
   IconButton,
   Paper,
   Stack,
-} from "@/lib/mui-optimization";
-import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
+import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/daisy-ui";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";

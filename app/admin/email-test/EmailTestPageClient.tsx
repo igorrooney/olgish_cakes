@@ -742,20 +742,20 @@ export function EmailTestPageClient() {
   }
 
   return (
-    <section className='min-h-screen bg-gradient-to-b from-base-200/70 via-base-100 to-base-100 px-4 py-8 md:px-6 md:py-10'>
-      <div className='mx-auto flex w-full max-w-7xl flex-col gap-6'>
-        <header className='card card-border border-primary-50 bg-base-100 shadow-sm'>
-          <div className='card-body gap-4'>
+    <section className='flex flex-col gap-6'>
+      <div className='flex w-full flex-col gap-6'>
+        <header className='rounded-md border border-base-300 bg-base-100 p-4 shadow-sm'>
+          <div className='flex flex-col gap-4'>
             <div className='flex flex-wrap items-center gap-3'>
-              <h1 className='font-moreSugar text-2xl uppercase tracking-[0.08em] text-primary-700 md:text-3xl'>
+              <h1 className='text-3xl font-semibold text-base-content'>
                 Email Test Console
               </h1>
-              <span className='badge badge-soft badge-primary'>Admin only</span>
+              <span className='badge badge-primary'>Admin only</span>
             </div>
             <p className='max-w-3xl text-sm leading-6 text-base-content/75'>
               Preview every template with static defaults from the renderer, then adjust fields to test edge cases before any live smoke send.
             </p>
-            <div className='alert alert-info alert-soft w-full text-sm' role='status' aria-live='polite'>
+            <div className='alert alert-info w-full text-sm' role='status' aria-live='polite'>
               <span>
                 Real send still requires allowlisted recipients, feature flag, and rate-limit checks.
               </span>
@@ -764,13 +764,13 @@ export function EmailTestPageClient() {
         </header>
 
         <div className='grid gap-6 xl:grid-cols-[420px_1fr]'>
-          <section className='card card-border border-primary-50 bg-base-100 shadow-sm'>
+          <section className='card border border-base-300 bg-base-100 shadow-sm'>
             <div className='card-body gap-5'>
               <div className='flex flex-wrap items-center justify-between gap-2'>
                 <h2 className='text-lg font-semibold text-primary-800'>Setup</h2>
                 <button
                   type='button'
-                  className='btn btn-ghost btn-sm rounded-full text-primary-700'
+                  className='btn btn-ghost btn-sm'
                   onClick={() => loadTemplateDefaults()}
                   disabled={isPreviewPending}
                 >
@@ -781,7 +781,7 @@ export function EmailTestPageClient() {
               <label className='form-control gap-2'>
                 <span className='label-text font-semibold'>Template</span>
                 <select
-                  className='select select-bordered w-full rounded-full border-primary-50'
+                  className='select select-bordered w-full'
                   value={selectedTemplate}
                   onChange={(event) => handleTemplateChange(event.target.value as EmailTemplateId)}
                 >
@@ -794,7 +794,7 @@ export function EmailTestPageClient() {
               <label className='form-control gap-2'>
                 <span className='label-text font-semibold'>Scenario</span>
                 <select
-                  className='select select-bordered w-full rounded-full border-primary-50'
+                  className='select select-bordered w-full'
                   value={selectedScenario}
                   onChange={(event) => handleScenarioChange(event.target.value)}
                 >
@@ -808,7 +808,7 @@ export function EmailTestPageClient() {
                 <span className='label-text font-semibold'>Real-send recipient</span>
                 <input
                   type='email'
-                  className='input input-bordered w-full rounded-full border-primary-50'
+                  className='input input-bordered w-full'
                   value={recipient}
                   onChange={(event) => setRecipient(event.target.value)}
                   placeholder='allowlisted@example.com'
@@ -821,8 +821,8 @@ export function EmailTestPageClient() {
 
               <div className='space-y-4'>
                 {visibleSections.map((section) => (
-                  <div key={section.id} className='rounded-box border border-primary-50 bg-base-200/40 p-4'>
-                    <h3 className='text-sm font-semibold uppercase tracking-wide text-primary-700'>
+                  <div key={section.id} className='rounded-md border border-base-300 bg-base-200/40 p-4'>
+                    <h3 className='text-sm font-semibold uppercase tracking-wide text-base-content/70'>
                       {section.title}
                     </h3>
                     <p className='mt-1 text-xs text-base-content/70'>{section.description}</p>
@@ -833,14 +833,14 @@ export function EmailTestPageClient() {
                           <span className='label-text text-xs font-semibold text-base-content/80'>{field.label}</span>
                           {field.type === 'textarea' ? (
                             <textarea
-                              className='textarea textarea-bordered min-h-[92px] w-full border-primary-50 text-sm'
+                              className='textarea textarea-bordered min-h-[92px] w-full text-sm'
                               value={formValues[field.key]}
                               onChange={(event) => handleFieldChange(field.key, event.target.value)}
                               placeholder={field.placeholder}
                             />
                           ) : field.type === 'select' ? (
                             <select
-                              className='select select-bordered w-full rounded-full border-primary-50 text-sm'
+                              className='select select-bordered w-full text-sm'
                               value={formValues[field.key]}
                               onChange={(event) => handleFieldChange(field.key, event.target.value)}
                             >
@@ -852,7 +852,7 @@ export function EmailTestPageClient() {
                             <input
                               type={field.type === 'list' || field.type === 'number' ? 'text' : field.type}
                               inputMode={field.type === 'number' ? 'decimal' : undefined}
-                              className='input input-bordered w-full rounded-full border-primary-50 text-sm'
+                              className='input input-bordered w-full text-sm'
                               value={formValues[field.key]}
                               onChange={(event) => handleFieldChange(field.key, event.target.value)}
                               placeholder={field.placeholder}
@@ -917,7 +917,7 @@ export function EmailTestPageClient() {
               <div className='grid gap-3'>
                 <button
                   type='button'
-                  className='btn rounded-full border-none bg-primary-500 text-primary-content hover:bg-primary-700'
+                  className='btn btn-primary'
                   onClick={handlePreview}
                   disabled={isPreviewPending || hasInvalidForm}
                   aria-busy={isPreviewPending}
@@ -926,7 +926,7 @@ export function EmailTestPageClient() {
                 </button>
                 <button
                   type='button'
-                  className='btn btn-outline rounded-full border-warning text-warning hover:bg-warning hover:text-warning-content'
+                  className='btn btn-outline btn-warning'
                   onClick={handleRequestRealSend}
                   disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
                   aria-busy={isRealSendPending}
@@ -937,24 +937,24 @@ export function EmailTestPageClient() {
             </div>
           </section>
 
-          <section className='card card-border border-primary-50 bg-base-100 shadow-sm'>
+          <section className='card border border-base-300 bg-base-100 shadow-sm'>
             <div className='card-body gap-4'>
               <div className='flex flex-wrap items-center justify-between gap-3'>
                 <h2 className='text-lg font-semibold text-primary-800'>Rendered preview</h2>
                 {previewData ? (
-                  <span className='badge badge-soft badge-primary'>{previewData.templateId}</span>
+                  <span className='badge badge-primary'>{previewData.templateId}</span>
                 ) : null}
               </div>
 
               {!previewData ? (
-                <div className='rounded-box border border-dashed border-primary-50 bg-base-200/40 px-6 py-12 text-center text-sm text-base-content/70'>
+                <div className='rounded-md border border-dashed border-base-300 bg-base-200/40 px-6 py-12 text-center text-sm text-base-content/70'>
                   {isPreviewPending
                     ? 'Loading template defaults...'
                     : 'Select a template and run preview to view subject, text, and HTML output.'}
                 </div>
               ) : (
                 <>
-                  <div className='rounded-box border border-primary-50 bg-base-200/60 p-4'>
+                  <div className='rounded-md border border-base-300 bg-base-200/60 p-4'>
                     <p className='text-xs uppercase tracking-wide text-base-content/60'>Subject</p>
                     <p className='mt-1 font-medium text-base-content'>{previewData.rendered.subject}</p>
                   </div>
@@ -990,15 +990,15 @@ export function EmailTestPageClient() {
                   </div>
 
                   {previewTab === 'text' ? (
-                    <div role='tabpanel' className='rounded-box border border-primary-50 bg-base-100 p-4'>
+                    <div role='tabpanel' className='rounded-md border border-base-300 bg-base-100 p-4'>
                       <pre className='max-h-[500px] overflow-auto whitespace-pre-wrap text-xs leading-6'>{previewData.rendered.text}</pre>
                     </div>
                   ) : null}
 
                   {previewTab === 'html' ? (
-                    <div role='tabpanel' className='rounded-box border border-primary-50 bg-base-100 p-2'>
+                    <div role='tabpanel' className='rounded-md border border-base-300 bg-base-100 p-2'>
                       <iframe
-                        className='h-[500px] w-full rounded-box border border-base-300 bg-white'
+                        className='h-[500px] w-full rounded-md border border-base-300 bg-white'
                         sandbox='allow-same-origin'
                         srcDoc={previewData.rendered.html}
                         title='Rendered email preview'
@@ -1007,7 +1007,7 @@ export function EmailTestPageClient() {
                   ) : null}
 
                   {previewTab === 'metadata' ? (
-                    <div role='tabpanel' className='rounded-box border border-primary-50 bg-base-100 p-4'>
+                    <div role='tabpanel' className='rounded-md border border-base-300 bg-base-100 p-4'>
                       <pre className='max-h-[500px] overflow-auto whitespace-pre-wrap text-xs leading-6'>{metadataText}</pre>
                     </div>
                   ) : null}
@@ -1041,14 +1041,14 @@ export function EmailTestPageClient() {
           <div className='modal-action'>
             <button
               type='button'
-              className='btn btn-ghost rounded-full'
+              className='btn btn-ghost'
               onClick={handleCancelRealSend}
             >
               Cancel
             </button>
             <button
               type='button'
-              className='btn btn-warning rounded-full'
+              className='btn btn-warning'
               onClick={handleConfirmRealSend}
               disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
             >

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { Box, CircularProgress } from "@/lib/mui-optimization";
+import { Box, CircularProgress } from "@/lib/daisy-ui";
 
 // Loading component for dynamic imports
 function DynamicLoading() {

@@ -4,8 +4,13 @@ import { generateOrderNumber } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { formatValidationErrors, orderSchema, validateRequest } from '@/lib/validation'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import { urlFor } from '@/sanity/lib/image'
-import { serverClient } from '@/sanity/lib/client'
+import {
+  createSupabaseOrder,
+  listSupabaseOrders,
+  updateSupabaseOrderMetadata
+} from '@/lib/orders/supabase-orders'
 import type { Attachment, OrderItem } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -175,10 +180,9 @@ async function handlePOST(request: NextRequest) {
     const referenceImageUrls = getReferenceImageUrls(attachments)
 
     const orderDoc = {
-      _type: 'order',
       orderNumber,
       status: 'new',
-      orderType: validatedOrderData.orderType,
+      orderType: validatedOrderData.orderType || 'custom-quote',
       customer: {
         name: validatedOrderData.name,
         email: validatedOrderData.email,
@@ -189,8 +193,8 @@ async function handlePOST(request: NextRequest) {
       },
       items,
       delivery: {
-        dateNeeded: validatedOrderData.dateNeeded || null,
-        deliveryMethod: validatedOrderData.deliveryMethod,
+        dateNeeded: validatedOrderData.dateNeeded || undefined,
+        deliveryMethod: validatedOrderData.deliveryMethod || 'collection',
         deliveryAddress: validatedOrderData.deliveryAddress || '',
         deliveryNotes: validatedOrderData.deliveryNotes || '',
         giftNote: validatedOrderData.giftNote || ''
@@ -242,8 +246,22 @@ async function handlePOST(request: NextRequest) {
       }
     }
 
-    const createdOrder = await serverClient.create(orderDoc)
+    const createdOrder = await createSupabaseOrder(orderDoc)
     const emailMode = getEmailTransportMode()
+    const firstItem = items[0]
+
+    await sendTelegramManagerNotification({
+      type: 'new-order',
+      customerName: validatedOrderData.name,
+      customerEmail: validatedOrderData.email,
+      customerPhone: validatedOrderData.phone,
+      dateNeeded: validatedOrderData.dateNeeded,
+      productName: firstItem?.productName || validatedOrderData.productName,
+      total: orderData.total || validatedOrderData.totalPrice,
+      messagePreview: validatedOrderData.message || firstItem?.specialInstructions,
+      imageCount: attachments.length,
+      adminPath: '/admin/orders'
+    })
 
     try {
       if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
@@ -256,8 +274,6 @@ async function handlePOST(request: NextRequest) {
         logger.error('Orders API: Invalid email address format', validatedOrderData.email)
         throw new Error(`Invalid email address format: ${validatedOrderData.email}`)
       }
-
-      const firstItem = items[0]
 
       const customerEmailResult = await sendEmail({
         templateId: 'orders-customer-confirmation',
@@ -302,13 +318,10 @@ async function handlePOST(request: NextRequest) {
         throw new Error(`Failed to send customer email: ${customerEmailFailureReason}`)
       }
 
-      await serverClient
-        .patch(createdOrder._id)
-        .set({
-          'metadata.emailSent': true,
-          'metadata.emailAttemptedAt': new Date().toISOString()
-        })
-        .commit()
+      await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, {
+        emailSent: true,
+        emailAttemptedAt: new Date().toISOString()
+      })
     } catch (emailError) {
       logger.error('Orders API: Failed to send confirmation email', {
         error: emailError,
@@ -316,14 +329,11 @@ async function handlePOST(request: NextRequest) {
       })
 
       try {
-        await serverClient
-          .patch(createdOrder._id)
-          .set({
-            'metadata.emailSent': false,
-            'metadata.emailError': emailError instanceof Error ? emailError.message : 'Unknown error',
-            'metadata.emailAttemptedAt': new Date().toISOString()
-          })
-          .commit()
+        await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, {
+          emailSent: false,
+          emailError: emailError instanceof Error ? emailError.message : 'Unknown error',
+          emailAttemptedAt: new Date().toISOString()
+        })
       } catch (metadataError) {
         logger.error('Orders API: Failed to update order metadata', metadataError)
       }
@@ -334,8 +344,6 @@ async function handlePOST(request: NextRequest) {
         logger.error('Orders API: RESEND_API_KEY not configured - skipping admin notification')
         throw new Error('Email service not configured')
       }
-
-      const firstItem = items[0]
 
       const adminEmailResult = await sendEmail({
         templateId: 'orders-admin-notification',
@@ -438,10 +446,16 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const validStatuses = ['new', 'pending', 'confirmed', 'in-progress', 'completed', 'cancelled', 'refunded']
-
-    let query = `*[_type == "order"] | order(_createdAt desc)`
-    let params = {}
+    const validStatuses = [
+      'new',
+      'confirmed',
+      'in-progress',
+      'ready-pickup',
+      'out-delivery',
+      'delivered',
+      'completed',
+      'cancelled'
+    ]
 
     if (status) {
       if (!validStatuses.includes(status)) {
@@ -450,70 +464,13 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         )
       }
-      query = `*[_type == "order" && status == $status] | order(_createdAt desc)`
-      params = { status }
     }
 
-    const orders = await serverClient.fetch(`${query}[${offset}...${offset + limit}]{
-      _id,
-      _createdAt,
-      _updatedAt,
-      orderNumber,
+    const { orders, totalCount } = await listSupabaseOrders({
       status,
-      orderType,
-      customer,
-      items,
-      delivery{
-        dateNeeded,
-        deliveryMethod,
-        deliveryAddress,
-        trackingNumber,
-        deliveryNotes,
-        giftNote
-      },
-      pricing{
-        subtotal,
-        deliveryFee,
-        discount,
-        total,
-        paymentStatus,
-        paymentMethod
-      },
-      messages[]{
-        message,
-        attachments[]{
-          asset->{
-            _id,
-            _ref,
-            url
-          },
-          alt,
-          caption
-        }
-      },
-      notes[]{
-        note,
-        author,
-        createdAt,
-        images[]{
-          asset->{
-            _id,
-            _ref,
-            url
-          },
-          alt,
-          caption
-        }
-      },
-      metadata
-    }`, params)
-
-    const totalCount = await serverClient.fetch(
-      status
-        ? `count(*[_type == "order" && status == $status])`
-        : `count(*[_type == "order"])`,
-      status ? { status } : {}
-    )
+      limit,
+      offset
+    })
 
     return NextResponse.json({
       orders,

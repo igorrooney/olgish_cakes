@@ -1,6 +1,6 @@
 "use client";
 
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Typography, Box } from "@/lib/daisy-ui";
 import AnimatedWrapper from "../components/AnimatedWrapper";
 
 export default function HeroSection() {

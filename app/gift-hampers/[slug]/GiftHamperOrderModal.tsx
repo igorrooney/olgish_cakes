@@ -17,15 +17,15 @@ import {
   Alert,
   AlertTitle,
   CircularProgress,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ContactForm, type ContactFormData } from "@/app/components/ContactForm";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@/lib/daisy-ui";
+import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
-import { CheckCircleIcon, ErrorIcon } from "@/lib/mui-optimization";
+import { CheckCircleIcon, ErrorIcon } from "@/lib/daisy-ui";
 
 dayjs.locale("en-gb");
 

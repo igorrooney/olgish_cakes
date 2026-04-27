@@ -1,10 +1,14 @@
-import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { logger } from "@/lib/logger";
-import { generateUniqueKey } from "@/lib/order-utils";
-import { serverClient } from "@/sanity/lib/client";
-import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from "@/lib/email/service";
-import type { Order, OrderItem, OrderNoteImage, OrderUpdate } from "@/types/order";
-import { NextRequest, NextResponse } from "next/server";
+import { isAdminAuthenticated } from '@/lib/admin-auth'
+import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { logger } from '@/lib/logger'
+import {
+  deleteSupabaseOrder,
+  getSupabaseOrderById,
+  updateSupabaseOrder,
+  uploadSupabaseOrderNoteImage
+} from '@/lib/orders/supabase-orders'
+import type { Order, OrderItem, OrderNote, OrderNoteImage, OrderUpdate } from '@/types/order'
+import { NextRequest, NextResponse } from 'next/server'
 
 function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
   if (!Array.isArray(items)) {
@@ -25,497 +29,375 @@ function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
   }))
 }
 
-// GET - Fetch single order by ID
+function getFormString(formData: FormData, key: string): string | undefined {
+  const value = formData.get(key)
+  return typeof value === 'string' ? value : undefined
+}
+
+function parseDeleteRequestBody(value: unknown): { password?: string, permanent?: boolean } {
+  if (!value || typeof value !== 'object') {
+    return {}
+  }
+
+  const record = value as Record<string, unknown>
+
+  return {
+    password: typeof record.password === 'string' ? record.password : undefined,
+    permanent: typeof record.permanent === 'boolean' ? record.permanent : undefined
+  }
+}
+
+function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
+  const nextOrder: Order = {
+    ...currentOrder,
+    customer: { ...currentOrder.customer },
+    delivery: { ...currentOrder.delivery },
+    pricing: { ...currentOrder.pricing },
+    items: currentOrder.items.map((item) => ({ ...item })),
+    messages: currentOrder.messages?.map((message) => ({
+      ...message,
+      attachments: message.attachments?.map((attachment) => ({ ...attachment }))
+    })),
+    notes: currentOrder.notes?.map((note) => ({
+      ...note,
+      images: note.images?.map((image) => ({ ...image }))
+    })),
+    metadata: currentOrder.metadata ? { ...currentOrder.metadata } : undefined
+  }
+
+  if (updates.status && updates.status !== currentOrder.status) {
+    nextOrder.status = updates.status
+  }
+
+  if (updates.trackingNumber !== undefined) {
+    nextOrder.delivery.trackingNumber = updates.trackingNumber
+  }
+
+  if (updates.deliveryMethod) {
+    nextOrder.delivery.deliveryMethod = updates.deliveryMethod
+  }
+
+  if (updates.dateNeeded !== undefined) {
+    nextOrder.delivery.dateNeeded = updates.dateNeeded ?? undefined
+  }
+
+  if (updates.paymentStatus) {
+    nextOrder.pricing.paymentStatus = updates.paymentStatus
+  }
+
+  if (updates.paymentMethod) {
+    nextOrder.pricing.paymentMethod = updates.paymentMethod
+  }
+
+  if (updates.customerName) {
+    nextOrder.customer.name = updates.customerName
+  }
+
+  if (updates.customerEmail) {
+    nextOrder.customer.email = updates.customerEmail
+  }
+
+  if (updates.customerPhone) {
+    nextOrder.customer.phone = updates.customerPhone
+  }
+
+  if (updates.customerAddress !== undefined) {
+    nextOrder.customer.address = updates.customerAddress
+  }
+
+  if (updates.customerCity !== undefined) {
+    nextOrder.customer.city = updates.customerCity
+  }
+
+  if (updates.customerPostcode !== undefined) {
+    nextOrder.customer.postcode = updates.customerPostcode
+  }
+
+  if (updates.subtotal !== undefined) {
+    nextOrder.pricing.subtotal = updates.subtotal
+  }
+
+  if (updates.deliveryFee !== undefined) {
+    nextOrder.pricing.deliveryFee = updates.deliveryFee
+  }
+
+  if (updates.discount !== undefined) {
+    nextOrder.pricing.discount = updates.discount
+  }
+
+  if (updates.total !== undefined) {
+    nextOrder.pricing.total = updates.total
+  }
+
+  if (updates.itemPrice !== undefined) {
+    const newItemPrice = parseFloat(updates.itemPrice)
+
+    if (!Number.isNaN(newItemPrice) && nextOrder.items.length > 0) {
+      nextOrder.items = nextOrder.items.map((item, index) =>
+        index === 0 ? { ...item, totalPrice: newItemPrice, unitPrice: newItemPrice } : item
+      )
+    }
+  }
+
+  if (updates.totalPrice !== undefined) {
+    const newTotal = parseFloat(updates.totalPrice)
+
+    if (!Number.isNaN(newTotal)) {
+      nextOrder.pricing.total = newTotal
+    }
+  }
+
+  if (
+    updates.selectedCakeId !== undefined ||
+    updates.selectedCakeName !== undefined ||
+    updates.selectedCakeSize !== undefined ||
+    updates.selectedDesignType !== undefined
+  ) {
+    const currentItem = nextOrder.items[0]
+    const itemPrice = updates.itemPrice ? parseFloat(updates.itemPrice) : (currentItem?.unitPrice ?? 0)
+
+    const updatedItem: OrderItem = {
+      productType: currentItem?.productType || 'cake',
+      productId: updates.selectedCakeId || currentItem?.productId || '',
+      productName: updates.selectedCakeName || currentItem?.productName || 'Custom Order',
+      designType: updates.selectedDesignType || currentItem?.designType || 'standard',
+      quantity: currentItem?.quantity || 1,
+      unitPrice: Number.isNaN(itemPrice) ? (currentItem?.unitPrice ?? 0) : itemPrice,
+      totalPrice: Number.isNaN(itemPrice) ? (currentItem?.totalPrice ?? 0) : itemPrice,
+      size: updates.selectedCakeSize || currentItem?.size || '',
+      flavor: currentItem?.flavor || '',
+      specialInstructions: currentItem?.specialInstructions || ''
+    }
+
+    nextOrder.items = nextOrder.items.length > 0
+      ? nextOrder.items.map((item, index) => index === 0 ? updatedItem : item)
+      : [updatedItem]
+  }
+
+  return nextOrder
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Verify admin authentication
-  const isAuthenticated = await isAdminAuthenticated(request);
+  const isAuthenticated = await isAdminAuthenticated(request)
   if (!isAuthenticated) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
-    );
+    )
   }
 
   try {
-    const { id } = await params;
-    // Use parameterized query to prevent GROQ injection
-    const order = await serverClient.fetch<Order | null>(
-      `*[_type == "order" && _id == $id][0]{
-        _id,
-        _createdAt,
-        _updatedAt,
-        orderNumber,
-        status,
-        orderType,
-        customer,
-        items,
-        delivery{
-          dateNeeded,
-          deliveryMethod,
-          deliveryAddress,
-          trackingNumber,
-          deliveryNotes,
-          giftNote
-        },
-        pricing{
-          subtotal,
-          deliveryFee,
-          discount,
-          total,
-          paymentStatus,
-          paymentMethod
-        },
-        messages,
-        notes{
-          note,
-          author,
-          createdAt,
-          images[]{
-            _type,
-            asset->{
-              _id,
-              url
-            },
-            alt,
-            caption
-          }
-        },
-        metadata{
-          giftNote,
-          orderType,
-          source,
-          referrer
-        }
-      }`,
-      { id }
-    );
+    const { id } = await params
+    const order = await getSupabaseOrderById(id)
 
     if (!order) {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
-      );
+      )
     }
 
-    return NextResponse.json(order);
-
+    return NextResponse.json(order)
   } catch (error) {
-    logger.error('Failed to fetch order', error);
+    logger.error('Failed to fetch order', error)
     return NextResponse.json(
       { error: 'Failed to fetch order' },
       { status: 500 }
-    );
+    )
   }
 }
 
-// PATCH - Update order (status, tracking, notes, etc.)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Verify admin authentication
-  const isAuthenticated = await isAdminAuthenticated(request);
+  const isAuthenticated = await isAdminAuthenticated(request)
   if (!isAuthenticated) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
-    );
+    )
   }
 
   try {
-    const { id } = await params;
-    // Handle both JSON and FormData requests
-    let updates: OrderUpdate = {};
-    let images: File[] = [];
+    const { id } = await params
+    let updates: OrderUpdate = {}
+    let images: File[] = []
+    const contentType = request.headers.get('content-type')
 
-    const contentType = request.headers.get('content-type');
+    if (contentType?.includes('multipart/form-data')) {
+      const formData = await request.formData()
 
-    if (contentType && contentType.includes('multipart/form-data')) {
-      // Handle FormData (with potential image uploads)
-      const formData = await request.formData();
+      updates = {
+        status: getFormString(formData, 'status'),
+        trackingNumber: getFormString(formData, 'trackingNumber'),
+        deliveryMethod: getFormString(formData, 'deliveryMethod'),
+        dateNeeded: (() => {
+          const dateNeeded = getFormString(formData, 'dateNeeded')
+          return dateNeeded && dateNeeded.trim() ? dateNeeded : null
+        })(),
+        paymentStatus: getFormString(formData, 'paymentStatus'),
+        paymentMethod: getFormString(formData, 'paymentMethod'),
+        note: getFormString(formData, 'note'),
+        customerName: getFormString(formData, 'customerName'),
+        customerEmail: getFormString(formData, 'customerEmail'),
+        customerPhone: getFormString(formData, 'customerPhone'),
+        customerAddress: getFormString(formData, 'customerAddress'),
+        customerCity: getFormString(formData, 'customerCity'),
+        customerPostcode: getFormString(formData, 'customerPostcode'),
+        itemPrice: getFormString(formData, 'itemPrice'),
+        totalPrice: getFormString(formData, 'totalPrice'),
+        selectedCakeId: getFormString(formData, 'selectedCakeId'),
+        selectedCakeName: getFormString(formData, 'selectedCakeName'),
+        selectedCakeSize: getFormString(formData, 'selectedCakeSize'),
+        selectedDesignType: getFormString(formData, 'selectedDesignType')
+      }
 
-      // Extract text fields
-      updates.status = formData.get('status') as string;
-      updates.trackingNumber = formData.get('trackingNumber') as string;
-      updates.deliveryMethod = formData.get('deliveryMethod') as string;
-      // Extract dateNeeded (format: YYYY-MM-DD)
-      const dateNeeded = formData.get('dateNeeded') as string;
-      updates.dateNeeded = dateNeeded && dateNeeded.trim() ? dateNeeded : null;
-      updates.paymentStatus = formData.get('paymentStatus') as string;
-      updates.paymentMethod = formData.get('paymentMethod') as string;
-      updates.note = formData.get('note') as string;
-      // Extract customer information
-      updates.customerName = formData.get('customerName') as string;
-      updates.customerEmail = formData.get('customerEmail') as string;
-      updates.customerPhone = formData.get('customerPhone') as string;
-      updates.customerAddress = formData.get('customerAddress') as string;
-      updates.customerCity = formData.get('customerCity') as string;
-      updates.customerPostcode = formData.get('customerPostcode') as string;
-      // Extract pricing information
-      updates.itemPrice = formData.get('itemPrice') as string;
-      updates.totalPrice = formData.get('totalPrice') as string;
-      // Extract item selection information
-      updates.selectedCakeId = formData.get('selectedCakeId') as string;
-      updates.selectedCakeName = formData.get('selectedCakeName') as string;
-      updates.selectedCakeSize = formData.get('selectedCakeSize') as string;
-      updates.selectedDesignType = formData.get('selectedDesignType') as string;
-
-      // Extract images
-      const imageFiles = formData.getAll('images') as File[];
-      images = imageFiles.filter(file => file.size > 0);
+      images = formData
+        .getAll('images')
+        .filter((value): value is File => value instanceof File && value.size > 0)
     } else {
-      // Handle JSON requests (backward compatibility)
-      updates = await request.json();
+      updates = await request.json() as OrderUpdate
     }
 
-    // Get current order to compare changes (including existing notes)
-    // Use parameterized query to prevent GROQ injection
-    const currentOrder = await serverClient.fetch<Order | null>(
-      `*[_type == "order" && _id == $id][0]{
-        _id,
-        orderNumber,
-        status,
-        customer,
-        delivery,
-        pricing,
-        items,
-        notes[]{
-          _key,
-          note,
-          author,
-          createdAt,
-          images[]{
-            _type,
-            asset->{
-              _id,
-              url
-            },
-            alt,
-            caption
-          }
-        }
-      }`,
-      { id }
-    );
+    const currentOrder = await getSupabaseOrderById(id)
 
     if (!currentOrder) {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
-      );
+      )
     }
 
-    // Prepare update document
-    // Sanity uses dot notation for nested fields, so we use Record<string, unknown>
-    const updateDoc: Record<string, unknown> = {};
+    const nextOrder = applyOrderUpdates(currentOrder, updates)
 
-    // Handle status updates
-    if (updates.status && updates.status !== currentOrder.status) {
-      updateDoc.status = updates.status;
-    }
-
-    // Handle tracking number updates
-    if (updates.trackingNumber) {
-      updateDoc['delivery.trackingNumber'] = updates.trackingNumber;
-    }
-
-    // Handle delivery method updates
-    if (updates.deliveryMethod) {
-      updateDoc['delivery.deliveryMethod'] = updates.deliveryMethod;
-    }
-
-    // Handle date needed updates
-    if (updates.dateNeeded !== undefined) {
-      updateDoc['delivery.dateNeeded'] = updates.dateNeeded;
-    }
-
-    // Handle payment status updates
-    if (updates.paymentStatus) {
-      updateDoc['pricing.paymentStatus'] = updates.paymentStatus;
-    }
-
-    // Handle payment method updates
-    if (updates.paymentMethod) {
-      updateDoc['pricing.paymentMethod'] = updates.paymentMethod;
-    }
-
-    // Handle customer information updates
-    if (updates.customerName) {
-      updateDoc['customer.name'] = updates.customerName;
-    }
-    if (updates.customerEmail) {
-      updateDoc['customer.email'] = updates.customerEmail;
-    }
-    if (updates.customerPhone) {
-      updateDoc['customer.phone'] = updates.customerPhone;
-    }
-    if (updates.customerAddress !== undefined) {
-      updateDoc['customer.address'] = updates.customerAddress;
-    }
-    if (updates.customerCity !== undefined) {
-      updateDoc['customer.city'] = updates.customerCity;
-    }
-    if (updates.customerPostcode !== undefined) {
-      updateDoc['customer.postcode'] = updates.customerPostcode;
-    }
-
-    // Handle price updates
-    if (updates.subtotal !== undefined) {
-      updateDoc['pricing.subtotal'] = updates.subtotal;
-    }
-    if (updates.deliveryFee !== undefined) {
-      updateDoc['pricing.deliveryFee'] = updates.deliveryFee;
-    }
-    if (updates.discount !== undefined) {
-      updateDoc['pricing.discount'] = updates.discount;
-    }
-    if (updates.total !== undefined) {
-      updateDoc['pricing.total'] = updates.total;
-    }
-
-    // Handle item price updates
-    if (updates.itemPrice !== undefined) {
-      const newItemPrice = parseFloat(updates.itemPrice);
-      if (!isNaN(newItemPrice) && currentOrder.items && currentOrder.items.length > 0) {
-        const updatedItems = currentOrder.items.map((item: OrderItem, index: number) =>
-          index === 0 ? { ...item, totalPrice: newItemPrice, unitPrice: newItemPrice } : item
-        );
-        updateDoc.items = updatedItems;
-      }
-    }
-
-    // Handle total price update (manual override)
-    if (updates.totalPrice !== undefined) {
-      const newTotal = parseFloat(updates.totalPrice);
-      if (!isNaN(newTotal)) {
-        updateDoc['pricing.total'] = newTotal;
-      }
-    }
-
-    // Handle item selection updates
-    if (updates.selectedCakeId !== undefined || updates.selectedCakeName !== undefined ||
-      updates.selectedCakeSize !== undefined || updates.selectedDesignType !== undefined) {
-
-      const itemPrice = updates.itemPrice ? parseFloat(updates.itemPrice) : (currentOrder.items[0]?.unitPrice ?? 0);
-      const newItem = {
-        productType: 'cake',
-        productId: updates.selectedCakeId || currentOrder.items[0]?.productId || '',
-        productName: updates.selectedCakeName || currentOrder.items[0]?.productName || 'Custom Order',
-        designType: updates.selectedDesignType || currentOrder.items[0]?.designType || 'standard',
-        quantity: currentOrder.items[0]?.quantity || 1,
-        unitPrice: itemPrice,
-        totalPrice: itemPrice,
-        size: updates.selectedCakeSize || currentOrder.items[0]?.size || '',
-        flavor: currentOrder.items[0]?.flavor || '',
-        specialInstructions: currentOrder.items[0]?.specialInstructions || '',
-      };
-
-      updateDoc.items = [newItem];
-    }
-
-    // Handle internal notes - only add if there's actual content (note text or images)
-    // Always preserve existing notes by appending new ones
     if ((updates.note && updates.note.trim()) || images.length > 0) {
-      const newNote = {
-        _key: generateUniqueKey('note'),
-        note: (updates.note && updates.note.trim()) || '',
-        author: updates.author || 'Admin',
-        createdAt: new Date().toISOString(),
-        images: [] as OrderNoteImage[],
-      };
+      const uploadedImages: OrderNoteImage[] = []
 
-      // Process uploaded images
-      if (images.length > 0) {
-        for (const imageFile of images) {
-          try {
-            // Convert File to Buffer for Sanity upload
-            const arrayBuffer = await imageFile.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            // Upload image to Sanity
-            const imageAsset = await serverClient.assets.upload('image', buffer, {
-              filename: imageFile.name ?? 'image.jpg',
-              contentType: imageFile.type ?? 'image/jpeg',
-            });
-
-            newNote.images.push({
-              _type: 'image',
-              asset: {
-                _type: 'reference',
-                _ref: imageAsset._id,
-              },
-              alt: imageFile.name ?? 'Uploaded image',
-              caption: '',
-            });
-          } catch (imageError) {
-            logger.error('Failed to upload image', imageError);
-            // Continue with other images even if one fails
-          }
+      for (const imageFile of images) {
+        try {
+          uploadedImages.push(await uploadSupabaseOrderNoteImage(currentOrder._id, imageFile))
+        } catch (imageError) {
+          logger.error('Failed to upload image', imageError)
         }
       }
 
-      // Preserve all existing notes and append the new one
-      // This ensures no notes are ever removed when adding a new one
-      const existingNotes = currentOrder.notes || [];
-      updateDoc.notes = [...existingNotes, newNote];
-    }
-    // Note: If no new note is being added, existing notes are automatically preserved
-    // by Sanity's patch operation, so no explicit handling is needed
-
-    // Update order in Sanity
-    const updatedOrder = await serverClient
-      .patch(id)
-      .set(updateDoc)
-      .commit();
-
-    // Send status update email after order is updated (if status changed)
-    if (updates.status && updates.status !== currentOrder.status) {
-      // Fetch the complete order with all fields including pricing for the email
-      // Use parameterized query to prevent GROQ injection
-      const completeOrder = await serverClient.fetch<Order | null>(
-        `*[_type == "order" && _id == $id][0]{
-          _id,
-          orderNumber,
-          status,
-          customer,
-          items,
-          delivery,
-          pricing,
-          messages[]{
-            message,
-            attachments[]{
-              _type,
-              asset->{
-                _id,
-                url
-              },
-              alt,
-              caption
-            }
-          }
-        }`,
-        { id }
-      );
-
-      if (completeOrder) {
-        // Create a modified order object with the updated delivery method for email
-        const orderForEmail = {
-          ...completeOrder,
-          delivery: {
-            ...completeOrder.delivery,
-            deliveryMethod: updates.deliveryMethod || completeOrder.delivery.deliveryMethod
-          }
-        };
-        await sendStatusUpdateEmail(orderForEmail, updates.status);
+      const newNote: OrderNote = {
+        note: (updates.note && updates.note.trim()) || '',
+        author: updates.author || 'Admin',
+        createdAt: new Date().toISOString(),
+        images: uploadedImages
       }
+
+      nextOrder.notes = [...(nextOrder.notes || []), newNote]
+    }
+
+    const updatedOrder = await updateSupabaseOrder(nextOrder)
+
+    if (updates.status && updates.status !== currentOrder.status) {
+      await sendStatusUpdateEmail(updatedOrder, updates.status)
     }
 
     return NextResponse.json({
       success: true,
       order: updatedOrder,
       message: 'Order updated successfully'
-    });
-
+    })
   } catch (error) {
-    logger.error('Failed to update order', error);
+    logger.error('Failed to update order', error)
     return NextResponse.json(
       { error: 'Failed to update order', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
-    );
+    )
   }
 }
 
-// DELETE - Delete order (soft delete by default, permanent delete with password)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Verify admin authentication
-  const isAuthenticated = await isAdminAuthenticated(request);
+  const isAuthenticated = await isAdminAuthenticated(request)
   if (!isAuthenticated) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
-    );
+    )
   }
 
   try {
-    const { id } = await params;
-    const body = await request.json().catch(() => ({}));
-    const { password, permanent } = body;
-
-    // Use parameterized query to prevent GROQ injection
-    const currentOrder = await serverClient.fetch<Order | null>(
-      `*[_type == "order" && _id == $id][0]`,
-      { id }
-    );
+    const { id } = await params
+    const body = parseDeleteRequestBody(await request.json().catch(() => ({})))
+    const currentOrder = await getSupabaseOrderById(id)
 
     if (!currentOrder) {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
-      );
+      )
     }
 
-    // Check if this is a permanent delete request
-    if (permanent && password) {
-      // Verify admin password for permanent deletion
-      const adminPassword = process.env.ADMIN_PASSWORD;
+    if (body.permanent) {
+      const password = body.password?.trim() || ''
+
+      if (!password) {
+        return NextResponse.json(
+          { error: 'Admin password is required' },
+          { status: 400 }
+        )
+      }
+
+      const adminPassword = process.env.ADMIN_PASSWORD
       if (!adminPassword) {
         return NextResponse.json(
           { error: 'Admin password not configured' },
           { status: 500 }
-        );
+        )
       }
 
       if (password !== adminPassword) {
         return NextResponse.json(
           { error: 'Invalid password' },
           { status: 401 }
-        );
+        )
       }
 
-      // Permanently delete the order from Sanity
-      await serverClient.delete(id);
+      await deleteSupabaseOrder(id)
 
       return NextResponse.json({
         success: true,
-        message: 'Order permanently deleted from Sanity'
-      });
+        message: 'Order permanently deleted from Supabase'
+      })
     }
 
-    // Default behavior: Soft delete by changing status to cancelled
-    const cancelledOrder = await serverClient
-      .patch(id)
-      .set({
-        status: 'cancelled',
-        'pricing.paymentStatus': 'cancelled',
-        'pricing.paymentMethod': 'cancelled'
-      })
-      .commit();
+    const cancelledOrder = await updateSupabaseOrder({
+      ...currentOrder,
+      status: 'cancelled',
+      pricing: {
+        ...currentOrder.pricing,
+        paymentStatus: 'cancelled',
+        paymentMethod: 'cancelled'
+      }
+    })
 
-    // Send cancellation email to customer
-    await sendStatusUpdateEmail(currentOrder, 'cancelled');
+    await sendStatusUpdateEmail(cancelledOrder, 'cancelled')
 
     return NextResponse.json({
       success: true,
       order: cancelledOrder,
       message: 'Order cancelled successfully'
-    });
-
+    })
   } catch (error) {
-    logger.error('Failed to delete order', error);
+    logger.error('Failed to delete order', error)
     return NextResponse.json(
       { error: 'Failed to delete order', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
-    );
+    )
   }
 }
 
-// Helper function to send status update emails
 async function sendStatusUpdateEmail(order: Order, newStatus: string) {
   const emailMode = getEmailTransportMode()
 
@@ -585,7 +467,7 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     }
 
     if (Array.isArray(order.items) && order.items.length > 0) {
-      return order.items.reduce((sum: number, item: OrderItem) => {
+      return order.items.reduce((sum, item) => {
         const itemTotal = typeof item.totalPrice === 'number' ? item.totalPrice : item.unitPrice || 0
         return sum + itemTotal
       }, 0)
@@ -647,5 +529,3 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     logger.error('Failed to send status update email', emailError)
   }
 }
-
-

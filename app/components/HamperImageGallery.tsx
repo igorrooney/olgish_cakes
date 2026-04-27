@@ -2,11 +2,11 @@
 
 import { memo, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
-import { Box } from "@/lib/mui-optimization";
+import { Box } from "@/lib/daisy-ui";
 import { AccessibleIconButton } from "@/lib/ui-components";
 // Import icons directly for better HMR support
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { ArrowBackIcon } from "@/lib/daisy-ui";
+import { ArrowForwardIcon } from "@/lib/daisy-ui";
 import { urlFor } from "@/sanity/lib/image";
 import { GiftHamperImage } from "@/types/giftHamper";
 

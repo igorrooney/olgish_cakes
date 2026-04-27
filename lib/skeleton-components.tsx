@@ -2,7 +2,7 @@
  * Reusable skeleton components for consistent loading states
  */
 
-import { Box, Card, CardContent, Skeleton } from "@mui/material";
+import { Box, Card, CardContent, Skeleton } from "@/lib/daisy-ui";
 import { memo } from "react";
 
 interface TestimonialSkeletonProps {

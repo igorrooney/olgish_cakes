@@ -68,7 +68,7 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI components
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   CloudUploadIcon: () => <span>☁️</span>,
   DeleteIcon: () => <span>🗑️</span>,
   Alert: ({ children, severity, ...props }: MockProps) => (

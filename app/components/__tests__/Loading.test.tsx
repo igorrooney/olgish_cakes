@@ -16,7 +16,7 @@ jest.mock('framer-motion', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   CircularProgress: ({ size, thickness, sx, ...props }: MockProps) => (
     <div data-testid="circular-progress" data-size={size} data-thickness={thickness} {...props}>

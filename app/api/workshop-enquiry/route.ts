@@ -6,6 +6,7 @@ import {
   requiresLiveEmailConfiguration,
   sendEmail
 } from '@/lib/email/service'
+import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   applyEnquiryRateLimitHeaders,
   getEnquiryRateLimitIdentifier,
@@ -235,6 +236,17 @@ export async function POST(request: NextRequest) {
       logSupabaseInsertFailure(insertError)
       throw new Error('Failed to save workshop enquiry')
     }
+
+    await sendTelegramManagerNotification({
+      type: 'workshop-enquiry',
+      customerName: validated.fullName,
+      customerEmail: validated.email,
+      customerPhone: validated.phone || undefined,
+      dateNeeded: validated.preferredDate,
+      productName: resolvedEventType,
+      messagePreview: validated.brief,
+      adminPath: '/admin'
+    })
 
     const notificationContext = {
       customerName: validated.fullName,

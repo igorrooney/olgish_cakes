@@ -8,8 +8,24 @@ import { POST } from '../route'
 // Mock Resend
 const mockSend = jest.fn()
 const mockSupabaseInsert = jest.fn()
+const mockStorageUpload = jest.fn()
+const mockStorageCreateSignedUrl = jest.fn(() => ({
+  data: { signedUrl: 'https://example.supabase.co/storage/v1/object/sign/custom-cake-enquiries/orders/design.jpg?token=test-token' }
+}))
 const mockSupabaseFrom = jest.fn(() => ({ insert: mockSupabaseInsert }))
-const mockGetSupabaseAdminClient = jest.fn(() => ({ from: mockSupabaseFrom }))
+const mockStorageFrom = jest.fn(() => ({
+  upload: mockStorageUpload,
+  createSignedUrl: mockStorageCreateSignedUrl
+}))
+const mockGetSupabaseAdminClient = jest.fn(() => ({
+  from: mockSupabaseFrom,
+  storage: {
+    from: mockStorageFrom
+  }
+}))
+const mockCreateSupabaseOrder = jest.fn()
+const mockUpdateSupabaseOrderMetadata = jest.fn()
+const mockSendTelegramManagerNotification = jest.fn()
 jest.mock('resend', () => ({
   Resend: jest.fn(() => ({
     emails: { send: mockSend }
@@ -24,34 +40,20 @@ jest.mock('@/lib/csrf', () => ({
   validateCsrfToken: jest.fn()
 }))
 
-// Mock Sanity
-jest.mock('@/sanity/lib/client', () => {
-  const mockUploadFn = jest.fn()
-  const mockCreateFn = jest.fn()
-  const mockPatchCommitFn = jest.fn()
-  const mockPatchSetFn = jest.fn(() => ({ commit: mockPatchCommitFn }))
-  const mockPatchFn = jest.fn(() => ({ set: mockPatchSetFn }))
-  return {
-    serverClient: {
-      assets: { upload: mockUploadFn },
-      create: mockCreateFn,
-      patch: mockPatchFn
-    },
-    __mockUpload: mockUploadFn,
-    __mockCreate: mockCreateFn,
-    __mockPatch: mockPatchFn,
-    __mockPatchSet: mockPatchSetFn,
-    __mockPatchCommit: mockPatchCommitFn
-  }
-})
+jest.mock('@/lib/orders/supabase-orders', () => ({
+  createSupabaseOrder: (...args: unknown[]) => mockCreateSupabaseOrder(...args),
+  updateSupabaseOrderMetadata: (...args: unknown[]) => mockUpdateSupabaseOrderMetadata(...args)
+}))
 
-const {
-  __mockUpload: mockUploadFromMock,
-  __mockCreate: mockCreateFromMock,
-  __mockPatch: mockPatchFromMock,
-  __mockPatchSet: mockPatchSetFromMock,
-  __mockPatchCommit: mockPatchCommitFromMock
-} = jest.requireMock('@/sanity/lib/client')
+jest.mock('@/lib/notifications/telegram', () => ({
+  sendTelegramManagerNotification: (...args: unknown[]) => mockSendTelegramManagerNotification(...args)
+}))
+
+const mockUploadFromMock = mockStorageUpload
+const mockCreateFromMock = mockCreateSupabaseOrder
+const mockPatchFromMock = mockUpdateSupabaseOrderMetadata
+const mockPatchSetFromMock = mockUpdateSupabaseOrderMetadata
+const mockPatchCommitFromMock = mockUpdateSupabaseOrderMetadata
 
 const defaultCsrfToken = 'valid-token'
 
@@ -98,9 +100,10 @@ describe('/api/contact', () => {
     process.env.ORDER_EMAIL_BCC = 'orders-bcc@example.com'
     mockSend.mockResolvedValue({ data: { id: 'test-email-id' }, error: null })
     mockSupabaseInsert.mockResolvedValue({ error: null })
-    mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id' })
-    mockUploadFromMock.mockResolvedValue({ _id: 'test-asset-id' })
-    mockPatchCommitFromMock.mockResolvedValue({ _id: 'test-order-id' })
+    mockStorageUpload.mockResolvedValue({ error: null })
+    mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id', metadata: {} })
+    mockPatchCommitFromMock.mockResolvedValue({ _id: 'test-order-id', metadata: {} })
+    mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
   })
 
@@ -264,6 +267,13 @@ describe('/api/contact', () => {
       })
       expect(mockSend).toHaveBeenCalledTimes(1)
       expect(mockSend.mock.calls[0]?.[0]?.html).not.toContain('>Phone<')
+      expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'contact-enquiry',
+        customerName: 'John',
+        customerEmail: 'john@example.com',
+        messagePreview: 'Test message with enough characters',
+        adminPath: '/admin'
+      }))
     })
 
     it('should still send the contact email when Supabase admin env vars are absent', async () => {
@@ -285,6 +295,7 @@ describe('/api/contact', () => {
       expect(mockGetSupabaseAdminClient).not.toHaveBeenCalled()
       expect(mockSupabaseInsert).not.toHaveBeenCalled()
       expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSendTelegramManagerNotification).not.toHaveBeenCalled()
     })
 
     it('should return 400 when a general contact phone number is invalid', async () => {
@@ -565,7 +576,6 @@ describe('/api/contact', () => {
       expect(mockCreateFromMock).toHaveBeenCalled()
       expect(mockCreateFromMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          _type: 'order',
           orderNumber: expect.any(String),
           status: 'new',
           orderType: 'custom-design',
@@ -619,13 +629,11 @@ describe('/api/contact', () => {
       expect(adminEmailCall?.text).toContain('- Customer message / requirements: Please call before delivery')
       expect(adminEmailCall?.text).toContain('- Referrer: instagram')
 
-      expect(mockPatchFromMock).toHaveBeenCalledWith('test-order-id')
-      expect(mockPatchSetFromMock).toHaveBeenCalledWith(expect.objectContaining({
-        'metadata.customerEmailSent': true,
-        'metadata.adminEmailSent': true,
-        'metadata.emailAttemptedAt': expect.any(String)
+      expect(mockPatchSetFromMock).toHaveBeenCalledWith('test-order-id', {}, expect.objectContaining({
+        customerEmailSent: true,
+        adminEmailSent: true,
+        emailAttemptedAt: expect.any(String)
       }))
-      expect(mockPatchCommitFromMock).toHaveBeenCalled()
     })
     it('should accept legacy order page payload with custom product type and normalize custom design order type', async () => {
       const formData = new FormData()
@@ -707,8 +715,33 @@ describe('/api/contact', () => {
       const response = await POST(request)
 
       expect(response.status).toBe(200)
+      expect(mockStorageFrom).toHaveBeenCalledWith('custom-cake-enquiries')
       expect(mockUploadFromMock).toHaveBeenCalled()
-      expect(mockCreateFromMock).toHaveBeenCalled()
+      expect(mockCreateFromMock).toHaveBeenCalledWith(expect.objectContaining({
+        messages: [
+          expect.objectContaining({
+            attachments: [
+              expect.objectContaining({
+                asset: expect.objectContaining({
+                  _type: 'supabase-file',
+                  url: 'https://example.supabase.co/storage/v1/object/sign/custom-cake-enquiries/orders/design.jpg?token=test-token'
+                })
+              })
+            ]
+          })
+        ]
+      }))
+      expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'inline-order',
+        customerName: 'John',
+        customerEmail: 'john@example.com',
+        customerPhone: '07123456789',
+        productName: 'Honey Cake',
+        total: 25,
+        messagePreview: 'Please call before delivery',
+        imageCount: 1,
+        adminPath: '/admin/orders'
+      }))
     })
 
     it('should persist gift note and include it in customer/admin emails for gift-hamper orders', async () => {
@@ -889,16 +922,16 @@ describe('/api/contact', () => {
 
       expect(response.status).toBe(200)
       expect(mockSend).not.toHaveBeenCalled()
-      expect(mockPatchSetFromMock).toHaveBeenCalledWith(expect.objectContaining({
-        'metadata.customerEmailSent': false,
-        'metadata.adminEmailSent': false,
-        'metadata.customerEmailError': 'Transport did not accept customer email',
-        'metadata.adminEmailError': 'Transport did not accept admin email',
-        'metadata.emailAttemptedAt': expect.any(String)
+      expect(mockPatchSetFromMock).toHaveBeenCalledWith('test-order-id', {}, expect.objectContaining({
+        customerEmailSent: false,
+        adminEmailSent: false,
+        customerEmailError: 'Transport did not accept customer email',
+        adminEmailError: 'Transport did not accept admin email',
+        emailAttemptedAt: expect.any(String)
       }))
     })
     it('should keep fallback admin email complete when order creation fails', async () => {
-      mockCreateFromMock.mockRejectedValue(new Error('Sanity creation failed'))
+      mockCreateFromMock.mockRejectedValue(new Error('Supabase order creation failed'))
 
       const formData = new FormData()
       formData.append('name', 'John')
@@ -947,7 +980,7 @@ describe('/api/contact', () => {
     })
 
     it('should include gift note in fallback customer email when order creation fails', async () => {
-      mockCreateFromMock.mockRejectedValue(new Error('Sanity creation failed'))
+      mockCreateFromMock.mockRejectedValue(new Error('Supabase order creation failed'))
 
       const formData = new FormData()
       formData.append('name', 'Jane')
@@ -979,7 +1012,7 @@ describe('/api/contact', () => {
     })
 
     it('should return 500 when fallback admin email is not accepted', async () => {
-      mockCreateFromMock.mockRejectedValue(new Error('Sanity creation failed'))
+      mockCreateFromMock.mockRejectedValue(new Error('Supabase order creation failed'))
       mockSend.mockResolvedValueOnce({ error: { message: 'Admin fallback failed' } })
 
       const formData = new FormData()

@@ -17,7 +17,7 @@ jest.mock('@/lib/business-info', () => ({
   }
 }))
 
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Grid: ({ children, container, item, xs, md, spacing, ...props }: MockProps) => (
     <div data-container={container} data-item={item} {...props}>{children}</div>
   ),

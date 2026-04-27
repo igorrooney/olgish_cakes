@@ -1,7 +1,7 @@
 "use client";
 
 import { PortableText } from "@portabletext/react";
-import { Typography, Box, Link } from "@/lib/mui-optimization";
+import { Typography, Box, Link } from "@/lib/daisy-ui";
 import { designTokens } from "@/lib/design-system";
 
 const { colors, typography } = designTokens;

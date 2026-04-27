@@ -15,13 +15,13 @@ import {
   IconButton,
   Badge,
   Divider,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import {
   ShoppingCartIcon,
   FavoriteIcon,
   StarIcon,
   ExpandMoreIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 import { designTokens } from "./design-system";
 import { getPriceValidUntil } from "@/app/utils/seo";
 

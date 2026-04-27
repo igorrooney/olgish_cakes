@@ -8,7 +8,7 @@ import {
   Link as MuiLink,
   Stack,
   CloseIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import {

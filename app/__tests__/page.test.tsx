@@ -129,7 +129,7 @@ jest.mock('next/image', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Avatar: ({ children, ...props }: MUIComponentProps) => <div data-testid="avatar" {...props}>{children}</div>,
   Box: ({ children, ...props }: MUIComponentProps) => <div {...props}>{children}</div>,
   Button: ({ children, component, href, ...props }: MUIComponentProps) => {

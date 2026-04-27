@@ -4,7 +4,7 @@ import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { Box, Typography, Tooltip } from "@/lib/mui-optimization";
+import { Box, Typography, Tooltip } from "@/lib/daisy-ui";
 import { Container as DesignContainer, AccessibleIconButton } from "@/lib/ui-components";
 import { useReviewStats } from "./ReviewStatsProvider";
 import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
@@ -16,7 +16,7 @@ import {
   FacebookIcon,
   YouTubeIcon,
   WhatsAppIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 
 const { colors, typography, spacing } = designTokens;
 

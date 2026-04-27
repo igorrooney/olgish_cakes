@@ -50,7 +50,7 @@ const renderWithStats = (stats = { count: 13, averageRating: 5 }) => {
   )
 }
 
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, component, role, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" role={role} {...props}>{children}</Component>

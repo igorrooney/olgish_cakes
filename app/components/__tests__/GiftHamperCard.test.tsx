@@ -89,7 +89,7 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   Typography: ({ children, variant, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'

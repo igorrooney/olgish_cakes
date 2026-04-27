@@ -27,7 +27,7 @@ jest.mock('@portabletext/react', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Typography: ({ children, variant, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>

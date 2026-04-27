@@ -3,7 +3,7 @@
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { Box, Typography } from "@/lib/mui-optimization";
+import { Box, Typography } from "@/lib/daisy-ui";
 import { BRAND_ID, DEFAULT_RATING } from "@/lib/schema-constants";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";

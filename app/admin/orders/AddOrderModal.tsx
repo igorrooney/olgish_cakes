@@ -1,7 +1,7 @@
 "use client";
 
 import { logger } from "@/lib/logger";
-import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { Add as AddIcon, Remove as RemoveIcon } from "@/lib/daisy-ui";
 import {
   Alert,
   Box,
@@ -19,7 +19,7 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import { useEffect, useState } from "react";
 
 interface AddOrderModalProps {

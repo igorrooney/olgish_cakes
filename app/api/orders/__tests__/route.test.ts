@@ -3,11 +3,10 @@
  */
 import { NextRequest } from 'next/server'
 
-const mockCreate = jest.fn()
-const mockPatchCommit = jest.fn()
-const mockPatchSet = jest.fn(() => ({ commit: mockPatchCommit }))
-const mockPatch = jest.fn(() => ({ set: mockPatchSet }))
+const mockCreateSupabaseOrder = jest.fn()
+const mockUpdateSupabaseOrderMetadata = jest.fn()
 const mockSendEmail = jest.fn()
+const mockSendTelegramManagerNotification = jest.fn()
 
 jest.mock('@/lib/rate-limit', () => ({
   withRateLimit: <T extends (...args: unknown[]) => unknown>(handler: T) => handler
@@ -21,12 +20,10 @@ jest.mock('@/lib/order-utils', () => ({
   generateOrderNumber: jest.fn(() => 'OC-TEST-1001')
 }))
 
-jest.mock('@/sanity/lib/client', () => ({
-  serverClient: {
-    create: (...args: unknown[]) => mockCreate(...args),
-    patch: (...args: unknown[]) => mockPatch(...args),
-    fetch: jest.fn()
-  }
+jest.mock('@/lib/orders/supabase-orders', () => ({
+  createSupabaseOrder: (...args: unknown[]) => mockCreateSupabaseOrder(...args),
+  listSupabaseOrders: jest.fn(),
+  updateSupabaseOrderMetadata: (...args: unknown[]) => mockUpdateSupabaseOrderMetadata(...args)
 }))
 
 jest.mock('@/lib/email/service', () => ({
@@ -35,13 +32,18 @@ jest.mock('@/lib/email/service', () => ({
   sendEmail: (...args: unknown[]) => mockSendEmail(...args)
 }))
 
+jest.mock('@/lib/notifications/telegram', () => ({
+  sendTelegramManagerNotification: (...args: unknown[]) => mockSendTelegramManagerNotification(...args)
+}))
+
 import { POST } from '../route'
 
 describe('/api/orders POST', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreate.mockResolvedValue({ _id: 'order-1' })
-    mockPatchCommit.mockResolvedValue({ _id: 'order-1' })
+    mockCreateSupabaseOrder.mockResolvedValue({ _id: 'order-1', metadata: {} })
+    mockUpdateSupabaseOrderMetadata.mockResolvedValue({ _id: 'order-1', metadata: {} })
+    mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
   })
 
@@ -96,12 +98,10 @@ describe('/api/orders POST', () => {
 
     expect(response.status).toBe(200)
     expect(mockSendEmail).toHaveBeenCalledTimes(2)
-    expect(mockPatch).toHaveBeenCalledWith('order-1')
-    expect(mockPatchSet).toHaveBeenCalledWith(expect.objectContaining({
-      'metadata.emailSent': false,
-      'metadata.emailError': expect.stringContaining('Transport did not accept the customer email')
+    expect(mockUpdateSupabaseOrderMetadata).toHaveBeenCalledWith('order-1', {}, expect.objectContaining({
+      emailSent: false,
+      emailError: expect.stringContaining('Transport did not accept the customer email')
     }))
-    expect(mockPatchCommit).toHaveBeenCalled()
   })
   it('passes all line items to customer and admin order emails', async () => {
     mockSendEmail
@@ -288,5 +288,129 @@ describe('/api/orders POST', () => {
     expect(adminCall.input.referenceImageUrls).toEqual([
       'https://cdn.sanity.io/images/demo/reference-1.jpg'
     ])
+  })
+
+  it('sends a Telegram manager notification after order creation', async () => {
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '07123456789',
+        message: 'Please make it less sweet',
+        orderType: 'standard',
+        productType: 'cake',
+        productName: 'Honey Cake',
+        designType: 'standard',
+        quantity: 1,
+        unitPrice: 30,
+        totalPrice: 30,
+        deliveryMethod: 'collection',
+        paymentMethod: 'cash-collection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'new-order',
+      customerName: 'John Doe',
+      customerEmail: 'john@example.com',
+      customerPhone: '07123456789',
+      productName: 'Honey Cake',
+      total: 30,
+      messagePreview: 'Please make it less sweet',
+      adminPath: '/admin/orders'
+    }))
+  })
+
+  it('still returns success when Telegram manager notification fails', async () => {
+    mockSendTelegramManagerNotification.mockResolvedValueOnce({
+      sent: false,
+      skipped: false,
+      error: 'Telegram failed'
+    })
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '07123456789',
+        message: 'Please make it less sweet',
+        orderType: 'standard',
+        productType: 'cake',
+        productName: 'Honey Cake',
+        designType: 'standard',
+        quantity: 1,
+        unitPrice: 30,
+        totalPrice: 30,
+        deliveryMethod: 'collection',
+        paymentMethod: 'cash-collection'
+      })
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual(expect.objectContaining({
+      success: true,
+      orderId: 'order-1'
+    }))
   })
 })

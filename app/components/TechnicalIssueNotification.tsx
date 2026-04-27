@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Alert, AlertTitle, IconButton, Typography, Button } from "@/lib/mui-optimization";
-import CloseIcon from "@mui/icons-material/Close";
-import PhoneIcon from "@mui/icons-material/Phone";
-import EmailIcon from "@mui/icons-material/Email";
-import InfoIcon from "@mui/icons-material/Info";
+import { Box, Alert, AlertTitle, IconButton, Typography, Button } from "@/lib/daisy-ui";
+import { CloseIcon } from "@/lib/daisy-ui";
+import { PhoneIcon } from "@/lib/daisy-ui";
+import { EmailIcon } from "@/lib/daisy-ui";
+import { InfoIcon } from "@/lib/daisy-ui";
 import { colors, spacing, borderRadius } from "@/lib/design-system";
 import { BUSINESS_CONSTANTS, PHONE_UTILS } from "@/lib/constants";
 import Link from "next/link";

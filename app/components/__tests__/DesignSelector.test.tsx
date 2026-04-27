@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { DesignSelector } from '../DesignSelector'
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, sx, ...props }: MockProps) => <div data-testid="box" {...props}>{children}</div>,
   FormControl: ({ children, fullWidth, ...props }: MockProps) => (
     <div data-testid="form-control" data-full-width={fullWidth} {...props}>{children}</div>

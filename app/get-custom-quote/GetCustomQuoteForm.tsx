@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '../hooks/useCustomCakeEnquiry'

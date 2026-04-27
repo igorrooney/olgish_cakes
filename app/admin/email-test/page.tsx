@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { AdminAuthGuard } from '@/components/AdminAuthGuard'
 import { EmailTestPageClient } from './EmailTestPageClient'
 import { Providers } from '@/app/providers'
 import { isAdminAuthenticated } from '@/lib/admin/auth.server'
@@ -21,8 +22,10 @@ export default async function EmailTestPage() {
   }
 
   return (
-    <Providers>
-      <EmailTestPageClient />
-    </Providers>
+    <AdminAuthGuard>
+      <Providers>
+        <EmailTestPageClient />
+      </Providers>
+    </AdminAuthGuard>
   )
 }

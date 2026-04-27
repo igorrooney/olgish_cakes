@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Box } from "@mui/material";
+import { Box } from "@/lib/daisy-ui";
 import { useState } from "react";
 
 interface InteractiveLinkProps {

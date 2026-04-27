@@ -46,6 +46,22 @@ jest.mock('../components/ReviewStatsProvider', () => ({
   ReviewStatsProvider: ({ children }: { children: ReactNode }) => <>{children}</>
 }))
 
+jest.mock('../components/RootChrome', () => ({
+  RootChrome: ({
+    children,
+    isVercelDeployment
+  }: {
+    children: ReactNode
+    isVercelDeployment: boolean
+  }) => (
+    <div data-testid='root-chrome'>
+      <div data-testid='non-critical-client-features' />
+      {children}
+      {isVercelDeployment ? <div data-testid='deferred-vercel-observability' /> : null}
+    </div>
+  )
+}))
+
 jest.mock('../components/PerformanceOptimizer', () => ({
   PerformanceOptimizer: () => <div data-testid='performance-optimizer' />
 }))

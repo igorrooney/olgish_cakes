@@ -39,19 +39,13 @@ const nextConfig = {
   turbopack: {},
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],
+    optimizePackageImports: ["framer-motion"],
     // Enable new performance optimizations
     optimizeServerReact: true,
     // Enable modern JavaScript features
     esmExternals: true,
     // Performance optimizations
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
-  },
-  // Modularize imports for better tree-shaking and HMR support
-  modularizeImports: {
-    "@mui/icons-material": {
-      transform: "@mui/icons-material/{{member}}",
-    },
   },
   // Server external packages (moved from experimental in Next.js 16)
   // Removed @sanity/client to avoid version mismatch warnings in Studio

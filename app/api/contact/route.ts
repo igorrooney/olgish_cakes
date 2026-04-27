@@ -3,9 +3,14 @@ import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { validateCsrfToken } from '@/lib/csrf'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
+import {
+  createSupabaseOrder,
+  updateSupabaseOrderMetadata
+} from '@/lib/orders/supabase-orders'
 import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
 import { contactFormSchema, formatValidationErrors, validateRequest } from '@/lib/validation'
-import { serverClient } from '@/sanity/lib/client'
+import type { OrderMessageAttachment } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
@@ -17,14 +22,6 @@ type InlineOrderDesignType = 'standard' | 'individual'
 type InlineOrderType = 'browse-catalog' | 'custom-design' | 'wedding-cake' | 'gift-hamper' | 'custom-quote'
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
-
-interface SanityImageReference {
-  _type: 'image'
-  asset: {
-    _type: 'reference'
-    _ref: string
-  }
-}
 
 type ContactEnquiryInsertParams = {
   name: string
@@ -193,6 +190,45 @@ function getDesignImageError(file: File): string | null {
   }
 
   return null
+}
+
+async function uploadOrderReferenceImage(orderNumber: string, file: File, imageBuffer: ArrayBuffer): Promise<OrderMessageAttachment> {
+  const supabase = getSupabaseAdminClient()
+  const bucket = process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
+  const extension = file.name.includes('.') ? file.name.split('.').pop() : 'jpg'
+  const safeName = file.name
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^a-zA-Z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase() || 'reference'
+  const path = `orders/${orderNumber}/references/${Date.now()}-${safeName}.${extension}`
+
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(path, imageBuffer, {
+      contentType: file.type || 'image/jpeg',
+      upsert: false
+    })
+
+  if (error) {
+    throw new Error(`Failed to upload order reference image to Supabase Storage: ${error.message}`)
+  }
+
+  const { data } = await supabase.storage
+    .from(bucket)
+    .createSignedUrl(path, 60 * 60)
+
+  return {
+    _type: 'image',
+    asset: {
+      _type: 'supabase-file',
+      _id: path,
+      _ref: path,
+      url: data?.signedUrl || ''
+    },
+    alt: file.name || 'Uploaded reference image',
+    caption: ''
+  }
 }
 
 function buildContactEnquiryInsertHints(errorDetails: string) {
@@ -469,6 +505,20 @@ async function handlePOST(request: NextRequest) {
         })
       }
 
+      if (enquiryPersisted) {
+        await sendTelegramManagerNotification({
+          type: 'contact-enquiry',
+          customerName: name,
+          customerEmail: email,
+          customerPhone: normalizedPhone,
+          dateNeeded: dateNeeded || undefined,
+          productName: cakeInterest || undefined,
+          messagePreview: message || note || giftNote,
+          imageCount: designImage ? 1 : 0,
+          adminPath: '/admin'
+        })
+      }
+
       try {
         const adminEmailResult = await sendEmail({
           templateId: 'contact-admin-inquiry',
@@ -576,27 +626,6 @@ async function handlePOST(request: NextRequest) {
     let orderError: unknown = null
 
     try {
-      let attachmentImages: SanityImageReference[] = []
-      if (designImage && imageBuffer) {
-        try {
-          const uploaded = await serverClient.assets.upload('image', Buffer.from(imageBuffer), {
-            filename: designImage.name,
-            contentType: designImage.type
-          })
-
-          attachmentImages = [
-            {
-              _type: 'image',
-              asset: { _type: 'reference', _ref: uploaded._id }
-            }
-          ]
-        } catch (uploadError) {
-          logger.error('Failed to upload design image to Sanity', {
-            error: uploadError
-          })
-        }
-      }
-
       const resolvedProductType: InlineOrderProductType = normalizedProductType || 'cake'
       const resolvedOrderType = resolveInlineOrderType({
         productType: resolvedProductType,
@@ -616,8 +645,20 @@ async function handlePOST(request: NextRequest) {
         : message
 
       const orderNumber = generateOrderNumber()
+      let attachmentImages: OrderMessageAttachment[] = []
+      if (designImage && imageBuffer) {
+        try {
+          attachmentImages = [
+            await uploadOrderReferenceImage(orderNumber, designImage, imageBuffer)
+          ]
+        } catch (uploadError) {
+          logger.error('Failed to upload design image to Supabase', {
+            error: uploadError
+          })
+        }
+      }
+
       const orderDoc = {
-        _type: 'order',
         orderNumber,
         status: 'new',
         orderType: resolvedOrderType,
@@ -645,7 +686,7 @@ async function handlePOST(request: NextRequest) {
           }
         ],
         delivery: {
-          dateNeeded: dateNeeded || null,
+          dateNeeded: dateNeeded || undefined,
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           deliveryNotes: '',
@@ -684,9 +725,22 @@ async function handlePOST(request: NextRequest) {
         }
       }
 
-      const createdOrder = await serverClient.create(orderDoc)
+      const createdOrder = await createSupabaseOrder(orderDoc)
       orderCreated = true
       const emailAttemptedAt = new Date().toISOString()
+
+      await sendTelegramManagerNotification({
+        type: 'inline-order',
+        customerName: name,
+        customerEmail: email,
+        customerPhone: normalizedPhone,
+        dateNeeded: dateNeeded || undefined,
+        productName,
+        total: totalPrice || 0,
+        messagePreview: resolvedCustomerMessage || note || giftNote,
+        imageCount: designImage ? 1 : 0,
+        adminPath: '/admin/orders'
+      })
 
       let customerEmailSent = false
       let adminEmailSent = false
@@ -794,21 +848,18 @@ async function handlePOST(request: NextRequest) {
       }
 
       const metadataPatch: Record<string, unknown> = {
-        'metadata.customerEmailSent': customerEmailSent,
-        'metadata.adminEmailSent': adminEmailSent,
-        'metadata.emailAttemptedAt': emailAttemptedAt
+        customerEmailSent,
+        adminEmailSent,
+        emailAttemptedAt
       }
       if (customerEmailError.length > 0) {
-        metadataPatch['metadata.customerEmailError'] = customerEmailError
+        metadataPatch.customerEmailError = customerEmailError
       }
       if (adminEmailError.length > 0) {
-        metadataPatch['metadata.adminEmailError'] = adminEmailError
+        metadataPatch.adminEmailError = adminEmailError
       }
 
-      await serverClient
-        .patch(createdOrder._id)
-        .set(metadataPatch)
-        .commit()
+      await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, metadataPatch)
     } catch (creationError) {
       orderError = creationError
       logger.error('Exception while creating inline order', creationError)

@@ -13,7 +13,7 @@ import {
   ClearIcon,
   Chip,
   Divider,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 import { AccessibleIconButton, TouchTargetWrapper } from "@/lib/ui-components";
 import { clearCache, invalidateCache } from "@/app/utils/fetchCakes";
 import { cacheManager } from "@/app/utils/cacheManager";

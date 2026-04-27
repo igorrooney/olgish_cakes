@@ -16,7 +16,7 @@ jest.mock('next/link', () => {
 })
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Breadcrumbs: ({ children, ...props }: MockProps) => (
     <nav data-testid="breadcrumbs" {...props}>{children}</nav>
   ),

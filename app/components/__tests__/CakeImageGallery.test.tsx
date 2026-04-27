@@ -41,7 +41,9 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
+  ArrowBackIcon: () => <span>Back</span>,
+  ArrowForwardIcon: () => <span>Forward</span>,
   Box: ({ children, role, sx, ...props }: MockProps) => (
     <div data-testid="box" role={role} {...props}>{children}</div>
   ),
@@ -53,16 +55,6 @@ jest.mock('@/lib/mui-optimization', () => ({
   Typography: ({ children, ...props }: MockProps) => <div data-testid="typography" {...props}>{children}</div>,
 }))
 
-// Mock direct icon imports
-jest.mock('@mui/icons-material/ArrowBack', () => ({
-  __esModule: true,
-  default: () => <span>◀</span>
-}))
-
-jest.mock('@mui/icons-material/ArrowForward', () => ({
-  __esModule: true,
-  default: () => <span>▶</span>
-}))
 
 // Mock DesignSelector
 jest.mock('../DesignSelector', () => ({

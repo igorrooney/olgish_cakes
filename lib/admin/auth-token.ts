@@ -1,4 +1,4 @@
-﻿import { jwtVerify } from 'jose'
+import { jwtVerify } from 'jose'
 
 interface AdminAuthConfig {
   adminUsername: string

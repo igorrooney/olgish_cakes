@@ -39,14 +39,18 @@ jest.mock('@/app/components/ContactForm', () => ({
   )
 }))
 
-jest.mock('@mui/material', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
+  AdapterDayjs: {},
   Box: ({ children, ...props }: { children?: React.ReactNode }) => <div {...props}>{children}</div>,
   Button: ({ children, ...props }: { children?: React.ReactNode }) => <button {...props}>{children}</button>,
+  CheckCircleIcon: () => <span>Success</span>,
   Dialog: ({ children, open }: { children?: React.ReactNode, open?: boolean }) => open ? <div>{children}</div> : null,
   DialogActions: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   DialogContent: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   DialogTitle: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   Divider: () => <hr />,
+  ErrorIcon: () => <span>Error</span>,
+  LocalizationProvider: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
   Paper: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   Typography: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   Chip: ({ label }: { label: string }) => <div>{label}</div>,
@@ -61,19 +65,6 @@ jest.mock('framer-motion', () => ({
     div: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
     create: (component: React.ElementType) => component
   }
-}))
-
-jest.mock('@mui/x-date-pickers/AdapterDayjs', () => ({
-  AdapterDayjs: {}
-}))
-
-jest.mock('@mui/x-date-pickers/LocalizationProvider', () => ({
-  LocalizationProvider: ({ children }: { children?: React.ReactNode }) => <>{children}</>
-}))
-
-jest.mock('@/lib/mui-optimization', () => ({
-  CheckCircleIcon: () => <span>Success</span>,
-  ErrorIcon: () => <span>Error</span>
 }))
 
 describe('GiftHamperOrderModal', () => {

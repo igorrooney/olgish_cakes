@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, TextField, Card, CardContent, Typography, Alert, Box } from "@mui/material";
-import { Lock as LockIcon } from "@mui/icons-material";
+import { Lock as LockIcon } from "@/lib/daisy-ui";
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
@@ -14,6 +13,8 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const controller = new AbortController();
+
     setLoading(true);
     setError("");
 
@@ -24,6 +25,7 @@ export default function AdminLoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -43,33 +45,34 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-base-200 px-4 py-12 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <LockIcon className="mx-auto h-12 w-12 text-blue-600" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <LockIcon className="mx-auto h-12 w-12 text-primary" />
+          <h2 className="mt-6 text-3xl font-semibold text-base-content">
             Admin Login
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-base-content/70">
             Enter your admin credentials to access the order management system
           </p>
         </div>
 
-        <Card>
-          <CardContent sx={{ p: 4 }}>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
-              )}
+        <div className="card bg-base-100 border border-base-300 shadow-sm">
+          <form className="card-body gap-4" onSubmit={handleSubmit}>
+            {error && (
+              <div className="alert alert-error" role="alert">
+                <span>{error}</span>
+              </div>
+            )}
 
-              <TextField
-                margin="normal"
+            <label className="form-control w-full" htmlFor="username">
+              <span className="label">
+                <span className="label-text">Username</span>
+              </span>
+              <input
                 required
-                fullWidth
+                className="input input-bordered w-full"
                 id="username"
-                label="Username"
                 name="username"
                 autoComplete="username"
                 autoFocus
@@ -77,13 +80,16 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
               />
+            </label>
 
-              <TextField
-                margin="normal"
+            <label className="form-control w-full" htmlFor="password">
+              <span className="label">
+                <span className="label-text">Password</span>
+              </span>
+              <input
                 required
-                fullWidth
+                className="input input-bordered w-full"
                 name="password"
-                label="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
@@ -91,22 +97,20 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
               />
+            </label>
 
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={loading}
-              >
-                {loading ? "Signing in..." : "Sign In"}
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+            <button
+              type="submit"
+              className="btn btn-primary mt-2 w-full"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+        </div>
 
         <div className="text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-base-content/60">
             Olgish Cakes Admin Portal
           </p>
         </div>

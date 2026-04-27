@@ -21,7 +21,7 @@ jest.mock('framer-motion', () => ({
 }))
 
 // Mock MUI
-jest.mock('@mui/material', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, component, src, alt, sx, ...props }: MockProps) => {
     if (component === 'img') {
       return <img src={src} alt={alt} {...props} />

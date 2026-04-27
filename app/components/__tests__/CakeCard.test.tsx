@@ -101,7 +101,7 @@ jest.mock('@/lib/ui-components', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Card: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
   CardContent: ({ children, sx, ...props }: MockProps) => <div {...props}>{children}</div>,
   Typography: ({ children, variant, component, sx, ...props }: MockProps) => {

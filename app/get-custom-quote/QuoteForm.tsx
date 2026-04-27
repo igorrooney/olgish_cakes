@@ -1,8 +1,8 @@
 "use client";
 
 // Import icons directly for better HMR support
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { ArrowBackIcon } from "@/lib/daisy-ui";
+import { ArrowForwardIcon } from "@/lib/daisy-ui";
 import {
   CakeOutlinedIcon,
   CelebrationIcon,
@@ -10,7 +10,7 @@ import {
   DeleteIcon,
   InfoIcon,
   LocalShippingIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 import {
   Alert,
   Box,
@@ -31,10 +31,10 @@ import {
   Stepper,
   TextField,
   Typography,
-} from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+} from "@/lib/daisy-ui";
+import { AdapterDayjs } from "@/lib/daisy-ui";
+import { DatePicker } from "@/lib/daisy-ui";
+import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/en-gb";
 import { motion } from "framer-motion";

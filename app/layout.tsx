@@ -2,11 +2,8 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { designTokens } from '@/lib/design-system'
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import { SiteHeader } from './components/homepage/SiteHeader'
 import { ReviewStatsProvider } from './components/ReviewStatsProvider'
-import { DeferredVercelObservability } from './components/DeferredVercelObservability'
-import { NonCriticalClientFeatures } from './components/NonCriticalClientFeatures'
-import { SiteFooter } from './components/SiteFooter'
+import { RootChrome } from './components/RootChrome'
 import './globals.css'
 import { getReviewStats } from './utils/review-stats.server'
 
@@ -240,13 +237,9 @@ export default async function RootLayout({
       </head>
       <body className={alice.variable} suppressHydrationWarning>
         <ReviewStatsProvider stats={reviewStats}>
-          <div className="flex flex-col min-h-screen">
-            <NonCriticalClientFeatures />
-            <SiteHeader />
-            <main className="flex-grow">{children}</main>
-            <SiteFooter />
-            {isVercelDeployment ? <DeferredVercelObservability /> : null}
-          </div>
+          <RootChrome isVercelDeployment={isVercelDeployment}>
+            {children}
+          </RootChrome>
         </ReviewStatsProvider>
 
       </body>

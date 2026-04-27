@@ -9,7 +9,7 @@ import {
   Avatar,
   CircularProgress,
   Alert,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { fetchTrustpilotReviews } from "@/app/lib/trustpilot";

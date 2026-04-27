@@ -7,6 +7,7 @@ import {
   takeEnquiryRateLimit
 } from '@/lib/enquiry-rate-limit'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   getSupabaseAdminClient,
   type SupabaseAdminClient
@@ -442,6 +443,18 @@ export async function POST(request: NextRequest) {
       logSupabaseInsertFailure(insertError)
       throw new Error('Failed to save enquiry')
     }
+
+    await sendTelegramManagerNotification({
+      type: 'custom-cake-enquiry',
+      customerName: formData.fullName,
+      customerEmail: formData.email || undefined,
+      customerPhone: formData.phone || undefined,
+      dateNeeded: formData.date,
+      productName: occasionValue || undefined,
+      messagePreview: requirementsValue,
+      imageCount: referenceImage ? 1 : 0,
+      adminPath: '/admin'
+    })
 
     const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
       weekday: 'long',

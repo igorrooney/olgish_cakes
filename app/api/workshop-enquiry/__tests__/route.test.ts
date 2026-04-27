@@ -8,6 +8,7 @@ import { takeEnquiryRateLimit } from '@/lib/enquiry-rate-limit'
 import { POST } from '../route'
 
 const mockSendEmail = jest.fn()
+const mockSendTelegramManagerNotification = jest.fn()
 const mockGetEmailTransportMode = jest.fn(() => 'disabled')
 const mockRequiresLiveEmailConfiguration = jest.fn(() => false)
 const mockInsert = jest.fn()
@@ -38,6 +39,10 @@ jest.mock('@/lib/email/service', () => ({
   getEmailTransportMode: () => mockGetEmailTransportMode(),
   requiresLiveEmailConfiguration: (...args: unknown[]) => mockRequiresLiveEmailConfiguration(...args),
   sendEmail: (...args: unknown[]) => mockSendEmail(...args)
+}))
+
+jest.mock('@/lib/notifications/telegram', () => ({
+  sendTelegramManagerNotification: (...args: unknown[]) => mockSendTelegramManagerNotification(...args)
 }))
 
 const createSendResult = (accepted = true, error: { message: string } | null = null) => ({
@@ -112,6 +117,7 @@ describe('/api/workshop-enquiry', () => {
     mockGetEmailTransportMode.mockReturnValue('disabled')
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
+    mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     mockInsert.mockResolvedValue({ error: null })
   })
 
@@ -331,6 +337,16 @@ describe('/api/workshop-enquiry', () => {
           to: 'test@example.com',
           replyTo: 'admin@example.com'
         })
+      }))
+      expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'workshop-enquiry',
+        customerName: 'Test User',
+        customerEmail: 'test@example.com',
+        customerPhone: undefined,
+        dateNeeded: workshopTomorrowDate,
+        productName: 'Corporate event',
+        messagePreview: 'Office team social with a calm, polished decoration direction.',
+        adminPath: '/admin'
       }))
     } finally {
       jest.useRealTimers()

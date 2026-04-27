@@ -2,32 +2,21 @@
 
 import { designTokens } from "@/lib/design-system";
 import { logger } from "@/lib/logger";
-import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/lib/order-constants";
+import { ORDER_STATUS_LABELS } from "@/lib/order-constants";
 import { urlFor } from "@/sanity/lib/image";
 import type { Order, SortableOrderValue } from "@/types/order";
 import {
   Add as AddIcon,
-  Cancel as CancelledIcon,
   Close as CloseIcon,
-  CheckCircle as CompletedIcon,
-  Edit as EditIcon,
   Image as ImageIcon,
-  Refresh as RefreshIcon,
-  Search as SearchIcon,
-  LocalShipping as ShippingIcon,
-  CloudUpload as UploadIcon,
-  Visibility as ViewIcon,
   ZoomIn as ZoomIcon
-} from "@mui/icons-material";
+} from "@/lib/daisy-ui";
 import {
   Alert,
   Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
   CardMedia,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -46,22 +35,14 @@ import {
   MenuItem,
   Select,
   Snackbar,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
   TablePagination,
-  TableRow,
-  TableSortLabel,
   TextField,
-  Tooltip,
   Typography,
-} from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+} from "@/lib/daisy-ui";
+import { AdapterDayjs } from "@/lib/daisy-ui";
+import { DatePicker } from "@/lib/daisy-ui";
+import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs, { type Dayjs } from "dayjs";
 import "dayjs/locale/en-gb";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -72,6 +53,42 @@ dayjs.locale("en-gb");
 
 // Order type imported from types/order.ts
 // Status colors and labels imported from lib/order-constants.ts
+type OrderImageAsset = {
+  _type?: string;
+  _id?: string;
+  _ref?: string;
+  url?: string;
+};
+
+type OrderImagePreview = {
+  asset: OrderImageAsset;
+  alt: string;
+  source: 'reference' | 'note';
+};
+
+function getOrderImagePreviews(order: Order): OrderImagePreview[] {
+  const messageImages = (order.messages || []).flatMap((message) =>
+    (message.attachments || [])
+      .filter((attachment) => Boolean(attachment?.asset))
+      .map((attachment) => ({
+        asset: attachment.asset,
+        alt: attachment.alt || 'Customer reference image',
+        source: 'reference' as const
+      }))
+  );
+
+  const noteImages = (order.notes || []).flatMap((note) =>
+    (note.images || [])
+      .filter((image) => Boolean(image?.asset))
+      .map((image) => ({
+        asset: image.asset,
+        alt: image.alt || 'Admin note image',
+        source: 'note' as const
+      }))
+  );
+
+  return [...messageImages, ...noteImages];
+}
 
 export function OrderManagementDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -86,7 +103,7 @@ export function OrderManagementDashboard() {
   const [deletePassword, setDeletePassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<{ _type?: string; _id?: string; _ref?: string; url?: string } | null>(null);
+  const [selectedImage, setSelectedImage] = useState<OrderImageAsset | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<string>("_createdAt");
@@ -176,42 +193,73 @@ export function OrderManagementDashboard() {
     setNotification({ open: true, message, severity });
   }, []);
 
-  const fetchOrders = useCallback(async (isRefresh = false) => {
+  const fetchOrders = useCallback(async (isRefresh = false, signal?: AbortSignal) => {
+    const controller = signal ? null : new AbortController();
+    const requestSignal = signal || controller?.signal;
+    const fetchedOrders: Order[] = [];
+    const limit = 100;
+    let offset = 0;
+
     try {
       if (isRefresh) {
         setIsRefreshing(true);
       } else {
         setLoading(true);
       }
-      // Always fetch all orders, filtering will be done on frontend
-      const response = await fetch(`/api/orders?t=${Date.now()}`, {
-        credentials: 'include',
-      });
-      const data = await response.json();
 
-      if (response.ok) {
-        setOrders(data.orders || []);
-      } else {
-        throw new Error(data.error || 'Failed to fetch orders');
+      while (true) {
+        const response = await fetch(`/api/orders?limit=${limit}&offset=${offset}&t=${Date.now()}`, {
+          credentials: 'include',
+          signal: requestSignal,
+        });
+        const data = await response.json() as {
+          orders?: Order[];
+          hasMore?: boolean;
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch orders');
+        }
+
+        fetchedOrders.push(...(data.orders || []));
+
+        if (!data.hasMore) {
+          break;
+        }
+
+        offset += limit;
       }
+
+      setOrders(fetchedOrders);
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
       logger.error('Error fetching orders', error);
       showNotification('Failed to fetch orders', 'error');
     } finally {
-      if (isRefresh) {
-        setIsRefreshing(false);
-      } else {
-        setLoading(false);
+      if (!requestSignal?.aborted) {
+        if (isRefresh) {
+          setIsRefreshing(false);
+        } else {
+          setLoading(false);
+        }
       }
     }
   }, [showNotification]);
 
   // Removed fetchMonthlyEarnings - not used in component
 
-  const fetchCakes = async () => {
+  const fetchCakes = async (signal?: AbortSignal) => {
+    const controller = signal ? null : new AbortController();
+    const requestSignal = signal || controller?.signal;
+
     try {
       const response = await fetch('/api/admin/cakes', {
         credentials: 'include',
+        signal: requestSignal,
       });
       const data = await response.json();
 
@@ -221,14 +269,24 @@ export function OrderManagementDashboard() {
         logger.error('Failed to fetch cakes', data);
       }
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
       logger.error('Error fetching cakes', error);
     }
   };
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchOrders();
-    fetchCakes();
+    const controller = new AbortController();
+
+    fetchOrders(false, controller.signal);
+    fetchCakes(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, [fetchOrders]); // Fetch on component mount
 
   // Reset to first page when filters change
@@ -318,26 +376,35 @@ export function OrderManagementDashboard() {
 
 
   const handleDeleteOrderPermanently = async () => {
-    if (!selectedOrder || !deletePassword) return;
+    const password = deletePassword.trim();
+
+    if (!selectedOrder || !password) return;
+
+    const controller = new AbortController();
+    const deletedOrderId = selectedOrder._id;
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/orders/${selectedOrder._id}`, {
+      const response = await fetch(`/api/orders/${deletedOrderId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-          password: deletePassword,
+          password,
           permanent: true
         }),
+        signal: controller.signal,
       });
 
       if (response.ok) {
-        showNotification('Order permanently deleted from Sanity', 'success');
+        showNotification('Order permanently deleted from Supabase', 'success');
+        setOrders((currentOrders) => currentOrders.filter((order) => order._id !== deletedOrderId));
         setDeleteConfirmOpen(false);
         setEditDialogOpen(false);
+        setViewDialogOpen(false);
+        setSelectedOrder(null);
         setDeletePassword("");
         // Refresh orders data
         await fetchOrders();
@@ -359,6 +426,8 @@ export function OrderManagementDashboard() {
 
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
+
+    const controller = new AbortController();
 
     setIsSaving(true);
     try {
@@ -401,6 +470,7 @@ export function OrderManagementDashboard() {
         method: 'PATCH',
         credentials: 'include',
         body: formData,
+        signal: controller.signal,
       });
 
       if (response.ok) {
@@ -482,6 +552,18 @@ export function OrderManagementDashboard() {
   };
 
   const filteredStats = getFilteredStatistics();
+
+  const currencyFormatter = useMemo(() => new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP'
+  }), []);
+
+  const allTimeRevenue = useMemo(() => orders
+    .filter(order => order && order.status !== 'cancelled')
+    .reduce((sum, order) => {
+      const total = order.pricing?.total;
+      return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
+    }, 0), [orders]);
 
   // Memoize sorted orders for performance
   const sortedOrders = useMemo(() => {
@@ -589,19 +671,22 @@ export function OrderManagementDashboard() {
     }));
   };
 
-  const handleImageClick = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string }) => {
+  const handleImageClick = (imageAsset: OrderImageAsset) => {
     setSelectedImage(imageAsset);
     setImageViewerOpen(true);
   };
 
-  const getImageUrl = (imageAsset: { _type?: string; _id?: string; _ref?: string; url?: string } | null | undefined) => {
+  const getImageUrl = (imageAsset: OrderImageAsset | null | undefined, width = 400, height = 400) => {
     if (!imageAsset) {
       return '';
     }
 
+    if (imageAsset.url) {
+      return imageAsset.url;
+    }
+
     try {
-      // Use Sanity's urlFor function to properly generate image URLs
-      const imageUrl = urlFor(imageAsset).width(400).height(400).url();
+      const imageUrl = urlFor(imageAsset).width(width).height(height).url();
       return imageUrl;
     } catch (error) {
       logger.error('Error generating image URL', error);
@@ -609,462 +694,641 @@ export function OrderManagementDashboard() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'delivered':
-      case 'completed':
-        return <CompletedIcon />;
+  const formatOrderDateTime = (value: string) => {
+    const date = new Date(value);
+
+    return {
+      date: date.toLocaleDateString('en-GB'),
+      time: date.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    };
+  };
+
+  const formatDeliveryMethod = (value?: string) => {
+    if (!value) {
+      return 'Delivery method not specified';
+    }
+
+    return value
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  const getPaymentBadgeClass = (paymentStatus?: string) => {
+    switch (paymentStatus) {
+      case 'paid':
+        return 'badge badge-sm badge-success';
+      case 'refunded':
       case 'cancelled':
-        return <CancelledIcon />;
-      case 'out-delivery':
-        return <ShippingIcon />;
+        return 'badge badge-sm badge-error';
+      case 'partial':
+        return 'badge badge-sm badge-info';
       default:
-        return <EditIcon />;
+        return 'badge badge-sm badge-warning';
     }
   };
 
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'completed':
+      case 'delivered':
+        return 'badge badge-sm badge-success';
+      case 'cancelled':
+        return 'badge badge-sm badge-error';
+      case 'in-progress':
+      case 'out-delivery':
+        return 'badge badge-sm badge-info';
+      case 'confirmed':
+      case 'ready-pickup':
+        return 'badge badge-sm badge-warning';
+      default:
+        return 'badge badge-sm badge-primary';
+    }
+  };
+
+  const selectedMonthLabel = monthFilter === 'all'
+    ? 'All months'
+    : monthOptions.find(month => month.value === monthFilter)?.label || 'Selected month';
+
+  const cancelledOrders = filteredOrders.filter(order => order.status === 'cancelled').length;
+  const needsActionOrders = filteredStats.newOrders + filteredStats.inProgressOrders;
+  const visibleOrdersLabel = filteredOrders.length === orders.length
+    ? `${filteredOrders.length} orders`
+    : `${filteredOrders.length} of ${orders.length} orders`;
+  const metricCards = [
+    {
+      label: monthFilter === 'all' ? 'Orders' : 'Filtered orders',
+      value: filteredStats.totalOrders.toString(),
+      detail: `${filteredStats.completedOrders} completed, ${cancelledOrders} cancelled`,
+      tone: 'text-base-content'
+    },
+    {
+      label: 'Needs action',
+      value: needsActionOrders.toString(),
+      detail: `${filteredStats.newOrders} new, ${filteredStats.inProgressOrders} in progress`,
+      tone: 'text-warning'
+    }
+  ];
+
   return (
-    <Box>
-      {/* Stats Cards - Dynamic based on filters */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                {monthFilter === 'all' ? 'Total Orders' : 'Filtered Orders'}
-              </Typography>
-              <Typography variant="h4">
-                {filteredStats.totalOrders}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
+    <div className="flex flex-col gap-6">
+      <header className="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-wide text-base-content/60">Operations</p>
+            <h1 className="mt-1 text-3xl font-semibold text-base-content">Orders</h1>
+            <p className="mt-2 max-w-2xl text-sm text-base-content/70">
+              Fulfilment queue for customer cakes and hampers.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => fetchOrders(true)}
+              disabled={loading || isRefreshing}
+            >
+              {isRefreshing ? (
+                <>
+                  <CircularProgress className="loading-sm" />
+                  Refreshing
+                </>
+              ) : (
+                <>
+                  Refresh
+                </>
               )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                {monthFilter === 'all' ? 'Total Revenue' : 'Filtered Revenue'}
-              </Typography>
-              <Typography variant="h4" color="success.main">
-                £{(filteredStats?.totalRevenue || 0).toFixed(2)}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Average Order Value
-              </Typography>
-              <Typography variant="h4" color="primary">
-                £{(filteredStats?.averageOrderValue || 0).toFixed(2)}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Completed Orders
-              </Typography>
-              <Typography variant="h4" color="success.main">
-                {filteredStats.completedOrders}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => setAddOrderModalOpen(true)}
+            >
+              <AddIcon />
+              Add order
+            </button>
+          </div>
+        </div>
+      </header>
+      <section
+        aria-label="Order summary"
+        className="gap-3"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '0.75rem'
+        }}
+      >
+        {metricCards.map(metric => (
+          <article
+            key={metric.label}
+            className="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm sm:p-4"
+          >
+            <p className="text-xs font-medium uppercase tracking-wide text-base-content/60">{metric.label}</p>
+            <p className={`mt-2 text-xl font-semibold sm:text-2xl ${metric.tone}`}>{metric.value}</p>
+            <p className="mt-1 text-sm text-base-content/65">{metric.detail}</p>
+          </article>
+        ))}
+      </section>
 
-      {/* Additional Stats - Dynamic based on filters */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                New Orders
-              </Typography>
-              <Typography variant="h4" color="error">
-                {filteredStats.newOrders}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                In Progress
-              </Typography>
-              <Typography variant="h4" color="warning.main">
-                {filteredStats.inProgressOrders}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Cancelled Orders
-              </Typography>
-              <Typography variant="h4" color="error">
-                {filteredOrders.filter(o => o.status === 'cancelled').length}
-              </Typography>
-              {monthFilter !== 'all' && (
-                <Typography variant="caption" color="text.secondary">
-                  {monthOptions.find(m => m.value === monthFilter)?.label}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                {monthFilter === 'all' ? 'All Time Revenue' : 'Monthly Revenue'}
-              </Typography>
-              <Typography variant="h4" color="primary">
-                £{monthFilter === 'all'
-                  ? orders
-                    .filter(order => order && order.status !== 'cancelled')
-                    .reduce((sum, order) => {
-                      if (!order || !order.pricing) return sum;
-                      const total = order.pricing.total;
-                      return sum + (typeof total === 'number' && !isNaN(total) ? total : 0);
-                    }, 0)
-                    .toFixed(2)
-                  : (filteredStats?.totalRevenue || 0).toFixed(2)
-                }
-              </Typography>
-              <Button
-                size="small"
-                href="/admin/earnings"
-                sx={{ mt: 1 }}
-              >
-                View Detailed Earnings
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <section className="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm" aria-label="Order filters">
+        <div className="grid gap-3 lg:grid-cols-[minmax(240px,1fr)_180px_180px_auto] lg:items-end">
+          <label className="form-control w-full">
+            <span className="label">
+              <span className="label-text">Search</span>
+            </span>
+            <input
+              type="search"
+              className="input input-bordered w-full"
+              placeholder="Order number, name or email"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </label>
 
-      {/* Filters and Search */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField
-                fullWidth
-                placeholder="Search orders..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Status Filter</InputLabel>
-                <Select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  label="Status Filter"
-                >
-                  <MenuItem value="all">All Orders</MenuItem>
-                  <MenuItem value="new">New Orders</MenuItem>
-                  <MenuItem value="confirmed">Confirmed</MenuItem>
-                  <MenuItem value="in-progress">In Progress</MenuItem>
-                  <MenuItem value="ready-pickup">Ready for Pickup</MenuItem>
-                  <MenuItem value="out-delivery">Out for Delivery</MenuItem>
-                  <MenuItem value="delivered">Delivered</MenuItem>
-                  <MenuItem value="completed">Completed</MenuItem>
-                  <MenuItem value="cancelled">Cancelled</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Month Filter</InputLabel>
-                <Select
-                  value={monthFilter}
-                  onChange={(e) => setMonthFilter(e.target.value)}
-                  label="Month Filter"
-                >
-                  <MenuItem value="all">All Months</MenuItem>
-                  {monthOptions.map((month) => (
-                    <MenuItem key={month.value} value={month.value}>
-                      {month.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => setAddOrderModalOpen(true)}
-                sx={{ mr: 1 }}
-              >
-                Add Order
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={1}>
-              <Button
-                variant="outlined"
-                startIcon={isRefreshing ? <CircularProgress size={20} /> : <RefreshIcon />}
-                onClick={() => fetchOrders(true)}
-                disabled={loading || isRefreshing}
-              >
-                {isRefreshing ? 'Refreshing...' : 'Refresh'}
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          <label className="form-control w-full">
+            <span className="label">
+              <span className="label-text">Status</span>
+            </span>
+            <select
+              className="select select-bordered w-full"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="all">All orders</option>
+              <option value="new">New orders</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="in-progress">In progress</option>
+              <option value="ready-pickup">Ready for pickup</option>
+              <option value="out-delivery">Out for delivery</option>
+              <option value="delivered">Delivered</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </label>
+
+          <label className="form-control w-full">
+            <span className="label">
+              <span className="label-text">Month</span>
+            </span>
+            <select
+              className="select select-bordered w-full"
+              value={monthFilter}
+              onChange={(event) => setMonthFilter(event.target.value)}
+            >
+              <option value="all">All months</option>
+              {monthOptions.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <a className="btn btn-outline btn-sm lg:mb-1" href="/admin/earnings">
+            {monthFilter === 'all'
+              ? `All revenue ${currencyFormatter.format(allTimeRevenue)}`
+              : 'View earnings'}
+          </a>
+        </div>
+        <div className="mt-3 flex flex-col gap-2 border-t border-base-300 pt-3 text-sm text-base-content/65 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Showing <span className="font-medium text-base-content">{visibleOrdersLabel}</span>
+          </p>
+          <p>{selectedMonthLabel}</p>
+        </div>
+      </section>
 
       {/* Orders Table */}
-      <Card>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'orderNumber'}
-                    direction={sortField === 'orderNumber' ? sortDirection : 'asc'}
+      <div className="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm">
+        <div className="flex flex-col gap-1 border-b border-base-300 bg-base-100 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-base-content">Order list</h2>
+            <p className="text-sm text-base-content/65">{visibleOrdersLabel}</p>
+          </div>
+          <p className="text-sm text-base-content/65">Latest first</p>
+        </div>
+        <div className="divide-y divide-base-300 md:hidden">
+          {loading ? (
+            <div className="px-4 py-10 text-center text-base-content/65">
+              Loading orders...
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="px-4 py-10 text-center text-base-content/65">
+              No orders found
+            </div>
+          ) : (
+            paginatedOrders.map((order) => {
+              const placedAt = formatOrderDateTime(order._createdAt);
+              const firstItem = order.items[0];
+              const additionalItems = Math.max(order.items.length - 1, 0);
+              const paymentStatus = order.pricing?.paymentStatus || 'pending';
+              const statusLabel = ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] || order.status;
+              const orderImages = getOrderImagePreviews(order);
+              const visibleOrderImages = orderImages.slice(0, 3);
+
+              return (
+                <article key={order._id} className="px-4 py-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-base-content">
+                        #{order.orderNumber}
+                      </h3>
+                      <p className="mt-1 text-xs text-base-content/60">
+                        {placedAt.date}, {placedAt.time}
+                      </p>
+                    </div>
+                    <span className={getStatusBadgeClass(order.status)}>
+                      {statusLabel}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid gap-4 text-sm">
+                    <div>
+                      <p className="font-medium text-base-content">
+                        {order.customer.name}
+                      </p>
+                      <a
+                        className="mt-1 block truncate text-xs text-base-content/65 hover:text-primary"
+                        href={`mailto:${order.customer.email}`}
+                      >
+                        {order.customer.email}
+                      </a>
+                      <a
+                        className="mt-1 block text-xs text-base-content/65 hover:text-primary"
+                        href={`tel:${order.customer.phone}`}
+                      >
+                        {order.customer.phone}
+                      </a>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                          Items
+                        </p>
+                        <p className="mt-1 line-clamp-2 font-medium text-base-content">
+                          {firstItem ? firstItem.productName : 'Custom order'}
+                        </p>
+                        <p className="mt-1 text-xs text-base-content/65">
+                          {firstItem ? `Qty ${firstItem.quantity}` : 'No line items'}
+                          {additionalItems > 0 && `, +${additionalItems} more`}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                          Needed
+                        </p>
+                        <p className="mt-1 font-medium text-base-content">
+                          {order.delivery?.dateNeeded
+                            ? new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')
+                            : 'Not specified'}
+                        </p>
+                        <p className="mt-1 text-xs text-base-content/65">
+                          {formatDeliveryMethod(order.delivery?.deliveryMethod)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {orderImages.length > 0 && (
+                    <div
+                      className="mt-4 flex items-center gap-2"
+                      aria-label={`${orderImages.length} image${orderImages.length === 1 ? '' : 's'} attached to order ${order.orderNumber}`}
+                    >
+                      <div className="flex -space-x-2">
+                        {visibleOrderImages.map((image, index) => {
+                          const imageUrl = getImageUrl(image.asset);
+
+                          if (!imageUrl) {
+                            return null;
+                          }
+
+                          return (
+                            <button
+                              key={`${image.source}-${index}`}
+                              type="button"
+                              className="h-10 w-10 overflow-hidden rounded border-2 border-base-100 bg-base-200 shadow-sm"
+                              onClick={() => handleImageClick(image.asset)}
+                              aria-label={`Open ${image.alt}`}
+                            >
+                              <img
+                                src={imageUrl}
+                                alt={image.alt}
+                                className="h-full w-full object-cover"
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <span className="badge badge-outline badge-sm">
+                        {orderImages.length} image{orderImages.length === 1 ? '' : 's'}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-base-content">
+                        £{(order.pricing?.total || 0).toFixed(2)}
+                      </p>
+                      <span className={`${getPaymentBadgeClass(paymentStatus)} mt-1 capitalize`}>
+                        {paymentStatus}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        aria-label={`View order ${order.orderNumber}`}
+                        onClick={() => handleViewOrder(order)}
+                      >
+                        View
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        aria-label={`Edit order ${order.orderNumber}`}
+                        onClick={() => handleEditOrder(order)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
+        <TableContainer className="hidden md:block">
+          <table className="table table-zebra table-fixed w-full min-w-[920px] text-sm">
+            <thead>
+              <tr className="bg-base-200 text-xs uppercase tracking-wide text-base-content/70">
+                <th className="w-[26%] px-4">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs px-0 font-semibold uppercase tracking-wide"
                     onClick={() => handleSort('orderNumber')}
                   >
-                    Order #
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'customer'}
-                    direction={sortField === 'customer' ? sortDirection : 'asc'}
-                    onClick={() => handleSort('customer')}
+                    Order / customer
+                    {sortField === 'orderNumber' && (sortDirection === 'desc' ? ' v' : ' ^')}
+                  </button>
+                </th>
+                <th className="w-[22%] px-4">Items</th>
+                <th className="w-[13%] px-4">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs px-0 font-semibold uppercase tracking-wide"
+                    onClick={() => handleSort('dateNeeded')}
                   >
-                    Customer
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>Items</TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'orderDate'}
-                    direction={sortField === 'orderDate' ? sortDirection : 'asc'}
-                    onClick={() => handleSort('orderDate')}
-                  >
-                    Order Date
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'total'}
-                    direction={sortField === 'total' ? sortDirection : 'asc'}
+                    Needed
+                    {sortField === 'dateNeeded' && (sortDirection === 'desc' ? ' v' : ' ^')}
+                  </button>
+                </th>
+                <th className="w-[12%] px-4 text-right">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs px-0 font-semibold uppercase tracking-wide"
                     onClick={() => handleSort('total')}
                   >
-                    Total (£)
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'status'}
-                    direction={sortField === 'status' ? sortDirection : 'asc'}
+                    Total
+                    {sortField === 'total' && (sortDirection === 'desc' ? ' v' : ' ^')}
+                  </button>
+                </th>
+                <th className="w-[12%] px-4">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs px-0 font-semibold uppercase tracking-wide"
                     onClick={() => handleSort('status')}
                   >
                     Status
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={sortField === 'dateNeeded'}
-                    direction={sortField === 'dateNeeded' ? sortDirection : 'asc'}
-                    onClick={() => handleSort('dateNeeded')}
-                  >
-                    Date Needed
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+                    {sortField === 'status' && (sortDirection === 'desc' ? ' v' : ' ^')}
+                  </button>
+                </th>
+                <th className="w-[15%] px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center">
-                    <Typography>Loading orders...</Typography>
-                  </TableCell>
-                </TableRow>
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-base-content/65">
+                    Loading orders...
+                  </td>
+                </tr>
               ) : filteredOrders.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center">
-                    <Typography>No orders found</Typography>
-                  </TableCell>
-                </TableRow>
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-base-content/65">
+                    No orders found
+                  </td>
+                </tr>
               ) : (
-                paginatedOrders.map((order) => (
-                  <TableRow key={order._id} hover>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight="medium">
-                        #{order.orderNumber}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
+                paginatedOrders.map((order) => {
+                  const placedAt = formatOrderDateTime(order._createdAt);
+                  const firstItem = order.items[0];
+                  const additionalItems = Math.max(order.items.length - 1, 0);
+                  const paymentStatus = order.pricing?.paymentStatus || 'pending';
+                  const statusLabel = ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] || order.status;
+                  const orderImages = getOrderImagePreviews(order);
+                  const visibleOrderImages = orderImages.slice(0, 3);
+
+                  return (
+                    <tr key={order._id} className="align-top">
+                      <td className="px-4 py-4">
+                        <div className="font-semibold text-base-content">
+                          #{order.orderNumber}
+                        </div>
+                        <div className="mt-1 text-xs text-base-content/60">
+                          {placedAt.date}, {placedAt.time}
+                        </div>
+                        <div className="mt-3 font-medium text-base-content">
                           {order.customer.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {order.customer.email}
-                        </Typography>
-                        <br />
-                        <Typography variant="caption" color="text.secondary">
-                          {order.customer.phone}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      {order.items.map((item, index) => (
-                        <Typography key={index} variant="body2">
-                          {item.productName} (x{item.quantity})
-                        </Typography>
-                      ))}
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {new Date(order._createdAt).toLocaleDateString('en-GB')}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(order._createdAt).toLocaleTimeString('en-GB', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight="medium">
-                        £{(order.pricing?.total || 0).toFixed(2)}
-                      </Typography>
-                      <Chip
-                        label={order.pricing?.paymentStatus || 'pending'}
-                        size="small"
-                        color={(order.pricing?.paymentStatus || 'pending') === 'paid' ? 'success' : 'warning'}
-                        sx={{ mt: 0.5 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        icon={getStatusIcon(order.status)}
-                        label={ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] || order.status}
-                        color={ORDER_STATUS_COLORS[order.status as keyof typeof ORDER_STATUS_COLORS] || 'default'}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-                        {order.delivery?.dateNeeded ? (
-                          <Typography variant="body2" fontWeight="medium">
-                            {new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}
-                          </Typography>
-                        ) : (
-                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                            Date not specified
-                          </Typography>
-                        )}
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            fontWeight: order.delivery?.deliveryMethod ? 500 : 400,
-                            textTransform: 'capitalize'
-                          }}
+                        </div>
+                        <a
+                          className="mt-1 block truncate text-xs text-base-content/65 hover:text-primary"
+                          href={`mailto:${order.customer.email}`}
                         >
-                          {order.delivery?.deliveryMethod
-                            ? order.delivery.deliveryMethod
-                              .replace(/-/g, ' ')
-                              .replace(/\b\w/g, (char) => char.toUpperCase())
-                            : 'Delivery method not specified'}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Tooltip title="View Details">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleViewOrder(order)}
+                          {order.customer.email}
+                        </a>
+                        <a
+                          className="mt-1 block text-xs text-base-content/65 hover:text-primary"
+                          href={`tel:${order.customer.phone}`}
+                        >
+                          {order.customer.phone}
+                        </a>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="line-clamp-2 font-medium leading-5 text-base-content">
+                          {firstItem ? firstItem.productName : 'Custom order'}
+                        </div>
+                        <div className="mt-1 text-xs text-base-content/65">
+                          {firstItem ? `Qty ${firstItem.quantity}` : 'No line items'}
+                          {additionalItems > 0 && `, +${additionalItems} more`}
+                        </div>
+                        {orderImages.length > 0 && (
+                          <div
+                            className="mt-3 flex items-center gap-2"
+                            aria-label={`${orderImages.length} image${orderImages.length === 1 ? '' : 's'} attached to order ${order.orderNumber}`}
                           >
-                            <ViewIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Edit Order">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleEditOrder(order)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))
+                            <div className="flex -space-x-2">
+                              {visibleOrderImages.map((image, index) => {
+                                const imageUrl = getImageUrl(image.asset);
+
+                                if (!imageUrl) {
+                                  return null;
+                                }
+
+                                return (
+                                  <button
+                                    key={`${image.source}-${index}`}
+                                    type="button"
+                                    className="h-9 w-9 overflow-hidden rounded border-2 border-base-100 bg-base-200 shadow-sm"
+                                    onClick={() => handleImageClick(image.asset)}
+                                    aria-label={`Open ${image.alt}`}
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={image.alt}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <span className="badge badge-outline badge-sm">
+                              {orderImages.length}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        {order.delivery?.dateNeeded ? (
+                          <div className="font-medium text-base-content">
+                            {new Date(order.delivery.dateNeeded).toLocaleDateString('en-GB')}
+                          </div>
+                        ) : (
+                          <div className="italic text-base-content/55">
+                            Date not specified
+                          </div>
+                        )}
+                        <div className="mt-1 text-xs text-base-content/65">
+                          {formatDeliveryMethod(order.delivery?.deliveryMethod)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="font-semibold text-base-content">
+                          £{(order.pricing?.total || 0).toFixed(2)}
+                        </div>
+                        <span className={`${getPaymentBadgeClass(paymentStatus)} mt-2 capitalize`}>
+                          {paymentStatus}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className={getStatusBadgeClass(order.status)}>
+                          {statusLabel}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-nowrap justify-end gap-2">
+                          <span title="View Order">
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-xs"
+                              aria-label={`View order ${order.orderNumber}`}
+                              onClick={() => handleViewOrder(order)}
+                            >
+                              View
+                            </button>
+                          </span>
+                          <span title="Edit Order">
+                            <button
+                              type="button"
+                              className="btn btn-outline btn-xs"
+                              aria-label={`Edit order ${order.orderNumber}`}
+                              onClick={() => handleEditOrder(order)}
+                            >
+                              Edit
+                            </button>
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            component="div"
-            count={filteredOrders.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Rows per page:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
-            }
-          />
+            </tbody>
+          </table>
         </TableContainer>
-      </Card>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={filteredOrders.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Rows per page:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
+          }
+        />
+      </div>
 
       {/* Edit Order Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Edit Order #{selectedOrder?.orderNumber}</DialogTitle>
-        <DialogContent>
+        <DialogTitle>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                Order editor
+              </p>
+              <span className="mt-1 block text-xl font-semibold text-base-content">
+                #{selectedOrder?.orderNumber}
+              </span>
+            </div>
+            {selectedOrder && (
+              <div className="flex flex-wrap gap-2 sm:justify-end">
+                <span className={getStatusBadgeClass(editForm.status)}>
+                  {ORDER_STATUS_LABELS[editForm.status as keyof typeof ORDER_STATUS_LABELS] || editForm.status}
+                </span>
+                <span className={`${getPaymentBadgeClass(editForm.paymentStatus)} capitalize`}>
+                  {editForm.paymentStatus || 'pending'}
+                </span>
+              </div>
+            )}
+          </div>
+        </DialogTitle>
+        <DialogContent className="space-y-5">
+          {selectedOrder && (
+            <section className="grid gap-3 rounded-box border border-base-300 bg-base-200/40 p-4 text-sm sm:grid-cols-3">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                  Customer
+                </p>
+                <p className="mt-1 font-medium text-base-content">{selectedOrder.customer.name}</p>
+                <p className="truncate text-base-content/65">{selectedOrder.customer.email}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                  Needed
+                </p>
+                <p className="mt-1 font-medium text-base-content">
+                  {editForm.dateNeeded ? editForm.dateNeeded.format('DD/MM/YYYY') : 'Not specified'}
+                </p>
+                <p className="text-base-content/65">{formatDeliveryMethod(editForm.deliveryMethod)}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                  Total
+                </p>
+                <p className="mt-1 font-semibold text-base-content">
+                  £{Number(editForm.totalPrice || 0).toFixed(2)}
+                </p>
+                <p className="text-base-content/65">{formatDeliveryMethod(editForm.paymentMethod)}</p>
+              </div>
+            </section>
+          )}
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -1185,7 +1449,7 @@ export function OrderManagementDashboard() {
                   label="Select Cake"
                 >
                   <MenuItem value="">
-                    <em>Custom Order</em>
+                    Custom Order
                   </MenuItem>
                   {availableCakes.map((cake) => (
                     <MenuItem key={cake._id} value={cake._id}>
@@ -1347,17 +1611,17 @@ export function OrderManagementDashboard() {
                   multiple
                   onChange={handleImageUpload}
                 />
-                <label htmlFor="image-upload">
-                  <Button
-                    variant="outlined"
-                    component="span"
-                    startIcon={<UploadIcon />}
-                    sx={{ mr: 2 }}
-                  >
-                    Upload Images
-                  </Button>
+                <label
+                  htmlFor="image-upload"
+                  className="btn btn-outline btn-sm cursor-pointer"
+                >
+                  Upload images
                 </label>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  className="mt-2 block"
+                >
                   Upload images to attach to this note (JPG, PNG, GIF)
                 </Typography>
               </Box>
@@ -1393,13 +1657,14 @@ export function OrderManagementDashboard() {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+        <DialogActions className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
+          <Button onClick={() => setEditDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
           <Button
             onClick={() => setDeleteConfirmOpen(true)}
             variant="outlined"
             color="error"
             size="small"
+            className="w-full sm:mr-auto sm:w-auto"
             sx={{
               mr: 'auto',
               color: 'error.main',
@@ -1417,6 +1682,7 @@ export function OrderManagementDashboard() {
             variant="contained"
             disabled={isSaving}
             startIcon={isSaving ? <CircularProgress size={20} /> : undefined}
+            className="w-full sm:w-auto"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
@@ -1425,10 +1691,10 @@ export function OrderManagementDashboard() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>⚠️ Delete Order Permanently</DialogTitle>
+        <DialogTitle>Delete Order Permanently</DialogTitle>
         <DialogContent>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Sanity.
+            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Supabase.
             This cannot be undone.
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -1456,7 +1722,7 @@ export function OrderManagementDashboard() {
             onClick={handleDeleteOrderPermanently}
             variant="contained"
             color="error"
-            disabled={!deletePassword || isDeleting}
+            disabled={deletePassword.trim().length === 0 || isDeleting}
           >
             {isDeleting ? 'Deleting...' : 'Delete Permanently'}
           </Button>
@@ -1465,10 +1731,69 @@ export function OrderManagementDashboard() {
 
       {/* View Order Dialog */}
       <Dialog open={viewDialogOpen} onClose={() => setViewDialogOpen(false)} maxWidth="lg" fullWidth>
-        <DialogTitle>Order Details #{selectedOrder?.orderNumber}</DialogTitle>
-        <DialogContent>
+        <DialogTitle>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                Order details
+              </p>
+              <span className="mt-1 block text-xl font-semibold text-base-content">
+                #{selectedOrder?.orderNumber}
+              </span>
+            </div>
+            {selectedOrder && (
+              <div className="flex flex-wrap gap-2 lg:justify-end">
+                <span className={getStatusBadgeClass(selectedOrder.status)}>
+                  {ORDER_STATUS_LABELS[selectedOrder.status as keyof typeof ORDER_STATUS_LABELS] || selectedOrder.status}
+                </span>
+                <span className={`${getPaymentBadgeClass(selectedOrder.pricing?.paymentStatus)} capitalize`}>
+                  {selectedOrder.pricing?.paymentStatus || 'pending'}
+                </span>
+                <span className="badge badge-sm">
+                  £{(selectedOrder.pricing?.total || 0).toFixed(2)}
+                </span>
+              </div>
+            )}
+          </div>
+        </DialogTitle>
+        <DialogContent className="space-y-5">
           {selectedOrder && (
-            <Grid container spacing={3}>
+            <>
+              <section className="grid gap-3 rounded-box border border-base-300 bg-base-200/40 p-4 text-sm md:grid-cols-4">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                    Customer
+                  </p>
+                  <p className="mt-1 font-medium text-base-content">{selectedOrder.customer.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                    Needed
+                  </p>
+                  <p className="mt-1 font-medium text-base-content">
+                    {selectedOrder.delivery?.dateNeeded
+                      ? new Date(selectedOrder.delivery.dateNeeded).toLocaleDateString('en-GB')
+                      : 'Not specified'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                    Method
+                  </p>
+                  <p className="mt-1 font-medium text-base-content">
+                    {formatDeliveryMethod(selectedOrder.delivery?.deliveryMethod)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                    Total
+                  </p>
+                  <p className="mt-1 font-semibold text-base-content">
+                    £{(selectedOrder.pricing?.total || 0).toFixed(2)}
+                  </p>
+                </div>
+              </section>
+              <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Customer Information</Typography>
                 <Box sx={{ mb: 2 }}>
@@ -1530,63 +1855,60 @@ export function OrderManagementDashboard() {
                     <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
                       {item.productName}
                     </Typography>
-                    <Grid container spacing={1} sx={{ mt: 0.5 }}>
+                    <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
                       {item.productType && (
-                        <Grid item xs={6} sm={4}>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Product Type:</strong> {item.productType === 'cake' ? 'Cake' : item.productType === 'gift-hamper' ? 'Gift Hamper' : item.productType}
-                          </Typography>
-                        </Grid>
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Product type</dt>
+                          <dd className="mt-1 text-base-content">
+                            {item.productType === 'cake' ? 'Cake' : item.productType === 'gift-hamper' ? 'Gift Hamper' : item.productType}
+                          </dd>
+                        </div>
                       )}
-                      <Grid item xs={6} sm={4}>
-                        <Typography variant="body2" color="text.secondary">
-                          <strong>Quantity:</strong> {item.quantity}
-                        </Typography>
-                      </Grid>
+                      <div>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Quantity</dt>
+                        <dd className="mt-1 text-base-content">{item.quantity}</dd>
+                      </div>
                       {item.unitPrice != null && (
-                        <Grid item xs={6} sm={4}>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Unit Price:</strong> £{(item.unitPrice || 0).toFixed(2)}
-                          </Typography>
-                        </Grid>
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Unit price</dt>
+                          <dd className="mt-1 text-base-content">£{(item.unitPrice || 0).toFixed(2)}</dd>
+                        </div>
                       )}
-                      <Grid item xs={6} sm={4}>
-                        <Typography variant="body2" color="text.secondary">
-                          <strong>Total Price:</strong> £{(item.totalPrice || 0).toFixed(2)}
-                        </Typography>
-                      </Grid>
+                      <div>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Total price</dt>
+                        <dd className="mt-1 font-medium text-base-content">£{(item.totalPrice || 0).toFixed(2)}</dd>
+                      </div>
                       {item.size && (
-                        <Grid item xs={6} sm={4}>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Size:</strong> {item.size}
-                          </Typography>
-                        </Grid>
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Size</dt>
+                          <dd className="mt-1 text-base-content">{item.size}</dd>
+                        </div>
                       )}
                       {item.flavor && (
-                        <Grid item xs={6} sm={4}>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Flavor:</strong> {item.flavor}
-                          </Typography>
-                        </Grid>
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Flavor</dt>
+                          <dd className="mt-1 text-base-content">{item.flavor}</dd>
+                        </div>
                       )}
                       {item.designType && (
-                        <Grid item xs={6} sm={4}>
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Design:</strong> {item.designType === 'standard' ? 'Standard Design' : item.designType === 'individual' ? 'Individual Design' : item.designType}
-                          </Typography>
-                        </Grid>
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">Design</dt>
+                          <dd className="mt-1 text-base-content">
+                            {item.designType === 'standard' ? 'Standard Design' : item.designType === 'individual' ? 'Individual Design' : item.designType}
+                          </dd>
+                        </div>
                       )}
                       {item.specialInstructions && (
-                        <Grid item xs={12}>
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            <strong>Special Instructions:</strong>
-                          </Typography>
+                        <div className="sm:col-span-2">
+                          <dt className="text-xs font-medium uppercase tracking-wide text-base-content/55">
+                            Special instructions
+                          </dt>
                           <Typography variant="body2" sx={{ mt: 0.5, p: 1, bgcolor: 'grey.50', borderRadius: 0.5, whiteSpace: 'pre-wrap' }}>
                             {item.specialInstructions}
                           </Typography>
-                        </Grid>
+                        </div>
                       )}
-                    </Grid>
+                    </dl>
 
                     {/* Display design images for individual designs */}
                     {item.designType === 'individual' && selectedOrder.messages && selectedOrder.messages.length > 0 && (() => {
@@ -1753,7 +2075,7 @@ export function OrderManagementDashboard() {
                       <>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
-                          💝 Gift Note
+                          Gift Note
                         </Typography>
                         <Box
                           sx={{
@@ -1939,9 +2261,10 @@ export function OrderManagementDashboard() {
                 )}
               </Grid>
             </Grid>
+            </>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
           <Button onClick={() => setViewDialogOpen(false)}>Close</Button>
           <Button onClick={() => { setViewDialogOpen(false); handleEditOrder(selectedOrder!); }} variant="contained">
             Edit Order
@@ -1977,7 +2300,7 @@ export function OrderManagementDashboard() {
           {selectedImage && (
             <Box sx={{ textAlign: 'center' }}>
               <img
-                src={urlFor(selectedImage).width(800).height(600).url() || ''}
+                src={getImageUrl(selectedImage, 800, 600)}
                 alt="Note attachment"
                 style={{
                   maxWidth: '100%',
@@ -2008,6 +2331,6 @@ export function OrderManagementDashboard() {
           {notification.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </div>
   );
 }

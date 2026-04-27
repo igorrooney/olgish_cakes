@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { ErrorBoundary } from '../ErrorBoundary'
 
 // Mock MUI components
-jest.mock('@mui/material', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, sx, ...props }: MockProps) => (
     <div data-testid="box" data-sx={JSON.stringify(sx)} {...props}>{children}</div>
   ),

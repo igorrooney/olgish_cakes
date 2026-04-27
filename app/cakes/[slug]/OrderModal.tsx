@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ContactForm, type ContactFormData } from "@/app/components/ContactForm";
 import { Cake } from "@/types/cake";
 import { OrderModalStructuredData } from "./OrderModalStructuredData";
-import { CheckCircleIcon, ErrorIcon } from "@/lib/mui-optimization";
+import { CheckCircleIcon, ErrorIcon } from "@/lib/daisy-ui";
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
 import {
   Box,
@@ -26,11 +26,11 @@ import {
   Alert,
   AlertTitle,
   CircularProgress,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@/lib/daisy-ui";
+import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 

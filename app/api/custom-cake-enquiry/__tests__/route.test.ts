@@ -8,6 +8,7 @@ import { takeEnquiryRateLimit } from '@/lib/enquiry-rate-limit'
 import { POST } from '../route'
 
 const mockSendEmail = jest.fn()
+const mockSendTelegramManagerNotification = jest.fn()
 const mockGetEmailTransportMode = jest.fn(() => 'disabled')
 const mockRequiresLiveEmailConfiguration = jest.fn(() => false)
 const mockInsert = jest.fn()
@@ -42,6 +43,10 @@ jest.mock('@/lib/email/service', () => ({
   getEmailTransportMode: () => mockGetEmailTransportMode(),
   requiresLiveEmailConfiguration: (...args: unknown[]) => mockRequiresLiveEmailConfiguration(...args),
   sendEmail: (...args: unknown[]) => mockSendEmail(...args)
+}))
+
+jest.mock('@/lib/notifications/telegram', () => ({
+  sendTelegramManagerNotification: (...args: unknown[]) => mockSendTelegramManagerNotification(...args)
 }))
 
 type StringOverrides = Partial<Record<string, string | null>>
@@ -107,6 +112,7 @@ describe('/api/custom-cake-enquiry', () => {
     mockGetEmailTransportMode.mockReturnValue('disabled')
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
+    mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     mockInsert.mockResolvedValue({ error: null })
     mockUpload.mockResolvedValue({
       data: {
@@ -246,6 +252,16 @@ describe('/api/custom-cake-enquiry', () => {
       message: expect.objectContaining({
         to: 'test@example.com'
       })
+    }))
+    expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'custom-cake-enquiry',
+      customerName: 'Test User',
+      customerEmail: 'test@example.com',
+      customerPhone: '+44(0)7123456789',
+      dateNeeded: '2026-12-25',
+      productName: 'birthday',
+      messagePreview: expect.stringContaining('Brief: Blue florals and vanilla sponge.'),
+      adminPath: '/admin'
     }))
   })
 

@@ -14,7 +14,7 @@
 - TypeScript 5.3
 - Tailwind CSS 3.4 with DaisyUI
 - Sanity 3.88 with next-sanity 7.1
-- MUI 6.3 with Emotion (legacy UI only)
+- DaisyUI for all UI components
 - pnpm for package management
 - Node 20.9+
 
@@ -30,7 +30,7 @@
 
 ## UI & Styling
 - DaisyUI for all new UI components
-- MUI/Emotion only for legacy code
+- Do not use MUI or Emotion
 - Use design tokens (no hardcoded colors/fonts)
 - All colors, fonts, spacing from design system
 - Tailwind for layout and utilities

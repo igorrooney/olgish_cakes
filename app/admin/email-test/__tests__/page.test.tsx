@@ -2,10 +2,14 @@
  * @jest-environment jsdom
  */
 import type { ReactNode } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import EmailTestPage from '../page'
 
 jest.mock('next/navigation', () => ({
+  usePathname: () => '/admin/email-test',
+  useRouter: () => ({
+    push: jest.fn()
+  }),
   redirect: jest.fn(() => {
     throw new Error('NEXT_REDIRECT')
   })
@@ -28,9 +32,15 @@ jest.mock('../EmailTestPageClient', () => ({
 const { redirect: mockRedirect } = jest.requireMock('next/navigation')
 const { isAdminAuthenticated: mockIsAdminAuthenticated } = jest.requireMock('@/lib/admin/auth.server')
 
+global.fetch = jest.fn()
+
 describe('admin email test page auth gate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({ authenticated: true })
+    })
   })
 
   it('redirects unauthenticated users to admin auth page', async () => {
@@ -46,8 +56,10 @@ describe('admin email test page auth gate', () => {
     const page = await EmailTestPage()
     render(page)
 
-    expect(screen.getByTestId('query-providers')).toBeInTheDocument()
-    expect(screen.getByTestId('email-test-page-client')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('query-providers')).toBeInTheDocument()
+      expect(screen.getByTestId('email-test-page-client')).toBeInTheDocument()
+    })
     expect(mockRedirect).not.toHaveBeenCalled()
   })
 })

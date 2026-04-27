@@ -13,8 +13,9 @@ jest.mock('next/navigation', () => ({
   })
 }))
 
-// Mock MUI components
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
+  __esModule: true,
+  ArrowBackIcon: () => <span data-testid="arrow-back-icon">Back</span>,
   Button: ({ children, variant, startIcon, onClick, disabled, sx, ...props }: MockProps) => (
     <button
       data-testid="button"
@@ -26,13 +27,7 @@ jest.mock('@/lib/mui-optimization', () => ({
       {startIcon}
       {children}
     </button>
-  ),
-}))
-
-// Mock direct icon import
-jest.mock('@mui/icons-material/ArrowBack', () => ({
-  __esModule: true,
-  default: () => <span data-testid="arrow-back-icon">←</span>
+  )
 }))
 
 // Mock design system

@@ -1,10 +1,10 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Box, Typography, Grid, Card, CardContent, Rating, Chip, Skeleton } from "@mui/material";
+import { Box, Typography, Grid, Card, CardContent, Rating, Chip, Skeleton } from "@/lib/daisy-ui";
 import { colors } from "@/lib/design-system";
 import type { Testimonial } from "@/app/types/testimonial";
-import { InstagramIcon, FacebookIcon, GoogleIcon, VerifiedIcon } from "@/lib/mui-optimization";
+import { InstagramIcon, FacebookIcon, GoogleIcon, VerifiedIcon } from "@/lib/daisy-ui";
 import { TestimonialSkeleton } from "@/lib/skeleton-components";
 import dynamic from "next/dynamic";
 

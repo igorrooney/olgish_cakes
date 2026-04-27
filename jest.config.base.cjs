@@ -74,7 +74,7 @@ module.exports = {
   testPathIgnorePatterns: ['/node_modules/', '/.next/', '<rootDir>/\\.tmp-script-run/'],
   watchPathIgnorePatterns: ['<rootDir>/\\.tmp-script-run/'],
   transformIgnorePatterns: [
-    'node_modules/(?!(jose|@mui|@babel/runtime|@emotion)(?:/|$))',
+    'node_modules/(?!(jose|@babel/runtime)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$'
   ]
 }

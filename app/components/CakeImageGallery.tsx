@@ -6,10 +6,10 @@ import {
   ImageList,
   ImageListItem,
   Typography,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 // Import icons directly for better HMR support
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { ArrowBackIcon } from "@/lib/daisy-ui";
+import { ArrowForwardIcon } from "@/lib/daisy-ui";
 import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";

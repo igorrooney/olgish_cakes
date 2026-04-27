@@ -21,7 +21,7 @@ jest.mock('next/image', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, className, sx, role, ...props }: MockProps) => (
     <div
       data-testid="box"

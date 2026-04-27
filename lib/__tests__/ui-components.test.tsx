@@ -32,7 +32,7 @@ import {
 } from '../ui-components'
 
 // Mock MUI and design system
-jest.mock('@mui/material', () => ({
+jest.mock('@/lib/daisy-ui', () => ({
   Button: ({ children, variant, sx, startIcon, ...props }: MockProps) => (
     <button data-variant={variant} data-sx={JSON.stringify(sx)} {...props}>
       {startIcon}
@@ -106,10 +106,7 @@ jest.mock('@mui/material', () => ({
   ),
   Divider: ({ sx, ...props }: MockProps) => (
     <hr data-testid="divider" data-sx={JSON.stringify(sx)} {...props} />
-  )
-}))
-
-jest.mock('@/lib/mui-optimization', () => ({
+  ),
   ShoppingCartIcon: () => <span data-testid="shopping-cart-icon">ShoppingCart</span>,
   FavoriteIcon: () => <span data-testid="favorite-icon">Favorite</span>,
   StarIcon: () => <span data-testid="star-icon">Star</span>,
