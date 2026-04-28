@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ORDER_STATUS_LABELS } from '@/lib/order-constants'
@@ -13,6 +14,12 @@ interface OrderDetailsPageClientProps {
 interface OrderUpdateResponse {
   success?: boolean
   order?: Order
+  error?: string
+  details?: string
+}
+
+interface OrderDeleteResponse {
+  success?: boolean
   error?: string
   details?: string
 }
@@ -79,6 +86,11 @@ interface OrderImagePreview {
 interface NoticeState {
   message: string
   tone: 'success' | 'error'
+}
+
+interface DeleteOrderInput {
+  orderId: string
+  password: string
 }
 
 const statusOptions = [
@@ -418,6 +430,29 @@ async function patchOrder(orderId: string, payload: OrderPatchPayload): Promise<
   return data.order
 }
 
+async function deleteOrder({ orderId, password }: DeleteOrderInput): Promise<void> {
+  const controller = new AbortController()
+
+  const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    signal: controller.signal,
+    body: JSON.stringify({
+      password,
+      permanent: true
+    })
+  })
+
+  const data = await response.json().catch((): OrderDeleteResponse => ({}))
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || data.details || 'Order could not be deleted')
+  }
+}
+
 function buildOrderPatchPayload(
   formState: OrderDetailsFormState,
   savedFormState: OrderDetailsFormState
@@ -471,12 +506,15 @@ interface UpdateOrderMutationInput {
 }
 
 export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps) {
+  const router = useRouter()
   const queryClient = useQueryClient()
   const [formState, setFormState] = useState<OrderDetailsFormState | null>(null)
   const [customerForm, setCustomerForm] = useState<CustomerFormState | null>(null)
   const [itemsForm, setItemsForm] = useState<ItemFormState[]>([])
   const [editingCustomer, setEditingCustomer] = useState(false)
   const [editingItems, setEditingItems] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
   const [notice, setNotice] = useState<NoticeState | null>(null)
   const lastSyncedOrderIdRef = useRef<string | null>(null)
   const lastSyncedFormStateRef = useRef<OrderDetailsFormState | null>(null)
@@ -655,6 +693,20 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
     }
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      router.push('/admin/orders')
+    },
+    onError: (error) => {
+      setNotice({
+        message: error instanceof Error ? error.message : 'Order could not be deleted.',
+        tone: 'error'
+      })
+    }
+  })
+
   const updateField = (field: keyof OrderDetailsFormState, value: string) => {
     setFormState((current) => current ? { ...current, [field]: value } : current)
   }
@@ -718,6 +770,22 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
 
     setNotice(null)
     itemsMutation.mutate(itemsForm)
+  }
+
+  const handleDeleteSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const password = deletePassword.trim()
+    if (!password) {
+      setNotice({
+        message: 'Admin password is required to delete this order.',
+        tone: 'error'
+      })
+      return
+    }
+
+    setNotice(null)
+    deleteMutation.mutate({ orderId, password })
   }
 
   if (orderQuery.isLoading) {
@@ -912,6 +980,56 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               {updateMutation.isPending ? 'Saving...' : 'Save changes'}
             </button>
           </form>
+
+          <section className='mt-6 border-t border-base-300 pt-5' aria-labelledby='delete-order-heading'>
+            <h3 id='delete-order-heading' className='text-base font-semibold text-error'>Delete order</h3>
+            <p className='mt-2 text-sm text-base-content/65'>
+              Permanently remove this order from Supabase.
+            </p>
+            {deleteConfirmOpen ? (
+              <form className='mt-4 grid gap-3' onSubmit={handleDeleteSubmit}>
+                <label className='form-control w-full'>
+                  <span className='label-text mb-2'>Admin password</span>
+                  <input
+                    type='password'
+                    className='input input-bordered w-full'
+                    value={deletePassword}
+                    onChange={(event) => setDeletePassword(event.target.value)}
+                    autoComplete='current-password'
+                    autoFocus
+                  />
+                </label>
+                <div className='flex flex-wrap gap-2'>
+                  <button
+                    type='submit'
+                    className='btn btn-error btn-sm'
+                    disabled={deletePassword.trim().length === 0 || deleteMutation.isPending}
+                  >
+                    {deleteMutation.isPending ? 'Deleting...' : 'Delete permanently'}
+                  </button>
+                  <button
+                    type='button'
+                    className='btn btn-ghost btn-sm'
+                    disabled={deleteMutation.isPending}
+                    onClick={() => {
+                      setDeletePassword('')
+                      setDeleteConfirmOpen(false)
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button
+                type='button'
+                className='btn btn-outline btn-error btn-sm mt-4'
+                onClick={() => setDeleteConfirmOpen(true)}
+              >
+                Delete order
+              </button>
+            )}
+          </section>
         </aside>
 
         <div className='flex flex-col gap-4 xl:order-1'>

@@ -13,6 +13,14 @@ jest.mock('next/link', () => {
   )
 })
 
+const mockRouterPush = jest.fn()
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockRouterPush
+  })
+}))
+
 const makeOrder = (overrides: Partial<Order> = {}): Order => ({
   _id: 'order-1',
   _createdAt: '2026-04-20T09:00:00.000Z',
@@ -109,6 +117,7 @@ describe('OrderDetailsPageClient', () => {
   beforeEach(() => {
     mockFetch = jest.fn() as jest.MockedFunction<typeof fetch>
     global.fetch = mockFetch
+    mockRouterPush.mockClear()
   })
 
   it('loads and renders a shareable order detail page', async () => {
@@ -601,5 +610,45 @@ describe('OrderDetailsPageClient', () => {
     })
 
     expect(screen.getAllByText(customerMessage)).toHaveLength(1)
+  })
+
+  it('permanently deletes the order and returns to the orders list', async () => {
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse(makeOrder()))
+      .mockResolvedValueOnce(jsonResponse({
+        success: true,
+        message: 'Order permanently deleted from Supabase'
+      }))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete order' }))
+    fireEvent.change(screen.getByLabelText('Admin password'), {
+      target: { value: 'correct-password' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Delete permanently' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenLastCalledWith('/api/orders/26042009000001', expect.objectContaining({
+        method: 'DELETE',
+        credentials: 'include',
+        signal: expect.any(AbortSignal)
+      }))
+    })
+
+    const requestBody = JSON.parse(String(mockFetch.mock.calls[1]?.[1]?.body)) as {
+      password?: string
+      permanent?: boolean
+    }
+
+    expect(requestBody).toEqual({
+      password: 'correct-password',
+      permanent: true
+    })
+    expect(mockRouterPush).toHaveBeenCalledWith('/admin/orders')
   })
 })
