@@ -101,7 +101,7 @@ describe('/api/contact', () => {
     mockSend.mockResolvedValue({ data: { id: 'test-email-id' }, error: null })
     mockSupabaseInsert.mockResolvedValue({ error: null })
     mockStorageUpload.mockResolvedValue({ error: null })
-    mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id', metadata: {} })
+    mockCreateFromMock.mockResolvedValue({ _id: 'test-order-id', orderNumber: 'OC-CONTACT-1001', metadata: {} })
     mockPatchCommitFromMock.mockResolvedValue({ _id: 'test-order-id', metadata: {} })
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
@@ -740,7 +740,7 @@ describe('/api/contact', () => {
         total: 25,
         messagePreview: 'Please call before delivery',
         imageCount: 1,
-        adminPath: '/admin/orders'
+        adminPath: '/admin/orders/OC-CONTACT-1001'
       }))
     })
 

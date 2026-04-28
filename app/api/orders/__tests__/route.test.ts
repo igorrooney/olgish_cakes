@@ -41,7 +41,7 @@ import { POST } from '../route'
 describe('/api/orders POST', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockCreateSupabaseOrder.mockResolvedValue({ _id: 'order-1', metadata: {} })
+    mockCreateSupabaseOrder.mockResolvedValue({ _id: 'order-1', orderNumber: 'OC-TEST-1001', metadata: {} })
     mockUpdateSupabaseOrderMetadata.mockResolvedValue({ _id: 'order-1', metadata: {} })
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
@@ -348,7 +348,7 @@ describe('/api/orders POST', () => {
       productName: 'Honey Cake',
       total: 30,
       messagePreview: 'Please make it less sweet',
-      adminPath: '/admin/orders'
+      adminPath: '/admin/orders/OC-TEST-1001'
     }))
   })
 

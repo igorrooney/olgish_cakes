@@ -3,7 +3,7 @@ import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from
 import { logger } from '@/lib/logger'
 import {
   deleteSupabaseOrder,
-  getSupabaseOrderById,
+  getSupabaseOrderByIdentifier,
   updateSupabaseOrder,
   uploadSupabaseOrderNoteImage
 } from '@/lib/orders/supabase-orders'
@@ -85,7 +85,7 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
     nextOrder.pricing.paymentStatus = updates.paymentStatus
   }
 
-  if (updates.paymentMethod) {
+  if (updates.paymentMethod !== undefined) {
     nextOrder.pricing.paymentMethod = updates.paymentMethod
   }
 
@@ -127,6 +127,23 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
 
   if (updates.total !== undefined) {
     nextOrder.pricing.total = updates.total
+  }
+
+  if (Array.isArray(updates.items)) {
+    nextOrder.items = updates.items
+      .filter((item) => typeof item.productName === 'string' && item.productName.trim().length > 0)
+      .map((item) => ({
+        productType: item.productType || 'cake',
+        productId: item.productId || '',
+        productName: item.productName.trim(),
+        quantity: Number.isFinite(item.quantity) && item.quantity > 0 ? item.quantity : 1,
+        unitPrice: typeof item.unitPrice === 'number' && Number.isFinite(item.unitPrice) ? item.unitPrice : 0,
+        totalPrice: Number.isFinite(item.totalPrice) ? item.totalPrice : 0,
+        size: item.size?.trim() || undefined,
+        flavor: item.flavor?.trim() || undefined,
+        designType: item.designType?.trim() || undefined,
+        specialInstructions: item.specialInstructions?.trim() || undefined
+      }))
   }
 
   if (updates.itemPrice !== undefined) {
@@ -191,7 +208,7 @@ export async function GET(
 
   try {
     const { id } = await params
-    const order = await getSupabaseOrderById(id)
+    const order = await getSupabaseOrderByIdentifier(id)
 
     if (!order) {
       return NextResponse.json(
@@ -263,7 +280,7 @@ export async function PATCH(
       updates = await request.json() as OrderUpdate
     }
 
-    const currentOrder = await getSupabaseOrderById(id)
+    const currentOrder = await getSupabaseOrderByIdentifier(id)
 
     if (!currentOrder) {
       return NextResponse.json(
@@ -330,7 +347,7 @@ export async function DELETE(
   try {
     const { id } = await params
     const body = parseDeleteRequestBody(await request.json().catch(() => ({})))
-    const currentOrder = await getSupabaseOrderById(id)
+    const currentOrder = await getSupabaseOrderByIdentifier(id)
 
     if (!currentOrder) {
       return NextResponse.json(
@@ -364,7 +381,7 @@ export async function DELETE(
         )
       }
 
-      await deleteSupabaseOrder(id)
+      await deleteSupabaseOrder(currentOrder._id)
 
       return NextResponse.json({
         success: true,

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { logger } from "@/lib/logger";
 import { ORDER_STATUS_LABELS } from "@/lib/order-constants";
@@ -66,6 +67,14 @@ type OrderImagePreview = {
   source: 'reference' | 'note';
 };
 
+type OrderFocusFilter = 'all' | 'needs-action' | 'active';
+
+const needsActionStatuses = ['new', 'confirmed', 'in-progress'];
+const activeStatuses = [...needsActionStatuses, 'ready-pickup', 'out-delivery'];
+
+const isNeedsActionStatus = (status: string) => needsActionStatuses.includes(status);
+const isActiveStatus = (status: string) => activeStatuses.includes(status);
+
 function getOrderImagePreviews(order: Order): OrderImagePreview[] {
   const messageImages = (order.messages || []).flatMap((message) =>
     (message.attachments || [])
@@ -105,6 +114,7 @@ export function OrderManagementDashboard() {
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<OrderImageAsset | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [focusFilter, setFocusFilter] = useState<OrderFocusFilter>('all');
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<string>("_createdAt");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
@@ -292,7 +302,7 @@ export function OrderManagementDashboard() {
   // Reset to first page when filters change
   useEffect(() => {
     setPage(0);
-  }, [searchTerm, statusFilter, monthFilter]);
+  }, [searchTerm, statusFilter, monthFilter, focusFilter]);
 
   const handleCakeSelection = (cakeId: string) => {
     const selectedCake = availableCakes.find(cake => cake._id === cakeId);
@@ -368,12 +378,6 @@ export function OrderManagementDashboard() {
     });
     setEditDialogOpen(true);
   };
-
-  const handleViewOrder = (order: Order) => {
-    setSelectedOrder(order);
-    setViewDialogOpen(true);
-  };
-
 
   const handleDeleteOrderPermanently = async () => {
     const password = deletePassword.trim();
@@ -490,17 +494,13 @@ export function OrderManagementDashboard() {
   };
 
 
-  // Memoize filtered orders for performance
-  const filteredOrders = useMemo(() => {
+  const searchAndMonthFilteredOrders = useMemo(() => {
     return orders.filter(order => {
       // Apply search filter with null checks
       const matchesSearch = searchTerm === "" ||
         order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Apply status filter (if not "all")
-      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
 
       // Apply month filter
       const matchesMonth = monthFilter === "all" || (() => {
@@ -511,9 +511,22 @@ export function OrderManagementDashboard() {
         return filterValue === monthFilter;
       })();
 
-      return matchesSearch && matchesStatus && matchesMonth;
+      return matchesSearch && matchesMonth;
     });
-  }, [orders, searchTerm, statusFilter, monthFilter]);
+  }, [orders, searchTerm, monthFilter]);
+
+  // Memoize filtered orders for performance
+  const filteredOrders = useMemo(() => {
+    return searchAndMonthFilteredOrders.filter(order => {
+      // Apply status filter (if not "all")
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      const matchesFocus = focusFilter === 'all' ||
+        (focusFilter === 'needs-action' && isNeedsActionStatus(order.status)) ||
+        (focusFilter === 'active' && isActiveStatus(order.status));
+
+      return matchesStatus && matchesFocus;
+    });
+  }, [searchAndMonthFilteredOrders, statusFilter, focusFilter]);
 
   // Calculate filtered statistics based on current filters
   const getFilteredStatistics = () => {
@@ -656,6 +669,11 @@ export function OrderManagementDashboard() {
     setPage(0);
   };
 
+  const handleFocusFilterChange = (nextFocusFilter: OrderFocusFilter) => {
+    setFocusFilter(nextFocusFilter);
+    setStatusFilter('all');
+  };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     setEditForm(prev => ({
@@ -734,23 +752,57 @@ export function OrderManagementDashboard() {
     switch (status) {
       case 'completed':
       case 'delivered':
-        return 'badge badge-sm badge-success';
+        return 'badge badge-sm badge-success whitespace-nowrap';
       case 'cancelled':
-        return 'badge badge-sm badge-error';
+        return 'badge badge-sm badge-error whitespace-nowrap';
       case 'in-progress':
       case 'out-delivery':
-        return 'badge badge-sm badge-info';
+        return 'badge badge-sm badge-info whitespace-nowrap';
       case 'confirmed':
       case 'ready-pickup':
-        return 'badge badge-sm badge-warning';
+        return 'badge badge-sm badge-warning whitespace-nowrap';
       default:
-        return 'badge badge-sm badge-primary';
+        return 'badge badge-sm badge-primary whitespace-nowrap';
     }
+  };
+
+  const getOperationalBadge = (status: string) => {
+    if (isNeedsActionStatus(status)) {
+      return <span className="badge badge-warning badge-outline badge-sm whitespace-nowrap">Needs action</span>;
+    }
+
+    if (isActiveStatus(status)) {
+      return <span className="badge badge-info badge-outline badge-sm whitespace-nowrap">Active</span>;
+    }
+
+    return null;
   };
 
   const selectedMonthLabel = monthFilter === 'all'
     ? 'All months'
     : monthOptions.find(month => month.value === monthFilter)?.label || 'Selected month';
+
+  const focusFilterOptions: Array<{
+    value: OrderFocusFilter;
+    label: string;
+    count: number;
+  }> = [
+    {
+      value: 'all',
+      label: 'All orders',
+      count: searchAndMonthFilteredOrders.length
+    },
+    {
+      value: 'needs-action',
+      label: 'Needs action',
+      count: searchAndMonthFilteredOrders.filter(order => isNeedsActionStatus(order.status)).length
+    },
+    {
+      value: 'active',
+      label: 'Active orders',
+      count: searchAndMonthFilteredOrders.filter(order => isActiveStatus(order.status)).length
+    }
+  ];
 
   const cancelledOrders = filteredOrders.filter(order => order.status === 'cancelled').length;
   const needsActionOrders = filteredStats.newOrders + filteredStats.inProgressOrders;
@@ -855,7 +907,10 @@ export function OrderManagementDashboard() {
             <select
               className="select select-bordered w-full"
               value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
+              onChange={(event) => {
+                setStatusFilter(event.target.value);
+                setFocusFilter('all');
+              }}
             >
               <option value="all">All orders</option>
               <option value="new">New orders</option>
@@ -892,6 +947,22 @@ export function OrderManagementDashboard() {
               ? `All revenue ${currencyFormatter.format(allTimeRevenue)}`
               : 'View earnings'}
           </a>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2" aria-label="Order focus filters">
+          {focusFilterOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={`btn btn-sm ${focusFilter === option.value ? 'btn-primary' : 'btn-outline'}`}
+              aria-pressed={focusFilter === option.value}
+              onClick={() => handleFocusFilterChange(option.value)}
+            >
+              {option.label}
+              <span className={`badge badge-sm ${focusFilter === option.value ? 'badge-neutral' : 'badge-ghost'}`}>
+                {option.count}
+              </span>
+            </button>
+          ))}
         </div>
         <div className="mt-3 flex flex-col gap-2 border-t border-base-300 pt-3 text-sm text-base-content/65 sm:flex-row sm:items-center sm:justify-between">
           <p>
@@ -940,9 +1011,12 @@ export function OrderManagementDashboard() {
                         {placedAt.date}, {placedAt.time}
                       </p>
                     </div>
-                    <span className={getStatusBadgeClass(order.status)}>
-                      {statusLabel}
-                    </span>
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <span className={getStatusBadgeClass(order.status)}>
+                        {statusLabel}
+                      </span>
+                      {getOperationalBadge(order.status)}
+                    </div>
                   </div>
 
                   <div className="mt-4 grid gap-4 text-sm">
@@ -1038,24 +1112,13 @@ export function OrderManagementDashboard() {
                         {paymentStatus}
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm"
-                        aria-label={`View order ${order.orderNumber}`}
-                        onClick={() => handleViewOrder(order)}
-                      >
-                        View
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        aria-label={`Edit order ${order.orderNumber}`}
-                        onClick={() => handleEditOrder(order)}
-                      >
-                        Edit
-                      </button>
-                    </div>
+                    <Link
+                      href={`/admin/orders/${order.orderNumber}`}
+                      className="btn btn-primary btn-sm"
+                      aria-label={`Open order ${order.orderNumber}`}
+                    >
+                      Open
+                    </Link>
                   </div>
                 </article>
               );
@@ -1225,31 +1288,23 @@ export function OrderManagementDashboard() {
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className={getStatusBadgeClass(order.status)}>
-                          {statusLabel}
-                        </span>
+                        <div className="flex flex-col items-start gap-2">
+                          <span className={getStatusBadgeClass(order.status)}>
+                            {statusLabel}
+                          </span>
+                          {getOperationalBadge(order.status)}
+                        </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex flex-nowrap justify-end gap-2">
-                          <span title="View Order">
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-xs"
-                              aria-label={`View order ${order.orderNumber}`}
-                              onClick={() => handleViewOrder(order)}
+                          <span title="Open Order">
+                            <Link
+                              href={`/admin/orders/${order.orderNumber}`}
+                              className="btn btn-primary btn-xs"
+                              aria-label={`Open order ${order.orderNumber}`}
                             >
-                              View
-                            </button>
-                          </span>
-                          <span title="Edit Order">
-                            <button
-                              type="button"
-                              className="btn btn-outline btn-xs"
-                              aria-label={`Edit order ${order.orderNumber}`}
-                              onClick={() => handleEditOrder(order)}
-                            >
-                              Edit
-                            </button>
+                              Open
+                            </Link>
                           </span>
                         </div>
                       </td>

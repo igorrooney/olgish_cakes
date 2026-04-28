@@ -57,7 +57,9 @@ describe('AdminDashboard', () => {
         json: async () => ({
           orders: [
             makeOrder({ _id: 'order-1', orderNumber: 'OC-1001', status: 'new' }),
-            makeOrder({ _id: 'order-2', orderNumber: 'OC-1002', status: 'completed' })
+            makeOrder({ _id: 'order-2', orderNumber: 'OC-1002', status: 'confirmed' }),
+            makeOrder({ _id: 'order-3', orderNumber: 'OC-1003', status: 'ready-pickup' }),
+            makeOrder({ _id: 'order-4', orderNumber: 'OC-1004', status: 'completed' })
           ]
         })
       } as Response)
@@ -78,8 +80,19 @@ describe('AdminDashboard', () => {
       expect(screen.getByText('Total orders')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('2')).toBeInTheDocument()
-    expect(screen.getByText('Needs action')).toBeInTheDocument()
+    const needsActionCard = screen.getByText('Needs action').closest('article')
+    if (!needsActionCard) {
+      throw new Error('Needs action card was not rendered')
+    }
+
+    const activeOrdersSummary = screen.getByText('Active orders').parentElement
+    if (!activeOrdersSummary) {
+      throw new Error('Active orders summary was not rendered')
+    }
+
+    expect(screen.getByText('Total orders')).toBeInTheDocument()
+    expect(needsActionCard).toHaveTextContent('2')
+    expect(activeOrdersSummary).toHaveTextContent('3')
     expect(screen.getByText('£260.00')).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Open orders' })).toHaveLength(2)
     screen.getAllByRole('link', { name: 'Open orders' }).forEach((link) => {

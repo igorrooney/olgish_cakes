@@ -739,7 +739,7 @@ async function handlePOST(request: NextRequest) {
         total: totalPrice || 0,
         messagePreview: resolvedCustomerMessage || note || giftNote,
         imageCount: designImage ? 1 : 0,
-        adminPath: '/admin/orders'
+        adminPath: `/admin/orders/${createdOrder.orderNumber}`
       })
 
       let customerEmailSent = false

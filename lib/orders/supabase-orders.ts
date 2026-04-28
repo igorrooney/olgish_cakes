@@ -92,6 +92,9 @@ const isSupabaseFileAsset = (asset: { _type?: string } | undefined): boolean =>
 const getSupabaseAssetPath = (asset: { _id?: string, _ref?: string }): string =>
   asset._ref || asset._id || ''
 
+const isUuid = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+
 async function signOrderMessageAttachment(attachment: OrderMessageAttachment): Promise<OrderMessageAttachment> {
   if (!isSupabaseFileAsset(attachment.asset)) {
     return attachment
@@ -263,6 +266,27 @@ export async function getSupabaseOrderById(id: string): Promise<Order | null> {
     .from(ordersTable)
     .select()
     .eq('id', id)
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`Failed to fetch Supabase order: ${error.message}`)
+  }
+
+  return data ? signSupabaseOrderImageUrls(mapSupabaseOrderRow(data as SupabaseOrderRow)) : null
+}
+
+export async function getSupabaseOrderByIdentifier(identifier: string): Promise<Order | null> {
+  const orderById = isUuid(identifier) ? await getSupabaseOrderById(identifier) : null
+
+  if (orderById) {
+    return orderById
+  }
+
+  const supabase = getSupabaseAdminClient()
+  const { data, error } = await supabase
+    .from(ordersTable)
+    .select()
+    .eq('order_number', identifier)
     .maybeSingle()
 
   if (error) {

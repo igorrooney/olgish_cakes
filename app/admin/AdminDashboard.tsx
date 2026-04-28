@@ -17,7 +17,8 @@ interface EarningsResponse {
 
 interface QuickStats {
   totalOrders: number
-  pendingOrders: number
+  needsActionOrders: number
+  activeOrders: number
   completedOrders: number
   totalRevenue: number
   currentMonthRevenue: number
@@ -44,7 +45,8 @@ interface StatCard {
   tone: 'primary' | 'warning' | 'success' | 'info'
 }
 
-const activeStatuses = ['new', 'pending', 'confirmed', 'in-progress', 'ready-pickup', 'out-delivery']
+const needsActionStatuses = ['new', 'confirmed', 'in-progress']
+const activeStatuses = [...needsActionStatuses, 'ready-pickup', 'out-delivery']
 const completedStatuses = ['completed', 'delivered']
 
 const adminResources: AdminResource[] = [
@@ -217,7 +219,8 @@ export function AdminDashboard() {
 
         setStats({
           totalOrders: orders.length,
-          pendingOrders: orders.filter((order) => activeStatuses.includes(order.status)).length,
+          needsActionOrders: orders.filter((order) => needsActionStatuses.includes(order.status)).length,
+          activeOrders: orders.filter((order) => activeStatuses.includes(order.status)).length,
           completedOrders: orders.filter((order) => completedStatuses.includes(order.status)).length,
           totalRevenue: earningsData.totalRevenue ?? 0,
           currentMonthRevenue: earningsData.currentMonth ?? 0,
@@ -234,7 +237,8 @@ export function AdminDashboard() {
         setError('Dashboard data could not be loaded. Try refreshing the page or open Orders directly.')
         setStats({
           totalOrders: 0,
-          pendingOrders: 0,
+          needsActionOrders: 0,
+          activeOrders: 0,
           completedOrders: 0,
           totalRevenue: 0,
           currentMonthRevenue: 0,
@@ -268,8 +272,8 @@ export function AdminDashboard() {
     },
     {
       label: 'Needs action',
-      value: stats?.pendingOrders.toString() ?? '-',
-      hint: 'New, pending or in progress',
+      value: stats?.needsActionOrders.toString() ?? '-',
+      hint: 'New, confirmed or in progress',
       tone: 'warning'
     },
     {
@@ -464,8 +468,8 @@ export function AdminDashboard() {
                       <p className='mt-1 text-lg font-semibold'>{formatCurrency(stats?.averageOrderValue ?? 0)}</p>
                     </div>
                     <div>
-                      <p className='text-xs uppercase tracking-wide text-base-content/60'>Action queue</p>
-                      <p className='mt-1 text-lg font-semibold'>{stats?.pendingOrders ?? 0}</p>
+                      <p className='text-xs uppercase tracking-wide text-base-content/60'>Active orders</p>
+                      <p className='mt-1 text-lg font-semibold'>{stats?.activeOrders ?? 0}</p>
                     </div>
                   </div>
                 </div>

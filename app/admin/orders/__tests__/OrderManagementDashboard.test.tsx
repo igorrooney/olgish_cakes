@@ -306,12 +306,6 @@ describe('OrderManagementDashboard - Integration Tests', () => {
     })
   }
 
-  const clickEditOrderButton = () => {
-    const editTooltip = screen.getByTitle('Edit Order')
-    const editButton = within(editTooltip).getByRole('button')
-    fireEvent.click(editButton)
-  }
-
   afterEach(() => {
     global.fetch = originalFetch
     jest.restoreAllMocks()
@@ -319,50 +313,40 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
 
 
-  describe('Date Picker in Edit Form', () => {
-    it('should display date picker in edit form', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-          deliveryMethod: 'postal',
-        },
-      })
-
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        clickEditOrderButton()
-      })
-
-      // Wait for edit dialog to appear and find date picker directly
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      // Check date picker is present
-      const datePicker = screen.getByTestId('date-picker')
-      expect(datePicker).toBeInTheDocument()
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      await waitFor(() => {
-        expect(dateInput).toHaveValue('2025-12-08')
-      })
-    })
-
-    it('should allow changing date in edit form', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
-      })
-
-      setupFetchMocks([order])
+  describe('Order focus filters', () => {
+    it('filters the list to needs-action and active orders', async () => {
+      setupFetchMocks([
+        createMockOrder({
+          _id: 'needs-action-order',
+          orderNumber: '260427100001',
+          status: 'confirmed',
+          customer: {
+            name: 'Needs Customer',
+            email: 'needs@example.com',
+            phone: '07111111111'
+          }
+        }),
+        createMockOrder({
+          _id: 'ready-order',
+          orderNumber: '260427100002',
+          status: 'ready-pickup',
+          customer: {
+            name: 'Ready Customer',
+            email: 'ready@example.com',
+            phone: '07222222222'
+          }
+        }),
+        createMockOrder({
+          _id: 'completed-order',
+          orderNumber: '260427100003',
+          status: 'completed',
+          customer: {
+            name: 'Completed Customer',
+            email: 'completed@example.com',
+            phone: '07333333333'
+          }
+        })
+      ])
 
       render(<OrderManagementDashboard />)
 
@@ -370,67 +354,27 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
+      const focusFilters = screen.getByLabelText('Order focus filters')
 
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
+      fireEvent.click(within(focusFilters).getByRole('button', { name: 'Needs action 1' }))
 
-      const dateInput = screen.getByTestId('date-picker-input')
-      fireEvent.change(dateInput, { target: { value: '2025-12-25' } })
+      expect(screen.getAllByText('Needs Customer').length).toBeGreaterThan(0)
+      expect(screen.queryByText('Ready Customer')).not.toBeInTheDocument()
+      expect(screen.queryByText('Completed Customer')).not.toBeInTheDocument()
 
-      expect(dateInput).toHaveValue('2025-12-25')
+      fireEvent.click(within(focusFilters).getByRole('button', { name: 'Active orders 2' }))
+
+      expect(screen.getAllByText('Needs Customer').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Ready Customer').length).toBeGreaterThan(0)
+      expect(screen.queryByText('Completed Customer')).not.toBeInTheDocument()
     })
+  })
 
-    it('should handle null date gracefully in edit form', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: undefined,
-        },
-      })
-
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveValue('')
-    })
-
-    it('should permanently delete an order from the admin edit dialog', async () => {
+  describe('Order detail navigation', () => {
+    it('keeps order-list actions focused on the detail page', async () => {
       const order = createMockOrder()
 
       setupFetchMocks([order])
-      mockFetch
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            success: true,
-            message: 'Order permanently deleted from Supabase'
-          })
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            orders: [],
-            totalCount: 0,
-            hasMore: false
-          })
-        })
 
       render(<OrderManagementDashboard />)
 
@@ -438,29 +382,14 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
+      const openLinks = screen.getAllByRole('link', { name: `Open order ${order.orderNumber}` })
 
-      fireEvent.click(screen.getByRole('button', { name: 'Delete Order' }))
-      fireEvent.change(screen.getByLabelText('Admin Password'), {
-        target: { value: 'admin-password' }
+      openLinks.forEach((link) => {
+        expect(link).toHaveAttribute('href', `/admin/orders/${order.orderNumber}`)
       })
-      fireEvent.click(screen.getByRole('button', { name: 'Delete Permanently' }))
 
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/api/orders/order-1', expect.objectContaining({
-          method: 'DELETE',
-          body: JSON.stringify({
-            password: 'admin-password',
-            permanent: true
-          })
-        }))
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.queryByText('#25112015431792')).not.toBeInTheDocument()
-      }, { timeout: 5000 })
+      expect(screen.queryByRole('button', { name: `Edit order ${order.orderNumber}` })).not.toBeInTheDocument()
+      expect(screen.queryByTitle('Edit Order')).not.toBeInTheDocument()
     })
   })
 
@@ -498,7 +427,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       expect(screen.getAllByLabelText(/1 image attached to order/i).length).toBeGreaterThan(0)
     })
 
-    it('should have accessible date picker with aria-label', async () => {
+    it('should keep order detail links keyboard accessible', async () => {
       const order = createMockOrder({
         delivery: {
           dateNeeded: '2025-12-08',
@@ -513,85 +442,13 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
+      const detailLink = screen.getAllByRole('link', { name: `Open order ${order.orderNumber}` })[0]
 
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
+      detailLink.focus()
+      expect(detailLink).toHaveFocus()
 
-      const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveAttribute('aria-label', 'Date Needed')
-      expect(dateInput).toHaveAttribute('type', 'date')
-    })
-
-    it('should have label associated with date picker input', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
-      })
-
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      const datePicker = screen.getByTestId('date-picker')
-      const labels = within(datePicker).getAllByText('Date Needed')
-
-      expect(labels.length).toBeGreaterThan(0)
-      expect(dateInput).toHaveAttribute('id', 'date-picker-input')
-      // Verify label is associated with input via htmlFor
-      const label = labels[0]
-      expect(label).toHaveAttribute('for', 'date-picker-input')
-    })
-
-    it('should be keyboard accessible', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
-      })
-
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        clickEditOrderButton()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-
-      // Verify it's focusable
-      dateInput.focus()
-      expect(dateInput).toHaveFocus()
-
-      // Verify keyboard interaction
-      fireEvent.keyDown(dateInput, { key: 'Enter', code: 'Enter' })
-      expect(dateInput).toHaveFocus()
+      fireEvent.keyDown(detailLink, { key: 'Enter', code: 'Enter' })
+      expect(detailLink).toHaveFocus()
     })
   })
 

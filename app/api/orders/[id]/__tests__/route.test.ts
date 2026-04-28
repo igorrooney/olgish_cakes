@@ -3,7 +3,7 @@
  */
 import { NextRequest } from 'next/server'
 
-const mockGetSupabaseOrderById = jest.fn()
+const mockGetSupabaseOrderByIdentifier = jest.fn()
 const mockUpdateSupabaseOrder = jest.fn()
 const mockDeleteSupabaseOrder = jest.fn()
 const mockSendEmail = jest.fn()
@@ -15,7 +15,7 @@ jest.mock('@/lib/admin-auth', () => ({
 
 jest.mock('@/lib/orders/supabase-orders', () => ({
   deleteSupabaseOrder: (...args: unknown[]) => mockDeleteSupabaseOrder(...args),
-  getSupabaseOrderById: (...args: unknown[]) => mockGetSupabaseOrderById(...args),
+  getSupabaseOrderByIdentifier: (...args: unknown[]) => mockGetSupabaseOrderByIdentifier(...args),
   updateSupabaseOrder: (...args: unknown[]) => mockUpdateSupabaseOrder(...args),
   uploadSupabaseOrderNoteImage: jest.fn()
 }))
@@ -92,7 +92,7 @@ describe('/api/orders/[id] PATCH', () => {
       notes: []
     }
 
-    mockGetSupabaseOrderById.mockResolvedValueOnce(currentOrder)
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
     mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
       ...order,
       _updatedAt: '2026-03-01T10:10:00.000Z'
@@ -111,7 +111,7 @@ describe('/api/orders/[id] PATCH', () => {
     const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
 
     expect(response.status).toBe(200)
-    expect(mockGetSupabaseOrderById).toHaveBeenCalledWith('order-1')
+    expect(mockGetSupabaseOrderByIdentifier).toHaveBeenCalledWith('order-1')
     expect(mockUpdateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
       status: 'confirmed'
     }))
@@ -188,7 +188,7 @@ describe('/api/orders/[id] PATCH', () => {
       notes: []
     }
 
-    mockGetSupabaseOrderById.mockResolvedValueOnce(currentOrder)
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
     mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => order)
 
     const formData = new FormData()
@@ -217,6 +217,147 @@ describe('/api/orders/[id] PATCH', () => {
       totalPrice: 45
     })
     expect(updatedOrder.items[1]).toEqual(currentOrder.items[1])
+  })
+
+  it('updates the full item list from a JSON admin edit', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'confirmed',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [
+        {
+          productName: 'Honey Cake',
+          productId: 'honey-cake',
+          productType: 'cake',
+          quantity: 1,
+          unitPrice: 40,
+          totalPrice: 40
+        }
+      ],
+      delivery: {
+        deliveryMethod: 'collection'
+      },
+      pricing: {
+        subtotal: 40,
+        total: 40,
+        paymentStatus: 'partial',
+        paymentMethod: 'cash-collection'
+      },
+      notes: []
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => order)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            productName: 'Updated Cake',
+            productId: 'honey-cake',
+            productType: 'cake',
+            quantity: 2,
+            unitPrice: 75,
+            totalPrice: 150,
+            size: '8 inch',
+            flavor: 'Chocolate',
+            designType: 'Mario',
+            specialInstructions: 'Add castle'
+          }
+        ],
+        subtotal: 150,
+        total: 150
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+    const updatedOrder = mockUpdateSupabaseOrder.mock.calls[0]?.[0]
+
+    expect(updatedOrder.items).toHaveLength(1)
+    expect(updatedOrder.items[0]).toMatchObject({
+      productName: 'Updated Cake',
+      productId: 'honey-cake',
+      productType: 'cake',
+      quantity: 2,
+      unitPrice: 75,
+      totalPrice: 150,
+      size: '8 inch',
+      flavor: 'Chocolate',
+      designType: 'Mario',
+      specialInstructions: 'Add castle'
+    })
+    expect(updatedOrder.pricing).toMatchObject({
+      subtotal: 150,
+      total: 150
+    })
+  })
+
+  it('clears the payment method when an empty value is submitted', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'confirmed',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [
+        {
+          productName: 'Honey Cake',
+          productId: 'honey-cake',
+          productType: 'cake',
+          quantity: 1,
+          unitPrice: 40,
+          totalPrice: 40
+        }
+      ],
+      delivery: {
+        deliveryMethod: 'collection'
+      },
+      pricing: {
+        subtotal: 40,
+        total: 40,
+        paymentStatus: 'partial',
+        paymentMethod: 'cash-collection'
+      },
+      notes: []
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => order)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        paymentMethod: ''
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+    expect(mockUpdateSupabaseOrder.mock.calls[0]?.[0].pricing.paymentMethod).toBe('')
   })
 })
 
@@ -254,7 +395,7 @@ describe('/api/orders/[id] DELETE', () => {
     jest.clearAllMocks()
     process.env.ADMIN_PASSWORD = 'correct-password'
     mockIsAdminAuthenticated.mockResolvedValue(true)
-    mockGetSupabaseOrderById.mockResolvedValue(currentOrder)
+    mockGetSupabaseOrderByIdentifier.mockResolvedValue(currentOrder)
     mockDeleteSupabaseOrder.mockResolvedValue(undefined)
     mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => order)
     mockSendEmail.mockResolvedValue({

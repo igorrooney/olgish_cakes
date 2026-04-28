@@ -260,7 +260,7 @@ async function handlePOST(request: NextRequest) {
       total: orderData.total || validatedOrderData.totalPrice,
       messagePreview: validatedOrderData.message || firstItem?.specialInstructions,
       imageCount: attachments.length,
-      adminPath: '/admin/orders'
+      adminPath: `/admin/orders/${createdOrder.orderNumber}`
     })
 
     try {
