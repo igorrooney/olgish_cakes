@@ -1,7 +1,7 @@
 import { createClient as createSanityClient } from "@sanity/client";
 import dotenv from "dotenv";
 import path from "path";
-import { stringToRichText } from "../lib/rich-text-utils";
+import { stringToRichText, type RichTextBlock } from "../lib/rich-text-utils";
 
 interface SanityImage {
   _type: "image";
@@ -31,7 +31,7 @@ interface Cake {
   name: string;
   slug: SanitySlug;
   description: string;
-  shortDescription?: any[]; // Rich text blocks for short description
+  shortDescription?: RichTextBlock[]; // Rich text blocks for short description
   size: string;
   pricing: CakePricing;
   designs: CakeDesigns;

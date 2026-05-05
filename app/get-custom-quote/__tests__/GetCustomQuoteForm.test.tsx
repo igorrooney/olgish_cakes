@@ -258,9 +258,12 @@ describe('GetCustomQuoteForm', () => {
       throw new Error('Expected quote submission body')
     }
 
-    const body = submitCall[1].body as FormData
+    const requestInit = submitCall[1] as RequestInit
+    const body = requestInit.body as FormData
     const requirements = body.get('requirements')
 
+    expect(requestInit.credentials).toBe('same-origin')
+    expect(requestInit.signal).toBeInstanceOf(AbortSignal)
     expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('email')).toBe('jane@example.com')
     expect(body.get('phone')).toBeNull()

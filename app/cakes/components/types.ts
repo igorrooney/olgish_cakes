@@ -41,12 +41,19 @@ export interface CatalogFilterDefaults {
 }
 
 export type CatalogMode = 'all-cakes' | 'category-landing'
+export type CatalogInitialViewport = 'desktop' | 'mobile'
+
+export interface CatalogInitialDataCompleteness {
+  custom: boolean
+  byPost: boolean
+}
 
 export interface CakesTabletCatalogProps {
   cakes: TabletCake[]
   featuredOffer: CakesFeaturedOfferData | null
   collectionOptions: CakesCollectionOption[]
   initialFilterDefaults: CatalogFilterDefaults
+  initialDataCompleteness?: CatalogInitialDataCompleteness
   lazyCustomCakesEndpoint?: string
   lazyCustomCakesPriceCeilingHint?: number
   lazyByPostCakesEndpoint?: string
@@ -59,6 +66,7 @@ export interface CakesTabletCatalogProps {
   showPriceFilter?: boolean
   showCollectionFilters?: boolean
   mobileToolbarVariant?: 'full' | 'inline-compact'
+  initialViewport?: CatalogInitialViewport
 }
 
 export type CakesSortOption = 'new' | 'priceHighToLow' | 'priceLowToHigh'

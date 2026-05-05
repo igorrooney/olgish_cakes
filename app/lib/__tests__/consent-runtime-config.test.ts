@@ -23,6 +23,13 @@ type KlaroConfigTranslations = {
   translations?: Record<string, LocaleTranslations>
 }
 
+type KlaroConfigServices = {
+  services?: Array<{
+    onAccept?: unknown
+    onDecline?: unknown
+  }>
+}
+
 describe('consent-runtime-config', () => {
   function getLocaleTranslations(locale: string) {
     return (serializedKlaroConfig as KlaroConfigTranslations).translations?.[locale]
@@ -51,5 +58,27 @@ describe('consent-runtime-config', () => {
     expect(getLocaleTranslations('en')?.acceptAll).toBe('Accept optional cookies')
     expect(getLocaleTranslations('en')?.acceptSelected).toBe('Accept selected cookies')
     expect(getLocaleTranslations('en')?.privacyPolicy?.name).toBe('cookie policy')
+  })
+
+  it('uses function consent callbacks so Klaro does not need unsafe-eval', async () => {
+    const originalGtmId = process.env.NEXT_PUBLIC_GTM_ID
+
+    jest.resetModules()
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST123'
+
+    const { serializedKlaroConfig: gtmKlaroConfig } = await import('../consent-runtime-config')
+    const services = (gtmKlaroConfig as KlaroConfigServices).services ?? []
+
+    expect(services).toHaveLength(3)
+    expect(services.every((service) => typeof service.onAccept === 'function')).toBe(true)
+    expect(services.filter((service) => service.onDecline).every(
+      (service) => typeof service.onDecline === 'function'
+    )).toBe(true)
+
+    if (originalGtmId === undefined) {
+      delete process.env.NEXT_PUBLIC_GTM_ID
+    } else {
+      process.env.NEXT_PUBLIC_GTM_ID = originalGtmId
+    }
   })
 })

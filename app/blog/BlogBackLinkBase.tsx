@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { MouseEventHandler } from 'react'
 
 const backLinkClassName = 'inline-flex items-center gap-2 text-base leading-none text-base-content transition-colors hover:text-primary-500'
@@ -11,7 +10,7 @@ interface BlogBackLinkBaseProps {
 
 export function BlogBackLinkBase({ href, onClick }: BlogBackLinkBaseProps) {
   return (
-    <Link
+    <a
       href={href}
       onClick={onClick}
       className={backLinkClassName}
@@ -20,6 +19,6 @@ export function BlogBackLinkBase({ href, onClick }: BlogBackLinkBaseProps) {
     >
       <span aria-hidden='true' className='text-[16px] leading-none'>&lsaquo;</span>
       <span className={backLabelClassName}>Back to articles</span>
-    </Link>
+    </a>
   )
 }

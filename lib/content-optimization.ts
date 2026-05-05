@@ -268,7 +268,7 @@ export const USER_SEGMENTATION = {
 
 // Content optimization for featured snippets
 export function optimizeForFeaturedSnippets(topic: string) {
-  const snippetTypes = {
+  const _snippetTypes = {
     definition: {
       format: "What is {topic}?",
       structure: "{Topic} is a {brief definition}. Key characteristics include...",

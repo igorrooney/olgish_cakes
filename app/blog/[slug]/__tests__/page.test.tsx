@@ -432,6 +432,22 @@ describe("BlogArticlePage", () => {
     expect(scripts[0]?.textContent).toContain('"url":"https://olgishcakes.co.uk"');
   });
 
+  it("uses the sanitized archive return path for the back link", async () => {
+    const view = await BlogArticlePage({
+      params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
+      searchParams: Promise.resolve({
+        from: "/blog?topic=cake-by-post&page=2",
+      }),
+    });
+
+    render(view);
+
+    expect(screen.getByTestId("blog-back-link")).toHaveAttribute(
+      "href",
+      "/blog?topic=cake-by-post&page=2"
+    );
+  });
+
   it("switches the article commerce cta label for custom cake products", async () => {
     mockGetArticleBySlug.mockResolvedValue({
       ...baseArticle,
@@ -504,28 +520,17 @@ describe("BlogArticlePage", () => {
     expect(screen.queryByRole("link", { name: /see this custom cake/i })).not.toBeInTheDocument();
   });
 
-  it("uses the sanitized archive href for the back link when a safe from param is present", async () => {
-    mockUseSearchParams.mockReturnValue(
-      new URLSearchParams("from=%2Fblog%3Ftopic%3Dcake-by-post%26page%3D2")
-    );
-
+  it("uses the static blog archive href for the back link", async () => {
     const view = await BlogArticlePage({
       params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
     });
 
     render(view);
 
-    expect(screen.getByTestId("blog-back-link")).toHaveAttribute(
-      "href",
-      "/blog?topic=cake-by-post&page=2"
-    );
+    expect(screen.getByTestId("blog-back-link")).toHaveAttribute("href", "/blog");
   });
 
   it("falls back to /blog when the from param is unsafe", async () => {
-    mockUseSearchParams.mockReturnValue(
-      new URLSearchParams("from=https%3A%2F%2Fevil.example%2Fblog")
-    );
-
     const view = await BlogArticlePage({
       params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
     });

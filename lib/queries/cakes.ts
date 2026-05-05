@@ -96,6 +96,11 @@ export const CAKE_BY_SLUG_QUERY = groq`
       name,
       isFeatured
     },
+    seo {
+      metaTitle,
+      metaDescription,
+      keywords
+    },
     ingredients,
     ingredientReference->{
       _id,

@@ -21,11 +21,12 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
-    dangerouslyAllowSVG: true,
     formats: ["image/avif", "image/webp"],
+    qualities: [45, 50, 54, 55, 56, 64, 75, 76, 78, 80, 82],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    deviceSizes: [384, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    dangerouslyAllowLocalIP: process.env.NEXT_IMAGE_ALLOW_LOCAL_IP === "true",
     // Enhanced performance settings
     // Disable optimization in development to bypass private IP check
     unoptimized: process.env.NODE_ENV === "development",
@@ -44,6 +45,8 @@ const nextConfig = {
     optimizeServerReact: true,
     // Enable modern JavaScript features
     esmExternals: true,
+    // Inline CSS wins for first-load mobile LCP in Lighthouse despite duplicated RSC bytes.
+    inlineCss: true,
     // Performance optimizations
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
   },
@@ -64,10 +67,10 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://cdn.kiprotect.com https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms",
+              // unsafe-eval is development-only; production scripts must come from trusted origins.
+              `script-src 'self' ${process.env.NODE_ENV === "development" ? "'unsafe-eval' " : ""}'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms`,
               // unsafe-inline required for Google Fonts and Sanity Studio styles
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.kiprotect.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://cdn.sanity.io https://*.sanity.io wss://*.sanity.io wss://*.api.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live https://va.vercel-scripts.com https://*.clarity.ms https://c.bing.com",
@@ -124,15 +127,6 @@ const nextConfig = {
         ],
       },
       {
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-      {
         source: "/sw.js",
         headers: [
           {
@@ -151,6 +145,19 @@ const nextConfig = {
           {
             key: "Access-Control-Allow-Origin",
             value: "*",
+          },
+        ],
+      },
+      {
+        source: "/runtime/klaro/v0.7/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
         ],
       },

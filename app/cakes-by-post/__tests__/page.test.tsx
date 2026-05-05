@@ -17,6 +17,10 @@ jest.mock('nuqs/adapters/next/app', () => ({
   NuqsAdapter: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
+jest.mock('next/headers', () => ({
+  headers: jest.fn(async () => new Headers())
+}))
+
 jest.mock('../../cakes/catalogPageData', () => ({
   getCatalogPageData: jest.fn(),
   getCatalogCustomCakesPriceCeiling: jest.fn()
@@ -123,9 +127,7 @@ describe('CakesByPostPage', () => {
   })
 
   it('uses base cakes-by-post canonical metadata when no query params are provided', async () => {
-    const metadata = await generateMetadata({
-      searchParams: Promise.resolve({})
-    })
+    const metadata = await generateMetadata({})
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes-by-post')
@@ -141,9 +143,9 @@ describe('CakesByPostPage', () => {
     expect(metadata.robots).toBeUndefined()
   })
 
-  it('falls back to base cakes-by-post canonical metadata for mixed pagination query', async () => {
+  it('noindexes filtered cakes-by-post query metadata', async () => {
     const metadata = await generateMetadata({
-      searchParams: Promise.resolve({ page: '2', collections: 'h-postal-gifts' })
+      searchParams: Promise.resolve({ collections: 'h-postal-gifts' })
     })
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes-by-post')

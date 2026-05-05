@@ -6,7 +6,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderToString } from 'react-dom/server.node'
 import { CakesTabletCatalog } from '../CakesTabletCatalog'
-import type { CakesCollectionOption, CatalogFilterDefaults, TabletCake } from '../types'
+import type { CakesCollectionOption, CatalogFilterDefaults, CatalogInitialDataCompleteness, TabletCake } from '../types'
 
 const renderedPriceValues: number[] = []
 const renderedCardVariants: Array<'desktop' | 'mobile'> = []
@@ -115,6 +115,15 @@ function triggerMobileInfiniteSentinelIntersection() {
     act(() => {
       instance.callback([entry], instance.observer)
     })
+  })
+}
+
+async function enableMobileInfiniteScrollObserver() {
+  fireEvent.scroll(window)
+
+  await waitFor(() => {
+    const sentinel = screen.getByTestId('mobile-infinite-scroll-sentinel')
+    expect(mockObserverInstances.some((instance) => instance.observedElements.has(sentinel))).toBe(true)
   })
 }
 
@@ -580,6 +589,8 @@ function renderCatalog({
   viewportWidth = 1200,
   collectionOptionsOverride,
   initialFilterDefaults = { byPost: false, custom: true },
+  initialDataCompleteness,
+  initialViewport = 'desktop',
   lazyCustomCakesEndpoint,
   lazyCustomCakesPriceCeilingHint,
   lazyByPostCakesEndpoint,
@@ -600,6 +611,8 @@ function renderCatalog({
   viewportWidth?: number
   collectionOptionsOverride?: CakesCollectionOption[]
   initialFilterDefaults?: CatalogFilterDefaults
+  initialDataCompleteness?: CatalogInitialDataCompleteness
+  initialViewport?: 'desktop' | 'mobile'
   lazyCustomCakesEndpoint?: string
   lazyCustomCakesPriceCeilingHint?: number
   lazyByPostCakesEndpoint?: string
@@ -630,6 +643,8 @@ function renderCatalog({
       featuredOffer={null}
       collectionOptions={collectionOptionsOverride ?? collectionOptions}
       initialFilterDefaults={initialFilterDefaults}
+      initialDataCompleteness={initialDataCompleteness}
+      initialViewport={initialViewport}
       lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
       lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
       lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
@@ -2085,15 +2100,16 @@ describe('CakesTabletCatalog', () => {
     expect(screen.queryByTestId('mobile-prehydration-shell')).not.toBeInTheDocument()
   })
 
-  it('keeps server mobile pre-hydration cards non-LCP on desktop viewport', () => {
+  it('marks first server mobile pre-hydration cards as LCP candidates', () => {
     const serverMarkup = renderCatalogToMarkup({ cakeCount: 4, viewportWidth: 1200 })
     const mobileCardTags = serverMarkup.match(/<article[^>]*data-variant="mobile"[^>]*>/g) ?? []
 
     expect(serverMarkup).toContain('data-testid="mobile-prehydration-shell"')
     expect(mobileCardTags.length).toBeGreaterThan(0)
-    mobileCardTags.forEach((mobileCardTag) => {
+    expect(mobileCardTags[0]).toMatch(/data-is-lcp-candidate="true"/)
+    expect(mobileCardTags[1]).toMatch(/data-is-lcp-candidate="true"/)
+    mobileCardTags.slice(2).forEach((mobileCardTag) => {
       expect(mobileCardTag).toMatch(/data-is-lcp-candidate="false"/)
-      expect(mobileCardTag).not.toMatch(/data-is-lcp-candidate="true"/)
     })
   })
 
@@ -2251,56 +2267,55 @@ describe('CakesTabletCatalog', () => {
     renderCatalog({
       viewportWidth: 390,
       items: createMixedCatalogItems({
-        customCount: 3,
+        customCount: 6,
         byPostCount: 0
       })
     })
 
     await waitFor(() => {
-      expect(screen.getAllByTestId('cake-card')).toHaveLength(3)
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
     const cards = screen.getAllByTestId('cake-card')
-    const [firstCard, secondCard, thirdCard] = cards
+    const [firstCard, secondCard] = cards
 
     expect(firstCard).toBeDefined()
     expect(secondCard).toBeDefined()
-    expect(thirdCard).toBeDefined()
-    if (!firstCard || !secondCard || !thirdCard) {
+    if (!firstCard || !secondCard) {
       return
     }
     expect(firstCard).toHaveAttribute('data-is-lcp-candidate', 'true')
     expect(secondCard).toHaveAttribute('data-is-lcp-candidate', 'true')
-    expect(thirdCard).toHaveAttribute('data-is-lcp-candidate', 'false')
+    cards.slice(2).forEach((card) => {
+      expect(card).toHaveAttribute('data-is-lcp-candidate', 'false')
+    })
   })
 
   it('marks only first mobile card as LCP candidate in single-column view', async () => {
     renderCatalog({
       viewportWidth: 390,
       items: createMixedCatalogItems({
-        customCount: 3,
+        customCount: 6,
         byPostCount: 0
       })
     })
 
     await waitFor(() => {
-      expect(screen.getAllByTestId('cake-card')).toHaveLength(3)
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Single-column view' }))
 
     const cards = screen.getAllByTestId('cake-card')
-    const [firstCard, secondCard, thirdCard] = cards
+    const [firstCard, secondCard] = cards
 
     expect(firstCard).toBeDefined()
     expect(secondCard).toBeDefined()
-    expect(thirdCard).toBeDefined()
-    if (!firstCard || !secondCard || !thirdCard) {
+    if (!firstCard || !secondCard) {
       return
     }
     expect(firstCard).toHaveAttribute('data-is-lcp-candidate', 'true')
     expect(secondCard).toHaveAttribute('data-is-lcp-candidate', 'false')
-    expect(thirdCard).toHaveAttribute('data-is-lcp-candidate', 'false')
   })
 
   it('does not show pre-hydration shell when mobile viewport branch is active', async () => {
@@ -2449,6 +2464,7 @@ describe('CakesTabletCatalog', () => {
 
     expect(window.location.search).toBe('')
     expect(screen.getByText('Cake 1')).toBeInTheDocument()
+    expect(screen.getByText('Cake 2')).toBeInTheDocument()
     expect(screen.getByText('Cake 6')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Filter & Sort' }))
@@ -2457,7 +2473,7 @@ describe('CakesTabletCatalog', () => {
 
     expect(window.location.search).toBe('')
     expect(screen.getByText('Cake 1')).toBeInTheDocument()
-    expect(screen.getByText('Cake 6')).toBeInTheDocument()
+    expect(screen.getByText('Cake 2')).toBeInTheDocument()
     expect(screen.getByTestId('mobile-filter-sort-sheet')).toBeInTheDocument()
   })
 
@@ -2474,6 +2490,7 @@ describe('CakesTabletCatalog', () => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     })
 
+    await enableMobileInfiniteScrollObserver()
     triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {
@@ -2764,12 +2781,58 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     expect(screen.queryByRole('navigation', { name: 'Cake catalog pagination' })).not.toBeInTheDocument()
 
+    await enableMobileInfiniteScrollObserver()
     triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {
       expect(screen.getAllByTestId('cake-card')).toHaveLength(10)
     })
     expect(screen.getByText('Cake 10')).toBeInTheDocument()
+  })
+
+  it('keeps a mobile lazy-load sentinel visible when server data is only the first batch', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        cakes: Array.from({ length: 6 }, (_, index) => createCake(index + 7)),
+        collectionOptions
+      })
+    } as Response)
+
+    renderCatalog({
+      viewportWidth: 390,
+      initialViewport: 'mobile',
+      items: Array.from({ length: 6 }, (_, index) => createCake(index + 1)),
+      initialDataCompleteness: {
+        custom: false,
+        byPost: true
+      },
+      lazyCustomCakesEndpoint: '/api/catalog/custom-cakes'
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
+    })
+    expect(screen.getByTestId('mobile-infinite-scroll-sentinel')).toBeInTheDocument()
+    expect(screen.getByTestId('mobile-catalog-more-logo-loader')).toBeInTheDocument()
+
+    await enableMobileInfiniteScrollObserver()
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/catalog/custom-cakes',
+        expect.objectContaining({
+          signal: expect.any(AbortSignal)
+        })
+      )
+    })
+
+    triggerMobileInfiniteSentinelIntersection()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('cake-card')).toHaveLength(12)
+    })
+    expect(screen.getByText('Cake 12')).toBeInTheDocument()
   })
 
   it('falls back to manual load more when IntersectionObserver is unavailable', async () => {
@@ -2825,6 +2888,7 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getByText('Cake 6')).toBeInTheDocument()
     expect(screen.queryByText('Cake 7')).not.toBeInTheDocument()
 
+    await enableMobileInfiniteScrollObserver()
     triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {
@@ -2849,6 +2913,7 @@ describe('CakesTabletCatalog', () => {
     })
     expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
 
+    await enableMobileInfiniteScrollObserver()
     triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {
@@ -2864,6 +2929,7 @@ describe('CakesTabletCatalog', () => {
     expect(screen.getAllByTestId('cake-card')).toHaveLength(6)
     expect(screen.getByText('Hamper 6')).toBeInTheDocument()
 
+    await enableMobileInfiniteScrollObserver()
     triggerMobileInfiniteSentinelIntersection()
 
     await waitFor(() => {

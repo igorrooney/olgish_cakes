@@ -244,10 +244,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "GB",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: 7,
-        returnMethod: "https://schema.org/ReturnByMail",
-        returnFees: "https://schema.org/FreeReturn",
+        returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
       },
       
       // Payment methods

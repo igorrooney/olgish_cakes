@@ -1,6 +1,8 @@
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
 
+type GiftHamperDescriptionInput = Pick<GiftHamper, 'description' | 'shortDescription'>
+
 export const giftHamperVisibleDescriptionFallback = 'Handmade cake-by-post hamper prepared in Leeds and packed with care for UK delivery.'
 
 function normalizeDescriptionText(value: string) {
@@ -28,7 +30,7 @@ function getNormalizedPortableText(
 }
 
 export function getGiftHamperVisibleDescriptionBlocks(
-  hamper: GiftHamper
+  hamper: GiftHamperDescriptionInput
 ): GiftHamper['description'] | GiftHamper['shortDescription'] | null {
   if (hasPortableTextContent(hamper.description) && normalizeDescriptionText(blocksToText(hamper.description)).length > 0) {
     return hamper.description
@@ -41,7 +43,7 @@ export function getGiftHamperVisibleDescriptionBlocks(
   return null
 }
 
-export function getGiftHamperVisibleDescriptionText(hamper: GiftHamper): string {
+export function getGiftHamperVisibleDescriptionText(hamper: GiftHamperDescriptionInput): string {
   const normalizedDescription = getNormalizedPortableText(hamper.description)
   if (normalizedDescription) {
     return normalizedDescription

@@ -176,6 +176,7 @@ export default async function CakesByPostPage() {
       initialFilterDefaults={{ byPost: true, custom: false }}
       lazyCustomCakesEndpoint='/api/catalog/custom-cakes'
       lazyCustomCakesPriceCeilingHint={customCakesPriceCeilingHint}
+      lazyByPostCakesEndpoint='/api/catalog/by-post-cakes'
       postCatalogContent={(
         <CatalogFaqAccordion
           sectionId='cakes-by-post-faq-title'

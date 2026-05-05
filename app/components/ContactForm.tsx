@@ -15,8 +15,6 @@ import {
   AlertTitle,
   Box,
   CircularProgress,
-  IconButton,
-  Paper,
   Stack,
 } from "@/lib/daisy-ui";
 import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/daisy-ui";
@@ -31,7 +29,7 @@ import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfTo
 // Configure dayjs for British locale
 dayjs.locale("en-gb");
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing, borderRadius } = designTokens;
 
 const MotionBox = motion.create(Box);
 
@@ -271,7 +269,7 @@ export function ContactForm({
     }
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
 
     if (onSubmit) {

@@ -2,6 +2,7 @@ import { getHomepageCollections } from '@/app/utils/fetchCollections'
 import { createCollectionQueryValueMap, normalizeDocumentId } from '@/app/utils/collectionQueryValue'
 import { getCategoryLandingPathByQueryValue } from '@/app/cakes/categoryLandingConfig'
 import type { HomepageCollection } from '@/app/types/collection'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { urlFor } from '@/sanity/lib/image'
 import { DeferredOccasionsClient } from './DeferredOccasionsClient'
 import type { DisplayCollection } from './occasions.types'
@@ -31,11 +32,17 @@ const buildDisplayCollections = (collections: HomepageCollection[]): DisplayColl
       const imageAlt = image.alt?.trim() || collection.name
       const canonicalCategoryPath = getCategoryLandingPathByQueryValue(queryValue)
       const searchParams = new URLSearchParams({ collections: queryValue })
+      const rawImageUrl = urlFor(image).url()
 
       return {
         _id: normalizedId,
         name: collection.name,
-        imageUrl: urlFor(image).width(480).height(480).url(),
+        imageUrl: getSanityCdnImageUrl(rawImageUrl, {
+          width: 360,
+          height: 360,
+          fit: 'crop',
+          quality: 78
+        }) ?? rawImageUrl,
         imageAlt,
         href: canonicalCategoryPath ?? `/cakes?${searchParams.toString()}`
       }

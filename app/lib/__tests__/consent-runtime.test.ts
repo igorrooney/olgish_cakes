@@ -46,7 +46,7 @@ describe('consent-runtime', () => {
 
     const klaroScript = document.getElementById('klaro-script') as HTMLScriptElement | null
     expect(klaroScript).toBeTruthy()
-    expect(klaroScript?.src).toContain('cdn.kiprotect.com/klaro/v0.7/klaro.js')
+    expect(klaroScript?.src).toContain('/runtime/klaro/v0.7/klaro-no-css.js')
 
     klaroScript?.dispatchEvent(new Event('load'))
     await runtimePromise

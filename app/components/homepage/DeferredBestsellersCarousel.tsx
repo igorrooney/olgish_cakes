@@ -1,14 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { CakeWithImage } from './BestsellersCarousel'
+import type { BestsellerCarouselCake } from './BestsellersCarousel'
 
 const BestsellersCarousel = dynamic(
   async () => import('./BestsellersCarousel').then(module => module.BestsellersCarousel)
 )
 
 type DeferredBestsellersCarouselProps = {
-  cakes: CakeWithImage[]
+  cakes: BestsellerCarouselCake[]
 }
 
 export function DeferredBestsellersCarousel({

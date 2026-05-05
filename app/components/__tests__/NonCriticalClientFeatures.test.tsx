@@ -60,9 +60,10 @@ describe('NonCriticalClientFeatures', () => {
     expect(screen.queryByTestId('klaro-bridge')).not.toBeInTheDocument()
     expect(screen.queryByTestId('scroll-to-top')).not.toBeInTheDocument()
 
-    act(() => {
+    await act(async () => {
       window.dispatchEvent(new Event('load'))
-      jest.advanceTimersByTime(1200)
+      jest.advanceTimersByTime(5000)
+      await Promise.resolve()
     })
 
     expect(await screen.findByTestId('klaro-bridge')).toBeInTheDocument()

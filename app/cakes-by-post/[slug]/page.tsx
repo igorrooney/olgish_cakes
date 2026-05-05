@@ -2,19 +2,20 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { Brand, Graph, Product } from 'schema-dts'
 import { getGiftHamperBySlug, getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
-import { Providers } from '@/app/providers'
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { normalizeCmsTitle } from '@/lib/metadata'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { BRAND_ID } from '@/lib/schema-constants'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { urlFor as buildImageUrl, urlFor } from '@/sanity/lib/image'
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
 import { buildCatalogBackHref } from '../../cakes/catalogNavigation'
-import { GiftHamperPageClient } from '../../gift-hampers/[slug]/GiftHamperPageClient'
+import type { CatalogProductDetailImage } from '../../cakes/components/CatalogProductDetailLayout'
+import { GiftHamperPageClient, type GiftHamperPageClientData } from '../../gift-hampers/[slug]/GiftHamperPageClient'
 import { getGiftHamperVisibleDescriptionText } from '../../gift-hampers/[slug]/description-content'
-import { resolveGiftHamperDeliveryContent } from '../../gift-hampers/[slug]/delivery-content'
+import { resolveGiftHamperDeliveryContent, type ResolvedGiftHamperDeliveryContent } from '../../gift-hampers/[slug]/delivery-content'
 
 export async function generateStaticParams() {
   try {
@@ -42,6 +43,73 @@ function normalizeMetaDescription(value: string | undefined) {
   }
 
   return value.replace(/\s+/g, ' ').trim()
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function mapGiftHamperImagesToGallery(hamper: GiftHamper): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${hamper.name} by Olgish Cakes`
+  const hamperImages = Array.isArray(hamper.images) ? hamper.images : []
+  const mainImageIndex = hamperImages.findIndex((image) => image.isMain === true)
+  const orderedImages = mainImageIndex >= 0
+    ? [hamperImages[mainImageIndex], ...hamperImages.filter((_, index) => index !== mainImageIndex)]
+    : hamperImages
+
+  orderedImages.forEach((image) => {
+    if (!hasImageAssetReference(image)) {
+      return
+    }
+
+    const rawImageUrl = urlFor(image).url()
+    const imageUrl = getSanityCdnImageUrl(rawImageUrl, {
+      width: 960,
+      height: 960,
+      fit: 'crop',
+      quality: 80
+    }) ?? rawImageUrl
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  })
+
+  return mappedImages
+}
+
+function getGiftHamperPageClientData(
+  hamper: GiftHamper,
+  deliveryContent: ResolvedGiftHamperDeliveryContent
+): GiftHamperPageClientData {
+  return {
+    name: hamper.name,
+    slug: hamper.slug,
+    description: hamper.description,
+    shortDescription: hamper.shortDescription,
+    deliveryContent,
+    price: hamper.price,
+    galleryImages: mapGiftHamperImagesToGallery(hamper),
+    ingredients: hamper.ingredients,
+    allergens: hamper.allergens,
+    ingredientReference: hamper.ingredientReference
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -133,6 +201,7 @@ export default async function CakesByPostProductPage({ params, searchParams }: P
   }
 
   const resolvedDeliveryContent = resolveGiftHamperDeliveryContent(hamper)
+  const hamperPageClientData = getGiftHamperPageClientData(hamper, resolvedDeliveryContent)
   const shouldEmitShippingDetails = resolvedDeliveryContent.shouldEmitShippingDetails
   const shippingDetailsForStructuredData = shouldEmitShippingDetails
     ? getOfferShippingDetails(
@@ -234,12 +303,10 @@ export default async function CakesByPostProductPage({ params, searchParams }: P
           />
         )
       })()}
-      <Providers>
-        <GiftHamperPageClient
-          hamper={hamper}
-          backHref={backHref}
-        />
-      </Providers>
+      <GiftHamperPageClient
+        hamper={hamperPageClientData}
+        backHref={backHref}
+      />
     </main>
   )
 }

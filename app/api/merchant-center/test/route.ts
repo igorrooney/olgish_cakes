@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllCakes } from "@/app/utils/fetchCakes";
 import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
+import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
+import type { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
 
 // Google Merchant Center Feed Test Endpoint
 export async function GET(request: NextRequest) {
@@ -64,20 +66,20 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper functions (copied from main feed for test endpoint)
-function generateCakeItem(cake: any, baseUrl: string): string {
+function generateCakeItem(cake: Cake, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
 
   // Get the best available image
   const mainImage = cake.mainImage?.asset?._ref
     ? cake.mainImage
-    : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+    : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
       cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+      cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
       cake.designs?.individual?.[0] ||
       // Fallback to images array (for legacy data like Honey Cake)
-      cake.images?.find((img: any) => img.asset?._ref) ||
+      cake.images?.find((img: CakeImage) => img.asset?._ref) ||
       cake.images?.[0];
 
   const imageUrl = mainImage?.asset?._ref
@@ -85,13 +87,15 @@ function generateCakeItem(cake: any, baseUrl: string): string {
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || 25;
-  const availability = cake.structuredData?.availability || 'in stock';
+  const availability = 'in stock';
+  const description = blocksToText(cake.shortDescription || cake.description) ||
+    `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`;
 
   return `
     <item>
       <g:id>cake_${cake._id}</g:id>
       <g:title>${escapeXml(cake.name)} - Traditional Ukrainian Honey Cake</g:title>
-      <g:description>${escapeXml(cake.shortDescription || cake.description || `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`)}</g:description>
+      <g:description>${escapeXml(description)}</g:description>
       <g:link>${productUrl}</g:link>
       <g:image_link>${imageUrl}</g:image_link>
       <g:price>${price} GBP</g:price>
@@ -103,26 +107,26 @@ function generateCakeItem(cake: any, baseUrl: string): string {
     </item>`;
 }
 
-function generateHamperItem(hamper: any, baseUrl: string): string {
+function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
   const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
 
   // Get the best available image
-  const mainImage = hamper.mainImage?.asset?._ref
-    ? hamper.mainImage
-    : hamper.images?.find((img: any) => img.asset?._ref) ||
-      hamper.images?.[0];
+  const mainImage = hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
+    hamper.images?.[0];
 
   const imageUrl = mainImage?.asset?._ref
     ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
     : `${baseUrl}/images/placeholder-hamper.jpg`;
 
   const price = hamper.price || 35;
+  const description = blocksToText(hamper.shortDescription || hamper.description || []) ||
+    `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`;
 
   return `
     <item>
       <g:id>hamper_${hamper._id}</g:id>
       <g:title>${escapeXml(hamper.name)} - Ukrainian Gift Hamper</g:title>
-      <g:description>${escapeXml(hamper.shortDescription || hamper.description || `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`)}</g:description>
+      <g:description>${escapeXml(description)}</g:description>
       <g:link>${productUrl}</g:link>
       <g:image_link>${imageUrl}</g:image_link>
       <g:price>${price} GBP</g:price>

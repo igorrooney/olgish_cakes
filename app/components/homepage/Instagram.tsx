@@ -5,6 +5,7 @@ import {
   isRecoverableInstagramError
 } from '@/app/utils/fetchInstagramPosts'
 import { DeferredInstagramCarousel } from './DeferredInstagramCarousel'
+import { mapInstagramPostToCarouselPost } from './instagramCarouselContent'
 
 const instagramProfileUrl = 'https://www.instagram.com/olgish_cakes/'
 const instagramProfileName = 'Olgish Cakes'
@@ -40,7 +41,8 @@ export async function Instagram({ limit }: InstagramProps = {}) {
     }
   }
 
-  const displayPosts = posts.length > 0 ? posts : [placeholderPost]
+  const displayPosts = (posts.length > 0 ? posts : [placeholderPost])
+    .map(mapInstagramPostToCarouselPost)
 
   return (
     <section className="bg-base-100 px-4 py-8">

@@ -55,6 +55,7 @@ export default async function CakesPage() {
       localBusinessDescription='Authentic traditional Ukrainian cakes made with love in Leeds. Specialising in Ukrainian birthday cakes, wedding cakes, and traditional honey cake (Medovik).'
       catalogData={catalogData}
       initialFilterDefaults={{ byPost: false, custom: true }}
+      lazyCustomCakesEndpoint='/api/catalog/custom-cakes'
       lazyByPostCakesEndpoint='/api/catalog/by-post-cakes'
       lazyByPostCakesPriceCeilingHint={byPostCakesPriceCeilingHint}
       postCatalogContent={(

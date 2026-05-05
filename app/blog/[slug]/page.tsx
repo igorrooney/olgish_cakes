@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache, Suspense, type ComponentProps } from "react";
+import { cache, type ComponentProps } from "react";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { normalizeCmsTitle } from "@/lib/metadata";
 import {
@@ -20,7 +18,6 @@ import {
   hasMaterialArticleUpdate,
   getProductHref,
   getRelatedArticles,
-  isSanityCdnImageUrl,
   isArticleProductPostableToUk,
   type ArticleProduct,
   type ArticleTableOfContentsItem,
@@ -33,17 +30,19 @@ import {
   getRelatedArticlesCopy,
 } from "../copy";
 import { ArticlePortableText } from "../ArticlePortableText";
-import { BlogBackLink } from "../BlogBackLink";
+import { ArticleHeroImage } from "../ArticleHeroImage";
 import { BlogBackLinkBase } from "../BlogBackLinkBase";
+import { buildBlogBackHref } from "../navigation";
 
 interface BlogArticlePageProps {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-function ArticlePageLink(props: ComponentProps<typeof Link>) {
-  return <Link {...props} prefetch={false} />;
+function ArticlePageLink(props: ComponentProps<"a">) {
+  return <a {...props} />;
 }
 
 const getArticlePageData = cache(async (slug: string) => {
@@ -70,37 +69,6 @@ function getArticlePrimaryCtaLabel(featuredProduct: ArticleProduct) {
   }
 
   return featuredProduct._type === "cake" ? "See this custom cake" : "See this cake";
-}
-
-function ArticleHeroImage({
-  imageUrl,
-  imageAlt,
-  title,
-}: {
-  imageUrl?: string;
-  imageAlt?: string;
-  title: string;
-}) {
-  if (!imageUrl) {
-    return null;
-  }
-
-  return (
-    <div className="relative overflow-hidden rounded-[30px] border border-primary-100/70 bg-base-100 shadow-[0_16px_36px_rgba(97,39,0,0.08)]">
-      <div className="relative aspect-[16/9]">
-        <Image
-          src={imageUrl}
-          alt={imageAlt || title}
-          fill
-          loading="eager"
-          fetchPriority="high"
-          unoptimized={isSanityCdnImageUrl(imageUrl)}
-          sizes="(min-width: 1280px) 1060px, 100vw"
-          className="object-cover"
-        />
-      </div>
-    </div>
-  );
 }
 
 function ArticleTableOfContentsCard({
@@ -149,13 +117,15 @@ function RelatedArticleMedia({
   if (imageUrl) {
     return (
       <div className="relative aspect-[4/3] bg-base-200">
-        <Image
+        <img
           src={imageUrl}
           alt={imageAlt || topicTitle}
-          fill
-          unoptimized={isSanityCdnImageUrl(imageUrl)}
+          width={720}
+          height={540}
+          loading="lazy"
+          decoding="async"
           sizes="(min-width: 1280px) 320px, (min-width: 1024px) calc(50vw - 3rem), calc(100vw - 3rem)"
-          className="object-cover"
+          className="h-full w-full object-cover"
         />
       </div>
     );
@@ -193,7 +163,7 @@ function RelatedArticleCard({
           </div>
         ) : null}
         <div className={`flex flex-1 flex-col gap-4 pb-2 ${imageUrl ? "" : "pt-2"}`}>
-          <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/62">
+          <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/75">
             <span className="inline-flex items-center border-b border-primary-300 pb-1 font-semibold text-primary-700">
               {getArticleTopicTitle(article)}
             </span>
@@ -276,8 +246,9 @@ export async function generateMetadata({ params }: BlogArticlePageProps): Promis
   };
 }
 
-export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
+export default async function BlogArticlePage({ params, searchParams }: BlogArticlePageProps) {
   const { slug } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const data = await getArticlePageData(slug);
 
   if (!data) {
@@ -312,6 +283,10 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
     article.seo?.canonicalUrl || `${BUSINESS_CONSTANTS.BASE_URL}${getArticleHref(article.slug)}`;
   const modifiedAt = article.editorialUpdatedAt;
   const showVisibleUpdatedDate = hasMaterialArticleUpdate(article.publishedAt, modifiedAt);
+  const backHref = buildBlogBackHref({
+    fallbackHref: "/blog",
+    fromParam: resolvedSearchParams?.from,
+  });
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -397,15 +372,13 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
           />
         ) : null}
 
-        <Suspense fallback={<BlogBackLinkBase href="/blog" />}>
-          <BlogBackLink />
-        </Suspense>
+        <BlogBackLinkBase href={backHref} />
 
         <section className="relative space-y-4 overflow-visible tablet:space-y-5">
           <div className="relative">
             <header className="flex flex-col gap-5 pt-1">
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/62">
+                <div className="flex flex-wrap items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.18em] text-base-content/75">
                   <span className="inline-flex items-center border-b border-primary-300 pb-1 font-semibold text-primary-700">
                     {getArticleTopicTitle(article)}
                   </span>
@@ -497,13 +470,15 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
               >
                 {featuredProductImageUrl ? (
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[18px] bg-base-100 shadow-[0_8px_20px_rgba(97,39,0,0.05)] tablet:mt-1">
-                    <Image
+                    <img
                       src={featuredProductImageUrl}
                       alt={featuredProduct.image?.alt || featuredProduct.name}
-                      fill
-                      unoptimized={isSanityCdnImageUrl(featuredProductImageUrl)}
+                      width={480}
+                      height={600}
+                      loading="lazy"
+                      decoding="async"
                       sizes="240px"
-                      className="object-cover"
+                      className="h-full w-full object-cover"
                     />
                   </div>
                 ) : null}

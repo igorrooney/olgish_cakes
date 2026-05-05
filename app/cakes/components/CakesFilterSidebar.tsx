@@ -18,7 +18,7 @@ interface CakesFilterSidebarProps {
   showProductTypeFilters?: boolean
 }
 
-const sectionLabelClassName = 'mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/62'
+const sectionLabelClassName = 'mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/75'
 const seeMoreButtonClassName = 'btn btn-ghost btn-sm h-auto min-h-0 border-transparent bg-transparent px-0 py-0 text-base font-normal normal-case leading-none text-base-content shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:300] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:140%] tablet:[letter-spacing:0]'
 
 function FilterCheckbox({
@@ -75,7 +75,7 @@ function FilterCheckbox({
           {label}
         </span>
         {helperText ? (
-          <span className='mt-0.5 block text-base leading-[1.4] text-base-content/60'>
+          <span className='mt-0.5 block text-base leading-[1.4] text-base-content/75'>
             {helperText}
           </span>
         ) : null}
@@ -139,7 +139,7 @@ export function CakesFilterSidebar({
     <aside aria-label='Catalog filters' className='card h-fit border border-base-300 bg-base-100 shadow-[0_16px_30px_rgba(15,23,42,0.03)] tablet:w-60 tablet:max-w-60'>
       <div className='card-body gap-0 p-4'>
         <div className='mb-4 flex items-center justify-between'>
-          <p className='m-0 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/62'>Filter by</p>
+          <p className='m-0 text-sm font-semibold uppercase tracking-[0.18em] text-base-content/75'>Filter by</p>
           <button
             type='button'
             onClick={resetAllFilters}

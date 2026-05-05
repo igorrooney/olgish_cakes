@@ -1,5 +1,3 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import { DeferredManageCookiesLink } from './DeferredManageCookiesLink'
 
 const footerSectionHeadingClassName = 'mb-2 font-moreSugar text-sm font-normal uppercase leading-5 tracking-normal text-left text-[color:var(--color-navigation)] tablet:text-xl'
@@ -26,21 +24,21 @@ export function SiteFooter() {
               <p className={footerSectionHeadingClassName}>
                 Navigation
               </p>
-              <Link href='/cakes-by-post' prefetch={false} className={footerLinkClassName}>
+              <a href='/cakes-by-post' className={footerLinkClassName}>
                 Cakes by post
-              </Link>
-              <Link href='/custom-cakes' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/custom-cakes' className={footerLinkClassName}>
                 Custom cakes
-              </Link>
-              <Link href='/blog' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/blog' className={footerLinkClassName}>
                 Articles
-              </Link>
-              <Link href='/faqs' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/faqs' className={footerLinkClassName}>
                 FAQs
-              </Link>
-              <Link href='/contact' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/contact' className={footerLinkClassName}>
                 Contact
-              </Link>
+              </a>
             </nav>
             <nav className='flex flex-col gap-2'>
               <p className={footerSectionHeadingClassName}>
@@ -63,24 +61,24 @@ export function SiteFooter() {
               <p className={footerSectionHeadingClassName}>
                 Footer
               </p>
-              <Link href='/delivery' prefetch={false} className={footerLinkClassName}>
+              <a href='/delivery' className={footerLinkClassName}>
                 Delivery & returns
-              </Link>
-              <Link href='/allergens' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/allergens' className={footerLinkClassName}>
                 Allergens
-              </Link>
-              <Link href='/terms' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/terms' className={footerLinkClassName}>
                 Terms
-              </Link>
-              <Link href='/privacy' prefetch={false} className={footerLinkClassName}>
+              </a>
+              <a href='/privacy' className={footerLinkClassName}>
                 Privacy policy
-              </Link>
+              </a>
               {isConsentEnabled ? (
                 <DeferredManageCookiesLink className='link link-hover text-left text-sm text-base-content tablet:text-base' />
               ) : null}
-              <Link href='/sitemap.xml' prefetch={false} className={footerLinkClassName}>
+              <a href='/sitemap.xml' className={footerLinkClassName}>
                 Sitemap
-              </Link>
+              </a>
             </nav>
           </div>
         </div>
@@ -88,12 +86,15 @@ export function SiteFooter() {
           <div className='footer place-items-start px-6 py-5 text-left tablet:!grid-flow-col tablet:flex-start tablet:items-center tablet:py-6 lg:px-20'>
             <aside className='flex items-center gap-3'>
               <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
-                <Image
-                  src='/images/olgish-cakes-logo-bakery-brand.png'
+                <img
+                  src='/images/olgish-cakes-logo-bakery-brand-128.webp'
                   alt='Olgish Cakes Logo'
-                  fill
-                  sizes='(min-width: 768px) 64px, 48px'
-                  className='object-contain'
+                  width={128}
+                  height={128}
+                  decoding='async'
+                  loading='lazy'
+                  fetchPriority='low'
+                  className='h-full w-full object-contain'
                 />
               </div>
               <div>

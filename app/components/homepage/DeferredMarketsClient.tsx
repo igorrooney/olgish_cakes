@@ -1,14 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { MarketSchedule } from '@/app/types/marketSchedule'
+import type { HomepageMarket } from './MarketsClient'
 
 const MarketsClient = dynamic(
   async () => import('./MarketsClient').then(module => module.MarketsClient)
 )
 
 type DeferredMarketsClientProps = {
-  upcomingMarkets: MarketSchedule[]
+  upcomingMarkets: HomepageMarket[]
 }
 
 export function DeferredMarketsClient({

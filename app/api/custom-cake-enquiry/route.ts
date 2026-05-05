@@ -7,6 +7,11 @@ import {
   takeEnquiryRateLimit
 } from '@/lib/enquiry-rate-limit'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import {
+  createUnsupportedFormContentTypeResponse,
+  isSupportedFormContentType,
+  readRequiredFormData
+} from '@/lib/form-request'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   getSupabaseAdminClient,
@@ -35,6 +40,8 @@ const optionalEmailSchema = z.union([
   z.string().trim().email('Invalid email address')
 ])
 const optionalPhoneSchema = z.string().trim()
+const dateNeededErrorMessage = 'Please select a valid date'
+const datePastErrorMessage = 'Please select today or a future date'
 
 const optionalPostcodeSchema = z
   .string()
@@ -68,6 +75,34 @@ const sanitizeFileName = (fileName: string) => {
 
 const buildReferenceImagePath = (fileName: string) =>
   `enquiries/${Date.now()}-${crypto.randomUUID()}-${sanitizeFileName(fileName)}`
+
+const getCurrentUkDateInputValue = (date = new Date()) => {
+  const dateParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date)
+
+  const year = dateParts.find((part) => part.type === 'year')?.value
+  const month = dateParts.find((part) => part.type === 'month')?.value
+  const day = dateParts.find((part) => part.type === 'day')?.value
+
+  if (!year || !month || !day) {
+    return date.toISOString().slice(0, 10)
+  }
+
+  return `${year}-${month}-${day}`
+}
+
+const dateNeededSchema = z
+  .string()
+  .trim()
+  .min(1, 'Please select a date')
+  .date(dateNeededErrorMessage)
+  .refine((value) => value >= getCurrentUkDateInputValue(), {
+    message: datePastErrorMessage
+  })
 
 const buildSupabaseInsertHints = (errorDetails: string) => {
   const normalizedDetails = errorDetails.toLowerCase()
@@ -278,7 +313,7 @@ const formSchema = z.object({
   city: optionalTrimmedStringSchema,
   postcode: optionalPostcodeSchema,
   occasion: optionalTrimmedStringSchema,
-  date: z.string().min(1, 'Please select a date'),
+  date: dateNeededSchema,
   requirements: optionalTrimmedStringSchema,
   csrfToken: z.string().min(1, 'CSRF token is required')
 }).superRefine((values, ctx) => {
@@ -314,6 +349,10 @@ const occasionLabels: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isSupportedFormContentType(request)) {
+      return createUnsupportedFormContentTypeResponse()
+    }
+
     const supabase = getSupabaseAdminClient()
     const rateLimitResult = await takeEnquiryRateLimit(supabase, {
       scope: 'custom-cake-enquiry',
@@ -332,6 +371,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const formDataResult = await readRequiredFormData(request)
+    if (!formDataResult.ok) {
+      return formDataResult.response
+    }
+
     const emailMode = getEmailTransportMode()
     const canSendLiveEmail =
       !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
@@ -343,7 +387,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.formData()
+    const { formData: body } = formDataResult
     const getString = (value: FormDataEntryValue | null) =>
       typeof value === 'string' ? value : ''
 

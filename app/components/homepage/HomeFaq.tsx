@@ -51,7 +51,7 @@ export function HomeFaq() {
         <div className="flex flex-col gap-4">
           {faqItems.map((item) => (
             <div key={item.question} className={collapseClassName}>
-              <input type="checkbox" />
+              <input type="checkbox" aria-label={`Toggle answer for ${item.question}`} />
               <div className={collapseTitleClassName}>{item.question}</div>
               <div className={collapseContentClassName}>
                 <p>{item.answer}</p>

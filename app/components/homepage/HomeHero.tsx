@@ -1,36 +1,34 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
 export function HomeHero() {
+  const headingClass =
+    'mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'
   const paragraphClass =
     'font-oldenburg text-base leading-[22px] tracking-[1.92px] text-primary-800 font-normal tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:text-[20px]'
   const ctaBaseClass =
     'w-full text-sm font-semibold tablet:flex-1 tablet:btn-lg tablet:h-[64px] tablet:text-[18px] tablet:max-w-[424px]'
 
   return (
-    <section className='bg-base-100 px-4 pt-6 pb-8 overflow-hidden tablet:px-10 tablet:pt-10 tablet:pb-12'>
+    <>
+      <section className='bg-base-100 px-4 pt-6 pb-8 overflow-hidden tablet:px-10 tablet:pt-10 tablet:pb-12'>
       <div className='homepage-container relative flex flex-col items-center gap-6 tablet:gap-[60px]'>
         <div className='relative flex w-full flex-col items-center justify-center'>
-          <h1 className='mt-2 !mb-0 font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px]'>
-            Handmade Cakes
-            <span className='hidden small-laptop:inline'> delivered</span>
-            <span className='small-laptop:hidden'>
-              <br />
-              delivered
+          <h1 className={headingClass}>
+            <span className='block small-laptop:inline'>Handmade Cakes</span>
+            <span className='block small-laptop:inline'>
+              <span className='hidden small-laptop:inline'> </span>
+              STRAIGHT
             </span>
-            <br />
-            to your door
-            <br className='tablet:hidden' />
-            <span className='hidden tablet:inline'> </span>
-            from{' '}
-            <span className='inline tablet:block small-laptop:inline'>Leeds</span>
+            <span className='block'>
+               TO YOUR DOOR
+            </span>
           </h1>
           <div className='absolute left-[55px] top-[55px] tablet:left-[22px] tablet:top-[20px] small-laptop:top-[-8px] small-laptop:left-[34px]'>
             <svg viewBox='0 0 25 24' fill='none' xmlns='http://www.w3.org/2000/svg' className='h-[24px] w-[25px] tablet:h-[49px] tablet:w-[51px]' aria-hidden='true' focusable='false'>
               <path d="M23.3895 2.85362C20.3154 3.48115 17.2413 4.15888 14.2225 4.88682C13.6692 3.52298 13.1179 2.15916 12.5686 0.795322C12.4649 0.52651 12.2736 0.302427 12.0268 0.160907C11.7801 0.019386 11.493 -0.0309136 11.2142 0.0184922C10.9353 0.0678981 10.6817 0.213993 10.4961 0.43211C10.3105 0.650226 10.2043 0.927016 10.1954 1.21577L9.78349 6.01637C6.75857 6.83216 3.76438 7.76091 0.819382 8.85909C0.571445 8.94865 0.358169 9.11699 0.210884 9.3394C0.0635993 9.5618 -0.00992861 9.82655 0.00107777 10.0948C0.0120841 10.363 0.107061 10.6205 0.272051 10.8296C0.437041 11.0386 0.663349 11.1882 0.917756 11.2563C3.70846 11.9819 6.44021 12.926 9.08874 14.0801C8.92888 15.9627 8.76697 17.8453 8.60302 19.7279L7.50249 21.1273C7.36616 21.3107 7.27931 21.5274 7.25056 21.7558C7.2218 21.9841 7.25215 22.2162 7.33859 22.4288C7.42504 22.6414 7.56456 22.8273 7.74325 22.9678C7.92195 23.1083 8.13359 23.1985 8.3571 23.2296C8.60303 24.4219 10.6442 24.2022 10.7672 22.7652L10.9455 20.7194C11.9231 19.4644 12.9129 18.2783 13.9089 17.0672C14.4146 17.5049 14.8931 17.9743 15.3415 18.4729C16.4789 19.7593 17.3027 21.2654 19.2025 21.2654C19.3883 21.2553 19.5695 21.2023 19.7323 21.1104C19.8952 21.0185 20.0354 20.89 20.1426 20.7348C20.2497 20.5795 20.3209 20.4014 20.3509 20.214C20.3808 20.0265 20.3687 19.8346 20.3154 19.6526C19.3603 17.4061 18.4156 15.1386 17.481 12.8502C19.8174 10.1393 22.2111 7.47852 24.6622 4.86799C25.5659 3.90787 24.49 2.62144 23.3895 2.85362ZM12.0399 7.98055L12.7777 7.79229C13.3925 9.31719 14.0073 10.8484 14.6529 12.3733L13.5216 13.7099C12.9068 13.3083 12.292 12.9318 11.6402 12.5866C11.7755 11.0554 11.9046 9.518 12.0399 7.98055ZM5.20921 9.95727C6.6479 9.48662 8.09886 9.05363 9.55599 8.64573L9.31622 11.4759C7.97591 10.8986 6.58641 10.4028 5.20921 9.95727ZM11.3205 16.3644L11.4128 15.2976L11.9354 15.6176L11.3205 16.3644ZM16.0178 15.6741C15.8948 15.5611 15.7718 15.4419 15.6489 15.3352L15.4829 15.1909L15.7104 14.9273L16.0178 15.6741ZM15.1939 7.20868C16.8785 6.79033 18.5652 6.40754 20.2539 6.06031C18.9751 7.45761 17.7126 8.87373 16.4666 10.3087L15.1939 7.20868Z" fill="#D8D9F3" />
             </svg>
           </div>
-          <div className='absolute left-[26px] top-[156px] tablet:left-[18px] tablet:top-[150px] small-laptop:top-[127px] small-laptop:left-[34px]'>
+          <div className='absolute left-[67px] top-[128px] tablet:left-[18px] tablet:top-[150px] small-laptop:top-[127px] small-laptop:left-[34px]'>
             <svg viewBox='0 0 57 27' fill='none' xmlns='http://www.w3.org/2000/svg' className='h-[24px] w-[20px] tablet:h-[27px] tablet:w-[57px]' aria-hidden='true' focusable='false'>
               <path d="M3.50175 7.28855C6.11808 5.99393 8.98566 5.28518 11.9052 5.21149C14.8248 5.1378 17.7264 5.70097 20.4083 6.86186C26.9456 9.69967 29.9755 16.1491 34.8647 20.8427C38.8339 24.6371 45.0067 27.7884 50.467 25.274C54.9974 23.1987 58.3089 17.3465 55.5926 12.6458C55.3022 12.0217 54.7862 11.5308 54.1486 11.272C53.511 11.0132 52.7994 11.0059 52.1574 11.2515C51.5241 11.521 51.0232 12.0301 50.7638 12.6678C50.5044 13.3055 50.5074 14.0203 50.7722 14.6566C51.2084 15.424 51.3613 16.32 51.2041 17.1878C51.0469 18.0557 50.5897 18.8402 49.9124 19.4043C49.107 20.1543 48.1033 20.6576 47.0201 20.8547C45.9369 21.0517 44.8195 20.9342 43.8001 20.516C37.987 18.5984 34.892 12.5726 31.0077 8.31218C27.3669 4.28526 22.5259 1.5393 17.2044 0.482595C11.883 -0.574111 6.36528 0.114833 1.47163 2.44701C-1.51799 3.94831 0.4992 8.77342 3.50175 7.28855Z" fill="#FFAF99" />
             </svg>
@@ -45,7 +43,7 @@ export function HomeHero() {
               <path d="M3.75873 40.072C13.8329 38.374 23.3179 34.1655 31.3393 27.8346C39.3607 21.5036 45.6604 13.2539 49.6576 3.84592C51.2243 0.17932 45.2889 -1.66628 43.7479 1.9764C40.0755 10.3652 34.3569 17.6971 27.1167 23.2996C19.8765 28.9021 11.3465 32.5958 2.30902 34.0419C-1.60487 34.6489 -0.155158 40.679 3.75873 40.072Z" fill="#D8D9F3" />
             </svg>
           </div>
-          <div className='absolute left-[296px] top-[160px] tablet:left-[800px] tablet:top-[101px] small-laptop:left-[1063px] small-laptop:top-[58px]'>
+          <div className='absolute left-[279px] top-[123px] tablet:left-[800px] tablet:top-[101px] small-laptop:left-[1063px] small-laptop:top-[58px]'>
             <svg viewBox='0 0 31 36' fill='none' xmlns='http://www.w3.org/2000/svg' className='h-[15px] w-[18px] tablet:h-[36px] tablet:w-[31px]' aria-hidden='true' focusable='false'>
               <path d="M30.8627 18.9975C30.7727 16.2022 30.0926 13.4352 28.8679 10.8823C27.6433 8.32942 25.9025 6.04952 23.7621 4.19547C21.5689 2.36624 18.9921 1.08082 16.2499 0.447964C13.5076 -0.184893 10.6805 -0.146575 8.00759 0.559634C6.48262 1.0285 5.08045 1.8106 3.88679 2.85815C2.69314 3.90569 1.73305 5.19669 1.0652 6.65223C0.397342 8.10778 0.0357633 9.69733 0.00252913 11.3237C-0.0307037 12.9501 0.265108 14.5792 0.871912 16.1114C2.03621 19.1071 6.51225 17.3311 5.34643 14.3491C5.00343 13.4722 4.83429 12.5417 4.84894 11.6121C4.86358 10.6825 5.06169 9.77245 5.4317 8.93504C5.8017 8.09763 6.33621 7.34973 7.00392 6.73499C7.67164 6.12024 8.45918 5.65098 9.32055 5.3547C12.8977 4.09275 17.3123 5.3223 20.3549 7.63073C26.5663 12.3647 28.3829 23.1051 22.1193 27.9537C20.6191 29.1869 18.7799 29.9399 16.8245 30.1212C14.8691 30.3024 12.8816 29.9043 11.1026 28.9751C10.4995 28.7242 9.83214 28.7191 9.24436 28.961C8.65658 29.2028 8.19546 29.6722 7.9604 30.2681C7.74581 30.8691 7.77089 31.5395 8.03049 32.1411C8.29009 32.7426 8.76442 33.2296 9.35579 33.5017C14.0499 36.1027 19.7256 35.3691 24.0148 32.7042C26.2477 31.2512 28.0505 29.2272 29.2497 26.8267C30.449 24.4263 31.0044 21.7301 30.8627 18.9975Z" fill="#D8D9F3" />
             </svg>
@@ -61,41 +59,62 @@ export function HomeHero() {
 
         <div className='relative h-[178px] w-[660px] max-w-full tablet:h-[260px] tablet:w-[660px]'>
           <div className='absolute left-0 top-[22px] h-[142px] w-[142px] rounded-[16px] border border-primary-50 overflow-hidden shadow-sm tablet:top-[32px] tablet:h-[250px] tablet:w-[250px]'>
-            <Image
-              src='/homeHero/home-hero-cake-left.png'
-              alt='White buttercream birthday cake with black ribbon bows'
-              fill
-              sizes='(min-width: 768px) 250px, 142px'
-              className='object-cover'
-            />
+            <picture>
+              <source srcSet='/homeHero/home-hero-cake-left.avif' type='image/avif' />
+              <source srcSet='/homeHero/home-hero-cake-left.webp' type='image/webp' />
+              <img
+                src='/homeHero/home-hero-cake-left.png'
+                alt='White buttercream birthday cake with black ribbon bows'
+                width={250}
+                height={250}
+                loading='lazy'
+                fetchPriority='low'
+                decoding='async'
+                className='h-full w-full object-cover'
+              />
+            </picture>
           </div>
           <div className='absolute left-1/2 top-0 h-[169px] w-[169px] rounded-[16px] border border-primary-50 overflow-hidden shadow-[0px_4px_4px_rgba(0,0,0,0.25)] -translate-x-1/2 translate-y-[6px] z-[1] tablet:h-[300px] tablet:w-[300px] tablet:translate-y-[10px]'>
-            <Image
-              src='/homeHero/home-hero-cake-center.png'
-              alt='Red birthday cake with gold crown topper and script'
-              fill
-              sizes='(min-width: 768px) 300px, 169px'
-              className='object-cover'
-              priority
-            />
+            <picture>
+              <source srcSet='/homeHero/home-hero-cake-center.avif' type='image/avif' />
+              <source srcSet='/homeHero/home-hero-cake-center.webp' type='image/webp' />
+              <img
+                src='/homeHero/home-hero-cake-center.png'
+                alt='Cake gift box with candle card and handwritten note'
+                width={300}
+                height={300}
+                loading='eager'
+                fetchPriority='high'
+                decoding='async'
+                className='h-full w-full object-cover'
+              />
+            </picture>
           </div>
           <div className='absolute right-0 top-[22px] h-[142px] w-[142px] rounded-[16px] border border-primary-50 overflow-hidden shadow-sm tablet:top-[32px] tablet:h-[250px] tablet:w-[250px]'>
-            <Image
-              src='/homeHero/home-hero-cake-right.png'
-
-              alt='Teal money pull birthday cake with gold accents'
-              fill
-              sizes='(min-width: 768px) 250px, 142px'
-              className='object-cover'
-            />
+            <picture>
+              <source srcSet='/homeHero/home-hero-cake-right.avif' type='image/avif' />
+              <source srcSet='/homeHero/home-hero-cake-right.webp' type='image/webp' />
+              <img
+                src='/homeHero/home-hero-cake-right.png'
+                alt='Teal money pull birthday cake with gold accents'
+                width={250}
+                height={250}
+                loading='lazy'
+                fetchPriority='low'
+                decoding='async'
+                className='h-full w-full object-cover'
+              />
+            </picture>
           </div>
-          <div className='absolute right-[-10px] top-[0px] h-12 w-12 tablet:right-[-18px] tablet:h-16 tablet:w-16'>
+          <div className='absolute right-[-10px] top-[0px] h-12 w-12 rotate-[30deg] tablet:right-[-18px] tablet:h-16 tablet:w-16'>
             <Image
               src='/design/mobile-home/hero-doodles.png'
               alt=''
               aria-hidden='true'
               fill
               sizes='(min-width: 768px) 64px, 48px'
+              fetchPriority='low'
+              quality={50}
               className='object-contain'
             />
           </div>
@@ -103,15 +122,12 @@ export function HomeHero() {
 
         <div className='flex flex-col gap-4 px-2 text-center tablet:max-w-[720px] tablet:gap-5 tablet:px-0 tablet:mt-[60px]'>
           <p className={paragraphClass}>
-            Small-batch, hand-decorated cakes baked in Leeds.
-          </p>
-          <p className={paragraphClass}>
-            Delivered nationwide by post, or brought to your door across Leeds and West Yorkshire.
+            Small-batch handmade cakes by post across the UK and bespoke celebration cakes made to order.
           </p>
         </div>
 
         <div className='flex w-full flex-col justify-center gap-3 tablet:flex-row tablet:gap-4'>
-          <Link
+          <a
             href='/cakes-by-post'
             className={`btn btn-primary ${ctaBaseClass} gap-2`}
           >
@@ -119,15 +135,16 @@ export function HomeHero() {
             <svg width='16' height='16' viewBox='0 0 14 13' fill='none' xmlns='http://www.w3.org/2000/svg' className='shrink-0'>
               <path fillRule='evenodd' clipRule='evenodd' d='M0 0.5C0 0.223858 0.223858 0 0.5 0H1.42379C1.9901 0 2.48567 0.380725 2.63159 0.92792L2.78579 1.50617C3.02337 1.50206 3.26145 1.5 3.5 1.5C6.96908 1.5 10.337 1.93628 13.5515 2.75722C13.6862 2.79162 13.8005 2.88055 13.867 3.00266C13.9335 3.12478 13.9461 3.26905 13.9018 3.40084C13.3455 5.05735 12.6851 6.66602 11.9283 8.21903C11.8445 8.39093 11.6701 8.5 11.4788 8.5H4C3.34689 8.5 2.79127 8.9174 2.58535 9.5H12.5C12.7761 9.5 13 9.72386 13 10C13 10.2761 12.7761 10.5 12.5 10.5H2C1.72386 10.5 1.5 10.2761 1.5 10C1.5 8.83672 2.29452 7.85901 3.37051 7.57992L1.92081 2.14356L1.92081 2.14356L1.66535 1.18558L1.66535 1.18558C1.63617 1.07615 1.53706 1 1.42379 1H0.5C0.223858 1 0 0.776142 0 0.5ZM3.05147 2.50249L4.38414 7.5H11.1649C11.7693 6.23424 12.3084 4.9313 12.7776 3.59553C9.80255 2.87945 6.69591 2.5 3.5 2.5C3.35029 2.5 3.20078 2.50083 3.05147 2.50249ZM1.5 12C1.5 11.4477 1.94772 11 2.5 11C3.05228 11 3.5 11.4477 3.5 12C3.5 12.5523 3.05228 13 2.5 13C1.94772 13 1.5 12.5523 1.5 12ZM10 12C10 11.4477 10.4477 11 11 11C11.5523 11 12 11.4477 12 12C12 12.5523 11.5523 13 11 13C10.4477 13 10 12.5523 10 12Z' fill='white' />
             </svg>
-          </Link>
-          <Link
+          </a>
+          <a
             href='/cakes'
             className={`btn btn-outline ${ctaBaseClass} border-primary-500 bg-base-100 text-primary-500 shadow-btn leading-[14px] tablet:leading-[16px]`}
           >
             Browse all cakes
-          </Link>
+          </a>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   )
 }

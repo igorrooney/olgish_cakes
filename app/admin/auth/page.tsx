@@ -49,9 +49,9 @@ export default function AdminLoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <LockIcon className="mx-auto h-12 w-12 text-primary" />
-          <h2 className="mt-6 text-3xl font-semibold text-base-content">
+          <h1 className="mt-6 text-3xl font-semibold text-base-content">
             Admin Login
-          </h2>
+          </h1>
           <p className="mt-2 text-sm text-base-content/70">
             Enter your admin credentials to access the order management system
           </p>

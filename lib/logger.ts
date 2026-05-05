@@ -59,6 +59,7 @@ class Logger {
         const entry = this.formatMessage('info', message, data);
 
         if (!this.isProduction) {
+            // eslint-disable-next-line no-console
             console.info(`[INFO] ${entry.timestamp}`, message, data || '');
         }
     }
@@ -69,6 +70,7 @@ class Logger {
     debug(message: string, data?: unknown): void {
         if (!this.isProduction) {
             const entry = this.formatMessage('debug', message, data);
+            // eslint-disable-next-line no-console
             console.debug(`[DEBUG] ${entry.timestamp}`, message, data || '');
         }
     }

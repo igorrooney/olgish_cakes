@@ -2,6 +2,7 @@
 require('@testing-library/jest-dom');
 
 const { TextDecoder, TextEncoder } = require('util');
+const React = require('react');
 
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = TextEncoder;
@@ -33,7 +34,6 @@ if (typeof global.Response === 'undefined') {
 
 // Mock framer-motion for React 19 compatibility
 jest.mock('framer-motion', () => {
-  const React = require('react');
   return {
     motion: new Proxy({}, {
       get: (target, prop) => {
@@ -85,6 +85,33 @@ jest.mock('framer-motion', () => {
     useInView: () => true,
   };
 });
+
+jest.mock('next-sanity', () => {
+  const mockClient = {
+    config: jest.fn(() => ({})),
+    fetch: jest.fn(),
+    listen: jest.fn(() => ({
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
+    })),
+  }
+
+  const groq = (strings, ...values) => String.raw({ raw: strings }, ...values)
+
+  return {
+    createClient: jest.fn(() => mockClient),
+    defineQuery: groq,
+    groq,
+  }
+})
+
+jest.mock('next-sanity/studio', () => ({
+  NextStudio: ({ config }) => React.createElement('div', {
+    'data-testid': 'next-studio',
+    'data-has-config': Boolean(config),
+  }),
+  metadata: {},
+  viewport: {},
+}))
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {

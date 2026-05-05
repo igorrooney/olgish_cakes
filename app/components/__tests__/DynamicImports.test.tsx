@@ -5,7 +5,6 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import {
   DynamicContactForm,
-  DynamicQuoteForm,
   DynamicCakeImageGallery,
   DynamicCookieConsent,
   DynamicDevTools,
@@ -50,16 +49,6 @@ describe('DynamicImports', () => {
       const { container } = render(<DynamicContactForm />)
 
       expect(container.innerHTML).toBeTruthy()
-    })
-  })
-
-  describe('DynamicQuoteForm', () => {
-    it('should be defined', () => {
-      expect(DynamicQuoteForm).toBeDefined()
-    })
-
-    it('should be a React component', () => {
-      expect(typeof DynamicQuoteForm).toBe('function')
     })
   })
 
@@ -125,7 +114,6 @@ describe('DynamicImports', () => {
   describe('Exports', () => {
     it('should export all dynamic components', () => {
       expect(DynamicContactForm).toBeDefined()
-      expect(DynamicQuoteForm).toBeDefined()
       expect(DynamicCakeImageGallery).toBeDefined()
       expect(DynamicCookieConsent).toBeDefined()
       expect(DynamicDevTools).toBeDefined()

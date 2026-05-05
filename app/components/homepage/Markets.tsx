@@ -94,6 +94,16 @@ function getUpcomingMarkets(markets: MarketSchedule[]): MarketSchedule[] {
 export async function Markets() {
   const allMarkets = await getMarketSchedule()
   const upcomingMarkets = getUpcomingMarkets(allMarkets)
+  const clientMarkets = upcomingMarkets.map((market) => ({
+    _id: market._id,
+    date: market.date,
+    endTime: market.endTime,
+    googleMapsUrl: market.googleMapsUrl,
+    location: market.location,
+    startTime: market.startTime,
+    title: market.title,
+    website: market.website
+  }))
   const marketStructuredData = upcomingMarkets.length > 0
     ? {
         '@context': 'https://schema.org',
@@ -113,7 +123,7 @@ export async function Markets() {
           }}
         />
       ) : null}
-      <DeferredMarketsClient upcomingMarkets={upcomingMarkets} />
+      <DeferredMarketsClient upcomingMarkets={clientMarkets} />
     </>
   )
 }

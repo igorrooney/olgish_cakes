@@ -1,4 +1,5 @@
 // Performance optimization utilities for Core Web Vitals
+import type { MetricType } from 'web-vitals'
 
 export interface ImageOptimizationOptions {
   priority?: boolean;
@@ -112,7 +113,7 @@ export const resourceOptimization = {
 
 export const performanceMonitoring = {
   // Monitor Core Web Vitals
-  monitorWebVitals: (callback: (metric: any) => void) => {
+  monitorWebVitals: (callback: (metric: MetricType) => void) => {
     if (typeof window === 'undefined') return;
     
     import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {

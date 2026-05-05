@@ -165,7 +165,7 @@ describe('sitemap-products', () => {
 
       expect(cakesQuery).toContain('defined(slug.current)')
       expect(cakesQuery).toContain('slug.current != "test"')
-      expect(cakesQuery).toContain('!slug.current match "test-*"')
+      expect(cakesQuery).toContain('!(slug.current match "test-*")')
     })
   })
 })

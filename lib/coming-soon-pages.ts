@@ -96,86 +96,8 @@ export const topLevelComingSoonPages: Record<string, ComingSoonPageContent> = {
   },
 };
 
-const learnRootComingSoonPage: ComingSoonPageContent = {
-  path: "/learn",
-  eyebrow: "Learn hub",
-  title: "The learn hub is being assembled",
-  description:
-    "This section will bring together practical guides, workshop information, and customer stories in one place. The structure is being prepared now.",
-  body: "I would rather launch this section once it has real substance than fill it with thin placeholder copy. For now, the live blog is the best place to read the practical side of ordering, gifting, and planning a celebration cake.",
-  bullets: [
-    "Guides will cover postal cake decisions, timing, and choosing between delivery-friendly and bespoke orders.",
-    "Workshops will be listed here once dates and formats are finalised.",
-    "Customer stories will sit here once I have the right mix of real occasions and useful detail.",
-  ],
-  links: [
-    { href: "/blog", label: "Read the blog", variant: "primary" },
-    { href: "/cakes-by-post", label: "Browse cakes by post", variant: "secondary" },
-    { href: "/contact", label: "Contact the bakery", variant: "secondary" },
-  ],
-};
-
-const learnSectionComingSoonPages: Record<string, ComingSoonPageContent> = {
-  guides: {
-    path: "/learn/guides",
-    eyebrow: "Learn hub",
-    title: "More practical guides are coming soon",
-    description:
-      "This section will collect the most useful ordering and celebration-planning guides in one place. I am still shaping it around real questions from customers.",
-    body: "The blog already covers the core questions people ask first. This dedicated guides section will make those notes easier to browse once the structure is ready.",
-    bullets: [
-      "Start with the postal cake guide if timing and delivery are the main question.",
-      "Use the archive if you are comparing postal cake with a local bespoke order.",
-      "Get in touch if you need a recommendation for a live occasion rather than a general read.",
-    ],
-    links: [
-      { href: "/blog", label: "Browse live guides", variant: "primary" },
-      {
-        href: "/blog/cake-by-post-uk-complete-guide",
-        label: "Read the postal cake guide",
-        variant: "secondary",
-      },
-      { href: "/contact", label: "Ask a question", variant: "secondary" },
-    ],
-  },
-  "customer-stories": {
-    path: "/learn/customer-stories",
-    eyebrow: "Learn hub",
-    title: "Customer stories are being gathered",
-    description:
-      "This page will eventually share real occasions, order decisions, and what made the cake right for the moment. I am still curating the first set properly.",
-    body: "Customer stories need enough detail to be worth reading. I am still choosing which occasions to publish so the page feels honest and useful rather than padded out.",
-    bullets: [
-      "The blog already covers the decision side of choosing a cake for birthdays, gifts, and delivery by post.",
-      "If you are planning something similar, the current cake range will show what is available now.",
-      "For a one-off celebration, send a brief and I can tell you what makes sense.",
-    ],
-    links: [
-      {
-        href: "/blog/how-surprise-someone-cake-delivery-post",
-        label: "Read a gifting guide",
-        variant: "primary",
-      },
-      { href: "/cakes", label: "Browse celebration cakes", variant: "secondary" },
-      { href: "/get-custom-quote#quote-form", label: "Send a brief", variant: "secondary" },
-    ],
-  },
-};
-
 export function getTopLevelComingSoonPage(slug: string) {
   return topLevelComingSoonPages[slug] ?? null;
-}
-
-export function getLearnComingSoonPage(slug?: string[]) {
-  if (!slug || slug.length === 0) {
-    return learnRootComingSoonPage;
-  }
-
-  if (slug.length !== 1) {
-    return null;
-  }
-
-  return learnSectionComingSoonPages[slug[0]] ?? null;
 }
 
 export function getComingSoonMetadata(page: ComingSoonPageContent): Metadata {

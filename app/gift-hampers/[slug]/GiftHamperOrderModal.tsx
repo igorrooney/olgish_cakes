@@ -14,12 +14,10 @@ import {
   Paper,
   Typography,
   Chip,
-  Alert,
-  AlertTitle,
   CircularProgress,
 } from "@/lib/daisy-ui";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ContactForm, type ContactFormData } from "@/app/components/ContactForm";
 import { AdapterDayjs } from "@/lib/daisy-ui";
 import { LocalizationProvider } from "@/lib/daisy-ui";

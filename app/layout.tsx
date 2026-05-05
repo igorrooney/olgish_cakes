@@ -2,10 +2,10 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { designTokens } from '@/lib/design-system'
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import { ReviewStatsProvider } from './components/ReviewStatsProvider'
 import { RootChrome } from './components/RootChrome'
+import { SiteFooter } from './components/SiteFooter'
+import { SiteHeader } from './components/homepage/SiteHeader'
 import './globals.css'
-import { getReviewStats } from './utils/review-stats.server'
 
 const alice = localFont({
   src: [
@@ -32,7 +32,7 @@ const inter = localFont({
   ],
   variable: '--font-inter',
   display: 'swap',
-  preload: false,
+  preload: true,
   fallback: ['system-ui', 'sans-serif'],
   adjustFontFallback: 'Arial'
 })
@@ -55,15 +55,16 @@ const oldenburg = localFont({
 const moreSugar = localFont({
   src: [
     {
-      path: './fonts/more_sugar/MoreSugar-Regular.ttf',
+      path: '../public/fonts/more_sugar/MoreSugar-Regular.woff2',
       weight: '400',
       style: 'normal'
     }
   ],
   variable: '--font-more-sugar',
   display: 'swap',
-  preload: false,
-  fallback: ['cursive', 'fantasy']
+  preload: true,
+  fallback: ['Arial', 'cursive', 'fantasy'],
+  adjustFontFallback: 'Arial'
 })
 
 const primary = designTokens.colors.primary.main
@@ -111,8 +112,7 @@ const baseMetadata: Metadata = {
     ],
     shortcut: "/favicon.ico",
     apple: [
-      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
       { rel: "mask-icon", url: "/safari-pinned-tab.svg", color: primary },
@@ -176,7 +176,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const reviewStats = await getReviewStats()
   const organizationStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -216,10 +215,12 @@ export default async function RootLayout({
       lang="en-GB"
       data-theme="olgish-cakes"
       data-scroll-behavior="smooth"
-      className={`${alice.variable} ${inter.variable} ${moreSugar.variable} ${oldenburg.variable}`}
+      className={`${alice.variable} ${inter.variable} ${oldenburg.variable} ${moreSugar.variable}`}
     >
       <head>
         <style>{`:root{--primary:${primary};--primary-dark:${primaryDark};--secondary:${secondary};}`}</style>
+        <link rel="preconnect" href="https://cdn.sanity.io" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
 
         {/* Sitewide structured data */}
         <script
@@ -236,11 +237,13 @@ export default async function RootLayout({
         />
       </head>
       <body className={alice.variable} suppressHydrationWarning>
-        <ReviewStatsProvider stats={reviewStats}>
-          <RootChrome isVercelDeployment={isVercelDeployment}>
-            {children}
-          </RootChrome>
-        </ReviewStatsProvider>
+        <RootChrome
+          isVercelDeployment={isVercelDeployment}
+          siteFooter={<SiteFooter />}
+          siteHeader={<SiteHeader />}
+        >
+          {children}
+        </RootChrome>
 
       </body>
     </html>

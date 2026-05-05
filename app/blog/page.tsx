@@ -26,7 +26,7 @@ import {
   getArchiveHeroContent,
   getArchiveSectionCopy,
 } from "./copy";
-import { BlogArticleLink } from "./BlogArticleLink";
+import { buildBlogArticleHref } from "./navigation";
 import { ArticleTopicFilter } from "./ArticleTopicFilter";
 
 const archiveTitle = "Cake by post advice, delivery help, and gift ideas";
@@ -176,12 +176,15 @@ function ArchiveArticleCard({
     : index % 2 === 0
       ? "max-w-[32ch] font-body text-[16px] leading-8 tracking-[0.01em] text-base-content/78 tablet:text-[17px]"
       : "max-w-[36ch] font-body text-[16px] leading-8 tracking-[0.01em] text-base-content/80 tablet:text-[17px]";
+  const articleHref = buildBlogArticleHref({
+    href: getArticleHref(article.slug),
+    fromHref: archiveHref,
+  });
 
   return (
     <article className={articleClassName}>
-      <BlogArticleLink
-        href={getArticleHref(article.slug)}
-        archiveHref={archiveHref}
+      <Link
+        href={articleHref}
         className={linkClassName}
       >
         {hasImage ? (
@@ -195,8 +198,8 @@ function ArchiveArticleCard({
               quality={80}
               sizes={
                 isLeadSupportingCard
-                  ? "(min-width: 1280px) 420px, (min-width: 1024px) 42vw, 100vw"
-                  : "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                  ? "(min-width: 1280px) 420px, (min-width: 1024px) 42vw, calc(100vw - 4rem)"
+                  : "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, calc(100vw - 3rem)"
               }
             />
           </div>
@@ -217,7 +220,7 @@ function ArchiveArticleCard({
             </p>
           </div>
         </div>
-      </BlogArticleLink>
+      </Link>
     </article>
   );
 }
@@ -445,9 +448,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <article
             className={`overflow-hidden rounded-[36px] border border-primary-200 ${archiveLeadSurfaceClassName}`}
           >
-            <BlogArticleLink
-              href={getArticleHref(leadArticle.slug)}
-              archiveHref={currentArchiveHref}
+            <Link
+              href={buildBlogArticleHref({
+                href: getArticleHref(leadArticle.slug),
+                fromHref: currentArchiveHref,
+              })}
               className={`group grid gap-4 p-4 tablet:gap-6 tablet:p-6 small-laptop:gap-8 small-laptop:p-8 ${
                 leadArticleImageUrl
                   ? "small-laptop:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)]"
@@ -487,18 +492,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     imageAlt={
                       leadArticle.coverImage?.alt || leadArticle.cardImage?.alt || leadArticle.title
                     }
-                    loading="eager"
-                    fetchPriority="high"
                     width={1200}
                     height={900}
                     fit="crop"
                     quality={82}
-                    sizes="(min-width: 1280px) 600px, (min-width: 1024px) 48vw, 100vw"
+                    sizes="(min-width: 1280px) 600px, (min-width: 1024px) 48vw, calc(100vw - 4rem)"
                     containerClassName="h-full min-h-[220px] tablet:min-h-[280px]"
                   />
                 </div>
               ) : null}
-            </BlogArticleLink>
+            </Link>
           </article>
         ) : showEmptyState ? (
           <section className="rounded-[28px] border border-base-300 bg-white p-8 text-center">
@@ -583,7 +586,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 height={900}
                 fit="crop"
                 quality={82}
-                sizes="(min-width: 1280px) 360px, (min-width: 1024px) 34vw, 100vw"
+                sizes="(min-width: 1280px) 360px, (min-width: 1024px) 34vw, calc(100vw - 3rem)"
               />
             </div>
           ) : null}

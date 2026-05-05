@@ -19,7 +19,7 @@ describe('CakesSortBar', () => {
     expect(activeButton).toHaveClass('border-primary', 'bg-primary', 'text-primary-content')
     expect(activeButton.querySelector('svg')).toBeInTheDocument()
 
-    expect(inactiveButton).toHaveClass('border-transparent', 'bg-primary-50', 'text-base-content/55')
+    expect(inactiveButton).toHaveClass('border-primary-100', 'bg-primary-50', 'text-primary-800')
     expect(inactiveButton.querySelector('svg')).not.toBeInTheDocument()
   })
 

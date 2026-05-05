@@ -1,14 +1,12 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
+import { preload } from 'react-dom'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
 import type { Testimonial } from './types/testimonial'
-import {
-  OlgishCakesFounder,
-  faqItems,
-  HomeFaq,
-  HomeHero,
-} from './components/homepage'
+import { OlgishCakesFounder } from './components/homepage/OlgishCakesFounder'
+import { faqItems, HomeFaq } from './components/homepage/HomeFaq'
+import { HomeHero } from './components/homepage/HomeHero'
 import {
   DeferredBestsellers,
   DeferredHomeEnquirySection,
@@ -22,13 +20,14 @@ import { getHomepageCollections } from './utils/fetchCollections'
 import { buildOccasionOptionsFromCollections } from './components/homepage/formOptions'
 import { getMarketSchedule } from './utils/fetchMarketSchedule'
 import { generateEventSEOMetadata } from './utils/generateEventStructuredData'
-import { getPriceValidUntil } from './utils/seo'
+import { getMerchantReturnPolicy, getPriceValidUntil } from './utils/seo'
 import { buildAggregateRating, type ReviewStats } from './utils/review-stats'
 
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const bakeryId = 'https://olgishcakes.co.uk/#bakery'
 const productId = 'https://olgishcakes.co.uk/#product'
 const maxReviewSchemas = 6
+const maxHomepageTestimonials = 6
 const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
 const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'
 const eventDescriptionBase = 'Order Ukrainian cakes in Leeds: Medovik, Napoleon, and custom birthday or wedding cakes. Handmade, 5-star rated, UK delivery.'
@@ -60,6 +59,7 @@ const baseKeywords = [
   'dessert near me',
   'dessert takeaway'
 ]
+const belowFoldSectionClassName = '[content-visibility:auto] [contain-intrinsic-size:780px]'
 
 type EventSEOMetadata = {
   additionalKeywords?: string[]
@@ -268,6 +268,12 @@ export async function generateMetadata(
 }
 
 export default async function Home() {
+  preload('/homeHero/home-hero-cake-center.avif', {
+    as: 'image',
+    fetchPriority: 'high',
+    type: 'image/avif'
+  })
+
   const [testimonials, collections] = await Promise.all([
     getAllTestimonials(),
     getHomepageCollections()
@@ -275,6 +281,7 @@ export default async function Home() {
   const eligibleTestimonials = testimonials.filter((testimonial) =>
     hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial)
   )
+  const homepageTestimonials = eligibleTestimonials.slice(0, maxHomepageTestimonials)
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
   const reviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
   const productReviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapProductReview)
@@ -392,14 +399,7 @@ export default async function Home() {
           }
         }
       },
-      hasMerchantReturnPolicy: {
-        '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'GB',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 14,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn'
-      }
+      hasMerchantReturnPolicy: getMerchantReturnPolicy()
     },
     aggregateRating,
     review: productReviewSchemas.length > 0 ? productReviewSchemas : DEFAULT_REVIEWS
@@ -463,34 +463,10 @@ export default async function Home() {
 
   return (
     <>
-      {reviewsStructuredData ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
-        />
-      ) : null}
-      {hasFaqStructuredData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
-        />
-      )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(bakeryStructuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
-      />
       <div className="min-h-screen bg-base-100 overflow-x-hidden">
         <div className="flex flex-col">
           <HomeHero />
-          <div className="w-full flex justify-center bg-base-100">
+          <div className={`w-full flex justify-center bg-base-100 ${belowFoldSectionClassName}`}>
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider.png"
@@ -499,15 +475,26 @@ export default async function Home() {
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
+                loading="eager"
+                fetchPriority="low"
+                quality={45}
                 className="w-full h-auto object-contain"
               />
             </div>
           </div>
-          <OlgishCakesFounder />
-          <DeferredBestsellers />
-          <DeferredMarkets />
-          <DeferredReviews testimonials={testimonials} />
-          <div className="homepage-divider relative h-auto">
+          <div className={belowFoldSectionClassName}>
+            <OlgishCakesFounder />
+          </div>
+          <div className={belowFoldSectionClassName}>
+            <DeferredBestsellers />
+          </div>
+          <div className={belowFoldSectionClassName}>
+            <DeferredMarkets />
+          </div>
+          <div className={belowFoldSectionClassName}>
+            <DeferredReviews testimonials={homepageTestimonials} />
+          </div>
+          <div className={`homepage-divider relative h-auto ${belowFoldSectionClassName}`}>
             <Image
               src="/design/occasions_divider.png"
               alt=""
@@ -515,11 +502,16 @@ export default async function Home() {
               width={430}
               height={100}
               sizes="(min-width: 768px) 430px, 100vw"
+              loading="lazy"
+              fetchPriority="low"
+              quality={45}
               className="w-full h-auto object-contain"
             />
           </div>
-          <DeferredOccasions collections={collections} />
-          <div className="w-full flex justify-center bg-base-100">
+          <div className={belowFoldSectionClassName}>
+            <DeferredOccasions collections={collections} />
+          </div>
+          <div className={`w-full flex justify-center bg-base-100 ${belowFoldSectionClassName}`}>
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/homepage_divider_2.png"
@@ -528,12 +520,17 @@ export default async function Home() {
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
+                loading="lazy"
+                fetchPriority="low"
+                quality={45}
                 className="w-full h-auto object-contain"
               />
             </div>
           </div>
-          <DeferredHomeEnquirySection occasionOptions={occasionOptions} />
-          <div className="w-full flex justify-center bg-base-100">
+          <div className={belowFoldSectionClassName}>
+            <DeferredHomeEnquirySection occasionOptions={occasionOptions} />
+          </div>
+          <div className={`w-full flex justify-center bg-base-100 ${belowFoldSectionClassName}`}>
             <div className="homepage-divider relative h-auto">
               <Image
                 src="/design/instagram-section-divider.png"
@@ -542,12 +539,43 @@ export default async function Home() {
                 width={430}
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
+                loading="lazy"
+                fetchPriority="low"
+                quality={45}
                 className="w-full h-auto object-contain"
               />
             </div>
           </div>
-          <DeferredInstagram />
-          <HomeFaq />
+          <div className={belowFoldSectionClassName}>
+            <DeferredInstagram />
+          </div>
+          <div className={belowFoldSectionClassName}>
+            <HomeFaq />
+          </div>
+          {reviewsStructuredData ? (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
+            />
+          ) : null}
+          {hasFaqStructuredData && (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+            />
+          )}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(bakeryStructuredData) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
+          />
         </div>
       </div>
     </>

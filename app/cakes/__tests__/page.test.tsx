@@ -325,9 +325,7 @@ describe('CakesPage', () => {
   })
 
   it('uses base canonical metadata when no query params are provided', async () => {
-    const metadata = await generateMetadata({
-      searchParams: Promise.resolve({})
-    })
+    const metadata = await generateMetadata({})
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/cakes')
@@ -343,9 +341,9 @@ describe('CakesPage', () => {
     expect(metadata.robots).toBeUndefined()
   })
 
-  it('falls back to base canonical metadata for mixed pagination query', async () => {
+  it('noindexes filtered catalog query metadata', async () => {
     const metadata = await generateMetadata({
-      searchParams: Promise.resolve({ page: '2', collections: 'c-wedding-cakes' })
+      searchParams: Promise.resolve({ collections: 'c-wedding-cakes' })
     })
 
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/cakes')
@@ -357,9 +355,7 @@ describe('CakesPage', () => {
   })
 
   it('keeps metadata title and description for SEO', async () => {
-    const metadata = await generateMetadata({
-      searchParams: Promise.resolve({})
-    })
+    const metadata = await generateMetadata({})
 
     expect(typeof metadata.title).toBe('string')
     expect(typeof metadata.description).toBe('string')
@@ -698,7 +694,7 @@ describe('CakesPage', () => {
       'href',
       '/cakes/sample-honey-cake?from=%2Fcakes'
     )
-    expect(screen.getByRole('heading', { level: 3, name: 'Sample Honey Cake' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Do you make custom birthday and wedding cakes in Leeds?' })).toBeInTheDocument()
 
@@ -751,7 +747,7 @@ describe('CakesPage', () => {
     const page = await CakesPage()
     renderCakesPage(page)
 
-    expect(screen.getByRole('heading', { level: 3, name: 'Birthday cakes in Leeds' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Birthday cakes in Leeds' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Explore Birthday cakes in Leeds/i })).toHaveAttribute(
       'href',
       '/birthday-cakes?from=%2Fcakes'

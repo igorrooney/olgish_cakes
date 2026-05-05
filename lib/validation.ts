@@ -43,7 +43,7 @@ function getTodayDateInputValue(baseDate = new Date()) {
   return `${year}-${month}-${day}`
 }
 
-function isDateOnOrAfterToday(value: string, todayDate = getTodayDateInputValue()) {
+function _isDateOnOrAfterToday(value: string, todayDate = getTodayDateInputValue()) {
   if (!value) {
     return true
   }

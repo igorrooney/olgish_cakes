@@ -5,6 +5,7 @@ import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import { CAKE_BY_SLUG_QUERY, CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
 import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
 
 interface FeaturedOfferImageQueryResult {
   alt?: string
@@ -72,9 +73,15 @@ function mapCakesFeaturedOffer(data: CakesFeaturedOfferQueryResult | null): Cake
     return null
   }
 
-  const imageUrl = data.overrideImage?.asset?.url
+  const rawImageUrl = data.overrideImage?.asset?.url
     || data.featuredCake?.mainImage?.asset?.url
     || '/images/placeholder-cake.jpg'
+  const imageUrl = getSanityCdnImageUrl(rawImageUrl, {
+    width: 560,
+    height: 560,
+    fit: 'crop',
+    quality: 78
+  }) ?? rawImageUrl
 
   const imageAlt = data.overrideImage?.alt
     || data.featuredCake?.mainImage?.alt
@@ -125,33 +132,47 @@ function getLegacyOrderValue(cake: Cake) {
     : Number.MAX_SAFE_INTEGER
 }
 
+function compareCakesByFallbackOrder(firstCake: Cake, secondCake: Cake) {
+  const firstLegacyOrder = getLegacyOrderValue(firstCake)
+  const secondLegacyOrder = getLegacyOrderValue(secondCake)
+
+  if (firstLegacyOrder !== secondLegacyOrder) {
+    return firstLegacyOrder - secondLegacyOrder
+  }
+
+  const firstCreatedAt = Date.parse(firstCake._createdAt)
+  const secondCreatedAt = Date.parse(secondCake._createdAt)
+  const hasValidCreatedAt = Number.isFinite(firstCreatedAt) && Number.isFinite(secondCreatedAt)
+
+  if (hasValidCreatedAt && firstCreatedAt !== secondCreatedAt) {
+    return secondCreatedAt - firstCreatedAt
+  }
+
+  return firstCake.name.localeCompare(secondCake.name)
+}
+
 function sortCakesByDisplayOrder(cakes: Cake[], references: ProductReference[] | undefined) {
   const manualOrderMap = createManualOrderMap(references)
 
   return [...cakes].sort((firstCake, secondCake) => {
-    const firstManualRank = manualOrderMap.get(normalizeDocumentId(firstCake._id)) ?? Number.MAX_SAFE_INTEGER
-    const secondManualRank = manualOrderMap.get(normalizeDocumentId(secondCake._id)) ?? Number.MAX_SAFE_INTEGER
+    const firstManualRank = manualOrderMap.get(normalizeDocumentId(firstCake._id))
+    const secondManualRank = manualOrderMap.get(normalizeDocumentId(secondCake._id))
+    const firstHasManualRank = firstManualRank !== undefined
+    const secondHasManualRank = secondManualRank !== undefined
 
-    if (firstManualRank !== secondManualRank) {
+    if (manualOrderMap.size > 0 && firstHasManualRank !== secondHasManualRank) {
+      return firstHasManualRank ? 1 : -1
+    }
+
+    if (
+      firstManualRank !== undefined &&
+      secondManualRank !== undefined &&
+      firstManualRank !== secondManualRank
+    ) {
       return firstManualRank - secondManualRank
     }
 
-    const firstLegacyOrder = getLegacyOrderValue(firstCake)
-    const secondLegacyOrder = getLegacyOrderValue(secondCake)
-
-    if (firstLegacyOrder !== secondLegacyOrder) {
-      return firstLegacyOrder - secondLegacyOrder
-    }
-
-    const firstCreatedAt = Date.parse(firstCake._createdAt)
-    const secondCreatedAt = Date.parse(secondCake._createdAt)
-    const hasValidCreatedAt = Number.isFinite(firstCreatedAt) && Number.isFinite(secondCreatedAt)
-
-    if (hasValidCreatedAt && firstCreatedAt !== secondCreatedAt) {
-      return secondCreatedAt - firstCreatedAt
-    }
-
-    return firstCake.name.localeCompare(secondCake.name)
+    return compareCakesByFallbackOrder(firstCake, secondCake)
   })
 }
 

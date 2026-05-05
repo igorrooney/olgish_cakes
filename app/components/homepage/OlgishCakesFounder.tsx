@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
 export function OlgishCakesFounder() {
   const linkClassName =
@@ -26,10 +25,10 @@ export function OlgishCakesFounder() {
               </p>
             </div>
             <div className='mt-4 flex justify-center tablet:hidden'>
-              <Link href='/cakes' className={linkClassName}>
+              <a href='/cakes' className={linkClassName}>
                 <span>See all cakes</span>
                 <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -39,6 +38,9 @@ export function OlgishCakesFounder() {
               alt='Olga, founder of Olgish Cakes'
               fill
               sizes='(min-width: 768px) 440px, 324px'
+              loading='lazy'
+              fetchPriority='low'
+              quality={55}
               className='object-cover object-[50%_50%] rounded-[16px]'
             />
             {/* Decorative top-left corner element */}
@@ -48,6 +50,8 @@ export function OlgishCakesFounder() {
               width={79}
               height={59}
               style={{ width: '79px', height: '59px' }}
+              loading='lazy'
+              fetchPriority='low'
               className='absolute left-[-7px] top-[-10px] z-10 pointer-events-none tablet:left-[-12px] tablet:top-[-14px]'
             />
             {/* Decorative bottom-right corner element */}
@@ -57,6 +61,8 @@ export function OlgishCakesFounder() {
               width={79}
               height={59}
               style={{ width: '79px', height: '59px' }}
+              loading='lazy'
+              fetchPriority='low'
               className='absolute right-[-9px] top-[352px] z-10 pointer-events-none tablet:bottom-[-12px] tablet:right-[-12px] tablet:top-auto'
             />
           </div>
@@ -64,25 +70,25 @@ export function OlgishCakesFounder() {
           <div className='hidden rounded-[16px] bg-primary-50 px-6 py-7 shadow-xl tablet:order-3 tablet:flex tablet:w-[316px] tablet:h-[486px] tablet:flex-col tablet:justify-center tablet:absolute tablet:left-[729px] tablet:pl-0 tablet:pr-[26px] tablet:rounded-l-none'>
             <ul className='flex flex-col gap-4 !list-none p-0 m-0 tablet:p-0'>
               <li>
-                <Link href='/cakes' className={linkClassName}>
+                <a href='/cakes' className={linkClassName}>
                   <span>See all cakes</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href='/#bestsellers' className={linkClassName}>
+                <a href='/#bestsellers' className={linkClassName}>
                   <span>View bestsellers</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href='/get-custom-quote' className={linkClassName}>
+                <a href='/get-custom-quote' className={linkClassName}>
                   <span>Custom cake enquiry</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href='https://www.instagram.com/olgish_cakes/'
                   className={linkClassName}
                   target='_blank'
@@ -90,7 +96,7 @@ export function OlgishCakesFounder() {
                 >
                   <span>Follow our Instagram</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

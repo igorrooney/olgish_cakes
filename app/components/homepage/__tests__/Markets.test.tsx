@@ -6,6 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { Markets } from '../Markets'
 import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
+import type { HomepageMarket } from '../MarketsClient'
 
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -23,7 +24,7 @@ jest.mock('@/app/utils/fetchMarketSchedule', () => ({
 }))
 
 jest.mock('../DeferredMarketsClient', () => ({
-  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: MarketSchedule[] }) => {
+  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: HomepageMarket[] }) => {
     const { MarketsClient } = jest.requireActual('../MarketsClient') as typeof import('../MarketsClient')
     return <MarketsClient upcomingMarkets={upcomingMarkets} />
   }

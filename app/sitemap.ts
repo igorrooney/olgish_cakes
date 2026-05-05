@@ -32,7 +32,7 @@ function getArticleLastModified(article: SitemapArticle) {
 }
 
 async function getCakes() {
-  const query = `*[_type == "cake" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
+  const query = `*[_type == "cake" && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
     slug,
     _updatedAt
   }`
@@ -41,7 +41,7 @@ async function getCakes() {
 }
 
 async function getArticles() {
-  const query = `*[_type == "article" && coalesce(publishedAt, _createdAt) <= now() && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
+  const query = `*[_type == "article" && coalesce(publishedAt, _createdAt) <= now() && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
     slug,
     _updatedAt,
     "publishedAt": coalesce(publishedAt, _createdAt)
@@ -51,7 +51,7 @@ async function getArticles() {
 }
 
 async function getGiftHampers() {
-  const query = `*[_type == "giftHamper" && !slug.current match "test*" && !slug.current match "*test*" && defined(slug.current)] {
+  const query = `*[_type == "giftHamper" && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
     slug,
     _updatedAt
   }`

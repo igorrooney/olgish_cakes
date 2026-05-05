@@ -85,4 +85,7 @@ backup-*.json
 .codex-artifacts/
 /output/
 .codex-*.log
+.codex-lighthouse-*.pid
+.codex-lighthouse-*-run-dir.txt
 .next-start-*.out.log
+/logs/

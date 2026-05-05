@@ -12,6 +12,7 @@ import {
 } from '../utils/collectionQueryValue'
 import type { CakesCollectionOption, CakesFeaturedOfferData, TabletCake } from './components/types'
 import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
 
 type UrlForImage = Parameters<typeof urlFor>[0]
 type RichTextBlockLike = {
@@ -219,9 +220,24 @@ function getGiftHamperImage(hamper: GiftHamper): ImageSelection | null {
   return null
 }
 
+function getCatalogCardImageUrl(image: ImageSelection | null) {
+  if (!image) {
+    return '/images/placeholder-cake.jpg'
+  }
+
+  const imageUrl = urlFor(image.image).url()
+
+  return getSanityCdnImageUrl(imageUrl, {
+    width: 560,
+    height: 560,
+    fit: 'crop',
+    quality: 56
+  }) ?? imageUrl
+}
+
 function mapCakeToTabletCake(cake: Cake): TabletCake {
   const image = getCakeImage(cake)
-  const imageUrl = image ? urlFor(image.image).width(900).height(900).url() : '/images/placeholder-cake.jpg'
+  const imageUrl = getCatalogCardImageUrl(image)
   const imageAlt = image?.alt?.trim() || `${cake.name} by Olgish Cakes`
   const collectionIds = (cake.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
   const basePrice = resolveCakeBasePrice({
@@ -249,7 +265,7 @@ function mapCakeToTabletCake(cake: Cake): TabletCake {
 
 function mapGiftHamperToTabletCake(hamper: GiftHamper): TabletCake {
   const image = getGiftHamperImage(hamper)
-  const imageUrl = image ? urlFor(image.image).width(900).height(900).url() : '/images/placeholder-cake.jpg'
+  const imageUrl = getCatalogCardImageUrl(image)
   const imageAlt = image?.alt?.trim() || `${hamper.name} by Olgish Cakes`
   const collectionIds = (hamper.collections ?? []).map((collection) => normalizeDocumentId(collection._id))
 

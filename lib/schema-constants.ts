@@ -67,10 +67,7 @@ export const DELIVERY_SETTINGS = {
 
 // Return policy
 export const RETURN_POLICY = {
-  returnDays: 14,
-  returnFees: "https://schema.org/FreeReturn",
-  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-  returnMethod: "https://schema.org/ReturnByMail"
+  returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted"
 } as const;
 
 // Rating defaults

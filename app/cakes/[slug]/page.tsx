@@ -2,17 +2,25 @@ import { getAllCakes, getCakeBySlug } from '@/app/utils/fetchCakes'
 import { Cake, blocksToText } from '@/types/cake'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Providers } from '@/app/providers'
-import { CakePageClient } from './CakePageClient'
+import { CakePageClient, type CakePageClientData } from './CakePageClient'
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
-import { ensureAbsoluteImageUrl } from '@/lib/utils/image-url'
+import { ensureAbsoluteImageUrl, getSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
 import { normalizeCmsTitle } from '@/lib/metadata'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 import { urlFor } from '@/sanity/lib/image'
-import { resolveCakeDeliveryContent } from './delivery-content'
+import { resolveCakeDeliveryContent, type ResolvedCakeDeliveryContent } from './delivery-content'
 import { buildCatalogBackHref } from '../catalogNavigation'
+import type { CatalogProductDetailImage } from '../components/CatalogProductDetailLayout'
+
+type UrlForImage = Parameters<typeof urlFor>[0]
+type CakeGalleryImageInput = {
+  asset?: {
+    _ref?: string
+  }
+  alt?: string
+}
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
@@ -47,6 +55,126 @@ function normalizeMetaDescription(value: string | undefined) {
 
 function safeJsonLd(value: unknown) {
   return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
+function getCakePrimaryImage(cake: Cake): UrlForImage | null {
+  const primaryImage = cake.mainImage?.asset?._ref
+    ? cake.mainImage
+    : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img) => img.asset?._ref) ||
+      cake.designs?.standard?.[0] ||
+      cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img) => img.asset?._ref) ||
+      cake.designs?.individual?.[0] ||
+      cake.images?.find((img) => img.asset?._ref) ||
+      cake.images?.[0]
+
+  return primaryImage?.asset?._ref ? primaryImage as UrlForImage : null
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function getCakeGalleryImageUrl(image: CakeGalleryImageInput) {
+  const rawImageUrl = urlFor(image as UrlForImage).width(960).height(960).url()
+
+  return getSanityCdnImageUrl(rawImageUrl, {
+    width: 960,
+    height: 960,
+    fit: 'crop',
+    quality: 80
+  }) ?? rawImageUrl
+}
+
+function mapCakeImagesToGallery(cake: Cake): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${cake.name} by Olgish Cakes`
+
+  function addImage(image: CakeGalleryImageInput | undefined) {
+    if (!image || !hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = getCakeGalleryImageUrl(image)
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  }
+
+  addImage(cake.mainImage)
+  cake.designs?.standard?.forEach((image) => addImage(image))
+  cake.designs?.individual?.forEach((image) => addImage(image))
+  cake.images?.forEach((image) => addImage(image))
+
+  return mappedImages
+}
+
+function mapCakeFillingOptions(cake: Cake): NonNullable<CakePageClientData['fillingOptions']> {
+  const seenFillingIds = new Set<string>()
+
+  return cake.fillingTypes?.flatMap((fillingType) => {
+    const fillingId = typeof fillingType._id === 'string' ? fillingType._id.trim() : ''
+    const fillingName = typeof fillingType.name === 'string' ? fillingType.name.trim() : ''
+
+    if (fillingId.length === 0 || fillingName.length === 0 || seenFillingIds.has(fillingId)) {
+      return []
+    }
+
+    seenFillingIds.add(fillingId)
+
+    const fillingImage = hasImageAssetReference(fillingType.image)
+      ? {
+          src: getCakeGalleryImageUrl(fillingType.image),
+          alt: typeof fillingType.image.alt === 'string' && fillingType.image.alt.trim().length > 0
+            ? fillingType.image.alt.trim()
+            : `${fillingName} filling for ${cake.name}`
+        }
+      : null
+
+    return [{
+      id: fillingId,
+      name: fillingName,
+      image: fillingImage
+    }]
+  }) ?? []
+}
+
+function getCakePageClientData(
+  cake: Cake,
+  deliveryContent: ResolvedCakeDeliveryContent
+): CakePageClientData {
+  return {
+    name: cake.name,
+    slug: cake.slug,
+    description: cake.description,
+    shortDescription: cake.shortDescription,
+    deliveryContent,
+    pricing: cake.pricing,
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    fillingOptions: mapCakeFillingOptions(cake),
+    defaultFillingTypeId: cake.defaultFillingType?._id,
+    galleryImages: mapCakeImagesToGallery(cake),
+    ingredients: cake.ingredients,
+    allergens: cake.allergens,
+    ingredientReference: cake.ingredientReference
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -190,28 +318,17 @@ export default async function CakePage({ params, searchParams }: PageProps) {
   }
 
   // Ensure image is always present and absolute for Product JSON-LD
+  const primaryImage = getCakePrimaryImage(cake)
   const productImageUrl = (() => {
-    // Get the best available image
-    const mainImage = cake.mainImage?.asset?._ref
-      ? cake.mainImage
-      : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img) => img.asset?._ref) ||
-      cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img) => img.asset?._ref) ||
-      cake.designs?.individual?.[0] ||
-      // Fallback to images array (for legacy data like Honey Cake)
-      cake.images?.find((img) => img.asset?._ref) ||
-      cake.images?.[0];
-
-    if (mainImage?.asset?._ref) {
-      const imageUrl = urlFor(mainImage).width(800).height(800).url()
+    if (primaryImage) {
+      const imageUrl = urlFor(primaryImage).width(800).height(800).url()
       // Ensure URL is absolute (Sanity should return absolute, but double-check)
       return ensureAbsoluteImageUrl(imageUrl)
     }
 
     return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
   })()
+  const cakePageClientData = getCakePageClientData(cake, resolvedDeliveryContent)
 
   return (
     <>
@@ -352,12 +469,10 @@ export default async function CakePage({ params, searchParams }: PageProps) {
       </a>
 
       <main id="main-content" tabIndex={-1}>
-        <Providers>
-          <CakePageClient
-            cake={cake}
-            backHref={backHref}
-          />
-        </Providers>
+        <CakePageClient
+          cake={cakePageClientData}
+          backHref={backHref}
+        />
       </main>
     </>
   );

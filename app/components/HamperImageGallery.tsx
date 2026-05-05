@@ -4,6 +4,7 @@ import { memo, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
 import { Box } from "@/lib/daisy-ui";
 import { AccessibleIconButton } from "@/lib/ui-components";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
 // Import icons directly for better HMR support
 import { ArrowBackIcon } from "@/lib/daisy-ui";
 import { ArrowForwardIcon } from "@/lib/daisy-ui";
@@ -28,6 +29,13 @@ export const HamperImageGallery = memo(function HamperImageGallery({
 
   const [index, setIndex] = useState(0);
   const current = allImages[index];
+  const rawCurrentImageUrl = urlFor(current).url();
+  const currentImageUrl = getSanityCdnImageUrl(rawCurrentImageUrl, {
+    width: 960,
+    height: 960,
+    fit: "crop",
+    quality: 80,
+  }) ?? rawCurrentImageUrl;
 
   const handlePrev = useCallback(() => {
     setIndex(prev => (prev === 0 ? allImages.length - 1 : prev - 1));
@@ -56,7 +64,7 @@ export const HamperImageGallery = memo(function HamperImageGallery({
         aria-label={`${name} image`}
       >
         <Image
-          src={urlFor(current).width(1200).height(1200).url()}
+          src={currentImageUrl}
           alt={current.alt || `${name} product image`}
           fill
           style={{ objectFit: "cover" }}
@@ -93,27 +101,37 @@ export const HamperImageGallery = memo(function HamperImageGallery({
             gap: 8,
           }}
         >
-          {allImages.map((img, i) => (
-            <Box
-              key={i}
-              sx={{
-                position: "relative",
-                aspectRatio: "1",
-                borderRadius: 2,
-                overflow: "hidden",
-                cursor: "pointer",
-                outline: i === index ? `2px solid ${colors.primary.main}` : "none",
-              }}
-              onClick={() => setIndex(i)}
-            >
-              <Image
-                src={urlFor(img).width(300).height(300).url()}
-                alt={img.alt || `${name} thumbnail ${i + 1}`}
-                fill
-                style={{ objectFit: "cover" }}
-              />
-            </Box>
-          ))}
+          {allImages.map((img, i) => {
+            const rawThumbnailUrl = urlFor(img).url();
+            const thumbnailUrl = getSanityCdnImageUrl(rawThumbnailUrl, {
+              width: 360,
+              height: 360,
+              fit: "crop",
+              quality: 76,
+            }) ?? rawThumbnailUrl;
+
+            return (
+              <Box
+                key={i}
+                sx={{
+                  position: "relative",
+                  aspectRatio: "1",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  outline: i === index ? `2px solid ${colors.primary.main}` : "none",
+                }}
+                onClick={() => setIndex(i)}
+              >
+                <Image
+                  src={thumbnailUrl}
+                  alt={img.alt || `${name} thumbnail ${i + 1}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </Box>
+            );
+          })}
         </Box>
       )}
     </section>

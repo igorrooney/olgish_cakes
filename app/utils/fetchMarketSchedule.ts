@@ -1,4 +1,3 @@
-import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
 import type {
@@ -150,7 +149,7 @@ export async function searchMarketEvents(
 ): Promise<MarketSchedule[]> {
   try {
     let query = '*[_type == "marketSchedule" && active == true';
-    const params: Record<string, any> = {};
+    const params: Record<string, string> = {};
 
     if (filters.featured) {
       query += " && featured == true";

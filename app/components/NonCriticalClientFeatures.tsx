@@ -17,7 +17,7 @@ function scheduleDeferredLoad(callback: () => void) {
   }
 
   if ('requestIdleCallback' in window) {
-    const handle = window.requestIdleCallback(callback, { timeout: 2500 })
+    const handle = window.requestIdleCallback(callback, { timeout: 7000 })
 
     return () => {
       if ('cancelIdleCallback' in window) {
@@ -26,7 +26,7 @@ function scheduleDeferredLoad(callback: () => void) {
     }
   }
 
-  const timeoutHandle = setTimeout(callback, 1200)
+  const timeoutHandle = setTimeout(callback, 5000)
 
   return () => {
     clearTimeout(timeoutHandle)

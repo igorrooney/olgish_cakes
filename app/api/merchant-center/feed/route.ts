@@ -4,7 +4,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { Cake, CakeImage } from "@/types/cake";
 import { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
 import { unstable_cache } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 interface RichTextChild {
   text: string;
@@ -52,7 +52,7 @@ const generateProductFeed = unstable_cache(
 );
 
 // Google Merchant Center Product Feed XML Generator
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const xmlContent = await generateProductFeed();
 

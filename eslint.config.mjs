@@ -16,6 +16,8 @@ const eslintConfig = [
       "**/dist/**",
       "**/build/**",
       "**/coverage/**",
+      "**/.codex-artifacts/**",
+      "**/output/**",
       "**/.turbo/**",
       "**/out/**",
       "**/reports/**",

@@ -6,8 +6,9 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailSection } from '../CatalogProductDetailLayout'
 import { PREVIOUS_PATHNAME_STATE_KEY } from '../../../utils/history-state'
 
-const mockGalleryImageSizes = `(min-width: 1024px) 560px, 100vw`
+const mockGalleryImageSizes = `(min-width: 1024px) 560px, 88vw`
 const mockOptimizedImageWidths = [640, 1200] as const
+const backgroundGalleryPreloadDelayMs = 3500
 
 function resolveMockOptimizedImageSrc(logicalSrc: string, width = mockOptimizedImageWidths[1]) {
   return `/_next/image?url=${encodeURIComponent(logicalSrc)}&w=${width}&q=75`
@@ -52,12 +53,14 @@ jest.mock('next/image', () => ({
   default: ({
     alt,
     fill: _fill,
+    loader: _loader,
     preload: _preload,
     priority: _priority,
     sizes: _sizes,
     ...props
   }: React.ComponentProps<'img'> & {
     fill?: boolean
+    loader?: unknown
     preload?: boolean
     priority?: boolean
     sizes?: string
@@ -71,8 +74,12 @@ jest.mock('next/link', () => ({
   default: ({
     children,
     href,
+    prefetch: _prefetch,
     ...props
-  }: React.PropsWithChildren<{ href: string } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
+  }: React.PropsWithChildren<{
+    href: string
+    prefetch?: boolean
+  } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
     <a href={href} {...props}>{children}</a>
   )
 }))
@@ -601,16 +608,33 @@ describe('CatalogProductDetailLayout', () => {
     expect(screen.queryByTestId('product-gallery-leaving-layer')).not.toBeInTheDocument()
   })
 
-  it('immediately preloads all non-active gallery images on first render', () => {
+  it('defers non-active gallery image preloads until after the initial LCP window', () => {
+    jest.useFakeTimers()
     const { preloadedRequests, restore } = mockWindowImagePreload()
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
 
+      expect(preloadedRequests).toEqual([])
+
+      act(() => {
+        jest.advanceTimersByTime(backgroundGalleryPreloadDelayMs - 1)
+      })
+
+      expect(preloadedRequests).toEqual([])
+
+      act(() => {
+        jest.advanceTimersByTime(1)
+      })
+
       expect(preloadedRequests).toEqual(
         burstNavigationGalleryImages.slice(1).map((image) => resolveMockPreloadRequest(image.src))
       )
     } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
       restore()
     }
   })
@@ -628,11 +652,18 @@ describe('CatalogProductDetailLayout', () => {
   })
 
   it('does not duplicate preloads when rerendered with the same gallery image sources', () => {
+    jest.useFakeTimers()
     const { preloadedRequests, restore } = mockWindowImagePreload()
     const rerenderedGalleryImages = galleryImages.map((image) => ({ ...image }))
 
     try {
       const { rerender } = renderLayout()
+
+      expect(preloadedRequests).toEqual([])
+
+      act(() => {
+        jest.advanceTimersByTime(backgroundGalleryPreloadDelayMs)
+      })
 
       expect(preloadedRequests).toEqual([resolveMockPreloadRequest('/images/hamper-2.jpg')])
 
@@ -657,6 +688,10 @@ describe('CatalogProductDetailLayout', () => {
 
       expect(preloadedRequests).toEqual([resolveMockPreloadRequest('/images/hamper-2.jpg')])
     } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
       restore()
     }
   })
@@ -736,7 +771,7 @@ describe('CatalogProductDetailLayout', () => {
       '[letter-spacing:0]',
       'align-middle',
       'tablet:[font-size:var(--t-font-size-sm)]',
-      'tablet:text-(--color-catalog-detail-muted)'
+      'tablet:text-base-content/75'
     )
     expect(categoryLabel).not.toHaveClass(
       'font-sans',
@@ -1027,7 +1062,8 @@ describe('CatalogProductDetailLayout', () => {
       renderLayout()
 
       expectActiveImage(1, 2)
-      expect(getStableGalleryImage()).not.toHaveAttribute('loading')
+      expect(getStableGalleryImage()).toHaveAttribute('loading', 'eager')
+      expect(getStableGalleryImage()).toHaveAttribute('fetchpriority', 'high')
       expect(getStableGalleryImage()).toHaveAttribute('decoding', 'async')
 
       fireEvent.click(screen.getByRole('tab', { name: 'View image 2' }))
@@ -1037,6 +1073,7 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
       expect(getEnteringGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
       expect(getEnteringGalleryImage()).toHaveAttribute('loading', 'eager')
+      expect(getEnteringGalleryImage()).toHaveAttribute('fetchpriority', 'auto')
       expect(getEnteringGalleryImage()).toHaveAttribute('decoding', 'async')
       expect(screen.getByTestId('product-gallery-leaving-layer')).toHaveAttribute('aria-hidden', 'true')
       expect(getLeavingGalleryImage()).toHaveAttribute('alt', '')
@@ -1118,30 +1155,38 @@ describe('CatalogProductDetailLayout', () => {
     expectActiveImage(1, 2)
   })
 
-  it('renders strict 8x8 dots with 8px gap and tokenized active styles', () => {
+  it('renders 44px tappable gallery dots with 8px visual dots and tokenized active styles', () => {
     renderLayout()
 
     const dotsTablist = screen.getByRole('tablist', { name: 'Product image slides' })
     const firstDotButton = screen.getByRole('tab', { name: 'View image 1' })
     const secondDotButton = screen.getByRole('tab', { name: 'View image 2' })
+    const firstVisualDot = firstDotButton.querySelector('span')
+    const secondVisualDot = secondDotButton.querySelector('span')
 
     expect(dotsTablist).toHaveClass('gap-2')
     expect(firstDotButton).toHaveClass(
+      'h-11',
+      'w-11',
+      'cursor-pointer',
+      'items-center',
+      'justify-center'
+    )
+    expect(firstVisualDot).toHaveClass(
       'h-2',
       'w-2',
-      'cursor-pointer',
-      'border',
       'border-[var(--color-gallery-dot-active)]',
       'bg-[var(--color-gallery-dot-active)]'
     )
-    expect(secondDotButton).toHaveClass('h-2', 'w-2', 'cursor-pointer', 'border', 'border-base-300', 'bg-base-100')
-    expect(firstDotButton).not.toHaveClass('h-6', 'w-6')
-    expect(secondDotButton).not.toHaveClass('h-6', 'w-6')
+    expect(secondDotButton).toHaveClass('h-11', 'w-11', 'cursor-pointer')
+    expect(secondVisualDot).toHaveClass('h-2', 'w-2', 'border-base-300', 'bg-base-100')
+    expect(firstDotButton).not.toHaveClass('h-2', 'w-2')
+    expect(secondDotButton).not.toHaveClass('h-2', 'w-2')
 
     fireEvent.click(secondDotButton)
 
-    expect(firstDotButton).toHaveClass('border-base-300', 'bg-base-100')
-    expect(secondDotButton).toHaveClass(
+    expect(firstVisualDot).toHaveClass('border-base-300', 'bg-base-100')
+    expect(secondVisualDot).toHaveClass(
       'border-[var(--color-gallery-dot-active)]',
       'bg-[var(--color-gallery-dot-active)]'
     )
@@ -1536,6 +1581,7 @@ describe('CatalogProductDetailLayout', () => {
   })
 
   it('starts a crossfade immediately when the requested image is already decoded and ready', async () => {
+    jest.useFakeTimers()
     const imagePreloadMock = mockWindowImagePreload({
       autoLoad: false,
       supportsDecode: true
@@ -1543,6 +1589,10 @@ describe('CatalogProductDetailLayout', () => {
 
     try {
       renderLayout(jest.fn(), '\u00A38.50', burstNavigationGalleryImages)
+
+      act(() => {
+        jest.advanceTimersByTime(backgroundGalleryPreloadDelayMs)
+      })
 
       act(() => {
         imagePreloadMock.triggerLoad(resolveMockOptimizedImageSrc('/images/hamper-2.jpg'))
@@ -1558,6 +1608,10 @@ describe('CatalogProductDetailLayout', () => {
       expect(screen.getByTestId('product-gallery-entering-layer')).toBeInTheDocument()
       expect(screen.getByTestId('product-gallery-leaving-layer')).toBeInTheDocument()
     } finally {
+      act(() => {
+        jest.runOnlyPendingTimers()
+      })
+      jest.useRealTimers()
       imagePreloadMock.restore()
     }
   })
@@ -1631,10 +1685,7 @@ describe('CatalogProductDetailLayout', () => {
         />
       )
 
-      expect(imagePreloadMock.preloadedRequests).toEqual([
-        resolveMockPreloadRequest('/images/filling-preview.jpg'),
-        resolveMockPreloadRequest('/images/hamper-2.jpg')
-      ])
+      expect(imagePreloadMock.preloadedRequests).toEqual([])
 
       rerender(
         <CatalogProductDetailLayout
@@ -1643,6 +1694,10 @@ describe('CatalogProductDetailLayout', () => {
           requestedActiveImageKey='filling-change-1'
         />
       )
+
+      expect(imagePreloadMock.preloadedRequests).toEqual([
+        resolveMockPreloadRequest('/images/filling-preview.jpg')
+      ])
 
       expectActiveImage(1, 3)
       expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 1')
@@ -1694,6 +1749,8 @@ describe('CatalogProductDetailLayout', () => {
         />
       )
 
+      expect(imagePreloadMock.preloadedRequests).toEqual([])
+
       rerender(
         <CatalogProductDetailLayout
           {...baseProps}
@@ -1701,6 +1758,10 @@ describe('CatalogProductDetailLayout', () => {
           requestedActiveImageKey='decode-gated-request-1'
         />
       )
+
+      expect(imagePreloadMock.preloadedRequests).toEqual([
+        resolveMockPreloadRequest('/images/hamper-6.jpg')
+      ])
 
       expectActiveImage(1, 7)
       expect(screen.getByTestId('product-gallery-active-layer')).toBeInTheDocument()

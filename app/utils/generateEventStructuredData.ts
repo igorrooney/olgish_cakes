@@ -8,7 +8,6 @@ export function generateEventStructuredData(
   event: MarketSchedule,
   reviewStats?: ReviewStats
 ): MarketScheduleStructuredData {
-  const eventDate = new Date(event.date);
   const startDateTime = new Date(`${event.date}T${event.startTime}:00`).toISOString();
   const endDateTime = new Date(`${event.date}T${event.endTime}:00`).toISOString();
   const aggregateRating = buildAggregateRating(reviewStats);

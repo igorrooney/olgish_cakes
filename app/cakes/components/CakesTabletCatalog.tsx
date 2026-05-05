@@ -1,8 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type MouseEvent } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 import { breakpoints } from '@/lib/breakpoints'
 import {
   parseAsArrayOf,
@@ -15,7 +16,6 @@ import {
 import { CakesFeaturedOffer } from './CakesFeaturedOffer'
 import { CakesFilterSidebar } from './CakesFilterSidebar'
 import { CatalogLogoLoader } from './CatalogLogoLoader'
-import { CakesMobileFilterSortSheet } from './CakesMobileFilterSortSheet'
 import { CakesProductCard } from './CakesProductCard'
 import { CakesSortBar } from './CakesSortBar'
 import {
@@ -38,6 +38,7 @@ function getPriceCeiling(cakes: TabletCake[]) {
 
 const sortOptions = ['new', 'priceHighToLow', 'priceLowToHigh'] as const
 const mobileViewModeStorageKey = 'catalog-mobile-view-mode'
+const MOBILE_INITIAL_PAGE_SIZE = 6
 const MOBILE_PAGE_SIZE = 6
 const TABLET_PAGE_SIZE = 6
 const SMALL_LAPTOP_PAGE_SIZE = 9
@@ -47,6 +48,14 @@ const SMALL_LAPTOP_BREAKPOINT = breakpoints['small-laptop']
 const MOBILE_SENTINEL_ROOT_MARGIN = '240px 0px'
 const DEFAULT_CATALOG_PATH = '/cakes'
 const BY_POST_CATALOG_PATH = '/cakes-by-post'
+const emptyLazyCakes: TabletCake[] = []
+const emptyLazyCollectionOptions: CakesCollectionOption[] = []
+const CakesMobileFilterSortSheet = dynamic(
+  async () => import('./CakesMobileFilterSortSheet').then((module) => module.CakesMobileFilterSortSheet),
+  {
+    loading: () => null
+  }
+)
 
 type PaginationToken = number | 'ellipsis-leading' | 'ellipsis-trailing'
 type MobileTab = 'custom' | 'byPost'
@@ -141,6 +150,41 @@ function isCollectionOption(value: unknown): value is CakesCollectionOption {
     value.legacyQueryValues.every((queryValue) => typeof queryValue === 'string') &&
     typeof value.label === 'string' &&
     typeof value.isFeatured === 'boolean'
+}
+
+async function fetchLazyCatalogPayload({
+  endpoint,
+  signal,
+  productType
+}: {
+  endpoint: string
+  signal: AbortSignal
+  productType?: TabletCake['productType']
+}): Promise<LazyCatalogQueryPayload> {
+  const response = await fetch(endpoint, {
+    signal
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch catalog items: ${response.status}`)
+  }
+
+  const queryPayload = await response.json() as LazyCustomCakesResponse
+  const cakesPayload = Array.isArray(queryPayload.cakes)
+    ? queryPayload.cakes.filter((cake): cake is TabletCake => {
+      return isTabletCake(cake) && (!productType || cake.productType === productType)
+    })
+    : []
+  const collectionOptionsPayload = Array.isArray(queryPayload.collectionOptions)
+    ? queryPayload.collectionOptions.filter((option): option is CakesCollectionOption => {
+      return isCollectionOption(option) && (!productType || option.productType === productType)
+    })
+    : []
+
+  return {
+    cakesPayload,
+    collectionOptionsPayload
+  }
 }
 
 function mergeCatalogItems(
@@ -248,10 +292,6 @@ function getIsSmallLaptopViewportSnapshot() {
   return window.innerWidth >= SMALL_LAPTOP_BREAKPOINT
 }
 
-function getViewportServerSnapshot() {
-  return false
-}
-
 function subscribeToViewportChanges(onStoreChange: () => void) {
   if (typeof window === 'undefined') {
     return () => {}
@@ -264,19 +304,19 @@ function subscribeToViewportChanges(onStoreChange: () => void) {
   }
 }
 
-function useIsMobileViewport() {
+function useIsMobileViewport(initialIsMobileViewport: boolean) {
   return useSyncExternalStore(
     subscribeToViewportChanges,
     getIsMobileViewportSnapshot,
-    getViewportServerSnapshot
+    () => initialIsMobileViewport
   )
 }
 
-function useIsSmallLaptopViewport() {
+function useIsSmallLaptopViewport(initialIsSmallLaptopViewport: boolean) {
   return useSyncExternalStore(
     subscribeToViewportChanges,
     getIsSmallLaptopViewportSnapshot,
-    getViewportServerSnapshot
+    () => initialIsSmallLaptopViewport
   )
 }
 
@@ -357,6 +397,7 @@ export function CakesTabletCatalog({
   featuredOffer,
   collectionOptions,
   initialFilterDefaults,
+  initialDataCompleteness,
   lazyCustomCakesEndpoint,
   lazyCustomCakesPriceCeilingHint,
   lazyByPostCakesEndpoint,
@@ -368,9 +409,9 @@ export function CakesTabletCatalog({
   showMobileFilterSheet = true,
   showPriceFilter = true,
   showCollectionFilters = true,
-  mobileToolbarVariant = 'full'
+  mobileToolbarVariant = 'full',
+  initialViewport = 'desktop'
 }: CakesTabletCatalogProps) {
-  const queryClient = useQueryClient()
   const pathname = usePathname()
   const [optimisticByPostFilter, setOptimisticByPostFilter] = useState<boolean | null>(null)
   const [optimisticCustomFilter, setOptimisticCustomFilter] = useState<boolean | null>(null)
@@ -379,34 +420,26 @@ export function CakesTabletCatalog({
   const [isMaxPriceAutoSyncEnabled, setIsMaxPriceAutoSyncEnabled] = useState(false)
   const optimisticByPostResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const optimisticCustomResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [lazyCustomCakes, setLazyCustomCakes] = useState<TabletCake[]>([])
-  const [lazyCustomCakeCollections, setLazyCustomCakeCollections] = useState<CakesCollectionOption[]>([])
-  const [isLazyCustomCakesLoading, setIsLazyCustomCakesLoading] = useState(false)
-  const [hasLazyCustomCakesError, setHasLazyCustomCakesError] = useState(false)
-  const [lazyByPostCakes, setLazyByPostCakes] = useState<TabletCake[]>([])
-  const [lazyByPostCakeCollections, setLazyByPostCakeCollections] = useState<CakesCollectionOption[]>([])
-  const [isLazyByPostCakesLoading, setIsLazyByPostCakesLoading] = useState(false)
-  const [hasLazyByPostCakesError, setHasLazyByPostCakesError] = useState(false)
   const pendingPaginationScrollRef = useRef(false)
   const hasNormalizedCleanUrlDefaultsRef = useRef(false)
-  const hasLoadedLazyCustomCakesRef = useRef(false)
-  const hasLoadedLazyByPostCakesRef = useRef(false)
-  const lazyCustomCakesRequestRef = useRef<Promise<void> | null>(null)
-  const lazyCustomCakesAbortControllerRef = useRef<AbortController | null>(null)
+  const [hasRequestedLazyCustomCakes, setHasRequestedLazyCustomCakes] = useState(false)
+  const [hasRequestedLazyByPostCakes, setHasRequestedLazyByPostCakes] = useState(false)
   const previousLazyCustomCakesRef = useRef<TabletCake[] | null>(null)
   const previousLazyByPostCakesRef = useRef<TabletCake[] | null>(null)
   const maxPriceQueryWriteIdRef = useRef(0)
   const [activeMaxPriceQueryWriteId, setActiveMaxPriceQueryWriteId] = useState(0)
   const [hasHydrated, setHasHydrated] = useState(false)
-  const isMobileViewport = useIsMobileViewport()
-  const isSmallLaptopViewport = useIsSmallLaptopViewport()
+  const isInitialMobileViewport = initialViewport === 'mobile'
+  const isMobileViewport = useIsMobileViewport(isInitialMobileViewport)
+  const isSmallLaptopViewport = useIsSmallLaptopViewport(false)
   const [isMobileFilterSortOpen, setIsMobileFilterSortOpen] = useState(false)
   const [mobileDraftSort, setMobileDraftSort] = useState<CakesSortOption>('new')
   const [mobileDraftSelectedCollectionIds, setMobileDraftSelectedCollectionIds] = useState<string[]>([])
   const [activeMobileViewMode, setActiveMobileViewMode] = useState<MobileViewMode>('grid')
+  const [hasMobileScrollInteraction, setHasMobileScrollInteraction] = useState(false)
   const [mobileVisibleCountByTab, setMobileVisibleCountByTab] = useState<Record<MobileTab, number>>({
-    custom: MOBILE_PAGE_SIZE,
-    byPost: MOBILE_PAGE_SIZE
+    custom: MOBILE_INITIAL_PAGE_SIZE,
+    byPost: MOBILE_INITIAL_PAGE_SIZE
   })
   const mobileSentinelRef = useRef<HTMLDivElement | null>(null)
   const isCategoryLanding = catalogMode === 'category-landing'
@@ -511,8 +544,56 @@ export function CakesTabletCatalog({
   const hasByPostCakesInInitialData = useMemo(() => {
     return cakes.some((cake) => cake.productType === 'giftHamper')
   }, [cakes])
-  const shouldLazyLoadCustomCakes = Boolean(lazyCustomCakesEndpoint) && !hasCustomCakesInInitialData
-  const shouldLazyLoadByPostCakes = Boolean(lazyByPostCakesEndpoint) && !hasByPostCakesInInitialData
+  const hasCompleteInitialCustomCakes = initialDataCompleteness?.custom ?? hasCustomCakesInInitialData
+  const hasCompleteInitialByPostCakes = initialDataCompleteness?.byPost ?? hasByPostCakesInInitialData
+  const shouldLazyLoadCustomCakes = Boolean(lazyCustomCakesEndpoint) && !hasCompleteInitialCustomCakes
+  const shouldLazyLoadByPostCakes = Boolean(lazyByPostCakesEndpoint) && !hasCompleteInitialByPostCakes
+  useEffect(() => {
+    const shouldDeferInitialMobileCustomLoad = isMobileViewport && hasCustomCakesInInitialData
+
+    if (shouldLazyLoadCustomCakes && effectiveCustomFilter && !shouldDeferInitialMobileCustomLoad) {
+      setHasRequestedLazyCustomCakes(true)
+    }
+  }, [effectiveCustomFilter, hasCustomCakesInInitialData, isMobileViewport, shouldLazyLoadCustomCakes])
+  useEffect(() => {
+    const shouldDeferInitialMobileByPostLoad = isMobileViewport && hasByPostCakesInInitialData
+
+    if (shouldLazyLoadByPostCakes && effectiveByPostFilter && !shouldDeferInitialMobileByPostLoad) {
+      setHasRequestedLazyByPostCakes(true)
+    }
+  }, [effectiveByPostFilter, hasByPostCakesInInitialData, isMobileViewport, shouldLazyLoadByPostCakes])
+  const lazyCustomCakesQuery = useQuery({
+    queryKey: ['catalog', 'lazy-products', lazyCustomCakesEndpoint, 'cake'],
+    enabled: shouldLazyLoadCustomCakes && hasRequestedLazyCustomCakes && Boolean(lazyCustomCakesEndpoint),
+    queryFn: ({ signal }) => fetchLazyCatalogPayload({
+      endpoint: lazyCustomCakesEndpoint ?? '',
+      signal,
+      productType: 'cake'
+    }),
+    retry: false,
+    staleTime: Infinity,
+    gcTime: 10 * 60 * 1000
+  })
+  const lazyByPostCakesQuery = useQuery({
+    queryKey: ['catalog', 'lazy-products', lazyByPostCakesEndpoint, 'giftHamper'],
+    enabled: shouldLazyLoadByPostCakes && hasRequestedLazyByPostCakes && Boolean(lazyByPostCakesEndpoint),
+    queryFn: ({ signal }) => fetchLazyCatalogPayload({
+      endpoint: lazyByPostCakesEndpoint ?? '',
+      signal,
+      productType: 'giftHamper'
+    }),
+    retry: false,
+    staleTime: Infinity,
+    gcTime: 10 * 60 * 1000
+  })
+  const lazyCustomCakes = lazyCustomCakesQuery.data?.cakesPayload ?? emptyLazyCakes
+  const lazyCustomCakeCollections = lazyCustomCakesQuery.data?.collectionOptionsPayload ?? emptyLazyCollectionOptions
+  const lazyByPostCakes = lazyByPostCakesQuery.data?.cakesPayload ?? emptyLazyCakes
+  const lazyByPostCakeCollections = lazyByPostCakesQuery.data?.collectionOptionsPayload ?? emptyLazyCollectionOptions
+  const isLazyCustomCakesLoading = lazyCustomCakesQuery.isPending && lazyCustomCakesQuery.fetchStatus === 'fetching'
+  const isLazyByPostCakesLoading = lazyByPostCakesQuery.isPending && lazyByPostCakesQuery.fetchStatus === 'fetching'
+  const hasLazyCustomCakesError = lazyCustomCakesQuery.isError
+  const hasLazyByPostCakesError = lazyByPostCakesQuery.isError
   const catalogItems = useMemo(() => {
     return mergeCatalogItems(cakes, [...lazyCustomCakes, ...lazyByPostCakes])
   }, [cakes, lazyByPostCakes, lazyCustomCakes])
@@ -629,191 +710,6 @@ export function CakesTabletCatalog({
     const nextUrl = `${currentUrl.pathname}${nextSearch.length > 0 ? `?${nextSearch}` : ''}${currentUrl.hash}`
     window.history.replaceState(window.history.state, '', nextUrl)
   }, [])
-
-  useEffect(() => {
-    if (!shouldLazyLoadCustomCakes || !lazyCustomCakesEndpoint) {
-      setIsLazyCustomCakesLoading(false)
-      return
-    }
-
-    if (hasLoadedLazyCustomCakesRef.current) {
-      setIsLazyCustomCakesLoading(false)
-      return
-    }
-
-    if (!effectiveCustomFilter && lazyCustomCakesRequestRef.current === null) {
-      setIsLazyCustomCakesLoading(false)
-      return
-    }
-
-    if (lazyCustomCakesRequestRef.current !== null) {
-      setIsLazyCustomCakesLoading(effectiveCustomFilter)
-      return
-    }
-
-    const requestAbortController = new AbortController()
-    const customCakesQueryKey = ['cakesCatalogLazyCustomCakes', lazyCustomCakesEndpoint] as const
-    lazyCustomCakesAbortControllerRef.current = requestAbortController
-
-    setIsLazyCustomCakesLoading(true)
-    setHasLazyCustomCakesError(false)
-
-    const loadCustomCakesRequest = (async () => {
-      try {
-        const payload = await queryClient.fetchQuery<LazyCatalogQueryPayload>({
-          queryKey: customCakesQueryKey,
-          retry: false,
-          queryFn: async ({ signal }) => {
-            const relayAbortSignal = () => {
-              requestAbortController.abort()
-            }
-
-            signal.addEventListener('abort', relayAbortSignal)
-
-            try {
-              const response = await fetch(lazyCustomCakesEndpoint, {
-                signal: requestAbortController.signal
-              })
-
-              if (!response.ok) {
-                throw new Error(`Failed to fetch custom cakes: ${response.status}`)
-              }
-
-              const queryPayload = await response.json() as LazyCustomCakesResponse
-              const cakesPayload = Array.isArray(queryPayload.cakes)
-                ? queryPayload.cakes.filter((cake): cake is TabletCake => isTabletCake(cake))
-                : []
-              const collectionOptionsPayload = Array.isArray(queryPayload.collectionOptions)
-                ? queryPayload.collectionOptions.filter((option): option is CakesCollectionOption => isCollectionOption(option))
-                : []
-
-              return {
-                cakesPayload,
-                collectionOptionsPayload
-              }
-            } finally {
-              signal.removeEventListener('abort', relayAbortSignal)
-            }
-          }
-        })
-
-        if (requestAbortController.signal.aborted) {
-          return
-        }
-
-        setLazyCustomCakes(payload.cakesPayload)
-        setLazyCustomCakeCollections(payload.collectionOptionsPayload)
-        hasLoadedLazyCustomCakesRef.current = true
-      } catch (error) {
-        if (requestAbortController.signal.aborted) {
-          return
-        }
-
-        setHasLazyCustomCakesError(true)
-        console.error('Failed to load custom cakes for catalog:', error)
-      } finally {
-        lazyCustomCakesRequestRef.current = null
-        lazyCustomCakesAbortControllerRef.current = null
-        setIsLazyCustomCakesLoading(false)
-      }
-    })()
-
-    lazyCustomCakesRequestRef.current = loadCustomCakesRequest
-    void loadCustomCakesRequest
-  }, [effectiveCustomFilter, lazyCustomCakesEndpoint, queryClient, shouldLazyLoadCustomCakes])
-
-  useEffect(() => {
-    return () => {
-      lazyCustomCakesAbortControllerRef.current?.abort()
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!effectiveByPostFilter || !shouldLazyLoadByPostCakes || !lazyByPostCakesEndpoint) {
-      setIsLazyByPostCakesLoading(false)
-      return
-    }
-
-    if (hasLoadedLazyByPostCakesRef.current) {
-      setIsLazyByPostCakesLoading(false)
-      return
-    }
-
-    const requestAbortController = new AbortController()
-    const byPostCakesQueryKey = ['cakesCatalogLazyByPostCakes', lazyByPostCakesEndpoint] as const
-    let isEffectActive = true
-
-    setIsLazyByPostCakesLoading(true)
-    setHasLazyByPostCakesError(false)
-
-    const loadByPostCakes = async () => {
-      try {
-        const payload = await queryClient.fetchQuery<LazyCatalogQueryPayload>({
-          queryKey: byPostCakesQueryKey,
-          retry: false,
-          queryFn: async ({ signal }) => {
-            const relayAbortSignal = () => {
-              requestAbortController.abort()
-            }
-
-            signal.addEventListener('abort', relayAbortSignal)
-
-            try {
-              const response = await fetch(lazyByPostCakesEndpoint, {
-                signal: requestAbortController.signal
-              })
-
-              if (!response.ok) {
-                throw new Error(`Failed to fetch by-post cakes: ${response.status}`)
-              }
-
-              const queryPayload = await response.json() as LazyCustomCakesResponse
-              const cakesPayload = Array.isArray(queryPayload.cakes)
-                ? queryPayload.cakes.filter((cake): cake is TabletCake => isTabletCake(cake) && cake.productType === 'giftHamper')
-                : []
-              const collectionOptionsPayload = Array.isArray(queryPayload.collectionOptions)
-                ? queryPayload.collectionOptions.filter((option): option is CakesCollectionOption => isCollectionOption(option) && option.productType === 'giftHamper')
-                : []
-
-              return {
-                cakesPayload,
-                collectionOptionsPayload
-              }
-            } finally {
-              signal.removeEventListener('abort', relayAbortSignal)
-            }
-          }
-        })
-
-        if (!isEffectActive || requestAbortController.signal.aborted) {
-          return
-        }
-
-        setLazyByPostCakes(payload.cakesPayload)
-        setLazyByPostCakeCollections(payload.collectionOptionsPayload)
-        hasLoadedLazyByPostCakesRef.current = true
-      } catch (error) {
-        if (!isEffectActive || requestAbortController.signal.aborted) {
-          return
-        }
-
-        setHasLazyByPostCakesError(true)
-        console.error('Failed to load by-post cakes for catalog:', error)
-      } finally {
-        if (isEffectActive) {
-          setIsLazyByPostCakesLoading(false)
-        }
-      }
-    }
-
-    void loadByPostCakes()
-
-    return () => {
-      isEffectActive = false
-      requestAbortController.abort()
-      void queryClient.cancelQueries({ queryKey: byPostCakesQueryKey })
-    }
-  }, [effectiveByPostFilter, lazyByPostCakesEndpoint, queryClient, shouldLazyLoadByPostCakes])
 
   const collectionIdSet = useMemo(
     () => new Set(availableCollectionOptions.map((option) => option.id)),
@@ -1213,13 +1109,13 @@ export function CakesTabletCatalog({
   }, [setQueryState])
   const resetMobileVisibleCount = useCallback((tab: MobileTab) => {
     setMobileVisibleCountByTab((previousVisibleCountByTab) => {
-      if (previousVisibleCountByTab[tab] === MOBILE_PAGE_SIZE) {
+      if (previousVisibleCountByTab[tab] === MOBILE_INITIAL_PAGE_SIZE) {
         return previousVisibleCountByTab
       }
 
       return {
         ...previousVisibleCountByTab,
-        [tab]: MOBILE_PAGE_SIZE
+        [tab]: MOBILE_INITIAL_PAGE_SIZE
       }
     })
   }, [])
@@ -1365,17 +1261,21 @@ export function CakesTabletCatalog({
   const mobileVisibleItems = useMemo(() => {
     return mobileTabItems.slice(0, mobileVisibleCount)
   }, [mobileTabItems, mobileVisibleCount])
-  const hasMoreMobileItems = mobileVisibleCount < mobileTabItems.length
+  const hasMoreLoadedMobileItems = mobileVisibleCount < mobileTabItems.length
+  const hasPendingActiveMobileTabLazyLoad = activeMobileTab === 'custom'
+    ? shouldLazyLoadCustomCakes && !lazyCustomCakesQuery.isSuccess && !hasLazyCustomCakesError
+    : shouldLazyLoadByPostCakes && !lazyByPostCakesQuery.isSuccess && !hasLazyByPostCakesError
+  const hasMoreMobileItems = hasMoreLoadedMobileItems || hasPendingActiveMobileTabLazyLoad
   const isPendingFirstCustomLazyLoad = effectiveCustomFilter &&
     shouldLazyLoadCustomCakes &&
     !hasCustomCakesInInitialData &&
-    !hasLoadedLazyCustomCakesRef.current &&
+    !lazyCustomCakesQuery.isSuccess &&
     lazyCustomCakes.length === 0 &&
     !hasLazyCustomCakesError
   const isPendingFirstByPostLazyLoad = effectiveByPostFilter &&
     shouldLazyLoadByPostCakes &&
     !hasByPostCakesInInitialData &&
-    !hasLoadedLazyByPostCakesRef.current &&
+    !lazyByPostCakesQuery.isSuccess &&
     lazyByPostCakes.length === 0 &&
     !hasLazyByPostCakesError
   const tabletTotalPages = useMemo(() => {
@@ -1456,8 +1356,12 @@ export function CakesTabletCatalog({
     return 'h-full'
   }, [isOutsideSmallLaptopPage, isOutsideTabletPage])
   const isDesktopLcpCandidate = useCallback((index: number) => {
+    if (!hasHydrated || isMobileViewport) {
+      return false
+    }
+
     return index === tabletPageStartIndex || index === smallLaptopPageStartIndex
-  }, [smallLaptopPageStartIndex, tabletPageStartIndex])
+  }, [hasHydrated, isMobileViewport, smallLaptopPageStartIndex, tabletPageStartIndex])
   const tabletPageTokens = useMemo(() => {
     return getPaginationTokens(tabletCurrentPage, tabletTotalPages)
   }, [tabletCurrentPage, tabletTotalPages])
@@ -1527,11 +1431,17 @@ export function CakesTabletCatalog({
     : hasLazyByPostCakesError && !hasByPostCakesInInitialData
   const shouldShowMobilePreHydrationShell = !hasHydrated && !isMobileViewport
   const shouldRenderMobileLayout = isMobileViewport
-  const canUseIntersectionObserver = typeof IntersectionObserver !== 'undefined'
+  const canUseIntersectionObserverApi = hasHydrated && typeof IntersectionObserver !== 'undefined'
+  const shouldUseMobileInfiniteScroll = canUseIntersectionObserverApi && hasMobileScrollInteraction
   const shouldShowMobileLoadMoreButton = hasMoreMobileItems &&
     !shouldShowMobileLoadingState &&
-    !canUseIntersectionObserver
+    !hasPendingActiveMobileTabLazyLoad &&
+    !canUseIntersectionObserverApi
   const loadMoreMobileItems = useCallback(() => {
+    if (hasPendingActiveMobileTabLazyLoad) {
+      return
+    }
+
     setMobileVisibleCountByTab((previousVisibleCountByTab) => {
       const previousVisibleCount = previousVisibleCountByTab[activeMobileTab]
       const nextVisibleCount = Math.min(
@@ -1548,14 +1458,14 @@ export function CakesTabletCatalog({
         [activeMobileTab]: nextVisibleCount
       }
     })
-  }, [activeMobileTab, mobileTabItems.length])
+  }, [activeMobileTab, hasPendingActiveMobileTabLazyLoad, mobileTabItems.length])
 
   useEffect(() => {
     if (!isMobileViewport || !hasMoreMobileItems || shouldShowMobileLoadingState) {
       return
     }
 
-    if (!canUseIntersectionObserver) {
+    if (!shouldUseMobileInfiniteScroll) {
       return
     }
 
@@ -1585,11 +1495,52 @@ export function CakesTabletCatalog({
       observer.disconnect()
     }
   }, [
-    canUseIntersectionObserver,
     hasMoreMobileItems,
     isMobileViewport,
     loadMoreMobileItems,
+    shouldUseMobileInfiniteScroll,
     shouldShowMobileLoadingState
+  ])
+
+  useEffect(() => {
+    if (!isMobileViewport || hasMobileScrollInteraction) {
+      return
+    }
+
+    const markMobileScrollInteraction = () => {
+      setHasMobileScrollInteraction(true)
+    }
+
+    window.addEventListener('scroll', markMobileScrollInteraction, { once: true, passive: true })
+    window.addEventListener('touchmove', markMobileScrollInteraction, { once: true, passive: true })
+    window.addEventListener('wheel', markMobileScrollInteraction, { once: true, passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', markMobileScrollInteraction)
+      window.removeEventListener('touchmove', markMobileScrollInteraction)
+      window.removeEventListener('wheel', markMobileScrollInteraction)
+    }
+  }, [hasMobileScrollInteraction, isMobileViewport])
+
+  useEffect(() => {
+    if (!isMobileViewport || !hasMobileScrollInteraction) {
+      return
+    }
+
+    if (shouldLazyLoadCustomCakes && effectiveCustomFilter) {
+      setHasRequestedLazyCustomCakes(true)
+    }
+
+    if (shouldLazyLoadByPostCakes && effectiveByPostFilter) {
+      setHasRequestedLazyByPostCakes(true)
+    }
+  }, [
+    effectiveByPostFilter,
+    effectiveCustomFilter,
+    hasMobileScrollInteraction,
+    isMobileViewport,
+    shouldLazyLoadByPostCakes,
+    shouldLazyLoadCustomCakes
   ])
 
   useEffect(() => {
@@ -1813,7 +1764,7 @@ export function CakesTabletCatalog({
   const mobileTabActiveClassName = 'border-primary-500 text-primary-500'
   const mobileTabInactiveClassName = 'border-b-primary-500/20 text-primary-200'
   const mobileFilterSortLabelClassName = 'font-sans font-semibold text-[15px] leading-7 tracking-[0] align-middle text-(--color-filter-sort-mobile-text)'
-  const mobileFilterSortIconButtonClassName = 'inline-flex h-6 w-6 items-center justify-center rounded-[6px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
+  const mobileFilterSortIconButtonClassName = 'inline-flex h-11 w-11 items-center justify-center rounded-[6px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
   const mobileFilterSortIconBaseClassName = 'h-4 w-4 transition-colors'
   const mobileFilterSortIconActiveClassName = 'text-(--color-filter-sort-mobile-icon-active)'
   const mobileFilterSortIconInactiveClassName = 'text-(--color-filter-sort-mobile-icon-inactive)'
@@ -1895,7 +1846,7 @@ export function CakesTabletCatalog({
                 type='button'
                 aria-label='Filter & Sort'
                 onClick={handleOpenMobileFilterSort}
-                className='btn btn-ghost h-auto min-h-0 border-transparent bg-transparent p-0 normal-case shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none'
+                className='btn btn-ghost min-h-11 border-transparent bg-transparent px-2 py-0 normal-case shadow-none hover:border-transparent hover:bg-transparent hover:shadow-none focus:border-transparent focus:bg-transparent focus:!outline-none focus:!shadow-none focus-visible:border-transparent focus-visible:bg-transparent focus-visible:!outline-none focus-visible:!shadow-none'
               >
                 <span className={mobileFilterSortLabelClassName}>
                   Filter & Sort
@@ -1989,7 +1940,7 @@ export function CakesTabletCatalog({
           </div>
         )}
         {includeNoScriptCrawlLinks &&
-        mobileTabItems.length > MOBILE_PAGE_SIZE ? (
+        mobileTabItems.length > MOBILE_INITIAL_PAGE_SIZE ? (
           <noscript>
             <nav aria-label='Catalog product crawl links' className='mt-6'>
               <ul className='list-disc pl-6'>
@@ -2004,14 +1955,21 @@ export function CakesTabletCatalog({
         ) : null}
 
         {includeInfiniteScrollSentinel &&
-        canUseIntersectionObserver &&
+        canUseIntersectionObserverApi &&
         hasMoreMobileItems &&
         !shouldShowMobileLoadingState ? (
           <div
             ref={mobileSentinelRef}
             data-testid='mobile-infinite-scroll-sentinel'
-            className='mt-8 h-8 w-full'
-          />
+            className='mt-8 flex min-h-14 w-full items-center justify-center'
+          >
+            {hasPendingActiveMobileTabLazyLoad ? (
+              <CatalogLogoLoader
+                srLabel={mobileLoadingMessage}
+                testId='mobile-catalog-more-logo-loader'
+              />
+            ) : null}
+          </div>
         ) : null}
         {includeInfiniteScrollSentinel && shouldShowMobileLoadMoreButton ? (
           <div className='mt-8 flex justify-center'>
@@ -2024,7 +1982,7 @@ export function CakesTabletCatalog({
             </button>
           </div>
         ) : null}
-        {includeFilterSortSheet && shouldRenderMobileFilterSheet ? (
+        {includeFilterSortSheet && shouldRenderMobileFilterSheet && isMobileFilterSortOpen ? (
           <CakesMobileFilterSortSheet
             open={isMobileFilterSortOpen}
             selectedSort={mobileDraftSort}
@@ -2056,7 +2014,7 @@ export function CakesTabletCatalog({
             includeInfiniteScrollSentinel: false,
             includeFilterSortSheet: false,
             includeNoScriptCrawlLinks: true,
-            allowLcpCandidates: false
+            allowLcpCandidates: true
           })}
         </div>
       ) : null}

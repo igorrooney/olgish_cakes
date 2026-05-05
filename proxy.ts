@@ -91,6 +91,7 @@ export async function proxy(request: NextRequest) {
   // Add caching headers with better cache control
   if (
     request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.startsWith('/runtime/klaro') ||
     request.nextUrl.pathname.startsWith('/static')
   ) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable')

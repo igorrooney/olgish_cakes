@@ -103,7 +103,7 @@ function validateInlineOrderValues(values: InlineOrderValues, isPostalOrder: boo
   }).safeParse(values)
 }
 
-interface ProductOrderInlineFormProps {
+export interface ProductOrderInlineFormProps {
   productType: 'cake' | 'gift-hamper'
   productId: string
   productName: string
@@ -187,7 +187,6 @@ export function ProductOrderInlineForm({
   const [formData, setFormData] = useState<InlineOrderValues>(initialFormState)
   const [designImage, setDesignImage] = useState<File | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasSubmittedSuccessfully, setHasSubmittedSuccessfully] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -307,7 +306,6 @@ export function ProductOrderInlineForm({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setHasAttemptedSubmit(true)
     setErrors({})
     setIsSubmitting(true)
 
@@ -428,7 +426,6 @@ export function ProductOrderInlineForm({
       }
 
       setHasSubmittedSuccessfully(true)
-      setHasAttemptedSubmit(false)
       setFormData(initialFormState)
       setDesignImage(null)
       if (designImageInputRef.current) {

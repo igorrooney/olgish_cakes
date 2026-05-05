@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache';
 
 interface CakeQueryResult {
@@ -20,7 +20,7 @@ interface GiftHamperQueryResult {
   order?: number
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cakesConfig = getCacheConfig('cakes')
     const giftHampersConfig = getCacheConfig('giftHampers')

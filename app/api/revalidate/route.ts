@@ -5,6 +5,8 @@ import { z } from "zod";
 import { validateRequest, formatValidationErrors } from "@/lib/validation";
 import { withRateLimit } from "@/lib/rate-limit";
 import { categoryLandingCanonicalPaths } from "@/app/cakes/categoryLandingConfig";
+import { createSanityWriteClient } from "@/lib/sanity-admin-client";
+import { ensureProductDisplayOrderEntry, type ProductDisplayOrderField, type ProductDisplayOrderSyncResult } from "@/lib/product-display-order-sync";
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -14,6 +16,35 @@ const revalidateSchema = z.object({
     current: z.string()
   }).nullable().optional()
 });
+
+async function syncProductDisplayOrderEntry({
+  documentId,
+  fieldName
+}: {
+  documentId: string | undefined
+  fieldName: ProductDisplayOrderField
+}): Promise<ProductDisplayOrderSyncResult | undefined> {
+  if (!documentId) {
+    return undefined
+  }
+
+  try {
+    return await ensureProductDisplayOrderEntry({
+      client: createSanityWriteClient(),
+      documentId,
+      fieldName
+    })
+  } catch (error) {
+    console.error('Product display order sync failed:', error)
+    return {
+      documentId,
+      fieldName,
+      updated: false,
+      inserted: false,
+      alreadyPresent: false
+    }
+  }
+}
 
 async function handlePOST(request: NextRequest) {
   try {
@@ -45,6 +76,7 @@ async function handlePOST(request: NextRequest) {
     const { _type, _id, slug } = validationResult.data;
     const pathsToRevalidate = new Set<string>()
     const tagsToRevalidate = new Set<string>()
+    let productDisplayOrderSync: ProductDisplayOrderSyncResult | undefined
 
     const addPath = (path: string) => {
       pathsToRevalidate.add(path)
@@ -62,6 +94,11 @@ async function handlePOST(request: NextRequest) {
 
     // Revalidate specific paths based on content type
     if (_type === "cake") {
+      productDisplayOrderSync = await syncProductDisplayOrderEntry({
+        documentId: _id,
+        fieldName: 'cakesOrder'
+      })
+
       // Revalidate cake-specific pages
       if (slug?.current) {
         addPath(`/cakes/${slug.current}`)
@@ -100,6 +137,11 @@ async function handlePOST(request: NextRequest) {
       await invalidateCache("faqs");
       addTag('faqs')
     } else if (_type === "giftHamper") {
+      productDisplayOrderSync = await syncProductDisplayOrderEntry({
+        documentId: _id,
+        fieldName: 'giftHampersOrder'
+      })
+
       // Revalidate gift hamper pages
       if (slug?.current) {
         addPath(`/cakes-by-post/${slug.current}`)
@@ -182,6 +224,7 @@ async function handlePOST(request: NextRequest) {
       success: true,
       message: "Revalidation completed",
       revalidated: { _type, _id, slug },
+      productsDisplayOrder: productDisplayOrderSync,
     });
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {

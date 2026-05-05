@@ -37,6 +37,7 @@ interface MUIComponentProps {
 
 let capturedOccasionsProps: Record<string, unknown> | null = null
 let capturedEnquiryFormProps: Record<string, unknown> | null = null
+let capturedReviewsProps: Record<string, unknown> | null = null
 
 // Mock fetch for CSRF token
 global.fetch = jest.fn(() =>
@@ -72,6 +73,11 @@ jest.mock('../utils/fetchMarketSchedule', () => ({
 jest.mock('../utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
   getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' })),
+  getMerchantReturnPolicy: jest.fn(() => ({
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: 'GB',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+  })),
   generateEventSEOMetadata: jest.fn(() => ({ additionalKeywords: [], totalUpcomingEvents: 0 }))
 }))
 
@@ -85,20 +91,26 @@ jest.mock('../components/AnimatedSection', () => ({
   AnimatedDiv: ({ children, ...props }: AnimatedComponentProps) => <div {...props}>{children}</div>
 }))
 
-// Mock mobile homepage components
-// Note: Markets is async in real code but mocked as sync for tests
-jest.mock('../components/homepage', () => ({
+jest.mock('../components/homepage/HomeHero', () => ({
+  HomeHero: () => <div data-testid="home-hero">Home Hero</div>
+}))
+
+jest.mock('../components/homepage/OlgishCakesFounder', () => ({
+  OlgishCakesFounder: () => <div data-testid="mobile-about">Mobile About</div>
+}))
+
+jest.mock('../components/homepage/HomeFaq', () => ({
   faqItems: [],
-  HomeHero: () => <div data-testid="home-hero">Home Hero</div>,
-  OlgishCakesFounder: () => <div data-testid="mobile-about">Mobile About</div>,
-  HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>,
-  Instagram: () => <div data-testid="instagram">Instagram</div>
+  HomeFaq: () => <div data-testid="home-faq">Home FAQ</div>
 }))
 
 jest.mock('../components/homepage/deferredSections', () => ({
   DeferredBestsellers: () => <div data-testid='bestsellers'>Bestsellers</div>,
   DeferredMarkets: () => <div data-testid='mobile-markets'>Mobile Markets</div>,
-  DeferredReviews: () => <div data-testid='reviews'>Reviews</div>,
+  DeferredReviews: (props: Record<string, unknown>) => {
+    capturedReviewsProps = props
+    return <div data-testid='reviews'>Reviews</div>
+  },
   DeferredOccasions: (props: Record<string, unknown>) => {
     capturedOccasionsProps = props
     return <div data-testid='occasions'>Occasions</div>
@@ -218,6 +230,7 @@ describe('HomePage', () => {
   beforeEach(() => {
     capturedOccasionsProps = null
     capturedEnquiryFormProps = null
+    capturedReviewsProps = null
     mockGetAllTestimonials.mockResolvedValue([])
     mockGetHomepageCollections.mockResolvedValue([])
   })
@@ -286,6 +299,52 @@ describe('HomePage', () => {
       expect(document.querySelectorAll('[data-testid="query-providers"]')).toHaveLength(1)
     })
 
+    it('passes only the first six eligible testimonials to the homepage reviews section', async () => {
+      mockGetAllTestimonials.mockResolvedValue([
+        {
+          _id: 'testimonial-empty',
+          _type: 'testimonial',
+          _createdAt: '2026-01-01T00:00:00Z',
+          _updatedAt: '2026-01-01T00:00:00Z',
+          customerName: 'Empty',
+          cakeType: 'Honey cake',
+          rating: 5,
+          date: '2026-01-10',
+          text: ' ',
+          source: 'google'
+        },
+        ...Array.from({ length: 7 }, (_, index) => ({
+          _id: `testimonial-${index}`,
+          _type: 'testimonial' as const,
+          _createdAt: '2026-01-01T00:00:00Z',
+          _updatedAt: '2026-01-01T00:00:00Z',
+          customerName: `Customer ${index}`,
+          cakeType: 'Honey cake',
+          rating: 5,
+          date: '2026-01-10',
+          text: `Helpful review ${index}.`,
+          source: 'google' as const
+        }))
+      ])
+
+      const page = await HomePage()
+      render(page)
+
+      expect(capturedReviewsProps?.testimonials).toHaveLength(6)
+      expect(capturedReviewsProps?.testimonials).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ _id: 'testimonial-0' }),
+          expect.objectContaining({ _id: 'testimonial-5' })
+        ])
+      )
+      expect(capturedReviewsProps?.testimonials).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ _id: 'testimonial-empty' }),
+          expect.objectContaining({ _id: 'testimonial-6' })
+        ])
+      )
+    })
+
     it('should include structured data scripts when testimonials exist', async () => {
       mockGetAllTestimonials.mockResolvedValue([
         {
@@ -307,6 +366,30 @@ describe('HomePage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
+
+      const productSchema = Array.from(scripts).map((script) => {
+        try {
+          return JSON.parse(script.textContent || '{}') as {
+            '@type'?: string
+            offers?: {
+              hasMerchantReturnPolicy?: Record<string, unknown>
+            }
+          }
+        } catch {
+          return null
+        }
+      }).find((data) => data?.['@type'] === 'Product')
+
+      const returnPolicy = productSchema?.offers?.hasMerchantReturnPolicy
+
+      expect(returnPolicy).toEqual(expect.objectContaining({
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'GB',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+      }))
+      expect(returnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(returnPolicy).not.toHaveProperty('returnFees')
+      expect(returnPolicy).not.toHaveProperty('returnMethod')
     })
 
     it('should render review schema from testimonials', async () => {

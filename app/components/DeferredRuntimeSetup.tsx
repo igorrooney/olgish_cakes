@@ -82,10 +82,6 @@ export function DeferredRuntimeSetup() {
       })
     }
 
-    const initializeConsentRuntime = () => {
-      void import('@/app/lib/consent-runtime').then(({ loadConsentRuntime }) => loadConsentRuntime())
-    }
-
     const initializeDeferredRuntimeSetup = () => {
       registerServiceWorker()
     }
@@ -95,7 +91,6 @@ export function DeferredRuntimeSetup() {
     }
 
     suppressExpectedExtensionErrors()
-    initializeConsentRuntime()
 
     if (document.readyState === 'complete') {
       queueRuntimeSetup()

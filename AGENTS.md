@@ -9,11 +9,11 @@
 - Always use Context7 MCP when working with libraries/APIs
 
 ## Tech Stack
-- Next.js 16 (App Router)
-- React 19
-- TypeScript 5.3
-- Tailwind CSS 3.4 with DaisyUI
-- Sanity 3.88 with next-sanity 7.1
+- Next.js 16.2.3 (App Router)
+- React 19.2.5
+- TypeScript 5.9.3
+- Tailwind CSS 4.1.17 with DaisyUI 5.5.8
+- Sanity 5.23.0 with next-sanity 12.3.2
 - DaisyUI for all UI components
 - pnpm for package management
 - Node 20.9+
@@ -35,6 +35,8 @@
 - All colors, fonts, spacing from design system
 - Tailwind for layout and utilities
 - Do not duplicate styles; extract shared class strings or utilities and reuse
+- Do not change visible design or page text without explicit user permission
+- Do not remove homepage SVG assets; they are part of the approved design
 - Cookie consent UI must appear immediately on initial page load; do not defer or delay the banner for performance optimization
 
 ## React Best Practices
@@ -78,15 +80,30 @@
   - Use descriptive, context-relevant `alt` text for meaningful images
   - Avoid keyword stuffing in alt text
 - Core Web Vitals targets:
-  - LCP <2.5s
+  - LCP <=2.5s for release readiness
+  - Aim for mobile LCP <=2.0s to keep a safety margin for real-user variance
+  - If LCP cannot be improved further without visible design changes, explain the tradeoff and ask permission before editing
+  - Release exception: a release may proceed with mobile lab LCP above 2.5s only when non-visible optimizations have already been applied, SEO is 100, CLS is <0.1, functional/security checks pass, and the remaining LCP work would require visible design changes or delaying the required cookie consent UI. Document the affected pages, Lighthouse report date, and treat this as a known performance risk to monitor after release.
   - CLS <0.1
   - INP <200ms
 
 ## Testing
-- 100% coverage required for all new code
-- Test coverage must remain 100% across the full suite
 - Jest + React Testing Library
-- CI fails if coverage drops below 100%
+- CI coverage gate:
+  - Statements >=85%
+  - Branches >=70%
+  - Functions >=80%
+  - Lines >=85%
+- High-risk code should target 90-100% meaningful coverage: payments, auth, order handling, validation, email sending, schema generation, security checks, API routes, and user-submitted data flows
+- New or changed high-risk code must include tests for success paths, validation failures, authorization failures, and important error handling
+- Config files, generated files, static metadata, visual-only wrappers, and framework glue may be excluded from coverage when they contain little or no business logic
+- Do not lower coverage thresholds without explicit user permission
+
+## Internal Tools
+- `/studio` is an internal Sanity Studio tool, not a public customer-facing page
+- Exclude `/studio` from public release readiness audits, public page/device sweeps, SEO scoring, Core Web Vitals scoring, and customer-facing feature review
+- Do not treat `/studio` issues as release blockers unless the user explicitly asks to audit or release the internal Studio
+- Still keep `/studio` internal-safe: noindex/nofollow, not promoted in public sitemap/navigation, and protected by appropriate Sanity project/origin/access controls
 
 ## Security Requirements
 - Commercial-grade security is mandatory for all features and changes

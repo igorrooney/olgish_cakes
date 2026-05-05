@@ -2,73 +2,19 @@
 
 import { useState } from "react";
 import {
-  Button,
   Box,
-  Typography,
-  Alert,
   Tooltip,
   SettingsIcon,
   CloseIcon,
-  RefreshIcon,
-  ClearIcon,
-  Chip,
-  Divider,
 } from "@/lib/daisy-ui";
-import { AccessibleIconButton, TouchTargetWrapper } from "@/lib/ui-components";
-import { clearCache, invalidateCache } from "@/app/utils/fetchCakes";
-import { cacheManager } from "@/app/utils/cacheManager";
+import { AccessibleIconButton } from "@/lib/ui-components";
 
 export function DevTools() {
   const [isVisible, setIsVisible] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [isClearing, setIsClearing] = useState(false);
-  const [lastCleared, setLastCleared] = useState<Date | null>(null);
-
-  const handleClearCache = async () => {
-    setIsClearing(true);
-    setMessage(null);
-
-    try {
-      await cacheManager.clearAllCache();
-      setLastCleared(new Date());
-      setMessage("✅ Cache cleared successfully!");
-    } catch (error) {
-      setMessage("❌ Failed to clear cache");
-      console.error("Cache clear error:", error);
-    } finally {
-      setIsClearing(false);
-    }
-  };
-
-  const handleClearPattern = async (pattern: string) => {
-    setIsClearing(true);
-    setMessage(null);
-
-    try {
-      await cacheManager.clearCachePattern(pattern);
-      setLastCleared(new Date());
-      setMessage(`✅ Cache cleared for pattern: ${pattern}`);
-    } catch (error) {
-      setMessage("❌ Failed to clear cache pattern");
-      console.error("Cache clear error:", error);
-    } finally {
-      setIsClearing(false);
-    }
-  };
-
-  const handleForceRefresh = () => {
-    clearCache();
-    // Force a hard refresh by adding cache-busting parameter
-    const url = new URL(window.location.href);
-    url.searchParams.set('_t', Date.now().toString());
-    window.location.href = url.toString();
-  };
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
-
-  const cacheStatus = cacheManager.getCacheStatus();
 
   // Only show in development
   if (process.env.NODE_ENV !== "development") {

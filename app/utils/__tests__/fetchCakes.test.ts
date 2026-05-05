@@ -50,7 +50,7 @@ describe('fetchCakes', () => {
     description: 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
     ctaLabel: 'Get free honey cake',
     cakeSlug: 'honey-cake',
-    imageUrl: 'https://cdn.sanity.io/images/project/dataset/main.jpg',
+    imageUrl: 'https://cdn.sanity.io/images/project/dataset/main.jpg?w=560&h=560&fit=crop&q=78&auto=format',
     imageAlt: 'Main image alt'
   }
 
@@ -145,6 +145,41 @@ describe('fetchCakes', () => {
       const result = await getAllCakes()
 
       expect(result.map((cake) => cake._id)).toEqual(['cake-2', 'cake-1'])
+    })
+
+    it('should place cakes missing from products display order before persisted manual order', async () => {
+      const firstCake: Cake = {
+        ...mockCake,
+        _id: 'cake-1',
+        _createdAt: '2025-01-01',
+        name: 'Cake One',
+        order: 1
+      }
+      const secondCake: Cake = {
+        ...mockCake,
+        _id: 'cake-2',
+        _createdAt: '2025-01-02',
+        name: 'Cake Two',
+        order: 2
+      }
+      const newCake: Cake = {
+        ...mockCake,
+        _id: 'cake-3',
+        _createdAt: '2026-04-29',
+        name: 'New Cake',
+        order: 4091
+      }
+
+      mockFetch.mockResolvedValue({
+        cakes: [firstCake, secondCake, newCake],
+        displayOrder: {
+          cakesOrder: [{ _ref: 'cake-2' }, { _ref: 'cake-1' }]
+        }
+      })
+
+      const result = await getAllCakes()
+
+      expect(result.map((cake) => cake._id)).toEqual(['cake-3', 'cake-2', 'cake-1'])
     })
 
     it('should fallback to legacy order when products display order is not configured', async () => {
@@ -399,7 +434,7 @@ describe('fetchCakes', () => {
 
       const result = await getCakesFeaturedOffer()
 
-      expect(result?.imageUrl).toBe('https://cdn.sanity.io/images/project/dataset/override.jpg')
+      expect(result?.imageUrl).toBe('https://cdn.sanity.io/images/project/dataset/override.jpg?w=560&h=560&fit=crop&q=78&auto=format')
       expect(result?.imageAlt).toBe('Override alt')
     })
 

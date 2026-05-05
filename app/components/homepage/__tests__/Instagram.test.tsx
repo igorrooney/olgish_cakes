@@ -6,13 +6,14 @@ import { render, screen } from '@testing-library/react'
 import { Instagram } from '../Instagram'
 import { getInstagramPostLimit, getLatestInstagramPosts } from '@/app/utils/fetchInstagramPosts'
 import type { InstagramPost } from '@/app/types/instagram'
+import type { InstagramCarouselPost } from '../instagramCarouselContent'
 
-const mockCarousel = jest.fn(({ posts }: { posts: InstagramPost[] }) => (
+const mockCarousel = jest.fn(({ posts }: { posts: InstagramCarouselPost[] }) => (
   <div data-testid="instagram-carousel" data-count={posts.length} />
 ))
 
 jest.mock('../DeferredInstagramCarousel', () => ({
-  DeferredInstagramCarousel: (props: { posts: InstagramPost[] }) => mockCarousel(props)
+  DeferredInstagramCarousel: (props: { posts: InstagramCarouselPost[] }) => mockCarousel(props)
 }))
 
 jest.mock('@/app/utils/fetchInstagramPosts', () => {

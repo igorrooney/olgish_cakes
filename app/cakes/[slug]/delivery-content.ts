@@ -8,6 +8,11 @@ import {
 import { blocksToText, type Cake } from '@/types/cake'
 import { defaultDeliveryPolicy, type DeliveryPolicy } from '@/types/deliveryPolicy'
 
+type CakeDeliveryContentInput = Pick<
+  Cake,
+  'cakesDeliverySection' | 'deliverySection' | 'description' | 'shortDescription'
+>
+
 export const defaultCakeDeliveryTitle = 'Delivery'
 export const fallbackCakeDeliveryPolicy: DeliveryPolicy = {
   ...defaultDeliveryPolicy
@@ -56,7 +61,7 @@ function hasPortableTextContent(
   return Array.isArray(value) && value.length > 0 && blocksToText(value).trim().length > 0
 }
 
-export function resolveCakeDeliveryTitle(cake: Cake): string {
+export function resolveCakeDeliveryTitle(cake: CakeDeliveryContentInput): string {
   const globalTitle = cake.cakesDeliverySection?.name
 
   if (typeof globalTitle === 'string' && globalTitle.trim().length > 0) {
@@ -66,7 +71,7 @@ export function resolveCakeDeliveryTitle(cake: Cake): string {
   return defaultCakeDeliveryTitle
 }
 
-export function resolveCakeDeliveryDescription(cake: Cake): NonNullable<Cake['description']> {
+export function resolveCakeDeliveryDescription(cake: CakeDeliveryContentInput): NonNullable<Cake['description']> {
   const shouldUseCustomDescription = cake.deliverySection?.descriptionSource === 'custom'
 
   if (shouldUseCustomDescription && hasPortableTextContent(cake.deliverySection?.customDescription)) {
@@ -80,7 +85,7 @@ export function resolveCakeDeliveryDescription(cake: Cake): NonNullable<Cake['de
   return fallbackCakeDeliveryDescription
 }
 
-function resolveGlobalCakeDeliveryPolicy(cake: Cake) {
+function resolveGlobalCakeDeliveryPolicy(cake: CakeDeliveryContentInput) {
   if (cake.cakesDeliverySection?.policy) {
     return normalizeDeliveryPolicy(cake.cakesDeliverySection.policy)
   }
@@ -88,7 +93,7 @@ function resolveGlobalCakeDeliveryPolicy(cake: Cake) {
   return fallbackCakeDeliveryPolicy
 }
 
-export function resolveCakeDeliveryPolicy(cake: Cake): DeliveryPolicy {
+export function resolveCakeDeliveryPolicy(cake: CakeDeliveryContentInput): DeliveryPolicy {
   const shouldUseCustomPolicy = cake.deliverySection?.descriptionSource === 'custom' ||
     cake.deliverySection?.policySource === 'custom'
 
@@ -99,7 +104,7 @@ export function resolveCakeDeliveryPolicy(cake: Cake): DeliveryPolicy {
   return resolveGlobalCakeDeliveryPolicy(cake)
 }
 
-export function detectCakeDeliveryPolicyMismatch(cake: Cake, policy: DeliveryPolicy) {
+export function detectCakeDeliveryPolicyMismatch(cake: CakeDeliveryContentInput, policy: DeliveryPolicy) {
   const description = resolveCakeDeliveryDescription(cake)
   const deliveryText = blocksToText(description)
 
@@ -115,7 +120,7 @@ export interface ResolvedCakeDeliveryContent {
   shippingDetailsVisibleClaims: DeliveryPolicyVisibleClaims
 }
 
-export function resolveCakeDeliveryContent(cake: Cake): ResolvedCakeDeliveryContent {
+export function resolveCakeDeliveryContent(cake: CakeDeliveryContentInput): ResolvedCakeDeliveryContent {
   const resolvedPolicy = resolveCakeDeliveryPolicy(cake)
   const resolvedDescription = resolveCakeDeliveryDescription(cake)
   const resolvedDeliveryText = blocksToText(resolvedDescription)

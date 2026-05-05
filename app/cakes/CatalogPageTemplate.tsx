@@ -2,7 +2,13 @@ import type { ReactNode } from 'react'
 import { Suspense } from 'react'
 import { CatalogClientProviders } from './CatalogClientProviders'
 import { CakesTabletCatalog } from './components/CakesTabletCatalog'
-import type { CatalogFilterDefaults, CatalogMode } from './components/types'
+import type {
+  CatalogFilterDefaults,
+  CatalogInitialDataCompleteness,
+  CatalogInitialViewport,
+  CatalogMode,
+  TabletCake
+} from './components/types'
 import type { CatalogPageData } from './catalogPageData'
 
 type StructuredData = Record<string, unknown>
@@ -41,6 +47,7 @@ interface CatalogPageTemplateProps {
   showPriceFilter?: boolean
   showCollectionFilters?: boolean
   mobileToolbarVariant?: 'full' | 'inline-compact'
+  initialViewport?: CatalogInitialViewport
 }
 
 const baseUrl = 'https://olgishcakes.co.uk'
@@ -85,6 +92,32 @@ function CatalogCatalogSkeletonFallback({ showDesktopFilters = true }: { showDes
 
 function toJsonLdScript(data: StructuredData) {
   return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
+function getCatalogInitialDataCompleteness({
+  allItems,
+  initialItems,
+  lazyCustomCakesEndpoint,
+  lazyByPostCakesEndpoint
+}: {
+  allItems: TabletCake[]
+  initialItems: TabletCake[]
+  lazyCustomCakesEndpoint?: string
+  lazyByPostCakesEndpoint?: string
+}): CatalogInitialDataCompleteness {
+  const allCustomCount = allItems.filter((item) => item.productType === 'cake').length
+  const allByPostCount = allItems.filter((item) => item.productType === 'giftHamper').length
+  const initialCustomCount = initialItems.filter((item) => item.productType === 'cake').length
+  const initialByPostCount = initialItems.filter((item) => item.productType === 'giftHamper').length
+
+  return {
+    custom: allCustomCount === 0
+      ? !lazyCustomCakesEndpoint
+      : initialCustomCount >= allCustomCount,
+    byPost: allByPostCount === 0
+      ? !lazyByPostCakesEndpoint
+      : initialByPostCount >= allByPostCount
+  }
 }
 
 function buildDefaultLocalBusinessData({
@@ -178,7 +211,8 @@ export function CatalogPageTemplate({
   showMobileFilterSheet = true,
   showPriceFilter = true,
   showCollectionFilters = true,
-  mobileToolbarVariant = 'full'
+  mobileToolbarVariant = 'full',
+  initialViewport = 'desktop'
 }: CatalogPageTemplateProps) {
   const resolvedLocalBusinessData = localBusinessData ?? buildDefaultLocalBusinessData({
     canonicalPath,
@@ -187,7 +221,15 @@ export function CatalogPageTemplate({
   const breadcrumbData = includeBreadcrumbStructuredData && breadcrumbItems.length > 0
     ? buildBreadcrumbData(breadcrumbItems)
     : null
-
+  const initialCatalogItems = catalogData.cakesForUi
+  const initialDataCompleteness = initialViewport === 'mobile'
+    ? getCatalogInitialDataCompleteness({
+      allItems: catalogData.cakesForUi,
+      initialItems: initialCatalogItems,
+      lazyCustomCakesEndpoint,
+      lazyByPostCakesEndpoint
+    })
+    : undefined
   return (
     <>
       <script
@@ -217,10 +259,11 @@ export function CatalogPageTemplate({
         <Suspense fallback={<CatalogCatalogSkeletonFallback showDesktopFilters={showDesktopFilters} />}>
           <CatalogClientProviders>
             <CakesTabletCatalog
-              cakes={catalogData.cakesForUi}
+              cakes={initialCatalogItems}
               featuredOffer={catalogData.featuredOffer}
               collectionOptions={catalogData.collectionOptions}
               initialFilterDefaults={initialFilterDefaults}
+              initialDataCompleteness={initialDataCompleteness}
               lazyCustomCakesEndpoint={lazyCustomCakesEndpoint}
               lazyCustomCakesPriceCeilingHint={lazyCustomCakesPriceCeilingHint}
               lazyByPostCakesEndpoint={lazyByPostCakesEndpoint}
@@ -233,6 +276,7 @@ export function CatalogPageTemplate({
               showPriceFilter={showPriceFilter}
               showCollectionFilters={showCollectionFilters}
               mobileToolbarVariant={mobileToolbarVariant}
+              initialViewport={initialViewport}
             />
           </CatalogClientProviders>
         </Suspense>

@@ -35,6 +35,21 @@ const getReviewTextElement = (controlId: string | null): HTMLElement => {
   return reviewText
 }
 
+const mockViewport = (viewport: 'mobile' | 'tablet' | 'small-laptop') => {
+  window.matchMedia = jest.fn((query: string) => ({
+    matches:
+      viewport === 'small-laptop' ||
+      (viewport === 'tablet' && query === '(min-width: 64rem)'),
+    media: query,
+    onchange: null,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    dispatchEvent: jest.fn()
+  }))
+}
+
 describe('ReviewsCarousel', () => {
   const now = new Date('2026-01-29T12:00:00Z')
   let clientWidthSpy: jest.SpyInstance<number, []>
@@ -45,6 +60,7 @@ describe('ReviewsCarousel', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(now)
+    mockViewport('mobile')
 
     clientWidthSpy = jest.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
       if (this.tagName === 'P') {
@@ -127,11 +143,11 @@ describe('ReviewsCarousel', () => {
     render(<ReviewsCarousel testimonials={testimonials} />)
 
     expect(screen.getByText('Our reviews')).toBeInTheDocument()
-    expect(screen.getAllByText('Amazing cake')).toHaveLength(3)
-    expect(screen.getAllByText(/29 January 2026/i).length).toBeGreaterThanOrEqual(3)
-    expect(screen.getAllByText(/23 January 2026/i).length).toBeGreaterThanOrEqual(3)
+    expect(screen.getAllByText('Amazing cake')).toHaveLength(1)
+    expect(screen.getAllByText(/29 January 2026/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/23 January 2026/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.queryByText(/days ago/i)).not.toBeInTheDocument()
-    expect(screen.getAllByText('Anonymous')).toHaveLength(3)
+    expect(screen.getAllByText('Anonymous')).toHaveLength(1)
   })
 
   it('renders fixed carousel navigation buttons with disabled edges', () => {
@@ -149,10 +165,8 @@ describe('ReviewsCarousel', () => {
     const nextReviewButton = screen.getByRole('button', { name: 'Next review' })
 
     const carousels = Array.from(container.querySelectorAll<HTMLDivElement>('.carousel'))
-    const [mobileCarousel, tabletCarousel, smallLaptopCarousel] = carousels
+    const [mobileCarousel] = carousels
     const mobileItems = Array.from(mobileCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
-    const tabletItems = Array.from(tabletCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
-    const smallLaptopItems = Array.from(smallLaptopCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
 
     expect(previousReviewButton).toHaveAttribute('aria-controls', mobileItems[0].id)
     expect(nextReviewButton).toHaveAttribute('aria-controls', mobileItems[1].id)
@@ -160,16 +174,8 @@ describe('ReviewsCarousel', () => {
     expect(nextReviewButton).not.toBeDisabled()
     expect(previousReviewButton).toHaveAttribute('aria-disabled', 'true')
     expect(nextReviewButton).toHaveAttribute('aria-disabled', 'false')
-
-    const previousReviewsButtons = screen.getAllByRole('button', { name: 'Previous reviews' })
-    const nextReviewsButtons = screen.getAllByRole('button', { name: 'Next reviews' })
-
-    expect(previousReviewsButtons).toHaveLength(2)
-    expect(nextReviewsButtons).toHaveLength(2)
-    expect(previousReviewsButtons[0]).toHaveAttribute('aria-controls', tabletItems[0].id)
-    expect(nextReviewsButtons[0]).toHaveAttribute('aria-controls', tabletItems[1].id)
-    expect(previousReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[0].id)
-    expect(nextReviewsButtons[1]).toHaveAttribute('aria-controls', smallLaptopItems[1].id)
+    expect(screen.queryByRole('button', { name: 'Previous reviews' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Next reviews' })).not.toBeInTheDocument()
 
     const scrollTo = jest.fn()
     Object.defineProperty(mobileCarousel, 'scrollTo', {
@@ -199,6 +205,70 @@ describe('ReviewsCarousel', () => {
     expect(nextReviewButton).toBeDisabled()
   })
 
+  it('updates tablet carousel navigation after the tablet view mounts', async () => {
+    mockViewport('tablet')
+
+    const testimonials = Array.from({ length: 9 }, (_, index) =>
+      createTestimonial({
+        _id: `tablet-nav-${index}`,
+        date: new Date(now.getTime() - index * days).toISOString(),
+        customerName: `Customer ${index + 1}`,
+        text: `Tablet review ${index + 1}`
+      })
+    )
+
+    const { container } = render(<ReviewsCarousel testimonials={testimonials} />)
+    const previousReviewsButton = await screen.findByRole('button', { name: 'Previous reviews' })
+    const nextReviewsButton = screen.getByRole('button', { name: 'Next reviews' })
+    const tabletCarousel = container.querySelector<HTMLDivElement>('.carousel')
+
+    if (!tabletCarousel) {
+      throw new Error('Expected tablet carousel to render')
+    }
+
+    const tabletItems = Array.from(tabletCarousel.querySelectorAll<HTMLElement>('.carousel-item'))
+    const scrollTo = jest.fn()
+
+    Object.defineProperties(tabletCarousel, {
+      clientWidth: {
+        value: 900,
+        configurable: true
+      },
+      scrollTo: {
+        value: scrollTo,
+        configurable: true
+      },
+      scrollWidth: {
+        value: 2700,
+        configurable: true
+      }
+    })
+
+    tabletItems.forEach((item, index) => {
+      Object.defineProperty(item, 'offsetLeft', {
+        value: index * 900,
+        configurable: true
+      })
+    })
+
+    expect(previousReviewsButton).toBeDisabled()
+    expect(nextReviewsButton).not.toBeDisabled()
+
+    fireEvent.click(nextReviewsButton)
+    expect(scrollTo).toHaveBeenCalledWith(900, 0)
+
+    Object.defineProperty(tabletCarousel, 'scrollLeft', {
+      value: 900,
+      writable: true,
+      configurable: true
+    })
+
+    fireEvent.scroll(tabletCarousel)
+
+    expect(previousReviewsButton).not.toBeDisabled()
+    expect(nextReviewsButton).not.toBeDisabled()
+  })
+
   it('shows an accessible disclosure control only for overflowing reviews', () => {
     const longReview = `${longReviewPrefix} It keeps going with extra detail about taste, texture, design, service, and delivery so the button should appear.`
     const shortReview = 'Short review that fits.'
@@ -220,16 +290,16 @@ describe('ReviewsCarousel', () => {
       />
     )
 
-    expect(screen.getAllByTestId('review-disclosure-slot')).toHaveLength(6)
+    expect(screen.getAllByTestId('review-disclosure-slot')).toHaveLength(2)
     const readMoreButtons = screen.getAllByRole('button', { name: 'Read more' })
-    expect(readMoreButtons).toHaveLength(3)
-    expect(screen.getAllByText(shortReview)).toHaveLength(3)
+    expect(readMoreButtons).toHaveLength(1)
+    expect(screen.getAllByText(shortReview)).toHaveLength(1)
 
     const longReviewText = getReviewTextElement(readMoreButtons[0].getAttribute('aria-controls'))
     expect(longReviewText).toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
     expect(readMoreButtons[0]).toHaveAttribute('aria-expanded', 'false')
     expect(readMoreButtons[0]).toHaveAttribute('aria-controls', longReviewText.id)
-    expect(screen.getAllByText('...')).toHaveLength(3)
+    expect(screen.getAllByText('...')).toHaveLength(1)
   })
 
   it('toggles overflowing reviews independently without affecting review metadata', () => {
@@ -265,16 +335,16 @@ describe('ReviewsCarousel', () => {
     expect(readMoreButtons[0]).toHaveTextContent('Show less')
     expect(firstReviewText).not.toHaveStyle({ maxHeight: '66px' })
     expect(secondReviewText).toHaveStyle({ maxHeight: '66px', overflow: 'hidden' })
-    expect(screen.getAllByText('...')).toHaveLength(5)
-    expect(screen.getAllByText('Amazing cake')).toHaveLength(3)
-    expect(screen.getAllByText('Iryna')).toHaveLength(3)
-    expect(screen.getAllByText(/1 January 2026/i)).toHaveLength(6)
+    expect(screen.getAllByText('...')).toHaveLength(1)
+    expect(screen.getAllByText('Amazing cake')).toHaveLength(1)
+    expect(screen.getAllByText('Iryna')).toHaveLength(1)
+    expect(screen.getAllByText(/1 January 2026/i)).toHaveLength(2)
 
     fireEvent.click(readMoreButtons[1])
 
     expect(readMoreButtons[1]).toHaveAttribute('aria-expanded', 'true')
     expect(secondReviewText).not.toHaveStyle({ maxHeight: '66px' })
-    expect(screen.getAllByText('...')).toHaveLength(4)
+    expect(screen.queryByText('...')).not.toBeInTheDocument()
   })
 
   it('keeps expanded reviews open after resize remeasurement', () => {
@@ -326,7 +396,7 @@ describe('ReviewsCarousel', () => {
       />
     )
 
-    expect(screen.getAllByText(exactThreeLineReview)).toHaveLength(3)
+    expect(screen.getAllByText(exactThreeLineReview)).toHaveLength(1)
     expect(screen.queryByRole('button', { name: 'Read more' })).not.toBeInTheDocument()
     expect(screen.queryByText('...')).not.toBeInTheDocument()
   })
@@ -354,7 +424,7 @@ describe('ReviewsCarousel', () => {
       window.dispatchEvent(new Event('resize'))
     })
 
-    expect(screen.getAllByRole('button', { name: 'Read more' })).toHaveLength(3)
+    expect(screen.getAllByRole('button', { name: 'Read more' })).toHaveLength(1)
   })
 
   it('removes the clamp when a resized review no longer overflows', () => {

@@ -147,11 +147,7 @@ export function getMerchantReturnPolicy() {
   return {
     "@type": "MerchantReturnPolicy",
     applicableCountry: "GB",
-    returnFees: "https://schema.org/FreeReturn",
-    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-    merchantReturnDays: 14,
-    // Adding explicit returnMethod improves Merchant listings eligibility
-    returnMethod: "https://schema.org/ReturnByMail",
+    returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
   } as const;
 }
 

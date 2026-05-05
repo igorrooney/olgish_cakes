@@ -15,20 +15,14 @@ describe('merchantReturnPolicy', () => {
       expect(STANDARD_MERCHANT_RETURN_POLICY.applicableCountry).toBe('GB')
     })
 
-    it('should have free returns', () => {
-      expect(STANDARD_MERCHANT_RETURN_POLICY.returnFees).toBe('https://schema.org/FreeReturn')
+    it('should not permit standard returns for made-to-order cakes', () => {
+      expect(STANDARD_MERCHANT_RETURN_POLICY.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
     })
 
-    it('should have finite return window', () => {
-      expect(STANDARD_MERCHANT_RETURN_POLICY.returnPolicyCategory).toBe('https://schema.org/MerchantReturnFiniteReturnWindow')
-    })
-
-    it('should have 14 day return period', () => {
-      expect(STANDARD_MERCHANT_RETURN_POLICY.merchantReturnDays).toBe(14)
-    })
-
-    it('should allow return by mail', () => {
-      expect(STANDARD_MERCHANT_RETURN_POLICY.returnMethod).toBe('https://schema.org/ReturnByMail')
+    it('should not claim return days, fees, or mail returns', () => {
+      expect(STANDARD_MERCHANT_RETURN_POLICY).not.toHaveProperty('merchantReturnDays')
+      expect(STANDARD_MERCHANT_RETURN_POLICY).not.toHaveProperty('returnFees')
+      expect(STANDARD_MERCHANT_RETURN_POLICY).not.toHaveProperty('returnMethod')
     })
   })
 

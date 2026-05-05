@@ -4,22 +4,12 @@
 import { render, screen } from '@testing-library/react'
 import { RootChrome } from '../RootChrome'
 
-const mockUsePathname = jest.fn()
-
-jest.mock('next/navigation', () => ({
-  usePathname: () => mockUsePathname()
+jest.mock('../DeferredNonCriticalClientFeatures', () => ({
+  DeferredNonCriticalClientFeatures: () => <div data-testid='deferred-non-critical-client-features' />
 }))
 
-jest.mock('../homepage/SiteHeader', () => ({
-  SiteHeader: () => <header data-testid='site-header' />
-}))
-
-jest.mock('../SiteFooter', () => ({
-  SiteFooter: () => <footer data-testid='site-footer' />
-}))
-
-jest.mock('../NonCriticalClientFeatures', () => ({
-  NonCriticalClientFeatures: () => <div data-testid='non-critical-client-features' />
+jest.mock('../LightweightConsentBanner', () => ({
+  LightweightConsentBanner: () => <div data-testid='lightweight-consent-banner' />
 }))
 
 jest.mock('../DeferredVercelObservability', () => ({
@@ -27,46 +17,51 @@ jest.mock('../DeferredVercelObservability', () => ({
 }))
 
 describe('RootChrome', () => {
-  beforeEach(() => {
-    mockUsePathname.mockReturnValue('/')
-  })
+  const renderRootChrome = ({
+    children,
+    isVercelDeployment = false
+  }: {
+    children: React.ReactNode
+    isVercelDeployment?: boolean
+  }) => render(
+    <RootChrome
+      isVercelDeployment={isVercelDeployment}
+      siteFooter={<footer data-testid='site-footer' />}
+      siteHeader={<header data-testid='site-header' />}
+    >
+      {children}
+    </RootChrome>
+  )
 
   it('renders public site chrome for storefront routes', () => {
-    render(
-      <RootChrome isVercelDeployment={false}>
-        <div data-testid='page-child'>Page</div>
-      </RootChrome>
-    )
+    renderRootChrome({
+      children: <div data-testid='page-child'>Page</div>
+    })
 
     expect(screen.getByTestId('site-header')).toBeInTheDocument()
     expect(screen.getByTestId('site-footer')).toBeInTheDocument()
-    expect(screen.getByTestId('non-critical-client-features')).toBeInTheDocument()
+    expect(screen.getByTestId('lightweight-consent-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('deferred-non-critical-client-features')).toBeInTheDocument()
     expect(screen.getByRole('main')).toContainElement(screen.getByTestId('page-child'))
   })
 
-  it('removes public chrome and non-essential scripts for admin routes', () => {
-    mockUsePathname.mockReturnValue('/admin')
-
-    render(
-      <RootChrome isVercelDeployment={false}>
-        <div data-testid='admin-child'>Admin</div>
-      </RootChrome>
-    )
+  it('keeps public chrome outside admin content so admin CSS can hide it without a client root wrapper', () => {
+    renderRootChrome({
+      children: <div data-admin-root data-testid='admin-child'>Admin</div>
+    })
 
     expect(screen.getByTestId('admin-child')).toBeInTheDocument()
-    expect(screen.queryByTestId('site-header')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('site-footer')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('non-critical-client-features')).not.toBeInTheDocument()
+    expect(screen.getByTestId('site-header').closest('.public-root-header')).toBeInTheDocument()
+    expect(screen.getByTestId('site-footer').closest('.public-root-footer')).toBeInTheDocument()
+    expect(screen.getByTestId('lightweight-consent-banner').closest('.public-root-consent')).toBeInTheDocument()
+    expect(screen.getByTestId('deferred-non-critical-client-features').closest('.public-root-deferred-features')).toBeInTheDocument()
   })
 
-  it('keeps observability enabled on Vercel admin routes', () => {
-    mockUsePathname.mockReturnValue('/admin/orders')
-
-    render(
-      <RootChrome isVercelDeployment>
-        <div>Admin</div>
-      </RootChrome>
-    )
+  it('keeps observability enabled on Vercel deployments', () => {
+    renderRootChrome({
+      children: <div>Page</div>,
+      isVercelDeployment: true
+    })
 
     expect(screen.getByTestId('deferred-vercel-observability')).toBeInTheDocument()
   })

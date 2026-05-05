@@ -168,6 +168,10 @@ describe('google-merchant-center-schema', () => {
 
       expect(schema.offers.hasMerchantReturnPolicy).toBeDefined()
       expect(schema.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
+      expect(schema.offers.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
     })
 
     it('should include payment methods', () => {

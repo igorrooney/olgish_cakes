@@ -336,6 +336,7 @@ export function FieldHelpField({ helpContent, props }: FieldHelpFieldProps) {
           description={props.description}
           inputId={props.inputId}
           level={props.level}
+          path={props.path}
           title={undefined}
           validation={props.validation}
         >

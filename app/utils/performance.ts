@@ -1,24 +1,24 @@
 // Performance utilities for Olgish Cakes
 
 // Debounce function for performance optimization
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
+export function debounce<Args extends unknown[]>(
+  func: (...args: Args) => void,
   wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
+): (...args: Args) => void {
+  let timeout: ReturnType<typeof setTimeout>;
+  return (...args: Args) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
 }
 
 // Throttle function for performance optimization
-export function throttle<T extends (...args: any[]) => any>(
-  func: T,
+export function throttle<Args extends unknown[]>(
+  func: (...args: Args) => void,
   limit: number
-): (...args: Parameters<T>) => void {
+): (...args: Args) => void {
   let inThrottle: boolean;
-  return (...args: Parameters<T>) => {
+  return (...args: Args) => {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
@@ -123,12 +123,20 @@ export class PerformanceMonitor {
 // Memory usage monitoring
 export function getMemoryUsage(): { used: number; total: number; percentage: number } {
   if (typeof performance !== "undefined" && "memory" in performance) {
-    const memory = (performance as any).memory;
-    return {
-      used: memory.usedJSHeapSize,
-      total: memory.totalJSHeapSize,
-      percentage: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
-    };
+    const memory = (performance as Performance & {
+      memory?: {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+      };
+    }).memory;
+
+    if (memory) {
+      return {
+        used: memory.usedJSHeapSize,
+        total: memory.totalJSHeapSize,
+        percentage: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
+      };
+    }
   }
   return { used: 0, total: 0, percentage: 0 };
 }
@@ -136,7 +144,7 @@ export function getMemoryUsage(): { used: number; total: number; percentage: num
 // Cache utilities
 export class CacheManager {
   private static instance: CacheManager;
-  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+  private cache: Map<string, { data: unknown; timestamp: number; ttl: number }> = new Map();
 
   static getInstance(): CacheManager {
     if (!CacheManager.instance) {
@@ -145,7 +153,7 @@ export class CacheManager {
     return CacheManager.instance;
   }
 
-  set(key: string, data: any, ttl: number = 5 * 60 * 1000): void {
+  set<T>(key: string, data: T, ttl: number = 5 * 60 * 1000): void {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),

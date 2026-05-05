@@ -5,6 +5,8 @@ import { NextRequest } from 'next/server'
 import { POST } from '../route'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { categoryLandingCanonicalPaths } from '@/app/cakes/categoryLandingConfig'
+import { createSanityWriteClient } from '@/lib/sanity-admin-client'
+import { ensureProductDisplayOrderEntry } from '@/lib/product-display-order-sync'
 
 jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
@@ -19,10 +21,34 @@ jest.mock('@/app/utils/fetchCakes', () => ({
   invalidateCache: jest.fn()
 }))
 
+jest.mock('@/lib/sanity-admin-client', () => ({
+  createSanityWriteClient: jest.fn(() => ({ sanityClient: true }))
+}))
+
+jest.mock('@/lib/product-display-order-sync', () => ({
+  ensureProductDisplayOrderEntry: jest.fn(async () => ({
+    documentId: 'sample-cake',
+    fieldName: 'cakesOrder',
+    updated: false,
+    inserted: false,
+    alreadyPresent: true
+  }))
+}))
+
+const mockedCreateSanityWriteClient = createSanityWriteClient as jest.MockedFunction<typeof createSanityWriteClient>
+const mockedEnsureProductDisplayOrderEntry = ensureProductDisplayOrderEntry as jest.MockedFunction<typeof ensureProductDisplayOrderEntry>
+
 describe('/api/revalidate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env.REVALIDATE_SECRET = 'test-secret'
+    mockedEnsureProductDisplayOrderEntry.mockResolvedValue({
+      documentId: 'sample-cake',
+      fieldName: 'cakesOrder',
+      updated: false,
+      inserted: false,
+      alreadyPresent: true
+    })
   })
 
   it('revalidates collections paths and tags for collectionsDisplayOrder', async () => {
@@ -159,6 +185,15 @@ describe('/api/revalidate', () => {
   })
 
   it('revalidates cake detail, listings and category landing pages for cake updates', async () => {
+    const sanityClient = { sanityClient: true }
+    mockedCreateSanityWriteClient.mockReturnValue(sanityClient as ReturnType<typeof createSanityWriteClient>)
+    mockedEnsureProductDisplayOrderEntry.mockResolvedValue({
+      documentId: 'sample-cake-id',
+      fieldName: 'cakesOrder',
+      updated: true,
+      inserted: true,
+      alreadyPresent: false
+    })
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',
       headers: {
@@ -167,6 +202,7 @@ describe('/api/revalidate', () => {
       },
       body: JSON.stringify({
         _type: 'cake',
+        _id: 'sample-cake-id',
         slug: {
           current: 'sample-cake'
         }
@@ -176,6 +212,11 @@ describe('/api/revalidate', () => {
     const response = await POST(request)
 
     expect(response.status).toBe(200)
+    expect(mockedEnsureProductDisplayOrderEntry).toHaveBeenCalledWith({
+      client: sanityClient,
+      documentId: 'sample-cake-id',
+      fieldName: 'cakesOrder'
+    })
     expect(revalidatePath).toHaveBeenCalledWith('/cakes/sample-cake')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
     expect(revalidatePath).toHaveBeenCalledWith('/')
@@ -183,6 +224,86 @@ describe('/api/revalidate', () => {
       expect(revalidatePath).toHaveBeenCalledWith(path)
     })
     expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+  })
+
+  it('still revalidates cake paths when products display order sync fails', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    mockedEnsureProductDisplayOrderEntry.mockRejectedValue(new Error('Sanity token missing'))
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'cake',
+        _id: 'sample-cake-id',
+        slug: {
+          current: 'sample-cake'
+        }
+      })
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.productsDisplayOrder).toEqual({
+      documentId: 'sample-cake-id',
+      fieldName: 'cakesOrder',
+      updated: false,
+      inserted: false,
+      alreadyPresent: false
+    })
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes/sample-cake')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('syncs gift hamper detail updates into product display order', async () => {
+    const sanityClient = { sanityClient: true }
+    mockedCreateSanityWriteClient.mockReturnValue(sanityClient as ReturnType<typeof createSanityWriteClient>)
+    mockedEnsureProductDisplayOrderEntry.mockResolvedValue({
+      documentId: 'sample-hamper-id',
+      fieldName: 'giftHampersOrder',
+      updated: true,
+      inserted: true,
+      alreadyPresent: false
+    })
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'giftHamper',
+        _id: 'sample-hamper-id',
+        slug: {
+          current: 'sample-hamper'
+        }
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockedEnsureProductDisplayOrderEntry).toHaveBeenCalledWith({
+      client: sanityClient,
+      documentId: 'sample-hamper-id',
+      fieldName: 'giftHampersOrder'
+    })
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post/sample-hamper')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
   })

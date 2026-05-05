@@ -164,12 +164,6 @@ function buildBreadcrumbStructuredData(): StructuredData {
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Learn',
-        item: `${BUSINESS_CONSTANTS.BASE_URL}/learn`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
         name: 'Workshops',
         item: `${BUSINESS_CONSTANTS.BASE_URL}/learn/workshops`,
       },

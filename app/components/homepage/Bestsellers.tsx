@@ -1,4 +1,5 @@
 import { getAllCakes } from '@/app/utils/fetchCakes'
+import { getSanityCdnImageUrl, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { urlFor } from '@/sanity/lib/image'
 import { blocksToText, Cake } from '@/types/cake'
 import Image from 'next/image'
@@ -35,8 +36,16 @@ export async function Bestsellers() {
       }
 
       // Generate image URL
-      const imageUrl = mainImage?.asset?._ref
-        ? urlFor(mainImage).width(800).height(800).url()
+      const rawImageUrl = mainImage?.asset?._ref
+        ? urlFor(mainImage).url()
+        : null
+      const imageUrl = rawImageUrl
+        ? getSanityCdnImageUrl(rawImageUrl, {
+          width: 560,
+          height: 560,
+          fit: 'crop',
+          quality: 56
+        }) ?? rawImageUrl
         : null
 
       if (!imageUrl) {
@@ -52,6 +61,20 @@ export async function Bestsellers() {
     .filter((cake): cake is NonNullable<typeof cake> => cake !== null) // Only include cakes with images
   const flaggedBestsellers = cakesWithImages.filter((cake) => cake.isBestseller).slice(0, 3)
   const displayCakes = flaggedBestsellers.length > 0 ? flaggedBestsellers : cakesWithImages.slice(0, 3)
+  const carouselCakes = displayCakes.map((cake) => {
+    const categoryLabel = formatCategoryLabel(cake.category)
+    const safeCakeName = cake.name?.trim() || 'Olgish Cakes'
+    const imageAlt = cake.mainImage?.alt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
+
+    return {
+      _id: cake._id,
+      name: cake.name,
+      slug: cake.slug,
+      category: cake.category,
+      imageUrl: cake.imageUrl,
+      imageAlt
+    }
+  })
   const tabletLinkClassName = 'flex items-center gap-2 font-oldenburg text-base text-base-content transition-colors hover:text-primary-500 tablet:text-[20px]'
   const tabletArrowClassName = 'font-oldenburg text-primary-500 text-lg mt-1'
   const tabletTextClassName = 'flex flex-col items-center text-center gap-3 tablet:max-w-[450px]'
@@ -83,7 +106,7 @@ export async function Bestsellers() {
         {displayCakes.length > 0 ? (
           <>
             <div className="tablet:hidden">
-              <DeferredBestsellersCarousel cakes={displayCakes} />
+              <DeferredBestsellersCarousel cakes={carouselCakes} />
             </div>
             <div className="hidden tablet:flex tablet:flex-col tablet:gap-[83px]">
               {displayCakes.map((cake, index) => {
@@ -112,14 +135,16 @@ export async function Bestsellers() {
                     className={`flex flex-col items-center gap-6 tablet:flex-row tablet:items-center tablet:justify-between ${isReversed ? 'tablet:flex-row-reverse' : ''}`}
                   >
                     <div className={imageClassName}>
-                      <Link href={`/cakes/${cake.slug.current}`} className="block h-full w-full relative">
+                      <Link href={`/cakes/${cake.slug.current}`} prefetch={false} className="block h-full w-full relative">
                         <Image
                           src={cake.imageUrl}
                           alt={imageAlt}
                           fill
                           sizes="(min-width: 1024px) 360px, 100vw"
+                          loading="lazy"
+                          fetchPriority="low"
+                          unoptimized={isSanityCdnImageUrl(cake.imageUrl)}
                           className="object-cover rounded-[16px]"
-                          priority={index === 0}
                         />
                       </Link>
                     </div>
@@ -135,7 +160,7 @@ export async function Bestsellers() {
                       <p className="font-oldenburg text-[15px] leading-[26px] text-base-content tablet:text-[16px]">
                         {bodyText}
                       </p>
-                      <Link href={`/cakes/${cake.slug.current}`} className={tabletLinkClassName}>
+                      <Link href={`/cakes/${cake.slug.current}`} prefetch={false} className={tabletLinkClassName}>
                         <span>Shop {cake.name}</span>
                         <span className={tabletArrowClassName}>{'>'}</span>
                       </Link>
@@ -154,6 +179,7 @@ export async function Bestsellers() {
       <div className="relative flex justify-end z-1 mr-5 tablet:hidden">
         <Link
           href="/cakes"
+          prefetch={false}
           className="flex items-center gap-2 text-black"
         >
           <span className="font-oldenburg">Shop bestsellers</span>

@@ -9,17 +9,15 @@ import {
   Stack,
   CloseIcon,
 } from "@/lib/daisy-ui";
-import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import {
   PrimaryButton,
   OutlineButton,
   BodyText,
-  TouchTargetWrapper,
   AccessibleIconButton,
 } from "@/lib/ui-components";
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing, borderRadius } = designTokens;
 
 const CookieConsent = memo(function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);

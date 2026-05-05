@@ -10,6 +10,8 @@
  */
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import React from 'react'
+import type { ConfigType } from 'dayjs'
+import type { Order } from '@/types/order'
 import { OrderManagementDashboard } from '../OrderManagementDashboard'
 
 // Increase timeout for complex async tests
@@ -132,7 +134,7 @@ jest.mock('@/lib/daisy-ui', () => {
 // Mock dayjs
 jest.mock('dayjs', () => {
   const originalDayjs = jest.requireActual('dayjs')
-  const mockDayjs = (date?: any) => originalDayjs(date)
+  const mockDayjs = (date?: ConfigType) => originalDayjs(date)
   mockDayjs.locale = jest.fn()
   return mockDayjs
 })
@@ -179,7 +181,7 @@ jest.mock('../AddOrderModal', () => ({
 }))
 
 // Test data factories
-const createMockOrder = (overrides: Partial<any> = {}): any => ({
+const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   _id: 'order-1',
   _createdAt: '2025-11-20T15:43:00Z',
   _updatedAt: '2025-11-20T15:43:00Z',
@@ -235,7 +237,7 @@ const createMockOrder = (overrides: Partial<any> = {}): any => ({
   ...overrides,
 })
 
-const createMockOrderWithCake = (overrides: Partial<any> = {}): any => ({
+const createMockOrderWithCake = (overrides: Partial<Order> = {}): Order => ({
   ...createMockOrder(),
   orderType: 'browse-catalog',
   items: [

@@ -1,12 +1,22 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { getResponsiveCatalogImageAttributes } from './catalogImageAttributes'
 import { CakesFeaturedOfferData } from './types'
 
 interface CakesFeaturedOfferProps {
   featuredOffer: CakesFeaturedOfferData
 }
 
+const featuredOfferImageWidths = [208, 384, 560] as const
+
 export function CakesFeaturedOffer({ featuredOffer }: CakesFeaturedOfferProps) {
+  const imageAttributes = getResponsiveCatalogImageAttributes(featuredOffer.imageUrl, {
+    fallbackWidth: 560,
+    fit: 'crop',
+    heightWidthRatio: 1,
+    quality: 56,
+    sizes: '208px',
+    widths: featuredOfferImageWidths
+  })
+
   return (
     <section
       aria-label='Featured offer'
@@ -14,12 +24,17 @@ export function CakesFeaturedOffer({ featuredOffer }: CakesFeaturedOfferProps) {
     >
       <div className='grid h-full grid-cols-1 tablet:grid-cols-[208px_minmax(0,1fr)]'>
         <div className='relative h-52 tablet:h-[208px]'>
-          <Image
-            src={featuredOffer.imageUrl}
+          <img
+            src={imageAttributes.src}
+            srcSet={imageAttributes.srcSet}
             alt={featuredOffer.imageAlt}
-            fill
-            className='object-cover tablet:rounded-l-[8px]'
-            priority
+            width={560}
+            height={560}
+            className='h-full w-full object-cover tablet:rounded-l-[8px]'
+            sizes={imageAttributes.sizes}
+            loading='lazy'
+            fetchPriority='low'
+            decoding='async'
           />
         </div>
         <div className='h-full bg-secondary/20 px-7 py-5 tablet:bg-[var(--color-featured-offer)] tablet:px-8 tablet:py-8'>
@@ -40,12 +55,12 @@ export function CakesFeaturedOffer({ featuredOffer }: CakesFeaturedOfferProps) {
               {featuredOffer.description}
             </p>
             <div className='flex justify-start tablet:justify-end'>
-              <Link
+              <a
                 href={`/cakes/${featuredOffer.cakeSlug}`}
                 className='btn btn-outline btn-primary btn-sm h-12 min-h-12 rounded-field px-5 normal-case tablet:h-8 tablet:min-h-8 tablet:w-auto tablet:min-w-fit tablet:whitespace-nowrap tablet:shadow-sm tablet:[font-weight:var(--t-font-weight-semibold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-sm)] tablet:[leading-trim:none] tablet:[line-height:var(--d-lineHeight-14)] tablet:[letter-spacing:0] tablet:text-center tablet:align-middle'
               >
                 {featuredOffer.ctaLabel}
-              </Link>   
+              </a>
             </div>
           </div>
         </div>

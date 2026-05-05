@@ -1,9 +1,9 @@
 'use client'
 
 import Image, { getImageProps } from 'next/image'
-import Link from 'next/link'
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
+import { getSanityCdnImageLoader, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 
 export interface CatalogProductDetailImage {
   src: string
@@ -61,9 +61,16 @@ interface GalleryImagePreloadDescriptor {
   sizes: string
 }
 
-const imageSizes = '(min-width: 1024px) 560px, 100vw'
+const imageSizes = '(min-width: 1024px) 560px, 88vw'
 const fadeDurationMs = 220
+const backgroundGalleryPreloadDelayMs = 3500
 const galleryImageIntrinsicSizePx = 1200
+const productGalleryImageLoader = getSanityCdnImageLoader({
+  width: galleryImageIntrinsicSizePx,
+  height: galleryImageIntrinsicSizePx,
+  fit: 'crop',
+  quality: 45
+})
 
 const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
@@ -173,6 +180,7 @@ function createCrossfadeState(
 function resolveGalleryImagePreloadDescriptor(
   image: CatalogProductDetailImage
 ): GalleryImagePreloadDescriptor {
+  const imageLoader = getProductGalleryImageLoader(image.src)
   const {
     props: {
       sizes,
@@ -182,6 +190,7 @@ function resolveGalleryImagePreloadDescriptor(
   } = getImageProps({
     alt: image.alt,
     height: galleryImageIntrinsicSizePx,
+    loader: imageLoader,
     sizes: imageSizes,
     src: image.src,
     width: galleryImageIntrinsicSizePx
@@ -194,6 +203,11 @@ function resolveGalleryImagePreloadDescriptor(
     sizes: typeof sizes === 'string' ? sizes : imageSizes
   }
 }
+
+function getProductGalleryImageLoader(imageSrc: string) {
+  return isSanityCdnImageUrl(imageSrc) ? productGalleryImageLoader : undefined
+}
+
 export function CatalogProductDetailLayout({
   backHref,
   backLabel = 'Back to results',
@@ -221,6 +235,7 @@ export function CatalogProductDetailLayout({
     pendingIndex: null,
     transitionKey: 0
   })
+  const [backgroundGalleryPreloadReadyKey, setBackgroundGalleryPreloadReadyKey] = useState('')
   const [isGalleryFocused, setIsGalleryFocused] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -246,6 +261,10 @@ export function CatalogProductDetailLayout({
   const galleryPreloadDescriptors = useMemo(() => {
     return resolvedImages.map((image) => resolveGalleryImagePreloadDescriptor(image))
   }, [resolvedImages])
+  const galleryPreloadKey = useMemo(() => {
+    return resolvedImages.map((image) => image.src).join('\n')
+  }, [resolvedImages])
+  const shouldPreloadBackgroundGalleryImages = backgroundGalleryPreloadReadyKey === galleryPreloadKey
   const isMultiImageGallery = resolvedImages.length > 1
   const splitPrice = useMemo(() => {
     return splitPriceText(priceText)
@@ -267,8 +286,8 @@ export function CatalogProductDetailLayout({
   const isCrossfadeActive = enteringImage !== null && leavingImage !== null
   const shouldRenderOrderOnly = isOrderFormOpen && Boolean(orderContent)
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
-  const shouldPreloadInitialHeroImage = fadeState.transitionKey === 0 && normalizedDisplayedImageIndex === 0
-  const stableGalleryImageLoading = shouldPreloadInitialHeroImage ? undefined : 'eager'
+  const shouldPrioritizeInitialHeroImage = fadeState.transitionKey === 0 && normalizedDisplayedImageIndex === 0
+  const stableGalleryImageFetchPriority = shouldPrioritizeInitialHeroImage ? 'high' : 'auto'
 
   const clearFadeCleanupTimer = useCallback(() => {
     if (fadeCleanupTimerRef.current !== null) {
@@ -428,9 +447,9 @@ export function CatalogProductDetailLayout({
     }
 
     setFadeState((currentState) => {
-      const currentDisplayedImageIndex = resolveDisplayedImageIndex(currentState)
+      const currentNavigationImageIndex = currentState.pendingIndex ?? resolveDisplayedImageIndex(currentState)
       const nextActiveIndex = resolveWrappedImageIndex(
-        currentDisplayedImageIndex + (direction === 'next' ? 1 : -1),
+        currentNavigationImageIndex + (direction === 'next' ? 1 : -1),
         resolvedImages.length
       )
 
@@ -684,7 +703,10 @@ export function CatalogProductDetailLayout({
     }
 
     galleryPreloadDescriptors.forEach((preloadDescriptor, index) => {
+      const isRequestedPendingImage = index === fadeState.pendingIndex
+
       if (index === normalizedDisplayedImageIndex ||
+        (!shouldPreloadBackgroundGalleryImages && !isRequestedPendingImage) ||
         readyGalleryImageSrcsRef.current.has(preloadDescriptor.logicalSrc) ||
         preloadedGalleryImageSrcsRef.current.has(preloadDescriptor.logicalSrc) ||
         activeGalleryPreloadImagesRef.current.has(preloadDescriptor.logicalSrc)) {
@@ -742,21 +764,41 @@ export function CatalogProductDetailLayout({
       preloadImage.src = preloadDescriptor.optimizedSrc
     })
   }, [
+    fadeState.pendingIndex,
     galleryPreloadDescriptors,
     isMultiImageGallery,
     markGalleryImageSrcAsReady,
     normalizedDisplayedImageIndex,
+    shouldPreloadBackgroundGalleryImages,
     waitForGalleryImageDecode
   ])
 
   useEffect(() => {
+    setBackgroundGalleryPreloadReadyKey('')
+
+    if (typeof window === 'undefined' || !isMultiImageGallery) {
+      return
+    }
+
+    const backgroundPreloadTimer = window.setTimeout(() => {
+      setBackgroundGalleryPreloadReadyKey(galleryPreloadKey)
+    }, backgroundGalleryPreloadDelayMs)
+
+    return () => {
+      window.clearTimeout(backgroundPreloadTimer)
+    }
+  }, [galleryPreloadKey, isMultiImageGallery])
+
+  useEffect(() => {
+    const activePreloadImages = activeGalleryPreloadImagesRef.current
+
     return () => {
       clearFadeCleanupTimer()
-      activeGalleryPreloadImagesRef.current.forEach((preloadImage) => {
+      activePreloadImages.forEach((preloadImage) => {
         preloadImage.onload = null
         preloadImage.onerror = null
       })
-      activeGalleryPreloadImagesRef.current.clear()
+      activePreloadImages.clear()
     }
   }, [clearFadeCleanupTimer])
 
@@ -792,7 +834,7 @@ export function CatalogProductDetailLayout({
 
   return (
     <article className='mx-auto w-full max-w-[1432px] px-4 pb-16 pt-5 tablet:max-w-[944px] tablet:px-0 tablet:pt-8 small-laptop:max-w-[1200px] large-laptop:max-w-[1432px]'>
-      <Link
+      <a
         href={backHref}
         onClick={handleBackLinkClick}
         className='inline-flex items-center gap-2 text-base leading-none text-base-content transition-colors hover:text-primary-500 tablet:text-(--color-filter-sort-mobile-text)'
@@ -802,7 +844,7 @@ export function CatalogProductDetailLayout({
         <span className='font-sans text-[16px] leading-6 text-base-content tablet:[font-family:var(--t-font-family-theme-primary)] tablet:[font-weight:var(--t-font-weight-normal)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-base)] tablet:[leading-trim:none] tablet:[line-height:var(--t-font-lineHeight-leading-7)] tablet:[letter-spacing:0] tablet:align-middle tablet:text-(--color-filter-sort-mobile-text)'>
           {backLabel}
         </span>
-      </Link>
+      </a>
 
       <div className='mt-5 grid grid-cols-1 gap-8 tablet:mt-8 tablet:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] tablet:items-start tablet:gap-10'>
         <section
@@ -851,6 +893,7 @@ export function CatalogProductDetailLayout({
                       alt=''
                       fill
                       loading='eager'
+                      loader={getProductGalleryImageLoader(leavingImage.src)}
                       sizes={imageSizes}
                       decoding='async'
                       className='object-cover'
@@ -873,8 +916,9 @@ export function CatalogProductDetailLayout({
                       src={enteringImage.src}
                       alt={enteringImage.alt}
                       fill
-                      preload={shouldPreloadInitialHeroImage}
-                      loading={stableGalleryImageLoading}
+                      loading='eager'
+                      fetchPriority={stableGalleryImageFetchPriority}
+                      loader={getProductGalleryImageLoader(enteringImage.src)}
                       sizes={imageSizes}
                       decoding='async'
                       className='object-cover'
@@ -894,8 +938,10 @@ export function CatalogProductDetailLayout({
                     src={displayedImage.src}
                     alt={displayedImage.alt}
                     fill
-                    preload={shouldPreloadInitialHeroImage}
-                    loading={stableGalleryImageLoading}
+                    preload={shouldPrioritizeInitialHeroImage}
+                    loading='eager'
+                    fetchPriority={stableGalleryImageFetchPriority}
+                    loader={getProductGalleryImageLoader(displayedImage.src)}
                     sizes={imageSizes}
                     decoding='async'
                     className='object-cover'
@@ -940,19 +986,23 @@ export function CatalogProductDetailLayout({
                     aria-selected={isActive}
                     aria-label={`View image ${index + 1}`}
                     onClick={() => moveToImage(index)}
-                    className={`h-2 w-2 cursor-pointer rounded-full border transition-colors ${
-                      isActive
-                        ? 'border-[var(--color-gallery-dot-active)] bg-[var(--color-gallery-dot-active)]'
-                        : 'border-base-300 bg-base-100'
-                    }`}
+                    className='inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500'
                   >
+                    <span
+                      aria-hidden='true'
+                      className={`h-2 w-2 rounded-full border transition-colors ${
+                        isActive
+                          ? 'border-[var(--color-gallery-dot-active)] bg-[var(--color-gallery-dot-active)]'
+                          : 'border-base-300 bg-base-100'
+                      }`}
+                    />
                   </button>
                 )
               })}
             </div>
           ) : null}
           {galleryBelowContent ? (
-            <div className='mt-8'>
+            <div className='content-auto-section mt-8'>
               {galleryBelowContent}
             </div>
           ) : null}
@@ -962,7 +1012,7 @@ export function CatalogProductDetailLayout({
           {shouldRenderOrderOnly ? (
             <>
               <header>
-                <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/55 tablet:[font-size:var(--t-font-size-sm)] tablet:text-(--color-catalog-detail-muted)'>
+                <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/75 tablet:[font-size:var(--t-font-size-sm)] tablet:text-base-content/75'>
                   You selected:
                 </p>
 
@@ -995,7 +1045,7 @@ export function CatalogProductDetailLayout({
             <>
               <header>
                 <div className='flex items-start justify-between gap-4'>
-                  <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/55 tablet:[font-size:var(--t-font-size-sm)] tablet:text-(--color-catalog-detail-muted)'>
+                  <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/75 tablet:[font-size:var(--t-font-size-sm)] tablet:text-base-content/75'>
                     {categoryLabel}
                   </p>
                 </div>
@@ -1049,7 +1099,7 @@ export function CatalogProductDetailLayout({
                 </div>
               ) : null}
 
-              <div className='mt-7'>
+              <div className='content-auto-section mt-7'>
                 {sections.map((section) => (
                   <details
                     key={section.id}

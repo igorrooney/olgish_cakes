@@ -11,11 +11,38 @@ import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 dotenv.config({ path: '.env' })
 
+type RecentOrderItem = {
+  productName?: string
+  quantity?: number
+}
+
+type RecentOrderResult = {
+  _id: string
+  orderNumber: string
+  _createdAt: string
+  status?: string
+  customer: {
+    name: string
+    email: string
+    phone?: string
+  }
+  pricing?: {
+    total?: number
+  }
+  metadata?: {
+    emailSent?: boolean
+    emailError?: string
+    emailAttemptedAt?: string
+    source?: string
+  }
+  items?: RecentOrderItem[]
+}
+
 async function checkRecentOrders(limit: number = 5) {
   try {
     console.log(`🔍 Checking last ${limit} orders...\n`)
 
-    const orders = await serverClient.fetch(
+    const orders = await serverClient.fetch<RecentOrderResult[]>(
       `*[_type == "order"] | order(_createdAt desc)[0...${limit}]{
         _id,
         orderNumber,
@@ -50,7 +77,7 @@ async function checkRecentOrders(limit: number = 5) {
     console.log(`✅ Found ${orders.length} order(s):\n`)
     console.log('='.repeat(80))
 
-    orders.forEach((order: any, index: number) => {
+    orders.forEach((order, index) => {
       const createdDate = new Date(order._createdAt)
       const timeAgo = getTimeAgo(createdDate)
       
@@ -86,7 +113,7 @@ async function checkRecentOrders(limit: number = 5) {
       
       if (order.items && order.items.length > 0) {
         console.log(`   Items:`)
-        order.items.forEach((item: any) => {
+        order.items.forEach((item) => {
           console.log(`      - ${item.productName || 'Custom'} x${item.quantity || 1}`)
         })
       }

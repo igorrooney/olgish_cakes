@@ -5,6 +5,19 @@
 
 import { ReactNode } from "react";
 
+interface AIBusinessInfo {
+  name: string;
+  description: string;
+  expertise: string[];
+  serviceAreas: string[];
+  specializations?: string[];
+  credentials?: string[];
+  url?: string;
+  telephone?: string;
+  email?: string;
+  address?: Record<string, unknown>;
+}
+
 // AI-friendly content structuring
 export const AI_CONTENT_OPTIMIZATION = {
   // Conversational content that AI can easily understand and cite
@@ -208,7 +221,7 @@ export function generateCitableContent(topic: string, expertise: string[]) {
 }
 
 // Schema markup specifically for AI understanding
-export function generateAIStructuredData(businessInfo: any) {
+export function generateAIStructuredData(businessInfo: AIBusinessInfo) {
   return {
     "@context": "https://schema.org",
     "@graph": [

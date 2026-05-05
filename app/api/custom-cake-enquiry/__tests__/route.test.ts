@@ -128,6 +128,25 @@ describe('/api/custom-cake-enquiry', () => {
     consoleErrorSpy.mockRestore()
   })
 
+  it('rejects non-form request bodies before persistence or rate limit work', async () => {
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: JSON.stringify({ fullName: 'Test User' }),
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: 'csrf-token=valid-token'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(415)
+    expect(data.error).toContain('Unsupported content type')
+    expect(mockCreateClient).not.toHaveBeenCalled()
+    expect(mockedTakeEnquiryRateLimit).not.toHaveBeenCalled()
+  })
+
   it('rejects request without CSRF token', async () => {
     const formData = buildFormData()
     formData.delete('csrfToken')
@@ -390,6 +409,62 @@ describe('/api/custom-cake-enquiry', () => {
         path: ['postcode']
       })
     ]))
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects an invalid date format server-side', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+
+    const formData = buildFormData({ date: '25/12/2026' })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.34'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Validation failed')
+    expect(data.details).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        message: 'Please select a valid date',
+        path: ['date']
+      })
+    ]))
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects a past date server-side', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+
+    const formData = buildFormData({ date: '2000-01-01' })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.35'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Validation failed')
+    expect(data.details).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        message: 'Please select today or a future date',
+        path: ['date']
+      })
+    ]))
+    expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
@@ -966,6 +1041,9 @@ describe('/api/custom-cake-enquiry', () => {
     expect(blockedResponse.headers.get('X-RateLimit-Remaining')).toBe('0')
     expect(blockedResponse.headers.get('X-RateLimit-Reset')).toBe('1798192800')
     expect(blockedResponse.headers.get('Retry-After')).toBe('60')
+    expect(mockUpload).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
     expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
       expect.objectContaining({
         from: mockFrom,

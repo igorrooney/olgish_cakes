@@ -1,10 +1,14 @@
 'use client'
 
 import { Cake } from '@/types/cake'
-import clsx from 'clsx'
+import { getSanityCdnImageLoader, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
+import {
+    mobileCarouselItemClassName,
+    mobileCarouselViewportClassName
+} from './carouselLayout'
 
 export interface CakeWithImage extends Cake {
   imageUrl: string
@@ -19,8 +23,19 @@ export interface CakeWithImage extends Cake {
   }
 }
 
+export interface BestsellerCarouselCake {
+  _id: string
+  name?: string
+  slug: {
+    current: string
+  }
+  category?: string
+  imageUrl: string
+  imageAlt?: string
+}
+
 export interface BestsellersCarouselProps {
-  cakes: CakeWithImage[]
+  cakes: BestsellerCarouselCake[]
 }
 
 const formatCategoryLabel = (category?: string) => {
@@ -35,13 +50,19 @@ const formatCategoryLabel = (category?: string) => {
         .join(' ')
 }
 
+const mobileBestsellerImageLoader = getSanityCdnImageLoader({
+  width: 560,
+  height: 560,
+  fit: 'crop',
+  quality: 56
+})
+
 export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
     const carouselRef = useRef<HTMLDivElement>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
     const hasCakes = cakes.length > 0
 
     const itemWidth = 342 + 8 // width (342px) + gap (8px between items)
-    const firstItemOffset = 24 // First item starts 24px from left
 
     const scrollToIndex = (index: number) => {
         if (!carouselRef.current) return
@@ -89,36 +110,36 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
         <div className="homepage-container relative -mx-4">
             <div
                 ref={carouselRef}
-                className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-[15px]"
+                className={`${mobileCarouselViewportClassName} gap-2`}
             >
                 {cakes.map((cake, index) => {
                     const categoryLabel = formatCategoryLabel(cake.category)
                     const safeCakeName = cake.name?.trim() || 'Olgish Cakes'
-                    const imageAlt = cake.mainImage?.alt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
+                    const imageAlt = cake.imageAlt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
                     const isFirst = index === 0
+                    const imageLoader = isSanityCdnImageUrl(cake.imageUrl) ? mobileBestsellerImageLoader : undefined
 
                     return (
                         <div
                             key={cake._id}
-                            className={`carousel-item relative flex-shrink-0 rounded-[16px] border border-primary-50 overflow-hidden ${isFirst ? 'shadow-xl' : 'shadow-md'}`}
+                            className={`${mobileCarouselItemClassName} rounded-[16px] border border-primary-50 overflow-hidden ${isFirst ? 'shadow-xl' : 'shadow-md'}`}
                             style={{
                                 width: '342px',
                                 height: '342px',
                                 minWidth: '342px',
-                                maxWidth: '342px',
-                                scrollSnapAlign: 'start',
-                                marginLeft: index === 0 ? '24px' : '8px',
-                                marginRight: index === cakes.length - 1 ? '24px' : '0'
+                                maxWidth: '342px'
                             }}
                         >
-                            <Link href={`/cakes/${cake.slug.current}`} className="block w-full h-full relative">
+                            <Link href={`/cakes/${cake.slug.current}`} prefetch={false} className="block w-full h-full relative">
                                 <Image
                                     src={cake.imageUrl}
                                     alt={imageAlt}
                                     fill
                                     className="object-cover rounded-[16px]"
-                                    priority={isFirst}
                                     sizes="342px"
+                                    loading="lazy"
+                                    fetchPriority="low"
+                                    loader={imageLoader}
                                 />
 
                                 <div
@@ -130,6 +151,8 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                                         alt="Handcrafted cakes"
                                         fill
                                         className="object-contain"
+                                        loading="lazy"
+                                        fetchPriority="low"
                                     />
                                 </div>
 
@@ -147,10 +170,10 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                             aria-label="Previous cake"
                             type="button"
                             style={{
-                                width: '32px',
-                                height: '32px',
-                                minWidth: '32px',
-                                minHeight: '32px',
+                                width: '44px',
+                                height: '44px',
+                                minWidth: '44px',
+                                minHeight: '44px',
                                 left: '5px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
@@ -187,10 +210,10 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                             aria-label="Next cake"
                             type="button"
                             style={{
-                                width: '32px',
-                                height: '32px',
-                                minWidth: '32px',
-                                minHeight: '32px',
+                                width: '44px',
+                                height: '44px',
+                                minWidth: '44px',
+                                minHeight: '44px',
                                 right: '0px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',

@@ -8,6 +8,25 @@ interface PerformanceEventTiming extends PerformanceEntry {
   startTime: number;
 }
 
+interface LayoutShiftPerformanceEntry extends PerformanceEntry {
+  hadRecentInput: boolean;
+  value: number;
+}
+
+type Gtag = (
+  command: "config" | "event",
+  targetId: string,
+  config?: Record<string, unknown>
+) => void;
+
+type WindowWithGtag = Window & {
+  gtag?: Gtag;
+};
+
+const getGtag = () => (
+  typeof window !== "undefined" ? (window as WindowWithGtag).gtag : undefined
+);
+
 interface SEOAnalyticsProps {
   pageType: string;
   pageTitle: string;
@@ -51,8 +70,9 @@ export function SEOAnalytics({
 
   const trackPageView = () => {
     // Send page view data to analytics
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("config", "G-XXXXXXXXXX", {
+    const gtag = getGtag();
+    if (gtag) {
+      gtag("config", "G-XXXXXXXXXX", {
         page_title: pageTitle,
         page_location: pageUrl,
         custom_map: {
@@ -65,9 +85,7 @@ export function SEOAnalytics({
   };
 
   const trackUserEngagement = () => {
-    const startTime = Date.now();
     let maxScrollDepth = 0;
-    let isPageVisible = true;
 
     // Track scroll depth
     const handleScroll = () => {
@@ -80,16 +98,12 @@ export function SEOAnalytics({
       }
     };
 
-    // Track page visibility
-    const handleVisibilityChange = () => {
-      isPageVisible = !document.hidden;
-    };
-
     // Track user interactions
     const handleUserInteraction = () => {
       // Track clicks, form submissions, etc.
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "user_interaction", {
+      const gtag = getGtag();
+      if (gtag) {
+        gtag("event", "user_interaction", {
           event_category: "engagement",
           event_label: pageType,
           value: 1,
@@ -99,14 +113,12 @@ export function SEOAnalytics({
 
     // Add event listeners
     window.addEventListener("scroll", handleScroll);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
     document.addEventListener("click", handleUserInteraction);
     document.addEventListener("submit", handleUserInteraction);
 
     // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
       document.removeEventListener("click", handleUserInteraction);
       document.removeEventListener("submit", handleUserInteraction);
     };
@@ -122,8 +134,9 @@ export function SEOAnalytics({
             const lcp = entry.startTime;
 
             // Send to analytics
-            if (typeof window !== "undefined" && (window as any).gtag) {
-              (window as any).gtag("event", "core_web_vitals", {
+            const gtag = getGtag();
+            if (gtag) {
+              gtag("event", "core_web_vitals", {
                 event_category: "web_vitals",
                 event_label: "LCP",
                 value: Math.round(lcp),
@@ -148,8 +161,9 @@ export function SEOAnalytics({
             const fid = fidEntry.processingStart - fidEntry.startTime;
 
             // Send to analytics
-            if (typeof window !== "undefined" && (window as any).gtag) {
-              (window as any).gtag("event", "core_web_vitals", {
+            const gtag = getGtag();
+            if (gtag) {
+              gtag("event", "core_web_vitals", {
                 event_category: "web_vitals",
                 event_label: "FID",
                 value: Math.round(fid),
@@ -170,13 +184,15 @@ export function SEOAnalytics({
       const clsObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
         entries.forEach(entry => {
-          if (entry.entryType === "layout-shift" && !(entry as any).hadRecentInput) {
-            clsValue += (entry as any).value;
+          const layoutShiftEntry = entry as LayoutShiftPerformanceEntry;
+          if (entry.entryType === "layout-shift" && !layoutShiftEntry.hadRecentInput) {
+            clsValue += layoutShiftEntry.value;
 
             // Send to analytics when CLS is significant
             if (clsValue > 0.1) {
-              if (typeof window !== "undefined" && (window as any).gtag) {
-                (window as any).gtag("event", "core_web_vitals", {
+              const gtag = getGtag();
+              if (gtag) {
+                gtag("event", "core_web_vitals", {
                   event_category: "web_vitals",
                   event_label: "CLS",
                   value: Math.round(clsValue * 1000) / 1000,
@@ -239,8 +255,9 @@ export function SEOAnalytics({
     };
 
     const trackScrollMilestone = (milestone: number) => {
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "scroll_depth", {
+      const gtag = getGtag();
+      if (gtag) {
+        gtag("event", "scroll_depth", {
           event_category: "engagement",
           event_label: `${milestone}%_scroll`,
           value: milestone,
@@ -264,8 +281,9 @@ export function SEOAnalytics({
     const sendTimeOnPage = () => {
       const timeOnPage = Date.now() - startTime;
 
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "time_on_page", {
+      const gtag = getGtag();
+      if (gtag) {
+        gtag("event", "time_on_page", {
           event_category: "engagement",
           event_label: pageType,
           value: Math.round(timeOnPage / 1000), // Convert to seconds
