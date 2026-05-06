@@ -242,6 +242,14 @@ describe('AdminAuthGuard', () => {
       })
     })
 
+    it('should show Enquiries link', async () => {
+      render(<AdminAuthGuard>Content</AdminAuthGuard>)
+
+      await waitFor(() => {
+        expect(screen.getByText('Enquiries')).toBeInTheDocument()
+      })
+    })
+
     it('should show Test Emails link', async () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
@@ -432,6 +440,15 @@ describe('AdminAuthGuard', () => {
       await waitFor(() => {
         const earningsLink = screen.getByText('Earnings').closest('a')
         expect(earningsLink).toHaveAttribute('href', '/admin/earnings')
+      })
+    })
+
+    it('should link to /admin/enquiries', async () => {
+      render(<AdminAuthGuard>Content</AdminAuthGuard>)
+
+      await waitFor(() => {
+        const enquiriesLink = screen.getByText('Enquiries').closest('a')
+        expect(enquiriesLink).toHaveAttribute('href', '/admin/enquiries')
       })
     })
 

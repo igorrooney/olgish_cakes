@@ -52,11 +52,19 @@ const completedStatuses = ['completed', 'delivered']
 const adminResources: AdminResource[] = [
   {
     title: 'Orders',
-    description: 'Review new enquiries, update statuses, payment details and delivery notes.',
+    description: 'Review new orders, update statuses, payment details and delivery notes.',
     href: '/admin/orders',
     label: 'Open orders',
     eyebrow: 'Daily work',
     metric: 'Customer queue'
+  },
+  {
+    title: 'Enquiries',
+    description: 'Open customer form submissions with direct contact details, dates and uploaded references.',
+    href: '/admin/enquiries',
+    label: 'Open enquiries',
+    eyebrow: 'Manager queue',
+    metric: 'Form requests'
   },
   {
     title: 'Earnings',

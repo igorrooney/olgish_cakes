@@ -12,6 +12,7 @@ interface AdminAuthGuardProps {
 const navItems = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/earnings", label: "Earnings" },
   { href: "/admin/email-test", label: "Email test" }
 ];
@@ -169,7 +170,7 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
                     Olgish Cakes Admin
                   </Link>
                   <p className="hidden text-xs text-base-content/60 sm:block">
-                    Orders, earnings, content and email operations
+                    Orders, enquiries, earnings and email operations
                   </p>
                 </div>
               </div>

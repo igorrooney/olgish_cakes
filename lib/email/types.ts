@@ -81,6 +81,7 @@ export interface EmailTemplateCommonInput {
     specialInstructions?: string
   }>
   trackingNumber?: string
+  adminUrl?: string
 }
 
 export type ContactAdminInquiryInput = EmailTemplateCommonInput

@@ -12,6 +12,8 @@ const mockSendTelegramManagerNotification = jest.fn()
 const mockGetEmailTransportMode = jest.fn(() => 'disabled')
 const mockRequiresLiveEmailConfiguration = jest.fn(() => false)
 const mockInsert = jest.fn()
+const mockInsertSelect = jest.fn()
+const mockInsertSingle = jest.fn()
 const mockUpload = jest.fn()
 const mockRemove = jest.fn()
 const mockFrom = jest.fn(() => ({ insert: mockInsert }))
@@ -113,7 +115,9 @@ describe('/api/custom-cake-enquiry', () => {
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
-    mockInsert.mockResolvedValue({ error: null })
+    mockInsert.mockReturnValue({ select: mockInsertSelect })
+    mockInsertSelect.mockReturnValue({ single: mockInsertSingle })
+    mockInsertSingle.mockResolvedValue({ data: { id: 42 }, error: null })
     mockUpload.mockResolvedValue({
       data: {
         path: 'enquiries/reference.jpg',
@@ -251,7 +255,8 @@ describe('/api/custom-cake-enquiry', () => {
         address: undefined,
         city: undefined,
         postcode: undefined,
-        occasion: 'Birthday'
+        occasion: 'Birthday',
+        adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/42'
       })
     }))
     expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
@@ -280,7 +285,7 @@ describe('/api/custom-cake-enquiry', () => {
       dateNeeded: '2026-12-25',
       productName: 'birthday',
       messagePreview: expect.stringContaining('Brief: Blue florals and vanilla sponge.'),
-      adminPath: '/admin'
+      adminPath: '/admin/enquiries/custom-cake/42'
     }))
   })
 
@@ -915,7 +920,7 @@ describe('/api/custom-cake-enquiry', () => {
 
   it('returns 500 when Supabase insert fails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
-    mockInsert.mockResolvedValueOnce({
+    mockInsertSingle.mockResolvedValueOnce({
       error: {
         code: 'PGRST204',
         message: 'Insert failed',
@@ -964,7 +969,7 @@ describe('/api/custom-cake-enquiry', () => {
 
   it('cleans up reference image when Supabase insert fails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
-    mockInsert.mockResolvedValueOnce({ error: { message: 'Insert failed' } })
+    mockInsertSingle.mockResolvedValueOnce({ data: null, error: { message: 'Insert failed' } })
     const file = new File(['image'], 'reference.jpg', { type: 'image/jpeg' })
     const formData = buildFormData()
     formData.append('referenceImage', file)

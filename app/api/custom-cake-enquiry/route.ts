@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import {
   applyEnquiryRateLimitHeaders,
@@ -175,6 +176,24 @@ type NotificationError = {
   message: string
 }
 
+type InsertedEnquiryRow = {
+  id: string | number
+}
+
+const isInsertedEnquiryRow = (value: unknown): value is InsertedEnquiryRow => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const record = value as Record<string, unknown>
+  return typeof record.id === 'string' || typeof record.id === 'number'
+}
+
+const getInsertedEnquiryId = (value: unknown) =>
+  isInsertedEnquiryRow(value) ? String(value.id) : null
+
+const buildAdminUrl = (path: string) => `${BUSINESS_CONSTANTS.BASE_URL}${path}`
+
 const logNotificationFailure = (
   step: NotificationError['step'],
   errorMessage: string,
@@ -230,6 +249,7 @@ const sendFailureAlertEmail = async (params: {
   attachmentNames: string[]
   notificationErrors: NotificationError[]
   emailMode: ReturnType<typeof getEmailTransportMode>
+  adminUrl: string
 }) => {
   const failureAlertResponse = await sendEmail({
     templateId: 'custom-cake-enquiry-failure-alert',
@@ -245,7 +265,8 @@ const sendFailureAlertEmail = async (params: {
       customerMessage: params.requirements,
       attachmentNames: params.attachmentNames,
       message: `Failed notifications:\n${buildFailureAlertMessage(params.notificationErrors)}`,
-      note: 'The enquiry was saved in the database successfully. Review notification logs and resend manually if needed.'
+      note: 'The enquiry was saved in the database successfully. Review notification logs and resend manually if needed.',
+      adminUrl: params.adminUrl
     },
     modeOverride: params.emailMode,
     message: {
@@ -456,7 +477,7 @@ export async function POST(request: NextRequest) {
       referenceImagePath = uploaded.path
     }
 
-    const { error: insertError } = await supabase
+    const { data: insertedEnquiry, error: insertError } = await supabase
       .from('custom_cake_enquiries')
       .insert({
         full_name: formData.fullName,
@@ -474,6 +495,8 @@ export async function POST(request: NextRequest) {
         reference_image_type: referenceImage?.type || null,
         reference_image_size: referenceImage ? referenceImage.size : null
       })
+      .select('id')
+      .single()
 
     if (insertError) {
       if (referenceImageBucket && referenceImagePath) {
@@ -488,6 +511,12 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to save enquiry')
     }
 
+    const enquiryId = getInsertedEnquiryId(insertedEnquiry)
+    const adminPath = enquiryId
+      ? `/admin/enquiries/custom-cake/${enquiryId}` as const
+      : '/admin/enquiries'
+    const adminUrl = buildAdminUrl(adminPath)
+
     await sendTelegramManagerNotification({
       type: 'custom-cake-enquiry',
       customerName: formData.fullName,
@@ -497,7 +526,7 @@ export async function POST(request: NextRequest) {
       productName: occasionValue || undefined,
       messagePreview: requirementsValue,
       imageCount: referenceImage ? 1 : 0,
-      adminPath: '/admin'
+      adminPath
     })
 
     const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
@@ -533,7 +562,8 @@ export async function POST(request: NextRequest) {
         dateNeeded: formData.date,
         occasion: resolvedOccasion,
         customerMessage: resolvedRequirements,
-        attachmentNames: referenceImage ? [referenceImage.name] : []
+        attachmentNames: referenceImage ? [referenceImage.name] : [],
+        adminUrl
       },
       modeOverride: emailMode,
       message: {
@@ -626,7 +656,8 @@ export async function POST(request: NextRequest) {
         requirements: resolvedRequirements,
         attachmentNames: referenceImage ? [referenceImage.name] : [],
         notificationErrors,
-        emailMode
+        emailMode,
+        adminUrl
       })
 
       failureAlertSent = failureAlertResult.sent

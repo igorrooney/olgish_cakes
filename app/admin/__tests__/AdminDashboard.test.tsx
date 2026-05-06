@@ -98,6 +98,7 @@ describe('AdminDashboard', () => {
     screen.getAllByRole('link', { name: 'Open orders' }).forEach((link) => {
       expect(link).toHaveAttribute('href', '/admin/orders')
     })
+    expect(screen.getByRole('link', { name: 'Open enquiries' })).toHaveAttribute('href', '/admin/enquiries')
     expect(screen.getByRole('link', { name: 'View earnings' })).toHaveAttribute('href', '/admin/earnings')
     expect(screen.getAllByText('#OC-1001')).toHaveLength(2)
     expect(screen.getAllByText('Jane Customer').length).toBeGreaterThan(0)
