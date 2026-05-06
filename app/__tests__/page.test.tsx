@@ -299,7 +299,7 @@ describe('HomePage', () => {
       expect(document.querySelectorAll('[data-testid="query-providers"]')).toHaveLength(1)
     })
 
-    it('passes only the first six eligible testimonials to the homepage reviews section', async () => {
+    it('passes all eligible testimonials to the homepage reviews section', async () => {
       mockGetAllTestimonials.mockResolvedValue([
         {
           _id: 'testimonial-empty',
@@ -330,17 +330,16 @@ describe('HomePage', () => {
       const page = await HomePage()
       render(page)
 
-      expect(capturedReviewsProps?.testimonials).toHaveLength(6)
+      expect(capturedReviewsProps?.testimonials).toHaveLength(7)
       expect(capturedReviewsProps?.testimonials).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ _id: 'testimonial-0' }),
-          expect.objectContaining({ _id: 'testimonial-5' })
+          expect.objectContaining({ _id: 'testimonial-6' })
         ])
       )
       expect(capturedReviewsProps?.testimonials).not.toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ _id: 'testimonial-empty' }),
-          expect.objectContaining({ _id: 'testimonial-6' })
+          expect.objectContaining({ _id: 'testimonial-empty' })
         ])
       )
     })

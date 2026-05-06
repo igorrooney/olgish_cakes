@@ -7,8 +7,6 @@ interface ReviewsProps {
   testimonials?: Testimonial[]
 }
 
-const maxHomepageReviews = 6
-
 const hasVisibleReviewText = (testimonial: Testimonial) =>
   Boolean(testimonial.text && testimonial.text.trim().length > 0)
 
@@ -27,7 +25,6 @@ export async function Reviews({ testimonials }: ReviewsProps = {}) {
   const resolvedTestimonials = testimonials ?? await getAllTestimonials()
   const displayTestimonials = resolvedTestimonials
     .filter((testimonial) => hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial))
-    .slice(0, maxHomepageReviews)
   const homepageReviews = displayTestimonials.map(mapHomepageReview)
 
   if (homepageReviews.length === 0) {

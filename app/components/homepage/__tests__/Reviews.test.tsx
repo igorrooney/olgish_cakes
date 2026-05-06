@@ -78,7 +78,7 @@ describe('Reviews', () => {
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
   })
 
-  it('limits homepage reviews to valid visible testimonials', async () => {
+  it('passes all valid visible testimonials to the carousel', async () => {
     const providedTestimonials = [
       createTestimonial({ _id: 'testimonial-1' }),
       createTestimonial({ _id: 'testimonial-2', text: '  ' }),
@@ -91,6 +91,6 @@ describe('Reviews', () => {
     const result = await Reviews({ testimonials: providedTestimonials })
     render(result as ReactElement)
 
-    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '6')
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '8')
   })
 })

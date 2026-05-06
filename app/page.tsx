@@ -27,7 +27,6 @@ const organizationId = 'https://olgishcakes.co.uk/#organization'
 const bakeryId = 'https://olgishcakes.co.uk/#bakery'
 const productId = 'https://olgishcakes.co.uk/#product'
 const maxReviewSchemas = 6
-const maxHomepageTestimonials = 6
 const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
 const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'
 const eventDescriptionBase = 'Order Ukrainian cakes in Leeds: Medovik, Napoleon, and custom birthday or wedding cakes. Handmade, 5-star rated, UK delivery.'
@@ -281,7 +280,6 @@ export default async function Home() {
   const eligibleTestimonials = testimonials.filter((testimonial) =>
     hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial)
   )
-  const homepageTestimonials = eligibleTestimonials.slice(0, maxHomepageTestimonials)
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
   const reviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
   const productReviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapProductReview)
@@ -492,7 +490,7 @@ export default async function Home() {
             <DeferredMarkets />
           </div>
           <div className={belowFoldSectionClassName}>
-            <DeferredReviews testimonials={homepageTestimonials} />
+            <DeferredReviews testimonials={eligibleTestimonials} />
           </div>
           <div className={`homepage-divider relative h-auto ${belowFoldSectionClassName}`}>
             <Image
