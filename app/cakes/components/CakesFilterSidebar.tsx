@@ -128,7 +128,9 @@ export function CakesFilterSidebar({
 
   const visibleCollectionOptions = showAllCollections
     ? nonFeaturedCollectionOptions
-    : nonFeaturedCollectionOptions.slice(0, 3)
+    : nonFeaturedCollectionOptions.filter((option, index) => {
+      return index < 3 || selectedCollectionIds.has(option.id)
+    })
 
   function resetAllFilters() {
     onReset()
