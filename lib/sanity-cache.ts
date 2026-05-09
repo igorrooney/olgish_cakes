@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache'
-import { client, USE_REAL_TIME_DATA } from '@/sanity/lib/client'
+import { client, sanityFetchOptions, USE_REAL_TIME_DATA } from '@/sanity/lib/client'
 import { SANITY_CACHE_CONFIG } from './sanity-cache-config'
 
 interface CacheOptions {
@@ -23,7 +23,7 @@ export async function cachedSanityFetch<T>(
 ): Promise<T> {
   // If real-time data is enabled, skip caching
   if (USE_REAL_TIME_DATA) {
-    return client.fetch<T>(query, params)
+    return client.fetch<T>(query, params, sanityFetchOptions)
   }
 
   const { revalidate = false, tags = [] } = options

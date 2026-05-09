@@ -69,8 +69,8 @@ describe('/api/revalidate', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
-    expect(revalidateTag).toHaveBeenCalledWith('cake-collections', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('gift-hamper-collections', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cake-collections', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hamper-collections', { expire: 0 })
   })
 
   it('revalidates cakes delivery section paths and tags', async () => {
@@ -90,9 +90,9 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
     expect(revalidatePath).toHaveBeenCalledWith('/')
-    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates gift hampers delivery section paths and tags', async () => {
@@ -112,10 +112,10 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
     expect(revalidatePath).toHaveBeenCalledWith('/')
-    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates allergen guidance when ingredient references change', async () => {
@@ -134,7 +134,7 @@ describe('/api/revalidate', () => {
 
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/allergens')
-    expect(revalidateTag).toHaveBeenCalledWith('ingredients', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('ingredients', { expire: 0 })
   })
 
   it('revalidates testimonial-dependent pages and tags for testimonial updates', async () => {
@@ -155,7 +155,7 @@ describe('/api/revalidate', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
     expect(revalidatePath).toHaveBeenCalledWith('/get-custom-quote')
-    expect(revalidateTag).toHaveBeenCalledWith('testimonials', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('testimonials', { expire: 0 })
   })
 
   it('revalidates product paths and tags for productsDisplayOrder', async () => {
@@ -178,10 +178,10 @@ describe('/api/revalidate', () => {
     categoryLandingCanonicalPaths.forEach((path) => {
       expect(revalidatePath).toHaveBeenCalledWith(path)
     })
-    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates cake detail, listings and category landing pages for cake updates', async () => {
@@ -223,9 +223,9 @@ describe('/api/revalidate', () => {
     categoryLandingCanonicalPaths.forEach((path) => {
       expect(revalidatePath).toHaveBeenCalledWith(path)
     })
-    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('still revalidates cake paths when products display order sync fails', async () => {
@@ -260,9 +260,9 @@ describe('/api/revalidate', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/cakes/sample-cake')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes')
     expect(revalidatePath).toHaveBeenCalledWith('/')
-    expect(revalidateTag).toHaveBeenCalledWith('cakes', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
 
     consoleErrorSpy.mockRestore()
   })
@@ -302,10 +302,10 @@ describe('/api/revalidate', () => {
     })
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post/sample-hamper')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
-    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('pages', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes-by-post', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates article detail and archive paths for article updates', async () => {
@@ -328,9 +328,9 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/blog/cake-by-post-guide')
     expect(revalidatePath).toHaveBeenCalledWith('/blog')
-    expect(revalidateTag).toHaveBeenCalledWith('articles', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('article', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('articles', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('article', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates the archive when article topics change', async () => {
@@ -349,8 +349,8 @@ describe('/api/revalidate', () => {
 
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/blog')
-    expect(revalidateTag).toHaveBeenCalledWith('articles', 'max')
-    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('articles', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
   })
 
   it('revalidates category landing pages for collection updates', async () => {
@@ -373,6 +373,7 @@ describe('/api/revalidate', () => {
     categoryLandingCanonicalPaths.forEach((path) => {
       expect(revalidatePath).toHaveBeenCalledWith(path)
     })
-    expect(revalidateTag).toHaveBeenCalledWith('cake-collections', 'max')
+    expect(revalidateTag).toHaveBeenCalledWith('cake-collections', { expire: 0 })
   })
 })
+

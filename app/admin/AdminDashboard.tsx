@@ -315,9 +315,9 @@ export function AdminDashboard() {
         body: JSON.stringify({ pattern: '*' })
       })
 
-      setNotice(response.ok ? 'Cache cleared. Public pages can rebuild with fresh content.' : 'Cache could not be cleared.')
+      setNotice(response.ok ? 'Website cache revalidated. Public pages can rebuild with fresh content.' : 'Cache could not be revalidated.')
     } catch {
-      setNotice('Cache could not be cleared.')
+      setNotice('Cache could not be revalidated.')
     } finally {
       setCacheClearing(false)
     }
@@ -351,7 +351,7 @@ export function AdminDashboard() {
                 onClick={handleClearCache}
                 disabled={cacheClearing}
               >
-                {cacheClearing ? 'Clearing...' : 'Clear cache'}
+                {cacheClearing ? 'Revalidating...' : 'Revalidate cache'}
               </button>
             </div>
           </div>

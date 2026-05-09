@@ -104,8 +104,8 @@ export async function proxy(request: NextRequest) {
     // Admin pages should not be cached
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
   } else {
-    // Regular pages with shorter cache time for better data freshness
-    response.headers.set('Cache-Control', 'public, max-age=60, must-revalidate')
+    // Regular pages may be cached by Next.js data tags, but browsers should re-check HTML on refresh.
+    response.headers.set('Cache-Control', 'no-cache, must-revalidate')
   }
   // Prevent indexing of catalog listing query URLs.
   // Keep clean listing URLs indexable and redirect ?page=1 to base URL.

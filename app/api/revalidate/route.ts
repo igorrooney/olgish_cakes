@@ -215,9 +215,8 @@ async function handlePOST(request: NextRequest) {
       revalidatePath(path)
     }
 
-    // Note: revalidateTag requires 2 parameters in Next.js 16 (tag and cache profile)
     for (const tag of tagsToRevalidate) {
-      revalidateTag(tag, 'max')
+      revalidateTag(tag, { expire: 0 })
     }
 
     return NextResponse.json({

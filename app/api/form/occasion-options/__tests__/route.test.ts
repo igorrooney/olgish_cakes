@@ -20,7 +20,7 @@ describe('/api/form/occasion-options', () => {
     jest.clearAllMocks()
   })
 
-  it('returns occasion options with noindex and cache headers on success', async () => {
+  it('returns occasion options with noindex and no-store headers on success', async () => {
     const collections = [{ _id: 'collection-1', name: 'Wedding Cakes' }]
     const occasionOptions = [
       { label: 'Select from list', value: '', disabled: true },
@@ -37,7 +37,7 @@ describe('/api/form/occasion-options', () => {
     expect(response.status).toBe(200)
     expect(body).toEqual({ occasionOptions })
     expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    expect(response.headers.get('Cache-Control')).toBe('public, s-maxage=1800, stale-while-revalidate=86400')
+    expect(response.headers.get('Cache-Control')).toBe('no-store')
     expect(mockedBuildOccasionOptionsFromCollections).toHaveBeenCalledWith(collections)
   })
 

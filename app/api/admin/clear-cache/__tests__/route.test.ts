@@ -5,11 +5,21 @@ jest.mock('@/app/utils/fetchCakes', () => ({
   invalidateCache: jest.fn()
 }))
 
+jest.mock('next/cache', () => ({
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn()
+}))
+
+jest.mock('@/app/cakes/categoryLandingConfig', () => ({
+  categoryLandingCanonicalPaths: ['/birthday-cakes', '/wedding-cakes']
+}))
+
 jest.mock('@/lib/admin/auth-token', () => ({
   verifyAdminAuthToken: jest.fn()
 }))
 
 import { NextRequest } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { GET, POST } from '../route'
 
 const { invalidateCache } = jest.requireMock('@/app/utils/fetchCakes') as {
@@ -62,7 +72,19 @@ describe('/api/admin/clear-cache', () => {
     expect(response.status).toBe(200)
     expect(verifyAdminAuthToken).toHaveBeenCalledWith('valid-cookie-token')
     expect(invalidateCache).toHaveBeenCalledWith('cakes:*')
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
+    expect(revalidatePath).toHaveBeenCalledWith('/api/catalog/by-post-cakes')
+    expect(revalidatePath).toHaveBeenCalledWith('/birthday-cakes')
+    expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('gift-hampers', { expire: 0 })
+    expect(revalidateTag).toHaveBeenCalledWith('articles', { expire: 0 })
     expect(json.success).toBe(true)
+    expect(json.revalidated).toEqual({
+      paths: 13,
+      tags: 15
+    })
   })
 
   it('falls back to ADMIN_SECRET_TOKEN authorization when cookie auth fails', async () => {
