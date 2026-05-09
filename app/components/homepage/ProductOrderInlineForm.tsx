@@ -221,6 +221,20 @@ export function ProductOrderInlineForm({
     ? 'bg-[var(--d-color-status-success-bg)] hover:bg-[var(--d-color-status-success-bg)]'
     : 'bg-primary-500 hover:bg-primary-700'
   const buttonLabel = hasSubmittedSuccessfully ? 'Order sent' : 'Submit order'
+  const successIntro = isPostalOrder
+    ? "Thank you. We've received your cakes by post request."
+    : "Thank you. We've received your request."
+  const successNextSteps = isPostalOrder
+    ? [
+        "We'll review your order and delivery details within 24 hours.",
+        "We'll send you a secure payment link once everything is confirmed.",
+        "Once payment is received, we'll prepare, pack, and send your cake by post."
+      ]
+    : [
+        "We'll review your details within 24 hours.",
+        "We'll contact you with a quote and final design details.",
+        "We'll confirm delivery or collection once you approve."
+      ]
   const userRequestDetails = useMemo(() => {
     const value = requestMode === 'custom-design'
       ? formData.requirements?.trim()
@@ -624,11 +638,11 @@ export function ProductOrderInlineForm({
         >
           <div className='space-y-2'>
             <p className='font-semibold'>Order request received</p>
-            <p>Thank you. We've received your request.</p>
+            <p>{successIntro}</p>
             <ul className='list-disc space-y-1 pl-5'>
-              <li>We'll review your details within 24 hours.</li>
-              <li>We'll contact you with a quote and final design details.</li>
-              <li>We'll confirm delivery or collection once you approve.</li>
+              {successNextSteps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
             </ul>
           </div>
         </div>

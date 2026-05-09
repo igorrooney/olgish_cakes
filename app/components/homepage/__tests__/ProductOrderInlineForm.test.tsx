@@ -583,6 +583,38 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.getByRole('button', { name: /order sent/i })).toBeInTheDocument()
   })
 
+  it('shows cakes by post payment next steps after submit', async () => {
+    await renderWithCsrfReady(
+      <ProductOrderInlineForm
+        productType='gift-hamper'
+        productId='hamper-slug'
+        productName='Honey Cake by Post'
+        totalPrice={25}
+      />
+    )
+
+    fillRequiredFields()
+    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/contact', expect.objectContaining({
+        method: 'POST'
+      }))
+    })
+
+    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
+    expect(screen.getByText('Order request received')).toBeInTheDocument()
+    expect(screen.getByText("Thank you. We've received your cakes by post request.")).toBeInTheDocument()
+    expect(screen.getByText("We'll review your order and delivery details within 24 hours.")).toBeInTheDocument()
+    expect(screen.getByText("We'll send you a secure payment link once everything is confirmed.")).toBeInTheDocument()
+    expect(screen.getByText("Once payment is received, we'll prepare, pack, and send your cake by post.")).toBeInTheDocument()
+    expect(screen.queryByText("We'll contact you with a quote and final design details.")).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order sent/i })).toBeInTheDocument()
+  })
+
   it('clears success state when user edits a field after successful submit', async () => {
     await renderWithCsrfReady(
       <ProductOrderInlineForm
