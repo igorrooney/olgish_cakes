@@ -26,6 +26,7 @@ import { buildAggregateRating, type ReviewStats } from './utils/review-stats'
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const bakeryId = 'https://olgishcakes.co.uk/#bakery'
 const productId = 'https://olgishcakes.co.uk/#product'
+export const revalidate = 3600
 const maxReviewSchemas = 6
 const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
 const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'

@@ -55,6 +55,10 @@ describe('Markets', () => {
     jest.clearAllMocks()
   })
 
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('shows a semantic reveal control and exposes additional markets on demand', async () => {
     mockGetMarketSchedule.mockResolvedValueOnce([
       createMarket({ _id: 'market-1', title: 'Market 1', date: '2099-04-01' }),
@@ -124,6 +128,28 @@ describe('Markets', () => {
     render(element)
 
     expect(screen.getByText('Wednesday 1 April')).toBeInTheDocument()
+  })
+
+  it('filters markets using the current Europe/London calendar date', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-05-09T23:30:00.000Z'))
+    mockGetMarketSchedule.mockResolvedValueOnce([
+      createMarket({
+        _id: 'market-past',
+        title: 'Morley Makers Market',
+        date: '2026-05-09'
+      }),
+      createMarket({
+        _id: 'market-today',
+        title: 'Sunday Market',
+        date: '2026-05-10'
+      })
+    ])
+
+    const element = await Markets()
+    render(element)
+
+    expect(screen.queryByText('Morley Makers Market')).not.toBeInTheDocument()
+    expect(screen.getByText('Sunday Market')).toBeInTheDocument()
   })
 
   it('does not render a reveal control when only two upcoming markets exist', async () => {
