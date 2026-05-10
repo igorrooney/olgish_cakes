@@ -313,6 +313,7 @@ export function LightweightConsentBanner() {
       <aside
         id='olgish-consent-banner'
         aria-label='Cookie preferences'
+        suppressHydrationWarning
         className='fixed bottom-4 left-4 right-4 z-[9999] w-auto max-w-[20rem] rounded-box border border-base-300 bg-base-100 p-4 font-sans text-base-content shadow-[0_18px_40px_color-mix(in_srgb,var(--color-primary-800)_18%,transparent)] tablet:left-1/2 tablet:right-auto tablet:w-[calc(100vw-2rem)] tablet:max-w-[44rem] tablet:-translate-x-1/2'
       >
         <div className='grid gap-3'>
