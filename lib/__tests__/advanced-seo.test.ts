@@ -13,7 +13,7 @@ jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2025-12-31'),
   getMerchantReturnPolicy: jest.fn(() => ({
     '@type': 'MerchantReturnPolicy',
-    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow'
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
   })),
   getOfferShippingDetails: jest.fn(() => ({
     '@type': 'OfferShippingDetails',

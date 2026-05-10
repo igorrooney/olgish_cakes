@@ -95,6 +95,29 @@ function renderReferenceImageGalleryHtml(imageUrls?: string[]) {
   return `<div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 20px; margin: 0 0 24px 0;"><h3 style="margin: 0 0 12px 0; color: #15803d; font-size: 18px; font-weight: 600;">Reference images</h3><p style="margin: 0 0 16px 0; color: #15803d; font-size: 14px; line-height: 1.6;">The customer included design reference images for this order.</p><div style="display: flex; flex-wrap: wrap; gap: 12px;">${imageCards}</div></div>`
 }
 
+function isHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+function renderFieldValueHtml(row: EmailFieldRow): string {
+  const escaped = escapeHtml(row.value)
+
+  if (row.multiline) {
+    return escaped.replace(/\n/g, '<br>')
+  }
+
+  if (isHttpUrl(row.value)) {
+    return `<a href="${escaped}" style="color: #2E3192; text-decoration: none;">${escaped}</a>`
+  }
+
+  return escaped
+}
+
 interface NormalizedOrderItem {
   productName: string
   productId: string
@@ -247,6 +270,7 @@ export function buildAdminSections(input: EmailTemplateCommonInput): EmailSectio
   appendRow(orderRows, 'Product ID', input.productId)
   appendRow(orderRows, 'Product type', input.productType)
   appendRow(orderRows, 'Status', input.status)
+  appendRow(orderRows, 'Admin link', input.adminUrl)
 
   const pricingRows: EmailFieldRow[] = []
   appendNumericRow(pricingRows, 'Quantity', input.quantity)
@@ -315,9 +339,7 @@ export function renderRowsAsHtml(sections: EmailSection[]): string {
     .map((section) => {
       const rows = section.rows
         .map((row) => {
-          const escaped = escapeHtml(row.value)
-          const renderedValue = row.multiline ? escaped.replace(/\n/g, '<br>') : escaped
-          return `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 14px; vertical-align: top;">${escapeHtml(row.label)}</td><td style="padding: 6px 0; color: #1f2937; font-size: 14px; text-align: right; vertical-align: top;">${renderedValue}</td></tr>`
+          return `<tr><td style="padding: 6px 0; color: #6b7280; font-size: 14px; vertical-align: top;">${escapeHtml(row.label)}</td><td style="padding: 6px 0; color: #1f2937; font-size: 14px; text-align: right; vertical-align: top;">${renderFieldValueHtml(row)}</td></tr>`
         })
         .join('')
 
@@ -363,6 +385,7 @@ export const commonInputSchema = z.object({
   titleOverride: z.string().optional(),
   statusMessage: z.string().optional(),
   trackingNumber: z.string().optional(),
+  adminUrl: z.string().optional(),
   orderItems: z.array(z.object({
     productName: z.string().optional(),
     productId: z.string().optional(),

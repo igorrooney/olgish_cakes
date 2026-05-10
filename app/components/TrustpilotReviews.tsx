@@ -2,13 +2,9 @@
 
 import {
   Box,
-  Container,
-  Paper,
   Typography,
   Rating,
   Avatar,
-  CircularProgress,
-  Alert,
 } from "@/lib/daisy-ui";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -19,10 +15,9 @@ import {
   BodyText,
   SectionHeading,
   ProductCard,
-  TouchTargetWrapper,
 } from "@/lib/ui-components";
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing } = designTokens;
 
 interface Review {
   id: string;
@@ -42,12 +37,22 @@ export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
   const [reviews, setReviews] = useState<Review[] | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function loadReviews() {
-      const data = await fetchTrustpilotReviews(productName);
+      const data = await fetchTrustpilotReviews(productName, controller.signal);
+      if (controller.signal.aborted) {
+        return;
+      }
+
       setReviews(data || null);
     }
 
     loadReviews();
+
+    return () => {
+      controller.abort();
+    };
   }, [productName]);
 
   // Don't render anything if there are no reviews

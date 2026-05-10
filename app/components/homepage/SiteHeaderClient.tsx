@@ -265,7 +265,7 @@ export function SiteHeaderClient() {
                       onClick={() => toggleDropdown(dropdown.id)}
                       onKeyDown={(event) => handleDesktopDropdownKeyDown(event, dropdown.id)}
                       aria-expanded={isOpen}
-                      aria-controls={getDesktopDropdownPanelId(dropdown.id)}
+                      aria-controls={isOpen ? getDesktopDropdownPanelId(dropdown.id) : undefined}
                       aria-haspopup='true'
                     >
                       <span
@@ -291,35 +291,34 @@ export function SiteHeaderClient() {
                         />
                       </svg>
                     </button>
-                    <div
-                      id={getDesktopDropdownPanelId(dropdown.id)}
-                      hidden={!isOpen}
-                      className={`absolute top-full z-[10000] mt-3 rounded-box bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] p-4 shadow-[0px_4px_6px_-1px_#0000001A] ${dropdown.alignmentClassName} ${
-                        isOpen ? 'block' : 'hidden'
-                      }`}
-                      aria-labelledby={getDesktopDropdownButtonId(dropdown.id)}
-                    >
-                      {dropdown.columns.map((column, columnIndex) => (
-                        <ul
-                          key={`${dropdown.id}-${columnIndex}`}
-                          className={`${dropdownMenuListClassName} ${
-                            dropdown.columns.length > 1 ? 'flex-1' : ''
-                          } ${dropdown.id === 'custom-cakes' && columnIndex > 0 ? 'self-start' : ''}`}
-                        >
-                          {column.map((item) => (
-                            <li key={item.href}>
-                              <HoverPrefetchLink
-                                href={item.href}
-                                className={dropdownItemClassName}
-                                onClick={handleDesktopDropdownNavigation}
-                              >
-                                {item.label}
-                              </HoverPrefetchLink>
-                            </li>
-                          ))}
-                        </ul>
-                      ))}
-                    </div>
+                    {isOpen ? (
+                      <div
+                        id={getDesktopDropdownPanelId(dropdown.id)}
+                        className={`absolute top-full z-[10000] mt-3 rounded-box bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] p-4 shadow-[0px_4px_6px_-1px_#0000001A] ${dropdown.alignmentClassName} block`}
+                        aria-labelledby={getDesktopDropdownButtonId(dropdown.id)}
+                      >
+                        {dropdown.columns.map((column, columnIndex) => (
+                          <ul
+                            key={`${dropdown.id}-${columnIndex}`}
+                            className={`${dropdownMenuListClassName} ${
+                              dropdown.columns.length > 1 ? 'flex-1' : ''
+                            } ${dropdown.id === 'custom-cakes' && columnIndex > 0 ? 'self-start' : ''}`}
+                          >
+                            {column.map((item) => (
+                              <li key={item.href}>
+                                <HoverPrefetchLink
+                                  href={item.href}
+                                  className={dropdownItemClassName}
+                                  onClick={handleDesktopDropdownNavigation}
+                                >
+                                  {item.label}
+                                </HoverPrefetchLink>
+                              </li>
+                            ))}
+                          </ul>
+                        ))}
+                      </div>
+                    ) : null}
                   </li>
                 )
               })}

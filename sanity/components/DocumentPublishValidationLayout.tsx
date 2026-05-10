@@ -55,7 +55,7 @@ export function getBlockingValidationErrors(validation: ValidationMarker[]) {
 
 export function DocumentPublishValidationLayout(props: DocumentLayoutProps) {
   const { documentId, documentType } = props
-  const { isValidating, validation } = useValidationStatus(documentId, documentType)
+  const { isValidating, validation } = useValidationStatus(documentId, documentType, false)
   const blockingErrors = getBlockingValidationErrors(validation)
   const hasBlockingErrors = blockingErrors.length > 0
 

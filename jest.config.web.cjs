@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const nextJest = require('next/jest')
 const baseConfig = require('./jest.config.base.cjs')
 

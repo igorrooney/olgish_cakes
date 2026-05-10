@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import type { MarketSchedule } from '@/app/types/marketSchedule'
 
 const mobileVisibleCount = 2
 const largeLaptopVisibleCount = 3
@@ -35,8 +34,19 @@ function formatMarketTime(startTime: string, endTime: string): string {
   return `${startTime}-${endTime}`
 }
 
+export type HomepageMarket = {
+  _id: string
+  date: string
+  endTime: string
+  googleMapsUrl: string
+  location: string
+  startTime: string
+  title: string
+  website?: string | null
+}
+
 type MarketCardProps = {
-  market: MarketSchedule
+  market: HomepageMarket
 }
 
 function getMarketVisibilityClassName(index: number, showAllMarkets: boolean) {
@@ -100,7 +110,7 @@ function MarketCard({ market }: MarketCardProps) {
 }
 
 type MarketsClientProps = {
-  upcomingMarkets: MarketSchedule[]
+  upcomingMarkets: HomepageMarket[]
 }
 
 export function MarketsClient({ upcomingMarkets }: MarketsClientProps) {

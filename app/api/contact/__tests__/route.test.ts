@@ -141,6 +141,23 @@ describe('/api/contact', () => {
   })
 
   describe('POST - CSRF', () => {
+    it('should return 415 when the request body is not form data', async () => {
+      const request = new NextRequest('http://localhost/api/contact', {
+        method: 'POST',
+        body: JSON.stringify({ name: 'John' }),
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: `csrf-token=${defaultCsrfToken}`
+        }
+      })
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(415)
+      expect(json.error).toContain('Unsupported content type')
+    })
+
     it('should return 403 when csrf token is missing from the form data', async () => {
       const formData = new FormData()
       formData.append('name', 'John')

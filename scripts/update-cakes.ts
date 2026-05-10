@@ -24,6 +24,12 @@ const sanityClient = createClient({
   useCdn: false,
 });
 
+type CakeWithSlug = SanityDocument & {
+  slug?: {
+    current?: string;
+  };
+};
+
 // Original prices from seed data
 const cakePrices: Record<string, number> = {
   "kyiv-cake": 45,
@@ -47,7 +53,7 @@ async function updateCakes() {
 
   try {
     // First, fetch all cakes
-    const cakes = await sanityClient.fetch<SanityDocument[]>('*[_type == "cake"]');
+    const cakes = await sanityClient.fetch<CakeWithSlug[]>('*[_type == "cake"]');
 
     if (!cakes || cakes.length === 0) {
       console.log("No cakes found in the database.");
@@ -57,8 +63,8 @@ async function updateCakes() {
     console.log(`Found ${cakes.length} cakes to update`);
 
     // Update each cake with shortDescription field
-    const transactions = cakes.map((cake: SanityDocument) => {
-      const slug = (cake as any).slug?.current;
+    const transactions = cakes.map((cake) => {
+      const slug = cake.slug?.current || "";
       const shortDescription = cakeShortDescriptions[slug] || "";
 
       return {

@@ -1,5 +1,3 @@
-import Image from 'next/image'
-import Link from 'next/link'
 import type { ReactNode } from 'react'
 import {
   PortableText,
@@ -7,8 +5,12 @@ import {
   type PortableTextMarkComponentProps
 } from '@portabletext/react'
 import { createArticleHeadingIdResolver } from '@/lib/article-heading-ids'
-import { getSanityCdnImageUrl, isSanityCdnImageUrl, type ArticleBodyNode, type PortableTextImage } from '@/lib/articles'
+import { getSanityCdnImageUrl, type ArticleBodyNode, type PortableTextImage } from '@/lib/articles'
 import { urlFor } from '@/sanity/lib/image'
+
+const articleBodyImageSizes = '(min-width: 1280px) 760px, (min-width: 768px) 70vw, 100vw'
+const articleBodyImageWidths = [384, 640, 760, 960, 1200, 1440] as const
+const articleBodyImageQuality = 64
 
 interface ArticlePortableTextProps {
   value: ArticleBodyNode[]
@@ -67,40 +69,60 @@ function PortableTextLink({ children, value }: PortableTextMarkComponentProps<Po
   const isExternal = href.startsWith('http://') || href.startsWith('https://')
 
   return (
-    <Link
+    <a
       href={href}
       className='font-semibold text-primary-500 underline decoration-accent underline-offset-4 transition-colors hover:text-primary-800'
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noreferrer noopener' : undefined}
     >
       {children}
-    </Link>
+    </a>
   )
 }
 
-function PortableTextImageBlock({ value }: { value: PortableTextImage }) {
-  const imageUrl = value.asset?._ref
-    ? urlFor(value).width(1440).fit('max').auto('format').url()
-    : getSanityCdnImageUrl(value.asset?.url, {
-        width: 1440,
-        fit: 'max',
-        quality: 82
-      })
+function getPortableTextImageBaseUrl(value: PortableTextImage) {
+  if (value.asset?._ref) {
+    return urlFor(value).url()
+  }
 
-  if (!imageUrl) {
+  return value.asset?.url
+}
+
+function getPortableTextImageUrl(imageUrl: string | undefined, width: number) {
+  return getSanityCdnImageUrl(imageUrl, {
+    width,
+    fit: 'max',
+    quality: articleBodyImageQuality
+  })
+}
+
+function getPortableTextImageSrcSet(imageUrl: string) {
+  return articleBodyImageWidths
+    .map((width) => `${getPortableTextImageUrl(imageUrl, width) ?? imageUrl} ${width}w`)
+    .join(', ')
+}
+
+function PortableTextImageBlock({ value }: { value: PortableTextImage }) {
+  const imageUrl = getPortableTextImageBaseUrl(value)
+  const src = getPortableTextImageUrl(imageUrl, 760)
+
+  if (!imageUrl || !src) {
     return null
   }
 
   return (
     <figure className='my-10 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm'>
       <div className='relative aspect-[5/3] w-full bg-base-200'>
-        <Image
-          src={imageUrl}
+        <img
+          src={src}
+          srcSet={getPortableTextImageSrcSet(imageUrl)}
+          sizes={articleBodyImageSizes}
           alt={value.alt || ''}
-          fill
-          unoptimized={isSanityCdnImageUrl(imageUrl)}
-          sizes='(min-width: 1280px) 760px, (min-width: 768px) 70vw, 100vw'
-          className='object-cover'
+          width={1440}
+          height={864}
+          loading='lazy'
+          decoding='async'
+          className='h-full w-full object-cover'
         />
       </div>
       {value.caption ? (

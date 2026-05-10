@@ -334,6 +334,7 @@ export function CakesMobileFilterSortSheet({
         })
         return
       } catch {
+        // Fall back to direct scrollTop assignment below.
       }
     }
 
@@ -433,6 +434,8 @@ export function CakesMobileFilterSortSheet({
         includeCheckedCollection: true
       })
     }
+  // scheduleCollectionsVisibilityScroll only reads refs and current DOM state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionOptions, featuredCollectionOptions, open, optionsSignature, selectedCollectionIds])
 
   function handleFeaturedToggle(event: SyntheticEvent<HTMLDetailsElement, Event>) {

@@ -1,6 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { invalidateCache } from '@/app/utils/fetchCakes'
+import { categoryLandingCanonicalPaths } from '@/app/cakes/categoryLandingConfig'
 import { verifyAdminAuthToken } from '@/lib/admin/auth-token'
+
+const publicPathsToRevalidate = [
+  '/',
+  '/cakes',
+  '/cakes-by-post',
+  '/faqs',
+  '/blog',
+  '/allergens',
+  '/get-custom-quote',
+  '/api/products',
+  '/api/catalog/custom-cakes',
+  '/api/catalog/by-post-cakes',
+  '/api/form/occasion-options',
+  ...categoryLandingCanonicalPaths
+] as const
+
+const sanityTagsToRevalidate = [
+  'articles',
+  'article',
+  'cake-collections',
+  'cakes',
+  'cakes-by-post',
+  'cakes-featured-offer',
+  'faqs',
+  'gift-hamper-collections',
+  'gift-hampers',
+  'ingredients',
+  'market-schedule',
+  'pages',
+  'sitemaps',
+  'stats',
+  'testimonials'
+] as const
 
 function getAdminAuthToken(request: NextRequest): string {
   return request.cookies.get('admin_auth_token')?.value?.trim() || ''
@@ -29,10 +64,20 @@ export async function POST(request: NextRequest) {
     const { pattern } = body
 
     await invalidateCache(pattern)
+    publicPathsToRevalidate.forEach((path) => {
+      revalidatePath(path)
+    })
+    sanityTagsToRevalidate.forEach((tag) => {
+      revalidateTag(tag, { expire: 0 })
+    })
 
     return NextResponse.json({
       success: true,
-      message: pattern ? `Cache cleared for pattern: ${pattern}` : 'All cache cleared',
+      message: pattern ? `Website cache revalidated for pattern: ${pattern}` : 'Website cache revalidated',
+      revalidated: {
+        paths: publicPathsToRevalidate.length,
+        tags: sanityTagsToRevalidate.length
+      },
       timestamp: new Date().toISOString()
     })
   } catch (error) {

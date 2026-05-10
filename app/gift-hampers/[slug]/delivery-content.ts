@@ -9,6 +9,11 @@ import { blocksToText } from '@/types/cake'
 import { defaultDeliveryPolicy, type DeliveryPolicy } from '@/types/deliveryPolicy'
 import type { GiftHamper } from '@/types/giftHamper'
 
+type GiftHamperDeliveryContentInput = Pick<
+  GiftHamper,
+  'deliverySection' | 'description' | 'giftHampersDeliverySection' | 'shortDescription'
+>
+
 export const defaultGiftHamperDeliveryTitle = 'Delivery'
 export const fallbackGiftHamperDeliveryPolicy: DeliveryPolicy = {
   ...defaultDeliveryPolicy
@@ -57,7 +62,7 @@ function hasPortableTextContent(
   return Array.isArray(value) && value.length > 0 && blocksToText(value).trim().length > 0
 }
 
-export function resolveGiftHamperDeliveryTitle(hamper: GiftHamper): string {
+export function resolveGiftHamperDeliveryTitle(hamper: GiftHamperDeliveryContentInput): string {
   const globalTitle = hamper.giftHampersDeliverySection?.name
 
   if (typeof globalTitle === 'string' && globalTitle.trim().length > 0) {
@@ -68,7 +73,7 @@ export function resolveGiftHamperDeliveryTitle(hamper: GiftHamper): string {
 }
 
 export function resolveGiftHamperDeliveryDescription(
-  hamper: GiftHamper
+  hamper: GiftHamperDeliveryContentInput
 ): NonNullable<GiftHamper['description']> {
   const shouldUseCustomDescription = hamper.deliverySection?.descriptionSource === 'custom'
 
@@ -83,7 +88,7 @@ export function resolveGiftHamperDeliveryDescription(
   return fallbackGiftHamperDeliveryDescription
 }
 
-function resolveGlobalGiftHamperDeliveryPolicy(hamper: GiftHamper) {
+function resolveGlobalGiftHamperDeliveryPolicy(hamper: GiftHamperDeliveryContentInput) {
   if (hamper.giftHampersDeliverySection?.policy) {
     return normalizeDeliveryPolicy(hamper.giftHampersDeliverySection.policy)
   }
@@ -91,7 +96,7 @@ function resolveGlobalGiftHamperDeliveryPolicy(hamper: GiftHamper) {
   return fallbackGiftHamperDeliveryPolicy
 }
 
-export function resolveGiftHamperDeliveryPolicy(hamper: GiftHamper): DeliveryPolicy {
+export function resolveGiftHamperDeliveryPolicy(hamper: GiftHamperDeliveryContentInput): DeliveryPolicy {
   const shouldUseCustomPolicy = hamper.deliverySection?.descriptionSource === 'custom' ||
     hamper.deliverySection?.policySource === 'custom'
 
@@ -103,7 +108,7 @@ export function resolveGiftHamperDeliveryPolicy(hamper: GiftHamper): DeliveryPol
 }
 
 export function detectGiftHamperDeliveryPolicyMismatch(
-  hamper: GiftHamper,
+  hamper: GiftHamperDeliveryContentInput,
   policy: DeliveryPolicy
 ) {
   const description = resolveGiftHamperDeliveryDescription(hamper)
@@ -122,7 +127,7 @@ export interface ResolvedGiftHamperDeliveryContent {
 }
 
 export function resolveGiftHamperDeliveryContent(
-  hamper: GiftHamper
+  hamper: GiftHamperDeliveryContentInput
 ): ResolvedGiftHamperDeliveryContent {
   const resolvedPolicy = resolveGiftHamperDeliveryPolicy(hamper)
   const resolvedDescription = resolveGiftHamperDeliveryDescription(hamper)

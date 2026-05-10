@@ -197,7 +197,7 @@ function createCollectionProductAssignmentsInput(config: CollectionAssignmentInp
       return () => {
         isMounted = false
       }
-    }, [client, emptyLabel, query])
+    }, [client])
 
     useEffect(() => {
       if (readOnly || isLoading || loadError || isSyncing || !canAssignPublishedReferences) {
@@ -247,7 +247,7 @@ function createCollectionProductAssignmentsInput(config: CollectionAssignmentInp
       setIsSyncing(true)
 
       try {
-        const { nextProducts, changedProductIds } = await syncCollectionAssignmentsWithRetry({
+        const { nextProducts } = await syncCollectionAssignmentsWithRetry({
           client: client as unknown as CollectionAssignmentsSyncClient,
           products,
           nextSelectedIdsSet,

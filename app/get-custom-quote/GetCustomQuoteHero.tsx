@@ -52,8 +52,8 @@ export function GetCustomQuoteHero() {
             <div className='relative z-[1] h-[290px] overflow-hidden rounded-[30px] border border-base-200 bg-base-100 shadow-xl tablet:h-[430px]'>
               <Image
                 src={heroCakeCenter}
-                alt='Red celebration cake with elegant crown topper'
-                priority
+                alt='Cake gift box with candle card and handwritten note'
+                preload
                 sizes='(min-width: 1024px) 230px, 39vw'
                 className='h-full w-full object-cover'
               />

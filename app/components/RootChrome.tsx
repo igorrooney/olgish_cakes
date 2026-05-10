@@ -1,37 +1,36 @@
-'use client'
-
 import type { ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
+import { DeferredNonCriticalClientFeatures } from './DeferredNonCriticalClientFeatures'
 import { DeferredVercelObservability } from './DeferredVercelObservability'
-import { NonCriticalClientFeatures } from './NonCriticalClientFeatures'
-import { SiteFooter } from './SiteFooter'
-import { SiteHeader } from './homepage/SiteHeader'
+import { LightweightConsentBanner } from './LightweightConsentBanner'
 
 interface RootChromeProps {
   children: ReactNode
   isVercelDeployment: boolean
+  siteFooter: ReactNode
+  siteHeader: ReactNode
 }
 
-const isAdminPath = (pathname: string | null) => pathname === '/admin' || Boolean(pathname?.startsWith('/admin/'))
-
-export function RootChrome({ children, isVercelDeployment }: RootChromeProps) {
-  const pathname = usePathname()
-
-  if (isAdminPath(pathname)) {
-    return (
-      <div className='min-h-screen'>
-        {children}
-        {isVercelDeployment ? <DeferredVercelObservability /> : null}
-      </div>
-    )
-  }
-
+export function RootChrome({
+  children,
+  isVercelDeployment,
+  siteFooter,
+  siteHeader
+}: RootChromeProps) {
   return (
-    <div className='flex min-h-screen flex-col'>
-      <NonCriticalClientFeatures />
-      <SiteHeader />
+    <div className='public-root-chrome flex min-h-screen flex-col'>
+      <div className='public-root-consent'>
+        <LightweightConsentBanner />
+      </div>
+      <div className='public-root-deferred-features'>
+        <DeferredNonCriticalClientFeatures />
+      </div>
+      <div className='public-root-header'>
+        {siteHeader}
+      </div>
       <main className='flex-grow'>{children}</main>
-      <SiteFooter />
+      <div className='public-root-footer'>
+        {siteFooter}
+      </div>
       {isVercelDeployment ? <DeferredVercelObservability /> : null}
     </div>
   )

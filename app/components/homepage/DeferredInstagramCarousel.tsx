@@ -1,14 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { InstagramPost } from '@/app/types/instagram'
+import type { InstagramCarouselPost } from './instagramCarouselContent'
 
 const InstagramCarousel = dynamic(
   async () => import('./InstagramCarousel').then(module => module.InstagramCarousel)
 )
 
 type DeferredInstagramCarouselProps = {
-  posts: InstagramPost[]
+  posts: InstagramCarouselPost[]
   profileUrl: string
   profileName: string
   profileHandle: string

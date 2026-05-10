@@ -11,7 +11,7 @@ export async function GET() {
       { occasionOptions },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=86400',
+          'Cache-Control': 'no-store',
           'X-Robots-Tag': 'noindex, nofollow'
         }
       }

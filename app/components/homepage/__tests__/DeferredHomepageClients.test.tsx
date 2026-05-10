@@ -3,10 +3,10 @@
  */
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import type { Testimonial } from '@/app/types/testimonial'
-import type { InstagramPost } from '@/app/types/instagram'
-import type { MarketSchedule } from '@/app/types/marketSchedule'
 import type { DisplayCollection } from '../occasions.types'
+import type { HomepageReview } from '../ReviewsCarousel'
+import type { InstagramCarouselPost } from '../instagramCarouselContent'
+import type { HomepageMarket } from '../MarketsClient'
 import { DeferredBestsellersCarousel } from '../DeferredBestsellersCarousel'
 import { DeferredInstagramCarousel } from '../DeferredInstagramCarousel'
 import { DeferredMarketsClient } from '../DeferredMarketsClient'
@@ -38,37 +38,29 @@ jest.mock('../EnquiryForm', () => ({
   EnquiryForm: (props: unknown) => enquiryFormMock(props)
 }))
 
-const testimonial: Testimonial = {
+const testimonial: HomepageReview = {
   _id: 'testimonial-1',
-  _type: 'testimonial',
-  _createdAt: '2026-01-01T00:00:00Z',
-  _updatedAt: '2026-01-01T00:00:00Z',
   customerName: 'Olha',
-  cakeType: 'Honey cake',
-  rating: 5,
   date: '2026-01-10',
-  text: 'Lovely cake',
-  source: 'google'
+  text: 'Lovely cake'
 }
 
-const instagramPost: InstagramPost = {
+const instagramPost: InstagramCarouselPost = {
   id: 'instagram-1',
+  captionLine: 'Fresh honey cake',
+  imageAlt: 'Fresh honey cake',
   imageUrl: 'https://example.com/post.jpg',
-  permalink: 'https://instagram.com/p/post',
-  mediaType: 'IMAGE'
+  permalink: 'https://instagram.com/p/post'
 }
 
-const market: MarketSchedule = {
+const market: HomepageMarket = {
   _id: 'market-1',
   title: 'Leeds Market',
   location: 'Leeds',
   googleMapsUrl: 'https://maps.example.com/leeds',
   date: '2099-04-01',
   startTime: '09:00',
-  endTime: '14:00',
-  active: true,
-  featured: false,
-  weatherDependent: false
+  endTime: '14:00'
 }
 
 const collection: DisplayCollection = {

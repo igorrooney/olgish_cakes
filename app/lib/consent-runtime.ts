@@ -151,6 +151,10 @@ export async function loadConsentRuntime(options: ConsentRuntimeOptions = {}) {
     return
   }
 
+  if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
+    return
+  }
+
   if (runtimeLoadPromise === null) {
     runtimeLoadPromise = (async () => {
       appendStylesheetIfMissing(klaroStyleHref, 'data-klaro-style')

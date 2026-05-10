@@ -31,6 +31,10 @@ describe('generateEventStructuredData', () => {
     }
   }
 
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   describe('generateEventStructuredData', () => {
     const reviewStats = { count: 13, averageRating: 5 }
 
@@ -264,6 +268,18 @@ describe('generateEventStructuredData', () => {
       expect(result).toBeNull()
     })
 
+    it('should filter event lists by the Europe/London calendar date', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-05-09T23:30:00.000Z'))
+
+      const result = generateEventsListStructuredData([
+        { ...mockEvent, _id: 'past', title: 'Past Market', date: '2026-05-09' },
+        { ...mockEvent, _id: 'today', title: 'Today Market', date: '2026-05-10' }
+      ])
+
+      expect(result!.numberOfItems).toBe(1)
+      expect(result!.itemListElement[0].item.name).toBe('Today Market')
+    })
+
     it('should include mainEntity with Organization data', () => {
       const result = generateEventsListStructuredData([mockEvent])
 
@@ -326,6 +342,18 @@ describe('generateEventStructuredData', () => {
       const result = generateEventSEOMetadata([pastEvent])
 
       expect(result).toEqual({})
+    })
+
+    it('should filter SEO metadata by the Europe/London calendar date', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-05-09T23:30:00.000Z'))
+
+      const result = generateEventSEOMetadata([
+        { ...mockEvent, _id: 'past', title: 'Morley Makers Market', date: '2026-05-09' },
+        { ...mockEvent, _id: 'today', title: 'Sunday Market', date: '2026-05-10' }
+      ])
+
+      expect(result.eventTitle).toContain('Sunday Market')
+      expect(result.totalUpcomingEvents).toBe(1)
     })
 
     it('should handle events with missing optional fields', () => {

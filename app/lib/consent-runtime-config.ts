@@ -1,9 +1,55 @@
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID
 
-export const klaroScriptSrc = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.js'
-export const klaroStyleHref = 'https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css'
+export const klaroScriptSrc = '/runtime/klaro/v0.7/klaro-no-css.js'
+export const klaroStyleHref = '/runtime/klaro/v0.7/klaro.min.css'
 export const klaroOverridesHref = '/styles/klaro-overrides.css'
 export const isConsentRuntimeEnabled = Boolean(gtmId)
+
+type ConsentModeValue = 'granted' | 'denied'
+
+type ConsentModeUpdate = {
+  ad_storage?: ConsentModeValue
+  analytics_storage?: ConsentModeValue
+  ad_user_data?: ConsentModeValue
+  ad_personalization?: ConsentModeValue
+}
+
+type ConsentRuntimeWindow = Window & typeof globalThis & {
+  gtag?: (...args: unknown[]) => void
+  __loadOlgishGtmOnce?: () => void
+}
+
+type KlaroServiceConfig = {
+  name: string
+  purposes: string[]
+  cookies?: string[]
+  translations: Record<string, {
+    title?: string
+    description?: string
+  }>
+  onAccept?: () => void
+  onDecline?: () => void
+}
+
+function getConsentRuntimeWindow() {
+  return window as ConsentRuntimeWindow
+}
+
+function updateGtagConsent(update: ConsentModeUpdate) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  getConsentRuntimeWindow().gtag?.('consent', 'update', update)
+}
+
+function loadGtmAfterConsent() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  getConsentRuntimeWindow().__loadOlgishGtmOnce?.()
+}
 
 export const consentDefaultsScript = `
   window.dataLayer = window.dataLayer || [];
@@ -29,12 +75,6 @@ const loadGtmOnConsentScript = `
   };
 `
 
-const loadGtmConsentSnippet = `
-  if (window.__loadOlgishGtmOnce) {
-    window.__loadOlgishGtmOnce()
-  }
-`
-
 const klaroServices = gtmId
   ? [
       {
@@ -49,17 +89,17 @@ const klaroServices = gtmId
             description: 'Helps us understand how people use the site.'
           }
         },
-        onAccept: `
-          gtag('consent', 'update', {
-            'analytics_storage': 'granted'
+        onAccept: () => {
+          updateGtagConsent({
+            analytics_storage: 'granted'
           })
-          ${loadGtmConsentSnippet}
-        `,
-        onDecline: `
-          gtag('consent', 'update', {
-            'analytics_storage': 'denied'
+          loadGtmAfterConsent()
+        },
+        onDecline: () => {
+          updateGtagConsent({
+            analytics_storage: 'denied'
           })
-        `
+        }
       },
       {
         name: 'microsoft-clarity',
@@ -72,7 +112,7 @@ const klaroServices = gtmId
             description: 'Helps us understand how people use the site with session insights.'
           }
         },
-        onAccept: loadGtmConsentSnippet
+        onAccept: loadGtmAfterConsent
       },
       {
         name: 'google-ads',
@@ -86,23 +126,23 @@ const klaroServices = gtmId
             description: 'Shows personalised ads and measures ad performance.'
           }
         },
-        onAccept: `
-          gtag('consent', 'update', {
-            'ad_storage': 'granted',
-            'ad_user_data': 'granted',
-            'ad_personalization': 'granted'
+        onAccept: () => {
+          updateGtagConsent({
+            ad_storage: 'granted',
+            ad_user_data: 'granted',
+            ad_personalization: 'granted'
           })
-          ${loadGtmConsentSnippet}
-        `,
-        onDecline: `
-          gtag('consent', 'update', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied'
+          loadGtmAfterConsent()
+        },
+        onDecline: () => {
+          updateGtagConsent({
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied'
           })
-        `
+        }
       }
-    ]
+    ] satisfies KlaroServiceConfig[]
   : []
 
 const klaroConfig = {

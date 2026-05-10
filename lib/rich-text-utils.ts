@@ -2,6 +2,22 @@
  * Utility functions for working with Sanity portable text
  */
 
+export interface RichTextChild {
+  _type?: string;
+  _key?: string;
+  text?: string;
+  [key: string]: unknown;
+}
+
+export interface RichTextBlock {
+  _type?: string;
+  _key?: string;
+  style?: string;
+  children?: RichTextChild[];
+  markDefs?: unknown[];
+  [key: string]: unknown;
+}
+
 /**
  * Generates a unique key for portable text blocks
  */
@@ -12,7 +28,7 @@ function generateUniqueKey(prefix: string = "block"): string {
 /**
  * Converts a plain string to a portable text block with proper keys
  */
-export function stringToRichText(text: string): any[] {
+export function stringToRichText(text: string): RichTextBlock[] {
   if (!text || text.trim() === "") {
     return [];
   }
@@ -41,13 +57,13 @@ export function stringToRichText(text: string): any[] {
  * Converts portable text blocks to plain text
  * This is a more robust version of blocksToText
  */
-export function richTextToText(blocks: any[]): string {
+export function richTextToText(blocks: RichTextBlock[]): string {
   if (!blocks || !Array.isArray(blocks)) return "";
 
   return blocks
     .map(block => {
       if (block._type === "block") {
-        return block.children?.map((child: any) => child.text).join("") || "";
+        return block.children?.map((child: RichTextChild) => child.text || "").join("") || "";
       }
       return "";
     })
@@ -58,7 +74,7 @@ export function richTextToText(blocks: any[]): string {
 /**
  * Validates that portable text blocks have unique keys
  */
-export function validateRichTextKeys(blocks: any[]): boolean {
+export function validateRichTextKeys(blocks: RichTextBlock[]): boolean {
   if (!blocks || !Array.isArray(blocks)) return true;
 
   const keys = new Set<string>();
@@ -90,7 +106,7 @@ export function validateRichTextKeys(blocks: any[]): boolean {
 /**
  * Ensures all blocks have unique keys by regenerating them if needed
  */
-export function ensureUniqueKeys(blocks: any[]): any[] {
+export function ensureUniqueKeys(blocks: RichTextBlock[]): RichTextBlock[] {
   if (!blocks || !Array.isArray(blocks)) return [];
 
   return blocks.map(block => {
@@ -103,7 +119,7 @@ export function ensureUniqueKeys(blocks: any[]): any[] {
 
     // Generate new keys for children if they don't exist
     if (newBlock.children && Array.isArray(newBlock.children)) {
-      newBlock.children = newBlock.children.map((child: any) => ({
+      newBlock.children = newBlock.children.map((child: RichTextChild) => ({
         ...child,
         _key: child._key || generateUniqueKey("span"),
       }));

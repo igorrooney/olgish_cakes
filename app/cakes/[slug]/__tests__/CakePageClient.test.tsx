@@ -3,14 +3,24 @@
  */
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { CakePageClient } from '../CakePageClient'
+import { CakePageClient as CakePageClientBase, type CakePageClientData } from '../CakePageClient'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
+import { urlFor } from '@/sanity/lib/image'
 import type { Cake } from '@/types/cake'
 import type { CatalogProductDetailImage, CatalogProductDetailSection } from '../../components/CatalogProductDetailLayout'
+import { resolveCakeDeliveryContent } from '../delivery-content'
 
 const capturedLayoutProps: Array<Record<string, unknown>> = []
 const mockOrderIntentHandler = jest.fn()
 const mockedUseOrderFormPrefetch = useOrderFormPrefetch as jest.MockedFunction<typeof useOrderFormPrefetch>
+type UrlForImage = Parameters<typeof urlFor>[0]
+type TestCakeImage = {
+  asset?: {
+    _ref?: string
+  }
+  alt?: string
+}
 
 
 jest.mock('next/dynamic', () => {
@@ -113,6 +123,7 @@ jest.mock('../../components/CatalogProductDetailLayout', () => ({
 
 jest.mock('@/sanity/lib/image', () => ({
   urlFor: (image?: { asset?: { _ref?: string } }) => ({
+    url: () => `https://cdn.sanity.io/images/test/${image?.asset?._ref ?? 'cake-image'}.jpg`,
     width: () => ({
       height: () => ({
         url: () => `https://cdn.sanity.io/images/test/${image?.asset?._ref ?? 'cake-image'}.jpg`
@@ -230,6 +241,123 @@ function createCakeWithOrderOptions(overrides: Partial<Cake> = {}): Cake {
     },
     ...overrides
   }
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function getTestCakeImageUrl(image: TestCakeImage) {
+  const rawImageUrl = urlFor(image as UrlForImage).width(960).height(960).url()
+
+  return getSanityCdnImageUrl(rawImageUrl, {
+    width: 960,
+    height: 960,
+    fit: 'crop',
+    quality: 80
+  }) ?? rawImageUrl
+}
+
+function mapTestCakeImagesToGallery(cake: Cake): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${cake.name} by Olgish Cakes`
+
+  function addImage(image: TestCakeImage | undefined) {
+    if (!image || !hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = getTestCakeImageUrl(image)
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  }
+
+  addImage(cake.mainImage)
+  cake.designs?.standard?.forEach((image) => addImage(image))
+  cake.designs?.individual?.forEach((image) => addImage(image))
+  cake.images?.forEach((image) => addImage(image))
+
+  return mappedImages
+}
+
+function mapTestCakeFillingOptions(cake: Cake): NonNullable<CakePageClientData['fillingOptions']> {
+  const seenFillingIds = new Set<string>()
+
+  return cake.fillingTypes?.flatMap((fillingType) => {
+    const fillingId = typeof fillingType._id === 'string' ? fillingType._id.trim() : ''
+    const fillingName = typeof fillingType.name === 'string' ? fillingType.name.trim() : ''
+
+    if (fillingId.length === 0 || fillingName.length === 0 || seenFillingIds.has(fillingId)) {
+      return []
+    }
+
+    seenFillingIds.add(fillingId)
+
+    const fillingImage = hasImageAssetReference(fillingType.image)
+      ? {
+          src: getTestCakeImageUrl(fillingType.image),
+          alt: typeof fillingType.image.alt === 'string' && fillingType.image.alt.trim().length > 0
+            ? fillingType.image.alt.trim()
+            : `${fillingName} filling for ${cake.name}`
+        }
+      : null
+
+    return [{
+      id: fillingId,
+      name: fillingName,
+      image: fillingImage
+    }]
+  }) ?? []
+}
+
+function toCakePageClientData(cake: Cake): CakePageClientData {
+  return {
+    name: cake.name,
+    slug: cake.slug,
+    description: cake.description,
+    shortDescription: cake.shortDescription,
+    deliveryContent: resolveCakeDeliveryContent(cake),
+    pricing: cake.pricing,
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    fillingOptions: mapTestCakeFillingOptions(cake),
+    defaultFillingTypeId: cake.defaultFillingType?._id,
+    galleryImages: mapTestCakeImagesToGallery(cake),
+    ingredients: cake.ingredients,
+    allergens: cake.allergens,
+    ingredientReference: cake.ingredientReference
+  }
+}
+
+function CakePageClient({
+  cake,
+  backHref
+}: {
+  cake: Cake
+  backHref: string
+}) {
+  return (
+    <CakePageClientBase
+      cake={toCakePageClientData(cake)}
+      backHref={backHref}
+    />
+  )
 }
 
 describe('CakePageClient', () => {

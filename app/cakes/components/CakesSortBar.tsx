@@ -54,7 +54,7 @@ const compactInlineButtonClassName = [
 ].join(' ')
 
 const activeButtonClassName = 'btn-primary border-primary bg-primary text-primary-content'
-const inactiveButtonClassName = 'border-transparent bg-primary-50 text-base-content/55'
+const inactiveButtonClassName = 'border-primary-100 bg-primary-50 text-primary-800'
 
 function isActive(option: CakesSortOption, selectedSort: CakesSortOption) {
   return option === selectedSort

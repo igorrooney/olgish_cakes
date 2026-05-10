@@ -11,14 +11,8 @@ jest.mock('nuqs/adapters/next/app', () => ({
   )
 }))
 
-jest.mock('../../providers', () => ({
-  Providers: ({ children }: { children: ReactNode }) => (
-    <div data-testid='query-providers'>{children}</div>
-  )
-}))
-
 describe('CatalogClientProviders', () => {
-  it('wraps the catalog subtree with route-local nuqs and query providers', () => {
+  it('wraps the catalog subtree with route-local nuqs state support', () => {
     render(
       <CatalogClientProviders>
         <div data-testid='catalog-child'>Catalog</div>
@@ -26,7 +20,6 @@ describe('CatalogClientProviders', () => {
     )
 
     expect(screen.getByTestId('nuqs-adapter')).toBeInTheDocument()
-    expect(screen.getByTestId('query-providers')).toBeInTheDocument()
     expect(screen.getByTestId('catalog-child')).toBeInTheDocument()
   })
 })

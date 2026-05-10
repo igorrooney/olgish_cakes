@@ -3,10 +3,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 
-interface UseSanityLiveOptions {
+interface UseSanityLiveOptions<T> {
   query: string;
-  params?: Record<string, any>;
-  initialData?: any;
+  params?: Record<string, unknown>;
+  initialData?: T | null;
   enabled?: boolean;
 }
 
@@ -15,8 +15,8 @@ export function useSanityLive<T>({
   params = {},
   initialData,
   enabled = true,
-}: UseSanityLiveOptions) {
-  const [data, setData] = useState<T | null>(initialData || null);
+}: UseSanityLiveOptions<T>) {
+  const [data, setData] = useState<T | null>(initialData ?? null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -52,7 +52,7 @@ export function useSanityLive<T>({
 
     // Set up real-time listener
     const subscription = client.listen(query, params).subscribe({
-      next: update => {
+      next: () => {
         if (mounted) {
           // Refetch data when content changes
           fetchData();

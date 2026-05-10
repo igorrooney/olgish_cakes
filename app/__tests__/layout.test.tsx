@@ -11,12 +11,33 @@ interface MockProps {
   [key: string]: unknown
 }
 
+interface MockLocalFontSource {
+  path: string
+  weight?: string
+  style?: string
+}
+
+interface MockLocalFontOptions {
+  src: string | MockLocalFontSource[]
+  variable?: string
+  display?: string
+  preload?: boolean
+  fallback?: string[]
+  adjustFontFallback?: string | false
+}
+
+const mockLocalFontCalls: MockLocalFontOptions[] = []
+
 jest.mock('next/font/local', () => ({
   __esModule: true,
-  default: jest.fn(() => ({
-    className: 'font-class',
-    variable: 'font-variable'
-  }))
+  default: jest.fn((options: MockLocalFontOptions) => {
+    mockLocalFontCalls.push(options)
+
+    return {
+      className: 'font-class',
+      variable: 'font-variable'
+    }
+  })
 }))
 
 jest.mock('@vercel/analytics/react', () => ({
@@ -49,14 +70,20 @@ jest.mock('../components/ReviewStatsProvider', () => ({
 jest.mock('../components/RootChrome', () => ({
   RootChrome: ({
     children,
-    isVercelDeployment
+    isVercelDeployment,
+    siteFooter,
+    siteHeader
   }: {
     children: ReactNode
     isVercelDeployment: boolean
+    siteFooter: ReactNode
+    siteHeader: ReactNode
   }) => (
     <div data-testid='root-chrome'>
       <div data-testid='non-critical-client-features' />
+      {siteHeader}
       {children}
+      {siteFooter}
       {isVercelDeployment ? <div data-testid='deferred-vercel-observability' /> : null}
     </div>
   )
@@ -120,6 +147,7 @@ describe('RootLayout', () => {
   afterEach(() => {
     delete process.env.VERCEL
     delete process.env.NEXT_PUBLIC_GTM_ID
+    mockLocalFontCalls.length = 0
   })
 
   it('renders Vercel analytics components on Vercel deployments', async () => {
@@ -155,6 +183,30 @@ describe('RootLayout', () => {
 
     expect(markup).not.toContain('"@type":"SearchAction"')
     expect(markup).not.toContain('search_term_string')
+  })
+
+  it('configures the MoreSugar hero font through next/font without relying on a render-blocking TTF asset', async () => {
+    const markup = await renderRootLayout()
+
+    expect(mockLocalFontCalls).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          src: [
+            {
+              path: '../public/fonts/more_sugar/MoreSugar-Regular.woff2',
+              weight: '400',
+              style: 'normal'
+            }
+          ],
+          variable: '--font-more-sugar',
+          display: 'swap',
+          preload: true,
+          fallback: ['Arial', 'cursive', 'fantasy'],
+          adjustFontFallback: 'Arial'
+        })
+      ])
+    )
+    expect(markup).not.toContain('MoreSugar-Regular.ttf')
   })
 
   it('keeps the root shell free of global public providers', async () => {

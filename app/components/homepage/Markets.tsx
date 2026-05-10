@@ -1,5 +1,6 @@
 import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
+import { getLondonDateKey, getMarketDateKey } from '@/app/utils/londonDate'
 import { DeferredMarketsClient } from './DeferredMarketsClient'
 
 type MarketEventSchema = {
@@ -75,25 +76,33 @@ function buildMarketEventSchema(market: MarketSchedule): MarketEventSchema {
 }
 
 function getUpcomingMarkets(markets: MarketSchedule[]): MarketSchedule[] {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const today = getLondonDateKey(new Date())
 
   return markets
     .filter((market) => {
-      const marketDate = new Date(market.date)
-      marketDate.setHours(0, 0, 0, 0)
-      return marketDate >= today
+      const marketDate = getMarketDateKey(market.date)
+      return marketDate !== null && marketDate >= today
     })
     .sort((a, b) => {
-      const dateA = new Date(a.date).getTime()
-      const dateB = new Date(b.date).getTime()
-      return dateA - dateB
+      const dateA = getMarketDateKey(a.date) ?? ''
+      const dateB = getMarketDateKey(b.date) ?? ''
+      return dateA.localeCompare(dateB)
     })
 }
 
 export async function Markets() {
   const allMarkets = await getMarketSchedule()
   const upcomingMarkets = getUpcomingMarkets(allMarkets)
+  const clientMarkets = upcomingMarkets.map((market) => ({
+    _id: market._id,
+    date: market.date,
+    endTime: market.endTime,
+    googleMapsUrl: market.googleMapsUrl,
+    location: market.location,
+    startTime: market.startTime,
+    title: market.title,
+    website: market.website
+  }))
   const marketStructuredData = upcomingMarkets.length > 0
     ? {
         '@context': 'https://schema.org',
@@ -113,7 +122,7 @@ export async function Markets() {
           }}
         />
       ) : null}
-      <DeferredMarketsClient upcomingMarkets={upcomingMarkets} />
+      <DeferredMarketsClient upcomingMarkets={clientMarkets} />
     </>
   )
 }

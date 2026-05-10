@@ -22,14 +22,6 @@ export const DynamicContactForm = dynamic(
   }
 );
 
-export const DynamicQuoteForm = dynamic(
-  () => import("../get-custom-quote/QuoteForm").then(mod => ({ default: mod.QuoteForm })),
-  {
-    loading: DynamicLoading,
-    ssr: false,
-  }
-);
-
 export const DynamicCakeImageGallery = dynamic(
   () => import("./CakeImageGallery").then(mod => ({ default: mod.CakeImageGallery })),
   {

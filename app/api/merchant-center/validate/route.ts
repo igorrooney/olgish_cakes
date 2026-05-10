@@ -1,9 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getAllCakes } from "@/app/utils/fetchCakes";
 import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
+import { blocksToText, type Cake } from "@/types/cake";
+import type { GiftHamper } from "@/types/giftHamper";
 
 // Google Merchant Center Feed Validation Endpoint
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const [cakes, giftHampers] = await Promise.all([
       getAllCakes(),
@@ -50,7 +52,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function validateCakeProduct(cake: any) {
+function validateCakeProduct(cake: Cake) {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -76,7 +78,7 @@ function validateCakeProduct(cake: any) {
   }
 
   // Description validation
-  const description = cake.shortDescription || cake.description;
+  const description = blocksToText(cake.shortDescription || cake.description);
   if (!description) {
     warnings.push(`Cake ${cake.name}: Missing product description`);
   } else if (description.length < 50) {
@@ -94,7 +96,7 @@ function validateCakeProduct(cake: any) {
   };
 }
 
-function validateHamperProduct(hamper: any) {
+function validateHamperProduct(hamper: GiftHamper) {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -103,7 +105,9 @@ function validateHamperProduct(hamper: any) {
   if (!hamper.name) errors.push(`Hamper: Missing product name`);
   if (!hamper.slug?.current) errors.push(`Hamper ${hamper.name}: Missing slug`);
   if (!hamper.price) warnings.push(`Hamper ${hamper.name}: Missing price`);
-  if (!hamper.mainImage?.asset?.url) warnings.push(`Hamper ${hamper.name}: Missing main image`);
+  const mainImage = hamper.images?.find(image => image.isMain) || hamper.images?.[0];
+
+  if (!mainImage?.asset?.url) warnings.push(`Hamper ${hamper.name}: Missing main image`);
 
   // Price validation
   const price = hamper.price;
@@ -112,15 +116,15 @@ function validateHamperProduct(hamper: any) {
   }
 
   // Image validation
-  if (hamper.mainImage?.asset?.url) {
-    const imageUrl = hamper.mainImage.asset.url;
+  if (mainImage?.asset?.url) {
+    const imageUrl = mainImage.asset.url;
     if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
       warnings.push(`Hamper ${hamper.name}: Image URL format may be incorrect`);
     }
   }
 
   // Description validation
-  const description = hamper.shortDescription || hamper.description;
+  const description = blocksToText(hamper.shortDescription || hamper.description || []);
   if (!description) {
     warnings.push(`Hamper ${hamper.name}: Missing product description`);
   } else if (description.length < 50) {

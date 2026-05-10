@@ -2,7 +2,7 @@ import { createClient } from "@sanity/client";
 import type { SanityDocument } from "@sanity/types";
 import dotenv from "dotenv";
 import path from "path";
-import { ensureUniqueKeys, validateRichTextKeys } from "../lib/rich-text-utils";
+import { ensureUniqueKeys, validateRichTextKeys, type RichTextBlock } from "../lib/rich-text-utils";
 
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
@@ -24,12 +24,27 @@ const sanityClient = createClient({
   useCdn: false,
 });
 
+type CakeWithRichText = SanityDocument & {
+  name?: string;
+  shortDescription?: RichTextBlock[];
+  description?: RichTextBlock[];
+};
+
+type CakeRichTextUpdates = Partial<Pick<CakeWithRichText, "shortDescription" | "description">>;
+
+type RichTextPatchTransaction = {
+  patch: {
+    id: string;
+    set: CakeRichTextUpdates;
+  };
+};
+
 async function fixRichTextKeys() {
   console.log("Fetching cakes with rich text data...");
 
   try {
     // Fetch all cakes
-    const cakes = await sanityClient.fetch<SanityDocument[]>('*[_type == "cake"]');
+    const cakes = await sanityClient.fetch<CakeWithRichText[]>('*[_type == "cake"]');
 
     if (!cakes || cakes.length === 0) {
       console.log("No cakes found in the database.");
@@ -38,29 +53,28 @@ async function fixRichTextKeys() {
 
     console.log(`Found ${cakes.length} cakes to check`);
 
-    const transactions: any[] = [];
+    const transactions: RichTextPatchTransaction[] = [];
     let fixedCount = 0;
 
     for (const cake of cakes) {
-      const cakeData = cake as any;
       let needsUpdate = false;
-      const updates: any = {};
+      const updates: CakeRichTextUpdates = {};
 
       // Check shortDescription
-      if (cakeData.shortDescription && Array.isArray(cakeData.shortDescription)) {
-        if (!validateRichTextKeys(cakeData.shortDescription)) {
-          console.log(`Fixing duplicate keys in shortDescription for cake: ${cakeData.name}`);
-          updates.shortDescription = ensureUniqueKeys(cakeData.shortDescription);
+      if (cake.shortDescription && Array.isArray(cake.shortDescription)) {
+        if (!validateRichTextKeys(cake.shortDescription)) {
+          console.log(`Fixing duplicate keys in shortDescription for cake: ${cake.name}`);
+          updates.shortDescription = ensureUniqueKeys(cake.shortDescription);
           needsUpdate = true;
           fixedCount++;
         }
       }
 
       // Check description
-      if (cakeData.description && Array.isArray(cakeData.description)) {
-        if (!validateRichTextKeys(cakeData.description)) {
-          console.log(`Fixing duplicate keys in description for cake: ${cakeData.name}`);
-          updates.description = ensureUniqueKeys(cakeData.description);
+      if (cake.description && Array.isArray(cake.description)) {
+        if (!validateRichTextKeys(cake.description)) {
+          console.log(`Fixing duplicate keys in description for cake: ${cake.name}`);
+          updates.description = ensureUniqueKeys(cake.description);
           needsUpdate = true;
           fixedCount++;
         }

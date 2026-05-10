@@ -3,12 +3,14 @@
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
+type MotionDivProps = React.ComponentProps<typeof motion.div>;
+
 interface AnimatedWrapperProps {
   children: ReactNode;
-  initial?: Record<string, any>;
-  animate?: Record<string, any>;
-  transition?: Record<string, any>;
-  whileHover?: Record<string, any>;
+  initial?: MotionDivProps["initial"];
+  animate?: MotionDivProps["animate"];
+  transition?: MotionDivProps["transition"];
+  whileHover?: MotionDivProps["whileHover"];
 }
 
 export default function AnimatedWrapper({

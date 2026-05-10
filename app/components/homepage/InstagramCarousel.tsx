@@ -2,11 +2,15 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import type { InstagramPost } from '@/app/types/instagram'
 import { CarouselNavButton } from './CarouselNavButton'
+import {
+  mobileCarouselItemClassName,
+  mobileCarouselViewportClassName
+} from './carouselLayout'
+import type { InstagramCarouselPost } from './instagramCarouselContent'
 
 interface InstagramCarouselProps {
-  posts: InstagramPost[]
+  posts: InstagramCarouselPost[]
   profileUrl: string
   profileName: string
   profileHandle: string
@@ -14,43 +18,6 @@ interface InstagramCarouselProps {
 }
 
 const defaultProfileImage = '/design/mobile-home/instagram-avatar.png'
-
-const sanitizeCaptionText = (caption?: string | null) => {
-  if (!caption) return null
-
-  const withoutUrls = caption.replace(/https?:\/\/\S+/gi, '')
-  const withoutTags = withoutUrls.replace(/[#@][\w-]+/g, '')
-  const collapsed = withoutTags.replace(/\s+/g, ' ').trim()
-
-  return collapsed.length > 0 ? collapsed : null
-}
-
-const getPostAlt = (post: InstagramPost) => {
-  const sanitizedCaption = sanitizeCaptionText(post.caption)
-  const firstLine = post.caption?.split(/\r?\n/)[0]
-  const sanitizedFirstLine = sanitizeCaptionText(firstLine)
-  const altText = sanitizedFirstLine || sanitizedCaption
-
-  if (!altText) {
-    return 'Olgish Cakes Instagram post'
-  }
-
-  if (altText.length <= 120) {
-    return altText
-  }
-
-  return `${altText.slice(0, 117)}...`
-}
-
-const getPostCaptionLine = (post: InstagramPost) => {
-  const trimmedCaption = post.caption?.trim()
-  if (!trimmedCaption) {
-    return null
-  }
-
-  const firstLine = trimmedCaption.split(/\r?\n/)[0]?.trim()
-  return sanitizeCaptionText(firstLine)
-}
 
 export function InstagramCarousel({
   posts,
@@ -185,24 +152,18 @@ export function InstagramCarousel({
       <div
         ref={carouselRef}
         id={carouselId}
-        className="carousel carousel-center w-full overflow-x-auto [scroll-snap-type:x_mandatory] ml-[15px]"
+        className={`${mobileCarouselViewportClassName} gap-6`}
       >
         {posts.map((post, index) => {
-          const imageAlt = getPostAlt(post)
-          const postCaption = getPostCaptionLine(post)
-
           return (
             <div
               key={post.id}
-              className="carousel-item relative flex-shrink-0"
+              className={mobileCarouselItemClassName}
               ref={index === 0 ? firstCardRef : index === posts.length - 1 ? lastCardRef : undefined}
               style={{
                 width: '342px',
                 minWidth: '342px',
-                maxWidth: '342px',
-                scrollSnapAlign: 'start',
-                marginLeft: index === 0 ? '24px' : '24px',
-                marginRight: index === posts.length - 1 ? '24px' : '0'
+                maxWidth: '342px'
               }}
             >
               <div className="flex h-full w-full flex-col rounded-[16px] border border-base-300 bg-[var(--color-instagram-card)] p-4 shadow-sm">
@@ -220,7 +181,7 @@ export function InstagramCarousel({
                       <span className="font-sans text-xs text-base-content">
                         {profileName}
                       </span>
-                      <span className="font-sans text-xs text-base-content/60">
+                      <span className="font-sans text-xs text-base-content/70">
                         {profileHandle}
                       </span>
                     </div>
@@ -243,16 +204,16 @@ export function InstagramCarousel({
                 >
                   <Image
                     src={post.imageUrl}
-                    alt={imageAlt}
+                    alt={post.imageAlt}
                     fill
                     className="object-cover"
                     sizes="342px"
                   />
                 </a>
 
-                {postCaption && (
+                {post.captionLine && (
                   <p className="mt-3 font-sans text-xs text-base-content">
-                    {postCaption}
+                    {post.captionLine}
                   </p>
                 )}
 

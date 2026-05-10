@@ -43,7 +43,7 @@ async function getProducts() {
       _type == "cake" &&
       defined(slug.current) &&
       slug.current != "test" &&
-      !slug.current match "test-*"
+      !(slug.current match "test-*")
     ] {
       _id,
       name,
@@ -60,7 +60,7 @@ async function getProducts() {
       _type == "giftHamper" &&
       defined(slug.current) &&
       slug.current != "test" &&
-      !slug.current match "test-*"
+      !(slug.current match "test-*")
     ] {
       slug,
       _updatedAt

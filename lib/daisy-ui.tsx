@@ -608,22 +608,24 @@ export function Snackbar(props: DaisyProps & {
   autoHideDuration?: number
   anchorOrigin?: unknown
 }) {
+  const { open, onClose, autoHideDuration, children } = props
+
   React.useEffect(() => {
-    if (!props.open || !props.onClose || typeof props.autoHideDuration !== 'number' || props.autoHideDuration <= 0) {
+    if (!open || !onClose || typeof autoHideDuration !== 'number' || autoHideDuration <= 0) {
       return undefined
     }
 
     const timeout = window.setTimeout(() => {
-      props.onClose?.(undefined, 'timeout')
-    }, props.autoHideDuration)
+      onClose(undefined, 'timeout')
+    }, autoHideDuration)
 
     return () => {
       window.clearTimeout(timeout)
     }
-  }, [props.open, props.onClose, props.autoHideDuration])
+  }, [open, onClose, autoHideDuration])
 
-  if (!props.open) return null
-  return <div className='toast toast-top toast-center z-50'>{props.children}</div>
+  if (!open) return null
+  return <div className='toast toast-top toast-center z-50'>{children}</div>
 }
 
 export function Stack(props: DaisyProps & HTMLAttributes<HTMLDivElement> & { direction?: string | Record<string, string>; spacing?: number | string }) {

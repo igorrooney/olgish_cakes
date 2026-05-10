@@ -6,8 +6,8 @@ interface NavigationStructuredDataProps {
   navigation: Array<{
     name: string;
     href: string;
-    megaMenu?: any;
-    dropdown?: any;
+    megaMenu?: unknown;
+    dropdown?: unknown;
   }>;
 }
 

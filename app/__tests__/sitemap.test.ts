@@ -315,8 +315,8 @@ describe('sitemap', () => {
 
       const cakesQuery = mockFetch.mock.calls[0][0]
 
-      expect(cakesQuery).toContain('!slug.current match "test*"')
-      expect(cakesQuery).toContain('!slug.current match "*test*"')
+      expect(cakesQuery).toContain('!(slug.current match "test*")')
+      expect(cakesQuery).toContain('!(slug.current match "*test*")')
       expect(cakesQuery).toContain('defined(slug.current)')
     })
 
@@ -329,8 +329,8 @@ describe('sitemap', () => {
 
       expect(blogQuery).toContain('_type == "article"')
       expect(blogQuery).toContain('coalesce(publishedAt, _createdAt) <= now()')
-      expect(blogQuery).toContain('!slug.current match "test*"')
-      expect(blogQuery).toContain('!slug.current match "*test*"')
+      expect(blogQuery).toContain('!(slug.current match "test*")')
+      expect(blogQuery).toContain('!(slug.current match "*test*")')
       expect(blogQuery).toContain('defined(slug.current)')
       expect(blogQuery).not.toContain('seo {')
       expect(blogQuery).not.toContain('"topic": topic->')
@@ -343,8 +343,8 @@ describe('sitemap', () => {
 
       const hampersQuery = mockFetch.mock.calls[2][0]
 
-      expect(hampersQuery).toContain('!slug.current match "test*"')
-      expect(hampersQuery).toContain('!slug.current match "*test*"')
+      expect(hampersQuery).toContain('!(slug.current match "test*")')
+      expect(hampersQuery).toContain('!(slug.current match "*test*")')
       expect(hampersQuery).toContain('defined(slug.current)')
     })
 

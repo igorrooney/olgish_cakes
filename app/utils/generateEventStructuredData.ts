@@ -1,4 +1,5 @@
 import type { MarketSchedule, MarketScheduleStructuredData } from "@/app/types/marketSchedule";
+import { getLondonDateKey, getMarketDateKey } from "./londonDate";
 import { buildAggregateRating, type ReviewStats } from "./review-stats";
 
 /**
@@ -8,7 +9,6 @@ export function generateEventStructuredData(
   event: MarketSchedule,
   reviewStats?: ReviewStats
 ): MarketScheduleStructuredData {
-  const eventDate = new Date(event.date);
   const startDateTime = new Date(`${event.date}T${event.startTime}:00`).toISOString();
   const endDateTime = new Date(`${event.date}T${event.endTime}:00`).toISOString();
   const aggregateRating = buildAggregateRating(reviewStats);
@@ -107,6 +107,7 @@ export function generateEventStructuredData(
  * Generate JSON-LD structured data for multiple events (ItemList)
  */
 export function generateEventsListStructuredData(events: MarketSchedule[], reviewStats?: ReviewStats) {
+  const today = getLondonDateKey(new Date());
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location || !event.startTime || !event.endTime) {
@@ -114,10 +115,8 @@ export function generateEventsListStructuredData(events: MarketSchedule[], revie
       return false;
     }
 
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate >= today && event.active;
+    const eventDate = getMarketDateKey(event.date);
+    return eventDate !== null && eventDate >= today && event.active;
   });
 
   if (upcomingEvents.length === 0) {
@@ -166,16 +165,15 @@ export function generateEventsListStructuredData(events: MarketSchedule[], revie
  * Generate additional SEO metadata for events
  */
 export function generateEventSEOMetadata(events: MarketSchedule[]) {
+  const today = getLondonDateKey(new Date());
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location) {
       return false;
     }
 
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate >= today && event.active;
+    const eventDate = getMarketDateKey(event.date);
+    return eventDate !== null && eventDate >= today && event.active;
   });
 
   if (upcomingEvents.length === 0) {

@@ -182,7 +182,7 @@ const latestArticle = {
   topic: topics[0],
   coverImage: {
     asset: {
-      url: "https://cdn.sanity.io/latest.jpg",
+      url: "https://cdn.sanity.io/images/project/production/latest.jpg",
     },
     alt: "Latest",
   },
@@ -194,7 +194,7 @@ const latestArticle = {
     isPostableToUk: true,
     image: {
       asset: {
-        url: "https://cdn.sanity.io/hamper.jpg",
+        url: "https://cdn.sanity.io/images/project/production/hamper.jpg",
       },
       alt: "Postal Medovik",
     },
@@ -217,7 +217,7 @@ const olderArticle = {
     isPostableToUk: false,
     image: {
       asset: {
-        url: "https://cdn.sanity.io/custom-cake.jpg",
+        url: "https://cdn.sanity.io/images/project/production/custom-cake.jpg",
       },
       alt: "Custom cake travel image",
     },
@@ -240,7 +240,7 @@ const secondaryArticle = {
     isPostableToUk: false,
     image: {
       asset: {
-        url: "https://cdn.sanity.io/custom-cake.jpg",
+        url: "https://cdn.sanity.io/images/project/production/custom-cake.jpg",
       },
       alt: "Custom cake travel image",
     },
@@ -257,13 +257,13 @@ const imageSupportingArticle = {
   topic: topics[0],
   cardImage: {
     asset: {
-      url: "https://cdn.sanity.io/packing-card.jpg",
+      url: "https://cdn.sanity.io/images/project/production/packing-card.jpg",
     },
     alt: "Packed cake slices card crop",
   },
   coverImage: {
     asset: {
-      url: "https://cdn.sanity.io/packing-cover.jpg",
+      url: "https://cdn.sanity.io/images/project/production/packing-cover.jpg",
     },
     alt: "Packed cake slices cover crop",
   },
@@ -373,26 +373,26 @@ describe("BlogPage", () => {
     const leadImage = screen.getByAltText("Latest");
     const supportingImage = screen.getByAltText("Packed cake slices card crop");
     const commerceImage = screen.getByAltText("Postal Medovik");
-    expect(leadImage).toHaveAttribute("loading", "eager");
-    expect(leadImage.getAttribute("fetchpriority")).toBe("high");
-    expect(leadImage).toHaveAttribute("sizes", "(min-width: 1280px) 600px, (min-width: 1024px) 48vw, 100vw");
+    expect(leadImage).toHaveAttribute("loading", "lazy");
+    expect(leadImage).not.toHaveAttribute("fetchpriority");
+    expect(leadImage).toHaveAttribute("sizes", "(min-width: 1280px) 600px, (min-width: 1024px) 48vw, calc(100vw - 4rem)");
     expect(leadImage.getAttribute("src")).toContain("w=1200");
     expect(leadImage.getAttribute("src")).toContain("h=900");
     expect(leadImage.getAttribute("src")).toContain("fit=crop");
     expect(leadImage.getAttribute("src")).toContain("auto=format");
     expect(supportingImage).toHaveAttribute(
       "sizes",
-      "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+      "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, calc(100vw - 3rem)"
     );
     expect(supportingImage.getAttribute("src")).toContain("packing-card.jpg");
     expect(supportingImage.getAttribute("src")).not.toContain("packing-cover.jpg");
-    expect(supportingImage.getAttribute("src")).toContain("w=1200");
-    expect(supportingImage.getAttribute("src")).toContain("h=900");
+    expect(supportingImage.getAttribute("src")).toContain("w=720");
+    expect(supportingImage.getAttribute("src")).toContain("h=540");
     expect(commerceImage).toHaveAttribute(
       "sizes",
-      "(min-width: 1280px) 360px, (min-width: 1024px) 34vw, 100vw"
+      "(min-width: 1280px) 360px, (min-width: 1024px) 34vw, calc(100vw - 3rem)"
     );
-    expect(commerceImage.getAttribute("src")).toContain("h=1500");
+    expect(commerceImage.getAttribute("src")).toContain("h=900");
 
     const commerceSection = screen.getByText(/shop postal medovik/i).closest("section");
     expect(commerceSection).not.toBeNull();

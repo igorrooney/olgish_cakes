@@ -1,6 +1,7 @@
-import { Cake } from "@/types/cake";
+import { blocksToText, Cake } from "@/types/cake";
 import Head from "next/head";
 import { urlFor } from "@/sanity/lib/image";
+import { getMerchantReturnPolicy } from '@/app/utils/seo'
 import { buildAggregateRating, type ReviewStats } from '@/app/utils/review-stats'
 
 interface CakePageSEOProps {
@@ -17,9 +18,7 @@ export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: Cak
     ? typeof cake.shortDescription === "string"
       ? cake.shortDescription
       : Array.isArray(cake.shortDescription)
-        ? cake.shortDescription
-            .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
-            .join(" ")
+        ? blocksToText(cake.shortDescription)
         : ""
     : `Order professional ${cake.name} cake in Leeds. ${designType === "standard" ? "Standard" : "Custom"} design from £${currentPrice}. Premium ingredients, fast delivery.`;
 
@@ -103,14 +102,7 @@ export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: Cak
         },
         appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
       },
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        applicableCountry: "GB",
-        returnFees: "https://schema.org/FreeReturn",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: 14,
-        returnMethod: "https://schema.org/ReturnByMail",
-      },
+      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
     },
     category: cake.category,
     additionalProperty: [
@@ -134,14 +126,14 @@ export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: Cak
       // Get the best available image
       const mainImage = cake.mainImage?.asset?._ref
         ? cake.mainImage
-        : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-          cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+        : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+          cake.designs?.standard?.find((img) => img.asset?._ref) ||
           cake.designs?.standard?.[0] ||
-          cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-          cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+          cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+          cake.designs?.individual?.find((img) => img.asset?._ref) ||
           cake.designs?.individual?.[0] ||
           // Fallback to images array (for legacy data like Honey Cake)
-          cake.images?.find((img: any) => img.asset?._ref) ||
+          cake.images?.find((img) => img.asset?._ref) ||
           cake.images?.[0];
 
       return mainImage?.asset?._ref
@@ -260,14 +252,7 @@ export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: Cak
             name: "Standard Cake Design",
             description: "Our signature cake designs with premium ingredients",
           },
-          hasMerchantReturnPolicy: {
-            "@type": "MerchantReturnPolicy",
-            applicableCountry: "GB",
-            returnFees: "https://schema.org/FreeReturn",
-            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-            merchantReturnDays: 14,
-            returnMethod: "https://schema.org/ReturnByMail",
-          },
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
         {
           "@type": "Offer",
@@ -276,14 +261,7 @@ export function CakePageSEO({ cake, designType, currentPrice, reviewStats }: Cak
             name: "Individual Cake Design",
             description: "Custom cake design with personal consultation and unlimited revisions",
           },
-          hasMerchantReturnPolicy: {
-            "@type": "MerchantReturnPolicy",
-            applicableCountry: "GB",
-            returnFees: "https://schema.org/FreeReturn",
-            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-            merchantReturnDays: 14,
-            returnMethod: "https://schema.org/ReturnByMail",
-          },
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
       ],
     },

@@ -1,14 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { Testimonial } from '@/app/types/testimonial'
+import type { HomepageReview } from './ReviewsCarousel'
 
 const ReviewsCarousel = dynamic(
   async () => import('./ReviewsCarousel').then(module => module.ReviewsCarousel)
 )
 
 type DeferredReviewsCarouselProps = {
-  testimonials: Testimonial[]
+  testimonials: HomepageReview[]
 }
 
 export function DeferredReviewsCarousel({

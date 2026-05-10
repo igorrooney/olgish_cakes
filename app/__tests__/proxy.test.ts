@@ -206,6 +206,22 @@ describe('proxy SEO headers for cakes filters', () => {
     expect(response.headers.get('location')).toBe('https://olgishcakes.co.uk/cakes-by-post')
   })
 
+  it('keeps Klaro runtime assets immutable through the proxy', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/runtime/klaro/v0.7/klaro-no-css.js')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=31536000, immutable')
+  })
+
+  it('requires browser revalidation for regular public pages', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/cakes')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('Cache-Control')).toBe('no-cache, must-revalidate')
+  })
+
   it('returns 410 for retired corporate cakes landing page', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/corporate-cakes-leeds')
 

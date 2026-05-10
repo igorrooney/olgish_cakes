@@ -1,8 +1,4 @@
-'use client'
-
-import Image from 'next/image'
-import type { ImageLoaderProps } from 'next/image'
-import { getSanityCdnImageLoader } from '@/lib/articles'
+import { getSanityCdnImageUrl, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 
 interface ResponsiveSanityImageProps {
   imageUrl?: string
@@ -15,6 +11,59 @@ interface ResponsiveSanityImageProps {
   height?: number
   fit?: 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'min' | 'scale'
   quality?: number
+}
+
+const srcSetWidths = [384, 480, 576, 640, 750, 828, 1080, 1200]
+
+function getProportionalHeight({
+  baseHeight,
+  baseWidth,
+  requestedWidth,
+}: {
+  baseHeight?: number
+  baseWidth?: number
+  requestedWidth: number
+}) {
+  return baseWidth && baseHeight
+    ? Math.max(1, Math.round((requestedWidth / baseWidth) * baseHeight))
+    : undefined
+}
+
+function getSanitySrcSet({
+  fit,
+  height,
+  imageUrl,
+  quality,
+  width,
+}: {
+  fit?: ResponsiveSanityImageProps['fit']
+  height?: number
+  imageUrl: string
+  quality?: number
+  width?: number
+}) {
+  if (!isSanityCdnImageUrl(imageUrl)) {
+    return undefined
+  }
+
+  return srcSetWidths
+    .filter(srcSetWidth => !width || srcSetWidth <= width)
+    .map(srcSetWidth => {
+      const srcSetUrl = getSanityCdnImageUrl(imageUrl, {
+        width: srcSetWidth,
+        height: getProportionalHeight({
+          baseHeight: height,
+          baseWidth: width,
+          requestedWidth: srcSetWidth,
+        }),
+        fit,
+        quality,
+      })
+
+      return srcSetUrl ? `${srcSetUrl} ${srcSetWidth}w` : null
+    })
+    .filter((srcSetEntry): srcSetEntry is string => Boolean(srcSetEntry))
+    .join(', ')
 }
 
 export function ResponsiveSanityImage({
@@ -33,31 +82,33 @@ export function ResponsiveSanityImage({
     return null
   }
 
-  const loader = ({ src, width: requestedWidth, quality: requestedQuality }: ImageLoaderProps) =>
-    getSanityCdnImageLoader({
-      width,
-      height,
-      fit,
-      quality,
-    })({
-      src,
-      width: requestedWidth,
-      quality: requestedQuality,
-    })
+  const src = getSanityCdnImageUrl(imageUrl, {
+    width,
+    height,
+    fit,
+    quality,
+  }) ?? imageUrl
+  const srcSet = getSanitySrcSet({
+    fit,
+    height,
+    imageUrl,
+    quality,
+    width,
+  })
 
   return (
     <div
       className={`relative h-full overflow-hidden rounded-[24px] bg-base-200 ${containerClassName}`}
     >
-      <Image
-        src={imageUrl}
+      <img
+        src={src}
+        srcSet={srcSet}
         alt={imageAlt || 'Article image'}
-        fill
         loading={loading}
         fetchPriority={fetchPriority}
-        loader={loader}
         sizes={sizes}
-        className='object-cover'
+        decoding='async'
+        className='!h-full !w-full object-cover'
       />
     </div>
   )

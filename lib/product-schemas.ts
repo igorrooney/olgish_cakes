@@ -19,6 +19,8 @@ import { batchValidateProductSchemas } from "./schema-validation";
 import { DEFAULT_REVIEWS } from "./structured-data-defaults";
 import { formatStructuredDataPrice } from "./utils/price-formatting";
 
+type RichTextBlocks = Parameters<typeof blocksToText>[0];
+
 export interface TestimonialStats {
   count: number;
   averageRating: number;
@@ -34,7 +36,7 @@ export interface Cake {
   mainImage?: {
     asset?: { url: string };
   };
-  description?: any;
+  description?: RichTextBlocks;
 }
 
 /**
@@ -188,10 +190,7 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: BUSINESS_INFO.addressCountry,
-        returnFees: RETURN_POLICY.returnFees,
         returnPolicyCategory: RETURN_POLICY.returnPolicyCategory,
-        merchantReturnDays: RETURN_POLICY.returnDays,
-        returnMethod: RETURN_POLICY.returnMethod,
       },
     },
     aggregateRating: {

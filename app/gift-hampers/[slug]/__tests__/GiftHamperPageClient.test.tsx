@@ -3,14 +3,25 @@
  */
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { GiftHamperPageClient } from '../GiftHamperPageClient'
+import { GiftHamperPageClient as GiftHamperPageClientBase, type GiftHamperPageClientData } from '../GiftHamperPageClient'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
+import { urlFor } from '@/sanity/lib/image'
 import type { GiftHamper } from '@/types/giftHamper'
-import type { CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
+import type { CatalogProductDetailImage, CatalogProductDetailSection } from '@/app/cakes/components/CatalogProductDetailLayout'
+import { resolveGiftHamperDeliveryContent } from '../delivery-content'
 
 const capturedLayoutProps: Array<Record<string, unknown>> = []
 const mockOrderIntentHandler = jest.fn()
 const mockedUseOrderFormPrefetch = useOrderFormPrefetch as jest.MockedFunction<typeof useOrderFormPrefetch>
+type UrlForImage = Parameters<typeof urlFor>[0]
+type TestHamperImage = {
+  asset?: {
+    _ref?: string
+  }
+  alt?: string
+  isMain?: boolean
+}
 jest.mock('next/dynamic', () => {
   return () => {
     const React = require('react') as typeof import('react')
@@ -89,6 +100,7 @@ jest.mock('@/app/cakes/components/CatalogProductDetailLayout', () => ({
 
 jest.mock('@/sanity/lib/image', () => ({
   urlFor: (image: { asset?: { _ref?: string } }) => ({
+    url: () => `https://cdn.sanity.io/images/test/${image.asset?._ref || 'fallback-image'}.jpg`,
     width: () => ({
       height: () => ({
         url: () => `https://cdn.sanity.io/images/test/${image.asset?._ref || 'fallback-image'}.jpg`
@@ -156,6 +168,90 @@ const baseHamper: GiftHamper = {
       }
     ]
   }
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string, isMain?: boolean } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function getTestHamperImageUrl(image: TestHamperImage) {
+  const rawImageUrl = urlFor(image as UrlForImage).url()
+
+  return getSanityCdnImageUrl(rawImageUrl, {
+    width: 960,
+    height: 960,
+    fit: 'crop',
+    quality: 80
+  }) ?? rawImageUrl
+}
+
+function mapTestHamperImagesToGallery(hamper: GiftHamper): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${hamper.name} by Olgish Cakes`
+  const hamperImages = Array.isArray(hamper.images) ? hamper.images : []
+  const mainImageIndex = hamperImages.findIndex((image) => image.isMain === true)
+  const orderedImages = mainImageIndex >= 0
+    ? [hamperImages[mainImageIndex], ...hamperImages.filter((_, index) => index !== mainImageIndex)]
+    : hamperImages
+
+  orderedImages.forEach((image) => {
+    if (!hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = getTestHamperImageUrl(image)
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  })
+
+  return mappedImages
+}
+
+function toGiftHamperPageClientData(hamper: GiftHamper): GiftHamperPageClientData {
+  return {
+    name: hamper.name,
+    slug: hamper.slug,
+    description: hamper.description,
+    shortDescription: hamper.shortDescription,
+    deliveryContent: resolveGiftHamperDeliveryContent(hamper),
+    price: hamper.price,
+    galleryImages: mapTestHamperImagesToGallery(hamper),
+    ingredients: hamper.ingredients,
+    allergens: hamper.allergens,
+    ingredientReference: hamper.ingredientReference
+  }
+}
+
+function GiftHamperPageClient({
+  hamper,
+  backHref
+}: {
+  hamper: GiftHamper
+  backHref: string
+}) {
+  return (
+    <GiftHamperPageClientBase
+      hamper={toGiftHamperPageClientData(hamper)}
+      backHref={backHref}
+    />
+  )
 }
 
 describe('GiftHamperPageClient', () => {
@@ -610,11 +706,11 @@ describe('GiftHamperPageClient', () => {
     const images = getLatestImages()
     expect(images).toHaveLength(2)
     expect(images[0]).toEqual({
-      src: 'https://cdn.sanity.io/images/test/image-primary.jpg',
+      src: 'https://cdn.sanity.io/images/test/image-primary.jpg?w=960&h=960&fit=crop&q=80&auto=format',
       alt: 'Primary hamper image'
     })
     expect(images[1]).toEqual({
-      src: 'https://cdn.sanity.io/images/test/image-secondary.jpg',
+      src: 'https://cdn.sanity.io/images/test/image-secondary.jpg?w=960&h=960&fit=crop&q=80&auto=format',
       alt: 'Secondary hamper image'
     })
   })

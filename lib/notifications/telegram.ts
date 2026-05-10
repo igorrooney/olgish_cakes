@@ -20,7 +20,7 @@ export interface TelegramManagerNotificationInput {
   total?: number
   messagePreview?: string
   imageCount?: number
-  adminPath?: '/admin' | '/admin/orders' | `/admin/orders/${string}`
+  adminPath?: '/admin' | '/admin/orders' | '/admin/enquiries' | `/admin/orders/${string}` | `/admin/enquiries/${string}/${string}`
 }
 
 export interface TelegramManagerNotificationResult {

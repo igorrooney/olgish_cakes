@@ -3,6 +3,7 @@ import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { validateCsrfToken } from '@/lib/csrf'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { readRequiredFormData } from '@/lib/form-request'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   createSupabaseOrder,
@@ -350,7 +351,12 @@ async function handlePOST(request: NextRequest) {
   }
 
   try {
-    const formData = await request.formData()
+    const formDataResult = await readRequiredFormData(request)
+    if (!formDataResult.ok) {
+      return formDataResult.response
+    }
+
+    const { formData } = formDataResult
     const submittedCsrfToken = toNonEmptyString(formData.get('csrfToken'))
     const cookieCsrfToken = request.cookies.get('csrf-token')?.value || ''
 

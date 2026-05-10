@@ -98,6 +98,7 @@ describe('AdminDashboard', () => {
     screen.getAllByRole('link', { name: 'Open orders' }).forEach((link) => {
       expect(link).toHaveAttribute('href', '/admin/orders')
     })
+    expect(screen.getByRole('link', { name: 'Open enquiries' })).toHaveAttribute('href', '/admin/enquiries')
     expect(screen.getByRole('link', { name: 'View earnings' })).toHaveAttribute('href', '/admin/earnings')
     expect(screen.getAllByText('#OC-1001')).toHaveLength(2)
     expect(screen.getAllByText('Jane Customer').length).toBeGreaterThan(0)
@@ -182,7 +183,7 @@ describe('AdminDashboard', () => {
     expect(screen.getByText('Needs check')).toBeInTheDocument()
   })
 
-  it('clears cache from the dashboard action', async () => {
+  it('revalidates cache from the dashboard action', async () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
@@ -199,7 +200,7 @@ describe('AdminDashboard', () => {
 
     render(<AdminDashboard />)
 
-    const button = await screen.findByRole('button', { name: 'Clear cache' })
+    const button = await screen.findByRole('button', { name: 'Revalidate cache' })
     fireEvent.click(button)
 
     await waitFor(() => {
@@ -210,6 +211,6 @@ describe('AdminDashboard', () => {
       }))
     })
 
-    expect(await screen.findByText('Cache cleared. Public pages can rebuild with fresh content.')).toBeInTheDocument()
+    expect(await screen.findByText('Website cache revalidated. Public pages can rebuild with fresh content.')).toBeInTheDocument()
   })
 })

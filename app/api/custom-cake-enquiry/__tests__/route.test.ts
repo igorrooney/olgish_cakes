@@ -12,6 +12,8 @@ const mockSendTelegramManagerNotification = jest.fn()
 const mockGetEmailTransportMode = jest.fn(() => 'disabled')
 const mockRequiresLiveEmailConfiguration = jest.fn(() => false)
 const mockInsert = jest.fn()
+const mockInsertSelect = jest.fn()
+const mockInsertSingle = jest.fn()
 const mockUpload = jest.fn()
 const mockRemove = jest.fn()
 const mockFrom = jest.fn(() => ({ insert: mockInsert }))
@@ -113,7 +115,9 @@ describe('/api/custom-cake-enquiry', () => {
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
-    mockInsert.mockResolvedValue({ error: null })
+    mockInsert.mockReturnValue({ select: mockInsertSelect })
+    mockInsertSelect.mockReturnValue({ single: mockInsertSingle })
+    mockInsertSingle.mockResolvedValue({ data: { id: 42 }, error: null })
     mockUpload.mockResolvedValue({
       data: {
         path: 'enquiries/reference.jpg',
@@ -126,6 +130,25 @@ describe('/api/custom-cake-enquiry', () => {
 
   afterEach(() => {
     consoleErrorSpy.mockRestore()
+  })
+
+  it('rejects non-form request bodies before persistence or rate limit work', async () => {
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: JSON.stringify({ fullName: 'Test User' }),
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: 'csrf-token=valid-token'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(415)
+    expect(data.error).toContain('Unsupported content type')
+    expect(mockCreateClient).not.toHaveBeenCalled()
+    expect(mockedTakeEnquiryRateLimit).not.toHaveBeenCalled()
   })
 
   it('rejects request without CSRF token', async () => {
@@ -232,7 +255,8 @@ describe('/api/custom-cake-enquiry', () => {
         address: undefined,
         city: undefined,
         postcode: undefined,
-        occasion: 'Birthday'
+        occasion: 'Birthday',
+        adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/42'
       })
     }))
     expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
@@ -261,7 +285,7 @@ describe('/api/custom-cake-enquiry', () => {
       dateNeeded: '2026-12-25',
       productName: 'birthday',
       messagePreview: expect.stringContaining('Brief: Blue florals and vanilla sponge.'),
-      adminPath: '/admin'
+      adminPath: '/admin/enquiries/custom-cake/42'
     }))
   })
 
@@ -390,6 +414,62 @@ describe('/api/custom-cake-enquiry', () => {
         path: ['postcode']
       })
     ]))
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects an invalid date format server-side', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+
+    const formData = buildFormData({ date: '25/12/2026' })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.34'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Validation failed')
+    expect(data.details).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        message: 'Please select a valid date',
+        path: ['date']
+      })
+    ]))
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects a past date server-side', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+
+    const formData = buildFormData({ date: '2000-01-01' })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.35'
+      }
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Validation failed')
+    expect(data.details).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        message: 'Please select today or a future date',
+        path: ['date']
+      })
+    ]))
+    expect(mockInsert).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
@@ -840,7 +920,7 @@ describe('/api/custom-cake-enquiry', () => {
 
   it('returns 500 when Supabase insert fails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
-    mockInsert.mockResolvedValueOnce({
+    mockInsertSingle.mockResolvedValueOnce({
       error: {
         code: 'PGRST204',
         message: 'Insert failed',
@@ -889,7 +969,7 @@ describe('/api/custom-cake-enquiry', () => {
 
   it('cleans up reference image when Supabase insert fails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
-    mockInsert.mockResolvedValueOnce({ error: { message: 'Insert failed' } })
+    mockInsertSingle.mockResolvedValueOnce({ data: null, error: { message: 'Insert failed' } })
     const file = new File(['image'], 'reference.jpg', { type: 'image/jpeg' })
     const formData = buildFormData()
     formData.append('referenceImage', file)
@@ -966,6 +1046,9 @@ describe('/api/custom-cake-enquiry', () => {
     expect(blockedResponse.headers.get('X-RateLimit-Remaining')).toBe('0')
     expect(blockedResponse.headers.get('X-RateLimit-Reset')).toBe('1798192800')
     expect(blockedResponse.headers.get('Retry-After')).toBe('60')
+    expect(mockUpload).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
     expect(takeEnquiryRateLimit).toHaveBeenCalledWith(
       expect.objectContaining({
         from: mockFrom,

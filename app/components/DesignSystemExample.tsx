@@ -30,10 +30,8 @@ import {
 import {
   CakeOutlinedIcon,
   LocalShippingIcon,
-  StarIcon,
   EmailIcon,
   PhoneIcon,
-  FavoriteIcon,
 } from "@/lib/daisy-ui";
 
 const { colors, spacing } = designTokens;

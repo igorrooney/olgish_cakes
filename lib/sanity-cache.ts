@@ -1,9 +1,10 @@
 import { unstable_cache } from 'next/cache'
-import { client, USE_REAL_TIME_DATA } from '@/sanity/lib/client'
+import { client, sanityFetchOptions, USE_REAL_TIME_DATA } from '@/sanity/lib/client'
+import { SANITY_CACHE_CONFIG } from './sanity-cache-config'
 
 interface CacheOptions {
   revalidate?: number | false
-  tags?: string[]
+  tags?: readonly string[]
 }
 
 /**
@@ -22,7 +23,7 @@ export async function cachedSanityFetch<T>(
 ): Promise<T> {
   // If real-time data is enabled, skip caching
   if (USE_REAL_TIME_DATA) {
-    return client.fetch<T>(query, params)
+    return client.fetch<T>(query, params, sanityFetchOptions)
   }
 
   const { revalidate = false, tags = [] } = options
@@ -31,7 +32,7 @@ export async function cachedSanityFetch<T>(
   const cacheKey = JSON.stringify({ query, params })
 
   // Use unstable_cache for request-level memoization
-  const cacheOptions: { tags?: string[]; revalidate?: number | false } = { tags }
+  const cacheOptions: { tags?: string[]; revalidate?: number | false } = { tags: [...tags] }
   if (revalidate !== false) {
     cacheOptions.revalidate = revalidate
   }
@@ -50,8 +51,6 @@ export async function cachedSanityFetch<T>(
 /**
  * Helper to get cache config by type
  */
-export function getCacheConfig(type: keyof typeof import('./sanity-cache-config').SANITY_CACHE_CONFIG) {
-  // Dynamic import to avoid circular dependencies
-  const { SANITY_CACHE_CONFIG } = require('./sanity-cache-config')
+export function getCacheConfig(type: keyof typeof SANITY_CACHE_CONFIG) {
   return SANITY_CACHE_CONFIG[type] || { revalidate: false, tags: [] }
 }

@@ -33,7 +33,7 @@ describe('/api/catalog/custom-cakes', () => {
     jest.clearAllMocks()
   })
 
-  it('returns noindex header and keeps cache control on success', async () => {
+  it('returns noindex and no-store headers on success', async () => {
     const payload = {
       cakes: [
         {
@@ -63,7 +63,7 @@ describe('/api/catalog/custom-cakes', () => {
     expect(response.status).toBe(200)
     expect(data).toEqual(payload)
     expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
-    expect(response.headers.get('Cache-Control')).toBe('public, s-maxage=1800, stale-while-revalidate=86400')
+    expect(response.headers.get('Cache-Control')).toBe('no-store')
   })
 
   it('returns noindex header on error', async () => {

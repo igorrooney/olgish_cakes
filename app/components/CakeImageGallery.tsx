@@ -3,14 +3,13 @@
 import { useState, useEffect, memo, useMemo, useCallback } from "react";
 import {
   Box,
-  ImageList,
-  ImageListItem,
   Typography,
 } from "@/lib/daisy-ui";
 // Import icons directly for better HMR support
 import { ArrowBackIcon } from "@/lib/daisy-ui";
 import { ArrowForwardIcon } from "@/lib/daisy-ui";
-import { AccessibleIconButton , TouchTargetWrapper} from "@/lib/ui-components";
+import { AccessibleIconButton } from "@/lib/ui-components";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { CakeDesigns } from "@/types/cake";
@@ -50,6 +49,13 @@ const CakeImageGallery = memo(function CakeImageGallery({
     [allImages, currentImageIndex]
   );
   const currentImage = allImages[currentImageIndex];
+  const rawCurrentImageUrl = urlFor(currentImage).url();
+  const currentImageUrl = getSanityCdnImageUrl(rawCurrentImageUrl, {
+    width: 960,
+    height: 960,
+    fit: "crop",
+    quality: 80,
+  }) ?? rawCurrentImageUrl;
 
   // Reset image index when design type changes
   useEffect(() => {
@@ -165,7 +171,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
         role="img"
       >
         <Image
-          src={urlFor(currentImage).width(800).height(800).url()}
+          src={currentImageUrl}
           alt={
             currentImage.alt ||
             `${name} - Ukrainian ${designType} cake design by Olgish Cakes in Leeds`
@@ -244,6 +250,13 @@ const CakeImageGallery = memo(function CakeImageGallery({
         >
           {galleryImages.map((image, index) => {
             const originalIndex = index >= currentImageIndex ? index + 1 : index;
+            const rawThumbnailUrl = urlFor(image).url();
+            const thumbnailUrl = getSanityCdnImageUrl(rawThumbnailUrl, {
+              width: 360,
+              height: 360,
+              fit: "crop",
+              quality: 76,
+            }) ?? rawThumbnailUrl;
 
             return (
               <Box
@@ -279,7 +292,7 @@ const CakeImageGallery = memo(function CakeImageGallery({
                 }}
               >
                 <Image
-                  src={urlFor(image).width(400).height(400).url()}
+                  src={thumbnailUrl}
                   alt={
                     image.alt ||
                     `${name} - Ukrainian cake gallery view ${index + 2} by Olgish Cakes`

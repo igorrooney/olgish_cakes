@@ -13,12 +13,33 @@ import {
   resolveCakeDefaultServingsKey,
   type CakeServingsPriceKey
 } from '@/lib/utils/cake-base-price'
-import { urlFor } from '@/sanity/lib/image'
-import { blocksToText, type Cake, type CakeImage } from '@/types/cake'
-import { getCakeDeliveryFallbackKeyPoint, resolveCakeDeliveryContent } from './delivery-content'
+import { blocksToText, type Cake } from '@/types/cake'
+import { getCakeDeliveryFallbackKeyPoint, type ResolvedCakeDeliveryContent } from './delivery-content'
+
+export interface CakePageClientData {
+  name: Cake['name']
+  slug: Cake['slug']
+  description: Cake['description']
+  shortDescription?: Cake['shortDescription']
+  deliveryContent: ResolvedCakeDeliveryContent
+  pricing: Cake['pricing']
+  newDesignPricingByServings?: Cake['newDesignPricingByServings']
+  fillingOptions?: CakePageClientFillingOption[]
+  defaultFillingTypeId?: string
+  galleryImages: CatalogProductDetailImage[]
+  ingredients: Cake['ingredients']
+  allergens?: Cake['allergens']
+  ingredientReference?: Cake['ingredientReference']
+}
+
+export interface CakePageClientFillingOption {
+  id: string
+  name: string
+  image: CatalogProductDetailImage | null
+}
 
 interface CakePageClientProps {
-  cake: Cake
+  cake: CakePageClientData
   backHref: string
 }
 
@@ -29,9 +50,10 @@ function formatPrice(value: number) {
 const fillingPreviewImageSizes = '(min-width: 1024px) 560px, 100vw'
 const customDesignSurcharge = 14
 const mobileViewportMediaQuery = '(max-width: 1023px)'
+const emptyFillingOptions: CakePageClientFillingOption[] = []
 
 const ProductOrderInlineForm = dynamic(
-  () => import('@/app/components/homepage/ProductOrderInlineForm').then((module) => module.ProductOrderInlineForm),
+  () => import('@/app/components/homepage/ProductOrderInlineFormWithProviders').then((module) => module.ProductOrderInlineFormWithProviders),
   {
     loading: () => (
       <p className='text-sm text-base-content/70'>Loading order form...</p>
@@ -46,12 +68,6 @@ const servingsConfig: Array<{ key: CakeServingsPriceKey, label: string }> = [
   { key: 'servings12To20', label: 'Serves 12-20 people' },
   { key: 'servings20Plus', label: 'Serves 20+ people' }
 ]
-
-interface FillingOption {
-  id: string
-  name: string
-  image: CakeImage | undefined
-}
 
 function hasPortableTextContent(value: Cake['description'] | Cake['shortDescription'] | undefined): value is NonNullable<Cake['description']> {
   return Array.isArray(value) && value.length > 0
@@ -138,73 +154,12 @@ function resolveKeyPoints(extractedPoints: string[], fallbackPoints: string[]) {
   return uniquePoints
 }
 
-function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  const maybeImage = value as { asset?: { _ref?: unknown } }
-
-  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
-}
-
-function mapCakeImagesToGallery(cake: Cake): CatalogProductDetailImage[] {
-  const mappedImages: CatalogProductDetailImage[] = []
-  const imageUrls = new Set<string>()
-  const fallbackAlt = `${cake.name} by Olgish Cakes`
-
-  function addImage(image: Cake['mainImage'] | CakeImage | undefined) {
-    if (!image || !hasImageAssetReference(image)) {
-      return
-    }
-
-    const imageUrl = urlFor(image).width(1200).height(1200).url()
-
-    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
-      return
-    }
-
-    imageUrls.add(imageUrl)
-    mappedImages.push({
-      src: imageUrl,
-      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
-        ? image.alt.trim()
-        : fallbackAlt
-    })
-  }
-
-  addImage(cake.mainImage)
-  cake.designs?.standard?.forEach((image) => addImage(image))
-  cake.designs?.individual?.forEach((image) => addImage(image))
-  cake.images?.forEach((image) => addImage(image))
-
-  return mappedImages
-}
-
 function resolveFillingCarouselImage({
-  cakeName,
   fillingOption
 }: {
-  cakeName: string
-  fillingOption: FillingOption | null
+  fillingOption: CakePageClientFillingOption | null
 }): CatalogProductDetailImage | null {
-  if (!fillingOption || !hasImageAssetReference(fillingOption.image)) {
-    return null
-  }
-
-  const fillingImageUrl = urlFor(fillingOption.image).width(1200).height(1200).url()
-  if (fillingImageUrl.length === 0) {
-    return null
-  }
-
-  const fillingImageAlt = typeof fillingOption.image.alt === 'string' && fillingOption.image.alt.trim().length > 0
-    ? fillingOption.image.alt.trim()
-    : `${fillingOption.name} filling for ${cakeName}`
-
-  return {
-    src: fillingImageUrl,
-    alt: fillingImageAlt
-  }
+  return fillingOption?.image ?? null
 }
 
 function renderDescriptionSectionContent(description: Cake['description'] | Cake['shortDescription'] | undefined): ReactNode {
@@ -236,7 +191,7 @@ function renderDescriptionSectionContent(description: Cake['description'] | Cake
   )
 }
 
-function renderIngredientsSectionContent(cake: Cake): ReactNode {
+function renderIngredientsSectionContent(cake: CakePageClientData): ReactNode {
   const referencedIngredients = cake.ingredientReference?.ingredients
   const hasReferencedIngredients = Array.isArray(referencedIngredients) && referencedIngredients.length > 0
   const legacyIngredients = Array.isArray(cake.ingredients) ? cake.ingredients : []
@@ -317,34 +272,14 @@ export function CakePageClient({
       pricing: cake.pricing
     })
   }, [cake.newDesignPricingByServings, cake.pricing])
-  const fillingOptions = useMemo<FillingOption[]>(() => {
-    const seenFillingIds = new Set<string>()
-    const resolvedOptions = cake.fillingTypes?.flatMap((fillingType) => {
-      const fillingId = typeof fillingType._id === 'string' ? fillingType._id.trim() : ''
-      const fillingName = typeof fillingType.name === 'string' ? fillingType.name.trim() : ''
-
-      if (fillingId.length === 0 || fillingName.length === 0 || seenFillingIds.has(fillingId)) {
-        return []
-      }
-
-      seenFillingIds.add(fillingId)
-
-      return [{
-        id: fillingId,
-        name: fillingName,
-        image: fillingType.image
-      }]
-    }) ?? []
-
-    return resolvedOptions
-  }, [cake.fillingTypes])
+  const fillingOptions = cake.fillingOptions ?? emptyFillingOptions
   const defaultSelectedFillingId = useMemo(() => {
-    if (typeof cake.defaultFillingType?._id === 'string' && fillingOptions.some((fillingOption) => fillingOption.id === cake.defaultFillingType?._id)) {
-      return cake.defaultFillingType._id
+    if (typeof cake.defaultFillingTypeId === 'string' && fillingOptions.some((fillingOption) => fillingOption.id === cake.defaultFillingTypeId)) {
+      return cake.defaultFillingTypeId
     }
 
     return fillingOptions[0]?.id ?? ''
-  }, [cake.defaultFillingType?._id, fillingOptions])
+  }, [cake.defaultFillingTypeId, fillingOptions])
   const defaultSelectedServingsKey = useMemo<CakeServingsPriceKey | ''>(() => {
     if (servingOptions.length === 0) {
       return ''
@@ -421,15 +356,12 @@ export function CakePageClient({
     }
   }, [])
 
-  const galleryImages = useMemo(() => {
-    return mapCakeImagesToGallery(cake)
-  }, [cake])
+  const galleryImages = cake.galleryImages
   const fillingCarouselImage = useMemo(() => {
     return resolveFillingCarouselImage({
-      cakeName: cake.name,
       fillingOption: selectedFillingOption
     })
-  }, [cake.name, selectedFillingOption])
+  }, [selectedFillingOption])
   const layoutImages = useMemo(() => {
     if (!isMobileViewport || !isOrderFormVisible || !fillingCarouselImage) {
       return galleryImages
@@ -454,7 +386,7 @@ export function CakePageClient({
 
     return (
       <div className='space-y-3'>
-        <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/55 tablet:[font-size:var(--t-font-size-sm)] tablet:text-(--color-catalog-detail-muted)'>
+        <p className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-normal)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-base-content/75 tablet:[font-size:var(--t-font-size-sm)] tablet:text-base-content/75'>
           Filling:
         </p>
         <div className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
@@ -469,9 +401,7 @@ export function CakePageClient({
       </div>
     )
   }, [fillingCarouselImage, isMobileViewport, isOrderFormVisible])
-  const resolvedDeliveryContent = useMemo(() => {
-    return resolveCakeDeliveryContent(cake)
-  }, [cake])
+  const resolvedDeliveryContent = cake.deliveryContent
   const keyPoints = useMemo(() => {
     const deliveryFallbackKeyPoint = resolvedDeliveryContent.shouldEmitShippingDetails
       ? getCakeDeliveryFallbackKeyPoint(resolvedDeliveryContent.policy)

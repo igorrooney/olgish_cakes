@@ -11,12 +11,34 @@ import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 dotenv.config({ path: '.env' })
 
+type OrderSearchItem = {
+  productName?: string
+  quantity?: number
+  totalPrice?: number
+}
+
+type OrderSearchResult = {
+  _id: string
+  orderNumber: string
+  _createdAt: string
+  status?: string
+  customer: {
+    name: string
+    email: string
+    phone?: string
+  }
+  pricing?: {
+    total?: number
+  }
+  items?: OrderSearchItem[]
+}
+
 async function findOrdersByEmail(email: string) {
   try {
     console.log(`🔍 Searching for orders with email: ${email}`)
 
     // Find orders by email (case-insensitive search)
-    const orders = await serverClient.fetch(
+    const orders = await serverClient.fetch<OrderSearchResult[]>(
       `*[_type == "order" && customer.email match "*${email.toLowerCase()}*"] | order(_createdAt desc)[0...10]{
         _id,
         orderNumber,
@@ -49,7 +71,7 @@ async function findOrdersByEmail(email: string) {
 
     console.log(`\n✅ Found ${orders.length} order(s):\n`)
 
-    orders.forEach((order: any, index: number) => {
+    orders.forEach((order, index) => {
       console.log(`${index + 1}. Order #${order.orderNumber}`)
       console.log(`   Created: ${new Date(order._createdAt).toLocaleString('en-GB')}`)
       console.log(`   Status: ${order.status || 'new'}`)
@@ -57,7 +79,7 @@ async function findOrdersByEmail(email: string) {
       console.log(`   Total: £${order.pricing?.total || 0}`)
       console.log(`   Items: ${order.items?.length || 0} item(s)`)
       if (order.items && order.items.length > 0) {
-        order.items.forEach((item: any) => {
+        order.items.forEach((item) => {
           console.log(`      - ${item.productName || 'Custom'} x${item.quantity || 1} - £${item.totalPrice || 0}`)
         })
       }

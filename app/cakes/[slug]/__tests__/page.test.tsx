@@ -47,7 +47,11 @@ const { getOfferShippingDetails: mockGetOfferShippingDetails } = jest.requireMoc
 
 jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2026-01-01'),
-  getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' })),
+  getMerchantReturnPolicy: jest.fn(() => ({
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: 'GB',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+  })),
   getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
 }))
 
@@ -887,6 +891,10 @@ describe('CakeDetailPage', () => {
       
       expect(jsonLd.offers.hasMerchantReturnPolicy).toBeDefined()
       expect(jsonLd.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
+      expect(jsonLd.offers.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(jsonLd.offers.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(jsonLd.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(jsonLd.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
     })
 
     it('should not include aggregateRating in Product schema', async () => {

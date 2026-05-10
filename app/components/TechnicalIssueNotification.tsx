@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Alert, AlertTitle, IconButton, Typography, Button } from "@/lib/daisy-ui";
+import { Box, IconButton, Typography, Button } from "@/lib/daisy-ui";
 import { CloseIcon } from "@/lib/daisy-ui";
 import { PhoneIcon } from "@/lib/daisy-ui";
 import { EmailIcon } from "@/lib/daisy-ui";

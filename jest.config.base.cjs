@@ -61,18 +61,37 @@ module.exports = {
     '!studio/**'
   ],
   coverageThreshold: {
-    // Realistic coverage thresholds based on current codebase
-    // Will be increased incrementally as more tests are added
+    // Commercial release gate: keep broad coverage healthy while focusing
+    // stricter reviews on high-risk business and security paths.
     global: {
-      branches: 30,
-      functions: 25,
-      lines: 35,
-      statements: 35
+      branches: 70,
+      functions: 80,
+      lines: 85,
+      statements: 85
     }
   },
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '<rootDir>/next.config.js',
+    '<rootDir>/scripts/',
+    '<rootDir>/sanity/',
+    '<rootDir>/studio/',
+    '<rootDir>/test/'
+  ],
   moduleDirectories: ['node_modules', '<rootDir>/'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/', '<rootDir>/\\.tmp-script-run/'],
-  watchPathIgnorePatterns: ['<rootDir>/\\.tmp-script-run/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '<rootDir>/\\.tmp-script-run/',
+    '<rootDir>/\\.codex-artifacts/',
+    '<rootDir>/\\.playwright-mcp/'
+  ],
+  watchPathIgnorePatterns: [
+    '<rootDir>/\\.tmp-script-run/',
+    '<rootDir>/\\.codex-artifacts/',
+    '<rootDir>/\\.playwright-mcp/'
+  ],
   transformIgnorePatterns: [
     'node_modules/(?!(jose|@babel/runtime)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$'

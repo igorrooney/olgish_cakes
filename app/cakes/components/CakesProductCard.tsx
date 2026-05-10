@@ -1,8 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+import { getResponsiveCatalogImageAttributes } from './catalogImageAttributes'
 import { TabletCake } from './types'
 
 interface CakesProductCardProps {
@@ -15,6 +13,8 @@ interface CakesProductCardProps {
 
 const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
 const mobileGridImageSizes = '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)'
+const catalogCardImageWidths = [256, 384, 480, 560, 640, 750] as const
+const catalogCardImageQuality = 45
 
 function formatPrice(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2)
@@ -27,8 +27,6 @@ export function CakesProductCard({
   mobileViewMode = 'grid',
   isLcpCandidate = false
 }: CakesProductCardProps) {
-  const [isImageLoaded, setIsImageLoaded] = useState(false)
-  const imageWrapperRef = useRef<HTMLDivElement | null>(null)
   const isByPostCake = cake.productType === 'giftHamper'
   const isLandingNavigation = cake.navigationTarget === 'landing'
   const formattedPrice = formatPrice(cake.price)
@@ -40,56 +38,38 @@ export function CakesProductCard({
   const mobileCardLinkClassName = mobileViewMode === 'grid'
     ? 'block h-full w-full'
     : 'block h-full'
-  const imageClassName = `object-cover transition-opacity duration-300 ${
-    isImageLoaded ? 'opacity-100' : 'opacity-0'
-  }`
-  const imageLoadingOverlayClassName = `pointer-events-none absolute inset-0 bg-base-200 transition-opacity duration-300 motion-reduce:animate-none ${
-    isImageLoaded ? 'opacity-0' : 'animate-pulse opacity-100'
-  }`
+  const imageClassName = 'h-full w-full object-cover'
+  const imageFetchPriority = isLcpCandidate ? 'high' : 'low'
+  const contentVisibilityClassName = isLcpCandidate ? '' : 'content-auto-card '
   const cardAriaLabel = isLandingNavigation
     ? `Explore ${cake.name}`
     : `View details for ${cake.name}`
-
-  useEffect(() => {
-    setIsImageLoaded(false)
-  }, [cake.imageUrl])
-
-  useEffect(() => {
-    const imageElement = imageWrapperRef.current?.querySelector('img')
-
-    if (!imageElement) {
-      return
-    }
-
-    if (imageElement.complete && imageElement.naturalWidth > 0) {
-      setIsImageLoaded(true)
-    }
-  }, [cake.imageUrl, variant])
-
-  const handleImageReady = useCallback(() => {
-    setIsImageLoaded(true)
-  }, [])
+  const imageAttributes = getResponsiveCatalogImageAttributes(cake.imageUrl, {
+    fallbackWidth: 560,
+    fit: 'crop',
+    heightWidthRatio: 1,
+    quality: catalogCardImageQuality,
+    sizes: variant === 'mobile' ? mobileImageSizes : cardImageSizes,
+    widths: catalogCardImageWidths
+  })
 
   if (variant === 'mobile') {
     return (
-      <Link href={resolvedLinkHref} className={mobileCardLinkClassName}>
+      <a href={resolvedLinkHref} className={mobileCardLinkClassName}>
         <span className='sr-only'>{cardAriaLabel}</span>
-        <article className='flex h-full flex-col'>
-          <div ref={imageWrapperRef} className={mobileImageWrapperClassName}>
-            <div
-              data-testid='cake-card-image-loading-overlay'
-              className={imageLoadingOverlayClassName}
-              aria-hidden='true'
-            />
-            <Image
-              src={cake.imageUrl}
+        <article className={`${contentVisibilityClassName}flex h-full flex-col`}>
+          <div className={mobileImageWrapperClassName}>
+            <img
+              src={imageAttributes.src}
+              srcSet={imageAttributes.srcSet}
               alt={cake.imageAlt}
-              fill
-              sizes={mobileImageSizes}
+              sizes={imageAttributes.sizes}
+              width={560}
+              height={560}
               className={imageClassName}
               loading={isLcpCandidate ? 'eager' : 'lazy'}
-              onLoad={handleImageReady}
-              onError={handleImageReady}
+              fetchPriority={imageFetchPriority}
+              decoding='async'
             />
             <p
               data-testid='mobile-price-chip'
@@ -105,38 +85,35 @@ export function CakesProductCard({
             </p>
           </div>
           <div className='px-1 pb-1 pt-2'>
-            <h3 className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-semibold)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-(--color-filter-sort-mobile-text)'>{cake.name}</h3>
+            <h2 className='[font-family:var(--t-font-family-theme-primary)] [font-weight:var(--t-font-weight-semibold)] [font-style:normal] text-[12px] [leading-trim:none] [line-height:var(--t-font-lineHeight-leading-7)] [letter-spacing:0] align-middle text-(--color-filter-sort-mobile-text)'>{cake.name}</h2>
           </div>
         </article>
-      </Link>
+      </a>
     )
   }
 
   return (
-    <Link href={resolvedLinkHref} className='block h-full'>
+    <a href={resolvedLinkHref} className='block h-full'>
       <span className='sr-only'>{cardAriaLabel}</span>
-      <article className='flex h-full flex-col overflow-hidden rounded-[10px] border border-primary-50 bg-primary-50 shadow-none'>
+      <article className={`${contentVisibilityClassName}flex h-full flex-col overflow-hidden rounded-[10px] border border-primary-50 bg-primary-50 shadow-none`}>
         <div className='p-[8px] pb-0'>
-          <div ref={imageWrapperRef} className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
-            <div
-              data-testid='cake-card-image-loading-overlay'
-              className={imageLoadingOverlayClassName}
-              aria-hidden='true'
-            />
-            <Image
-              src={cake.imageUrl}
+          <div className='relative aspect-square w-full overflow-hidden rounded-[8px] bg-base-200'>
+            <img
+              src={imageAttributes.src}
+              srcSet={imageAttributes.srcSet}
               alt={cake.imageAlt}
-              fill
-              sizes={cardImageSizes}
+              sizes={imageAttributes.sizes}
+              width={560}
+              height={560}
               className={imageClassName}
               loading={isLcpCandidate ? 'eager' : 'lazy'}
-              onLoad={handleImageReady}
-              onError={handleImageReady}
+              fetchPriority={imageFetchPriority}
+              decoding='async'
             />
           </div>
         </div>
         <div className='flex flex-1 flex-col gap-2 px-4 pb-3 pt-3'>
-          <h3 className='text-[19px] leading-[28px] text-base-content'>{cake.name}</h3>
+          <h2 className='text-[19px] leading-[28px] text-base-content'>{cake.name}</h2>
           <p className='line-clamp-2 text-[14px] leading-7 text-base-content/70' title={cake.description}>
             {cake.description}
           </p>
@@ -151,6 +128,6 @@ export function CakesProductCard({
           </p>
         </div>
       </article>
-    </Link>
+    </a>
   )
 }

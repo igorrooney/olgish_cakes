@@ -1,26 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { generateHamperMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import {
+  generateHamperMerchantCenterSchema,
+  type MerchantHamperInput,
+} from "@/lib/google-merchant-center-schema";
 import { useReviewStats } from "./ReviewStatsProvider";
 import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface GiftHamperStructuredDataProps {
-  hamper: {
-    _id: string;
-    name: string;
-    slug: {
-      current: string;
-    };
-    description?: any[];
-    shortDescription?: any[];
-    price: number;
-    mainImage?: {
-      asset?: {
-        url?: string;
-      };
-      alt?: string;
-    };
+  hamper: MerchantHamperInput & {
     ingredients?: string[];
     allergens?: string[];
     category?: string;
@@ -43,7 +32,9 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
     if (!hamper.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
-    const structuredData = generateHamperMerchantCenterSchema(hamper);
+    const structuredData: ReturnType<typeof generateHamperMerchantCenterSchema> & {
+      keywords?: string;
+    } = generateHamperMerchantCenterSchema(hamper);
     const aggregateRating = buildAggregateRating(reviewStats);
 
     if (aggregateRating) {
@@ -52,7 +43,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
 
     // Add keywords if available
     if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {
-      (structuredData as any).keywords = hamper.seo.keywords.join(", ");
+      structuredData.keywords = hamper.seo.keywords.join(", ");
     }
 
     // Create script element

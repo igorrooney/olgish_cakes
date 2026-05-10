@@ -25,7 +25,8 @@ jest.mock('@/sanity/lib/image', () => ({
       height: mockHeight
     }))
     const mockUrlFor = jest.fn(() => ({
-      width: mockWidth
+      width: mockWidth,
+      url: mockImageUrl
     }))
 
     return {
@@ -66,7 +67,10 @@ const imageModule = jest.requireMock('@/sanity/lib/image') as {
     mockImageUrl: jest.Mock<string, []>
     mockHeight: jest.Mock<{ url: jest.Mock<string, []> }, [number]>
     mockWidth: jest.Mock<{ height: jest.Mock<{ url: jest.Mock<string, []> }, [number]> }, [number]>
-    mockUrlFor: jest.Mock<{ width: jest.Mock<{ height: jest.Mock<{ url: jest.Mock<string, []> }, [number]> }, [number]> }, [unknown]>
+    mockUrlFor: jest.Mock<{
+      width: jest.Mock<{ height: jest.Mock<{ url: jest.Mock<string, []> }, [number]> }, [number]>
+      url: jest.Mock<string, []>
+    }, [unknown]>
   }
 }
 const {
@@ -162,7 +166,7 @@ describe('catalogPageData gift-hamper fallbacks', () => {
     expect(data.featuredOffer).toBeNull()
   })
 
-  it('requests 900x900 transformed image URLs for mapped cakes', async () => {
+  it('preserves external image URLs for mapped cakes', async () => {
     mockedGetAllCakes.mockResolvedValue([sampleCake])
 
     const data = await getCatalogPageData('cakes')
@@ -173,8 +177,8 @@ describe('catalogPageData gift-hamper fallbacks', () => {
       imageUrl: 'https://example.com/image.jpg'
     })
     expect(mockUrlFor).toHaveBeenCalledWith(sampleCake.mainImage)
-    expect(mockWidth).toHaveBeenCalledWith(900)
-    expect(mockHeight).toHaveBeenCalledWith(900)
+    expect(mockWidth).not.toHaveBeenCalled()
+    expect(mockHeight).not.toHaveBeenCalled()
   })
 
   it('maps Kyiv-style custom cake price to 2-4 servings default when provided', async () => {
@@ -232,7 +236,7 @@ describe('catalogPageData gift-hamper fallbacks', () => {
     expect(data.cakesForUi[0]?.price).toBe(31)
   })
 
-  it('requests 900x900 transformed image URLs for mapped gift hampers', async () => {
+  it('preserves external image URLs for mapped gift hampers', async () => {
     mockedGetAllGiftHampers.mockResolvedValue([sampleGiftHamper])
 
     const data = await getCatalogByPostCakesData()
@@ -243,8 +247,8 @@ describe('catalogPageData gift-hamper fallbacks', () => {
       imageUrl: 'https://example.com/image.jpg'
     })
     expect(mockUrlFor).toHaveBeenCalledWith(sampleGiftHamper.images?.[0])
-    expect(mockWidth).toHaveBeenCalledWith(900)
-    expect(mockHeight).toHaveBeenCalledWith(900)
+    expect(mockWidth).not.toHaveBeenCalled()
+    expect(mockHeight).not.toHaveBeenCalled()
   })
 })
 

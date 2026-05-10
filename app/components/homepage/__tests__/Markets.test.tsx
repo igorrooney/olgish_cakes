@@ -6,6 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { Markets } from '../Markets'
 import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
+import type { HomepageMarket } from '../MarketsClient'
 
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -23,7 +24,7 @@ jest.mock('@/app/utils/fetchMarketSchedule', () => ({
 }))
 
 jest.mock('../DeferredMarketsClient', () => ({
-  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: MarketSchedule[] }) => {
+  DeferredMarketsClient: ({ upcomingMarkets }: { upcomingMarkets: HomepageMarket[] }) => {
     const { MarketsClient } = jest.requireActual('../MarketsClient') as typeof import('../MarketsClient')
     return <MarketsClient upcomingMarkets={upcomingMarkets} />
   }
@@ -52,6 +53,10 @@ const createMarket = (overrides: Partial<MarketSchedule> = {}): MarketSchedule =
 describe('Markets', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
   it('shows a semantic reveal control and exposes additional markets on demand', async () => {
@@ -123,6 +128,28 @@ describe('Markets', () => {
     render(element)
 
     expect(screen.getByText('Wednesday 1 April')).toBeInTheDocument()
+  })
+
+  it('filters markets using the current Europe/London calendar date', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-05-09T23:30:00.000Z'))
+    mockGetMarketSchedule.mockResolvedValueOnce([
+      createMarket({
+        _id: 'market-past',
+        title: 'Morley Makers Market',
+        date: '2026-05-09'
+      }),
+      createMarket({
+        _id: 'market-today',
+        title: 'Sunday Market',
+        date: '2026-05-10'
+      })
+    ])
+
+    const element = await Markets()
+    render(element)
+
+    expect(screen.queryByText('Morley Makers Market')).not.toBeInTheDocument()
+    expect(screen.getByText('Sunday Market')).toBeInTheDocument()
   })
 
   it('does not render a reveal control when only two upcoming markets exist', async () => {

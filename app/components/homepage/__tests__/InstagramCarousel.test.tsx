@@ -4,7 +4,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { InstagramCarousel } from '../InstagramCarousel'
-import type { InstagramPost } from '@/app/types/instagram'
+import type { InstagramCarouselPost } from '../instagramCarouselContent'
 
 interface ImageProps {
   alt?: string
@@ -21,21 +21,20 @@ jest.mock('next/image', () => ({
 }))
 
 describe('InstagramCarousel', () => {
-  const posts: InstagramPost[] = [
+  const posts: InstagramCarouselPost[] = [
     {
       id: 'post-1',
-      caption: 'Honey cake close-up\nMore details here',
+      captionLine: 'Honey cake close-up',
+      imageAlt: 'Honey cake close-up',
       imageUrl: 'https://scontent.cdninstagram.com/media-1.jpg',
-      permalink: 'https://instagram.com/p/post-1',
-      mediaType: 'IMAGE',
-      likeCount: 120
+      permalink: 'https://instagram.com/p/post-1'
     },
     {
       id: 'post-2',
-      caption: 'Birthday cake details',
+      captionLine: 'Birthday cake details',
+      imageAlt: 'Birthday cake details',
       imageUrl: 'https://scontent.cdninstagram.com/media-2.jpg',
-      permalink: 'https://instagram.com/p/post-2',
-      mediaType: 'IMAGE'
+      permalink: 'https://instagram.com/p/post-2'
     }
   ]
 
@@ -101,5 +100,26 @@ describe('InstagramCarousel', () => {
     const previousButtons = screen.getAllByLabelText('Previous post')
     expect(previousButtons).toHaveLength(1)
     expect(previousButtons[0]).toBeDisabled()
+  })
+
+  it('avoids load-time scroll snap by using padding without mandatory snap', () => {
+    const { container } = render(
+      <InstagramCarousel
+        posts={posts}
+        profileUrl="https://www.instagram.com/olgish_cakes/"
+        profileName="Olgish Cakes"
+        profileHandle="@olgish_cakes"
+      />
+    )
+
+    const carousel = container.querySelector('#instagram-carousel')
+    const firstItem = container.querySelector('.carousel-item') as HTMLElement | null
+
+    expect(carousel).toHaveClass('px-6')
+    expect(carousel).toHaveClass('[scroll-snap-type:none]')
+    expect(carousel).not.toHaveClass('ml-[15px]')
+    expect(carousel).not.toHaveClass('[scroll-snap-type:x_mandatory]')
+    expect(firstItem).toHaveClass('[scroll-snap-align:start]')
+    expect(firstItem?.style.marginLeft).toBe('')
   })
 })

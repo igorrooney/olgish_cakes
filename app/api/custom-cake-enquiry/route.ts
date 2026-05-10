@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import {
   applyEnquiryRateLimitHeaders,
@@ -7,6 +8,11 @@ import {
   takeEnquiryRateLimit
 } from '@/lib/enquiry-rate-limit'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import {
+  createUnsupportedFormContentTypeResponse,
+  isSupportedFormContentType,
+  readRequiredFormData
+} from '@/lib/form-request'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   getSupabaseAdminClient,
@@ -35,6 +41,8 @@ const optionalEmailSchema = z.union([
   z.string().trim().email('Invalid email address')
 ])
 const optionalPhoneSchema = z.string().trim()
+const dateNeededErrorMessage = 'Please select a valid date'
+const datePastErrorMessage = 'Please select today or a future date'
 
 const optionalPostcodeSchema = z
   .string()
@@ -68,6 +76,34 @@ const sanitizeFileName = (fileName: string) => {
 
 const buildReferenceImagePath = (fileName: string) =>
   `enquiries/${Date.now()}-${crypto.randomUUID()}-${sanitizeFileName(fileName)}`
+
+const getCurrentUkDateInputValue = (date = new Date()) => {
+  const dateParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date)
+
+  const year = dateParts.find((part) => part.type === 'year')?.value
+  const month = dateParts.find((part) => part.type === 'month')?.value
+  const day = dateParts.find((part) => part.type === 'day')?.value
+
+  if (!year || !month || !day) {
+    return date.toISOString().slice(0, 10)
+  }
+
+  return `${year}-${month}-${day}`
+}
+
+const dateNeededSchema = z
+  .string()
+  .trim()
+  .min(1, 'Please select a date')
+  .date(dateNeededErrorMessage)
+  .refine((value) => value >= getCurrentUkDateInputValue(), {
+    message: datePastErrorMessage
+  })
 
 const buildSupabaseInsertHints = (errorDetails: string) => {
   const normalizedDetails = errorDetails.toLowerCase()
@@ -140,6 +176,24 @@ type NotificationError = {
   message: string
 }
 
+type InsertedEnquiryRow = {
+  id: string | number
+}
+
+const isInsertedEnquiryRow = (value: unknown): value is InsertedEnquiryRow => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const record = value as Record<string, unknown>
+  return typeof record.id === 'string' || typeof record.id === 'number'
+}
+
+const getInsertedEnquiryId = (value: unknown) =>
+  isInsertedEnquiryRow(value) ? String(value.id) : null
+
+const buildAdminUrl = (path: string) => `${BUSINESS_CONSTANTS.BASE_URL}${path}`
+
 const logNotificationFailure = (
   step: NotificationError['step'],
   errorMessage: string,
@@ -195,6 +249,7 @@ const sendFailureAlertEmail = async (params: {
   attachmentNames: string[]
   notificationErrors: NotificationError[]
   emailMode: ReturnType<typeof getEmailTransportMode>
+  adminUrl: string
 }) => {
   const failureAlertResponse = await sendEmail({
     templateId: 'custom-cake-enquiry-failure-alert',
@@ -210,7 +265,8 @@ const sendFailureAlertEmail = async (params: {
       customerMessage: params.requirements,
       attachmentNames: params.attachmentNames,
       message: `Failed notifications:\n${buildFailureAlertMessage(params.notificationErrors)}`,
-      note: 'The enquiry was saved in the database successfully. Review notification logs and resend manually if needed.'
+      note: 'The enquiry was saved in the database successfully. Review notification logs and resend manually if needed.',
+      adminUrl: params.adminUrl
     },
     modeOverride: params.emailMode,
     message: {
@@ -278,7 +334,7 @@ const formSchema = z.object({
   city: optionalTrimmedStringSchema,
   postcode: optionalPostcodeSchema,
   occasion: optionalTrimmedStringSchema,
-  date: z.string().min(1, 'Please select a date'),
+  date: dateNeededSchema,
   requirements: optionalTrimmedStringSchema,
   csrfToken: z.string().min(1, 'CSRF token is required')
 }).superRefine((values, ctx) => {
@@ -314,6 +370,10 @@ const occasionLabels: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isSupportedFormContentType(request)) {
+      return createUnsupportedFormContentTypeResponse()
+    }
+
     const supabase = getSupabaseAdminClient()
     const rateLimitResult = await takeEnquiryRateLimit(supabase, {
       scope: 'custom-cake-enquiry',
@@ -332,6 +392,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const formDataResult = await readRequiredFormData(request)
+    if (!formDataResult.ok) {
+      return formDataResult.response
+    }
+
     const emailMode = getEmailTransportMode()
     const canSendLiveEmail =
       !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
@@ -343,7 +408,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.formData()
+    const { formData: body } = formDataResult
     const getString = (value: FormDataEntryValue | null) =>
       typeof value === 'string' ? value : ''
 
@@ -412,7 +477,7 @@ export async function POST(request: NextRequest) {
       referenceImagePath = uploaded.path
     }
 
-    const { error: insertError } = await supabase
+    const { data: insertedEnquiry, error: insertError } = await supabase
       .from('custom_cake_enquiries')
       .insert({
         full_name: formData.fullName,
@@ -430,6 +495,8 @@ export async function POST(request: NextRequest) {
         reference_image_type: referenceImage?.type || null,
         reference_image_size: referenceImage ? referenceImage.size : null
       })
+      .select('id')
+      .single()
 
     if (insertError) {
       if (referenceImageBucket && referenceImagePath) {
@@ -444,6 +511,12 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to save enquiry')
     }
 
+    const enquiryId = getInsertedEnquiryId(insertedEnquiry)
+    const adminPath = enquiryId
+      ? `/admin/enquiries/custom-cake/${enquiryId}` as const
+      : '/admin/enquiries'
+    const adminUrl = buildAdminUrl(adminPath)
+
     await sendTelegramManagerNotification({
       type: 'custom-cake-enquiry',
       customerName: formData.fullName,
@@ -453,7 +526,7 @@ export async function POST(request: NextRequest) {
       productName: occasionValue || undefined,
       messagePreview: requirementsValue,
       imageCount: referenceImage ? 1 : 0,
-      adminPath: '/admin'
+      adminPath
     })
 
     const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
@@ -489,7 +562,8 @@ export async function POST(request: NextRequest) {
         dateNeeded: formData.date,
         occasion: resolvedOccasion,
         customerMessage: resolvedRequirements,
-        attachmentNames: referenceImage ? [referenceImage.name] : []
+        attachmentNames: referenceImage ? [referenceImage.name] : [],
+        adminUrl
       },
       modeOverride: emailMode,
       message: {
@@ -582,7 +656,8 @@ export async function POST(request: NextRequest) {
         requirements: resolvedRequirements,
         attachmentNames: referenceImage ? [referenceImage.name] : [],
         notificationErrors,
-        emailMode
+        emailMode,
+        adminUrl
       })
 
       failureAlertSent = failureAlertResult.sent

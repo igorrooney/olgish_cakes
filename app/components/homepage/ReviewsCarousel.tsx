@@ -1,16 +1,23 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RefObject } from 'react'
-import type { Testimonial } from '@/app/types/testimonial'
 import { CarouselNavButton } from './CarouselNavButton'
 
+export type HomepageReview = {
+  _id: string
+  customerName: string
+  date: string
+  text: string
+  title?: string
+}
+
 interface ReviewProps {
-  testimonials: Testimonial[]
+  testimonials: HomepageReview[]
 }
 
 interface ReviewCardProps {
-  testimonial: Testimonial
+  testimonial: HomepageReview
   reviewTextId: string
   className?: string
 }
@@ -25,6 +32,51 @@ const collapsedReviewStyle = {
   maxHeight: `${collapsedReviewMaxHeight}px`,
   overflow: 'hidden'
 } as const
+const tabletMediaQuery = '(min-width: 64rem)'
+const smallLaptopMediaQuery = '(min-width: 80rem)'
+
+type ReviewsViewport = 'mobile' | 'tablet' | 'small-laptop'
+
+const getCurrentViewport = (): ReviewsViewport => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return 'mobile'
+  }
+
+  if (window.matchMedia(smallLaptopMediaQuery).matches) {
+    return 'small-laptop'
+  }
+
+  if (window.matchMedia(tabletMediaQuery).matches) {
+    return 'tablet'
+  }
+
+  return 'mobile'
+}
+
+const useReviewsViewport = () => {
+  const [viewport, setViewport] = useState<ReviewsViewport>('mobile')
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return
+    }
+
+    const tabletQuery = window.matchMedia(tabletMediaQuery)
+    const smallLaptopQuery = window.matchMedia(smallLaptopMediaQuery)
+    const updateViewport = () => setViewport(getCurrentViewport())
+
+    updateViewport()
+    tabletQuery.addEventListener('change', updateViewport)
+    smallLaptopQuery.addEventListener('change', updateViewport)
+
+    return () => {
+      tabletQuery.removeEventListener('change', updateViewport)
+      smallLaptopQuery.removeEventListener('change', updateViewport)
+    }
+  }, [])
+
+  return viewport
+}
 
 const getValidDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -88,10 +140,19 @@ const scrollToIndex = (carouselRef: RefObject<HTMLDivElement | null>, index: num
   carousel.scrollTo(left, 0)
 }
 
-const useCarouselIndex = (carouselRef: RefObject<HTMLDivElement | null>, itemCount: number) => {
+const useCarouselIndex = (
+  carouselRef: RefObject<HTMLDivElement | null>,
+  itemCount: number,
+  isActive: boolean
+) => {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
+    if (!isActive) {
+      setIndex(0)
+      return
+    }
+
     const carousel = carouselRef.current
 
     if (!carousel) return
@@ -139,7 +200,7 @@ const useCarouselIndex = (carouselRef: RefObject<HTMLDivElement | null>, itemCou
       carousel.removeEventListener('scroll', updateIndex)
       window.removeEventListener('resize', updateIndex)
     }
-  }, [carouselRef, itemCount])
+  }, [carouselRef, isActive, itemCount])
 
   return index
 }
@@ -321,22 +382,31 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
   const mobileCarouselRef = useRef<HTMLDivElement>(null)
   const tabletCarouselRef = useRef<HTMLDivElement>(null)
   const smallLaptopCarouselRef = useRef<HTMLDivElement>(null)
+  const viewport = useReviewsViewport()
   const baseId = 'reviews-carousel'
 
   const mobileSlideCount = testimonials.length
-  const tabletSlideCount = Math.ceil(testimonials.length / 4)
-  const tabletSlides = Array.from({ length: tabletSlideCount }, (_, slideIndex) =>
-    testimonials.slice(slideIndex * 4, slideIndex * 4 + 4)
+  const tabletSlides = useMemo(() =>
+    Array.from({ length: Math.ceil(testimonials.length / 4) }, (_, slideIndex) =>
+      testimonials.slice(slideIndex * 4, slideIndex * 4 + 4)
+    ), [testimonials]
   )
+  const tabletSlideCount = tabletSlides.length
 
-  const smallLaptopSlideCount = Math.ceil(testimonials.length / 6)
-  const smallLaptopSlides = Array.from({ length: smallLaptopSlideCount }, (_, slideIndex) =>
-    testimonials.slice(slideIndex * 6, slideIndex * 6 + 6)
+  const smallLaptopSlides = useMemo(() =>
+    Array.from({ length: Math.ceil(testimonials.length / 6) }, (_, slideIndex) =>
+      testimonials.slice(slideIndex * 6, slideIndex * 6 + 6)
+    ), [testimonials]
   )
+  const smallLaptopSlideCount = smallLaptopSlides.length
 
-  const mobileIndex = useCarouselIndex(mobileCarouselRef, mobileSlideCount)
-  const tabletIndex = useCarouselIndex(tabletCarouselRef, tabletSlideCount)
-  const smallLaptopIndex = useCarouselIndex(smallLaptopCarouselRef, smallLaptopSlideCount)
+  const mobileIndex = useCarouselIndex(mobileCarouselRef, mobileSlideCount, viewport === 'mobile')
+  const tabletIndex = useCarouselIndex(tabletCarouselRef, tabletSlideCount, viewport === 'tablet')
+  const smallLaptopIndex = useCarouselIndex(
+    smallLaptopCarouselRef,
+    smallLaptopSlideCount,
+    viewport === 'small-laptop'
+  )
 
   if (testimonials.length === 0) {
     return null
@@ -350,114 +420,122 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
         </h2>
 
         <div className='relative -mx-4 tablet:mx-0'>
-          <div
-            ref={mobileCarouselRef}
-            className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5 tablet:hidden'
-          >
-            {testimonials.map((testimonial, index) => (
+          {viewport === 'mobile' ? (
+            <>
               <div
-                key={testimonial._id}
-                id={`${baseId}-reviews-mobile-${index + 1}`}
-                className='carousel-item flex-shrink-0'
-                style={{
-                  width: '342px',
-                  minWidth: '342px',
-                  maxWidth: '342px',
-                  scrollSnapAlign: 'start'
-                }}
+                ref={mobileCarouselRef}
+                className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5'
               >
-                <ReviewCard
-                  testimonial={testimonial}
-                  reviewTextId={`${baseId}-mobile-review-text-${index + 1}-${testimonial._id}`}
-                />
-              </div>
-            ))}
-          </div>
-          <CarouselControls
-            className='mt-5 flex justify-center gap-3 tablet:hidden'
-            carouselRef={mobileCarouselRef}
-            currentIndex={mobileIndex}
-            idPrefix={`${baseId}-reviews-mobile`}
-            nextLabel='Next review'
-            prevLabel='Previous review'
-            total={mobileSlideCount}
-          />
-
-          <div className='relative hidden tablet:block small-laptop:hidden'>
-            <div className='relative p-6'>
-              <div
-                ref={tabletCarouselRef}
-                className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
-              >
-                {tabletSlides.map((slide, slideIndex) => (
+                {testimonials.map((testimonial, index) => (
                   <div
-                    key={`reviews-slide-${slideIndex}`}
-                    id={`${baseId}-reviews-tablet-${slideIndex + 1}`}
-                    className='carousel-item w-full flex-shrink-0'
-                    style={{ scrollSnapAlign: 'start' }}
+                    key={testimonial._id}
+                    id={`${baseId}-reviews-mobile-${index + 1}`}
+                    className='carousel-item flex-shrink-0'
+                    style={{
+                      width: '342px',
+                      minWidth: '342px',
+                      maxWidth: '342px',
+                      scrollSnapAlign: 'start'
+                    }}
                   >
-                    <div className='flex w-full flex-wrap items-stretch justify-center gap-5'>
-                      {slide.map((testimonial) => (
-                        <div key={testimonial._id} className='w-full max-w-[342px]'>
-                          <ReviewCard
-                            testimonial={testimonial}
-                            reviewTextId={`${baseId}-tablet-review-text-${slideIndex + 1}-${testimonial._id}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                    <ReviewCard
+                      testimonial={testimonial}
+                      reviewTextId={`${baseId}-mobile-review-text-${index + 1}-${testimonial._id}`}
+                    />
                   </div>
                 ))}
               </div>
-            </div>
-            <CarouselControls
-              className='mt-5 flex justify-center gap-3'
-              carouselRef={tabletCarouselRef}
-              currentIndex={tabletIndex}
-              idPrefix={`${baseId}-reviews-tablet`}
-              nextLabel='Next reviews'
-              prevLabel='Previous reviews'
-              total={tabletSlideCount}
-            />
-          </div>
+              <CarouselControls
+                className='mt-5 flex justify-center gap-3'
+                carouselRef={mobileCarouselRef}
+                currentIndex={mobileIndex}
+                idPrefix={`${baseId}-reviews-mobile`}
+                nextLabel='Next review'
+                prevLabel='Previous review'
+                total={mobileSlideCount}
+              />
+            </>
+          ) : null}
 
-          <div className='relative hidden small-laptop:block'>
-            <div className='relative p-6'>
-              <div
-                ref={smallLaptopCarouselRef}
-                className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
-              >
-                {smallLaptopSlides.map((slide, slideIndex) => (
-                  <div
-                    key={`reviews-small-laptop-slide-${slideIndex}`}
-                    id={`${baseId}-reviews-small-laptop-${slideIndex + 1}`}
-                    className='carousel-item w-full flex-shrink-0'
-                    style={{ scrollSnapAlign: 'start' }}
-                  >
-                    <div className='grid w-full grid-cols-[repeat(3,_342px)] justify-start gap-5'>
-                      {slide.map((testimonial) => (
-                        <div key={testimonial._id} className='w-full max-w-[342px]'>
-                          <ReviewCard
-                            testimonial={testimonial}
-                            reviewTextId={`${baseId}-small-laptop-review-text-${slideIndex + 1}-${testimonial._id}`}
-                          />
-                        </div>
-                      ))}
+          {viewport === 'tablet' ? (
+            <div className='relative'>
+              <div className='relative p-6'>
+                <div
+                  ref={tabletCarouselRef}
+                  className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
+                >
+                  {tabletSlides.map((slide, slideIndex) => (
+                    <div
+                      key={`reviews-slide-${slideIndex}`}
+                      id={`${baseId}-reviews-tablet-${slideIndex + 1}`}
+                      className='carousel-item w-full flex-shrink-0'
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <div className='flex w-full flex-wrap items-stretch justify-center gap-5'>
+                        {slide.map((testimonial) => (
+                          <div key={testimonial._id} className='w-full max-w-[342px]'>
+                            <ReviewCard
+                              testimonial={testimonial}
+                              reviewTextId={`${baseId}-tablet-review-text-${slideIndex + 1}-${testimonial._id}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+              <CarouselControls
+                className='mt-5 flex justify-center gap-3'
+                carouselRef={tabletCarouselRef}
+                currentIndex={tabletIndex}
+                idPrefix={`${baseId}-reviews-tablet`}
+                nextLabel='Next reviews'
+                prevLabel='Previous reviews'
+                total={tabletSlideCount}
+              />
             </div>
-            <CarouselControls
-              className='mt-5 flex justify-center gap-3'
-              carouselRef={smallLaptopCarouselRef}
-              currentIndex={smallLaptopIndex}
-              idPrefix={`${baseId}-reviews-small-laptop`}
-              nextLabel='Next reviews'
-              prevLabel='Previous reviews'
-              total={smallLaptopSlideCount}
-            />
-          </div>
+          ) : null}
+
+          {viewport === 'small-laptop' ? (
+            <div className='relative'>
+              <div className='relative p-6'>
+                <div
+                  ref={smallLaptopCarouselRef}
+                  className='carousel w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory]'
+                >
+                  {smallLaptopSlides.map((slide, slideIndex) => (
+                    <div
+                      key={`reviews-small-laptop-slide-${slideIndex}`}
+                      id={`${baseId}-reviews-small-laptop-${slideIndex + 1}`}
+                      className='carousel-item w-full flex-shrink-0'
+                      style={{ scrollSnapAlign: 'start' }}
+                    >
+                      <div className='grid w-full grid-cols-[repeat(3,_342px)] justify-start gap-5'>
+                        {slide.map((testimonial) => (
+                          <div key={testimonial._id} className='w-full max-w-[342px]'>
+                            <ReviewCard
+                              testimonial={testimonial}
+                              reviewTextId={`${baseId}-small-laptop-review-text-${slideIndex + 1}-${testimonial._id}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <CarouselControls
+                className='mt-5 flex justify-center gap-3'
+                carouselRef={smallLaptopCarouselRef}
+                currentIndex={smallLaptopIndex}
+                idPrefix={`${baseId}-reviews-small-laptop`}
+                nextLabel='Next reviews'
+                prevLabel='Previous reviews'
+                total={smallLaptopSlideCount}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

@@ -62,7 +62,7 @@ describe('DeferredRuntimeSetup', () => {
     })
   })
 
-  it('loads the consent runtime immediately on mount', async () => {
+  it('does not load the heavy consent runtime on mount', async () => {
     const { loadConsentRuntime } = await import('@/app/lib/consent-runtime')
 
     render(<DeferredRuntimeSetup />)
@@ -71,7 +71,7 @@ describe('DeferredRuntimeSetup', () => {
       await Promise.resolve()
     })
 
-    expect(loadConsentRuntime).toHaveBeenCalledTimes(1)
+    expect(loadConsentRuntime).not.toHaveBeenCalled()
   })
 
   it('skips service worker registration outside production', () => {

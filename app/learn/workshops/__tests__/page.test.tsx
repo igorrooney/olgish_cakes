@@ -192,8 +192,12 @@ describe('WorkshopsPage', () => {
     expect(blocks.find(block => block['@type'] === 'Event')).toBeUndefined()
     expect(blocks.find(block => block['@type'] === 'Course')).toBeUndefined()
     expect(blocks.find(block => block['@type'] === 'FAQPage')).toBeUndefined()
-    expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[2]?.name).toBe(
-      'Workshops'
+    const breadcrumbItems = breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>
+
+    expect(breadcrumbItems).toHaveLength(2)
+    expect(breadcrumbItems[1]?.name).toBe('Workshops')
+    expect(breadcrumbItems.some(item => item.item === 'https://olgishcakes.co.uk/learn')).toBe(
+      false
     )
   })
 })

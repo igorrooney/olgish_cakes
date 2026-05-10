@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { CakesProductCard } from '../CakesProductCard'
 import { TabletCake } from '../types'
 
@@ -11,9 +11,11 @@ jest.mock('next/image', () => ({
   default: ({
     alt,
     fill,
+    loader: _loader,
     priority,
+    unoptimized: _unoptimized,
     ...props
-  }: React.ComponentProps<'img'> & { fill?: boolean, priority?: boolean }) => (
+  }: React.ComponentProps<'img'> & { fill?: boolean, loader?: unknown, priority?: boolean, unoptimized?: boolean }) => (
     <img alt={alt || ''} {...props} />
   )
 }))
@@ -23,8 +25,9 @@ jest.mock('next/link', () => ({
   default: ({
     children,
     href,
+    prefetch: _prefetch,
     ...props
-  }: React.PropsWithChildren<{ href: string } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
+  }: React.PropsWithChildren<{ href: string, prefetch?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
     <a href={href} {...props}>{children}</a>
   )
 }))
@@ -117,36 +120,14 @@ describe('CakesProductCard', () => {
     renderCard()
 
     expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('loading', 'lazy')
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('fetchpriority', 'low')
   })
 
   it('uses eager loading for LCP candidate image', () => {
     renderCard({}, { isLcpCandidate: true })
 
     expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('loading', 'eager')
-  })
-
-  it('reveals already-complete image without waiting for load event', async () => {
-    const completeSpy = jest.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(true)
-    const naturalWidthSpy = jest.spyOn(HTMLImageElement.prototype, 'naturalWidth', 'get').mockReturnValue(1200)
-
-    try {
-      renderCard({}, { isLcpCandidate: true })
-
-      const image = screen.getByAltText('Christmas honey cake decorated with festive details')
-      const loadingOverlay = screen.getByTestId('cake-card-image-loading-overlay')
-
-      await waitFor(() => {
-        expect(loadingOverlay).toHaveClass('opacity-0')
-        expect(image).toHaveClass('opacity-100')
-      })
-
-      expect(loadingOverlay).not.toHaveClass('opacity-100')
-      expect(loadingOverlay).not.toHaveClass('animate-pulse')
-      expect(image).not.toHaveClass('opacity-0')
-    } finally {
-      completeSpy.mockRestore()
-      naturalWidthSpy.mockRestore()
-    }
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('fetchpriority', 'high')
   })
 
   it('renders the card as a single clickable link', () => {
@@ -213,26 +194,13 @@ describe('CakesProductCard', () => {
     expect(imageWrapper).not.toHaveClass('aspect-[4/3]')
   })
 
-  it('shows shimmer overlay before desktop image load and fades it after load', () => {
+  it('renders desktop image without per-card hydration overlay state', () => {
     renderCard()
 
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
-    const loadingOverlay = screen.getByTestId('cake-card-image-loading-overlay')
 
-    expect(loadingOverlay).toHaveClass(
-      'bg-base-200',
-      'animate-pulse',
-      'opacity-100',
-      'motion-reduce:animate-none'
-    )
-    expect(image).toHaveClass('opacity-0')
-
-    fireEvent.load(image)
-
-    expect(loadingOverlay).toHaveClass('opacity-0')
-    expect(loadingOverlay).not.toHaveClass('opacity-100')
-    expect(loadingOverlay).not.toHaveClass('animate-pulse')
-    expect(image).toHaveClass('opacity-100')
+    expect(screen.queryByTestId('cake-card-image-loading-overlay')).not.toBeInTheDocument()
+    expect(image).toHaveClass('object-cover')
     expect(image).not.toHaveClass('opacity-0')
   })
 
@@ -240,7 +208,7 @@ describe('CakesProductCard', () => {
     const { container } = renderMobileCard()
     const article = container.querySelector('article')
     const mobilePriceChip = screen.getByTestId('mobile-price-chip')
-    const mobileHeading = screen.getByRole('heading', { level: 3, name: 'Christmas Honey Cake' })
+    const mobileHeading = screen.getByRole('heading', { level: 2, name: 'Christmas Honey Cake' })
 
     expect(screen.queryByText('Layered honey sponge with sour cream and festive decoration.')).not.toBeInTheDocument()
     expect(mobilePriceChip).toHaveTextContent(/from.*27/i)
@@ -307,7 +275,7 @@ describe('CakesProductCard', () => {
     const imageWrapper = image.parentElement
     const mobileLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
     const mobilePriceChip = screen.getByTestId('mobile-price-chip')
-    const mobileHeading = screen.getByRole('heading', { level: 3, name: 'Christmas Honey Cake' })
+    const mobileHeading = screen.getByRole('heading', { level: 2, name: 'Christmas Honey Cake' })
 
     expect(image).toHaveAttribute(
       'sizes',
@@ -358,26 +326,13 @@ describe('CakesProductCard', () => {
     expect(mobileHeading).not.toHaveClass('text-[19px]', 'leading-[28px]', 'text-base-content')
   })
 
-  it('shows shimmer overlay before mobile image load and clears it on error', () => {
+  it('renders mobile image without per-card hydration overlay state', () => {
     renderMobileCard()
 
     const image = screen.getByAltText('Christmas honey cake decorated with festive details')
-    const loadingOverlay = screen.getByTestId('cake-card-image-loading-overlay')
 
-    expect(loadingOverlay).toHaveClass(
-      'bg-base-200',
-      'animate-pulse',
-      'opacity-100',
-      'motion-reduce:animate-none'
-    )
-    expect(image).toHaveClass('opacity-0')
-
-    fireEvent.error(image)
-
-    expect(loadingOverlay).toHaveClass('opacity-0')
-    expect(loadingOverlay).not.toHaveClass('opacity-100')
-    expect(loadingOverlay).not.toHaveClass('animate-pulse')
-    expect(image).toHaveClass('opacity-100')
+    expect(screen.queryByTestId('cake-card-image-loading-overlay')).not.toBeInTheDocument()
+    expect(image).toHaveClass('object-cover')
     expect(image).not.toHaveClass('opacity-0')
   })
 

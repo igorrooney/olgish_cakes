@@ -8,20 +8,32 @@ import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPref
 import { portableTextComponents } from '@/app/components/portableTextComponents'
 import { blocksToText } from '@/types/cake'
 import type { GiftHamper } from '@/types/giftHamper'
-import { urlFor } from '@/sanity/lib/image'
 import {
   getGiftHamperVisibleDescriptionBlocks,
   giftHamperVisibleDescriptionFallback
 } from './description-content'
-import { getGiftHamperDeliveryFallbackKeyPoint, resolveGiftHamperDeliveryContent } from './delivery-content'
+import { getGiftHamperDeliveryFallbackKeyPoint, type ResolvedGiftHamperDeliveryContent } from './delivery-content'
+
+export interface GiftHamperPageClientData {
+  name: GiftHamper['name']
+  slug: GiftHamper['slug']
+  description?: GiftHamper['description']
+  shortDescription?: GiftHamper['shortDescription']
+  deliveryContent: ResolvedGiftHamperDeliveryContent
+  price: GiftHamper['price']
+  galleryImages: CatalogProductDetailImage[]
+  ingredients?: GiftHamper['ingredients']
+  allergens?: GiftHamper['allergens']
+  ingredientReference?: GiftHamper['ingredientReference']
+}
 
 interface GiftHamperPageClientProps {
-  hamper: GiftHamper
+  hamper: GiftHamperPageClientData
   backHref: string
 }
 
 const ProductOrderInlineForm = dynamic(
-  () => import('@/app/components/homepage/ProductOrderInlineForm').then((module) => module.ProductOrderInlineForm),
+  () => import('@/app/components/homepage/ProductOrderInlineFormWithProviders').then((module) => module.ProductOrderInlineFormWithProviders),
   {
     loading: () => (
       <p className='text-sm text-base-content/70'>Loading order form...</p>
@@ -104,49 +116,6 @@ function resolveKeyPoints(extractedPoints: string[], fallbackPoints: string[]) {
   return uniquePoints
 }
 
-function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  const maybeImage = value as { asset?: { _ref?: unknown } }
-
-  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
-}
-
-function mapHamperImagesToGallery(hamper: GiftHamper): CatalogProductDetailImage[] {
-  const mappedImages: CatalogProductDetailImage[] = []
-  const imageUrls = new Set<string>()
-  const fallbackAlt = `${hamper.name} by Olgish Cakes`
-  const hamperImages = Array.isArray(hamper.images) ? hamper.images : []
-  const mainImageIndex = hamperImages.findIndex((image) => image.isMain === true)
-  const orderedImages = mainImageIndex >= 0
-    ? [hamperImages[mainImageIndex], ...hamperImages.filter((_, index) => index !== mainImageIndex)]
-    : hamperImages
-
-  orderedImages.forEach((image) => {
-    if (!hasImageAssetReference(image)) {
-      return
-    }
-
-    const imageUrl = urlFor(image).width(1200).height(1200).url()
-
-    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
-      return
-    }
-
-    imageUrls.add(imageUrl)
-    mappedImages.push({
-      src: imageUrl,
-      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
-        ? image.alt.trim()
-        : fallbackAlt
-    })
-  })
-
-  return mappedImages
-}
-
 function renderDescriptionSectionContent(
   description: GiftHamper['description'] | GiftHamper['shortDescription'] | null
 ): ReactNode {
@@ -178,7 +147,7 @@ function renderDescriptionSectionContent(
   )
 }
 
-function renderIngredientsSectionContent(hamper: GiftHamper): ReactNode {
+function renderIngredientsSectionContent(hamper: GiftHamperPageClientData): ReactNode {
   const referencedIngredients = hamper.ingredientReference?.ingredients
   const hasReferencedIngredients = Array.isArray(referencedIngredients) && referencedIngredients.length > 0
   const legacyIngredients = Array.isArray(hamper.ingredients) ? hamper.ingredients : []
@@ -231,12 +200,8 @@ export function GiftHamperPageClient({
   const [isOrderFormVisible, setIsOrderFormVisible] = useState(false)
   const handleOrderIntent = useOrderFormPrefetch({ prefetchOccasionOptions: false })
   const backLabel = isOrderFormVisible ? 'Back to product' : 'Back to cakes by post'
-  const galleryImages = useMemo(() => {
-    return mapHamperImagesToGallery(hamper)
-  }, [hamper])
-  const resolvedDeliveryContent = useMemo(() => {
-    return resolveGiftHamperDeliveryContent(hamper)
-  }, [hamper])
+  const galleryImages = hamper.galleryImages
+  const resolvedDeliveryContent = hamper.deliveryContent
   const keyPoints = useMemo(() => {
     const deliveryFallbackKeyPoint = resolvedDeliveryContent.shouldEmitShippingDetails
       ? getGiftHamperDeliveryFallbackKeyPoint(resolvedDeliveryContent.policy)

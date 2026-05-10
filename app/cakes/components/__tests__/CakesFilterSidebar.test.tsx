@@ -22,15 +22,52 @@ const collectionOptions: CakesCollectionOption[] = [
     productType: 'cake'
   }
 ]
+const longerCollectionOptions: CakesCollectionOption[] = [
+  collectionOptions[0],
+  {
+    id: 'collection-2',
+    queryValue: 'c-birthday',
+    legacyQueryValues: ['collection-2'],
+    label: 'Birthday',
+    isFeatured: false,
+    productType: 'cake'
+  },
+  {
+    id: 'collection-3',
+    queryValue: 'c-wedding',
+    legacyQueryValues: ['collection-3'],
+    label: 'Wedding',
+    isFeatured: false,
+    productType: 'cake'
+  },
+  {
+    id: 'collection-4',
+    queryValue: 'c-anniversary',
+    legacyQueryValues: ['collection-4'],
+    label: 'Anniversary',
+    isFeatured: false,
+    productType: 'cake'
+  },
+  {
+    id: 'collection-5',
+    queryValue: 'c-baby-shower',
+    legacyQueryValues: ['collection-5'],
+    label: 'Baby shower',
+    isFeatured: false,
+    productType: 'cake'
+  }
+]
 
 function renderSidebar({
   filters = defaultFilters,
   isByPostLoading = false,
-  isCustomLoading = false
+  isCustomLoading = false,
+  collectionOptionsOverride = collectionOptions
 }: {
   filters?: CakesFilterState
   isByPostLoading?: boolean
   isCustomLoading?: boolean
+  collectionOptionsOverride?: CakesCollectionOption[]
 } = {}) {
   const onToggleByPost = jest.fn()
   const onToggleCustom = jest.fn()
@@ -42,7 +79,7 @@ function renderSidebar({
     <CakesFilterSidebar
       filters={filters}
       priceMax={80}
-      collectionOptions={collectionOptions}
+      collectionOptions={collectionOptionsOverride}
       isByPostLoading={isByPostLoading}
       isCustomLoading={isCustomLoading}
       onToggleByPost={onToggleByPost}
@@ -140,5 +177,21 @@ describe('CakesFilterSidebar', () => {
 
     expect(onToggleByPost).toHaveBeenCalledWith(false)
     expect(onToggleCustom).toHaveBeenCalledWith(true)
+  })
+
+  it('keeps a selected collection visible when the collection list is collapsed', () => {
+    renderSidebar({
+      collectionOptionsOverride: longerCollectionOptions,
+      filters: {
+        ...defaultFilters,
+        showByPost: false,
+        showCustom: true,
+        selectedCollectionIds: ['collection-5']
+      }
+    })
+
+    expect(screen.getByRole('checkbox', { name: 'Baby shower' })).toBeChecked()
+    expect(screen.getByRole('button', { name: 'See more' })).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Anniversary' })).not.toBeInTheDocument()
   })
 })

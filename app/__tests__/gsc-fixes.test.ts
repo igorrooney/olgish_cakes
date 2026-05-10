@@ -67,7 +67,9 @@ describe('GSC Compliance Fixes', () => {
           '@type': 'OfferShippingDetails'
         },
         hasMerchantReturnPolicy: {
-          '@type': 'MerchantReturnPolicy'
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'GB',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
         }
       }
       
@@ -77,6 +79,10 @@ describe('GSC Compliance Fixes', () => {
       expect(offer.image).toContain('https://')
       expect(offer.shippingDetails).toBeDefined()
       expect(offer.hasMerchantReturnPolicy).toBeDefined()
+      expect(offer.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
     })
   })
 
@@ -208,7 +214,9 @@ describe('GSC Compliance Fixes', () => {
             '@type': 'OfferShippingDetails'
           },
           hasMerchantReturnPolicy: {
-            '@type': 'MerchantReturnPolicy'
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: 'GB',
+            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
           }
         },
         aggregateRating: {
@@ -231,6 +239,10 @@ describe('GSC Compliance Fixes', () => {
       expect(validProductStructure.offers.image).toBeDefined()
       expect(validProductStructure.offers.shippingDetails).toBeDefined()
       expect(validProductStructure.offers.hasMerchantReturnPolicy).toBeDefined()
+      expect(validProductStructure.offers.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
       expect(validProductStructure.aggregateRating).toBeDefined()
       expect(validProductStructure.review).toBeDefined()
     })
