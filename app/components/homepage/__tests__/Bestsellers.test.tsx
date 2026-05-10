@@ -96,7 +96,7 @@ describe('Bestsellers', () => {
     render(element)
 
     expect(screen.getByText(/Customer story from Sanity/)).toBeInTheDocument()
-    expect(screen.getByText('- For Anna, 30th birthday.')).toBeInTheDocument()
+    expect(screen.getByText('For Anna, 30th birthday.')).toBeInTheDocument()
     expect(screen.getByText('Short description from Sanity.')).toBeInTheDocument()
   })
 
@@ -118,7 +118,7 @@ describe('Bestsellers', () => {
     render(element)
 
     expect(screen.getByText(/Short description fallback/)).toBeInTheDocument()
-    expect(screen.getByText('- Walnut Cake, Custom cake')).toBeInTheDocument()
+    expect(screen.getByText('Walnut Cake, Custom cake')).toBeInTheDocument()
     expect(screen.getByText('Full description fallback.')).toBeInTheDocument()
   })
 })
