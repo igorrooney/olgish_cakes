@@ -1,27 +1,53 @@
 "use client";
 
-import { PortableText } from "@portabletext/react";
-import { Typography, Box, Link } from "@/lib/mui-optimization";
+import {
+  PortableText,
+  type PortableTextBlock,
+  type PortableTextComponents,
+} from "@portabletext/react";
+import type { ReactNode } from "react";
+import { Typography, Box, Link } from "@/lib/daisy-ui";
 import { designTokens } from "@/lib/design-system";
 
 const { colors, typography } = designTokens;
 
 interface RichTextRendererProps {
-  value: any[];
+  value: PortableTextBlock[];
   variant?: "body1" | "body2" | "caption";
-  sx?: any;
+  sx?: Record<string, unknown>;
   structuredData?: boolean;
 }
+
+type ChildrenProps = {
+  children?: ReactNode;
+};
+
+type LinkMarkProps = ChildrenProps & {
+  value?: {
+    href?: string;
+  };
+};
+
+type ImageValue = {
+  asset?: {
+    url?: string;
+  };
+  alt?: string;
+  caption?: string;
+};
+
+type ImageProps = {
+  value?: ImageValue;
+};
 
 export function RichTextRenderer({
   value,
   variant = "body1",
   sx = {},
-  structuredData = false,
 }: RichTextRendererProps) {
-  const components = {
+  const components: PortableTextComponents = {
     block: {
-      h1: ({ children }: any) => (
+      h1: ({ children }: ChildrenProps) => (
         <Typography
           variant="h1"
           component="h1"
@@ -36,7 +62,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      h2: ({ children }: any) => (
+      h2: ({ children }: ChildrenProps) => (
         <Typography
           variant="h2"
           component="h2"
@@ -51,7 +77,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      h3: ({ children }: any) => (
+      h3: ({ children }: ChildrenProps) => (
         <Typography
           variant="h3"
           component="h3"
@@ -66,7 +92,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      h4: ({ children }: any) => (
+      h4: ({ children }: ChildrenProps) => (
         <Typography
           variant="h4"
           component="h4"
@@ -81,7 +107,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      h5: ({ children }: any) => (
+      h5: ({ children }: ChildrenProps) => (
         <Typography
           variant="h5"
           component="h5"
@@ -96,7 +122,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      h6: ({ children }: any) => (
+      h6: ({ children }: ChildrenProps) => (
         <Typography
           variant="h6"
           component="h6"
@@ -111,7 +137,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      normal: ({ children }: any) => (
+      normal: ({ children }: ChildrenProps) => (
         <Typography
           variant={variant}
           component="p"
@@ -126,7 +152,7 @@ export function RichTextRenderer({
           {children}
         </Typography>
       ),
-      blockquote: ({ children }: any) => (
+      blockquote: ({ children }: ChildrenProps) => (
         <Box
           component="blockquote"
           sx={{
@@ -144,7 +170,7 @@ export function RichTextRenderer({
       ),
     },
     list: {
-      bullet: ({ children }: any) => (
+      bullet: ({ children }: ChildrenProps) => (
         <Box
           component="ul"
           sx={{
@@ -157,7 +183,7 @@ export function RichTextRenderer({
           {children}
         </Box>
       ),
-      number: ({ children }: any) => (
+      number: ({ children }: ChildrenProps) => (
         <Box
           component="ol"
           sx={{
@@ -171,7 +197,7 @@ export function RichTextRenderer({
         </Box>
       ),
     },
-    listItem: ({ children }: any) => (
+    listItem: ({ children }: ChildrenProps) => (
       <Box
         component="li"
         sx={{
@@ -183,17 +209,17 @@ export function RichTextRenderer({
       </Box>
     ),
     marks: {
-      strong: ({ children }: any) => (
+      strong: ({ children }: ChildrenProps) => (
         <Box component="strong" sx={{ fontWeight: typography.fontWeight.bold }}>
           {children}
         </Box>
       ),
-      em: ({ children }: any) => (
+      em: ({ children }: ChildrenProps) => (
         <Box component="em" sx={{ fontStyle: "italic" }}>
           {children}
         </Box>
       ),
-      code: ({ children }: any) => (
+      code: ({ children }: ChildrenProps) => (
         <Box
           component="code"
           sx={{
@@ -208,7 +234,7 @@ export function RichTextRenderer({
           {children}
         </Box>
       ),
-      link: ({ value, children }: any) => (
+      link: ({ value, children }: LinkMarkProps) => (
         <Link
           href={value?.href}
           target="_blank"
@@ -227,7 +253,7 @@ export function RichTextRenderer({
       ),
     },
     types: {
-      image: ({ value }: any) => (
+      image: ({ value }: ImageProps) => (
         <Box
           component="figure"
           sx={{

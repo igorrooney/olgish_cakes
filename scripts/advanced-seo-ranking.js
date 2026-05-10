@@ -48,6 +48,8 @@ class AdvancedSEORanking {
         localKeywords: 10
       }
     };
+    this.reportDir = path.join(__dirname, '../reports/generated');
+    fs.mkdirSync(this.reportDir, { recursive: true });
   }
 
   // Generate keyword-optimized content for target pages
@@ -532,7 +534,7 @@ Order your honey cake near me today and discover why we're Yorkshire's premier U
   // Save comprehensive report
   saveReport() {
     const report = this.generateSEOReport();
-    const reportPath = path.join(__dirname, '../seo-ranking-report.json');
+    const reportPath = path.join(this.reportDir, 'seo-ranking-report.json');
     
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`📊 Comprehensive SEO ranking report saved to: ${reportPath}`);

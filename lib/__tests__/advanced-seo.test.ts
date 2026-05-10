@@ -13,7 +13,7 @@ jest.mock('@/app/utils/seo', () => ({
   getPriceValidUntil: jest.fn(() => '2025-12-31'),
   getMerchantReturnPolicy: jest.fn(() => ({
     '@type': 'MerchantReturnPolicy',
-    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow'
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
   })),
   getOfferShippingDetails: jest.fn(() => ({
     '@type': 'OfferShippingDetails',
@@ -224,7 +224,7 @@ describe('advanced-seo', () => {
 
     it('should include Product schema', () => {
       const result = generateAdvancedStructuredData(productData)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product).toBeDefined()
       expect(product.name).toBe('Honey Cake')
@@ -232,7 +232,7 @@ describe('advanced-seo', () => {
 
     it('should include Bakery schema', () => {
       const result = generateAdvancedStructuredData(productData)
-      const bakery = result['@graph'].find((item: any) => item['@type'] === 'Bakery')
+      const bakery = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Bakery')
 
       expect(bakery).toBeDefined()
       expect(bakery.name).toContain('Olgish Cakes')
@@ -240,7 +240,7 @@ describe('advanced-seo', () => {
 
     it('should include FAQPage schema', () => {
       const result = generateAdvancedStructuredData(productData)
-      const faq = result['@graph'].find((item: any) => item['@type'] === 'FAQPage')
+      const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
 
       expect(faq).toBeDefined()
       expect(faq.mainEntity).toBeInstanceOf(Array)
@@ -248,7 +248,7 @@ describe('advanced-seo', () => {
 
     it('should include HowTo schema', () => {
       const result = generateAdvancedStructuredData(productData)
-      const howTo = result['@graph'].find((item: any) => item['@type'] === 'HowTo')
+      const howTo = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'HowTo')
 
       expect(howTo).toBeDefined()
       expect(howTo.step).toBeInstanceOf(Array)
@@ -257,7 +257,7 @@ describe('advanced-seo', () => {
     it('should handle missing image URL', () => {
       const dataWithoutImage = { ...productData, imageUrl: undefined }
       const result = generateAdvancedStructuredData(dataWithoutImage)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.image).toBeDefined()
       expect(product.image[0]).toContain('placeholder')
@@ -265,7 +265,7 @@ describe('advanced-seo', () => {
 
     it('should handle relative image URL', () => {
       const result = generateAdvancedStructuredData(productData)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.image[0]).toMatch(/^https?:\/\//)
     })
@@ -273,31 +273,31 @@ describe('advanced-seo', () => {
     it('should handle absolute image URL', () => {
       const dataWithAbsoluteUrl = { ...productData, imageUrl: 'https://cdn.example.com/image.jpg' }
       const result = generateAdvancedStructuredData(dataWithAbsoluteUrl)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.image[0]).toBe('https://cdn.example.com/image.jpg')
     })
 
     it('should use provided rating when available', () => {
       const result = generateAdvancedStructuredData(productData)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
-      expect(product.aggregateRating.ratingValue).toBe(4.8)
-      expect(product.aggregateRating.reviewCount).toBe(50)
+      expect(product.aggregateRating.ratingValue).toBe('4.8')
+      expect(product.aggregateRating.reviewCount).toBe('50')
     })
 
-    it('should use default rating when not provided', () => {
-      const dataWithoutRating = { ...productData, rating: undefined, reviewCount: undefined }
+    it('should use review stats when rating not provided', () => {
+      const dataWithoutRating = { ...productData, rating: undefined, reviewCount: undefined, reviewStats: { count: 13, averageRating: 5 } }
       const result = generateAdvancedStructuredData(dataWithoutRating)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.aggregateRating.ratingValue).toBe('5.0')
-      expect(product.aggregateRating.reviewCount).toBe('127')
+      expect(product.aggregateRating.reviewCount).toBe('13')
     })
 
     it('should include reviews array', () => {
       const result = generateAdvancedStructuredData(productData)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.review).toBeInstanceOf(Array)
       expect(product.review.length).toBe(2)
@@ -306,7 +306,7 @@ describe('advanced-seo', () => {
     it('should use default price when not provided', () => {
       const dataWithoutPrice = { ...productData, price: undefined }
       const result = generateAdvancedStructuredData(dataWithoutPrice)
-      const product = result['@graph'].find((item: any) => item['@type'] === 'Product')
+      const product = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'Product')
 
       expect(product.offers.price).toBe(25)
     })
@@ -364,7 +364,7 @@ describe('advanced-seo', () => {
     it('should have question and answer in QA pairs', () => {
       const result = generateAISearchOptimization(content)
 
-      result.qaPairs.forEach((qa: any) => {
+      result.qaPairs.forEach((qa: UnknownRecord) => {
         expect(qa.question).toBeDefined()
         expect(qa.answer).toBeDefined()
       })
@@ -482,4 +482,3 @@ describe('advanced-seo', () => {
     })
   })
 })
-

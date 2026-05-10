@@ -46,31 +46,31 @@ export const LazyAnimatedWrapper = dynamic(() => import("@/app/components/Animat
   ssr: false,
 });
 
-// Optimized MUI component loading
-export const LazyMuiComponents = {
-  Pagination: dynamic(() => import("@mui/material/Pagination"), {
-    loading: () =>
-      React.createElement("div", { className: "h-12 bg-gray-100 rounded animate-pulse" }),
-    ssr: false,
-  }),
-  Rating: dynamic(() => import("@mui/material/Rating"), {
+export const LazyDaisyComponents = {
+  Rating: dynamic(() => import("@/lib/daisy-ui").then(mod => ({ default: mod.Rating })), {
     loading: () =>
       React.createElement("div", { className: "h-6 w-24 bg-gray-100 rounded animate-pulse" }),
     ssr: false,
   }),
-  Accordion: dynamic(() => import("@mui/material/Accordion"), {
+  Accordion: dynamic(() => import("@/lib/daisy-ui").then(mod => ({ default: mod.Accordion })), {
     loading: () =>
       React.createElement("div", { className: "h-16 bg-gray-100 rounded animate-pulse" }),
     ssr: false,
   }),
-  AccordionSummary: dynamic(() => import("@mui/material/AccordionSummary"), {
-    loading: () =>
-      React.createElement("div", { className: "h-12 bg-gray-100 rounded animate-pulse" }),
-    ssr: false,
-  }),
-  AccordionDetails: dynamic(() => import("@mui/material/AccordionDetails"), {
-    loading: () =>
-      React.createElement("div", { className: "h-8 bg-gray-100 rounded animate-pulse" }),
-    ssr: false,
-  }),
+  AccordionSummary: dynamic(
+    () => import("@/lib/daisy-ui").then(mod => ({ default: mod.AccordionSummary })),
+    {
+      loading: () =>
+        React.createElement("div", { className: "h-12 bg-gray-100 rounded animate-pulse" }),
+      ssr: false,
+    }
+  ),
+  AccordionDetails: dynamic(
+    () => import("@/lib/daisy-ui").then(mod => ({ default: mod.AccordionDetails })),
+    {
+      loading: () =>
+        React.createElement("div", { className: "h-8 bg-gray-100 rounded animate-pulse" }),
+      ssr: false,
+    }
+  ),
 };

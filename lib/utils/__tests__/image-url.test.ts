@@ -1,7 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import { ensureAbsoluteImageUrl, isValidAbsoluteImageUrl } from '../image-url'
+import {
+  ensureAbsoluteImageUrl,
+  getSanityCdnImageLoader,
+  getSanityCdnImageUrl,
+  isSanityCdnImageUrl,
+  isValidAbsoluteImageUrl
+} from '../image-url'
 
 describe('ensureAbsoluteImageUrl', () => {
   it('should return absolute URLs unchanged', () => {
@@ -109,3 +115,73 @@ describe('isValidAbsoluteImageUrl', () => {
   })
 })
 
+describe('isSanityCdnImageUrl', () => {
+  it('returns true for Sanity CDN image URLs', () => {
+    expect(isSanityCdnImageUrl('https://cdn.sanity.io/images/project/dataset/image.jpg')).toBe(true)
+  })
+
+  it('returns false for non-Sanity image URLs', () => {
+    expect(isSanityCdnImageUrl('https://example.com/images/project/dataset/image.jpg')).toBe(false)
+  })
+})
+
+describe('getSanityCdnImageUrl', () => {
+  it('adds responsive Sanity transform parameters to CDN image URLs', () => {
+    expect(getSanityCdnImageUrl(
+      'https://cdn.sanity.io/images/project/production/image.png',
+      {
+        width: 720,
+        height: 540,
+        fit: 'crop',
+        quality: 78
+      }
+    )).toBe('https://cdn.sanity.io/images/project/production/image.png?w=720&h=540&fit=crop&q=78&auto=format')
+  })
+
+  it('keeps non-Sanity URLs unchanged', () => {
+    expect(getSanityCdnImageUrl(
+      'https://example.com/image.png',
+      {
+        width: 720,
+        height: 540,
+        fit: 'crop',
+        quality: 78
+      }
+    )).toBe('https://example.com/image.png')
+  })
+})
+
+describe('getSanityCdnImageLoader', () => {
+  it('resizes Sanity images at the requested Next image width', () => {
+    const loader = getSanityCdnImageLoader()
+
+    expect(loader({
+      src: 'https://cdn.sanity.io/images/project/production/image.png?w=560&h=560&fit=crop&q=78&auto=format',
+      width: 384,
+      quality: 75
+    })).toBe('https://cdn.sanity.io/images/project/production/image.png?w=384&h=384&fit=crop&q=75&auto=format')
+  })
+
+  it('uses configured dimensions to keep aspect ratio when source params are absent', () => {
+    const loader = getSanityCdnImageLoader({
+      width: 1120,
+      height: 630,
+      fit: 'crop',
+      quality: 82
+    })
+
+    expect(loader({
+      src: 'https://cdn.sanity.io/images/project/production/image.png',
+      width: 560
+    })).toBe('https://cdn.sanity.io/images/project/production/image.png?w=560&h=315&fit=crop&q=82&auto=format')
+  })
+
+  it('keeps non-Sanity images unchanged', () => {
+    const loader = getSanityCdnImageLoader({ width: 560, height: 560 })
+
+    expect(loader({
+      src: '/images/placeholder-cake.jpg',
+      width: 384
+    })).toBe('/images/placeholder-cake.jpg')
+  })
+})

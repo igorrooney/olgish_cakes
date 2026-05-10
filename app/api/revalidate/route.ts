@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { validateRequest, formatValidationErrors } from "@/lib/validation";
 import { withRateLimit } from "@/lib/rate-limit";
+import { categoryLandingCanonicalPaths } from "@/app/cakes/categoryLandingConfig";
+import { createSanityWriteClient } from "@/lib/sanity-admin-client";
+import { ensureProductDisplayOrderEntry, type ProductDisplayOrderField, type ProductDisplayOrderSyncResult } from "@/lib/product-display-order-sync";
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -11,8 +14,37 @@ const revalidateSchema = z.object({
   _id: z.string().optional(),
   slug: z.object({
     current: z.string()
-  }).optional()
+  }).nullable().optional()
 });
+
+async function syncProductDisplayOrderEntry({
+  documentId,
+  fieldName
+}: {
+  documentId: string | undefined
+  fieldName: ProductDisplayOrderField
+}): Promise<ProductDisplayOrderSyncResult | undefined> {
+  if (!documentId) {
+    return undefined
+  }
+
+  try {
+    return await ensureProductDisplayOrderEntry({
+      client: createSanityWriteClient(),
+      documentId,
+      fieldName
+    })
+  } catch (error) {
+    console.error('Product display order sync failed:', error)
+    return {
+      documentId,
+      fieldName,
+      updated: false,
+      inserted: false,
+      alreadyPresent: false
+    }
+  }
+}
 
 async function handlePOST(request: NextRequest) {
   try {
@@ -42,68 +74,160 @@ async function handlePOST(request: NextRequest) {
     }
 
     const { _type, _id, slug } = validationResult.data;
+    const pathsToRevalidate = new Set<string>()
+    const tagsToRevalidate = new Set<string>()
+    let productDisplayOrderSync: ProductDisplayOrderSyncResult | undefined
+
+    const addPath = (path: string) => {
+      pathsToRevalidate.add(path)
+    }
+
+    const addTag = (tag: string) => {
+      tagsToRevalidate.add(tag)
+    }
+
+    const addCakeCategoryLandingPaths = () => {
+      categoryLandingCanonicalPaths.forEach((path) => {
+        addPath(path)
+      })
+    }
 
     // Revalidate specific paths based on content type
     if (_type === "cake") {
+      productDisplayOrderSync = await syncProductDisplayOrderEntry({
+        documentId: _id,
+        fieldName: 'cakesOrder'
+      })
+
       // Revalidate cake-specific pages
       if (slug?.current) {
-        revalidatePath(`/cakes/${slug.current}`);
-        revalidatePath("/cakes"); // Revalidate cakes list
-        revalidatePath("/"); // Revalidate home page (might have featured cakes)
+        addPath(`/cakes/${slug.current}`)
+        addPath("/cakes") // Revalidate cakes list
+        addPath("/") // Revalidate home page (might have featured cakes)
+        addCakeCategoryLandingPaths()
 
         // Clear specific cache entries
         await invalidateCache(`cake-${slug.current}`);
         await invalidateCache("all-cakes");
         await invalidateCache("featured-cakes");
       }
+      addTag('cakes')
+      addTag('pages')
+      addTag('sitemaps')
+    } else if (_type === 'cakesFeaturedOffer') {
+      addPath('/cakes')
+      addTag('cakes')
+      addTag('cakes-featured-offer')
+    } else if (_type === 'cakesDeliverySection') {
+      addPath('/cakes')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes')
+      addTag('sitemaps')
     } else if (_type === "testimonial") {
-      // Revalidate testimonial pages
-      revalidatePath("/testimonials");
-      revalidatePath("/"); // Home page might show testimonials
+      // Revalidate pages that surface testimonial stats or reviews
+      addPath("/") // Home page might show testimonials
+      addPath("/cakes-by-post")
+      addPath("/get-custom-quote")
       await invalidateCache("testimonials");
+      addTag('testimonials')
     } else if (_type === "faq") {
       // Revalidate FAQ pages
-      revalidatePath("/faq");
+      addPath("/faqs")
       await invalidateCache("faqs");
+      addTag('faqs')
     } else if (_type === "giftHamper") {
+      productDisplayOrderSync = await syncProductDisplayOrderEntry({
+        documentId: _id,
+        fieldName: 'giftHampersOrder'
+      })
+
       // Revalidate gift hamper pages
       if (slug?.current) {
-        revalidatePath(`/gift-hampers/${slug.current}`);
-        revalidatePath("/gift-hampers"); // Revalidate gift hampers list
-        revalidatePath("/"); // Home page might show featured hampers
+        addPath(`/cakes-by-post/${slug.current}`)
+        addPath('/cakes-by-post') // Revalidate cakes-by-post list
       }
-      await invalidateCache("gift-hampers");
-    } else if (_type === "blogPost") {
-      // Revalidate blog pages
+      await invalidateCache('cakes-by-post');
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
+      addTag('pages')
+      addTag('sitemaps')
+    } else if (_type === 'giftHampersDeliverySection') {
+      addPath('/cakes-by-post')
+      addPath('/')
+      addTag('pages')
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
+      addTag('sitemaps')
+    } else if (_type === 'ingredient') {
+      addPath('/allergens')
+      addTag('ingredients')
+    } else if (_type === 'article') {
+      // Revalidate article pages
       if (slug?.current) {
-        revalidatePath(`/blog/${slug.current}`);
-        revalidatePath("/blog"); // Revalidate blog list
+        addPath(`/blog/${slug.current}`)
+        addPath('/blog')
       }
-      await invalidateCache("blog-posts");
+      await invalidateCache('articles')
+      addTag('articles')
+      addTag('article')
+      addTag('sitemaps')
+    } else if (_type === 'articleTopic') {
+      addPath('/blog')
+      await invalidateCache('articles')
+      addTag('articles')
+      addTag('sitemaps')
     } else if (_type === "marketSchedule") {
-      // Revalidate market schedule page
-      revalidatePath("/market-schedule");
-      revalidatePath("/"); // Home page might link to market schedule
+      // Revalidate homepage markets section
+      addPath("/")
       await invalidateCache("market-schedule");
+      addTag('market-schedule')
+    } else if (_type === 'collection') {
+      // Revalidate homepage collections
+      addPath("/")
+      addPath('/cakes')
+      addCakeCategoryLandingPaths()
+      addTag('cake-collections')
+    } else if (_type === 'giftHamperCollection') {
+      // Revalidate gift hamper collections used on cakes filters
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addTag('gift-hamper-collections')
+    } else if (_type === 'collectionsDisplayOrder') {
+      // Revalidate homepage and cakes filters that use collections order
+      addPath('/')
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addTag('cake-collections')
+      addTag('gift-hamper-collections')
+    } else if (_type === 'productsDisplayOrder') {
+      // Revalidate product listing pages that use manual display order
+      addPath('/cakes')
+      addPath('/cakes-by-post')
+      addCakeCategoryLandingPaths()
+      addTag('cakes')
+      addTag('cakes-by-post')
+      addTag('gift-hampers')
+      addTag('sitemaps')
     }
 
-    // Revalidate tags for broader cache invalidation
-    // Note: revalidateTag requires 2 parameters in Next.js 16 (tag and cache profile)
-    revalidateTag("cakes", "max");
-    revalidateTag("testimonials", "max");
-    revalidateTag("faqs", "max");
-    revalidateTag("gift-hampers", "max");
-    revalidateTag("blog-posts", "max");
-    revalidateTag("market-schedule", "max");
+    for (const path of pathsToRevalidate) {
+      revalidatePath(path)
+    }
+
+    for (const tag of tagsToRevalidate) {
+      revalidateTag(tag, { expire: 0 })
+    }
 
     return NextResponse.json({
       success: true,
       message: "Revalidation completed",
       revalidated: { _type, _id, slug },
+      productsDisplayOrder: productDisplayOrderSync,
     });
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.error("❌ Revalidation error:", error);
+      console.error('Revalidation error:', error);
     }
     return NextResponse.json(
       {
@@ -140,3 +264,4 @@ export async function GET(request: NextRequest) {
     usage: "POST with Sanity webhook payload",
   });
 }
+

@@ -309,10 +309,10 @@ function checkTechnicalSEO() {
     log("Sitemap generation found", "success");
   }
 
-  // Check for robots.txt
-  if (checkFileExists("public/robots.txt")) {
+  // Check for robots metadata route source
+  if (checkFileExists("app/robots.ts")) {
     results.robots = true;
-    log("Robots.txt found", "success");
+    log("Robots metadata route source found", "success");
   }
 
   // Check for canonical URLs

@@ -1,7 +1,13 @@
 // UI Components Library using Ukrainian Design System
 // This file provides pre-styled components using our design tokens
 
-import React, { forwardRef } from "react";
+import React, {
+  forwardRef,
+  type ElementType,
+  type MouseEventHandler,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import {
   Button,
   Card,
@@ -15,20 +21,86 @@ import {
   IconButton,
   Badge,
   Divider,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import {
   ShoppingCartIcon,
   FavoriteIcon,
   StarIcon,
   ExpandMoreIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 import { designTokens } from "./design-system";
 import { getPriceValidUntil } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows, components } = designTokens;
 
+type SxProps = Record<string, unknown> | Array<Record<string, unknown>>;
+type ButtonComponentProps = React.ComponentProps<typeof Button>;
+type CardComponentProps = React.ComponentProps<typeof Card>;
+type TextFieldComponentProps = Omit<React.ComponentProps<typeof TextField>, "size" | "sx"> & {
+  sx?: SxProps;
+  size?: string | number;
+};
+type ChipComponentProps = React.ComponentProps<typeof Chip>;
+type TypographyComponentProps = React.ComponentProps<typeof Typography>;
+type BoxComponentProps = React.ComponentProps<typeof Box>;
+type AccordionComponentProps = React.ComponentProps<typeof Accordion>;
+type BadgeComponentProps = React.ComponentProps<typeof Badge>;
+type DividerComponentProps = React.ComponentProps<typeof Divider>;
+type StyledIconElement = ReactElement<{ sx?: SxProps }>;
+type FeatureCardProps = CardComponentProps & {
+  icon: StyledIconElement;
+  title: ReactNode;
+  description: ReactNode;
+};
+type PriceDisplayProps = BoxComponentProps & {
+  price: number;
+  size?: "small" | "medium" | "large" | "xlarge";
+  label?: string;
+};
+type RatingBadgeProps = BadgeComponentProps & {
+  rating: ReactNode;
+};
+type ActionButtonProps = ButtonComponentProps & {
+  onClick?: MouseEventHandler<HTMLElement>;
+};
+type IconButtonPassThroughProps = {
+  className?: string;
+  disabled?: boolean;
+  id?: string;
+  onClick?: MouseEventHandler<HTMLElement>;
+  rel?: string;
+  target?: string;
+  type?: "button" | "submit" | "reset";
+};
+type AccessibleIconButtonProps = IconButtonPassThroughProps & {
+  children: ReactNode;
+  ariaLabel: string;
+  title?: string;
+  component?: ElementType;
+  href?: string;
+  sx?: SxProps;
+};
+type FavoriteButtonProps = IconButtonPassThroughProps & {
+  isFavorite: boolean;
+  title?: string;
+  component?: ElementType;
+  href?: string;
+  sx?: SxProps;
+};
+type ContactInfoProps = BoxComponentProps & {
+  icon: StyledIconElement;
+  text: string;
+  href?: string;
+};
+
+const mergeSx = (sx?: SxProps): Record<string, unknown> => {
+  if (!sx) return {};
+  if (Array.isArray(sx)) return Object.assign({}, ...sx);
+  return sx;
+};
+
 // Button Components
-export const PrimaryButton = ({ children, ...props }: any) => (
+export const PrimaryButton = ({ children, sx, ...props }: ButtonComponentProps) => (
   <Button
     variant="contained"
     sx={{
@@ -56,7 +128,7 @@ export const PrimaryButton = ({ children, ...props }: any) => (
         outline: `2px solid ${colors.primary.main}`,
         outlineOffset: "2px",
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -64,7 +136,7 @@ export const PrimaryButton = ({ children, ...props }: any) => (
   </Button>
 );
 
-export const SecondaryButton = ({ children, ...props }: any) => (
+export const SecondaryButton = ({ children, sx, ...props }: ButtonComponentProps) => (
   <Button
     variant="contained"
     sx={{
@@ -92,7 +164,7 @@ export const SecondaryButton = ({ children, ...props }: any) => (
         outline: `2px solid ${colors.secondary.main}`,
         outlineOffset: "2px",
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -100,7 +172,7 @@ export const SecondaryButton = ({ children, ...props }: any) => (
   </Button>
 );
 
-export const OutlineButton = ({ children, ...props }: any) => (
+export const OutlineButton = ({ children, sx, ...props }: ButtonComponentProps) => (
   <Button
     variant="outlined"
     sx={{
@@ -128,7 +200,7 @@ export const OutlineButton = ({ children, ...props }: any) => (
         outline: `2px solid ${colors.primary.main}`,
         outlineOffset: "2px",
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -137,11 +209,11 @@ export const OutlineButton = ({ children, ...props }: any) => (
 );
 
 // Card Components
-export const ProductCard = ({ children, ...props }: any) => (
+export const ProductCard = ({ children, sx, ...props }: CardComponentProps) => (
   <Card
     sx={{
       ...components.card,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -149,13 +221,13 @@ export const ProductCard = ({ children, ...props }: any) => (
   </Card>
 );
 
-export const FeatureCard = ({ icon, title, description, ...props }: any) => (
+export const FeatureCard = ({ icon, title, description, sx, ...props }: FeatureCardProps) => (
   <Card
     sx={{
       ...components.card,
       textAlign: "center",
       padding: spacing.lg,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -191,8 +263,9 @@ export const FeatureCard = ({ icon, title, description, ...props }: any) => (
 );
 
 // Input Components
-export const StyledTextField = ({ ...props }: any) => (
+export const StyledTextField = ({ sx, size, ...props }: TextFieldComponentProps) => (
   <TextField
+    size={typeof size === "number" ? size : undefined}
     sx={{
       "& .MuiOutlinedInput-root": {
         borderRadius: borderRadius.lg,
@@ -211,14 +284,14 @@ export const StyledTextField = ({ ...props }: any) => (
         fontSize: typography.fontSize.base,
         color: colors.text.primary,
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   />
 );
 
 // Chip Components
-export const IngredientChip = ({ label, ...props }: any) => (
+export const IngredientChip = ({ label, sx, ...props }: ChipComponentProps) => (
   <Chip
     label={label}
     sx={{
@@ -228,13 +301,13 @@ export const IngredientChip = ({ label, ...props }: any) => (
       fontWeight: typography.fontWeight.medium,
       minHeight: "44px", // WCAG touch target requirement for interactive chips
       padding: "8px 16px", // Ensure adequate padding
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   />
 );
 
-export const AllergenChip = ({ label, ...props }: any) => (
+export const AllergenChip = ({ label, sx, ...props }: ChipComponentProps) => (
   <Chip
     label={label}
     sx={{
@@ -245,13 +318,13 @@ export const AllergenChip = ({ label, ...props }: any) => (
       border: `1px solid #fecaca`,
       minHeight: "44px", // WCAG touch target requirement for interactive chips
       padding: "8px 16px", // Ensure adequate padding
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   />
 );
 
-export const CategoryChip = ({ label, ...props }: any) => (
+export const CategoryChip = ({ label, sx, ...props }: ChipComponentProps) => (
   <Chip
     label={label}
     sx={{
@@ -261,14 +334,14 @@ export const CategoryChip = ({ label, ...props }: any) => (
       fontWeight: typography.fontWeight.medium,
       minHeight: "44px", // WCAG touch target requirement for interactive chips
       padding: "8px 16px", // Ensure adequate padding
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   />
 );
 
 // Typography Components
-export const DisplayHeading = ({ children, ...props }: any) => (
+export const DisplayHeading = ({ children, sx, ...props }: TypographyComponentProps) => (
   <Typography
     variant="h1"
     sx={{
@@ -281,7 +354,7 @@ export const DisplayHeading = ({ children, ...props }: any) => (
       },
       lineHeight: typography.lineHeight.tight,
       letterSpacing: typography.letterSpacing.tight,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -289,7 +362,7 @@ export const DisplayHeading = ({ children, ...props }: any) => (
   </Typography>
 );
 
-export const SectionHeading = ({ children, ...props }: any) => (
+export const SectionHeading = ({ children, sx, ...props }: TypographyComponentProps) => (
   <Typography
     variant="h2"
     sx={{
@@ -301,7 +374,7 @@ export const SectionHeading = ({ children, ...props }: any) => (
         md: typography.fontSize["4xl"],
       },
       lineHeight: typography.lineHeight.tight,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -309,7 +382,7 @@ export const SectionHeading = ({ children, ...props }: any) => (
   </Typography>
 );
 
-export const CardHeading = ({ children, ...props }: any) => (
+export const CardHeading = ({ children, sx, ...props }: TypographyComponentProps) => (
   <Typography
     variant="h3"
     sx={{
@@ -318,7 +391,7 @@ export const CardHeading = ({ children, ...props }: any) => (
       color: colors.text.primary,
       fontSize: typography.fontSize.xl,
       lineHeight: typography.lineHeight.tight,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -326,13 +399,13 @@ export const CardHeading = ({ children, ...props }: any) => (
   </Typography>
 );
 
-export const BodyText = ({ children, ...props }: any) => (
+export const BodyText = ({ children, sx, ...props }: TypographyComponentProps) => (
   <Typography
     variant="body1"
     sx={{
       color: colors.text.primary,
       lineHeight: typography.lineHeight.relaxed,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -341,7 +414,7 @@ export const BodyText = ({ children, ...props }: any) => (
 );
 
 // Layout Components
-export const Container = ({ children, ...props }: any) => (
+export const Container = ({ children, sx, ...props }: BoxComponentProps) => (
   <Box
     sx={{
       maxWidth: "1200px",
@@ -350,7 +423,7 @@ export const Container = ({ children, ...props }: any) => (
         xs: spacing.md,
         md: spacing.lg,
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -358,7 +431,7 @@ export const Container = ({ children, ...props }: any) => (
   </Box>
 );
 
-export const Section = ({ children, ...props }: any) => (
+export const Section = ({ children, sx, ...props }: BoxComponentProps) => (
   <Box
     component="section"
     sx={{
@@ -366,7 +439,7 @@ export const Section = ({ children, ...props }: any) => (
         xs: `${spacing.xl} 0`,
         md: `${spacing["2xl"]} 0`,
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -375,7 +448,7 @@ export const Section = ({ children, ...props }: any) => (
 );
 
 // Accordion Component
-export const StyledAccordion = ({ title, children, ...props }: any) => (
+export const StyledAccordion = ({ title, children, sx, ...props }: AccordionComponentProps & { title: ReactNode }) => (
   <Accordion
     sx={{
       "&:before": {
@@ -391,6 +464,7 @@ export const StyledAccordion = ({ title, children, ...props }: any) => (
       "&.Mui-expanded": {
         margin: `${spacing.sm} 0`,
       },
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -430,12 +504,7 @@ export const PriceDisplay = ({
   size = "large" as const,
   label = "",
   ...props
-}: {
-  price: number;
-  size?: "small" | "medium" | "large" | "xlarge";
-  label?: string;
-  [key: string]: any;
-}) => {
+}: PriceDisplayProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-GB", {
       style: "currency",
@@ -468,7 +537,7 @@ export const PriceDisplay = ({
   return (
     <Box
       sx={{
-        ...props.sx,
+        ...mergeSx(props.sx),
       }}
       {...props}
     >
@@ -505,7 +574,7 @@ export const PriceDisplay = ({
 };
 
 // Rating Badge Component
-export const RatingBadge = ({ rating, ...props }: any) => (
+export const RatingBadge = ({ rating, sx, ...props }: RatingBadgeProps) => (
   <Badge
     badgeContent={rating}
     sx={{
@@ -522,7 +591,7 @@ export const RatingBadge = ({ rating, ...props }: any) => (
         justifyContent: "center",
         padding: "8px 12px", // Ensure adequate padding around content
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -531,7 +600,7 @@ export const RatingBadge = ({ rating, ...props }: any) => (
 );
 
 // Action Button Components
-export const AddToCartButton = ({ onClick, ...props }: any) => (
+export const AddToCartButton = ({ onClick, sx, ...props }: ActionButtonProps) => (
   <Button
     variant="contained"
     startIcon={<ShoppingCartIcon />}
@@ -559,7 +628,7 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
         outline: `2px solid ${colors.primary.main}`,
         outlineOffset: "2px",
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -568,14 +637,15 @@ export const AddToCartButton = ({ onClick, ...props }: any) => (
 );
 
 // Accessible IconButton Component with WCAG touch target compliance
-export const AccessibleIconButton = forwardRef<HTMLElement, {
-  children: React.ReactNode;
-  ariaLabel: string;
-  title?: string;
-  component?: any;
-  href?: string;
-  [key: string]: any;
-}>((function AccessibleIconButton({ children, ariaLabel, title, component, href, ...props }, ref) {
+export const AccessibleIconButton = forwardRef<HTMLElement, AccessibleIconButtonProps>((function AccessibleIconButton({
+  children,
+  ariaLabel,
+  title,
+  component,
+  href,
+  sx,
+  ...props
+}, ref) {
   const iconButtonStyles = {
     minWidth: "48px", // WCAG touch target requirement with extra padding
     minHeight: "48px", // WCAG touch target requirement with extra padding
@@ -599,14 +669,14 @@ export const AccessibleIconButton = forwardRef<HTMLElement, {
     "& + &": {
       marginLeft: spacing.sm,
     },
-    ...props.sx,
+    ...mergeSx(sx),
   };
 
   // If used as a link, ensure aria-label is properly applied
   if (component === "a" || href) {
     return (
       <IconButton
-        ref={ref as any}
+        ref={ref}
         component={component || "a"}
         href={href}
         aria-label={ariaLabel}
@@ -622,7 +692,7 @@ export const AccessibleIconButton = forwardRef<HTMLElement, {
   // Default button behavior
   return (
     <IconButton
-      ref={ref as any}
+      ref={ref}
       aria-label={ariaLabel}
       title={title || ariaLabel}
       sx={iconButtonStyles}
@@ -635,7 +705,7 @@ export const AccessibleIconButton = forwardRef<HTMLElement, {
 
 AccessibleIconButton.displayName = 'AccessibleIconButton';
 
-export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
+export const FavoriteButton = ({ isFavorite, onClick, sx, ...props }: FavoriteButtonProps) => (
   <AccessibleIconButton
     onClick={onClick}
     ariaLabel={isFavorite ? "Remove from favorites" : "Add to favorites"}
@@ -644,7 +714,7 @@ export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
       "&:hover": {
         color: isFavorite ? colors.error.dark : colors.text.primary,
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -653,7 +723,7 @@ export const FavoriteButton = ({ isFavorite, onClick, ...props }: any) => (
 );
 
 // Contact Info Component
-export const ContactInfo = ({ icon, text, href, ...props }: any) => {
+export const ContactInfo = ({ icon, text, href, sx, ...props }: ContactInfoProps) => {
   const isPhone = text?.includes("+44") || text?.includes("phone");
   const isEmail = text?.includes("@") || text?.includes("email");
 
@@ -693,7 +763,7 @@ export const ContactInfo = ({ icon, text, href, ...props }: any) => {
               color: colors.primary.main,
             }
           : {},
-        ...props.sx,
+        ...mergeSx(sx),
       }}
       {...props}
     >
@@ -717,7 +787,7 @@ export const ContactInfo = ({ icon, text, href, ...props }: any) => {
 };
 
 // Touch Target Wrapper Component for ensuring proper spacing
-export const TouchTargetWrapper = ({ children, ...props }: any) => (
+export const TouchTargetWrapper = ({ children, sx, ...props }: BoxComponentProps) => (
   <Box
     sx={{
       minHeight: "44px", // WCAG touch target requirement
@@ -731,7 +801,7 @@ export const TouchTargetWrapper = ({ children, ...props }: any) => (
         maxWidth: "100%",
         maxHeight: "100%",
       },
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   >
@@ -740,12 +810,12 @@ export const TouchTargetWrapper = ({ children, ...props }: any) => (
 );
 
 // Divider Component
-export const StyledDivider = ({ ...props }: any) => (
+export const StyledDivider = ({ sx, ...props }: DividerComponentProps) => (
   <Divider
     sx={{
       borderColor: colors.border.light,
       margin: `${spacing.lg} 0`,
-      ...props.sx,
+      ...mergeSx(sx),
     }}
     {...props}
   />

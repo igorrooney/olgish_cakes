@@ -9,11 +9,12 @@ export interface Testimonial {
   cakeType: string;
   rating: number;
   date: string;
+  title?: string;
   text: string;
   cakeImage?: {
     asset?: SanityAsset;
     url?: string;
     alt?: string;
   };
-  source?: "google" | "facebook" | "instagram" | "direct";
+  source?: "google" | "facebook" | "instagram" | "trustpilot" | "direct";
 }

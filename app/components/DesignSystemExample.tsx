@@ -4,7 +4,7 @@
 import React from "react";
 import Link from "next/link";
 import { CLIENT_BUSINESS_INFO } from "@/lib/business-info";
-import { Grid, Box } from "@/lib/mui-optimization";
+import { Grid, Box } from "@/lib/daisy-ui";
 import { designTokens } from "@/lib/design-system";
 import {
   DisplayHeading,
@@ -30,11 +30,9 @@ import {
 import {
   CakeOutlinedIcon,
   LocalShippingIcon,
-  StarIcon,
   EmailIcon,
   PhoneIcon,
-  FavoriteIcon,
-} from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
 
 const { colors, spacing } = designTokens;
 

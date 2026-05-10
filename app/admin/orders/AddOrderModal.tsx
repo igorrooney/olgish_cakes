@@ -1,7 +1,7 @@
 "use client";
 
 import { logger } from "@/lib/logger";
-import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { Add as AddIcon, Remove as RemoveIcon } from "@/lib/daisy-ui";
 import {
   Alert,
   Box,
@@ -19,8 +19,8 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import { useEffect, useState } from "react";
+} from "@/lib/daisy-ui";
+import { useEffect, useRef, useState } from "react";
 
 interface AddOrderModalProps {
   open: boolean;
@@ -58,12 +58,16 @@ interface OrderItem {
   isFromCatalog: boolean;
 }
 
+type OrderItemValue = OrderItem[keyof OrderItem];
+
 export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const productsAbortControllerRef = useRef<AbortController | null>(null);
+  const orderAbortControllerRef = useRef<AbortController | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -111,7 +115,18 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     if (open) {
       fetchProducts();
     }
+
+    return () => {
+      productsAbortControllerRef.current?.abort();
+    };
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      productsAbortControllerRef.current?.abort();
+      orderAbortControllerRef.current?.abort();
+    };
+  }, []);
 
   // Set default delivery and payment methods based on order type
   useEffect(() => {
@@ -125,21 +140,31 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
   }, [formData.orderType]);
 
   const fetchProducts = async () => {
+    productsAbortControllerRef.current?.abort();
+    const controller = new AbortController();
+    productsAbortControllerRef.current = controller;
+
     try {
       setProductsLoading(true);
-      const response = await fetch('/api/products');
+      const response = await fetch('/api/products', { signal: controller.signal });
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products);
       }
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
       logger.error('Failed to fetch products', error);
     } finally {
-      setProductsLoading(false);
+      if (productsAbortControllerRef.current === controller) {
+        productsAbortControllerRef.current = null;
+        setProductsLoading(false);
+      }
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof typeof formData, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -147,9 +172,9 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
 
     // Auto-calculate total when pricing fields change
     if (field === 'subtotal' || field === 'deliveryFee' || field === 'discount') {
-      const newSubtotal = field === 'subtotal' ? parseFloat(value) || 0 : formData.subtotal;
-      const newDeliveryFee = field === 'deliveryFee' ? parseFloat(value) || 0 : formData.deliveryFee;
-      const newDiscount = field === 'discount' ? parseFloat(value) || 0 : formData.discount;
+      const newSubtotal = field === 'subtotal' ? Number(value) || 0 : formData.subtotal;
+      const newDeliveryFee = field === 'deliveryFee' ? Number(value) || 0 : formData.deliveryFee;
+      const newDiscount = field === 'discount' ? Number(value) || 0 : formData.discount;
       const newTotal = newSubtotal + newDeliveryFee - newDiscount;
 
       setFormData(prev => ({
@@ -159,17 +184,17 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     }
   };
 
-  const handleItemChange = (index: number, field: keyof OrderItem, value: any) => {
+  const handleItemChange = (index: number, field: keyof OrderItem, value: OrderItemValue) => {
     const newItems = [...items];
     newItems[index] = {
       ...newItems[index],
       [field]: value
-    };
+    } as OrderItem;
 
     // Auto-calculate item total when quantity or unit price changes
     if (field === 'quantity' || field === 'unitPrice') {
-      const quantity = field === 'quantity' ? parseInt(value) || 0 : newItems[index].quantity;
-      const unitPrice = field === 'unitPrice' ? parseFloat(value) || 0 : newItems[index].unitPrice;
+      const quantity = field === 'quantity' ? Number(value) || 0 : newItems[index].quantity;
+      const unitPrice = field === 'unitPrice' ? Number(value) || 0 : newItems[index].unitPrice;
       newItems[index].totalPrice = quantity * unitPrice;
     }
 
@@ -237,6 +262,10 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
   };
 
   const handleSubmit = async () => {
+    orderAbortControllerRef.current?.abort();
+    const controller = new AbortController();
+    orderAbortControllerRef.current = controller;
+
     setLoading(true);
     setError("");
     setSuccess("");
@@ -277,6 +306,7 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
 
       const response = await fetch("/api/orders", {
         method: "POST",
+        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
         },
@@ -333,9 +363,15 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
         throw new Error(errorData.error || "Failed to create order");
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       setError(err instanceof Error ? err.message : "Failed to create order");
     } finally {
-      setLoading(false);
+      if (orderAbortControllerRef.current === controller) {
+        orderAbortControllerRef.current = null;
+        setLoading(false);
+      }
     }
   };
 

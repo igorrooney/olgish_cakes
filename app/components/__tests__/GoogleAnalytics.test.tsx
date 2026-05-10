@@ -15,7 +15,7 @@ jest.mock('next/navigation', () => ({
 
 // Mock Next.js Script component
 jest.mock('next/script', () => {
-  return function MockScript({ children, dangerouslySetInnerHTML, ...props }: any) {
+  return function MockScript({ children, dangerouslySetInnerHTML, ...props }: MockProps) {
     if (dangerouslySetInnerHTML) {
       return <script {...props} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
     }
@@ -27,14 +27,15 @@ describe('GoogleAnalytics', () => {
   const mockGtag = jest.fn()
   const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
   const mockUseSearchParams = useSearchParams as jest.MockedFunction<typeof useSearchParams>
+  const windowWithAnalytics = window as Window & { gtag?: typeof mockGtag; dataLayer?: unknown[] }
 
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks()
     
     // Setup window.gtag mock
-    window.gtag = mockGtag
-    window.dataLayer = []
+    windowWithAnalytics.gtag = mockGtag
+    windowWithAnalytics.dataLayer = []
     
     // Default mock implementation for searchParams
     mockUseSearchParams.mockReturnValue({
@@ -48,12 +49,12 @@ describe('GoogleAnalytics', () => {
       forEach: jest.fn(),
       size: 0,
       [Symbol.iterator]: jest.fn()
-    } as any)
+    } as unknown as ReturnType<typeof useSearchParams>)
   })
 
   afterEach(() => {
-    delete (window as any).gtag
-    delete (window as any).dataLayer
+    delete windowWithAnalytics.gtag
+    delete windowWithAnalytics.dataLayer
   })
 
   describe('Component Rendering', () => {
@@ -125,15 +126,15 @@ describe('GoogleAnalytics', () => {
       )
     })
 
-    it('should track /gift-hampers page visits', () => {
-      mockUsePathname.mockReturnValue('/gift-hampers')
+    it('should track /cakes-by-post page visits', () => {
+      mockUsePathname.mockReturnValue('/cakes-by-post')
 
       render(<GoogleAnalytics gaId="G-TEST123" />)
 
       expect(mockGtag).toHaveBeenCalled()
       expect(mockGtag).toHaveBeenCalledWith('config', 'G-TEST123',
         expect.objectContaining({
-          page_path: '/gift-hampers'
+          page_path: '/cakes-by-post'
         })
       )
     })
@@ -164,7 +165,7 @@ describe('GoogleAnalytics', () => {
         forEach: jest.fn(),
         size: 2,
         [Symbol.iterator]: jest.fn()
-      } as any)
+      } as unknown as ReturnType<typeof useSearchParams>)
 
       render(<GoogleAnalytics gaId="G-TEST123" />)
 
@@ -193,8 +194,8 @@ describe('GoogleAnalytics', () => {
       expect(mockGtag).not.toHaveBeenCalled()
     })
 
-    it('should NOT track /admin/blog page', () => {
-      mockUsePathname.mockReturnValue('/admin/blog')
+    it('should NOT track /admin/email-test page', () => {
+      mockUsePathname.mockReturnValue('/admin/email-test')
 
       render(<GoogleAnalytics gaId="G-TEST123" />)
 
@@ -259,7 +260,7 @@ describe('GoogleAnalytics', () => {
         forEach: jest.fn(),
         size: 1,
         [Symbol.iterator]: jest.fn()
-      } as any)
+      } as unknown as ReturnType<typeof useSearchParams>)
 
       const { rerender } = render(<GoogleAnalytics gaId="G-TEST123" />)
 
@@ -276,7 +277,7 @@ describe('GoogleAnalytics', () => {
         forEach: jest.fn(),
         size: 1,
         [Symbol.iterator]: jest.fn()
-      } as any)
+      } as unknown as ReturnType<typeof useSearchParams>)
 
       rerender(<GoogleAnalytics gaId="G-TEST123" />)
 
@@ -323,7 +324,7 @@ describe('GoogleAnalytics', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing gtag gracefully', () => {
-      delete (window as any).gtag
+      delete windowWithAnalytics.gtag
       mockUsePathname.mockReturnValue('/')
 
       expect(() => {
@@ -416,4 +417,3 @@ describe('GoogleAnalytics', () => {
     })
   })
 })
-

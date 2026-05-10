@@ -3,9 +3,10 @@
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
-import { Box, Typography } from "@/lib/mui-optimization";
+import { Box, Typography } from "@/lib/daisy-ui";
 import { BRAND_ID, DEFAULT_RATING } from "@/lib/schema-constants";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
@@ -15,7 +16,7 @@ import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
 import type { Brand, Graph, Product } from "schema-dts";
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing } = designTokens;
 
 // Centralized default testimonial stats - matches DEFAULT_REVIEWS length and rating
 const DEFAULT_TESTIMONIAL_STATS = {
@@ -52,7 +53,18 @@ const GiftHamperCard = memo(function GiftHamperCard({
   }, [hamper.name, hamper.category]);
 
   const imageUrl = useMemo(() => {
-    return mainImage?.asset?._ref ? urlFor(mainImage).width(800).height(800).url() : placeholderUrl;
+    if (!mainImage?.asset?._ref) {
+      return placeholderUrl;
+    }
+
+    const rawImageUrl = urlFor(mainImage).url();
+
+    return getSanityCdnImageUrl(rawImageUrl, {
+      width: 560,
+      height: 560,
+      fit: 'crop',
+      quality: 78,
+    }) ?? rawImageUrl;
   }, [mainImage, placeholderUrl]);
 
   const imageAltText = useMemo(() => {
@@ -80,7 +92,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
         // Product referencing the brand by @id
         {
           "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`,
+          "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`,
           name: hamper.name,
           description: hamper.shortDescription
             ? blocksToText(hamper.shortDescription)
@@ -109,7 +121,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
               },
               reviewRating: {
                 "@type": "Rating",
@@ -127,7 +139,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             {
               "@type": "Review",
               itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}#product`
+                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
               },
               reviewRating: {
                 "@type": "Rating",
@@ -149,7 +161,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
             priceCurrency: "GBP",
             availability: "https://schema.org/InStock",
             priceValidUntil: getPriceValidUntil(30),
-            url: `https://olgishcakes.co.uk/gift-hampers/${hamper.slug?.current || hamper._id}`,
+            url: `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}`,
             seller: {
               "@type": "Organization",
               name: "Olgish Cakes",
@@ -184,14 +196,14 @@ const GiftHamperCard = memo(function GiftHamperCard({
 
       {/* AggregateRating microdata for Product list cards */}
       <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-        <meta itemProp="ratingValue" content="5" />
-        <meta itemProp="reviewCount" content="127" />
+        <meta itemProp="ratingValue" content={testimonialStats.averageRating.toFixed(1)} />
+        <meta itemProp="reviewCount" content={testimonialStats.count.toString()} />
         <meta itemProp="bestRating" content="5" />
         <meta itemProp="worstRating" content="1" />
       </Box>
 
       <Link
-        href={`/gift-hampers/${hamper.slug?.current || hamper._id}`}
+        href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${hamper.name}`}
         itemProp="url"
@@ -216,7 +228,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
               transform: isHovered ? "scale(1.05)" : "scale(1)",
               filter: isHovered ? "brightness(0.95)" : "brightness(1)",
             }}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) calc(100vw - 2rem), (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             priority={variant === "featured"}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
@@ -291,7 +303,7 @@ const GiftHamperCard = memo(function GiftHamperCard({
           </Typography>
         )}
 
-        <Link href={`/gift-hampers/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
+        <Link href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
           <OutlineButton
             sx={{
               mt: "auto",

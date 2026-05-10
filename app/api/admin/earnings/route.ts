@@ -1,183 +1,154 @@
-import { NextRequest, NextResponse } from "next/server";
-import { serverClient } from "@/sanity/lib/client";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAdminAuthenticated } from '@/lib/admin-auth'
+import { logger } from '@/lib/logger'
+import {
+  listSupabaseOrderEarningsSummaries,
+  type OrderEarningsSummary
+} from '@/lib/orders/supabase-orders'
+import { NextRequest, NextResponse } from 'next/server'
 
-// GET - Fetch monthly earnings data
+interface HistoricalMonthlyData {
+  year: number
+  month: string
+  earnings: number
+  ordersCount: number
+  averageOrderValue: number
+}
+
+const monthOrder = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
+
+function isRevenueOrder(order: OrderEarningsSummary): boolean {
+  return order.status !== 'cancelled' &&
+    order.paymentStatus !== 'cancelled' &&
+    (
+      order.status === 'completed' ||
+      order.status === 'delivered' ||
+      order.paymentStatus === 'paid' ||
+      ['delivered', 'completed'].includes(order.paymentStatus)
+    )
+}
+
+function getOrderTotal(order: OrderEarningsSummary): number {
+  return typeof order.total === 'number' && Number.isFinite(order.total) ? order.total : 0
+}
+
+function sumRevenue(orders: OrderEarningsSummary[]): number {
+  return orders
+    .filter(isRevenueOrder)
+    .reduce((sum, order) => sum + getOrderTotal(order), 0)
+}
+
+function getNonCancelledOrders(orders: OrderEarningsSummary[]): OrderEarningsSummary[] {
+  return orders.filter((order) => order.status !== 'cancelled')
+}
+
 export async function GET(request: NextRequest) {
-  // Check authentication
-  const isAuthenticated = await isAdminAuthenticated(request);
+  const isAuthenticated = await isAdminAuthenticated(request)
   if (!isAuthenticated) {
     return NextResponse.json(
-      { error: "Unauthorized" },
+      { error: 'Unauthorized' },
       { status: 401 }
-    );
+    )
   }
 
   try {
-    const now = new Date();
-    const currentMonth = now.getMonth(); // 0-11
-    const currentYear = now.getFullYear();
+    const now = new Date()
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+    const firstDayCurrentMonth = new Date(currentYear, currentMonth, 1)
+    const firstDayLastMonth = new Date(currentYear, currentMonth - 1, 1)
+    const allOrders = await listSupabaseOrderEarningsSummaries()
 
-    // Get first day of current month
-    const firstDayCurrentMonth = new Date(currentYear, currentMonth, 1);
+    const currentMonthOrders = allOrders.filter((order) => {
+      const orderDate = new Date(order.createdAt)
+      return orderDate >= firstDayCurrentMonth
+    })
 
-    // Get first day of last month
-    const firstDayLastMonth = new Date(currentYear, currentMonth - 1, 1);
+    const lastMonthOrders = allOrders.filter((order) => {
+      const orderDate = new Date(order.createdAt)
+      return orderDate >= firstDayLastMonth && orderDate < firstDayCurrentMonth
+    })
 
-    // Get first day of month before last month (to calculate last month's total)
-    const firstDayMonthBeforeLast = new Date(currentYear, currentMonth - 2, 1);
-
-    // Fetch all orders
-    const allOrders = await serverClient.fetch(`
-      *[_type == "order" && defined(pricing.total)]{
-        _createdAt,
-        "total": pricing.total,
-        "paymentStatus": pricing.paymentStatus,
-        status
-      }
-    `);
-
-    // Filter orders by month and calculate totals
-    const currentMonthOrders = allOrders.filter((order: any) => {
-      const orderDate = new Date(order._createdAt);
-      return orderDate >= firstDayCurrentMonth;
-    });
-
-    const lastMonthOrders = allOrders.filter((order: any) => {
-      const orderDate = new Date(order._createdAt);
-      return orderDate >= firstDayLastMonth && orderDate < firstDayCurrentMonth;
-    });
-
-    // Calculate earnings (include completed orders regardless of payment status, or paid orders)
-    const currentMonthEarnings = currentMonthOrders
-      .filter((order: any) =>
-        order.status !== 'cancelled' &&
-        order.paymentStatus !== 'cancelled' &&
-        (order.status === 'completed' ||
-         order.paymentStatus === 'paid' ||
-         ['delivered', 'completed'].includes(order.paymentStatus))
-      )
-      .reduce((sum: number, order: any) => sum + (order.total || 0), 0);
-
-    const lastMonthEarnings = lastMonthOrders
-      .filter((order: any) =>
-        order.status !== 'cancelled' &&
-        order.paymentStatus !== 'cancelled' &&
-        (order.status === 'completed' ||
-         order.paymentStatus === 'paid' ||
-         ['delivered', 'completed'].includes(order.paymentStatus))
-      )
-      .reduce((sum: number, order: any) => sum + (order.total || 0), 0);
-
-    // Calculate total orders (exclude cancelled orders)
-    const nonCancelledOrders = allOrders.filter((order: any) => order.status !== 'cancelled');
-    const totalOrders = nonCancelledOrders.length;
-
-    // Calculate total revenue across all time (exclude cancelled orders)
-    const totalRevenue = allOrders
-      .filter((order: any) =>
-        order.status !== 'cancelled' &&
-        order.paymentStatus !== 'cancelled' &&
-        (order.status === 'completed' ||
-         order.paymentStatus === 'paid' ||
-         ['delivered', 'completed'].includes(order.paymentStatus))
-      )
-      .reduce((sum: number, order: any) => sum + (order.total || 0), 0);
-
-    // Calculate average order value (exclude cancelled orders)
+    const nonCancelledOrders = getNonCancelledOrders(allOrders)
+    const totalOrders = nonCancelledOrders.length
     const averageOrderValue = totalOrders > 0
-      ? nonCancelledOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0) / totalOrders
-      : 0;
+      ? nonCancelledOrders.reduce((sum, order) => sum + getOrderTotal(order), 0) / totalOrders
+      : 0
 
-    // Calculate monthly breakdown for historical data
-    const monthlyGroups: { [key: string]: any[] } = {};
+    const monthlyGroups = allOrders.reduce<Record<string, OrderEarningsSummary[]>>((groups, order) => {
+      const orderDate = new Date(order.createdAt)
+      const year = orderDate.getFullYear()
+      const month = orderDate.toLocaleString('default', { month: 'long' })
+      const key = `${year}-${month}`
 
-    allOrders.forEach((order: any) => {
-      const orderDate = new Date(order._createdAt);
-      const year = orderDate.getFullYear();
-      const month = orderDate.toLocaleString('default', { month: 'long' });
-      const key = `${year}-${month}`;
-
-      if (!monthlyGroups[key]) {
-        monthlyGroups[key] = [];
+      return {
+        ...groups,
+        [key]: [...(groups[key] || []), order]
       }
-      monthlyGroups[key].push(order);
-    });
+    }, {})
 
-    // Generate historical monthly data
-    const historicalMonthlyData = Object.entries(monthlyGroups)
+    const currentMonthName = now.toLocaleString('default', { month: 'long' })
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const lastMonthName = lastMonth.toLocaleString('default', { month: 'long' })
+    const lastYear = lastMonth.getFullYear()
+
+    const historicalMonthlyData: HistoricalMonthlyData[] = Object.entries(monthlyGroups)
       .filter(([key]) => {
-        const [year, month] = key.split('-');
-        const orderYear = parseInt(year);
-        const orderMonth = month;
+        const [year, month] = key.split('-')
+        const orderYear = parseInt(year, 10)
 
-        // Exclude current and last month (they're handled separately)
-        const now = new Date();
-        const currentMonthName = now.toLocaleString('default', { month: 'long' });
-        const currentYear = now.getFullYear();
-
-        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const lastMonthName = lastMonth.toLocaleString('default', { month: 'long' });
-        const lastYear = lastMonth.getFullYear();
-
-        return !(orderYear === currentYear && orderMonth === currentMonthName) &&
-               !(orderYear === lastYear && orderMonth === lastMonthName);
+        return !(orderYear === currentYear && month === currentMonthName) &&
+          !(orderYear === lastYear && month === lastMonthName)
       })
       .map(([key, orders]) => {
-        const [year, month] = key.split('-');
-
-        const monthlyEarnings = orders
-          .filter((order: any) =>
-            order.status !== 'cancelled' &&
-            order.paymentStatus !== 'cancelled' &&
-            (order.status === 'completed' ||
-             order.paymentStatus === 'paid' ||
-             ['delivered', 'completed'].includes(order.paymentStatus))
-          )
-          .reduce((sum: number, order: any) => sum + (order.total || 0), 0);
-
-        const nonCancelledOrders = orders.filter((order: any) => order.status !== 'cancelled');
-        const ordersCount = nonCancelledOrders.length;
-        const totalValue = nonCancelledOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0);
-        const averageOrderValue = ordersCount > 0 ? totalValue / ordersCount : 0;
+        const [year, month] = key.split('-')
+        const nonCancelledMonthlyOrders = getNonCancelledOrders(orders)
+        const ordersCount = nonCancelledMonthlyOrders.length
+        const totalValue = nonCancelledMonthlyOrders.reduce((sum, order) => sum + getOrderTotal(order), 0)
 
         return {
-          year: parseInt(year),
+          year: parseInt(year, 10),
           month,
-          earnings: monthlyEarnings,
+          earnings: sumRevenue(orders),
           ordersCount,
-          averageOrderValue,
-        };
+          averageOrderValue: ordersCount > 0 ? totalValue / ordersCount : 0
+        }
       })
       .sort((a, b) => {
         if (a.year !== b.year) {
-          return b.year - a.year;
+          return b.year - a.year
         }
 
-        const monthOrder = [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-
-        return monthOrder.indexOf(b.month) - monthOrder.indexOf(a.month);
-      });
+        return monthOrder.indexOf(b.month) - monthOrder.indexOf(a.month)
+      })
 
     return NextResponse.json({
-      currentMonth: currentMonthEarnings,
-      lastMonth: lastMonthEarnings,
-      totalRevenue,
+      currentMonth: sumRevenue(currentMonthOrders),
+      lastMonth: sumRevenue(lastMonthOrders),
+      totalRevenue: sumRevenue(allOrders),
       totalOrders,
       averageOrderValue,
-      currentMonthOrdersCount: currentMonthOrders.filter((order: any) => order.status !== 'cancelled').length,
-      lastMonthOrdersCount: lastMonthOrders.filter((order: any) => order.status !== 'cancelled').length,
-      historicalMonthlyData,
-    });
-
+      currentMonthOrdersCount: getNonCancelledOrders(currentMonthOrders).length,
+      lastMonthOrdersCount: getNonCancelledOrders(lastMonthOrders).length,
+      historicalMonthlyData
+    })
   } catch (error) {
-    console.error('Failed to fetch earnings:', error);
+    logger.error('Failed to fetch earnings', error)
     return NextResponse.json(
       { error: 'Failed to fetch earnings data' },
       { status: 500 }
-    );
+    )
   }
 }

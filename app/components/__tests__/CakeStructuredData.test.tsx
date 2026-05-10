@@ -5,6 +5,8 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { CakeStructuredData } from '../CakeStructuredData'
 
+type CakeProp = React.ComponentProps<typeof CakeStructuredData>['cake']
+
 // Mock dependencies
 jest.mock('@/lib/google-merchant-center-schema', () => ({
   generateCakeMerchantCenterSchema: jest.fn((cake) => ({
@@ -57,7 +59,7 @@ describe('CakeStructuredData', () => {
       structuredData: undefined
     }
 
-    render(<CakeStructuredData cake={cakeWithoutStructuredData as any} />)
+    render(<CakeStructuredData cake={cakeWithoutStructuredData as CakeProp} />)
 
     const script = document.getElementById('cake-structured-data')
     expect(script).toBeNull()
@@ -71,7 +73,7 @@ describe('CakeStructuredData', () => {
       }
     }
 
-    render(<CakeStructuredData cake={cakeWithKeywords as any} />)
+    render(<CakeStructuredData cake={cakeWithKeywords as CakeProp} />)
 
     const script = document.getElementById('cake-structured-data')
     const json = JSON.parse(script?.textContent || '{}')
@@ -117,4 +119,3 @@ describe('CakeStructuredData', () => {
     expect(() => JSON.parse(script?.textContent || '{}')).not.toThrow()
   })
 })
-

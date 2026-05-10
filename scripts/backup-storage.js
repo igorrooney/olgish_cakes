@@ -12,17 +12,37 @@
  * npm run backup:sync -- --schedule=daily
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import { promises as fs } from 'fs'
+import path from 'path'
 
 class BackupStorageManager {
   constructor(config) {
-    this.config = config;
-    this.providers = {
-      aws: require('./storage-providers/aws-s3'),
-      gcp: require('./storage-providers/gcp-storage'),
-      azure: require('./storage-providers/azure-blob')
-    };
+    this.config = config
+    this.providers = {}
+    this.providerLoaders = {
+      aws: () => import('./storage-providers/aws-s3.js'),
+      gcp: () => import('./storage-providers/gcp-storage.js'),
+      azure: () => import('./storage-providers/azure-blob.js')
+    }
+  }
+
+  async getProvider(providerName) {
+    if (this.providers[providerName]) {
+      return this.providers[providerName]
+    }
+
+    const loadProvider = this.providerLoaders[providerName]
+    if (!loadProvider) {
+      throw new Error(`Unsupported cloud provider: ${providerName}`)
+    }
+
+    try {
+      const providerModule = await loadProvider()
+      this.providers[providerName] = providerModule.default
+      return this.providers[providerName]
+    } catch (error) {
+      throw new Error(`Failed to initialize ${providerName} storage provider: ${error.message}`)
+    }
   }
 
   async uploadBackup(filePath, options = {}) {
@@ -33,10 +53,7 @@ class BackupStorageManager {
       return { success: true, message: 'Cloud storage disabled' };
     }
 
-    const provider = this.providers[storageConfig.cloud.provider];
-    if (!provider) {
-      throw new Error(`Unsupported cloud provider: ${storageConfig.cloud.provider}`);
-    }
+    const provider = await this.getProvider(storageConfig.cloud.provider)
 
     try {
       console.log(`☁️  Uploading backup to ${storageConfig.cloud.provider}...`);
@@ -114,10 +131,7 @@ class BackupStorageManager {
       return [];
     }
 
-    const provider = this.providers[storageConfig.cloud.provider];
-    if (!provider) {
-      throw new Error(`Unsupported cloud provider: ${storageConfig.cloud.provider}`);
-    }
+    const provider = await this.getProvider(storageConfig.cloud.provider)
 
     try {
       const prefix = options.scheduleType 
@@ -139,8 +153,8 @@ class BackupStorageManager {
   }
 
   async downloadBackup(cloudKey, localPath) {
-    const storageConfig = this.config.backup.storage;
-    const provider = this.providers[storageConfig.cloud.provider];
+    const storageConfig = this.config.backup.storage
+    const provider = await this.getProvider(storageConfig.cloud.provider)
 
     try {
       console.log(`⬇️  Downloading backup: ${cloudKey}`);
@@ -293,4 +307,4 @@ class BackupStorageManager {
   }
 }
 
-module.exports = BackupStorageManager;
+export default BackupStorageManager

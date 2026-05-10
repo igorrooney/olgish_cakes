@@ -4,14 +4,18 @@
 /node_modules
 /.pnp
 .pnp.js
+/.pnpm-store/
+package-lock.json
 
 # testing
 /coverage
 /.jest-cache
+/test-results
 
 # next.js
 /.next/
 /out/
+/.swc/
 
 # reports
 /reports/
@@ -29,6 +33,7 @@ lighthouse-*.html
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -38,6 +43,9 @@ lighthouse-*.html
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.next-dev-*.log
+.next-dev-*.err.log
+.playwright-mcp/
 
 # local env files
 .env
@@ -67,4 +75,19 @@ next-env.d.ts
 *.tar.gz
 *.zip
 backup-*.json
+.tmp-script-run/
 .cursor/mcp.json
+/tmp/
+.tmp-lighthouse-profile/
+.tmp-lighthouse-blog-mobile/
+.tmp-lighthouse-blog-mobile-2/
+.playwright-cli/
+.codex-artifacts/
+/output/
+.codex-*.log
+.codex-lighthouse-*.pid
+.codex-lighthouse-*-run-dir.txt
+.next-start-*.out.log
+/logs/
+.agents/*
+/supabase/.temp/

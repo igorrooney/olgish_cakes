@@ -4,6 +4,20 @@ import { getClient } from "@/sanity/lib/client";
 
 export const runtime = "edge";
 
+interface HamperOgImage {
+  isMain?: boolean;
+  asset?: {
+    url?: string;
+  };
+  alt?: string;
+}
+
+interface HamperOgData {
+  name?: string;
+  price?: number;
+  images?: HamperOgImage[];
+}
+
 async function getHamper(slug: string) {
   const query = `*[_type == "giftHamper" && slug.current == $slug][0]{
     name,
@@ -12,7 +26,7 @@ async function getHamper(slug: string) {
     images[]{asset->{url}, alt, isMain}
   }`;
   const client = getClient(false);
-  return client.fetch(query, { slug });
+  return client.fetch<HamperOgData | null>(query, { slug });
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -22,7 +36,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
   const name: string = hamper?.name || "Gift Hamper";
   const price: string = hamper?.price ? `£${hamper.price}` : "";
   const imageUrl: string | undefined =
-    hamper?.images?.find((i: any) => i.isMain)?.asset?.url || hamper?.images?.[0]?.asset?.url;
+    hamper?.images?.find((image: HamperOgImage) => image.isMain)?.asset?.url ||
+    hamper?.images?.[0]?.asset?.url;
 
   const bg = imageUrl || "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png";
 

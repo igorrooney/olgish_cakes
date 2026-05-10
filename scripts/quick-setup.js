@@ -87,7 +87,7 @@ async function quickSetup() {
     console.log('   cat backups/manual/backup-report-*.json | head -20');
     console.log('');
     console.log('📚 Documentation: docs/SANITY_BACKUP_SYSTEM.md');
-    console.log('🚀 Quick Start: BACKUP_QUICK_START.md');
+    console.log('🚀 Quick Start: docs/BACKUP_QUICK_START.md');
     console.log('');
     console.log('🔧 Available Commands:');
     console.log('   npm run backup:sanity       - Create manual backup');

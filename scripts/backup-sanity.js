@@ -17,11 +17,16 @@
  */
 
 import { createClient } from '@sanity/client';
-import { promises as fs } from 'fs';
+import { promises as fs, realpathSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import {
+  BACKUP_ASSET_QUERY,
+  BACKUP_DOCUMENT_QUERY,
+  createBackupClientConfig
+} from './backup-document-scope.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,13 +75,7 @@ class SanityBackup {
       throw new Error('Missing required Sanity configuration. Please check your environment variables.');
     }
 
-    this.client = createClient({
-      projectId: config.projectId,
-      dataset: config.dataset,
-      token: config.token,
-      apiVersion: config.apiVersion,
-      useCdn: false
-    });
+    this.client = createClient(createBackupClientConfig(config));
 
     // Create output directory
     await fs.mkdir(this.options.outputDir, { recursive: true });
@@ -88,8 +87,7 @@ class SanityBackup {
   async fetchAllDocuments() {
     console.log('📄 Fetching all documents...');
     
-    const query = `*[_type in ["cake", "giftHamper", "testimonial", "faq", "marketSchedule", "blogPost"]] | order(_createdAt desc)`;
-    const documents = await this.client.fetch(query);
+    const documents = await this.client.fetch(BACKUP_DOCUMENT_QUERY);
     
     this.backupInfo.records.documents = documents.length;
     console.log(`✅ Found ${documents.length} documents`);
@@ -104,8 +102,7 @@ class SanityBackup {
 
     console.log('🖼️  Fetching assets metadata...');
     
-    const query = `*[_type == "sanity.imageAsset" || _type == "sanity.fileAsset"] | order(_createdAt desc)`;
-    const assets = await this.client.fetch(query);
+    const assets = await this.client.fetch(BACKUP_ASSET_QUERY);
     
     this.backupInfo.records.assets = assets.length;
     console.log(`✅ Found ${assets.length} assets`);
@@ -176,15 +173,19 @@ class SanityBackup {
   }
 
   async createBackupReport(files) {
+    const fileEntries = await Promise.all(
+      files.map(async (filePath) => ({
+        name: path.basename(filePath),
+        size: await this.getFileSize(filePath),
+        created: new Date().toISOString()
+      }))
+    )
+
     const report = {
       ...this.backupInfo,
-      files: files.map(f => ({
-        name: path.basename(f),
-        size: await this.getFileSize(f),
-        created: new Date().toISOString()
-      })),
+      files: fileEntries,
       totalSize: await this.getTotalSize(files)
-    };
+    }
 
     const reportPath = path.join(this.options.outputDir, `backup-report-${this.options.timestamp}.json`);
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
@@ -319,8 +320,18 @@ async function main() {
   process.exit(result.success ? 0 : 1);
 }
 
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+
+  try {
+    return realpathSync(__filename) === realpathSync(process.argv[1]);
+  } catch {
+    return path.resolve(__filename) === path.resolve(process.argv[1]);
+  }
+}
+
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isDirectExecution()) {
   main().catch(console.error);
 }
 

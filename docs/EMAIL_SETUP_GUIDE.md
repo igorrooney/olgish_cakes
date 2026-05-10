@@ -177,3 +177,49 @@ If emails still don't work after following this guide:
 **Last Updated:** {{ current_date }}
 **Version:** 1.0
 
+
+## Internal Email Testing Console
+
+A guarded testing console is now available at `/admin/email-test` using the same shared template registry as production (`lib/email/templates/*`).
+
+### New Environment Variables
+
+```bash
+# Transport mode:
+# - capture: render and capture emails in memory (default in local/test)
+# - live: send via Resend
+# - disabled: skip sends completely
+EMAIL_TRANSPORT_MODE=capture
+
+# Real-send controls for /api/dev/email-test-send
+EMAIL_REAL_SEND_ENABLED=false
+EMAIL_TEST_RECIPIENT_ALLOWLIST=igorrooney@gmail.com,another@example.com
+EMAIL_TEST_SUBJECT_PREFIX=[TEST]
+EMAIL_REAL_SEND_RATE_LIMIT_PER_HOUR=5
+```
+
+### Dev Endpoints
+
+- `POST /api/dev/email-preview`
+  - Requires authenticated admin session (`admin_auth_token` cookie).
+  - Body: `{ "templateId": "...", "scenarioId": "default", "input": { ... } }` (`scenarioId` optional)
+  - Returns rendered `subject`, `text`, and `html` without sending.
+
+- `POST /api/dev/email-test-send`
+  - Requires authenticated admin session (`admin_auth_token` cookie).
+  - Body: `{ "templateId": "...", "to": "...", "scenarioId": "default", "input": { ... } }` (`scenarioId` optional)
+  - Sends a real email only when all guards pass:
+    - `EMAIL_REAL_SEND_ENABLED=true`
+    - recipient is allowlisted
+    - per-hour rate limit not exceeded
+
+### Recommended Workflow
+
+1. Keep `EMAIL_TRANSPORT_MODE=capture` for local development.
+2. Use `/admin/email-test` to preview all templates and payload variants.
+3. Use "Send real test email" only for final smoke checks.
+4. Keep real-send disabled in CI (`capture` or `disabled`).
+
+
+
+

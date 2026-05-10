@@ -165,7 +165,7 @@ function generateReport() {
 
 // Generate optimization checklist
 function generateChecklist() {
-  const checklistPath = path.join(process.cwd(), "RENDER_BLOCKING_OPTIMIZATION_CHECKLIST.md");
+  const checklistPath = path.join(process.cwd(), "docs", "RENDER_BLOCKING_OPTIMIZATION_CHECKLIST.md");
 
   const checklist = `# Render Blocking Resources Optimization Checklist
 

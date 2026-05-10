@@ -21,7 +21,7 @@ const TRUSTPILOT_API_KEY = process.env.NEXT_PUBLIC_TRUSTPILOT_API_KEY;
 const TRUSTPILOT_BUSINESS_UNIT_ID = process.env.NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID;
 const TRUSTPILOT_API_HOST = "https://api.trustpilot.com/v1";
 
-export async function fetchTrustpilotReviews(productName: string) {
+export async function fetchTrustpilotReviews(productName: string, signal?: AbortSignal) {
   // If Trustpilot is not configured, return null immediately
   if (!TRUSTPILOT_API_KEY || !TRUSTPILOT_BUSINESS_UNIT_ID ||
       TRUSTPILOT_API_KEY === 'your_api_key_here' ||
@@ -40,6 +40,7 @@ export async function fetchTrustpilotReviews(productName: string) {
         next: {
           revalidate: 3600, // Cache for 1 hour
         },
+        signal,
       }
     );
 
@@ -59,6 +60,10 @@ export async function fetchTrustpilotReviews(productName: string) {
       location: review.consumer.displayLocation,
     }));
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return null;
+    }
+
     console.error("Error fetching Trustpilot reviews:", error);
     return null;
   }

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { Box, Skeleton } from "@mui/material";
+import { Box, Skeleton } from "@/lib/daisy-ui";
 
 interface OptimizedImageProps {
   src: string;

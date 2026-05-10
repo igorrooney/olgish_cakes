@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ContactForm } from "@/app/components/ContactForm";
+import { ContactForm, type ContactFormData } from "@/app/components/ContactForm";
 import { Cake } from "@/types/cake";
 import { OrderModalStructuredData } from "./OrderModalStructuredData";
-import { CheckCircleIcon, ErrorIcon } from "@/lib/mui-optimization";
+import { CheckCircleIcon, ErrorIcon } from "@/lib/daisy-ui";
+import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
 import {
   Box,
   Button,
@@ -25,11 +26,11 @@ import {
   Alert,
   AlertTitle,
   CircularProgress,
-} from "@mui/material";
+} from "@/lib/daisy-ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { useEffect, useRef, useState } from "react";
+import { AdapterDayjs } from "@/lib/daisy-ui";
+import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 
@@ -58,12 +59,48 @@ export function OrderModal({
   const [_submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
+  const submitAbortControllerRef = useRef<AbortController | null>(null);
 
-  async function handleSubmit(formData: any) {
+  useEffect(() => {
+    if (open) {
+      return;
+    }
+
+    if (submitAbortControllerRef.current) {
+      submitAbortControllerRef.current.abort();
+      submitAbortControllerRef.current = null;
+    }
+  }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (submitAbortControllerRef.current) {
+        submitAbortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  async function handleSubmit(formData: ContactFormData) {
     setIsSubmitting(true);
+    setErrorMessage("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
+    let controller: AbortController | null = null;
 
     try {
+      if (submitAbortControllerRef.current) {
+        submitAbortControllerRef.current.abort();
+      }
+
+      controller = new AbortController();
+      submitAbortControllerRef.current = controller;
+      const csrfToken = await fetchCsrfToken(controller.signal);
+
+      if (!csrfToken) {
+        throw new Error(csrfTokenLoadErrorMessage);
+      }
+
       const data = new FormData();
+      data.append("csrfToken", csrfToken);
       data.append("name", formData.name);
       data.append("email", formData.email);
       data.append("phone", formData.phone);
@@ -110,6 +147,8 @@ ${formData.message}
       const response = await fetch("/api/contact", {
         method: "POST",
         body: data,
+        credentials: "same-origin",
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -121,11 +160,27 @@ ${formData.message}
       onClose();
       setShowSuccessModal(true);
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
       console.error("Form submission error:", error);
+      setErrorMessage(
+        error instanceof Error && (
+          error.message === csrfTokenLoadErrorMessage ||
+          error.message === "Failed to fetch CSRF token" ||
+          error.message === "Missing CSRF token"
+        )
+          ? csrfTokenLoadErrorMessage
+          : "There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk"
+      );
       setSubmitStatus("error");
       setShowErrorModal(true);
     } finally {
       setIsSubmitting(false);
+      if (controller && submitAbortControllerRef.current === controller) {
+        submitAbortControllerRef.current = null;
+      }
     }
   }
 
@@ -458,32 +513,38 @@ ${formData.message}
                 Error Sending Order
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                There was an error sending your order. Please try again or contact us directly at{" "}
-                <Link
-                  href="mailto:hello@olgishcakes.co.uk"
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                    fontWeight: 500,
-                  }}
-                  aria-label="Email us at hello@olgishcakes.co.uk"
-                >
-                  <span
-                    style={{
-                      cursor: "pointer",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.textDecoration = "underline";
-                      e.currentTarget.style.color = "var(--mui-palette-primary-main)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.textDecoration = "none";
-                      e.currentTarget.style.color = "inherit";
-                    }}
-                  >
-                    hello@olgishcakes.co.uk
-                  </span>
-                </Link>
+                {errorMessage === csrfTokenLoadErrorMessage ? (
+                  errorMessage
+                ) : (
+                  <>
+                    {errorMessage}{" "}
+                    <Link
+                      href="mailto:hello@olgishcakes.co.uk"
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        fontWeight: 500,
+                      }}
+                      aria-label="Email us at hello@olgishcakes.co.uk"
+                    >
+                      <span
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.textDecoration = "underline";
+                          e.currentTarget.style.color = "var(--mui-palette-primary-main)";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.textDecoration = "none";
+                          e.currentTarget.style.color = "inherit";
+                        }}
+                      >
+                        hello@olgishcakes.co.uk
+                      </span>
+                    </Link>
+                  </>
+                )}
               </Typography>
               <Button variant="contained" onClick={() => setShowErrorModal(false)}>
                 Try Again

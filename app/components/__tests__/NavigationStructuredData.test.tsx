@@ -8,7 +8,7 @@ import { NavigationStructuredData } from '../NavigationStructuredData'
 describe('NavigationStructuredData', () => {
   const mockNavigation = [
     { name: 'Cakes', href: '/cakes' },
-    { name: 'About', href: '/about' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' }
   ]
 
@@ -56,7 +56,7 @@ describe('NavigationStructuredData', () => {
 
     const script = container.querySelector('script')
     const json = JSON.parse(script?.textContent || '{}')
-    json.mainEntity.forEach((entity: any) => {
+    json.mainEntity.forEach((entity: UnknownRecord) => {
       expect(entity['@type']).toBe('WebPage')
     })
   })
@@ -67,7 +67,7 @@ describe('NavigationStructuredData', () => {
     const script = container.querySelector('script')
     const json = JSON.parse(script?.textContent || '{}')
     expect(json.mainEntity[0].url).toBe('https://olgishcakes.co.uk/cakes')
-    expect(json.mainEntity[1].url).toBe('https://olgishcakes.co.uk/about')
+    expect(json.mainEntity[1].url).toBe('https://olgishcakes.co.uk/blog')
   })
 
   it('should handle items with megaMenu', () => {
@@ -107,7 +107,7 @@ describe('NavigationStructuredData', () => {
 
     const script = container.querySelector('script')
     const json = JSON.parse(script?.textContent || '{}')
-    json.mainEntity.forEach((entity: any) => {
+    json.mainEntity.forEach((entity: UnknownRecord) => {
       expect(entity.breadcrumb['@type']).toBe('BreadcrumbList')
       expect(entity.breadcrumb.itemListElement.length).toBe(2)
     })

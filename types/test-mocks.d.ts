@@ -15,7 +15,7 @@ declare global {
     interface Matchers<R> {
       toBeInTheDocument(): R
       toHaveAttribute(attr: string, value?: string): R
-      toHaveStyle(style: string | Record<string, any>): R
+      toHaveStyle(style: string | Record<string, unknown>): R
     }
   }
 }

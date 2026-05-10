@@ -10,11 +10,22 @@ interface AnalyticsEvent {
   value?: number;
 }
 
+type Gtag = (
+  command: "event",
+  eventName: string,
+  params?: Record<string, unknown>
+) => void;
+
+type WindowWithGtag = Window & {
+  gtag?: Gtag;
+};
+
 export function useAnalytics() {
   const trackEvent = useCallback((eventData: AnalyticsEvent) => {
     // Google Analytics 4 event tracking
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("event", eventData.event, {
+    const gtag = typeof window !== "undefined" ? (window as WindowWithGtag).gtag : undefined;
+    if (gtag) {
+      gtag("event", eventData.event, {
         event_category: eventData.category,
         event_label: eventData.label,
         value: eventData.value,

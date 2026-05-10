@@ -19,6 +19,8 @@ interface ValidationResult {
   status: 'pass' | 'fail' | 'warning';
 }
 
+type StructuredDataSchema = Record<string, unknown>;
+
 // Test URLs and their expected schema types
 const TEST_URLS = [
   {
@@ -72,7 +74,12 @@ const SCHEMA_RULES = {
   },
 } as const;
 
-function validateSchema(schema: any, type: string): { errors: string[]; warnings: string[] } {
+function hasSchemaValue(schema: StructuredDataSchema, field: string): boolean {
+  const value = schema[field];
+  return value !== undefined && value !== null && value !== '';
+}
+
+function validateSchema(schema: StructuredDataSchema, type: string): { errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
   const rules = SCHEMA_RULES[type as keyof typeof SCHEMA_RULES];
@@ -84,15 +91,19 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
 
   // Check required fields
   for (const field of rules.required) {
-    if (!schema[field]) {
+    if (!hasSchemaValue(schema, field)) {
       errors.push(`Missing required field: ${field}`);
     }
   }
 
   // Check offers if present
   if (schema.offers && 'offersRequired' in rules) {
+    const offers = typeof schema.offers === 'object' && schema.offers !== null && !Array.isArray(schema.offers)
+      ? schema.offers as StructuredDataSchema
+      : {};
+
     for (const field of rules.offersRequired) {
-      if (!schema.offers[field]) {
+      if (!hasSchemaValue(offers, field)) {
         errors.push(`Missing required offers field: ${field}`);
       }
     }
@@ -101,7 +112,7 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
   // Check recommended fields
   if ('recommended' in rules) {
     for (const field of rules.recommended) {
-      if (!schema[field]) {
+      if (!hasSchemaValue(schema, field)) {
         warnings.push(`Missing recommended field: ${field}`);
       }
     }
@@ -109,11 +120,15 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
 
   // Special validation for Product schema
   if (type === 'Product') {
-    if (schema.offers) {
-      if (!schema.offers.price || schema.offers.price === '0') {
+    const offers = typeof schema.offers === 'object' && schema.offers !== null && !Array.isArray(schema.offers)
+      ? schema.offers as StructuredDataSchema
+      : null;
+
+    if (offers) {
+      if (!hasSchemaValue(offers, 'price') || offers.price === '0') {
         warnings.push('Product has zero price - ensure this is intentional');
       }
-      if (!schema.offers.priceCurrency) {
+      if (!hasSchemaValue(offers, 'priceCurrency')) {
         errors.push('Product offers missing priceCurrency');
       }
     }
@@ -131,7 +146,11 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
     if (!schema.eventStatus) {
       warnings.push('Event missing eventStatus field');
     }
-    if (schema.offers && (!schema.offers.price || !schema.offers.priceCurrency)) {
+    const offers = typeof schema.offers === 'object' && schema.offers !== null && !Array.isArray(schema.offers)
+      ? schema.offers as StructuredDataSchema
+      : null;
+
+    if (offers && (!hasSchemaValue(offers, 'price') || !hasSchemaValue(offers, 'priceCurrency'))) {
       warnings.push('Event offers missing price or priceCurrency');
     }
   }
@@ -139,14 +158,19 @@ function validateSchema(schema: any, type: string): { errors: string[]; warnings
   // Special validation for BreadcrumbList
   if (type === 'BreadcrumbList') {
     if (schema.itemListElement && Array.isArray(schema.itemListElement)) {
-      schema.itemListElement.forEach((item: any, index: number) => {
-        if (!item.name || item.name.trim() === '') {
+      schema.itemListElement.forEach((item, index) => {
+        const itemRecord = typeof item === 'object' && item !== null && !Array.isArray(item)
+          ? item as StructuredDataSchema
+          : {};
+        const itemName = typeof itemRecord.name === 'string' ? itemRecord.name : '';
+
+        if (itemName.trim() === '') {
           errors.push(`Breadcrumb item ${index + 1} missing or empty name`);
         }
-        if (!item.item) {
+        if (!hasSchemaValue(itemRecord, 'item')) {
           errors.push(`Breadcrumb item ${index + 1} missing item URL`);
         }
-        if (item.name === 'Unnamed item') {
+        if (itemName === 'Unnamed item') {
           errors.push(`Breadcrumb item ${index + 1} has "Unnamed item" name`);
         }
       });
@@ -236,7 +260,7 @@ async function validatePageStructuredData(url: string, page: string, expectedSch
   }
 }
 
-function generateMockSchema(type: string, url: string): any {
+function generateMockSchema(type: string, url: string): StructuredDataSchema {
   // Generate mock schemas based on our implementations
   switch (type) {
     case 'Product':

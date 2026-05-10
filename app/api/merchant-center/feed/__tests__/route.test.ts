@@ -1,4 +1,6 @@
 /**
+ * @jest-environment node
+ * 
  * Unit tests for Google Merchant Center Feed Route
  * 
  * These tests prevent the "Missing field 'image'" issue in Google Search Console
@@ -535,19 +537,16 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
 
       expect(response.headers.get('Content-Type')).toBe('application/xml; charset=utf-8')
-      expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600')
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=0, s-maxage=0')
     })
   })
 
   describe('Availability conversion', () => {
-    it('should convert Schema.org availability to merchant center format', async () => {
+    it('should emit in stock availability for cakes', async () => {
       const cake: Cake = createMockCake({
         mainImage: {
           _type: 'image',
           asset: { _ref: 'image-123', url: 'https://example.com/image.jpg' }
-        },
-        structuredData: {
-          availability: 'InStock'
         }
       })
 
@@ -561,14 +560,11 @@ describe('Merchant Center Feed Route', () => {
       expect(xml).toContain('<g:availability>in stock</g:availability>')
     })
 
-    it('should handle OutOfStock availability', async () => {
+    it('should ignore removed cake availability overrides and keep in stock output', async () => {
       const cake: Cake = createMockCake({
         mainImage: {
           _type: 'image',
           asset: { _ref: 'image-123', url: 'https://example.com/image.jpg' }
-        },
-        structuredData: {
-          availability: 'OutOfStock'
         }
       })
 
@@ -579,7 +575,7 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
       const xml = await response.text()
 
-      expect(xml).toContain('<g:availability>out of stock</g:availability>')
+      expect(xml).toContain('<g:availability>in stock</g:availability>')
     })
   })
 })

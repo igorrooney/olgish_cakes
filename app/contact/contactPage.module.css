@@ -1,0 +1,209 @@
+.contactPageContainer {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.desktopDirectContactCard {
+  display: none !important;
+}
+
+.compactDirectContactPanel {
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--color-primary-200) 78%, transparent);
+  padding: 0.9rem 0 0;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.compactDirectContactGlow {
+  display: none;
+}
+
+.formFieldGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.deferredSection {
+  content-visibility: auto;
+  contain-intrinsic-size: 720px;
+}
+
+.deferredFormSection {
+  content-visibility: auto;
+  contain-intrinsic-size: 1280px;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .contactPageContainer {
+    max-width: 840px;
+  }
+
+  .heroLayout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .heroContent {
+    padding-right: 0;
+  }
+
+  .heroTitle {
+    max-width: 10.5ch;
+  }
+
+  .heroActions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .directContactPanel {
+    max-width: 42rem;
+  }
+
+  .formLayout {
+    gap: 1.75rem;
+    padding: 1.75rem;
+  }
+
+  .formSidebar {
+    max-width: none;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .contactPageContainer {
+    max-width: 680px;
+  }
+
+  .heroLayout {
+    gap: 0.75rem;
+    padding: 1.125rem;
+  }
+
+  .heroContent {
+    padding-right: 0;
+  }
+
+  .directContactPanel {
+    max-width: 36rem;
+  }
+
+  .formLayout {
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .formPromptCard {
+    background: transparent;
+    box-shadow: none;
+    border-color: color-mix(in srgb, var(--color-primary-100) 70%, transparent);
+    padding-inline: 0;
+    padding-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contactPageContainer {
+    max-width: 960px;
+  }
+
+  .heroLayout {
+    grid-template-columns: minmax(0, 1.08fr) minmax(332px, 0.92fr);
+    align-items: stretch;
+    gap: 1.75rem;
+  }
+
+  .heroContent {
+    justify-content: center;
+    padding-right: 0.75rem;
+  }
+
+  .heroTitle {
+    max-width: 12.5ch;
+  }
+
+  .heroActions {
+    flex-direction: row;
+  }
+
+  .directContactPanel {
+    max-width: none;
+  }
+
+  .formLayout {
+    grid-template-columns: minmax(250px, 0.84fr) minmax(0, 1.16fr);
+    align-items: start;
+    gap: 1.75rem;
+  }
+
+  .formSidebar {
+    max-width: none;
+  }
+
+  .formCard {
+    order: 2;
+  }
+
+  .mobileDirectContactSection {
+    display: none !important;
+  }
+
+  .desktopDirectContactCard {
+    display: block !important;
+  }
+
+  .formPromptCard {
+    background: color-mix(in srgb, var(--color-base-100) 85%, transparent);
+    box-shadow: var(--tw-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+    border: 1px solid color-mix(in srgb, var(--color-primary-100) 100%, transparent);
+    border-radius: 1.75rem;
+    padding-inline: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
+@media (min-width: 1380px) {
+  .formFieldGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .contactPageContainer {
+    max-width: 1040px;
+  }
+
+  .heroLayout {
+    grid-template-columns: minmax(0, 1.06fr) minmax(344px, 0.94fr);
+    align-items: center;
+  }
+
+  .heroContent {
+    padding-right: 1rem;
+  }
+
+  .heroTitle {
+    max-width: 13.5ch;
+  }
+
+  .formLayout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1512px) {
+  .contactPageContainer {
+    max-width: 1080px;
+  }
+}

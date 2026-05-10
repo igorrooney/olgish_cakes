@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { Box, CircularProgress } from "@/lib/mui-optimization";
+import { Box, CircularProgress } from "@/lib/daisy-ui";
 
 // Loading component for dynamic imports
 function DynamicLoading() {
@@ -22,24 +22,8 @@ export const DynamicContactForm = dynamic(
   }
 );
 
-export const DynamicQuoteForm = dynamic(
-  () => import("../get-custom-quote/QuoteForm").then(mod => ({ default: mod.QuoteForm })),
-  {
-    loading: DynamicLoading,
-    ssr: false,
-  }
-);
-
 export const DynamicCakeImageGallery = dynamic(
   () => import("./CakeImageGallery").then(mod => ({ default: mod.CakeImageGallery })),
-  {
-    loading: DynamicLoading,
-    ssr: true,
-  }
-);
-
-export const DynamicTestimonialsList = dynamic(
-  () => import("../testimonials/TestimonialsList").then(mod => ({ default: mod.TestimonialsList })),
   {
     loading: DynamicLoading,
     ssr: true,

@@ -128,6 +128,7 @@ export interface OrderUpdate {
     selectedCakeName?: string;
     selectedCakeSize?: string;
     selectedDesignType?: string;
+    items?: OrderItem[];
     subtotal?: number;
     deliveryFee?: number;
     discount?: number;

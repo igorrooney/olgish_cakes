@@ -24,7 +24,7 @@
 | Page | Views | Issue |
 |------|-------|-------|
 | /admin/orders | 169 | Should be excluded from analytics |
-| /admin/blog | 92 | Should be excluded |
+| /admin/blog | 92 | Historical legacy route, should be excluded |
 | /admin | 89 + 44 = 133 | Should be excluded |
 | /admin/login | 42 | Should be excluded |
 

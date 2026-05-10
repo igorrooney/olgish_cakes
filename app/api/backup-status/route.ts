@@ -1,14 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { promises as fs, statSync } from 'fs';
 import path from 'path';
 
-export async function GET(request: NextRequest) {
+interface LatestBackupStatus {
+  name: string
+  size?: number
+  created?: string
+}
+
+interface BackupDirectoryStatus {
+  totalBackups: number
+  totalReports: number
+  latestBackup?: LatestBackupStatus | null
+  error?: string
+}
+
+export async function GET() {
   try {
 
     const backupDirs = ['daily', 'weekly', 'monthly', 'manual'];
     const status = {
       timestamp: new Date().toISOString(),
-      backups: {} as Record<string, any>
+      backups: {} as Record<string, BackupDirectoryStatus>
     };
 
     for (const dir of backupDirs) {
@@ -20,7 +33,7 @@ export async function GET(request: NextRequest) {
         const reportFiles = files.filter(f => f.includes('backup-report-'));
 
         // Get latest backup info
-        let latestBackup = null;
+        let latestBackup: LatestBackupStatus | null = null;
         if (backupFiles.length > 0) {
           const latestFile = backupFiles
             .map(f => ({ name: f, path: path.join(dirPath, f) }))

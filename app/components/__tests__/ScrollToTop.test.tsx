@@ -4,41 +4,18 @@
 import React from 'react'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ScrollToTop } from '../ScrollToTop'
-
-// Mock MUI
-jest.mock('@mui/material', () => ({
-  Fab: ({ children, onClick, size, sx, ...props }: any) => (
-    <button
-      data-testid="fab"
-      data-size={size}
-      onClick={onClick}
-      {...props}
-    >
-      {children}
-    </button>
-  ),
-  Zoom: ({ children, in: isIn, ...props }: any) => (
-    <div data-testid="zoom" data-in={isIn} {...props}>
-      {children}
-    </div>
-  )
-}))
-
-jest.mock('@mui/icons-material', () => ({
-  KeyboardArrowUp: () => <span data-testid="arrow-up-icon">↑</span>
-}))
+import { KLARO_VISIBILITY_EVENT } from '../KlaroA11yBridge'
 
 describe('ScrollToTop', () => {
   beforeEach(() => {
-    // Reset scroll position
     Object.defineProperty(window, 'pageYOffset', {
       writable: true,
       configurable: true,
       value: 0
     })
 
-    // Mock scrollTo
     window.scrollTo = jest.fn()
+    document.body.dataset.klaroOpen = 'false'
   })
 
   describe('Visibility', () => {
@@ -46,7 +23,10 @@ describe('ScrollToTop', () => {
       render(<ScrollToTop />)
 
       const zoom = screen.getByTestId('zoom')
+      const button = screen.getByTestId('fab')
       expect(zoom.getAttribute('data-in')).toBe('false')
+      expect(button).toHaveAttribute('tabindex', '-1')
+      expect(button).toHaveAttribute('aria-hidden', 'true')
     })
 
     it('should become visible when scrolled down 300px', () => {
@@ -58,26 +38,30 @@ describe('ScrollToTop', () => {
       })
 
       const zoom = screen.getByTestId('zoom')
+      const button = screen.getByTestId('fab')
       expect(zoom.getAttribute('data-in')).toBe('true')
+      expect(button).toHaveAttribute('tabindex', '0')
+      expect(button).toHaveAttribute('aria-hidden', 'false')
     })
 
     it('should hide when scrolled to top', () => {
       render(<ScrollToTop />)
 
-      // Scroll down
       act(() => {
         Object.defineProperty(window, 'pageYOffset', { value: 400, writable: true })
         fireEvent.scroll(window)
       })
 
-      // Scroll back up
       act(() => {
         Object.defineProperty(window, 'pageYOffset', { value: 200, writable: true })
         fireEvent.scroll(window)
       })
 
       const zoom = screen.getByTestId('zoom')
+      const button = screen.getByTestId('fab')
       expect(zoom.getAttribute('data-in')).toBe('false')
+      expect(button).toHaveAttribute('tabindex', '-1')
+      expect(button).toHaveAttribute('aria-hidden', 'true')
     })
 
     it('should show exactly at 301px', () => {
@@ -102,6 +86,23 @@ describe('ScrollToTop', () => {
 
       const zoom = screen.getByTestId('zoom')
       expect(zoom.getAttribute('data-in')).toBe('false')
+    })
+
+    it('should hide while Klaro consent UI is open', () => {
+      render(<ScrollToTop />)
+
+      act(() => {
+        Object.defineProperty(window, 'pageYOffset', { value: 400, writable: true })
+        fireEvent.scroll(window)
+      })
+
+      act(() => {
+        document.body.dataset.klaroOpen = 'true'
+        window.dispatchEvent(new CustomEvent(KLARO_VISIBILITY_EVENT, { detail: { isOpen: true } }))
+      })
+
+      expect(screen.queryByTestId('zoom')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('fab')).not.toBeInTheDocument()
     })
   })
 
@@ -179,7 +180,7 @@ describe('ScrollToTop', () => {
   })
 
   describe('Button Properties', () => {
-    it('should render Fab button', () => {
+    it('should render the scroll-to-top button', () => {
       render(<ScrollToTop />)
 
       expect(screen.getByTestId('fab')).toBeInTheDocument()
@@ -192,13 +193,11 @@ describe('ScrollToTop', () => {
       expect(fab.getAttribute('data-size')).toBe('medium')
     })
 
-    it('should include arrow up icon', () => {
-      // Icon is rendered inside the component structure
+    it('should include the inline icon', () => {
       const { container } = render(<ScrollToTop />)
-      
-      // The component structure includes the icon, verify container renders
-      expect(container).toBeTruthy()
+
       expect(container.querySelector('button')).toBeTruthy()
+      expect(container.querySelector('svg')).toBeTruthy()
     })
 
     it('should have aria-label', () => {
@@ -214,16 +213,24 @@ describe('ScrollToTop', () => {
       const button = screen.getByTestId('fab')
       expect(button).toHaveAttribute('title', 'Scroll to top')
     })
+
+    it('should be removed from keyboard focus order while hidden', () => {
+      render(<ScrollToTop />)
+
+      const button = screen.getByTestId('fab')
+      expect(button).toHaveAttribute('tabindex', '-1')
+      expect(button).toHaveAttribute('aria-hidden', 'true')
+    })
   })
 
   describe('Render Behavior', () => {
-    it('should always render Zoom component', () => {
+    it('should always render the visibility wrapper', () => {
       render(<ScrollToTop />)
 
       expect(screen.getByTestId('zoom')).toBeInTheDocument()
     })
 
-    it('should always render Fab inside Zoom', () => {
+    it('should always render the button inside the visibility wrapper', () => {
       render(<ScrollToTop />)
 
       const zoom = screen.getByTestId('zoom')
@@ -232,4 +239,3 @@ describe('ScrollToTop', () => {
     })
   })
 })
-

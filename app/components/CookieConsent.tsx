@@ -8,22 +8,25 @@ import {
   Link as MuiLink,
   Stack,
   CloseIcon,
-} from "@/lib/mui-optimization";
-import Link from "next/link";
+} from "@/lib/daisy-ui";
 import { designTokens } from "@/lib/design-system";
 import {
   PrimaryButton,
   OutlineButton,
   BodyText,
-  TouchTargetWrapper,
   AccessibleIconButton,
 } from "@/lib/ui-components";
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing, borderRadius } = designTokens;
 
 const CookieConsent = memo(function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const notifyConsentChange = useCallback((status: 'accepted' | 'declined') => {
+    if (typeof window === 'undefined') return
+    window.dispatchEvent(new CustomEvent('cookie-consent', { detail: { status } }))
+  }, [])
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -37,25 +40,27 @@ const CookieConsent = memo(function CookieConsent() {
     setIsLoading(true);
     try {
       localStorage.setItem("cookieConsent", "accepted");
+      notifyConsentChange('accepted')
       setIsVisible(false);
     } catch (error) {
       console.error("Error saving cookie consent:", error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [notifyConsentChange]);
 
   const handleDecline = useCallback(async () => {
     setIsLoading(true);
     try {
       localStorage.setItem("cookieConsent", "declined");
+      notifyConsentChange('declined')
       setIsVisible(false);
     } catch (error) {
       console.error("Error saving cookie consent:", error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [notifyConsentChange]);
 
   const handleClose = useCallback(() => {
     setIsVisible(false);

@@ -1,87 +1,114 @@
 #!/usr/bin/env node
 
 /**
- * Setup Sanity Webhook Script
+ * Creates the Sanity document webhook that calls /api/revalidate.
  *
- * This script creates a webhook in Sanity that will automatically
- * revalidate your Next.js app when content is published.
- *
- * Usage: node scripts/setup-webhook.js
+ * Required env:
+ * - NEXT_PUBLIC_SANITY_PROJECT_ID
+ * - NEXT_PUBLIC_SANITY_DATASET
+ * - SANITY_API_TOKEN
+ * - REVALIDATE_SECRET
  */
 
-import { createClient } from "@sanity/client";
+import dotenv from 'dotenv'
 
-// Create Sanity client with write permissions
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-01-01",
-  useCdn: false,
-  token: process.env.SANITY_API_TOKEN, // Requires write token
-});
+dotenv.config({ path: '.env' })
+dotenv.config({ path: '.env.local', override: true })
 
-async function setupWebhook() {
-  try {
-    console.log("🔧 Setting up Sanity webhook for content revalidation...");
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+const sanityToken = process.env.SANITY_API_TOKEN
+const revalidateSecret = process.env.REVALIDATE_SECRET
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://olgishcakes.co.uk').replace(/\/$/, '')
+const apiVersion = normalizeApiVersion(process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31')
 
-    // Check if we have the required token
-    if (!process.env.SANITY_API_TOKEN) {
-      console.error("❌ SANITY_API_TOKEN environment variable is required");
-      console.log("Please add your Sanity write token to your .env file:");
-      console.log("SANITY_API_TOKEN=your_write_token_here");
-      return;
-    }
+const webhookDocumentTypes = [
+  'cake',
+  'cakesFeaturedOffer',
+  'cakesDeliverySection',
+  'testimonial',
+  'faq',
+  'giftHamper',
+  'giftHampersDeliverySection',
+  'ingredient',
+  'article',
+  'articleTopic',
+  'marketSchedule',
+  'collection',
+  'giftHamperCollection',
+  'collectionsDisplayOrder',
+  'productsDisplayOrder'
+]
 
-    // Webhook configuration
-    const webhookConfig = {
-      name: "Olgish Cakes Content Revalidation",
-      url: process.env.NEXT_PUBLIC_SITE_URL
-        ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate`
-        : "https://olgishcakes.co.uk/api/revalidate",
-      httpMethod: "POST",
-      dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-      filter: '_type in ["cake", "testimonial", "faq"]',
-      events: ["create", "update", "delete"],
-      description: "Automatically revalidates Next.js pages when content is published",
-    };
+function normalizeApiVersion(value) {
+  return value.startsWith('v') ? value : `v${value}`
+}
 
-    console.log("📋 Webhook configuration:");
-    console.log(JSON.stringify(webhookConfig, null, 2));
-
-    // Create the webhook using Sanity's API
-    const response = await fetch(
-      `https://api.sanity.io/v2021-06-07/webhooks/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET || "production"}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.SANITY_API_TOKEN}`,
-        },
-        body: JSON.stringify(webhookConfig),
-      }
-    );
-
-    if (response.ok) {
-      const webhook = await response.json();
-      console.log("✅ Webhook created successfully!");
-      console.log("🔗 Webhook ID:", webhook.id);
-      console.log("🌐 Webhook URL:", webhook.url);
-      console.log("\n🎉 Your content will now update automatically when published!");
-    } else {
-      const error = await response.text();
-      console.error("❌ Failed to create webhook:", error);
-      console.log("\n💡 Manual setup instructions:");
-      console.log("1. Go to https://www.sanity.io/manage");
-      console.log("2. Find your project → API → Webhooks");
-      console.log("3. Create webhook with the configuration above");
-    }
-  } catch (error) {
-    console.error("❌ Error setting up webhook:", error);
-    console.log("\n💡 Manual setup instructions:");
-    console.log("1. Go to https://www.sanity.io/manage");
-    console.log("2. Find your project → API → Webhooks");
-    console.log("3. Create webhook with URL: https://olgishcakes.co.uk/api/revalidate");
+function requireEnvValue(name, value) {
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`)
   }
 }
 
-// Run the script
-setupWebhook();
+async function setupWebhook() {
+  requireEnvValue('NEXT_PUBLIC_SANITY_PROJECT_ID', projectId)
+  requireEnvValue('SANITY_API_TOKEN', sanityToken)
+  requireEnvValue('REVALIDATE_SECRET', revalidateSecret)
+
+  const webhookConfig = {
+    type: 'document',
+    name: 'Olgish Cakes Content Revalidation',
+    url: `${siteUrl}/api/revalidate`,
+    dataset,
+    apiVersion,
+    httpMethod: 'POST',
+    includeDrafts: false,
+    headers: {
+      Authorization: `Bearer ${revalidateSecret}`
+    },
+    rule: {
+      on: ['create', 'update', 'delete'],
+      filter: `_type in ${JSON.stringify(webhookDocumentTypes)} && !(_id in path("drafts.**"))`,
+      projection: '{_id, _type, slug}'
+    },
+    description: 'Revalidates Next.js pages and syncs new products into Products Display Order.'
+  }
+
+  console.log('Creating Sanity webhook with configuration:')
+  console.log(JSON.stringify({
+    ...webhookConfig,
+    headers: {
+      Authorization: 'Bearer [REDACTED]'
+    }
+  }, null, 2))
+
+  const response = await fetch(
+    `https://${projectId}.api.sanity.io/${apiVersion}/hooks/projects/${projectId}`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${sanityToken}`
+      },
+      body: JSON.stringify(webhookConfig)
+    }
+  )
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    throw new Error(`Failed to create webhook: ${response.status} ${errorBody}`)
+  }
+
+  const webhook = await response.json()
+  console.log('Webhook created.')
+  console.log(JSON.stringify({
+    id: webhook.id,
+    name: webhook.name,
+    url: webhook.url
+  }, null, 2))
+}
+
+setupWebhook().catch((error) => {
+  console.error('Webhook setup failed:', error)
+  process.exit(1)
+})

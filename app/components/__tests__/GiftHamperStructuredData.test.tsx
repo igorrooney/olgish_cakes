@@ -5,6 +5,8 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { GiftHamperStructuredData } from '../GiftHamperStructuredData'
 
+type HamperProp = React.ComponentProps<typeof GiftHamperStructuredData>['hamper']
+
 // Mock dependencies
 jest.mock('@/lib/google-merchant-center-schema', () => ({
   generateHamperMerchantCenterSchema: jest.fn((hamper) => ({
@@ -58,7 +60,7 @@ describe('GiftHamperStructuredData', () => {
       structuredData: undefined
     }
 
-    render(<GiftHamperStructuredData hamper={hamperWithoutStructuredData as any} />)
+    render(<GiftHamperStructuredData hamper={hamperWithoutStructuredData as HamperProp} />)
 
     const script = document.getElementById('hamper-structured-data')
     expect(script).toBeNull()
@@ -72,7 +74,7 @@ describe('GiftHamperStructuredData', () => {
       }
     }
 
-    render(<GiftHamperStructuredData hamper={hamperWithKeywords as any} />)
+    render(<GiftHamperStructuredData hamper={hamperWithKeywords as HamperProp} />)
 
     const script = document.getElementById('hamper-structured-data')
     const json = JSON.parse(script?.textContent || '{}')
@@ -114,4 +116,3 @@ describe('GiftHamperStructuredData', () => {
     expect(() => JSON.parse(script?.textContent || '{}')).not.toThrow()
   })
 })
-

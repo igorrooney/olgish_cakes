@@ -5,10 +5,13 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CakeImageGallery } from '../CakeImageGallery'
 
+type GalleryProps = React.ComponentProps<typeof CakeImageGallery>
+type GalleryDesigns = GalleryProps['designs']
+
 // Mock Next.js Image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, ...props }: any) => <img alt={alt} src={src} data-testid="next-image" {...props} />
+  default: ({ alt, src, ...props }: MockProps) => <img alt={alt} src={src} data-testid="next-image" {...props} />
 }))
 
 // Mock Sanity
@@ -29,41 +32,33 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock UI components
 jest.mock('@/lib/ui-components', () => ({
-  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: any) => (
+  AccessibleIconButton: ({ children, onClick, ariaLabel, ...props }: MockProps) => (
     <button data-testid="accessible-icon-button" onClick={onClick} aria-label={ariaLabel} {...props}>
       {children}
     </button>
   ),
-  TouchTargetWrapper: ({ children, ...props }: any) => <div {...props}>{children}</div>
+  TouchTargetWrapper: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, role, sx, ...props }: any) => (
+jest.mock('@/lib/daisy-ui', () => ({
+  ArrowBackIcon: () => <span>Back</span>,
+  ArrowForwardIcon: () => <span>Forward</span>,
+  Box: ({ children, role, sx, ...props }: MockProps) => (
     <div data-testid="box" role={role} {...props}>{children}</div>
   ),
-  IconButton: ({ children, onClick, ...props }: any) => (
+  IconButton: ({ children, onClick, ...props }: MockProps) => (
     <button data-testid="icon-button" onClick={onClick} {...props}>{children}</button>
   ),
-  ImageList: ({ children, ...props }: any) => <div data-testid="image-list" {...props}>{children}</div>,
-  ImageListItem: ({ children, ...props }: any) => <div data-testid="image-list-item" {...props}>{children}</div>,
-  Typography: ({ children, ...props }: any) => <div data-testid="typography" {...props}>{children}</div>,
+  ImageList: ({ children, ...props }: MockProps) => <div data-testid="image-list" {...props}>{children}</div>,
+  ImageListItem: ({ children, ...props }: MockProps) => <div data-testid="image-list-item" {...props}>{children}</div>,
+  Typography: ({ children, ...props }: MockProps) => <div data-testid="typography" {...props}>{children}</div>,
 }))
 
-// Mock direct icon imports
-jest.mock('@mui/icons-material/ArrowBack', () => ({
-  __esModule: true,
-  default: () => <span>◀</span>
-}))
-
-jest.mock('@mui/icons-material/ArrowForward', () => ({
-  __esModule: true,
-  default: () => <span>▶</span>
-}))
 
 // Mock DesignSelector
 jest.mock('../DesignSelector', () => ({
-  DesignSelector: ({ onChange, value, ...props }: any) => (
+  DesignSelector: ({ onChange, value, ...props }: MockProps) => (
     <div data-testid="design-selector">
       <button onClick={() => onChange('standard')}>Standard</button>
       <button onClick={() => onChange('individual')}>Individual</button>
@@ -144,7 +139,7 @@ describe('CakeImageGallery', () => {
     it('should show "No image available" when designs is null', () => {
       const propsWithNullDesigns = {
         ...mockProps,
-        designs: null as any
+        designs: null as unknown as GalleryDesigns
       }
 
       render(<CakeImageGallery {...propsWithNullDesigns} />)
@@ -155,7 +150,7 @@ describe('CakeImageGallery', () => {
     it('should show "No image available" when no standard key', () => {
       const propsWithNoStandard = {
         ...mockProps,
-        designs: { individual: mockIndividualImages } as any
+        designs: { individual: mockIndividualImages } as unknown as GalleryDesigns
       }
 
       render(<CakeImageGallery {...propsWithNoStandard} />)
@@ -446,4 +441,3 @@ describe('CakeImageGallery', () => {
     })
   })
 })
-

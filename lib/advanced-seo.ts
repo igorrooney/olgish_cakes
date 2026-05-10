@@ -4,6 +4,7 @@
  */
 
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
+import { buildAggregateRating, formatRatingValue, formatReviewCount, type ReviewStats } from '@/app/utils/review-stats'
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 
 // Advanced keyword research and targeting
@@ -157,6 +158,7 @@ export function generateAdvancedStructuredData(data: {
   price?: number;
   rating?: number;
   reviewCount?: number;
+  reviewStats?: ReviewStats;
   category: string;
   availability?: string;
   location?: string;
@@ -167,6 +169,21 @@ export function generateAdvancedStructuredData(data: {
     : data.imageUrl
     ? `${baseUrl}${data.imageUrl}`
     : `${baseUrl}/images/placeholder-cake.jpg`;
+  const rating = typeof data.rating === 'number' && Number.isFinite(data.rating) && data.rating > 0
+    ? data.rating
+    : null
+  const reviewCount = typeof data.reviewCount === 'number' && Number.isFinite(data.reviewCount) && data.reviewCount > 0
+    ? data.reviewCount
+    : null
+  const aggregateRating = rating !== null && reviewCount !== null
+    ? {
+        '@type': 'AggregateRating',
+        ratingValue: formatRatingValue(rating),
+        reviewCount: formatReviewCount(reviewCount),
+        bestRating: '5',
+        worstRating: '1',
+      }
+    : buildAggregateRating(data.reviewStats)
 
   return {
     "@context": "https://schema.org",
@@ -213,21 +230,7 @@ export function generateAdvancedStructuredData(data: {
           shippingDetails: getOfferShippingDetails(),
           hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
-        aggregateRating: data.rating
-          ? {
-              "@type": "AggregateRating",
-              ratingValue: data.rating,
-              reviewCount: data.reviewCount || 100,
-              bestRating: 5,
-              worstRating: 1,
-            }
-          : {
-              "@type": "AggregateRating",
-              ratingValue: "5.0",
-              reviewCount: "127",
-              bestRating: "5",
-              worstRating: "1",
-            },
+        ...(aggregateRating ? { aggregateRating } : {}),
         review: [
           {
             "@type": "Review",
@@ -303,7 +306,7 @@ export function generateAdvancedStructuredData(data: {
           latitude: 53.8008, // Leeds coordinates
           longitude: -1.5491,
         },
-        openingHours: ["Mo-Fr 09:00-18:00", "Sa 09:00-17:00", "Su 10:00-16:00"],
+        openingHours: ["Mo-Su 00:00-23:59"],
         servesCuisine: ["Ukrainian", "Eastern European", "Desserts"],
         priceRange: "££",
         areaServed: [

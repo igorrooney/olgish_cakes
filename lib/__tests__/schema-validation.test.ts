@@ -7,6 +7,11 @@ import {
   validateReviewSchema
 } from '../schema-validation'
 
+const asProductSchema = (schema: Partial<WithContext<Product>>) =>
+  schema as unknown as WithContext<Product>
+const asReviewSchema = (schema: Partial<WithContext<Review>>) =>
+  schema as unknown as WithContext<Review>
+
 describe('schema-validation', () => {
   beforeEach(() => {
     jest.spyOn(console, 'log').mockImplementation(() => { })
@@ -56,14 +61,14 @@ describe('schema-validation', () => {
 
       it('should detect undefined product name', () => {
         const invalid = { ...validSchema, name: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid product name')
       })
 
       it('should detect non-string product name', () => {
-        const invalid = { ...validSchema, name: 123 as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, name: 123 }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid product name')
       })
@@ -105,14 +110,14 @@ describe('schema-validation', () => {
 
       it('should detect undefined description', () => {
         const invalid = { ...validSchema, description: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid product description')
       })
 
       it('should detect non-string description', () => {
-        const invalid = { ...validSchema, description: 123 as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, description: 123 }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid product description')
       })
@@ -147,7 +152,7 @@ describe('schema-validation', () => {
     describe('Image Validation', () => {
       it('should detect missing image', () => {
         const invalid = { ...validSchema, image: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing product image')
       })
@@ -177,7 +182,7 @@ describe('schema-validation', () => {
     describe('Offers Validation', () => {
       it('should detect missing offers', () => {
         const invalid = { ...validSchema, offers: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing offers object')
       })
@@ -189,19 +194,17 @@ describe('schema-validation', () => {
             '@type': 'Offer',
             priceCurrency: 'GBP',
             availability: 'InStock'
-          } as any
+          }
         }
-        const result = validateProductSchema(invalid)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid offer price (must be a number)')
       })
 
       it('should accept numeric price (preferred for Google Merchant Center)', () => {
-        // Use a date that's definitely in the future (1 year from now)
         const futureDate = new Date()
         futureDate.setFullYear(futureDate.getFullYear() + 1)
         const priceValidUntil = futureDate.toISOString().split('T')[0]
-
         const valid = {
           ...validSchema,
           offers: {
@@ -212,7 +215,7 @@ describe('schema-validation', () => {
             priceValidUntil
           }
         }
-        const result = validateProductSchema(valid as any)
+        const result = validateProductSchema(asProductSchema(valid))
         expect(result.isValid).toBe(true)
         expect(result.errors).not.toContain('Missing or invalid offer price')
       })
@@ -228,7 +231,7 @@ describe('schema-validation', () => {
             priceValidUntil: '2026-01-01'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid offer price (must be a number)')
       })
@@ -244,7 +247,7 @@ describe('schema-validation', () => {
             priceValidUntil: '2026-01-01'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Price must be greater than zero')
       })
@@ -257,9 +260,9 @@ describe('schema-validation', () => {
             price: '35',
             availability: 'InStock',
             priceValidUntil: '2026-01-01'
-          } as any
+          }
         }
-        const result = validateProductSchema(invalid)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid priceCurrency (must be GBP)')
       })
@@ -275,7 +278,7 @@ describe('schema-validation', () => {
             priceValidUntil: '2026-01-01'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid priceCurrency (must be GBP)')
       })
@@ -288,9 +291,9 @@ describe('schema-validation', () => {
             price: '35',
             priceCurrency: 'GBP',
             priceValidUntil: '2026-01-01'
-          } as any
+          }
         }
-        const result = validateProductSchema(invalid)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing offer availability')
       })
@@ -303,9 +306,9 @@ describe('schema-validation', () => {
             price: '35',
             priceCurrency: 'GBP',
             availability: 'InStock'
-          } as any
+          }
         }
-        const result = validateProductSchema(invalid)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing priceValidUntil date')
       })
@@ -321,7 +324,7 @@ describe('schema-validation', () => {
             priceValidUntil: '01/01/2026'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('priceValidUntil must be in YYYY-MM-DD format')
       })
@@ -330,14 +333,14 @@ describe('schema-validation', () => {
     describe('SKU Validation', () => {
       it('should detect missing SKU', () => {
         const invalid = { ...validSchema, sku: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid SKU')
       })
 
       it('should detect non-string SKU', () => {
-        const invalid = { ...validSchema, sku: 123 as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, sku: 123 }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid SKU')
       })
@@ -381,14 +384,14 @@ describe('schema-validation', () => {
     describe('MPN Validation', () => {
       it('should detect missing MPN', () => {
         const invalid = { ...validSchema, mpn: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid MPN')
       })
 
       it('should detect non-string MPN', () => {
-        const invalid = { ...validSchema, mpn: 123 as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, mpn: 123 }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing or invalid MPN')
       })
@@ -423,14 +426,14 @@ describe('schema-validation', () => {
     describe('Brand Validation', () => {
       it('should detect missing brand', () => {
         const invalid = { ...validSchema, brand: undefined }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing brand information')
       })
 
       it('should detect non-object brand', () => {
-        const invalid = { ...validSchema, brand: 'Brand Name' as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, brand: 'Brand Name' }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
         expect(result.errors).toContain('Missing brand information')
       })
@@ -446,7 +449,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(schemaWithRating as any)
+        const result = validateProductSchema(asProductSchema(schemaWithRating))
         expect(result.errors.some(e => e.includes('rating'))).toBe(false)
       })
 
@@ -458,7 +461,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('Missing ratingValue in aggregateRating')
       })
 
@@ -471,7 +474,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('ratingValue must be between 1 and 5')
       })
 
@@ -484,7 +487,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('ratingValue must be between 1 and 5')
       })
 
@@ -497,7 +500,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(valid as any)
+        const result = validateProductSchema(asProductSchema(valid))
         expect(result.errors.some(e => e.includes('between 1 and 5'))).toBe(false)
       })
 
@@ -510,7 +513,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(valid as any)
+        const result = validateProductSchema(asProductSchema(valid))
         expect(result.errors.some(e => e.includes('between 1 and 5'))).toBe(false)
       })
 
@@ -523,7 +526,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(schemaWithNumericRating as any)
+        const result = validateProductSchema(asProductSchema(schemaWithNumericRating))
         expect(result.errors.some(e => e.includes('between 1 and 5'))).toBe(false)
       })
 
@@ -536,7 +539,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('ratingValue must be between 1 and 5')
       })
 
@@ -548,7 +551,7 @@ describe('schema-validation', () => {
             ratingValue: '4.5'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('Missing reviewCount in aggregateRating')
       })
 
@@ -561,7 +564,7 @@ describe('schema-validation', () => {
             reviewCount: '-5'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('reviewCount must be a positive number')
       })
 
@@ -574,7 +577,7 @@ describe('schema-validation', () => {
             reviewCount: '0'
           }
         }
-        const result = validateProductSchema(valid as any)
+        const result = validateProductSchema(asProductSchema(valid))
         expect(result.errors.some(e => e.includes('reviewCount must be a positive'))).toBe(false)
       })
 
@@ -587,7 +590,7 @@ describe('schema-validation', () => {
             reviewCount: 10
           }
         }
-        const result = validateProductSchema(schemaWithNumericCount as any)
+        const result = validateProductSchema(asProductSchema(schemaWithNumericCount))
         expect(result.errors.some(e => e.includes('reviewCount'))).toBe(false)
       })
 
@@ -600,19 +603,19 @@ describe('schema-validation', () => {
             reviewCount: 'not-a-number'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors).toContain('reviewCount must be a positive number')
       })
 
       it('should skip rating validation when aggregateRating missing', () => {
         const schemaWithoutRating = { ...validSchema, aggregateRating: undefined }
-        const result = validateProductSchema(schemaWithoutRating as any)
+        const result = validateProductSchema(asProductSchema(schemaWithoutRating))
         expect(result.errors.some(e => e.includes('rating'))).toBe(false)
       })
 
       it('should skip rating validation when not an object', () => {
-        const invalid = { ...validSchema, aggregateRating: 'not an object' as any }
-        const result = validateProductSchema(invalid)
+        const invalid = { ...validSchema, aggregateRating: 'not an object' }
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors.some(e => e.includes('rating'))).toBe(false)
       })
 
@@ -624,7 +627,7 @@ describe('schema-validation', () => {
             reviewCount: '10'
           }
         }
-        const result = validateProductSchema(invalid as any)
+        const result = validateProductSchema(asProductSchema(invalid))
         expect(result.errors.some(e => e.includes('rating'))).toBe(false)
       })
     })
@@ -638,7 +641,7 @@ describe('schema-validation', () => {
           sku: 'INVALID',
           mpn: 'AB'
         }
-        const result = validateProductSchema(invalid)
+        const result = validateProductSchema(asProductSchema(invalid))
 
         expect(result.errors.length).toBeGreaterThanOrEqual(4)
       })
@@ -648,9 +651,9 @@ describe('schema-validation', () => {
   describe('validateMPNUniqueness', () => {
     it('should pass with unique MPNs', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-003' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-003' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -660,9 +663,9 @@ describe('schema-validation', () => {
 
     it('should detect duplicate MPNs', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -672,10 +675,10 @@ describe('schema-validation', () => {
 
     it('should detect multiple duplicates', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-002' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -686,8 +689,8 @@ describe('schema-validation', () => {
 
     it('should handle schemas without MPNs', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -696,8 +699,8 @@ describe('schema-validation', () => {
 
     it('should ignore non-string MPNs', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 123 as any } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 123 }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'MPN-001' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -713,9 +716,9 @@ describe('schema-validation', () => {
 
     it('should handle three or more of same MPN', () => {
       const schemas: WithContext<Product>[] = [
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' } as any,
-        { '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' } as any
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' }),
+        asProductSchema({ '@context': 'https://schema.org', '@type': 'Product', mpn: 'DUP' })
       ]
 
       const result = validateMPNUniqueness(schemas)
@@ -751,28 +754,28 @@ describe('schema-validation', () => {
 
     it('should detect missing author', () => {
       const invalid = { ...validReview, author: undefined }
-      const result = validateReviewSchema(invalid as any)
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing review author')
     })
 
     it('should detect non-object author', () => {
-      const invalid = { ...validReview, author: 'John Doe' as any }
-      const result = validateReviewSchema(invalid)
+      const invalid = { ...validReview, author: 'John Doe' }
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing review author')
     })
 
     it('should detect missing reviewRating', () => {
       const invalid = { ...validReview, reviewRating: undefined }
-      const result = validateReviewSchema(invalid as any)
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing reviewRating')
     })
 
     it('should detect non-object reviewRating', () => {
-      const invalid = { ...validReview, reviewRating: '5' as any }
-      const result = validateReviewSchema(invalid)
+      const invalid = { ...validReview, reviewRating: '5' }
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing reviewRating')
     })
@@ -786,21 +789,21 @@ describe('schema-validation', () => {
 
     it('should detect undefined review body', () => {
       const invalid = { ...validReview, reviewBody: undefined }
-      const result = validateReviewSchema(invalid as any)
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing or invalid reviewBody')
     })
 
     it('should detect non-string review body', () => {
-      const invalid = { ...validReview, reviewBody: 123 as any }
-      const result = validateReviewSchema(invalid)
+      const invalid = { ...validReview, reviewBody: 123 }
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing or invalid reviewBody')
     })
 
     it('should detect missing datePublished', () => {
       const invalid = { ...validReview, datePublished: undefined }
-      const result = validateReviewSchema(invalid as any)
+      const result = validateReviewSchema(asReviewSchema(invalid))
       expect(result.isValid).toBe(false)
       expect(result.errors).toContain('Missing datePublished')
     })
@@ -824,13 +827,15 @@ describe('schema-validation', () => {
         reviewBody: '',
         datePublished: 'invalid'
       }
-      const result = validateReviewSchema(invalid as any)
+      const result = validateReviewSchema(asReviewSchema(invalid))
 
       expect(result.errors.length).toBeGreaterThanOrEqual(3)
     })
   })
 
   describe('batchValidateProductSchemas', () => {
+    const originalNodeEnv = process.env.NODE_ENV
+
     const validSchema: WithContext<Product> = {
       '@context': 'https://schema.org',
       '@type': 'Product',
@@ -850,7 +855,11 @@ describe('schema-validation', () => {
     }
 
     beforeEach(() => {
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', writable: true })
+      process.env.NODE_ENV = 'test'
+    })
+
+    afterAll(() => {
+      process.env.NODE_ENV = originalNodeEnv
     })
 
     it('should return count of valid schemas', () => {
@@ -874,8 +883,7 @@ describe('schema-validation', () => {
     })
 
     it('should log errors in development by default', () => {
-      const originalEnv = process.env.NODE_ENV
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true })
+      process.env.NODE_ENV = 'development'
 
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])
@@ -884,8 +892,7 @@ describe('schema-validation', () => {
     })
 
     it('should not log errors in production by default', () => {
-      const originalEnv = process.env.NODE_ENV
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true })
+      process.env.NODE_ENV = 'production'
 
       const invalidSchema = { ...validSchema, name: 'AB' }
       batchValidateProductSchemas([invalidSchema])
@@ -963,8 +970,8 @@ describe('schema-validation', () => {
     })
 
     it('should handle schema with non-string name', () => {
-      const invalidSchema = { ...validSchema, name: 123 as any }
-      batchValidateProductSchemas([invalidSchema], true)
+      const invalidSchema = { ...validSchema, name: 123 }
+      batchValidateProductSchemas([asProductSchema(invalidSchema)], true)
 
       expect(console.error).toHaveBeenCalled()
     })
@@ -1114,4 +1121,3 @@ describe('schema-validation', () => {
     })
   })
 })
-

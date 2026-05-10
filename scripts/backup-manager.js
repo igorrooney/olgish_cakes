@@ -17,11 +17,14 @@
  * npm run backup:manager -- --status
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const SanityBackup = require('./backup-sanity');
-const BackupScheduler = require('./backup-scheduler');
-const BackupStorageManager = require('./backup-storage');
+import { promises as fs, realpathSync } from 'fs'
+import path from 'path'
+import { execSync } from 'child_process'
+import AdmZip from 'adm-zip'
+import { fileURLToPath } from 'url'
+import SanityBackup from './backup-sanity.js'
+import BackupScheduler from './backup-scheduler.js'
+import BackupStorageManager from './backup-storage.js'
 
 class BackupManager {
   constructor(configPath = './scripts/backup-config.json') {
@@ -54,30 +57,33 @@ class BackupManager {
     console.log('🚀 Starting backup process...');
     
     try {
+      const backupOptions = {
         ...this.config.backup.options,
         ...options
-      };
+      }
 
-      const result = await this.backup.run();
+      this.backup = new SanityBackup(backupOptions)
+
+      const result = await this.backup.run()
       
       if (result.success) {
-        console.log('✅ Backup completed successfully');
+        console.log('✅ Backup completed successfully')
         
         // Upload to cloud storage if enabled
         if (this.config.backup.storage.cloud.enabled) {
-          console.log('☁️  Uploading to cloud storage...');
+          console.log('☁️  Uploading to cloud storage...')
           for (const file of result.files) {
-            await this.storage.uploadBackup(file, { scheduleType: options.scheduleType });
+            await this.storage.uploadBackup(file, { scheduleType: options.scheduleType })
           }
         }
         
-        return result;
+        return result
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error)
       }
     } catch (error) {
-      console.error('❌ Backup failed:', error.message);
-      throw error;
+      console.error('❌ Backup failed:', error.message)
+      throw error
     }
   }
 
@@ -118,22 +124,20 @@ class BackupManager {
   }
 
   async extractBackup(backupFile) {
-    const extractDir = path.join(path.dirname(backupFile), 'extracted');
-    await fs.mkdir(extractDir, { recursive: true });
+    const extractDir = path.join(path.dirname(backupFile), 'extracted')
+    await fs.mkdir(extractDir, { recursive: true })
     
     if (backupFile.endsWith('.tar.gz')) {
-      const { execSync } = require('child_process');
-      execSync(`tar -xzf "${backupFile}" -C "${extractDir}"`);
+      execSync(`tar -xzf "${backupFile}" -C "${extractDir}"`)
     } else if (backupFile.endsWith('.zip')) {
-      const AdmZip = require('adm-zip');
-      const zip = new AdmZip(backupFile);
-      zip.extractAllTo(extractDir, true);
+      const zip = new AdmZip(backupFile)
+      zip.extractAllTo(extractDir, true)
     } else {
       // Assume it's already extracted
-      return path.dirname(backupFile);
+      return path.dirname(backupFile)
     }
     
-    return extractDir;
+    return extractDir
   }
 
   async loadBackupData(extractDir) {
@@ -390,9 +394,23 @@ async function main() {
   }
 }
 
-// Run if called directly
-if (require.main === module) {
-  main().catch(console.error);
+function isDirectExecution() {
+  if (!process.argv[1]) {
+    return false
+  }
+
+  const currentFilePath = fileURLToPath(import.meta.url)
+
+  try {
+    return realpathSync(currentFilePath) === realpathSync(process.argv[1])
+  } catch {
+    return path.resolve(currentFilePath) === path.resolve(process.argv[1])
+  }
 }
 
-module.exports = BackupManager;
+// Run if called directly
+if (isDirectExecution()) {
+  main().catch(console.error)
+}
+
+export default BackupManager

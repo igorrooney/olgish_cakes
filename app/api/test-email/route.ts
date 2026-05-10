@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PHONE_UTILS } from "@/lib/constants";
 
+interface MockOrderItem {
+  productName?: string;
+  totalPrice?: number;
+  unitPrice?: number;
+  quantity?: number;
+  productType?: string;
+  designType?: string;
+  specialInstructions?: string;
+}
+
 // Test email route - for development only
 export async function POST(request: NextRequest) {
   try {
@@ -162,7 +172,7 @@ export async function POST(request: NextRequest) {
                         Your Order
                       </h3>
 
-                      ${mockOrder.items.map((item: any) => `
+                      ${mockOrder.items.map((item: MockOrderItem) => `
                         <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                           <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                           <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>

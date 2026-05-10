@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@/lib/mui-optimization";
+import { Box, Typography } from "@/lib/daisy-ui";
 import { memo } from "react";
 import Image from "next/image";
 

@@ -16,6 +16,27 @@ dotenv.config({ path: '.env' })
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+type ResendOrderItem = {
+  productName?: string
+  totalPrice?: number
+  unitPrice?: number
+  quantity?: number
+}
+
+type ResendOrder = {
+  _id: string
+  orderNumber: string
+  status?: string
+  customer: {
+    name: string
+    email: string
+  }
+  items?: ResendOrderItem[]
+  pricing?: {
+    total?: number
+  }
+}
+
 async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
   try {
     if (!process.env.RESEND_API_KEY) {
@@ -24,7 +45,7 @@ async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
     }
 
     // Find order by order number
-    const order = await serverClient.fetch(
+    const order = await serverClient.fetch<ResendOrder | null>(
       `*[_type == "order" && orderNumber == "${orderNumber}"][0]{
         _id,
         orderNumber,
@@ -49,7 +70,7 @@ async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
     console.log(`📧 Sending confirmation email to: ${emailTo}`)
 
     // Generate order summary HTML (simplified version)
-    const itemsHtml = order.items?.map((item: any) => `
+    const itemsHtml = order.items?.map((item) => `
       <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
         <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
         <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>

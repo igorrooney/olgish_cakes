@@ -32,7 +32,7 @@ async function testConnection() {
   const client = createClient(config);
   
   // Test with a simple query
-  const query = `*[_type in ["cake", "giftHamper", "testimonial", "faq", "marketSchedule", "blogPost"]] | order(_createdAt desc) [0...5]`;
+  const query = `*[_type in ["cake", "giftHamper", "testimonial", "faq", "marketSchedule", "article", "articleTopic"]] | order(_createdAt desc) [0...5]`;
   const documents = await client.fetch(query);
   
   console.log(`✅ Connection successful! Found ${documents.length} documents`);

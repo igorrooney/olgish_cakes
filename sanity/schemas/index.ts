@@ -1,7 +1,18 @@
-import cake from "./cake";
-import testimonial from "./testimonial";
-import faq from "./faq";
-import blogPost from "./blogPost";
-import order from "./order";
+import cake from './cake'
+import giftHamper from './giftHamper'
+import testimonial from './testimonial'
+import faq from './faq'
+import article from './article'
+import articleTopic from './articleTopic'
+import order from './order'
+import collection from './collection'
+import giftHamperCollection from './giftHamperCollection'
+import cakesFeaturedOffer from './cakesFeaturedOffer'
+import collectionsDisplayOrder from './collectionsDisplayOrder'
+import productsDisplayOrder from './productsDisplayOrder'
+import ingredient from './ingredient'
+import cakeFillingType from './cakeFillingType'
+import cakesDeliverySection from './cakesDeliverySection'
+import giftHampersDeliverySection from './giftHampersDeliverySection'
 
-export const schemaTypes = [cake, testimonial, faq, blogPost, order];
+export const schemaTypes = [cake, giftHamper, testimonial, faq, article, articleTopic, order, collection, giftHamperCollection, collectionsDisplayOrder, productsDisplayOrder, cakesFeaturedOffer, ingredient, cakeFillingType, cakesDeliverySection, giftHampersDeliverySection]

@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, FormControl, MenuItem, Select, Typography } from "@/lib/mui-optimization";
-import type { SelectChangeEvent } from "@/lib/mui-optimization";
+import { Box, FormControl, MenuItem, Select, Typography } from "@/lib/daisy-ui";
+import type { SelectChangeEvent } from "@/lib/daisy-ui";
 
 export type DesignType = "standard" | "individual";
 
