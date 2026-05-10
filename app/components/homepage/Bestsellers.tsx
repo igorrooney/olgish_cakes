@@ -150,7 +150,7 @@ export async function Bestsellers() {
                     </div>
                     <div className={tabletTextClassName}>
                       <div className="space-y-3">
-                        <p className="font-oldenburg font-normal text-[20px] leading-[28px] text-primary-800 tablet:text-[24px] tablet:leading-[28px] tablet:text-center large-laptop:text-[32px] large-laptop:mb-6">
+                        <p className="font-oldenburg font-normal text-[20px] leading-[28px] text-primary-800 tablet:text-[24px] tablet:leading-[28px] tablet:text-center large-laptop:text-[32px] large-laptop:leading-[40px] large-laptop:mb-6">
                           "{quoteText}"
                         </p>
                         <p className="font-oldenburg text-[14px] leading-[20px] tracking-[0.06em] text-base-content tablet:text-[16px]">
