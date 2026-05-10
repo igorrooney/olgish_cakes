@@ -124,8 +124,8 @@ export async function Bestsellers() {
                 const categoryLabel = formatCategoryLabel(cake.category)
                 const safeCakeName = cake.name?.trim() || 'Olgish Cakes'
                 const storyDetailsText = bestsellerDetails
-                  ? `- ${bestsellerDetails.replace(/^-\s*/, '')}`
-                  : `- ${safeCakeName}, ${categoryLabel} cake`
+                  ? `${bestsellerDetails.replace(/^-\s*/, '')}`
+                  : `${safeCakeName}, ${categoryLabel} cake`
                 const imageAlt = cake.mainImage?.alt?.trim() || `${safeCakeName} ${categoryLabel} cake by Olgish Cakes`
                 const isReversed = index % 2 === 1
 
