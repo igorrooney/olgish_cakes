@@ -10,6 +10,8 @@ type ImageProps = {
   src?: string
   fill?: boolean
   className?: string
+  quality?: number
+  sizes?: string
 }
 
 jest.mock('next/image', () => ({
@@ -65,5 +67,14 @@ describe('BestsellersCarousel', () => {
     expect(carousel).not.toHaveClass('[scroll-snap-type:x_mandatory]')
     expect(firstItem).toHaveClass('[scroll-snap-align:start]')
     expect(firstItem?.style.marginLeft).toBe('')
+  })
+
+  it('serves the bestseller sticker at its rendered badge size', () => {
+    const { container } = render(<BestsellersCarousel cakes={[cake]} />)
+
+    const sticker = container.querySelector('img[src="/design/mobile-home/bestseller-sticker.png"]')
+
+    expect(sticker).toHaveAttribute('sizes', '73px')
+    expect(sticker).toHaveAttribute('quality', '45')
   })
 })

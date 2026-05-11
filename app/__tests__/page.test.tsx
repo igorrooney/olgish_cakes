@@ -479,6 +479,17 @@ describe('HomePage', () => {
       // Just verify the page renders
       expect(container).toBeTruthy()
     })
+
+    it('prioritises the mobile LCP divider image without changing the asset', async () => {
+      const page = await HomePage()
+      const { container } = render(page)
+
+      const divider = container.querySelector('img[src="/design/homepage_divider.png"]')
+
+      expect(divider).toHaveAttribute('loading', 'eager')
+      expect(divider).toHaveAttribute('fetchpriority', 'high')
+      expect(divider).toHaveAttribute('quality', '45')
+    })
   })
 
   describe('Data Fetching', () => {

@@ -475,7 +475,7 @@ export default async function Home() {
                 height={100}
                 sizes="(min-width: 768px) 430px, 100vw"
                 loading="eager"
-                fetchPriority="low"
+                fetchPriority="high"
                 quality={45}
                 className="w-full h-auto object-contain"
               />

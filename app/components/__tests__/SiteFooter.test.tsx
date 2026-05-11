@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import React from 'react'
-import { SiteFooter } from '../SiteFooter'
+import { footerDividerStyle, SiteFooter } from '../SiteFooter'
 
 interface LinkProps {
   children: ReactNode
@@ -46,13 +46,21 @@ describe('SiteFooter', () => {
     delete process.env.NEXT_PUBLIC_GTM_ID
   })
 
-  it('renders the divider art as a decorative desktop-only container', () => {
+  it('renders the divider art as a decorative mobile-visible container', () => {
     render(<SiteFooter />)
 
     const divider = document.querySelector('.footer-divider-art')
 
     expect(divider).not.toBeNull()
     expect(divider).toHaveAttribute('aria-hidden', 'true')
+    expect(divider).toHaveClass('block')
+    expect(divider).not.toHaveClass('hidden')
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-position: center'))
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-repeat: no-repeat'))
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-size: contain'))
+    expect(footerDividerStyle.aspectRatio).toBe('1024 / 107')
+    expect(footerDividerStyle.backgroundImage).toContain('image-set(')
+    expect(footerDividerStyle.backgroundImage).toContain('/design/mobile-home/footer-image.avif')
   })
 
   it('renders navigation links', () => {
