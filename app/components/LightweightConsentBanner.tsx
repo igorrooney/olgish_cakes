@@ -41,8 +41,7 @@ function createConsentBannerScript() {
   }
 
   function getKlaroConsentModeUpdate(klaroChoice) {
-    var analyticsGranted = klaroChoice['google-analytics'] === true ||
-      klaroChoice['microsoft-clarity'] === true;
+    var analyticsGranted = klaroChoice['google-analytics'] === true;
     var adsGranted = klaroChoice['google-ads'] === true;
 
     return {
@@ -117,9 +116,25 @@ function createConsentBannerScript() {
 
   function ensureConsentDefaults() {
     window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function() {
-      window.dataLayer.push(arguments);
-    };
+    window.__olgishAnalyticsConsent = window.__olgishAnalyticsConsent === true;
+
+    if (!window.__olgishConsentAwareGtagInstalled) {
+      var existingGtag = window.gtag;
+      window.__olgishConsentAwareGtagInstalled = true;
+      window.gtag = function() {
+        var command = arguments[0];
+        if ((command === 'event' || command === 'config') && window.__olgishAnalyticsConsent !== true) {
+          return;
+        }
+
+        if (typeof existingGtag === 'function') {
+          existingGtag.apply(window, arguments);
+          return;
+        }
+
+        window.dataLayer.push(arguments);
+      };
+    }
 
     window.gtag('consent', 'default', {
       ad_storage: 'denied',
@@ -134,11 +149,13 @@ function createConsentBannerScript() {
     ensureConsentDefaults();
 
     if (choiceOrUpdate && typeof choiceOrUpdate === 'object' && choiceOrUpdate.consentUpdate) {
+      window.__olgishAnalyticsConsent = choiceOrUpdate.consentUpdate.analytics_storage === 'granted';
       window.gtag('consent', 'update', choiceOrUpdate.consentUpdate);
       return;
     }
 
     if (typeof choiceOrUpdate === 'string') {
+      window.__olgishAnalyticsConsent = choiceOrUpdate === 'accepted';
       window.gtag('consent', 'update', {
         ad_storage: choiceOrUpdate === 'accepted' ? 'granted' : 'denied',
         analytics_storage: choiceOrUpdate === 'accepted' ? 'granted' : 'denied',
@@ -148,6 +165,9 @@ function createConsentBannerScript() {
       return;
     }
 
+    window.__olgishAnalyticsConsent = Boolean(
+      choiceOrUpdate && choiceOrUpdate.analytics_storage === 'granted'
+    );
     window.gtag('consent', 'update', choiceOrUpdate);
   }
 

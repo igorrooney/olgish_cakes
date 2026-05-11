@@ -179,7 +179,7 @@
 
 - `PerformanceOptimizer` - Core Web Vitals optimization
 - `OptimizedImage` - Advanced image optimization
-- `SEOAnalytics` - Comprehensive tracking and monitoring
+- Consent-gated GTM runtime - Analytics and conversion tracking
 - `StructuredData` - Flexible schema markup system
 - `Breadcrumbs` - Enhanced navigation with structured data
 

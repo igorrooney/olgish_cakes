@@ -21,6 +21,8 @@ declare global {
       }
     ) => void;
     dataLayer: unknown[];
+    __olgishAnalyticsConsent?: boolean;
+    __olgishConsentAwareGtagInstalled?: boolean;
   }
 }
 

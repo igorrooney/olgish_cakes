@@ -93,9 +93,25 @@ function createPreferencesRuntimeScript() {
 
   function ensureConsentDefaults() {
     window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function() {
-      window.dataLayer.push(arguments);
-    };
+    window.__olgishAnalyticsConsent = window.__olgishAnalyticsConsent === true;
+
+    if (!window.__olgishConsentAwareGtagInstalled) {
+      var existingGtag = window.gtag;
+      window.__olgishConsentAwareGtagInstalled = true;
+      window.gtag = function() {
+        var command = arguments[0];
+        if ((command === 'event' || command === 'config') && window.__olgishAnalyticsConsent !== true) {
+          return;
+        }
+
+        if (typeof existingGtag === 'function') {
+          existingGtag.apply(window, arguments);
+          return;
+        }
+
+        window.dataLayer.push(arguments);
+      };
+    }
 
     window.gtag('consent', 'default', {
       ad_storage: 'denied',
@@ -110,6 +126,7 @@ function createPreferencesRuntimeScript() {
     ensureConsentDefaults();
 
     if (typeof choiceOrUpdate === 'string') {
+      window.__olgishAnalyticsConsent = choiceOrUpdate === 'accepted';
       window.gtag('consent', 'update', {
         ad_storage: choiceOrUpdate === 'accepted' ? 'granted' : 'denied',
         analytics_storage: choiceOrUpdate === 'accepted' ? 'granted' : 'denied',
@@ -119,6 +136,9 @@ function createPreferencesRuntimeScript() {
       return;
     }
 
+    if (choiceOrUpdate && choiceOrUpdate.analytics_storage) {
+      window.__olgishAnalyticsConsent = choiceOrUpdate.analytics_storage === 'granted';
+    }
     window.gtag('consent', 'update', choiceOrUpdate);
   }
 

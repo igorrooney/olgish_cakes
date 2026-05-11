@@ -18,7 +18,6 @@
 @source not "../app/components/DynamicImports.tsx";
 @source not "../app/components/GiftHamperCard.tsx";
 @source not "../app/components/GiftHamperStructuredData.tsx";
-@source not "../app/components/GoogleAnalytics.tsx";
 @source not "../app/components/HamperImageGallery.tsx";
 @source not "../app/components/MobileBreadcrumbs.tsx";
 @source not "../app/components/MobileNavbar.tsx";
@@ -26,7 +25,6 @@
 @source not "../app/components/PerformanceMonitor.tsx";
 @source not "../app/components/PerformanceOptimizer.tsx";
 @source not "../app/components/PlaceholderImage.tsx";
-@source not "../app/components/SEOAnalytics.tsx";
 @source not "../app/components/SiteHeaderClient.tsx";
 @source not "../app/components/StructuredData.tsx";
 @source not "../app/components/TechnicalIssueNotification.tsx";
