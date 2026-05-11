@@ -10,7 +10,15 @@ import type { DisplayCollection } from '../occasions.types'
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />
+  default: ({
+    alt,
+    src,
+    unoptimized
+  }: {
+    alt: string
+    src: string
+    unoptimized?: boolean
+  }) => <img alt={alt} data-unoptimized={unoptimized ? 'true' : 'false'} src={src} />
 }))
 
 jest.mock('next/link', () => ({
@@ -167,5 +175,19 @@ describe('Occasions', () => {
 
     expect(mockGetHomepageCollections).not.toHaveBeenCalled()
     expect(screen.getByText('Kids Birthdays')).toBeInTheDocument()
+  })
+
+  it('bypasses Next image optimization for Sanity CDN collection images', async () => {
+    jest.requireMock('@/sanity/lib/image').urlFor.mockReturnValueOnce({
+      url: () => 'https://cdn.sanity.io/images/project/dataset/collection.png'
+    })
+
+    const element = await Occasions({ collections: [baseCollection] })
+    render(element)
+
+    expect(screen.getByRole('img', { name: 'Kids birthday cake' })).toHaveAttribute(
+      'data-unoptimized',
+      'true'
+    )
   })
 })

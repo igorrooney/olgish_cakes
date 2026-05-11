@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef, useState } from 'react'
+import { isSanityCdnImageUrl } from '@/lib/utils/image-url'
 import type { DisplayCollection } from './occasions.types'
 
 type OccasionsClientProps = {
@@ -90,6 +91,7 @@ export function OccasionsClient({ collections }: OccasionsClientProps) {
                     fill
                     className='object-cover'
                     sizes='(min-width: 1024px) 216px, (min-width: 768px) 216px, 98px'
+                    unoptimized={isSanityCdnImageUrl(collection.imageUrl)}
                   />
                 </div>
                 <p className={labelClassName}>

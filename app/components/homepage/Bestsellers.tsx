@@ -182,7 +182,7 @@ export async function Bestsellers() {
           prefetch={false}
           className="flex items-center gap-2 text-black"
         >
-          <span className="font-oldenburg">Shop bestsellers</span>
+          <span className="font-oldenburg">Shop custom cakes</span>
           <span className="font-oldenburg text-primary-500 text-lg mt-1">{">"}</span>
         </Link>
       </div>
