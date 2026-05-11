@@ -16,6 +16,8 @@ type ConsentModeUpdate = {
 
 type ConsentRuntimeWindow = Window & typeof globalThis & {
   gtag?: (...args: unknown[]) => void
+  __olgishAnalyticsConsent?: boolean
+  __olgishConsentAwareGtagInstalled?: boolean
   __loadOlgishGtmOnce?: () => void
 }
 
@@ -40,7 +42,13 @@ function updateGtagConsent(update: ConsentModeUpdate) {
     return
   }
 
-  getConsentRuntimeWindow().gtag?.('consent', 'update', update)
+  const consentWindow = getConsentRuntimeWindow()
+
+  if (update.analytics_storage) {
+    consentWindow.__olgishAnalyticsConsent = update.analytics_storage === 'granted'
+  }
+
+  consentWindow.gtag?.('consent', 'update', update)
 }
 
 function loadGtmAfterConsent() {
@@ -53,7 +61,24 @@ function loadGtmAfterConsent() {
 
 export const consentDefaultsScript = `
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function(){dataLayer.push(arguments)}
+  window.__olgishAnalyticsConsent = window.__olgishAnalyticsConsent === true;
+  if (!window.__olgishConsentAwareGtagInstalled) {
+    var existingGtag = window.gtag;
+    window.__olgishConsentAwareGtagInstalled = true;
+    window.gtag = function(){
+      var command = arguments[0];
+      if ((command === 'event' || command === 'config') && window.__olgishAnalyticsConsent !== true) {
+        return;
+      }
+
+      if (typeof existingGtag === 'function') {
+        existingGtag.apply(window, arguments);
+        return;
+      }
+
+      dataLayer.push(arguments)
+    }
+  }
   gtag('consent', 'default', {
     'ad_storage': 'denied',
     'analytics_storage': 'denied',

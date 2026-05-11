@@ -106,12 +106,12 @@
 - **SEO Enhancement**: Rich image metadata and business context
 - **Accessibility**: Enhanced alt text and image descriptions
 
-#### **SEOAnalytics Component** ✅
+#### **Consent-Gated Analytics** ✅
 
-- **Comprehensive Tracking**: Page views, user engagement, and Core Web Vitals
-- **Performance Monitoring**: Real-time performance metrics and optimization
-- **User Behavior Analysis**: Scroll depth, time on page, and interaction tracking
-- **Conversion Tracking**: Order and inquiry tracking from organic traffic
+- **GTM-only loader**: Google Analytics is configured inside Google Tag Manager
+- **Consent-first tracking**: Analytics events are blocked until optional cookies are accepted
+- **Performance Monitoring**: Core Web Vitals are reported only after analytics consent
+- **Conversion Tracking**: Order and inquiry tracking should run through consent-aware GTM tags
 
 ---
 
@@ -200,7 +200,7 @@
 
 - `PerformanceOptimizer` - Core Web Vitals optimization
 - `OptimizedImage` - Advanced image optimization with structured data
-- `SEOAnalytics` - Comprehensive tracking and monitoring
+- Consent-gated GTM runtime - Analytics and conversion tracking
 - `StructuredData` - Flexible schema markup system
 - `Breadcrumbs` - Enhanced navigation with structured data
 
