@@ -6,6 +6,19 @@ const deferredFooterStyle = {
   contentVisibility: 'auto',
   containIntrinsicSize: '520px'
 } as const
+export const footerDividerStyle = {
+  aspectRatio: '1024 / 107',
+  backgroundImage: [
+    'image-set(',
+    "url('/design/mobile-home/footer-image.avif') type('image/avif'),",
+    "url('/design/mobile-home/footer-image.webp') type('image/webp'),",
+    "url('/design/mobile-home/footer-image.png') type('image/png')",
+    ')'
+  ].join(' '),
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: 'contain'
+} as const
 
 export function SiteFooter() {
   const isConsentEnabled = Boolean(process.env.NEXT_PUBLIC_GTM_ID)
@@ -16,7 +29,11 @@ export function SiteFooter() {
 
   return (
     <>
-      <div aria-hidden='true' className='footer-divider-art relative hidden w-full bg-base-100 tablet:block' />
+      <div
+        aria-hidden='true'
+        className='footer-divider-art relative block w-full bg-base-100'
+        style={footerDividerStyle}
+      />
       <footer className='bg-base-100 text-base-content' style={deferredFooterStyle}>
         <div className='footer w-full px-6 py-6 tablet:px-20 tablet:py-8'>
           <div className='grid grid-cols-2 gap-x-6 gap-y-6 text-left tablet:grid-cols-3 tablet:items-start tablet:justify-items-start tablet:justify-start tablet:gap-x-10 tablet:gap-y-8'>

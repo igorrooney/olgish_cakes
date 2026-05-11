@@ -151,8 +151,10 @@ export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {
                                         alt="Handcrafted cakes"
                                         fill
                                         className="object-contain"
+                                        sizes="73px"
                                         loading="lazy"
                                         fetchPriority="low"
+                                        quality={45}
                                     />
                                 </div>
 
