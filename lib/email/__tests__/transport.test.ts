@@ -94,6 +94,47 @@ describe('email transport', () => {
     expect(result.id).toBe('resend-id-1')
   })
 
+  it('maps internal contentId attachments to Resend inlineContentId in live mode', async () => {
+    mockSend.mockResolvedValue({ data: { id: 'resend-id-inline' }, error: null })
+
+    const result = await deliverEmail({
+      mode: 'live',
+      templateId: 'custom-cake-enquiry-customer',
+      message: {
+        from: 'test@example.com',
+        to: 'john@example.com',
+        subject: 'A',
+        text: 'B',
+        html: '<img src="cid:olgish-cakes-email-logo" alt="Olgish Cakes">',
+        attachments: [
+          {
+            filename: 'olgish-cakes-email-logo.png',
+            content: Buffer.from('logo'),
+            contentType: 'image/png',
+            contentId: 'olgish-cakes-email-logo'
+          }
+        ]
+      },
+      rendered: {
+        subject: 'Subject',
+        text: 'Text',
+        html: '<img src="cid:olgish-cakes-email-logo" alt="Olgish Cakes">'
+      }
+    })
+
+    expect(result.accepted).toBe(true)
+    expect(mockSend).toHaveBeenCalledWith(expect.objectContaining({
+      attachments: [
+        expect.objectContaining({
+          filename: 'olgish-cakes-email-logo.png',
+          contentType: 'image/png',
+          contentId: 'olgish-cakes-email-logo',
+          inlineContentId: 'olgish-cakes-email-logo'
+        })
+      ]
+    }))
+  })
+
   it('returns error when live mode missing api key', async () => {
     delete process.env.RESEND_API_KEY
 

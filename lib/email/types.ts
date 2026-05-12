@@ -156,6 +156,7 @@ export interface EmailMessage {
     path?: string
     contentType?: string
     contentId?: string
+    inlineContentId?: string
   }>
 }
 

@@ -119,7 +119,7 @@ export function SiteFooter() {
                   Olgish Cakes
                 </p>
                 <p className='text-sm text-base-content tablet:text-base'>
-                  Made with Ukrainian heart
+                  Ukrainian heart, Yorkshire soul
                 </p>
               </div>
             </aside>

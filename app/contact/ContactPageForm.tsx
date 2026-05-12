@@ -216,15 +216,14 @@ export function ContactPageForm() {
         />
         <div className='md:col-span-2'>
           <ValidatorInput
+            fieldType='datePicker'
             id='dateNeeded'
-            type='date'
             min={minDate}
             placeholder='Select a date'
             value={formData.dateNeeded}
             label='If you have a date, add it'
             labelAlt='(Optional)'
             labelPlacement='outside'
-            showValidation={hasAttemptedSubmit}
             error={errors.dateNeeded}
             hintText='Leave this blank if the date is still up in the air'
             onValueChange={(value) => updateField('dateNeeded', value, true)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { logger } from "@/lib/logger";
+import { DesignSystemDatePicker } from "@/app/components/forms/DesignSystemDatePicker";
 import { Add as AddIcon, Remove as RemoveIcon } from "@/lib/daisy-ui";
 import {
   Alert,
@@ -479,14 +480,14 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
+              <DesignSystemDatePicker
+                id="add-order-date-needed"
                 label="Date Needed *"
-                type="date"
+                labelPlacement="outside"
+                placeholder="Select a date"
                 value={formData.dateNeeded}
-                onChange={(e) => handleInputChange("dateNeeded", e.target.value)}
-                InputLabelProps={{ shrink: true }}
                 required
+                onValueChange={(value) => handleInputChange("dateNeeded", value)}
               />
             </Grid>
 

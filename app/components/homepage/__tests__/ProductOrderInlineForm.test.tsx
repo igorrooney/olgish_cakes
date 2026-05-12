@@ -77,6 +77,25 @@ describe('ProductOrderInlineForm', () => {
     return `${year}-${month}-${day}`
   }
 
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
+  const formatCalendarButtonName = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return calendarAriaFormatter.format(new Date(year, month - 1, day))
+  }
+
+  const selectDateNeeded = (dateValue: string) => {
+    fireEvent.click(screen.getByLabelText(/when do you need it/i))
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName(dateValue)}`, 'i')
+    }))
+  }
+
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
 
@@ -474,7 +493,7 @@ describe('ProductOrderInlineForm', () => {
     expect(global.fetch).not.toHaveBeenCalled()
   })
 
-  it('blocks submission when optional date is in the past', async () => {
+  it('does not offer past dates in the optional date picker', async () => {
     render(
       <ProductOrderInlineForm
         productType='cake'
@@ -485,15 +504,7 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: getDateInputValue(-1) } })
-    fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
-
-    await waitFor(() => {
-      expect(screen.getByText(/please select today or a future date/i)).toBeVisible()
-      expect(document.activeElement).toBe(screen.getByLabelText(/when do you need it/i))
-    })
-
-    expect(global.fetch).not.toHaveBeenCalled()
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('data-min-date', getDateInputValue(0))
   })
 
   it('submits compact v2 payload to /api/contact in default mode', async () => {
@@ -518,7 +529,7 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '123 Test Street' } })
     fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Leeds' } })
     fireEvent.change(screen.getByLabelText(/postcode/i), { target: { value: 'LS1 1AA' } })
-    fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: neededDate } })
+    selectDateNeeded(neededDate)
     selectOccasion('Birthday')
     fireEvent.change(screen.getByLabelText(/message/i), { target: { value: 'Please confirm collection time.' } })
 

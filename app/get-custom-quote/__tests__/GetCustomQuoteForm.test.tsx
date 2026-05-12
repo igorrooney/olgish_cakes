@@ -38,6 +38,25 @@ describe('GetCustomQuoteForm', () => {
     return formatDateForInput(date)
   }
 
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
+  const formatCalendarButtonName = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return calendarAriaFormatter.format(new Date(year, month - 1, day))
+  }
+
+  const selectDateNeeded = (dateValue: string) => {
+    fireEvent.click(screen.getByRole('button', { name: /date needed/i }))
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName(dateValue)}`, 'i')
+    }))
+  }
+
   const renderForm = async (props?: { occasionOptions?: OccasionOption[] }) => {
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -69,7 +88,7 @@ describe('GetCustomQuoteForm', () => {
     fireEvent.change(screen.getByLabelText(/^Full name$/i), { target: { value: 'Jane Doe' } })
     fireEvent.change(screen.getByLabelText(/^Email address$/i), { target: { value: email } })
     fireEvent.change(screen.getByLabelText(/^Phone number$/i), { target: { value: phone } })
-    fireEvent.change(screen.getByLabelText(/^Date needed$/i), { target: { value: getDateInputValue(5) } })
+    selectDateNeeded(getDateInputValue(5))
     fireEvent.change(screen.getByLabelText(/^Approximate servings$/i), { target: { value: '24 guests' } })
     if (occasion) {
       fireEvent.click(screen.getByLabelText(/^Occasion/i))
@@ -105,7 +124,7 @@ describe('GetCustomQuoteForm', () => {
     expect(screen.getByLabelText(/^Full name$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Email address$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Phone number$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^Date needed$/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /date needed/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/^Approximate servings$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Occasion/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Cake brief/i)).toBeInTheDocument()
@@ -357,8 +376,11 @@ describe('GetCustomQuoteForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send quote request/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /enquiry sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
+
+    expect(screen.getByText(/your cake enquiry has arrived safely/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send quote request/i })).toBeInTheDocument()
 
     expect(screen.queryByText(/selected:\s*cake\.png/i)).not.toBeInTheDocument()
     expect(fileInput.value).toBe('')
@@ -407,6 +429,8 @@ describe('GetCustomQuoteForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/too many requests\. please try again later\./i)).toBeInTheDocument()
+      expect(screen.getByText(/hello@olgishcakes\.co\.uk/i)).toBeInTheDocument()
+      expect(screen.getByText(/\+44 786 721 8194/i)).toBeInTheDocument()
     })
   })
 
@@ -436,6 +460,8 @@ describe('GetCustomQuoteForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/invalid csrf token/i)).toBeInTheDocument()
+      expect(screen.getByText(/hello@olgishcakes\.co\.uk/i)).toBeInTheDocument()
+      expect(screen.getByText(/\+44 786 721 8194/i)).toBeInTheDocument()
     })
   })
 
@@ -465,6 +491,8 @@ describe('GetCustomQuoteForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/email service not configured/i)).toBeInTheDocument()
+      expect(screen.getByText(/hello@olgishcakes\.co\.uk/i)).toBeInTheDocument()
+      expect(screen.getByText(/\+44 786 721 8194/i)).toBeInTheDocument()
     })
   })
 
@@ -493,7 +521,7 @@ describe('GetCustomQuoteForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send quote request/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/something went wrong while sending your quote request/i)).toBeInTheDocument()
+      expect(screen.getByText(/something went wrong while sending your enquiry/i)).toBeInTheDocument()
       expect(screen.getByText(/hello@olgishcakes\.co\.uk/i)).toBeInTheDocument()
       expect(screen.getByText(/\+44 786 721 8194/i)).toBeInTheDocument()
     })

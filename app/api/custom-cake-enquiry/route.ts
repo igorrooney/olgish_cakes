@@ -27,8 +27,21 @@ const notificationFailureErrorMessage =
 const getReferenceImageBucket = () =>
   process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
 
-const emailFromAddress =
-  process.env.NEXT_PUBLIC_EMAIL_FROM || 'Olgish Cakes <hello@olgishcakes.co.uk>'
+const defaultEmailFromAddress = 'Olgish Cakes <hello@olgishcakes.co.uk>'
+
+const getEmailFromAddress = () => {
+  const configuredEmailFromAddress = process.env.NEXT_PUBLIC_EMAIL_FROM?.trim()
+
+  if (!configuredEmailFromAddress) {
+    return defaultEmailFromAddress
+  }
+
+  if (configuredEmailFromAddress.includes('<') && configuredEmailFromAddress.includes('>')) {
+    return configuredEmailFromAddress
+  }
+
+  return `Olgish Cakes <${configuredEmailFromAddress}>`
+}
 
 const referenceImageConfig = {
   acceptedTypes: ['image/jpeg', 'image/png', 'image/heic'],
@@ -172,7 +185,7 @@ const logSupabaseInsertFailure = (error: unknown) => {
 }
 
 type NotificationError = {
-  step: 'admin-email' | 'customer-email'
+  step: 'admin-email' | 'customer-email' | 'telegram-manager'
   message: string
 }
 
@@ -236,6 +249,8 @@ const buildFailureAlertMessage = (
   .map((entry) => `${entry.step}: ${entry.message}`)
   .join('\n')
 
+const telegramFailureAlertEmail = 'igorrooney@gmail.com'
+
 const sendFailureAlertEmail = async (params: {
   customerName: string
   customerEmail?: string
@@ -270,7 +285,7 @@ const sendFailureAlertEmail = async (params: {
     },
     modeOverride: params.emailMode,
     message: {
-      from: emailFromAddress,
+      from: getEmailFromAddress(),
       to: recipientEmail,
       bcc: process.env.ADMIN_BCC_EMAIL || undefined,
       replyTo: params.customerEmail || undefined
@@ -283,6 +298,57 @@ const sendFailureAlertEmail = async (params: {
         sent: false as const,
         errorMessage: failureAlertResponse.error?.message || 'Transport did not accept failure alert email'
       }
+}
+
+const sendTelegramFailureAlertEmail = async (params: {
+  customerName: string
+  customerEmail?: string
+  customerPhone?: string
+  address?: string
+  city?: string
+  postcode?: string
+  dateNeeded: string
+  occasion: string
+  requirements: string
+  attachmentNames: string[]
+  telegramError: string
+  emailMode: ReturnType<typeof getEmailTransportMode>
+  adminUrl: string
+}) => {
+  const response = await sendEmail({
+    templateId: 'custom-cake-enquiry-failure-alert',
+    input: {
+      customerName: params.customerName,
+      customerEmail: params.customerEmail,
+      customerPhone: params.customerPhone,
+      address: params.address,
+      city: params.city,
+      postcode: params.postcode,
+      dateNeeded: params.dateNeeded,
+      occasion: params.occasion,
+      customerMessage: params.requirements,
+      attachmentNames: params.attachmentNames,
+      message: `Telegram manager notification failed:\n${params.telegramError}`,
+      note: 'The enquiry was saved successfully, but the Telegram manager notification did not send. Check TELEGRAM_BOT_TOKEN, TELEGRAM_MANAGER_CHAT_ID, hosting network egress, and Telegram API availability.',
+      adminUrl: params.adminUrl
+    },
+    modeOverride: params.emailMode,
+    subjectPrefix: '[Telegram alert]',
+    message: {
+      from: getEmailFromAddress(),
+      to: telegramFailureAlertEmail,
+      replyTo: params.customerEmail || undefined
+    }
+  })
+
+  if (!response.accepted || response.error) {
+    console.error('Telegram failure alert email failed', {
+      customerName: params.customerName,
+      customerEmail: params.customerEmail ?? null,
+      dateNeeded: params.dateNeeded,
+      errorMessage: response.error?.message || 'Transport did not accept Telegram failure alert email'
+    })
+  }
 }
 
 const hasOperationalNotificationSuccess = (params: {
@@ -517,18 +583,6 @@ export async function POST(request: NextRequest) {
       : '/admin/enquiries'
     const adminUrl = buildAdminUrl(adminPath)
 
-    await sendTelegramManagerNotification({
-      type: 'custom-cake-enquiry',
-      customerName: formData.fullName,
-      customerEmail: formData.email || undefined,
-      customerPhone: formData.phone || undefined,
-      dateNeeded: formData.date,
-      productName: occasionValue || undefined,
-      messagePreview: requirementsValue,
-      imageCount: referenceImage ? 1 : 0,
-      adminPath
-    })
-
     const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',
@@ -545,6 +599,36 @@ export async function POST(request: NextRequest) {
       'Not specified'
     const resolvedRequirements = formData.requirements?.trim() || 'Not specified'
     const notificationErrors: NotificationError[] = []
+
+    const telegramNotificationResult = await sendTelegramManagerNotification({
+      type: 'custom-cake-enquiry',
+      customerName: formData.fullName,
+      customerEmail: formData.email || undefined,
+      customerPhone: formData.phone || undefined,
+      dateNeeded: formData.date,
+      productName: resolvedOccasion,
+      messagePreview: requirementsValue,
+      imageCount: referenceImage ? 1 : 0,
+      adminPath
+    })
+
+    if (!telegramNotificationResult.sent && !telegramNotificationResult.skipped) {
+      await sendTelegramFailureAlertEmail({
+        customerName: formData.fullName,
+        customerEmail: formData.email || undefined,
+        customerPhone: formData.phone || undefined,
+        address: formData.address,
+        city: formData.city,
+        postcode: formData.postcode,
+        dateNeeded: formData.date,
+        occasion: resolvedOccasion,
+        requirements: resolvedRequirements,
+        attachmentNames: referenceImage ? [referenceImage.name] : [],
+        telegramError: telegramNotificationResult.error || 'Telegram notification request failed',
+        emailMode,
+        adminUrl
+      })
+    }
 
     const attachmentBuffer = referenceImage
       ? Buffer.from(await referenceImage.arrayBuffer())
@@ -567,7 +651,7 @@ export async function POST(request: NextRequest) {
       },
       modeOverride: emailMode,
       message: {
-        from: emailFromAddress,
+        from: getEmailFromAddress(),
         to: recipientEmail,
         bcc: process.env.ADMIN_BCC_EMAIL || undefined,
         replyTo: formData.email || undefined,
@@ -600,14 +684,25 @@ export async function POST(request: NextRequest) {
         input: {
           customerName: formData.fullName,
           customerEmail: formData.email || undefined,
+          customerPhone: formData.phone || undefined,
+          address: formData.address,
+          city: formData.city,
+          postcode: formData.postcode,
+          orderType: 'custom-cake-enquiry',
           dateNeeded: formData.date,
           occasion: resolvedOccasion,
           customerMessage: resolvedRequirements,
-          message: 'Date needed: ' + formattedDate
+          attachmentNames: referenceImage ? [referenceImage.name] : [],
+          message: 'Date needed: ' + formattedDate,
+          nextSteps: [
+            'I\'ll check the date, your notes and the delivery details.',
+            'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+            'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
+          ]
         },
         modeOverride: emailMode,
         message: {
-          from: emailFromAddress,
+          from: getEmailFromAddress(),
           to: formData.email,
           bcc: process.env.ADMIN_BCC_EMAIL || undefined,
           replyTo: recipientEmail,

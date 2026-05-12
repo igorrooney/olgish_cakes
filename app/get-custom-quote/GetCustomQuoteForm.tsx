@@ -4,8 +4,10 @@ import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '../hooks/useCustomCakeEnquiry'
 import {
   buildCustomCakeEnquiryFormData,
+  customCakeEnquiryFallbackErrorMessage,
   isCsrfTokenLoadError,
-  isSubmissionError
+  isSubmissionError,
+  withCustomCakeEnquiryContactFallback
 } from '../services/customCakeEnquiry'
 import {
   dateMinErrorMessage,
@@ -143,7 +145,7 @@ export function GetCustomQuoteForm({
       }
 
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.'
+        submit: error instanceof Error ? error.message : customCakeEnquiryFallbackErrorMessage
       })
     }
   })
@@ -192,10 +194,10 @@ export function GetCustomQuoteForm({
     } catch (error) {
       setErrors({
         submit: isCsrfTokenLoadError(error)
-          ? 'CSRF token not loaded. Please refresh the page and try again.'
+          ? withCustomCakeEnquiryContactFallback('CSRF token not loaded. Please refresh the page.')
           : error instanceof Error
             ? error.message
-            : 'Failed to submit form. Please try again.'
+            : customCakeEnquiryFallbackErrorMessage
       })
     }
   }
@@ -212,10 +214,6 @@ export function GetCustomQuoteForm({
     }))
   }
 
-  const submitLabel = hasSubmittedSuccessfully ? 'Enquiry sent' : 'Send quote request'
-  const submitClassName = hasSubmittedSuccessfully
-    ? 'btn-success'
-    : 'btn-primary'
   const normalizedOccasionOptions = optionalFieldOptions(normalizeOccasionOptions(occasionOptions))
 
   return (
@@ -275,14 +273,13 @@ export function GetCustomQuoteForm({
           onValueChange={(value) => updateField('servings', value, true)}
         />
         <ValidatorInput
+          fieldType='datePicker'
           id='date'
-          type='date'
           min={minDate}
           placeholder='Select a date'
           value={formData.date}
           label='Date needed'
           labelPlacement='outside'
-          showValidation={hasAttemptedSubmit}
           error={errors.date}
           required
           hintText='Select a date'
@@ -341,14 +338,43 @@ export function GetCustomQuoteForm({
         </div>
       ) : null}
 
+      {hasSubmittedSuccessfully ? (
+        <div
+          className='alert alert-success items-start text-sm'
+          role='status'
+          aria-live='polite'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-5 w-5 shrink-0 stroke-current'
+            fill='none'
+            viewBox='0 0 24 24'
+            aria-hidden='true'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
+          <div>
+            <p className='font-semibold'>Enquiry sent</p>
+            <p className='mt-1 leading-6'>
+              Thank you, your cake enquiry has arrived safely. I&apos;ll get back to you as soon as I can.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <div className='bottom-3'>
         <button
           type='submit'
-          className={`btn btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base ${submitClassName}`}
+          className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
           disabled={isSubmitting || isCsrfLoading}
           aria-busy={isSubmitting || isCsrfLoading}
         >
-          {isSubmitting ? 'Sending...' : submitLabel}
+          {isSubmitting ? 'Sending...' : 'Send quote request'}
         </button>
         <p className='mt-3 text-center text-sm leading-6 text-base-content/70'>
           I&apos;ll review your enquiry and reply within 24 hours. Please add either an email address or a phone number so I can get back to you.

@@ -62,6 +62,18 @@ describe('daisy-ui compatibility wrappers', () => {
   })
 
   describe('DatePicker', () => {
+    const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+
+    const formatCalendarButtonName = (value: string) => {
+      const [year, month, day] = value.split('-').map(Number)
+      return calendarAriaFormatter.format(new Date(year, month - 1, day))
+    }
+
     it('sets today as the minimum date when past dates are disabled', () => {
       render(
         <DatePicker
@@ -78,7 +90,28 @@ describe('daisy-ui compatibility wrappers', () => {
         />
       )
 
-      expect(screen.getByLabelText('Date Needed')).toHaveAttribute('min', dayjs().format('YYYY-MM-DD'))
+      expect(screen.getByLabelText('Date Needed')).toHaveAttribute('data-min-date', dayjs().format('YYYY-MM-DD'))
+    })
+
+    it('adapts selected dates back to Dayjs values', () => {
+      const handleChange = jest.fn()
+
+      render(
+        <DatePicker
+          label='Date Needed'
+          value={null}
+          onChange={handleChange}
+          min='2026-03-18'
+        />
+      )
+
+      fireEvent.click(screen.getByLabelText('Date Needed'))
+      fireEvent.click(screen.getByRole('button', {
+        name: new RegExp(`select ${formatCalendarButtonName('2026-03-19')}`, 'i')
+      }))
+
+      expect(handleChange).toHaveBeenCalledTimes(1)
+      expect(handleChange.mock.calls[0][0].format('YYYY-MM-DD')).toBe('2026-03-19')
     })
   })
 

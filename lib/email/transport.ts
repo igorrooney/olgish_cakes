@@ -19,11 +19,23 @@ function appendCapturedEmail(email: CapturedEmail) {
 }
 
 function buildMessage(message: EmailMessage, rendered: RenderedEmail): EmailMessage {
+  const attachments = message.attachments?.map((attachment) => {
+    if (!attachment.contentId) {
+      return attachment
+    }
+
+    return {
+      ...attachment,
+      inlineContentId: attachment.contentId
+    }
+  })
+
   return {
     ...message,
     subject: rendered.subject,
     text: rendered.text,
-    html: rendered.html
+    html: rendered.html,
+    attachments
   }
 }
 

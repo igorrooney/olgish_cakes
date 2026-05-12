@@ -106,6 +106,7 @@ describe('/api/custom-cake-enquiry', () => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
+    process.env.NEXT_PUBLIC_EMAIL_FROM = 'hello@olgishcakes.co.uk'
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
     process.env.SUPABASE_URL = 'https://example.supabase.co'
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
@@ -248,6 +249,7 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(1, expect.objectContaining({
       templateId: 'custom-cake-enquiry-admin',
       message: expect.objectContaining({
+        from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'hello@olgishcakes.co.uk',
         replyTo: 'test@example.com'
       }),
@@ -274,6 +276,7 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templateId: 'custom-cake-enquiry-customer',
       message: expect.objectContaining({
+        from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: 'test@example.com'
       })
     }))
@@ -283,7 +286,7 @@ describe('/api/custom-cake-enquiry', () => {
       customerEmail: 'test@example.com',
       customerPhone: '+44(0)7123456789',
       dateNeeded: '2026-12-25',
-      productName: 'birthday',
+      productName: 'Birthday',
       messagePreview: expect.stringContaining('Brief: Blue florals and vanilla sponge.'),
       adminPath: '/admin/enquiries/custom-cake/42'
     }))
@@ -387,6 +390,78 @@ describe('/api/custom-cake-enquiry', () => {
       address: '123 Test St',
       city: 'Leeds',
       postcode: 'LS1 1AA'
+    }))
+    expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      templateId: 'custom-cake-enquiry-customer',
+      input: expect.objectContaining({
+        customerName: 'Test User',
+        customerEmail: 'test@example.com',
+        customerPhone: '+44(0)7123456789',
+        address: '123 Test St',
+        city: 'Leeds',
+        postcode: 'LS1 1AA',
+        orderType: 'custom-cake-enquiry',
+        dateNeeded: '2026-12-25',
+        occasion: 'Birthday',
+        customerMessage: expect.stringContaining('Blue florals'),
+        nextSteps: expect.arrayContaining([
+          expect.stringContaining('availability')
+        ])
+      })
+    }))
+  })
+
+  it('emails Igor when Telegram manager notification fails', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    mockSendTelegramManagerNotification.mockResolvedValueOnce({
+      sent: false,
+      skipped: false,
+      error: 'fetch failed'
+    })
+
+    const formData = buildFormData({
+      address: '123 Test St',
+      city: 'Leeds',
+      postcode: 'LS1 1AA'
+    })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.33'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
+      templateId: 'custom-cake-enquiry-failure-alert',
+      subjectPrefix: '[Telegram alert]',
+      message: expect.objectContaining({
+        to: 'igorrooney@gmail.com',
+        replyTo: 'test@example.com'
+      }),
+      input: expect.objectContaining({
+        customerName: 'Test User',
+        customerEmail: 'test@example.com',
+        customerPhone: '+44(0)7123456789',
+        address: '123 Test St',
+        city: 'Leeds',
+        postcode: 'LS1 1AA',
+        occasion: 'Birthday',
+        customerMessage: expect.stringContaining('Blue florals'),
+        message: expect.stringContaining('Telegram manager notification failed:\nfetch failed'),
+        note: expect.stringContaining('hosting network egress'),
+        adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/42'
+      })
+    }))
+    expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
+      templateId: 'custom-cake-enquiry-admin'
+    }))
+    expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
+      templateId: 'custom-cake-enquiry-customer'
     }))
   })
 

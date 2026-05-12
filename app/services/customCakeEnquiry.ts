@@ -32,11 +32,27 @@ type ErrorResponse = {
   details?: ValidationErrorDetail[]
 }
 
-const enquiryFallbackErrorMessage =
-  'Something went wrong while sending your quote request. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+export const customCakeEnquiryContactFallback =
+  'Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+export const customCakeEnquiryFallbackErrorMessage =
+  `Something went wrong while sending your enquiry. ${customCakeEnquiryContactFallback}`
 const maskedServerErrorMessages = new Set([
   'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
 ])
+
+export const withCustomCakeEnquiryContactFallback = (message: string) => {
+  const trimmedMessage = message.trim()
+
+  if (trimmedMessage.length === 0) {
+    return customCakeEnquiryFallbackErrorMessage
+  }
+
+  if (trimmedMessage.includes(customCakeEnquiryContactFallback)) {
+    return trimmedMessage
+  }
+
+  return `${trimmedMessage} ${customCakeEnquiryContactFallback}`
+}
 
 const getServerErrorMessage = (error: unknown) => {
   if (typeof error !== 'string') {
@@ -102,7 +118,13 @@ export const submitCustomCakeEnquiry = async (
       throw createSubmissionError('Validation failed. Please check the form fields.', fieldErrors)
     }
 
-    throw new Error(getServerErrorMessage(errorData.error) ?? enquiryFallbackErrorMessage)
+    const serverErrorMessage = getServerErrorMessage(errorData.error)
+
+    throw new Error(
+      serverErrorMessage
+        ? withCustomCakeEnquiryContactFallback(serverErrorMessage)
+        : customCakeEnquiryFallbackErrorMessage
+    )
   }
 
   return (await response.json().catch(() => ({}))) as Record<string, unknown>

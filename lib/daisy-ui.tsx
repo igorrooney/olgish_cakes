@@ -12,6 +12,7 @@
 } from 'react'
 import React, { Children, cloneElement, isValidElement } from 'react'
 import dayjs, { type Dayjs } from 'dayjs'
+import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
 
 type DaisyColor = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
 type SxValue = Record<string, unknown>
@@ -807,18 +808,36 @@ export function DatePicker(props: {
   [key: string]: unknown
 }) {
   const textFieldProps = props.slotProps?.textField
+  const slotId = textFieldProps?.id
+  const resolvedId = typeof props.id === 'string'
+    ? props.id
+    : typeof slotId === 'string'
+      ? slotId
+      : props.label
+        ? `${props.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-date`
+        : 'date-picker'
+  const min = typeof props.min === 'string'
+    ? props.min
+    : props.disablePast
+      ? dayjs().format('YYYY-MM-DD')
+      : undefined
+  const helperText = typeof textFieldProps?.helperText === 'string'
+    ? textFieldProps.helperText
+    : undefined
+  const hasError = Boolean(textFieldProps?.error)
 
-  return <TextField
+  return <DesignSystemDatePicker
+    id={resolvedId}
     label={props.label}
-    type='date'
-    disabled={Boolean(props.disabled)}
-    fullWidth={textFieldProps?.fullWidth}
-    min={props.disablePast ? dayjs().format('YYYY-MM-DD') : undefined}
+    labelPlacement='outside'
+    disabled={Boolean(props.disabled || textFieldProps?.disabled)}
+    min={min}
     placeholder={textFieldProps?.placeholder}
-    required={textFieldProps?.required}
-    sx={textFieldProps?.sx}
+    required={Boolean(textFieldProps?.required)}
+    hintText={!hasError ? helperText : undefined}
+    error={hasError ? helperText : undefined}
     value={props.value ? props.value.format('YYYY-MM-DD') : ''}
-    onChange={event => props.onChange?.(event.currentTarget.value ? dayjs(event.currentTarget.value) : null)}
+    onValueChange={value => props.onChange?.(value ? dayjs(value) : null)}
   />
 }
 

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
 import { ORDER_STATUS_LABELS } from '@/lib/order-constants'
 import type { Order, OrderItem, OrderMessageAttachment, OrderNoteImage } from '@/types/order'
 
@@ -942,15 +943,14 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               </select>
             </label>
 
-            <label className='form-control w-full'>
-              <span className='label-text mb-2'>Date needed</span>
-              <input
-                type='date'
-                className='input input-bordered w-full'
-                value={formState.dateNeeded}
-                onChange={(event) => updateField('dateNeeded', event.target.value)}
-              />
-            </label>
+            <DesignSystemDatePicker
+              id='dateNeeded'
+              label='Date needed'
+              labelPlacement='outside'
+              placeholder='Select a date'
+              value={formState.dateNeeded}
+              onValueChange={(value) => updateField('dateNeeded', value)}
+            />
 
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Tracking number</span>

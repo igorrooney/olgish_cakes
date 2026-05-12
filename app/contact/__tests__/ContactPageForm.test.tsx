@@ -18,14 +18,37 @@ describe('ContactPageForm', () => {
     return getTodayDateInputValue(date)
   }
 
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
+  const formatCalendarButtonName = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return calendarAriaFormatter.format(new Date(year, month - 1, day))
+  }
+
   const getDateInput = () => {
     const input = document.getElementById('dateNeeded')
 
-    if (!(input instanceof HTMLInputElement)) {
-      throw new Error('Expected date input')
+    if (!(input instanceof HTMLButtonElement)) {
+      throw new Error('Expected date picker trigger')
     }
 
     return input
+  }
+
+  const selectDateNeeded = (dateValue: string) => {
+    if (!dateValue) {
+      return
+    }
+
+    fireEvent.click(getDateInput())
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName(dateValue)}`, 'i')
+    }))
   }
 
   const getMessageField = () => screen.getByRole('textbox', { name: /^Message/i })
@@ -73,9 +96,7 @@ describe('ContactPageForm', () => {
       fireEvent.click(screen.getByRole('option', { name: enquiryType }))
     }
 
-    fireEvent.change(getDateInput(), {
-      target: { value: dateNeeded },
-    })
+    selectDateNeeded(dateNeeded)
     fireEvent.change(getMessageField(), {
       target: {
         value:
@@ -118,7 +139,7 @@ describe('ContactPageForm', () => {
     expect(screen.getByLabelText(/^Full name$/i)).toHaveAttribute('autocomplete', 'name')
     expect(screen.getByLabelText(/^Email address$/i)).toHaveAttribute('autocomplete', 'email')
     expect(screen.getByLabelText(/^Phone number/i)).toHaveAttribute('autocomplete', 'tel')
-    expect(getDateInput()).toHaveAttribute('min', todayDate)
+    expect(getDateInput()).toHaveAttribute('data-min-date', todayDate)
     expect(
       screen.getByText(/optional, but useful if a quick call or whatsapp reply would help\./i)
     ).toBeInTheDocument()
@@ -256,7 +277,7 @@ describe('ContactPageForm', () => {
     expect(screen.getByLabelText(/^Full name$/i)).toHaveValue('')
     expect(screen.getByLabelText(/^Email address$/i)).toHaveValue('')
     expect(screen.getByLabelText(/^Phone number/i)).toHaveValue('')
-    expect(getDateInput()).toHaveValue('')
+    expect(getDateInput()).toHaveAttribute('data-value', '')
     expect(getMessageField()).toHaveValue('')
     expect(screen.getByLabelText(/^What are you asking about\?$/i)).toHaveTextContent(
       'Select from list'
