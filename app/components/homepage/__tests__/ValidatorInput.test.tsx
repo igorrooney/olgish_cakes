@@ -6,6 +6,18 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { ValidatorInput } from '../ValidatorInput'
 
 describe('ValidatorInput error card', () => {
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
+  const formatCalendarButtonName = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return calendarAriaFormatter.format(new Date(year, month - 1, day))
+  }
+
   it('renders helper text for standard inputs and wires aria-describedby', () => {
     render(
       <ValidatorInput
@@ -295,7 +307,7 @@ describe('ValidatorInput error card', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
   })
 
-  it('applies cursor-pointer class to date input and wrapper', () => {
+  it('applies cursor-pointer class to date picker trigger', () => {
     render(
       <ValidatorInput
         id='date'
@@ -308,15 +320,81 @@ describe('ValidatorInput error card', () => {
       />
     )
 
-    const dateInput = screen.getByLabelText('When do you need it?')
-    expect(dateInput).toHaveClass('cursor-pointer')
+    const dateTrigger = screen.getByRole('button', { name: /when do you need it/i })
+    expect(dateTrigger).toHaveClass('cursor-pointer')
+    expect(dateTrigger).toHaveAttribute('aria-haspopup', 'dialog')
+  })
 
-    const inputWrapper = dateInput.closest('label')
-    if (!inputWrapper) {
-      throw new Error('Expected date input wrapper label')
-    }
+  it('renders a custom date picker calendar and selects an enabled date', () => {
+    const handleValueChange = jest.fn()
 
-    expect(inputWrapper).toHaveClass('cursor-pointer')
+    render(
+      <ValidatorInput
+        fieldType='datePicker'
+        id='date'
+        placeholder='Select a date'
+        value=''
+        label='When do you need it?'
+        hintText='Select a date'
+        min='2026-03-18'
+        onValueChange={handleValueChange}
+      />
+    )
+
+    const trigger = screen.getByRole('button', { name: /when do you need it/i })
+
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('data-min-date', '2026-03-18')
+
+    fireEvent.click(trigger)
+
+    expect(screen.getByRole('dialog')).toHaveTextContent('March 2026')
+    expect(screen.getByRole('button', { name: /17 March 2026 is not available/i })).toBeDisabled()
+
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName('2026-03-19')}`, 'i')
+    }))
+
+    expect(handleValueChange).toHaveBeenCalledWith('2026-03-19')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+  })
+
+  it('supports keyboard movement and escape in the custom date picker', () => {
+    render(
+      <ValidatorInput
+        fieldType='datePicker'
+        id='date'
+        placeholder='Select a date'
+        value=''
+        label='When do you need it?'
+        hintText='Select a date'
+        min='2026-03-18'
+        onValueChange={() => {}}
+      />
+    )
+
+    const trigger = screen.getByRole('button', { name: /when do you need it/i })
+
+    fireEvent.click(trigger)
+
+    const minDateButton = screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName('2026-03-18')}`, 'i')
+    })
+    const nextDateButton = screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName('2026-03-19')}`, 'i')
+    })
+
+    expect(minDateButton).toHaveFocus()
+
+    fireEvent.keyDown(screen.getByRole('grid'), { key: 'ArrowRight' })
+
+    expect(nextDateButton).toHaveFocus()
+
+    fireEvent.keyDown(screen.getByRole('grid'), { key: 'Escape' })
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
   })
 
   it('renders a visible error card for textarea field', () => {
@@ -358,6 +436,22 @@ describe('ValidatorInput error card', () => {
     expect(alert).toBeVisible()
     expect(alert).toHaveAttribute('aria-live', 'assertive')
     expect(alert).toHaveTextContent('Image must be 5MB or smaller')
+  })
+
+  it('renders upload format and size helper text as a readable sentence', () => {
+    render(
+      <ValidatorInput
+        fieldType='upload'
+        id='referenceImage'
+        label='Upload a reference image'
+        hintText='Upload a reference image'
+        infoLeft='JPEG, PNG, HEIC'
+        infoRight='5MB max'
+      />
+    )
+
+    expect(screen.getByText('JPEG, PNG, HEIC. 5MB max')).toBeInTheDocument()
+    expect(screen.queryByText(/HEIC5MB max/i)).not.toBeInTheDocument()
   })
 
   it('hydrates select and date inputs without changing deterministic ids or attributes', () => {
@@ -424,11 +518,11 @@ describe('ValidatorInput error card', () => {
     })
 
     const combobox = container.querySelector('[role="combobox"]')
-    const dateInput = container.querySelector('input[type="date"]')
+    const dateTrigger = container.querySelector('#date')
 
     expect(consoleErrorSpy).not.toHaveBeenCalled()
     expect(combobox?.getAttribute('aria-controls')).toBe('occasion-listbox')
-    expect(dateInput?.getAttribute('min')).toBe('2026-03-18')
+    expect(dateTrigger?.getAttribute('data-min-date')).toBe('2026-03-18')
 
     act(() => {
       root?.unmount()

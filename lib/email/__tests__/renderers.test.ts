@@ -20,6 +20,49 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Kyiv Cake')
   })
 
+  it('renders all submitted homepage enquiry details for customer emails', () => {
+    const rendered = renderEmailTemplate('custom-cake-enquiry-customer', {
+      orderType: 'custom-cake-enquiry',
+      customerName: 'Igor Ieromenko',
+      customerEmail: 'igor@example.com',
+      customerPhone: '+44 786 721 8194',
+      address: '1 Cake Street',
+      city: 'Leeds',
+      postcode: 'LS17 1AA',
+      dateNeeded: '2026-05-25',
+      occasion: 'Mother\'s Day Gifts',
+      customerMessage: 'test requirements',
+      attachmentNames: ['reference.jpg']
+    })
+
+    expect(rendered.subject).toBe('Custom cake enquiry received')
+    expect(rendered.text).toContain('I\'ve received your details and will check availability before getting back to you.')
+    expect(rendered.text).toContain('Contact Details')
+    expect(rendered.text).toContain('Name: Igor Ieromenko')
+    expect(rendered.text).toContain('Email: igor@example.com')
+    expect(rendered.text).toContain('Phone: +44 7867 218194')
+    expect(rendered.text).toContain('Address: 1 Cake Street')
+    expect(rendered.text).toContain('City: Leeds')
+    expect(rendered.text).toContain('Postcode: LS17 1AA')
+    expect(rendered.text).toContain('Date needed: 25/05/2026')
+    expect(rendered.text).toContain('Occasion: Mother\'s Day Gifts')
+    expect(rendered.text).toContain('Customer message: test requirements')
+    expect(rendered.text).toContain('Reference image uploaded: reference.jpg')
+    expect(rendered.html).toContain('Contact details')
+    expect(rendered.html).toContain('Cake details')
+    expect(rendered.html).toContain('reference.jpg')
+    expect(rendered.html).toContain('src="cid:olgish-cakes-email-logo"')
+    expect(rendered.html).toContain('width="112" height="112"')
+    expect(rendered.html).not.toContain('olgish-cakes-email-logo.png')
+    expect(rendered.html).not.toContain('olgish-cakes-logo-bakery-brand.png')
+    expect(rendered.html).not.toContain('olgish-cakes-logo-bakery-brand-128.webp')
+    expect(rendered.html).toContain('font-family: Inter, Arial, Helvetica, sans-serif')
+    expect(rendered.html).toContain('font-family: \'More Sugar\', \'Trebuchet MS\', Arial, Helvetica, sans-serif')
+    expect(rendered.html).toContain('background-color: #FFF5E6')
+    expect(rendered.html).toContain('background-color: #FFFBEB')
+    expect(rendered.html).toContain('background-color: #2E3192')
+  })
+
   it('omits empty optional fields', () => {
     const rendered = renderEmailTemplate('contact-admin-inquiry', {
       customerName: 'Jane',
@@ -52,6 +95,25 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Gift note: Happy birthday!')
     expect(rendered.html).toContain('Gift note')
   })
+
+  it('keeps order labels for non-enquiry customer emails', () => {
+    const rendered = renderEmailTemplate('orders-customer-confirmation', {
+      customerName: 'Jane',
+      orderNumber: 'OC-ORDER-LABELS-1',
+      occasion: 'Birthday',
+      customerMessage: 'Please include candles'
+    })
+
+    expect(rendered.text).toContain('Order Summary')
+    expect(rendered.text).toContain('Order Preferences')
+    expect(rendered.text).not.toContain('Enquiry Summary')
+    expect(rendered.text).not.toContain('Cake Details')
+    expect(rendered.html).toContain('Order Summary')
+    expect(rendered.html).toContain('Order Preferences')
+    expect(rendered.html).not.toContain('Enquiry summary')
+    expect(rendered.html).not.toContain('Cake details')
+  })
+
   it('keeps date and currency formatting deterministic', () => {
     const rendered = renderEmailTemplate('orders-admin-notification', {
       orderNumber: 'OC-1002',

@@ -9,6 +9,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react'
+import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
 
 type SelectOption = {
   label: string
@@ -33,6 +34,21 @@ type ValidatorInputProps =
       trailingIcon?: ReactNode
       inputClassName?: string
       showValidation?: boolean
+      error?: string
+      required?: boolean
+      hintText: string
+      onValueChange: (value: string) => void
+    }
+  | {
+      fieldType: 'datePicker'
+      id: string
+      min?: string
+      placeholder: string
+      value: string
+      label: string
+      labelAlt?: string
+      labelPlacement?: 'inside' | 'outside'
+      labelLayout?: 'between' | 'stacked'
       error?: string
       required?: boolean
       hintText: string
@@ -487,6 +503,10 @@ export function ValidatorInput(props: ValidatorInputProps) {
     return <SelectField {...props} />
   }
 
+  if (props.fieldType === 'datePicker') {
+    return <DesignSystemDatePicker {...props} />
+  }
+
   if (props.fieldType === 'textarea') {
     const {
       id,
@@ -593,15 +613,32 @@ export function ValidatorInput(props: ValidatorInputProps) {
           </div>
         ) : null}
         {(infoLeft || infoRight) && (
-          <div className='label w-full justify-between'>
-            <span className='label-text-alt text-xs text-base-content opacity-100'>{infoLeft}</span>
-            <span className='label-text-alt text-xs text-base-content opacity-100'>
-              {infoRight}
-            </span>
-          </div>
+          <p className='mt-2 text-xs leading-5 text-base-content/70'>
+            {[infoLeft, infoRight].filter(Boolean).join('. ')}
+          </p>
         )}
         {renderErrorCard(id, error)}
       </div>
+    )
+  }
+
+  if (props.type === 'date') {
+    return (
+      <DesignSystemDatePicker
+        id={props.id}
+        min={props.min}
+        placeholder={props.placeholder}
+        value={props.value}
+        label={props.label}
+        labelAlt={props.labelAlt}
+        labelPlacement={props.labelPlacement}
+        labelLayout={props.labelLayout}
+        error={props.error}
+        required={props.required}
+        hintText={props.hintText}
+        triggerClassName={props.inputClassName}
+        onValueChange={props.onValueChange}
+      />
     )
   }
 

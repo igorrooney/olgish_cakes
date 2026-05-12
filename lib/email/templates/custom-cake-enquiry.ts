@@ -62,8 +62,8 @@ export const customCakeTemplateDefinitions: Record<string, TemplateDefinition<Em
   'custom-cake-enquiry-customer': createTemplateDefinition(
     {
       subject: 'Custom cake enquiry received',
-      heading: 'Enquiry received',
-      intro: 'Thank you for your custom cake enquiry.',
+      heading: 'Custom cake enquiry received',
+      intro: 'Thank you for your custom cake enquiry. I\'ve received your details and will check availability before getting back to you.',
       admin: false
     },
     customerScenarios

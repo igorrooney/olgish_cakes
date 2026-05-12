@@ -19,6 +19,25 @@ describe('WorkshopEnquiryForm', () => {
     return getTodayDateInputValue(date)
   }
 
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
+  const formatCalendarButtonName = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return calendarAriaFormatter.format(new Date(year, month - 1, day))
+  }
+
+  const selectPreferredDate = (dateValue: string) => {
+    fireEvent.click(screen.getByLabelText(/^Preferred date$/i))
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${formatCalendarButtonName(dateValue)}`, 'i')
+    }))
+  }
+
   const renderForm = async () => {
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -56,9 +75,7 @@ describe('WorkshopEnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/^Location$/i), {
       target: { value: 'Shoreditch, London' },
     })
-    fireEvent.change(screen.getByLabelText(/^Preferred date$/i), {
-      target: { value: preferredDate },
-    })
+    selectPreferredDate(preferredDate)
     fireEvent.change(screen.getByLabelText(/^Decoration theme$/i), {
       target: { value: 'Soft florals' },
     })
@@ -114,7 +131,7 @@ describe('WorkshopEnquiryForm', () => {
     expect(
       screen.getByText(/i'll reply by email with the quote, travel cost and whether the venue and timings sound realistic/i)
     ).toBeInTheDocument()
-    expect(screen.getByLabelText(/^Preferred date$/i)).toHaveAttribute('min', tomorrowDate)
+    expect(screen.getByLabelText(/^Preferred date$/i)).toHaveAttribute('data-min-date', tomorrowDate)
   })
 
   it('shows validation errors and focuses the first invalid field', async () => {
@@ -147,19 +164,11 @@ describe('WorkshopEnquiryForm', () => {
     expect(global.fetch).not.toHaveBeenCalledWith('/api/workshop-enquiry', expect.anything())
   })
 
-  it('rejects today and requires a future workshop date', async () => {
-    const todayDate = getDateInputValue()
+  it('starts the preferred date picker at the first available future date', async () => {
+    const tomorrowDate = getDateInputValue(1)
 
     await renderForm()
-    fillRequiredFields({ preferredDate: todayDate })
-
-    fireEvent.click(screen.getByRole('button', { name: /send workshop enquiry/i }))
-
-    await waitFor(() => {
-      expect(screen.getByText(/please select a future date/i)).toBeInTheDocument()
-    })
-
-    expect(global.fetch).not.toHaveBeenCalledWith('/api/workshop-enquiry', expect.anything())
+    expect(screen.getByLabelText(/^Preferred date$/i)).toHaveAttribute('data-min-date', tomorrowDate)
   })
 
   it('submits successfully with email only', async () => {

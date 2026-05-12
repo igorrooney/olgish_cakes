@@ -241,14 +241,13 @@ export function WorkshopEnquiryForm() {
           onValueChange={value => updateField('location', value, true)}
         />
         <ValidatorInput
+          fieldType='datePicker'
           id='preferredDate'
-          type='date'
           min={minDate}
           placeholder='Select a date'
           value={formData.preferredDate}
           label='Preferred date'
           labelPlacement='outside'
-          showValidation={hasAttemptedSubmit}
           error={errors.preferredDate}
           required
           hintText='Choose the date you want me to check first'

@@ -159,7 +159,7 @@ describe('OrderDetailsPageClient', () => {
       expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
     })
 
-    expect(screen.getByLabelText('Date needed')).toHaveValue('2026-07-26')
+    expect(screen.getByLabelText('Date needed')).toHaveAttribute('data-value', '2026-07-26')
   })
 
   it('updates order management fields through the order API', async () => {

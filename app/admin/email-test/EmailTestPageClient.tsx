@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
 import { emailTemplateIds, type EmailTemplateId, type RenderedEmail } from '@/lib/email/types'
 import { listTemplateScenarioOptions } from '@/lib/email/scenarios'
 
@@ -848,6 +849,13 @@ export function EmailTestPageClient() {
                                 <option key={option.value} value={option.value}>{option.label}</option>
                               ))}
                             </select>
+                          ) : field.type === 'date' ? (
+                            <DesignSystemDatePicker
+                              id={`email-test-${field.key}`}
+                              placeholder={field.placeholder || 'Select a date'}
+                              value={formValues[field.key]}
+                              onValueChange={(value) => handleFieldChange(field.key, value)}
+                            />
                           ) : (
                             <input
                               type={field.type === 'list' || field.type === 'number' ? 'text' : field.type}

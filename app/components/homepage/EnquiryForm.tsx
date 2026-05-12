@@ -4,8 +4,10 @@ import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '@/app/hooks/useCustomCakeEnquiry'
 import {
   buildCustomCakeEnquiryFormData,
+  customCakeEnquiryFallbackErrorMessage,
   isCsrfTokenLoadError,
-  isSubmissionError
+  isSubmissionError,
+  withCustomCakeEnquiryContactFallback
 } from '@/app/services/customCakeEnquiry'
 import { AddressIcon } from '../icons/AddressIcon'
 import { EmailIcon } from '../icons/EmailIcon'
@@ -88,16 +90,12 @@ export function EnquiryForm({
       }
 
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to submit form. Please try again.'
+        submit: error instanceof Error ? error.message : customCakeEnquiryFallbackErrorMessage
       })
     }
   })
 
   const isSubmitting = submitMutation.isPending
-  const buttonLabel = hasSubmittedSuccessfully ? 'Enquiry sent' : 'Send enquiry'
-  const buttonClassName = hasSubmittedSuccessfully
-    ? 'bg-[var(--d-color-status-success-bg)] hover:bg-[var(--d-color-status-success-bg)]'
-    : 'bg-primary-500 hover:bg-primary-700'
 
   const resetSuccessState = () => {
     if (hasSubmittedSuccessfully) {
@@ -182,10 +180,10 @@ export function EnquiryForm({
     } catch (error) {
       setErrors({
         submit: isCsrfTokenLoadError(error)
-          ? 'CSRF token not loaded. Please refresh the page and try again.'
+          ? withCustomCakeEnquiryContactFallback('CSRF token not loaded. Please refresh the page.')
           : error instanceof Error
             ? error.message
-            : 'Failed to submit form. Please try again.'
+            : customCakeEnquiryFallbackErrorMessage
       })
     }
   }
@@ -302,12 +300,11 @@ export function EnquiryForm({
             }}
           />
           <ValidatorInput
+            fieldType='datePicker'
             id='date'
-            type='date'
             placeholder='Select a date'
             value={formData.date}
             label='When do you need it?'
-            showValidation={hasAttemptedSubmit}
             error={errors.date}
             required
             hintText='Select a date'
@@ -360,14 +357,42 @@ export function EnquiryForm({
               <span>{errors.submit}</span>
             </div>
           )}
+          {hasSubmittedSuccessfully ? (
+            <div
+              className='alert alert-success w-full items-start text-sm'
+              role='status'
+              aria-live='polite'
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-5 w-5 shrink-0 stroke-current'
+                fill='none'
+                viewBox='0 0 24 24'
+                aria-hidden='true'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                />
+              </svg>
+              <div>
+                <p className='font-semibold'>Enquiry sent</p>
+                <p className='mt-1 leading-6'>
+                  Thank you, your cake enquiry has arrived safely. I&apos;ll get back to you as soon as I can.
+                </p>
+              </div>
+            </div>
+          ) : null}
           <button
             type='submit'
-            className={`btn h-12 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}
+            className='btn h-12 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700 tablet:h-12'
             disabled={isSubmitting || isCsrfLoading}
             aria-busy={isSubmitting}
           >
             <span className='flex items-center justify-center gap-2 font-sans text-sm font-semibold'>
-              {buttonLabel}
+              Send enquiry
               {isSubmitting ? (
                 <span className='loading loading-spinner' aria-hidden='true'></span>
               ) : (

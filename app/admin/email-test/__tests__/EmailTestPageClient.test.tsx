@@ -337,7 +337,7 @@ describe('EmailTestPageClient', () => {
     expect(screen.getByLabelText('Internal note')).toHaveValue('Update Vercel env values after refreshing.')
     expect(screen.getByLabelText('Order type')).toHaveValue('system-alert')
     expect(screen.getByLabelText('Product name')).toHaveValue('Instagram access token')
-    expect(screen.getByLabelText('Date needed')).toHaveValue('2026-06-05')
+    expect(screen.getByLabelText('Date needed')).toHaveAttribute('data-value', '2026-06-05')
     expect(screen.queryByLabelText('Customer phone')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Quantity')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Attachment names')).not.toBeInTheDocument()

@@ -9,11 +9,31 @@ import { getTodayDateInputValue } from '../mobileForm.utils'
 describe('EnquiryForm', () => {
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
+  const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
 
   const getDateInputValue = (daysFromNow = 0) => {
     const date = new Date()
     date.setDate(date.getDate() + daysFromNow)
     return getTodayDateInputValue(date)
+  }
+
+  const parseDateInputValue = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  const selectDate = (value: string) => {
+    fireEvent.click(screen.getByRole('button', { name: /when do you need it/i }))
+    fireEvent.click(screen.getByRole('button', {
+      name: new RegExp(`select ${escapeRegExp(calendarAriaFormatter.format(parseDateInputValue(value)))}`, 'i')
+    }))
   }
 
   const fillValidForm = () => {
@@ -23,7 +43,7 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/^address:$/i), { target: { value: '123 Test Street' } })
     fireEvent.change(screen.getByLabelText(/^city:$/i), { target: { value: 'Leeds' } })
     fireEvent.change(screen.getByLabelText(/^postcode:$/i), { target: { value: 'LS1 1AA' } })
-    fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: getDateInputValue(1) } })
+    selectDate(getDateInputValue(1))
   }
 
   const renderWithCsrf = async (occasionOptions?: Array<{ label: string, value?: string, disabled?: boolean }>) => {
@@ -75,6 +95,7 @@ describe('EnquiryForm', () => {
   afterEach(() => {
     Element.prototype.scrollIntoView = originalScrollIntoView
     jest.restoreAllMocks()
+    jest.useRealTimers()
   })
 
   it('renders all form fields', async () => {
@@ -121,13 +142,13 @@ describe('EnquiryForm', () => {
 
     await renderWithCsrf()
 
-    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', expectedMinDate)
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('data-min-date', expectedMinDate)
   })
 
   it('does not depend on a server-supplied min date prop', async () => {
     await renderWithCsrf()
 
-    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('min', getDateInputValue())
+    expect(screen.getByLabelText(/when do you need it/i)).toHaveAttribute('data-min-date', getDateInputValue())
   })
 
   it('applies tablet layout classes to the container and heading', async () => {
@@ -160,19 +181,20 @@ describe('EnquiryForm', () => {
   it('shows the date input label and empty value when untouched', async () => {
     await renderWithCsrf()
 
-    const dateInput = screen.getByLabelText(/when do you need it/i)
-    expect(dateInput).toBeInTheDocument()
-    expect(dateInput).toHaveValue('')
+    const datePickerTrigger = screen.getByLabelText(/when do you need it/i)
+    expect(datePickerTrigger).toBeInTheDocument()
+    expect(datePickerTrigger).toHaveTextContent(/select a date/i)
   })
 
-  it('clears past dates and shows an error message', async () => {
+  it('disables past dates in the calendar', async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-03-18T12:00:00.000Z'))
+
     await renderWithCsrf()
 
-    const dateInput = screen.getByLabelText(/when do you need it/i)
-    fireEvent.change(dateInput, { target: { value: getDateInputValue(-1) } })
+    fireEvent.click(screen.getByRole('button', { name: /when do you need it/i }))
 
-    expect(dateInput).toHaveValue('')
-    expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /17 March 2026 is not available/i })).toBeDisabled()
   })
 
   it('rejects a date that becomes past after the form stays open across midnight', async () => {
@@ -182,13 +204,13 @@ describe('EnquiryForm', () => {
     await renderWithCsrf()
 
     const dateInput = screen.getByLabelText(/when do you need it/i)
-    expect(dateInput).toHaveAttribute('min', '2026-03-18')
+    expect(dateInput).toHaveAttribute('data-min-date', '2026-03-18')
 
     jest.setSystemTime(new Date('2026-03-19T00:05:00.000Z'))
 
-    fireEvent.change(dateInput, { target: { value: '2026-03-18' } })
+    selectDate('2026-03-18')
 
-    expect(dateInput).toHaveValue('')
+    expect(dateInput).toHaveTextContent(/select a date/i)
     expect(screen.getByText(/please select today or a future date/i)).toBeInTheDocument()
   })
 
@@ -212,7 +234,7 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/^address:$/i), { target: { value: '123' } })
     fireEvent.change(screen.getByLabelText(/^city:$/i), { target: { value: 'L' } })
     fireEvent.change(screen.getByLabelText(/^postcode:$/i), { target: { value: 'BAD' } })
-    fireEvent.change(screen.getByLabelText(/when do you need it/i), { target: { value: getDateInputValue(1) } })
+    selectDate(getDateInputValue(1))
 
     const submitButton = screen.getByRole('button', { name: /send enquiry/i })
     const form = submitButton.closest('form')
@@ -352,8 +374,11 @@ describe('EnquiryForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send enquiry/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /enquiry sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
+
+    expect(screen.getByText(/your cake enquiry has arrived safely/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send enquiry/i })).toBeInTheDocument()
 
     expect(screen.queryByText(/selected:\s*cake\.png/i)).not.toBeInTheDocument()
     expect(fileInput.value).toBe('')
@@ -428,7 +453,7 @@ describe('EnquiryForm', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /enquiry sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
   })
 
@@ -455,7 +480,7 @@ describe('EnquiryForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send enquiry/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /enquiry sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
 
     const fullNameInput = screen.getByLabelText(/full name:/i)
@@ -511,9 +536,10 @@ describe('EnquiryForm', () => {
 
     // Wait for submission to complete and button to be enabled again
     await waitFor(() => {
-      const enabledButton = screen.getByRole('button', { name: /enquiry sent/i })
-      expect(enabledButton).not.toBeDisabled()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
+
+    expect(screen.getByRole('button', { name: /send enquiry/i })).not.toBeDisabled()
   })
 
   it('shows a server-provided message when submission fails on the server', async () => {
@@ -542,6 +568,8 @@ describe('EnquiryForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/internal server error/i)).toBeInTheDocument()
+      expect(screen.getByText(/hello@olgishcakes\.co\.uk/i)).toBeInTheDocument()
+      expect(screen.getByText(/\+44 786 721 8194/i)).toBeInTheDocument()
     })
   })
 })

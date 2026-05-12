@@ -549,8 +549,8 @@ export function ProductOrderInlineForm({
         />
       ) : null}
       <ValidatorInput
+        fieldType='datePicker'
         id='date'
-        type='date'
         placeholder='Select a date'
         value={formData.date}
         label='When do you need it?'
