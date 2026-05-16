@@ -131,6 +131,9 @@ function MobileMenu() {
             <a href='/cakes' role='menuitem' className={mobileMenuItemClassName}>
               Custom cakes
             </a>
+            <a href={quotePageHref} role='menuitem' className={mobileMenuItemClassName}>
+              Get a quote
+            </a>
             <a href='/faqs' role='menuitem' className={mobileMenuItemClassName}>
               FAQs
             </a>

@@ -59,6 +59,10 @@ describe('SiteHeader', () => {
     expect(menuDetails).toHaveAttribute('open')
     expect(screen.getByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /custom cakes/i })).toHaveAttribute('href', '/cakes')
+    expect(screen.getByRole('menuitem', { name: /get a quote/i })).toHaveAttribute(
+      'href',
+      '/get-custom-quote#quote-form'
+    )
     expect(screen.getByRole('menuitem', { name: /cakes by post/i })).toHaveAttribute('href', '/cakes-by-post')
     expect(screen.getByRole('menuitem', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
     expect(screen.queryByRole('menuitem', { name: /all cakes/i })).not.toBeInTheDocument()
