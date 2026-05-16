@@ -2,6 +2,7 @@ import { isAdminAuthenticated } from '@/lib/admin-auth'
 import { logger } from '@/lib/logger'
 import { generateOrderNumber } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
+import { getRequestIpLocation } from '@/lib/request-location'
 import { formatValidationErrors, orderSchema, validateRequest } from '@/lib/validation'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
@@ -179,6 +180,7 @@ async function handlePOST(request: NextRequest) {
     const attachmentNames = attachments.map(getAttachmentLabel)
     const referenceImageUrls = getReferenceImageUrls(attachments)
 
+    const requestIpLocation = getRequestIpLocation(request.headers)
     const orderDoc = {
       orderNumber,
       status: 'new',
@@ -242,7 +244,8 @@ async function handlePOST(request: NextRequest) {
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
           request.headers.get('x-real-ip') ||
-          'unknown'
+          'unknown',
+        ...(requestIpLocation ? { ipLocation: requestIpLocation } : {})
       }
     }
 

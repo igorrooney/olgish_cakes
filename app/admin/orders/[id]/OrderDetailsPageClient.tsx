@@ -30,6 +30,7 @@ interface OrderDetailsFormState {
   paymentStatus: string
   paymentMethod: string
   deliveryMethod: string
+  deliveryCourier: string
   dateNeeded: string
   trackingNumber: string
   note: string
@@ -63,6 +64,7 @@ interface OrderPatchPayload {
   paymentStatus?: string
   paymentMethod?: string
   deliveryMethod?: string
+  deliveryCourier?: string
   dateNeeded?: string | null
   trackingNumber?: string
   note?: string
@@ -92,6 +94,17 @@ interface NoticeState {
 interface DeleteOrderInput {
   orderId: string
   password: string
+}
+
+interface StoredIpLocation {
+  city?: string
+  region?: string
+  country?: string
+}
+
+interface CustomerNoteRow {
+  label: string
+  value: string
 }
 
 const statusOptions = [
@@ -125,6 +138,11 @@ const deliveryMethodOptions = [
   'postal',
   'postal-delivery',
   'market-pickup'
+]
+
+const deliveryCourierOptions = [
+  { value: 'royal-mail', label: 'Royal Mail' },
+  { value: 'evri', label: 'Evri' }
 ]
 
 const formatCurrency = (value: number) =>
@@ -167,6 +185,114 @@ const formatLabel = (value?: string) => {
   return value
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+
+const readStringField = (record: Record<string, unknown>, field: string) => {
+  const value = record[field]
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
+}
+
+const getOrderDeliveryCourier = (order: Order) => {
+  if (!isRecord(order.metadata)) {
+    return 'royal-mail'
+  }
+
+  const deliveryCourier = readStringField(order.metadata, 'deliveryCourier')
+  return deliveryCourier === 'evri' || deliveryCourier === 'royal-mail' ? deliveryCourier : 'royal-mail'
+}
+
+const getOrderIpLocation = (order: Order): StoredIpLocation | null => {
+  if (!isRecord(order.metadata)) {
+    return null
+  }
+
+  const ipLocation = order.metadata.ipLocation
+
+  if (!isRecord(ipLocation)) {
+    return null
+  }
+
+  const location = {
+    city: readStringField(ipLocation, 'city'),
+    region: readStringField(ipLocation, 'region'),
+    country: readStringField(ipLocation, 'country')
+  }
+
+  return Object.values(location).some(Boolean) ? location : null
+}
+
+const formatIpLocation = (location: StoredIpLocation | null) =>
+  location ? [location.city, location.region, location.country].filter(Boolean).join(', ') : 'Not captured'
+
+const isCakesByPostOrder = (order: Order) =>
+  order.orderType === 'gift-hamper' ||
+  order.delivery?.deliveryMethod === 'postal' ||
+  order.items.some((item) => item.productType === 'gift-hamper')
+
+const getInlineOrderContext = (order: Order): Record<string, unknown> | null => {
+  if (!isRecord(order.metadata)) {
+    return null
+  }
+
+  const context = order.metadata.inlineOrderContext
+  return isRecord(context) ? context : null
+}
+
+const extractMessageLine = (value: string) => {
+  const messageLine = value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => {
+      const normalized = line.toLowerCase()
+      return normalized.startsWith('message:') || normalized.startsWith('customer notes:')
+    })
+
+  return messageLine?.replace(/^(message|customer notes):\s*/i, '').trim()
+}
+
+const getCustomerMessage = (order: Order) => {
+  const context = getInlineOrderContext(order)
+  const contextMessage = context ? readStringField(context, 'customerMessage') : undefined
+  const itemMessage = order.items
+    .map((item) => item.specialInstructions?.trim())
+    .find((value) => value && value.length > 0)
+  const submittedMessage = (order.messages || [])
+    .map((message) => extractMessageLine(message.message) || message.message.trim())
+    .find((value) => value.length > 0)
+
+  return contextMessage || itemMessage || submittedMessage
+}
+
+const getOrderGiftNote = (order: Order) => {
+  const metadataGiftNote = isRecord(order.metadata)
+    ? readStringField(order.metadata, 'giftNote')
+    : undefined
+
+  return order.delivery?.giftNote?.trim() || metadataGiftNote
+}
+
+const getCustomerNoteRows = (order: Order): CustomerNoteRow[] => {
+  const rows: CustomerNoteRow[] = []
+  const customerMessage = getCustomerMessage(order)
+  const giftNote = getOrderGiftNote(order)
+
+  if (customerMessage) {
+    rows.push({ label: 'Customer notes', value: customerMessage })
+  }
+
+  if (giftNote) {
+    rows.push({ label: 'Gift note', value: giftNote })
+  }
+
+  return rows
+}
+
+const isGeneratedCakesByPostMessage = (value: string) => {
+  const normalized = value.toLowerCase()
+  return normalized.includes('product type: gift-hamper') && normalized.includes('price:')
 }
 
 const getOrderTotal = (order: Order) => {
@@ -268,6 +394,7 @@ const createFormState = (order: Order): OrderDetailsFormState => ({
   paymentStatus: order.pricing?.paymentStatus || 'pending',
   paymentMethod: order.pricing?.paymentMethod || '',
   deliveryMethod: order.delivery?.deliveryMethod || 'collection',
+  deliveryCourier: getOrderDeliveryCourier(order),
   dateNeeded: getDateInputValue(order.delivery?.dateNeeded),
   trackingNumber: order.delivery?.trackingNumber || '',
   note: ''
@@ -370,6 +497,7 @@ const hasFormChanges = (current: OrderDetailsFormState | null, saved: OrderDetai
     current.paymentStatus !== saved.paymentStatus ||
     current.paymentMethod !== saved.paymentMethod ||
     current.deliveryMethod !== saved.deliveryMethod ||
+    current.deliveryCourier !== saved.deliveryCourier ||
     current.dateNeeded !== saved.dateNeeded ||
     current.trackingNumber !== saved.trackingNumber ||
     current.note.trim().length > 0
@@ -475,6 +603,10 @@ function buildOrderPatchPayload(
 
   if (formState.deliveryMethod !== savedFormState.deliveryMethod) {
     payload.deliveryMethod = formState.deliveryMethod
+  }
+
+  if (formState.deliveryCourier !== savedFormState.deliveryCourier) {
+    payload.deliveryCourier = formState.deliveryCourier
   }
 
   if (formState.dateNeeded !== savedFormState.dateNeeded) {
@@ -816,6 +948,9 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
 
   const firstItem = order.items[0]
   const nextActionMessage = getNextActionMessage(order)
+  const ipLocation = getOrderIpLocation(order)
+  const cakesByPostOrder = isCakesByPostOrder(order)
+  const customerNoteRows = getCustomerNoteRows(order)
 
   return (
     <div className='flex flex-col gap-6'>
@@ -939,6 +1074,19 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               >
                 {deliveryMethodOptions.map((method) => (
                   <option key={method} value={method}>{formatLabel(method)}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className='form-control w-full'>
+              <span className='label-text mb-2'>Courier</span>
+              <select
+                className='select select-bordered w-full'
+                value={formState.deliveryCourier}
+                onChange={(event) => updateField('deliveryCourier', event.target.value)}
+              >
+                {deliveryCourierOptions.map((courier) => (
+                  <option key={courier.value} value={courier.value}>{courier.label}</option>
                 ))}
               </select>
             </label>
@@ -1143,6 +1291,10 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                     {[order.customer.city, order.customer.postcode].filter(Boolean).join(', ') || 'Not specified'}
                   </dd>
                 </div>
+                <div>
+                  <dt className='text-base-content/60'>Approx. submitted from</dt>
+                  <dd className='mt-1 text-base-content'>{formatIpLocation(ipLocation)}</dd>
+                </div>
               </dl>
             )}
           </section>
@@ -1302,10 +1454,25 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
           </section>
 
           <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='messages-heading'>
-            <h2 id='messages-heading' className='text-lg font-semibold text-base-content'>Messages and images</h2>
-            {order.messages && order.messages.length > 0 ? (
+            <h2 id='messages-heading' className='text-lg font-semibold text-base-content'>
+              {cakesByPostOrder ? 'Customer notes and images' : 'Messages and images'}
+            </h2>
+            {cakesByPostOrder ? (
+              customerNoteRows.length > 0 ? (
+                <dl className='mt-4 grid gap-3'>
+                  {customerNoteRows.map((row) => (
+                    <div key={row.label} className='rounded-box border border-base-300 bg-base-200 p-4'>
+                      <dt className='text-xs font-medium uppercase tracking-wide text-base-content/60'>{row.label}</dt>
+                      <dd className='mt-2 whitespace-pre-wrap text-sm text-base-content'>{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <p className='mt-4 text-sm text-base-content/65'>No customer notes recorded.</p>
+              )
+            ) : order.messages && order.messages.length > 0 ? (
               <div className='mt-4 grid gap-3'>
-                {order.messages.map((message, index) => (
+                {order.messages.filter((message) => !isGeneratedCakesByPostMessage(message.message)).map((message, index) => (
                   <div key={`${message.message}-${index}`} className='rounded-box border border-base-300 bg-base-200 p-4'>
                     <p className='whitespace-pre-wrap text-sm text-base-content'>{message.message}</p>
                   </div>
@@ -1337,7 +1504,9 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                   )
                 })}
               </div>
-            ) : null}
+            ) : (
+              <p className='mt-4 text-sm text-base-content/65'>No images attached.</p>
+            )}
           </section>
 
           <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='notes-heading'>

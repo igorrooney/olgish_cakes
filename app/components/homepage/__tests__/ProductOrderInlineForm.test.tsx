@@ -253,7 +253,7 @@ describe('ProductOrderInlineForm', () => {
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /order sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /request sent/i })).toBeDisabled()
     })
   })
 
@@ -566,7 +566,7 @@ describe('ProductOrderInlineForm', () => {
     expect(body.get('quantity')).toBeNull()
   })
 
-  it('shows success next steps after submit and keeps success button label', async () => {
+  it('shows success next steps after submit and disables the submitted button', async () => {
     await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
@@ -591,7 +591,7 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.getByText("We'll review your details within 24 hours.")).toBeInTheDocument()
     expect(screen.getByText("We'll contact you with a quote and final design details.")).toBeInTheDocument()
     expect(screen.getByText("We'll confirm delivery or collection once you approve.")).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /order sent/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /request sent/i })).toBeDisabled()
   })
 
   it('shows cakes by post payment next steps after submit', async () => {
@@ -608,6 +608,7 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
     fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
     fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    expect(screen.getByLabelText(/customer notes/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
@@ -620,10 +621,10 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.getByText('Order request received')).toBeInTheDocument()
     expect(screen.getByText("Thank you. We've received your cakes by post request.")).toBeInTheDocument()
     expect(screen.getByText("We'll review your order and delivery details within 24 hours.")).toBeInTheDocument()
-    expect(screen.getByText("We'll send you a secure payment link once everything is confirmed.")).toBeInTheDocument()
+    expect(screen.getByText("If everything is confirmed, we'll send you a secure payment link.")).toBeInTheDocument()
     expect(screen.getByText("Once payment is received, we'll prepare, pack, and send your cake by post.")).toBeInTheDocument()
     expect(screen.queryByText("We'll contact you with a quote and final design details.")).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /order sent/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /request sent/i })).toBeDisabled()
   })
 
   it('clears success state when user edits a field after successful submit', async () => {
@@ -796,6 +797,23 @@ describe('ProductOrderInlineForm', () => {
     const body = requestInit.body as FormData
     expect(body.get('csrfToken')).toBe('csrf-token-123')
     expect(body.get('giftNote')).toBe('Happy birthday from us!')
+  })
+
+  it('labels cakes by post message input as customer notes and keeps gift note for the card text', () => {
+    render(
+      <ProductOrderInlineForm
+        productType='gift-hamper'
+        productId='hamper-slug'
+        productName='Hamper'
+        totalPrice={12.5}
+      />
+    )
+
+    expect(screen.getByLabelText(/customer notes/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Add notes for Olgish Cakes')).toBeInTheDocument()
+    expect(screen.getByLabelText(/gift note/i)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Add a personal message to include with your gift')).toBeInTheDocument()
+    expect(screen.queryByLabelText(/^message/i)).not.toBeInTheDocument()
   })
 
   it('omits gift note from payload for gift-hamper orders when empty', async () => {

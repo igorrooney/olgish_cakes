@@ -10,6 +10,13 @@ import {
 import type { Order, OrderItem, OrderNote, OrderNoteImage, OrderUpdate } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
 
+type DeliveryCourier = 'royal-mail' | 'evri'
+
+const deliveryCourierLabels: Record<DeliveryCourier, string> = {
+  'royal-mail': 'Royal Mail',
+  evri: 'Evri'
+}
+
 function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
   if (!Array.isArray(items)) {
     return []
@@ -27,6 +34,32 @@ function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
     productType: item.productType,
     productId: item.productId
   }))
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function normalizeDeliveryCourier(value: string | undefined): DeliveryCourier | undefined {
+  if (value === 'royal-mail' || value === 'evri') {
+    return value
+  }
+
+  return undefined
+}
+
+function getDeliveryCourier(order: Order): DeliveryCourier | undefined {
+  if (!isRecord(order.metadata)) {
+    return undefined
+  }
+
+  return normalizeDeliveryCourier(typeof order.metadata.deliveryCourier === 'string' ? order.metadata.deliveryCourier : undefined)
+}
+
+function getDeliveryCourierLabel(order: Order): string {
+  const courier = getDeliveryCourier(order) || 'royal-mail'
+
+  return deliveryCourierLabels[courier]
 }
 
 function getFormString(formData: FormData, key: string): string | undefined {
@@ -75,6 +108,19 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
 
   if (updates.deliveryMethod) {
     nextOrder.delivery.deliveryMethod = updates.deliveryMethod
+  }
+
+  if (updates.deliveryCourier !== undefined) {
+    const deliveryCourier = normalizeDeliveryCourier(updates.deliveryCourier)
+    const nextMetadata = { ...(nextOrder.metadata || {}) }
+
+    if (deliveryCourier) {
+      nextMetadata.deliveryCourier = deliveryCourier
+    } else {
+      delete nextMetadata.deliveryCourier
+    }
+
+    nextOrder.metadata = nextMetadata
   }
 
   if (updates.dateNeeded !== undefined) {
@@ -251,6 +297,7 @@ export async function PATCH(
       updates = {
         status: getFormString(formData, 'status'),
         trackingNumber: getFormString(formData, 'trackingNumber'),
+        deliveryCourier: getFormString(formData, 'deliveryCourier'),
         deliveryMethod: getFormString(formData, 'deliveryMethod'),
         dateNeeded: (() => {
           const dateNeeded = getFormString(formData, 'dateNeeded')
@@ -423,28 +470,47 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     return
   }
 
+  const isCakesByPostOrder = order.orderType === 'gift-hamper' ||
+    order.delivery.deliveryMethod === 'postal' ||
+    order.delivery.deliveryMethod === 'postal-delivery' ||
+    order.items.some((item) => item.productType === 'gift-hamper')
+
   const statusMessages = {
     confirmed: {
-      subject: `Order Confirmed #${order.orderNumber} - Olgish Cakes`,
-      message: 'Great news! Your order has been confirmed and we\'ve started working on it. We\'ll keep you updated on progress.'
+      subject: isCakesByPostOrder
+        ? `Order Request Confirmed #${order.orderNumber} - Olgish Cakes`
+        : `Order Confirmed #${order.orderNumber} - Olgish Cakes`,
+      heading: isCakesByPostOrder ? 'Order request confirmed' : 'Order confirmed',
+      message: isCakesByPostOrder
+        ? 'Great news, we\'ve confirmed your cakes by post request.'
+        : 'Great news! Your order has been confirmed and we\'ve started working on it. We\'ll keep you updated on progress.'
     },
     'in-progress': {
       subject: `Order In Progress #${order.orderNumber} - Olgish Cakes`,
-      message: 'Your order is now in progress. Our team is preparing your cake with care.'
+      heading: 'Order in progress',
+      message: isCakesByPostOrder
+        ? 'Your cakes by post order is now being prepared.'
+        : 'Your order is now in progress. Our team is preparing your cake with care.'
     },
     'ready-pickup': {
       subject: `Order Ready for Collection #${order.orderNumber} - Olgish Cakes`,
+      heading: 'Order ready for collection',
       message: 'Your order is ready for collection. Please contact us to arrange pickup.'
     },
     'out-delivery': {
-      subject: `Order Out for Delivery #${order.orderNumber} - Olgish Cakes`,
+      subject: isCakesByPostOrder
+        ? `Order Dispatched #${order.orderNumber} - Olgish Cakes`
+        : `Order Out for Delivery #${order.orderNumber} - Olgish Cakes`,
+      heading: isCakesByPostOrder ? 'Order dispatched' : 'Order out for delivery',
       message: (() => {
         const deliveryMethod = order.delivery.deliveryMethod
 
         if (deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') {
+          const courierLabel = getDeliveryCourierLabel(order)
+
           return order.delivery.trackingNumber
-            ? 'Great news! Your order has been dispatched via Royal Mail. You can use the tracking number below to follow delivery.'
-            : 'Great news! Your order has been dispatched via Royal Mail and is on the way.'
+            ? `Great news, your cakes by post order has been dispatched with ${courierLabel}.`
+            : `Great news, your cakes by post order has been dispatched with ${courierLabel} and is on the way.`
         }
 
         if (deliveryMethod === 'local-delivery') {
@@ -460,15 +526,22 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     },
     delivered: {
       subject: `Order Delivered #${order.orderNumber} - Olgish Cakes`,
-      message: 'Your order has been delivered. We hope you enjoy your cake.'
+      heading: 'Order delivered',
+      message: isCakesByPostOrder
+        ? 'Your cakes by post order has been delivered. We hope it arrived safely and is enjoyed.'
+        : 'Your order has been delivered. We hope you enjoy your cake.'
     },
     completed: {
       subject: `Order Completed #${order.orderNumber} - Olgish Cakes`,
+      heading: 'Order completed',
       message: 'Thank you for choosing Olgish Cakes. Your order is completed and we look forward to serving you again.'
     },
     cancelled: {
       subject: `Order Cancelled #${order.orderNumber} - Olgish Cakes`,
-      message: 'We\'re sorry to inform you that your order has been cancelled. If you have questions, please contact us.'
+      heading: 'Order cancelled',
+      message: isCakesByPostOrder
+        ? 'Your cakes by post order has been cancelled. If you have any questions, please contact us and we\'ll help.'
+        : 'Your order has been cancelled. If you have any questions, please contact us and we\'ll help.'
     }
   } as const
 
@@ -527,8 +600,12 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
         deliveryMethod: order.delivery.deliveryMethod,
         deliveryAddress: order.delivery.deliveryAddress,
         paymentMethod: order.pricing?.paymentMethod,
+        paymentStatus: order.pricing?.paymentStatus,
         trackingNumber: order.delivery.trackingNumber || undefined,
+        deliveryCourier: getDeliveryCourier(order),
+        giftNote: order.delivery.giftNote || undefined,
         titleOverride: statusInfo.subject,
+        headingOverride: statusInfo.heading,
         statusMessage: statusInfo.message
       },
       modeOverride: emailMode,

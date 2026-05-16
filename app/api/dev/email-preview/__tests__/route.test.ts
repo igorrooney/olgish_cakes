@@ -135,6 +135,61 @@ describe('/api/dev/email-preview', () => {
     expect(json.rendered.text).not.toContain('The order status has been updated.')
   })
 
+  it('keeps cakes-by-post status scenario defaults when previewing edited input', async () => {
+    const request = buildRequest(
+      {
+        templateId: 'orders-status-update',
+        scenarioId: 'cakes-by-post-confirmed',
+        input: {
+          status: 'confirmed',
+          customerName: 'Edited Customer'
+        }
+      },
+      'valid-admin-cookie'
+    )
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(json.input.customerName).toBe('Edited Customer')
+    expect(json.input.productName).toBe('Personalised Congratulations Cake Card')
+    expect(json.input.paymentStatus).toBe('pending')
+    expect(json.input.titleOverride).toContain('Order Request Confirmed #26051220022842')
+    expect(json.rendered.text).toContain('Personalised Congratulations Cake Card')
+    expect(json.rendered.text).not.toContain('Payment status:')
+    expect(json.rendered.text).toContain('Delivery method: By post')
+    expect(json.rendered.text).toContain('secure payment link')
+  })
+
+  it('preserves edited cakes-by-post courier when previewing status emails', async () => {
+    const request = buildRequest(
+      {
+        templateId: 'orders-status-update',
+        scenarioId: 'cakes-by-post-out-for-delivery',
+        input: {
+          status: 'out-for-delivery',
+          deliveryCourier: 'evri',
+          trackingNumber: 'H02X8A0022918652'
+        }
+      },
+      'valid-admin-cookie'
+    )
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(json.input.deliveryCourier).toBe('evri')
+    expect(json.input.statusMessage).toContain('Evri')
+    expect(json.rendered.text).toContain('Great news, your cakes by post order has been dispatched with Evri.')
+    expect(json.rendered.text).toContain('Courier: Evri')
+    expect(json.rendered.text).toContain('Evri will update the tracking as your parcel moves through their network.')
+    expect(json.rendered.html).toContain('https://www.evri.com/track/parcel/H02X8A0022918652/details')
+    expect(json.rendered.text).not.toContain('dispatched with Royal Mail')
+    expect(json.rendered.text).not.toContain('Royal Mail will update the tracking')
+  })
+
   it('rejects malformed template input with status 400', async () => {
     const request = buildRequest(
       {

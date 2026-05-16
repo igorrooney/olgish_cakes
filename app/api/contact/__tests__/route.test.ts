@@ -62,11 +62,13 @@ function createRequest(
   options: {
     csrfToken?: string | null
     cookieToken?: string | null
+    headers?: Record<string, string>
   } = {}
 ) {
   const {
     csrfToken = defaultCsrfToken,
-    cookieToken = defaultCsrfToken
+    cookieToken = defaultCsrfToken,
+    headers: customHeaders = {}
   } = options
 
   if (csrfToken === null) {
@@ -80,6 +82,10 @@ function createRequest(
   if (cookieToken !== null) {
     headers.set('Cookie', `csrf-token=${cookieToken}`)
   }
+
+  Object.entries(customHeaders).forEach(([name, value]) => {
+    headers.set(name, value)
+  })
 
   return new NextRequest('http://localhost/api/contact', {
     method: 'POST',
@@ -586,7 +592,15 @@ describe('/api/contact', () => {
       formData.append('filling', 'Sour cream')
       formData.append('servings', 'Serves 8-12 people')
 
-      const request = createRequest(formData)
+      const request = createRequest(formData, {
+        headers: {
+          'x-vercel-ip-city': 'Bristol',
+          'x-vercel-ip-country-region': 'ENG',
+          'x-vercel-ip-country': 'GB',
+          'x-vercel-ip-latitude': '51.4545',
+          'x-vercel-ip-longitude': '-2.5879'
+        }
+      })
 
       await POST(request)
 
@@ -599,6 +613,14 @@ describe('/api/contact', () => {
           metadata: expect.objectContaining({
             source: 'website-inline-v2',
             orderSourceVersion: 'v2-inline',
+            ipLocation: {
+              city: 'Bristol',
+              region: 'ENG',
+              country: 'GB',
+              latitude: '51.4545',
+              longitude: '-2.5879',
+              source: 'vercel-ip-headers'
+            },
             inlineOrderContext: expect.objectContaining({
               occasion: 'birthday',
               requestMode: 'custom-design',
@@ -769,6 +791,7 @@ describe('/api/contact', () => {
       formData.append('address', '7 Sample Street')
       formData.append('city', 'Leeds')
       formData.append('postcode', 'LS1 1AA')
+      formData.append('customerMessage', 'Please write congratulations')
       formData.append('giftNote', 'Happy birthday!')
       formData.append('isOrderForm', 'true')
       formData.append('orderType', 'Custom Design')
@@ -802,7 +825,16 @@ describe('/api/contact', () => {
         .find((payload) => typeof payload.subject === 'string' && payload.subject.includes('New inline order'))
 
       expect(customerEmailCall?.text).toContain('Gift note: Happy birthday!')
+      expect(customerEmailCall?.text).toContain('Thank you. We\'ve received your cakes by post request')
+      expect(customerEmailCall?.text).toContain('Contact Details')
+      expect(customerEmailCall?.text).toContain('Address: 7 Sample Street')
+      expect(customerEmailCall?.text).toContain('Notes: Please write congratulations')
+      expect(customerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
+      expect(customerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
+      expect(customerEmailCall?.text).not.toContain('Customer message:')
       expect(customerEmailCall?.html).toContain('Gift note')
+      expect(customerEmailCall?.html).toContain('Contact details')
+      expect(customerEmailCall?.subject).toMatch(/^Order request received #\d+ - Olgish Cakes$/)
       expect(adminEmailCall?.text).toContain('- Gift note: Happy birthday!')
       expect(adminEmailCall?.html).toContain('Gift note')
     })
@@ -1020,10 +1052,16 @@ describe('/api/contact', () => {
       const response = await POST(request)
       const fallbackCustomerEmailCall = mockSend.mock.calls
         .map((call) => call[0])
-        .find((payload) => payload.to === 'jane@example.com' && typeof payload.subject === 'string' && payload.subject.includes('Order Inquiry Received'))
+        .find((payload) => payload.to === 'jane@example.com' && typeof payload.subject === 'string' && payload.subject.includes('Order request received'))
 
       expect(response.status).toBe(200)
       expect(mockSend).toHaveBeenCalledTimes(2)
+      expect(fallbackCustomerEmailCall?.subject).toBe('Order request received - Olgish Cakes')
+      expect(fallbackCustomerEmailCall?.text).toContain('Contact Details')
+      expect(fallbackCustomerEmailCall?.text).toContain('Address: 7 Sample Street')
+      expect(fallbackCustomerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
+      expect(fallbackCustomerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
+      expect(fallbackCustomerEmailCall?.text).not.toContain('Customer message:')
       expect(fallbackCustomerEmailCall?.text).toContain('Gift note: Happy birthday!')
       expect(fallbackCustomerEmailCall?.html).toContain('Gift note')
     })

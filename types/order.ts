@@ -85,6 +85,7 @@ export interface OrderNote {
 
 export interface OrderMetadata {
     giftNote?: string;
+    deliveryCourier?: string;
     [key: string]: unknown;
 }
 
@@ -110,6 +111,7 @@ export interface Order {
 export interface OrderUpdate {
     status?: string;
     trackingNumber?: string;
+    deliveryCourier?: string;
     deliveryMethod?: string;
     dateNeeded?: string | null;
     paymentStatus?: string;

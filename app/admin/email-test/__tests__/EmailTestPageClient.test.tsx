@@ -57,8 +57,41 @@ describe('EmailTestPageClient', () => {
     expect(screen.getByRole('heading', { name: 'Setup' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Rendered preview' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Preview email' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByTitle('Rendered email preview')).toBeInTheDocument()
     expect(screen.queryByPlaceholderText('EMAIL_TEST_ADMIN_TOKEN')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Template payload (JSON)')).not.toBeInTheDocument()
+  })
+
+  it('offers cakes-by-post scenarios for customer, admin, and status emails', async () => {
+    renderWithQueryClient()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cakes-by-post-order' }
+    })
+
+    expect(screen.getByRole('option', { name: 'Customer: Cakes by post customer' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Admin: Cakes by post admin' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Fallback: Cakes by post customer email if order save fails' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Show advanced\/error scenarios/ }))
+
+    expect(screen.getByRole('option', { name: 'Fallback: Cakes by post customer email if order save fails' })).toBeInTheDocument()
+
+    expect(screen.getByRole('option', { name: 'Customer: order status update' })).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Scenario'), {
+      target: { value: 'orders-status-update:cakes-by-post-status' }
+    })
+
+    expect(screen.getByLabelText('Order status')).toBeInTheDocument()
+    expect(within(screen.getByLabelText('Order status')).getByRole('option', { name: 'Dispatched' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Courier')).toHaveValue('royal-mail')
+    expect(within(screen.getByLabelText('Courier')).getByRole('option', { name: 'Evri' })).toBeInTheDocument()
   })
 
   it('loads default sample input and populates editable fields', async () => {
@@ -150,11 +183,15 @@ describe('EmailTestPageClient', () => {
     renderWithQueryClient()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Template')).toBeInTheDocument()
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Template'), {
-      target: { value: 'orders-status-update' }
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cake-product-order' }
+    })
+
+    fireEvent.change(screen.getByLabelText('Scenario'), {
+      target: { value: 'orders-status-update:cake-product-status' }
     })
 
     const orderSection = screen.getByText('Order fields').closest('div')
@@ -219,6 +256,16 @@ describe('EmailTestPageClient', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => buildPreviewResponse({
+          templateId: 'orders-customer-confirmation',
+          input: {
+            status: 'confirmed'
+          },
+          subject: 'Customer confirmation'
+        })
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
           templateId: 'orders-status-update',
           input: {
             status: 'confirmed'
@@ -241,11 +288,15 @@ describe('EmailTestPageClient', () => {
     renderWithQueryClient()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Template')).toBeInTheDocument()
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Template'), {
-      target: { value: 'orders-status-update' }
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cake-product-order' }
+    })
+
+    fireEvent.change(screen.getByLabelText('Scenario'), {
+      target: { value: 'orders-status-update:cake-product-status' }
     })
 
     const orderSection = screen.getByText('Order fields').closest('div')
@@ -257,7 +308,7 @@ describe('EmailTestPageClient', () => {
       expect(scoped.getByLabelText('Status')).toHaveValue('confirmed')
     })
 
-    fireEvent.change(screen.getByLabelText('Scenario'), {
+    fireEvent.change(screen.getByLabelText('Order status'), {
       target: { value: 'out-for-delivery' }
     })
 
@@ -278,7 +329,7 @@ describe('EmailTestPageClient', () => {
     ]))
   })
 
-  it('supports the Instagram token refresh alert template with minimal editable fields', async () => {
+  it('lets cakes-by-post status previews switch courier in the payload', async () => {
     ;(global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -287,93 +338,101 @@ describe('EmailTestPageClient', () => {
       .mockResolvedValueOnce({
         ok: true,
         json: async () => buildPreviewResponse({
-          templateId: 'instagram-token-refresh-alert',
-          subject: 'Instagram token refresh reminder',
+          templateId: 'contact-inline-order-customer',
           input: {
-            customerName: 'Olgish Cakes team',
-            customerEmail: 'hello@olgishcakes.co.uk',
-            orderType: 'system-alert',
-            productName: 'Instagram access token',
-            dateNeeded: '2026-06-05',
-            message: 'Refresh the token before it expires.',
-            note: 'Update Vercel env values after refreshing.'
-          }
+            productType: 'gift-hamper'
+          },
+          subject: 'Cakes by post customer'
         })
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => buildPreviewResponse({
-          templateId: 'instagram-token-refresh-alert',
-          subject: 'Instagram token refresh reminder',
+          templateId: 'orders-status-update',
           input: {
-            customerName: 'Updated team',
-            customerEmail: 'hello@olgishcakes.co.uk',
-            orderType: 'system-alert',
-            productName: 'Instagram access token',
-            dateNeeded: '2026-06-05',
-            message: 'Refresh the token before it expires.',
-            note: 'Update Vercel env values after refreshing.'
-          }
+            productType: 'gift-hamper',
+            status: 'confirmed',
+            deliveryCourier: 'royal-mail'
+          },
+          subject: 'Cakes by post confirmed'
+        })
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
+          templateId: 'orders-status-update',
+          input: {
+            productType: 'gift-hamper',
+            status: 'out-for-delivery',
+            deliveryCourier: 'royal-mail',
+            trackingNumber: 'TRACK-123456'
+          },
+          subject: 'Cakes by post out for delivery'
+        })
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
+          templateId: 'orders-status-update',
+          input: {
+            productType: 'gift-hamper',
+            status: 'out-for-delivery',
+            deliveryCourier: 'evri',
+            trackingNumber: 'TRACK-123456'
+          },
+          subject: 'Evri preview'
         })
       } as Response)
 
     renderWithQueryClient()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Template')).toBeInTheDocument()
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Template'), {
-      target: { value: 'instagram-token-refresh-alert' }
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cakes-by-post-order' }
+    })
+
+    fireEvent.change(screen.getByLabelText('Scenario'), {
+      target: { value: 'orders-status-update:cakes-by-post-status' }
     })
 
     await waitFor(() => {
-      expect(screen.getByRole('option', { name: 'Instagram: Token refresh alert' })).toBeInTheDocument()
-      expect(screen.getByLabelText('Customer name')).toHaveValue('Olgish Cakes team')
+      expect(screen.getByLabelText('Order status')).toBeInTheDocument()
     })
 
-    expect(screen.getByLabelText('Customer email')).toHaveValue('hello@olgishcakes.co.uk')
-    expect(screen.getByLabelText('Submitted message')).toHaveValue('Refresh the token before it expires.')
-    expect(screen.getByLabelText('Internal note')).toHaveValue('Update Vercel env values after refreshing.')
-    expect(screen.getByLabelText('Order type')).toHaveValue('system-alert')
-    expect(screen.getByLabelText('Product name')).toHaveValue('Instagram access token')
-    expect(screen.getByLabelText('Date needed')).toHaveAttribute('data-value', '2026-06-05')
-    expect(screen.queryByLabelText('Customer phone')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Quantity')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Attachment names')).not.toBeInTheDocument()
-
-    fireEvent.change(screen.getByLabelText('Customer name'), {
-      target: { value: 'Updated team' }
+    fireEvent.change(screen.getByLabelText('Order status'), {
+      target: { value: 'cakes-by-post-out-for-delivery' }
     })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Courier')).toHaveValue('royal-mail')
+    })
+
+    fireEvent.change(screen.getByLabelText('Courier'), {
+      target: { value: 'evri' }
+    })
+
+    expect(screen.queryAllByLabelText('Courier')).toHaveLength(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Instagram token refresh reminder')).toBeInTheDocument()
+      expect(screen.getByText('Evri preview')).toBeInTheDocument()
     })
 
-    const requestBodies = (global.fetch as jest.Mock).mock.calls
-      .map((call) => JSON.parse(String(call[1]?.body)))
+    const previewCall = (global.fetch as jest.Mock).mock.calls.at(-1)
+    const previewBody = JSON.parse(String(previewCall?.[1]?.body))
 
-    expect(requestBodies).toEqual(expect.arrayContaining([
-      {
-        templateId: 'instagram-token-refresh-alert',
-        scenarioId: 'default'
-      }
-    ]))
-
-    const previewBody = requestBodies.at(-1)
-    expect(previewBody).toEqual({
-      templateId: 'instagram-token-refresh-alert',
-      scenarioId: 'default',
+    expect(previewBody).toMatchObject({
+      templateId: 'orders-status-update',
+      scenarioId: 'cakes-by-post-out-for-delivery',
       input: {
-        customerName: 'Updated team',
-        customerEmail: 'hello@olgishcakes.co.uk',
-        message: 'Refresh the token before it expires.',
-        note: 'Update Vercel env values after refreshing.',
-        orderType: 'system-alert',
-        productName: 'Instagram access token',
-        dateNeeded: '2026-06-05'
+        productType: 'gift-hamper',
+        status: 'out-for-delivery',
+        deliveryCourier: 'evri',
+        trackingNumber: 'TRACK-123456'
       }
     })
   })
@@ -392,11 +451,11 @@ describe('EmailTestPageClient', () => {
     renderWithQueryClient()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Template')).toBeInTheDocument()
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText('Template'), {
-      target: { value: 'contact-inline-order-customer' }
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cake-product-order' }
     })
 
     await waitFor(() => {

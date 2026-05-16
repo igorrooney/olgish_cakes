@@ -1,7 +1,9 @@
 import { logger } from '@/lib/logger'
 import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
+import { formatRequestIpLocation, getRequestIpLocation } from '@/lib/request-location'
 import { validateCsrfToken } from '@/lib/csrf'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { readRequiredFormData } from '@/lib/form-request'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
@@ -630,6 +632,8 @@ async function handlePOST(request: NextRequest) {
 
     let orderCreated = false
     let orderError: unknown = null
+    const requestIpLocation = getRequestIpLocation(request.headers)
+    const approximateSubmittedFrom = formatRequestIpLocation(requestIpLocation)
 
     try {
       const resolvedProductType: InlineOrderProductType = normalizedProductType || 'cake'
@@ -645,6 +649,7 @@ async function handlePOST(request: NextRequest) {
         ? 'card'
         : 'cash-collection'
       const inferredDeliveryAddress = buildDeliveryAddress(address, city, postcode)
+      const isCakesByPostOrder = resolvedProductType === 'gift-hamper'
       const designTypeLabel = normalizeDesignTypeLabel(designType)
       const resolvedCustomerMessage = customerMessage.length > 0
         ? customerMessage
@@ -664,6 +669,7 @@ async function handlePOST(request: NextRequest) {
         }
       }
 
+      const adminUrl = `${BUSINESS_CONSTANTS.BASE_URL}/admin/orders/${orderNumber}`
       const orderDoc = {
         orderNumber,
         status: 'new',
@@ -720,6 +726,7 @@ async function handlePOST(request: NextRequest) {
           referrer,
           userAgent: request.headers.get('user-agent') || '',
           ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+          ...(requestIpLocation ? { ipLocation: requestIpLocation } : {}),
           inlineOrderContext: {
             occasion: occasion || undefined,
             requestMode,
@@ -780,8 +787,14 @@ async function handlePOST(request: NextRequest) {
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           paymentMethod: inferredPaymentMethod,
+          approximateSubmittedFrom,
           referrer: referrer || undefined,
-          titleOverride: `Order Confirmation #${orderNumber} - Olgish Cakes`
+          intro: isCakesByPostOrder
+            ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
+            : undefined,
+          titleOverride: isCakesByPostOrder
+            ? `Order request received #${orderNumber} - Olgish Cakes`
+            : `Order Confirmation #${orderNumber} - Olgish Cakes`
         },
         modeOverride: emailMode,
         message: {
@@ -823,11 +836,13 @@ async function handlePOST(request: NextRequest) {
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           paymentMethod: inferredPaymentMethod,
+          approximateSubmittedFrom,
           referrer: referrer || undefined,
           message: message || undefined,
           note: note || undefined,
           giftNote: giftNote || undefined,
           attachmentNames: designImage ? [designImage.name] : [],
+          adminUrl,
           titleOverride: `New inline order #${orderNumber} from ${name}`
         },
         modeOverride: emailMode,
@@ -883,6 +898,7 @@ async function handlePOST(request: NextRequest) {
       const fallbackDeliveryMethod = fallbackProductType === 'gift-hamper' ? 'postal' : 'collection'
       const fallbackPaymentMethod = fallbackProductType === 'gift-hamper' ? 'card' : 'cash-collection'
       const fallbackDeliveryAddress = buildDeliveryAddress(address, city, postcode)
+      const isFallbackCakesByPostOrder = fallbackProductType === 'gift-hamper'
       const fallbackDesignTypeLabel = normalizeDesignTypeLabel(designType)
 
       const adminFallbackResponse = await sendEmail({
@@ -910,6 +926,7 @@ async function handlePOST(request: NextRequest) {
           deliveryMethod: fallbackDeliveryMethod,
           deliveryAddress: fallbackDeliveryAddress,
           paymentMethod: fallbackPaymentMethod,
+          approximateSubmittedFrom,
           referrer: referrer || undefined,
           message: message || undefined,
           note: note || undefined,
@@ -947,14 +964,33 @@ async function handlePOST(request: NextRequest) {
           customerName: name,
           customerEmail: email,
           customerPhone: normalizedPhone,
+          address: address || undefined,
+          city: city || undefined,
+          postcode: postcode || undefined,
+          orderType: fallbackOrderType,
+          productName: productName || undefined,
+          productId: productId || undefined,
+          productType: fallbackProductType,
+          quantity: 1,
+          unitPrice: totalPrice || 0,
+          totalPrice: totalPrice || 0,
           dateNeeded: dateNeeded || undefined,
           occasion: occasion || undefined,
           designType: fallbackDesignTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
           customerMessage: customerMessage || undefined,
+          deliveryMethod: fallbackDeliveryMethod,
+          deliveryAddress: fallbackDeliveryAddress,
+          paymentMethod: fallbackPaymentMethod,
+          approximateSubmittedFrom,
           giftNote: giftNote || undefined,
-          titleOverride: 'Order Inquiry Received - Olgish Cakes'
+          intro: isFallbackCakesByPostOrder
+            ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
+            : undefined,
+          titleOverride: isFallbackCakesByPostOrder
+            ? 'Order request received - Olgish Cakes'
+            : 'Order Inquiry Received - Olgish Cakes'
         },
         modeOverride: emailMode,
         message: {

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
-import { emailTemplateIds, type EmailTemplateId, type RenderedEmail } from '@/lib/email/types'
+import type { EmailTemplateId, RenderedEmail } from '@/lib/email/types'
 import { listTemplateScenarioOptions } from '@/lib/email/scenarios'
 
 type PreviewTab = 'text' | 'html' | 'metadata'
@@ -12,6 +12,7 @@ type EditableFieldKey =
   | 'customerName'
   | 'customerEmail'
   | 'customerPhone'
+  | 'headingOverride'
   | 'message'
   | 'note'
   | 'orderNumber'
@@ -35,10 +36,14 @@ type EditableFieldKey =
   | 'servings'
   | 'customerMessage'
   | 'deliveryMethod'
+  | 'deliveryCourier'
   | 'deliveryAddress'
   | 'paymentMethod'
+  | 'paymentStatus'
   | 'referrer'
   | 'giftNote'
+  | 'approximateSubmittedFrom'
+  | 'adminUrl'
   | 'attachmentNames'
   | 'nextSteps'
 
@@ -87,32 +92,160 @@ interface PreviewMutationInput {
   scenarioId?: string
 }
 
-const defaultRecipient = ''
-const initialScenarioId = listTemplateScenarioOptions(emailTemplateIds[0]).at(0)?.id || ''
+type EmailRequestId =
+  | 'contact-enquiry'
+  | 'homepage-custom-cake-enquiry'
+  | 'get-custom-quote-enquiry'
+  | 'cakes-by-post-order'
+  | 'cake-product-order'
+  | 'workshop-enquiry'
 
-const templateLabels: Record<EmailTemplateId, string> = {
-  'contact-admin-inquiry': 'Contact: Admin inquiry',
-  'contact-inline-order-customer': 'Contact: Inline order customer',
-  'contact-inline-order-admin': 'Contact: Inline order admin',
-  'contact-inline-order-fallback-customer': 'Contact: Inline order fallback customer',
-  'contact-inline-order-fallback-admin': 'Contact: Inline order fallback admin',
-  'orders-customer-confirmation': 'Orders: Customer confirmation',
-  'orders-admin-notification': 'Orders: Admin notification',
-  'orders-status-update': 'Orders: Status update',
-  'quote-admin-request': 'Quote: Admin request',
-  'custom-cake-enquiry-admin': 'Custom enquiry: Admin',
-  'custom-cake-enquiry-customer': 'Custom enquiry: Customer',
-  'custom-cake-enquiry-failure-alert': 'Custom enquiry: Failure alert',
-  'workshop-enquiry-admin': 'Workshop enquiry: Admin',
-  'workshop-enquiry-customer': 'Workshop enquiry: Customer',
-  'workshop-enquiry-failure-alert': 'Workshop enquiry: Failure alert',
-  'instagram-token-refresh-alert': 'Instagram: Token refresh alert'
+interface RequestScenarioOption {
+  id: string
+  label: string
+  templateId: EmailTemplateId
+  scenarioId: string
+  advanced?: boolean
+  statusGroup?: 'cake-product' | 'cakes-by-post'
 }
+
+interface EmailRequestOption {
+  id: EmailRequestId
+  label: string
+  scenarios: RequestScenarioOption[]
+}
+
+const defaultRecipient = ''
+
+const cakeProductStatusScenarios: FieldOption[] = [
+  { label: 'Confirmed', value: 'confirmed' },
+  { label: 'In progress', value: 'in-progress' },
+  { label: 'Ready', value: 'ready' },
+  { label: 'Out for delivery', value: 'out-for-delivery' },
+  { label: 'Delivered', value: 'delivered' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Cancelled', value: 'cancelled' }
+]
+
+const cakesByPostStatusScenarios: FieldOption[] = [
+  { label: 'Confirmed', value: 'cakes-by-post-confirmed' },
+  { label: 'In progress', value: 'cakes-by-post-in-progress' },
+  { label: 'Ready', value: 'cakes-by-post-ready' },
+  { label: 'Dispatched', value: 'cakes-by-post-out-for-delivery' },
+  { label: 'Delivered', value: 'cakes-by-post-delivered' },
+  { label: 'Completed', value: 'cakes-by-post-completed' },
+  { label: 'Cancelled', value: 'cakes-by-post-cancelled' }
+]
+
+function createScenarioOptions(
+  templateId: EmailTemplateId,
+  prefix: string,
+  scenarioIds?: string[],
+  advanced = false
+): RequestScenarioOption[] {
+  const allowedScenarioIds = scenarioIds ? new Set(scenarioIds) : null
+
+  return listTemplateScenarioOptions(templateId)
+    .filter((scenario) => allowedScenarioIds === null || allowedScenarioIds.has(scenario.id))
+    .map((scenario) => ({
+      id: `${templateId}:${scenario.id}`,
+      label: `${prefix}: ${scenario.label}`,
+      templateId,
+      scenarioId: scenario.id,
+      advanced
+    }))
+}
+
+function createStatusScenarioOption(params: {
+  id: string
+  label: string
+  statusGroup: 'cake-product' | 'cakes-by-post'
+  scenarioId: string
+}): RequestScenarioOption {
+  return {
+    id: `orders-status-update:${params.id}`,
+    label: params.label,
+    templateId: 'orders-status-update',
+    scenarioId: params.scenarioId,
+    statusGroup: params.statusGroup
+  }
+}
+
+const requestOptions: EmailRequestOption[] = [
+  {
+    id: 'contact-enquiry',
+    label: 'Contact page enquiry',
+    scenarios: createScenarioOptions('contact-admin-inquiry', 'Admin')
+  },
+  {
+    id: 'homepage-custom-cake-enquiry',
+    label: 'Homepage custom cake enquiry',
+    scenarios: [
+      ...createScenarioOptions('custom-cake-enquiry-admin', 'Admin', ['homepage-default']),
+      ...createScenarioOptions('custom-cake-enquiry-customer', 'Customer', ['homepage-default', 'homepage-minimal']),
+      ...createScenarioOptions('custom-cake-enquiry-failure-alert', 'Failure alert', undefined, true)
+    ]
+  },
+  {
+    id: 'get-custom-quote-enquiry',
+    label: 'Get custom quote enquiry',
+    scenarios: [
+      ...createScenarioOptions('custom-cake-enquiry-admin', 'Admin', ['quote-default']),
+      ...createScenarioOptions('custom-cake-enquiry-customer', 'Customer', ['quote-default', 'quote-minimal']),
+      ...createScenarioOptions('custom-cake-enquiry-failure-alert', 'Failure alert', undefined, true)
+    ]
+  },
+  {
+    id: 'cakes-by-post-order',
+    label: 'Cakes by post order',
+    scenarios: [
+      ...createScenarioOptions('contact-inline-order-customer', 'Customer', ['cakes-by-post']),
+      ...createScenarioOptions('contact-inline-order-admin', 'Admin', ['cakes-by-post']),
+      createStatusScenarioOption({
+        id: 'cakes-by-post-status',
+        label: 'Customer: order status update',
+        statusGroup: 'cakes-by-post',
+        scenarioId: 'cakes-by-post-confirmed'
+      }),
+      ...createScenarioOptions('contact-inline-order-fallback-customer', 'Fallback', ['cakes-by-post'], true),
+      ...createScenarioOptions('contact-inline-order-fallback-admin', 'Fallback', ['cakes-by-post'], true)
+    ]
+  },
+  {
+    id: 'cake-product-order',
+    label: 'Cake product order',
+    scenarios: [
+      ...createScenarioOptions('contact-inline-order-customer', 'Customer', ['default', 'minimal']),
+      ...createScenarioOptions('contact-inline-order-admin', 'Admin', ['default', 'with-attachment']),
+      createStatusScenarioOption({
+        id: 'cake-product-status',
+        label: 'Customer: order status update',
+        statusGroup: 'cake-product',
+        scenarioId: 'confirmed'
+      }),
+      ...createScenarioOptions('contact-inline-order-fallback-customer', 'Fallback', ['default'], true),
+      ...createScenarioOptions('contact-inline-order-fallback-admin', 'Fallback', ['default'], true)
+    ]
+  },
+  {
+    id: 'workshop-enquiry',
+    label: 'Workshop enquiry',
+    scenarios: [
+      ...createScenarioOptions('workshop-enquiry-admin', 'Admin'),
+      ...createScenarioOptions('workshop-enquiry-customer', 'Customer'),
+      ...createScenarioOptions('workshop-enquiry-failure-alert', 'Failure alert', undefined, true)
+    ]
+  }
+]
+
+const initialRequest = requestOptions[0]
+const initialScenario = initialRequest.scenarios[0]
 
 const commonFields: EditableFieldKey[] = [
   'customerName',
   'customerEmail',
   'customerPhone',
+  'headingOverride',
   'message',
   'note'
 ]
@@ -152,10 +285,14 @@ const preferenceFields: EditableFieldKey[] = [
   'servings',
   'customerMessage',
   'deliveryMethod',
+  'deliveryCourier',
   'deliveryAddress',
   'paymentMethod',
+  'paymentStatus',
   'referrer',
-  'giftNote'
+  'giftNote',
+  'approximateSubmittedFrom',
+  'adminUrl'
 ]
 
 const listFields: EditableFieldKey[] = ['attachmentNames', 'nextSteps']
@@ -298,6 +435,7 @@ const sections: FieldSection[] = [
       { key: 'customerName', label: 'Customer name', type: 'text', placeholder: 'Test Customer' },
       { key: 'customerEmail', label: 'Customer email', type: 'email', placeholder: 'test@example.com' },
       { key: 'customerPhone', label: 'Customer phone', type: 'tel', placeholder: '+44 7123 456789' },
+      { key: 'headingOverride', label: 'Email heading', type: 'text', placeholder: 'Order confirmed' },
       { key: 'message', label: 'Submitted message', type: 'textarea', placeholder: 'Original message from the form' },
       { key: 'note', label: 'Internal note', type: 'textarea', placeholder: 'Optional operational note' }
     ]
@@ -347,10 +485,23 @@ const sections: FieldSection[] = [
       { key: 'servings', label: 'Servings', type: 'text', placeholder: 'Serves 8-12 people' },
       { key: 'customerMessage', label: 'Customer requirements', type: 'textarea', placeholder: 'Please keep it less sweet and no nuts.' },
       { key: 'deliveryMethod', label: 'Delivery method', type: 'text', placeholder: 'collection' },
+      {
+        key: 'deliveryCourier',
+        label: 'Courier',
+        type: 'select',
+        placeholder: '',
+        options: [
+          { label: 'Royal Mail', value: 'royal-mail' },
+          { label: 'Evri', value: 'evri' }
+        ]
+      },
       { key: 'deliveryAddress', label: 'Delivery address', type: 'textarea', placeholder: '123 Example Street, London, SW1A 1AA' },
       { key: 'paymentMethod', label: 'Payment method', type: 'text', placeholder: 'cash-collection' },
+      { key: 'paymentStatus', label: 'Payment status', type: 'text', placeholder: 'pending' },
       { key: 'referrer', label: 'Referrer', type: 'text', placeholder: 'instagram' },
-      { key: 'giftNote', label: 'Gift note', type: 'textarea', placeholder: 'Happy Birthday!' }
+      { key: 'giftNote', label: 'Gift note', type: 'textarea', placeholder: 'Happy Birthday!' },
+      { key: 'approximateSubmittedFrom', label: 'Approx. submitted from', type: 'text', placeholder: 'Leeds, ENG, GB' },
+      { key: 'adminUrl', label: 'Admin URL', type: 'text', placeholder: 'https://olgishcakes.co.uk/admin/orders/26051220022842' }
     ]
   },
   {
@@ -380,6 +531,7 @@ const numericFieldLabels: Record<EditableFieldKey, string> = {
   customerName: 'Customer name',
   customerEmail: 'Customer email',
   customerPhone: 'Customer phone',
+  headingOverride: 'Email heading',
   message: 'Submitted message',
   note: 'Internal note',
   orderNumber: 'Order number',
@@ -403,10 +555,14 @@ const numericFieldLabels: Record<EditableFieldKey, string> = {
   servings: 'Servings',
   customerMessage: 'Customer requirements',
   deliveryMethod: 'Delivery method',
+  deliveryCourier: 'Courier',
   deliveryAddress: 'Delivery address',
   paymentMethod: 'Payment method',
+  paymentStatus: 'Payment status',
   referrer: 'Referrer',
   giftNote: 'Gift note',
+  approximateSubmittedFrom: 'Approx. submitted from',
+  adminUrl: 'Admin URL',
   attachmentNames: 'Attachment names',
   nextSteps: 'Next steps'
 }
@@ -511,26 +667,59 @@ async function parseApiResponse<T>(response: Response): Promise<T> {
 }
 
 export function EmailTestPageClient() {
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplateId>(emailTemplateIds[0])
-  const [selectedScenario, setSelectedScenario] = useState(initialScenarioId)
+  const [selectedRequest, setSelectedRequest] = useState<EmailRequestId>(initialRequest.id)
+  const [selectedScenarioKey, setSelectedScenarioKey] = useState(initialScenario.id)
   const [recipient, setRecipient] = useState(defaultRecipient)
   const [formValues, setFormValues] = useState<EmailTestFormValues>(() => createEmptyFormValues())
   const [previewData, setPreviewData] = useState<PreviewResponse | null>(null)
   const [realSendData, setRealSendData] = useState<RealSendResponse | null>(null)
-  const [previewTab, setPreviewTab] = useState<PreviewTab>('text')
+  const [previewTab, setPreviewTab] = useState<PreviewTab>('html')
+  const [showAdvancedScenarios, setShowAdvancedScenarios] = useState(false)
+  const [selectedOrderStatusScenario, setSelectedOrderStatusScenario] = useState(cakeProductStatusScenarios[0].value)
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
 
   const previewAbortRef = useRef<AbortController | null>(null)
   const sendAbortRef = useRef<AbortController | null>(null)
   const previewRequestIdRef = useRef(0)
 
-  const scenarioOptions = useMemo(() => listTemplateScenarioOptions(selectedTemplate), [selectedTemplate])
+  const selectedRequestOption = useMemo(() => {
+    return requestOptions.find((option) => option.id === selectedRequest) || initialRequest
+  }, [selectedRequest])
+
+  const scenarioOptions = useMemo(() => {
+    if (showAdvancedScenarios) {
+      return selectedRequestOption.scenarios
+    }
+
+    return selectedRequestOption.scenarios.filter((scenario) => scenario.advanced !== true)
+  }, [selectedRequestOption, showAdvancedScenarios])
+
+  const selectedScenarioOption = useMemo(() => {
+    return scenarioOptions.find((scenario) => scenario.id === selectedScenarioKey) || scenarioOptions[0] || initialScenario
+  }, [scenarioOptions, selectedScenarioKey])
+
+  const selectedTemplate = selectedScenarioOption.templateId
+  const orderStatusScenarioOptions = useMemo(() => {
+    if (selectedScenarioOption.statusGroup === 'cakes-by-post') {
+      return cakesByPostStatusScenarios
+    }
+
+    if (selectedScenarioOption.statusGroup === 'cake-product') {
+      return cakeProductStatusScenarios
+    }
+
+    return []
+  }, [selectedScenarioOption.statusGroup])
+  const selectedScenario = selectedScenarioOption.statusGroup
+    ? selectedOrderStatusScenario
+    : selectedScenarioOption.scenarioId
   const activeFields = useMemo(() => templateFieldMap[selectedTemplate], [selectedTemplate])
   const activeFieldSet = useMemo(() => new Set(activeFields), [activeFields])
 
   const shouldShowTrackingField = useMemo(() => {
     return shouldIncludeTrackingNumber(selectedTemplate, formValues.status || '')
   }, [formValues.status, selectedTemplate])
+  const shouldShowCourierSelector = selectedScenarioOption.statusGroup === 'cakes-by-post'
 
   const visibleSections = useMemo(() => {
     return sections
@@ -545,11 +734,15 @@ export function EmailTestPageClient() {
             return shouldShowTrackingField
           }
 
+          if (field.key === 'deliveryCourier' && shouldShowCourierSelector) {
+            return false
+          }
+
           return true
         })
       }))
       .filter((section) => section.fields.length > 0)
-  }, [activeFieldSet, shouldShowTrackingField])
+  }, [activeFieldSet, shouldShowCourierSelector, shouldShowTrackingField])
 
   const previewInput = useMemo(() => {
     return buildInputFromFormValues(formValues, activeFields, selectedTemplate)
@@ -625,7 +818,7 @@ export function EmailTestPageClient() {
       }
 
       setPreviewData(data)
-      setPreviewTab('text')
+      setPreviewTab('html')
       if (variables.syncFormValues) {
         setFormValues(toFormValues(data.input))
       }
@@ -679,6 +872,30 @@ export function EmailTestPageClient() {
     }
   }, [])
 
+  useEffect(() => {
+    if (scenarioOptions.some((scenario) => scenario.id === selectedScenarioKey)) {
+      return
+    }
+
+    const firstScenario = scenarioOptions[0] || initialScenario
+    setSelectedScenarioKey(firstScenario.id)
+  }, [scenarioOptions, selectedScenarioKey])
+
+  useEffect(() => {
+    if (!selectedScenarioOption.statusGroup) {
+      return
+    }
+
+    if (orderStatusScenarioOptions.some((option) => option.value === selectedOrderStatusScenario)) {
+      return
+    }
+
+    const firstStatusScenario = orderStatusScenarioOptions[0]
+    if (firstStatusScenario) {
+      setSelectedOrderStatusScenario(firstStatusScenario.value)
+    }
+  }, [orderStatusScenarioOptions, selectedOrderStatusScenario, selectedScenarioOption.statusGroup])
+
   const loadTemplateDefaults = useCallback((scenarioIdOverride?: string) => {
     setPreviewData(null)
     setRealSendData(null)
@@ -691,18 +908,30 @@ export function EmailTestPageClient() {
 
   useEffect(() => {
     loadTemplateDefaults()
-  }, [loadTemplateDefaults, selectedScenario, selectedTemplate])
+  }, [loadTemplateDefaults, selectedScenarioKey, selectedTemplate])
   const hasInvalidForm = numericValidationErrors.length > 0
   const hasRecipient = recipient.trim().length > 0
 
-  const handleTemplateChange = (templateId: EmailTemplateId) => {
-    const firstScenarioId = listTemplateScenarioOptions(templateId).at(0)?.id || ''
-    setSelectedScenario(firstScenarioId)
-    setSelectedTemplate(templateId)
+  const handleRequestChange = (requestId: EmailRequestId) => {
+    const requestOption = requestOptions.find((option) => option.id === requestId) || initialRequest
+    const firstScenario = requestOption.scenarios.find((scenario) => scenario.advanced !== true) || requestOption.scenarios[0] || initialScenario
+    setSelectedRequest(requestOption.id)
+    setSelectedScenarioKey(firstScenario.id)
+    if (firstScenario.statusGroup === 'cakes-by-post') {
+      setSelectedOrderStatusScenario(cakesByPostStatusScenarios[0].value)
+    } else if (firstScenario.statusGroup === 'cake-product') {
+      setSelectedOrderStatusScenario(cakeProductStatusScenarios[0].value)
+    }
   }
 
-  const handleScenarioChange = (scenarioId: string) => {
-    setSelectedScenario(scenarioId)
+  const handleScenarioChange = (scenarioKey: string) => {
+    const nextScenario = scenarioOptions.find((scenario) => scenario.id === scenarioKey)
+    setSelectedScenarioKey(scenarioKey)
+    if (nextScenario?.statusGroup === 'cakes-by-post') {
+      setSelectedOrderStatusScenario(cakesByPostStatusScenarios[0].value)
+    } else if (nextScenario?.statusGroup === 'cake-product') {
+      setSelectedOrderStatusScenario(cakeProductStatusScenarios[0].value)
+    }
   }
 
   const handleFieldChange = (key: EditableFieldKey, value: string) => {
@@ -780,14 +1009,14 @@ export function EmailTestPageClient() {
               </div>
 
               <label className='form-control gap-2'>
-                <span className='label-text font-semibold'>Template</span>
+                <span className='label-text font-semibold'>Request</span>
                 <select
                   className='select select-bordered w-full'
-                  value={selectedTemplate}
-                  onChange={(event) => handleTemplateChange(event.target.value as EmailTemplateId)}
+                  value={selectedRequest}
+                  onChange={(event) => handleRequestChange(event.target.value as EmailRequestId)}
                 >
-                  {emailTemplateIds.map((templateId) => (
-                    <option key={templateId} value={templateId}>{templateLabels[templateId]}</option>
+                  {requestOptions.map((request) => (
+                    <option key={request.id} value={request.id}>{request.label}</option>
                   ))}
                 </select>
               </label>
@@ -796,13 +1025,57 @@ export function EmailTestPageClient() {
                 <span className='label-text font-semibold'>Scenario</span>
                 <select
                   className='select select-bordered w-full'
-                  value={selectedScenario}
+                  value={selectedScenarioKey}
                   onChange={(event) => handleScenarioChange(event.target.value)}
                 >
                   {scenarioOptions.map((scenario) => (
                     <option key={scenario.id} value={scenario.id}>{scenario.label}</option>
                   ))}
                 </select>
+              </label>
+
+              {selectedScenarioOption.statusGroup ? (
+                <label className='form-control gap-2'>
+                  <span className='label-text font-semibold'>Order status</span>
+                  <select
+                    className='select select-bordered w-full'
+                    value={selectedOrderStatusScenario}
+                    onChange={(event) => setSelectedOrderStatusScenario(event.target.value)}
+                  >
+                    {orderStatusScenarioOptions.map((statusOption) => (
+                      <option key={statusOption.value} value={statusOption.value}>{statusOption.label}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
+
+              {shouldShowCourierSelector ? (
+                <label className='form-control gap-2'>
+                  <span className='label-text font-semibold'>Courier</span>
+                  <select
+                    className='select select-bordered w-full'
+                    value={formValues.deliveryCourier || 'royal-mail'}
+                    onChange={(event) => handleFieldChange('deliveryCourier', event.target.value)}
+                  >
+                    <option value='royal-mail'>Royal Mail</option>
+                    <option value='evri'>Evri</option>
+                  </select>
+                </label>
+              ) : null}
+
+              <label className='flex cursor-pointer items-start gap-3 rounded-md border border-base-300 bg-base-200/40 p-3'>
+                <input
+                  type='checkbox'
+                  className='toggle toggle-primary mt-1'
+                  checked={showAdvancedScenarios}
+                  onChange={(event) => setShowAdvancedScenarios(event.target.checked)}
+                />
+                <span className='grid gap-1 text-sm'>
+                  <span className='font-semibold text-base-content'>Show advanced/error scenarios</span>
+                  <span className='text-xs leading-5 text-base-content/65'>
+                    Includes fallback emails sent only if order save or notification handling fails.
+                  </span>
+                </span>
               </label>
 
               <label className='form-control gap-2'>
@@ -958,7 +1231,7 @@ export function EmailTestPageClient() {
                 <div className='rounded-md border border-dashed border-base-300 bg-base-200/40 px-6 py-12 text-center text-sm text-base-content/70'>
                   {isPreviewPending
                     ? 'Loading template defaults...'
-                    : 'Select a template and run preview to view subject, text, and HTML output.'}
+                    : 'Select a template and run preview to view the designed email, text, and metadata.'}
                 </div>
               ) : (
                 <>
@@ -984,7 +1257,7 @@ export function EmailTestPageClient() {
                       aria-selected={previewTab === 'html'}
                       onClick={() => setPreviewTab('html')}
                     >
-                      HTML
+                      Design
                     </button>
                     <button
                       type='button'

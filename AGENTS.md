@@ -37,6 +37,7 @@
 - Do not duplicate styles; extract shared class strings or utilities and reuse
 - Do not change visible design or page text without explicit user permission
 - Do not remove homepage SVG assets; they are part of the approved design
+- Use the homepage enquiry form success message styling for all new or updated success messages: `alert alert-success w-full items-start text-sm` with the same check-circle icon and compact text layout, unless the user explicitly asks for a different design
 - Cookie consent UI must appear immediately on initial page load; do not defer or delay the banner for performance optimization
 
 ## React Best Practices

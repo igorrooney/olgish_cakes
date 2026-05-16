@@ -15,7 +15,7 @@ interface TemplateMeta {
   admin: boolean
 }
 
-function toTrimmed(value: string | null | undefined): string {
+export function toTrimmed(value: string | null | undefined): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
@@ -50,7 +50,7 @@ export function formatCurrency(value: number | null | undefined): string {
   return `\u00A3${value}`
 }
 
-function formatPhoneDisplay(value: string | null | undefined): string {
+export function formatPhoneDisplay(value: string | null | undefined): string {
   const raw = toTrimmed(value)
   if (raw.length === 0) {
     return ''
@@ -237,7 +237,7 @@ export function renderOrderItemsHtml(items: NormalizedOrderItem[]): string {
     return ''
   }
 
-  const itemRows = items.map((item, index) => {
+  const itemRows = items.map((item) => {
     const details: string[] = []
 
     if (item.productType.length > 0) {
@@ -268,7 +268,7 @@ export function renderOrderItemsHtml(items: NormalizedOrderItem[]): string {
       ? `<ul style="margin: 8px 0 0 18px; padding: 0; color: #4B5563; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 21px;">${details.map((detail) => `<li>${escapeHtml(detail)}</li>`).join('')}</ul>`
       : ''
 
-    return `<li style="margin: 0 0 12px 0;"><p style="margin: 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 15px; line-height: 23px;">${escapeHtml(`${index + 1}. ${formatOrderItemSummary(item)}`)}</p>${detailsHtml}</li>`
+    return `<li style="margin: 0 0 12px 0;"><p style="margin: 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 15px; line-height: 23px;">${escapeHtml(formatOrderItemSummary(item))}</p>${detailsHtml}</li>`
   }).join('')
 
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td style="padding: 22px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td style="padding: 0 0 14px 0; color: #2E3192; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">Order items</td></tr></table><ol style="margin: 0; padding-left: 18px;">${itemRows}</ol></td></tr></table>${renderEmailSpacer(14)}`
@@ -321,6 +321,7 @@ export function buildAdminSections(input: EmailTemplateCommonInput): EmailSectio
   appendRow(contextRows, 'Delivery method', input.deliveryMethod)
   appendRow(contextRows, 'Delivery address', input.deliveryAddress)
   appendRow(contextRows, 'Payment method', input.paymentMethod)
+  appendRow(contextRows, 'Approx. submitted from', input.approximateSubmittedFrom)
   appendRow(contextRows, 'Referrer', input.referrer)
 
   const messageRows: EmailFieldRow[] = []
@@ -393,6 +394,7 @@ export const commonInputSchema = z.object({
   servings: z.string().optional(),
   customerMessage: z.string().optional(),
   deliveryMethod: z.string().optional(),
+  deliveryCourier: z.string().optional(),
   deliveryAddress: z.string().optional(),
   paymentMethod: z.string().optional(),
   referrer: z.string().optional(),
@@ -405,9 +407,12 @@ export const commonInputSchema = z.object({
   nextSteps: z.array(z.string()).optional(),
   intro: z.string().optional(),
   titleOverride: z.string().optional(),
+  headingOverride: z.string().optional(),
   statusMessage: z.string().optional(),
+  paymentStatus: z.string().optional(),
   trackingNumber: z.string().optional(),
   adminUrl: z.string().optional(),
+  approximateSubmittedFrom: z.string().optional(),
   orderItems: z.array(z.object({
     productName: z.string().optional(),
     productId: z.string().optional(),
@@ -421,6 +426,19 @@ export const commonInputSchema = z.object({
     specialInstructions: z.string().optional()
   })).optional()
 })
+
+export interface CustomerEmailContent {
+  bodyText: string
+  bodyHtml: string
+}
+
+export type CustomerEmailContentBuilder = (input: EmailTemplateCommonInput) => CustomerEmailContent | null
+export type AdminEmailContentBuilder = (input: EmailTemplateCommonInput) => CustomerEmailContent | null
+
+interface TemplateOptions {
+  customerContentBuilder?: CustomerEmailContentBuilder
+  adminContentBuilder?: AdminEmailContentBuilder
+}
 
 function buildSubject(meta: TemplateMeta, input: EmailTemplateCommonInput): string {
   if (input.titleOverride && input.titleOverride.trim().length > 0) {
@@ -458,9 +476,10 @@ function resolveNextSteps(input: EmailTemplateCommonInput): string[] {
   return defaultNextSteps()
 }
 
-interface CustomerRow {
+export interface CustomerRow {
   label: string
   value: string
+  href?: string
 }
 
 interface CustomerRows {
@@ -472,8 +491,8 @@ interface CustomerRows {
 const TRUSTPILOT_REVIEW_URL = 'https://uk.trustpilot.com/review/olgishcakes.co.uk'
 const EMAIL_LOGO_CID = 'olgish-cakes-email-logo'
 const EMAIL_LOGO_SRC = `cid:${EMAIL_LOGO_CID}`
-const EMAIL_FONT_SANS = 'Inter, Arial, Helvetica, sans-serif'
-const EMAIL_FONT_DISPLAY = '\'More Sugar\', \'Trebuchet MS\', Arial, Helvetica, sans-serif'
+export const EMAIL_FONT_SANS = 'Inter, Arial, Helvetica, sans-serif'
+export const EMAIL_FONT_DISPLAY = '\'More Sugar\', \'Trebuchet MS\', Arial, Helvetica, sans-serif'
 
 function isCustomCakeEnquiry(input: EmailTemplateCommonInput): boolean {
   return input.orderType === 'custom-cake-enquiry'
@@ -493,7 +512,9 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
     rows.push({ label, value: trimmed })
   }
 
-  if (isCustomCakeEnquiry(input)) {
+  const customCakeEnquiry = isCustomCakeEnquiry(input)
+
+  if (customCakeEnquiry) {
     row(contactRows, 'Name', input.customerName)
     row(contactRows, 'Email', input.customerEmail)
     row(contactRows, 'Phone', formatPhoneDisplay(input.customerPhone))
@@ -518,7 +539,7 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
   row(preferencesRows, 'Servings', input.servings)
   row(preferencesRows, 'Customer message', input.customerMessage)
   row(preferencesRows, 'Gift note', input.giftNote)
-  if (isCustomCakeEnquiry(input) && Array.isArray(input.attachmentNames)) {
+  if (customCakeEnquiry && Array.isArray(input.attachmentNames)) {
     row(preferencesRows, 'Reference image uploaded', input.attachmentNames.join(', '))
   }
 
@@ -533,7 +554,7 @@ function isCompletedStatus(value: string | null | undefined): boolean {
   return toTrimmed(value).toLowerCase() === 'completed'
 }
 
-function buildCompletedReviewText(): string {
+export function buildCompletedReviewText(): string {
   return [
     'We\'d love your feedback',
     'Thank you for choosing Olgish Cakes. If you enjoyed your order, we\'d really appreciate your review.',
@@ -541,7 +562,7 @@ function buildCompletedReviewText(): string {
   ].join('\n')
 }
 
-function buildCompletedReviewHtml(): string {
+export function buildCompletedReviewHtml(): string {
   return `<div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 20px; margin-top: 16px;"><h3 style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 16px; font-weight: 600;">We'd love your feedback</h3><p style="margin: 0 0 12px 0; color: #0c4a6e; font-size: 14px; line-height: 1.6;">Thank you for choosing Olgish Cakes. If you enjoyed your order, we'd really appreciate your review.</p><a href="${TRUSTPILOT_REVIEW_URL}" style="display: inline-block; background: #0ea5e9; color: #ffffff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">Leave a review on Trustpilot</a></div>`
 }
 
@@ -577,7 +598,7 @@ function buildCustomerTextBody(input: EmailTemplateCommonInput, nextSteps: strin
     .filter((section) => section.length > 0)
     .join('\n\n')
 }
-function buildCustomerFooterText(): string {
+export function buildCustomerFooterText(): string {
   return [
     'Questions about your order? We\'re here to help.',
     'hello@olgishcakes.co.uk',
@@ -585,23 +606,30 @@ function buildCustomerFooterText(): string {
   ].join('\n')
 }
 
-function renderEmailSpacer(height: number): string {
+export function renderEmailSpacer(height: number): string {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td height="${height}" style="height: ${height}px; font-size: ${height}px; line-height: ${height}px;">&nbsp;</td></tr></table>`
 }
 
-function renderCustomerCard(title: string, rows: CustomerRow[]): string {
+export function renderCustomerCard(title: string, rows: CustomerRow[]): string {
   if (rows.length === 0) {
     return ''
   }
 
   const tableRows = rows
-    .map((entry) => `<tr><td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">${escapeHtml(entry.label)}</td><td valign="top" style="padding: 8px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">${escapeHtml(entry.value).replace(/\n/g, '<br>')}</td></tr>`)
+    .map((entry) => {
+      const valueHtml = escapeHtml(entry.value).replace(/\n/g, '<br>')
+      const linkedValueHtml = entry.href
+        ? `<a href="${escapeHtml(entry.href)}" style="color: #2E3192; text-decoration: underline; font-weight: 700;">${valueHtml}</a>`
+        : valueHtml
+
+      return `<tr><td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">${escapeHtml(entry.label)}</td><td valign="top" style="padding: 8px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">${linkedValueHtml}</td></tr>`
+    })
     .join('')
 
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td style="padding: 22px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td style="padding: 0 0 14px 0; color: #2E3192; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">${escapeHtml(title)}</td></tr></table><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">${tableRows}</table></td></tr></table>${renderEmailSpacer(14)}`
 }
 
-function buildCustomerFooterHtml(): string {
+export function buildCustomerFooterHtml(): string {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">Questions about your order? We're here to help.</p><p style="margin: 0; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 24px;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 700;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none; font-weight: 700;">+44 7867 218194</a></p></td></tr></table>`
 }
 
@@ -623,25 +651,28 @@ function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: strin
 
   return `${contactCard}${summaryCard}${orderItemsCard}${preferencesCard}${steps}${completedReviewCard}${buildCustomerFooterHtml()}`
 }
-function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput): RenderedEmail {
+function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput, options: TemplateOptions = {}): RenderedEmail {
   const subject = buildSubject(meta, input)
+  const heading = input.headingOverride?.trim() || meta.heading
   const intro = input.intro?.trim() || input.statusMessage?.trim() || meta.intro
   const nextSteps = resolveNextSteps(input)
+  const customerContent = meta.admin ? null : options.customerContentBuilder?.(input) ?? null
+  const adminContent = meta.admin ? options.adminContentBuilder?.(input) ?? null : null
 
   const sections = buildAdminSections(input)
   const bodyText = meta.admin
-    ? renderRowsAsText(sections)
-    : buildCustomerTextBody(input, nextSteps)
+    ? adminContent?.bodyText ?? renderRowsAsText(sections)
+    : customerContent?.bodyText ?? buildCustomerTextBody(input, nextSteps)
   const bodyHtml = meta.admin
-    ? `${renderReferenceImageGalleryHtml(input.referenceImageUrls)}${renderRowsAsHtml(sections)}`
-    : buildCustomerHtmlBody(input, nextSteps)
+    ? adminContent?.bodyHtml ?? `${renderReferenceImageGalleryHtml(input.referenceImageUrls)}${renderRowsAsHtml(sections)}`
+    : customerContent?.bodyHtml ?? buildCustomerHtmlBody(input, nextSteps)
 
   const greetingName = input.customerName?.trim() || 'there'
   const greetingPrefix = meta.admin ? 'Hello' : 'Dear'
   const signature = meta.admin ? 'Olgish Cakes' : buildCustomerFooterText()
 
   const text = [
-    meta.heading,
+    heading,
     '',
     `${greetingPrefix} ${greetingName},`,
     '',
@@ -655,7 +686,7 @@ function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput)
   const htmlSignature = meta.admin
     ? '<p style="margin: 24px 0 0 0; color: #374151; font-size: 14px;">Olgish Cakes</p>'
     : ''
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(subject)}</title></head><body bgcolor="#FFF5E6" style="margin: 0; padding: 0; background-color: #FFF5E6; font-family: ${EMAIL_FONT_SANS};"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#FFF5E6" style="background-color: #FFF5E6; border-collapse: collapse;"><tr><td align="center" style="padding: 28px 14px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" bgcolor="#FFFBEB" style="width: 100%; max-width: 600px; background-color: #FFFBEB; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td align="center" bgcolor="#2E3192" style="background-color: #2E3192; padding: 24px 24px 22px 24px; text-align: center;"><img src="${EMAIL_LOGO_SRC}" alt="Olgish Cakes" width="112" height="112" style="display: block; width: 112px; height: 112px; margin: 0 auto 16px auto; border: 0; outline: none; text-decoration: none;"><h1 style="margin: 0; color: #ffffff; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 25px; font-weight: 700; line-height: 32px; letter-spacing: 0;">${escapeHtml(meta.heading)}</h1></td></tr><tr><td bgcolor="#FFFBEB" style="background-color: #FFFBEB; padding: 30px 28px;"><p style="margin: 0 0 16px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 26px;">${greetingPrefix} <strong>${escapeHtml(greetingName)}</strong>,</p><p style="margin: 0 0 24px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 27px;">${escapeHtml(intro)}</p>${bodyHtml}${htmlSignature}</td></tr></table></td></tr></table></body></html>`
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(subject)}</title></head><body bgcolor="#FFF5E6" style="margin: 0; padding: 0; background-color: #FFF5E6; font-family: ${EMAIL_FONT_SANS};"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#FFF5E6" style="background-color: #FFF5E6; border-collapse: collapse;"><tr><td align="center" style="padding: 28px 14px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" bgcolor="#FFFBEB" style="width: 100%; max-width: 600px; background-color: #FFFBEB; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td align="center" bgcolor="#2E3192" style="background-color: #2E3192; padding: 24px 24px 22px 24px; text-align: center;"><img src="${EMAIL_LOGO_SRC}" alt="Olgish Cakes" width="112" height="112" style="display: block; width: 112px; height: 112px; margin: 0 auto 16px auto; border: 0; outline: none; text-decoration: none;"><h1 style="margin: 0; color: #ffffff; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 25px; font-weight: 700; line-height: 32px; letter-spacing: 0;">${escapeHtml(heading)}</h1></td></tr><tr><td bgcolor="#FFFBEB" style="background-color: #FFFBEB; padding: 30px 28px;"><p style="margin: 0 0 16px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 26px;">${greetingPrefix} <strong>${escapeHtml(greetingName)}</strong>,</p><p style="margin: 0 0 24px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 27px;">${escapeHtml(intro)}</p>${bodyHtml}${htmlSignature}</td></tr></table></td></tr></table></body></html>`
 
   return {
     subject,
@@ -669,12 +700,13 @@ function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput)
 
 export function createTemplateDefinition(
   meta: TemplateMeta,
-  scenarios: EmailTemplateScenario<EmailTemplateCommonInput>[]
+  scenarios: EmailTemplateScenario<EmailTemplateCommonInput>[],
+  options: TemplateOptions = {}
 ): TemplateDefinition<EmailTemplateCommonInput> {
   return {
     schema: commonInputSchema,
     scenarios,
-    build: (input) => buildTemplateEmail(meta, input)
+    build: (input) => buildTemplateEmail(meta, input, options)
   }
 }
 
