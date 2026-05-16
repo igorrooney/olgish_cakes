@@ -1,0 +1,33 @@
+[Olgish Cakes]
+Order request confirmed
+
+Dear Igor Ieromenko,
+
+Great news, we've confirmed your cakes by post request.
+
+Order Summary
+Order Number    26051219200232
+Product Personalised Congratulations Cake Card
+Quantity        1
+Date needed     27/05/2026
+Total Amount    £8.95
+Payment status  Pending
+
+Delivery Details
+Delivery method By post
+Delivery address        15 Allerton Grange Avenue, Leeds, LS17 6PR
+
+Customer Notes
+Customer notes  test message
+
+Gift Details
+Gift note       test gift note
+
+Next step
+We'll send your secure payment link next. Once payment is received, we'll prepare, pack, and send your cake by post.
+
+
+Questions about your order? We're here to help.
+
+hello@olgishcakes.co.uk<mailto:hello@olgishcakes.co.uk>
++44 7867 218194<tel:+447867218194>

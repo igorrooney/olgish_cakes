@@ -103,6 +103,74 @@ describe('/api/orders POST', () => {
       emailError: expect.stringContaining('Transport did not accept the customer email')
     }))
   })
+
+  it('stores approximate request location from Vercel IP headers', async () => {
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-vercel-ip-city': 'Manchester',
+        'x-vercel-ip-country-region': 'ENG',
+        'x-vercel-ip-country': 'GB'
+      },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '07123456789',
+        message: 'Please make it less sweet',
+        orderType: 'standard',
+        productType: 'cake',
+        productName: 'Honey Cake',
+        designType: 'standard',
+        quantity: 1,
+        unitPrice: 30,
+        totalPrice: 30,
+        deliveryMethod: 'collection',
+        paymentMethod: 'cash-collection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
+      metadata: expect.objectContaining({
+        ipLocation: {
+          city: 'Manchester',
+          region: 'ENG',
+          country: 'GB',
+          latitude: undefined,
+          longitude: undefined,
+          source: 'vercel-ip-headers'
+        }
+      })
+    }))
+  })
+
   it('passes all line items to customer and admin order emails', async () => {
     mockSendEmail
       .mockResolvedValueOnce({

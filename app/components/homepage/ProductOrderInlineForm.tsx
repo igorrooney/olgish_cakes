@@ -218,16 +218,16 @@ export function ProductOrderInlineForm({
     return mergeSelectedOccasionOption(resolvedOccasionOptions, formData.occasion ?? '')
   }, [formData.occasion, resolvedOccasionOptions])
   const buttonClassName = hasSubmittedSuccessfully
-    ? 'bg-[var(--d-color-status-success-bg)] hover:bg-[var(--d-color-status-success-bg)]'
+    ? '!border-base-300 !bg-base-200 !text-base-content/70 shadow-none opacity-100 disabled:!border-base-300 disabled:!bg-base-200 disabled:!text-base-content/70 disabled:opacity-100'
     : 'bg-primary-500 hover:bg-primary-700'
-  const buttonLabel = hasSubmittedSuccessfully ? 'Order sent' : 'Submit order'
+  const buttonLabel = hasSubmittedSuccessfully ? 'Request sent' : 'Submit order'
   const successIntro = isPostalOrder
     ? "Thank you. We've received your cakes by post request."
     : "Thank you. We've received your request."
   const successNextSteps = isPostalOrder
     ? [
         "We'll review your order and delivery details within 24 hours.",
-        "We'll send you a secure payment link once everything is confirmed.",
+        "If everything is confirmed, we'll send you a secure payment link.",
         "Once payment is received, we'll prepare, pack, and send your cake by post."
       ]
     : [
@@ -243,7 +243,9 @@ export function ProductOrderInlineForm({
     return value && value.length > 0 ? value : ''
   }, [formData.message, formData.requirements, requestMode])
   const fullMessage = useMemo(() => {
-    const requestDetailsLabel = requestMode === 'custom-design' ? 'Requirements' : 'Message'
+    const requestDetailsLabel = requestMode === 'custom-design'
+      ? 'Requirements'
+      : isPostalOrder ? 'Customer notes' : 'Message'
     const sections = [
       ...contextLines,
       userRequestDetails.length > 0
@@ -252,7 +254,7 @@ export function ProductOrderInlineForm({
     ].filter((line) => line.length > 0)
 
     return sections.join('\n')
-  }, [contextLines, requestMode, userRequestDetails])
+  }, [contextLines, isPostalOrder, requestMode, userRequestDetails])
 
   useEffect(() => {
     return () => {
@@ -508,7 +510,7 @@ export function ProductOrderInlineForm({
         icon={<AddressIcon />}
         error={errors.address}
         required={isPostalOrder}
-        hintText='Enter your address'
+        hintText='Enter delivery address'
         onValueChange={(value) => updateField('address', value, true)}
       />
       <ValidatorInput
@@ -520,7 +522,7 @@ export function ProductOrderInlineForm({
         icon={<AddressIcon />}
         error={errors.city}
         required={isPostalOrder}
-        hintText='Enter your city'
+        hintText='Enter delivery city'
         onValueChange={(value) => updateField('city', value, true)}
       />
       <ValidatorInput
@@ -565,11 +567,17 @@ export function ProductOrderInlineForm({
         fieldType='textarea'
         id={requestMode === 'custom-design' ? 'requirements' : 'message'}
         value={requestMode === 'custom-design' ? formData.requirements ?? '' : formData.message ?? ''}
-        label={requestMode === 'custom-design' ? 'Requirements' : 'Message'}
-        labelAlt={requestMode === 'custom-design' ? '(Optional) Shape, flavour, icing, filling etc.' : '(Optional)'}
+        label={requestMode === 'custom-design' ? 'Requirements' : isPostalOrder ? 'Customer notes' : 'Message'}
+        labelAlt={requestMode === 'custom-design'
+          ? '(Optional) Shape, flavour, icing, filling etc.'
+          : isPostalOrder ? '(Optional) Delivery notes or anything you want us to know' : '(Optional)'}
         labelLayout={requestMode === 'custom-design' ? 'stacked' : undefined}
-        placeholder={requestMode === 'custom-design' ? 'Enter requirements' : 'Enter message'}
-        hintText={requestMode === 'custom-design' ? 'Enter requirements' : 'Enter message'}
+        placeholder={requestMode === 'custom-design'
+          ? 'Enter requirements'
+          : isPostalOrder ? 'Add notes for Olgish Cakes' : 'Enter message'}
+        hintText={requestMode === 'custom-design'
+          ? 'Enter requirements'
+          : isPostalOrder ? 'Add notes for Olgish Cakes' : 'Enter message'}
         onValueChange={(value) => {
           if (requestMode === 'custom-design') {
             updateField('requirements', value)
@@ -632,10 +640,24 @@ export function ProductOrderInlineForm({
       ) : null}
       {hasSubmittedSuccessfully ? (
         <div
-          className='alert alert-success w-full items-start'
+          className='alert alert-success w-full items-start text-sm'
           role='status'
           aria-live='polite'
         >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-5 w-5 shrink-0 stroke-current'
+            fill='none'
+            viewBox='0 0 24 24'
+            aria-hidden='true'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
           <div className='space-y-2'>
             <p className='font-semibold'>Order request received</p>
             <p>{successIntro}</p>
@@ -650,7 +672,7 @@ export function ProductOrderInlineForm({
       <button
         type='submit'
         className={`btn h-12 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}
-        disabled={isSubmitting}
+        disabled={isSubmitting || hasSubmittedSuccessfully}
         aria-busy={isSubmitting}
       >
         <span className='flex items-center justify-center gap-2 font-sans text-sm font-semibold'>

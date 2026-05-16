@@ -1,5 +1,42 @@
 import type { EmailTemplateCommonInput, TemplateDefinition } from '../types'
+import { buildCakesByPostStatusUpdateContent } from './cakes-by-post-customer'
 import { createDefaultScenarioInput, createTemplateDefinition } from './shared'
+
+const cakesByPostConfirmedInput = createDefaultScenarioInput({
+  customerName: 'Igor Ieromenko',
+  customerEmail: 'igor@example.com',
+  customerPhone: '+44 7867 218241',
+  address: '15 Allerton Grange Avenue',
+  city: 'Leeds',
+  postcode: 'LS17 6PR',
+  orderNumber: '26051220022842',
+  orderType: 'gift-hamper',
+  productName: 'Personalised Congratulations Cake Card',
+  productId: 'personalised-congratulations-cake-card',
+  productType: 'gift-hamper',
+  quantity: 1,
+  unitPrice: 8.95,
+  totalPrice: 8.95,
+  dateNeeded: '2026-05-26',
+  occasion: undefined,
+  designType: undefined,
+  filling: undefined,
+  servings: undefined,
+  customerMessage: 'test message',
+  deliveryMethod: 'postal',
+  deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+  paymentMethod: 'card',
+  paymentStatus: 'pending',
+  referrer: 'cakes-by-post',
+  status: 'confirmed',
+  message: 'test message',
+  note: undefined,
+  giftNote: 'test gift note',
+  attachmentNames: [],
+  titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
+  headingOverride: 'Order request confirmed',
+  statusMessage: 'Great news, we\'ve confirmed your cakes by post request.'
+})
 
 const customerConfirmationScenarios = [
   {
@@ -30,6 +67,79 @@ const statusUpdateScenarios = [
       titleOverride: 'Order Confirmed #OC-2026-1001 - Olgish Cakes',
       statusMessage: 'Great news! Your order has been confirmed and we are now preparing your delicious cake.'
     })
+  },
+  {
+    id: 'cakes-by-post-confirmed',
+    label: 'Cakes by post: confirmed',
+    input: cakesByPostConfirmedInput
+  },
+  {
+    id: 'cakes-by-post-in-progress',
+    label: 'Cakes by post: in progress',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'in-progress',
+      titleOverride: 'Order in Progress #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order in progress',
+      statusMessage: 'Your cakes by post order is now being prepared.'
+    }
+  },
+  {
+    id: 'cakes-by-post-ready',
+    label: 'Cakes by post: ready',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'ready',
+      titleOverride: 'Order Ready #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order ready',
+      statusMessage: 'Your cakes by post order is ready for dispatch.'
+    }
+  },
+  {
+    id: 'cakes-by-post-out-for-delivery',
+    label: 'Cakes by post: dispatched',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'out-for-delivery',
+      titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order dispatched',
+      statusMessage: 'Great news, your cakes by post order has been dispatched with Royal Mail.',
+      deliveryCourier: 'royal-mail',
+      trackingNumber: 'TRACK-123456'
+    }
+  },
+  {
+    id: 'cakes-by-post-delivered',
+    label: 'Cakes by post: delivered',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'delivered',
+      titleOverride: 'Order Delivered #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order delivered',
+      statusMessage: 'Your cakes by post order has been delivered. We hope it arrived safely and is enjoyed.'
+    }
+  },
+  {
+    id: 'cakes-by-post-completed',
+    label: 'Cakes by post: completed',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'completed',
+      titleOverride: 'Order Completed #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order completed',
+      statusMessage: 'Thank you for choosing Olgish Cakes. Your cakes by post order has been completed.'
+    }
+  },
+  {
+    id: 'cakes-by-post-cancelled',
+    label: 'Cakes by post: cancelled',
+    input: {
+      ...cakesByPostConfirmedInput,
+      status: 'cancelled',
+      titleOverride: 'Order Cancelled #26051220022842 - Olgish Cakes',
+      headingOverride: 'Order cancelled',
+      statusMessage: 'Your cakes by post order has been cancelled. If you have any questions, please contact us and we\'ll help.'
+    }
   },
   {
     id: 'in-progress',
@@ -114,6 +224,9 @@ export const ordersTemplateDefinitions: Record<string, TemplateDefinition<EmailT
       intro: 'The order status has been updated.',
       admin: false
     },
-    statusUpdateScenarios
+    statusUpdateScenarios,
+    {
+      customerContentBuilder: buildCakesByPostStatusUpdateContent
+    }
   )
 }

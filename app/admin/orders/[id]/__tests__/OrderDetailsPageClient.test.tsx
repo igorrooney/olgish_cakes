@@ -121,7 +121,16 @@ describe('OrderDetailsPageClient', () => {
   })
 
   it('loads and renders a shareable order detail page', async () => {
-    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder()))
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      metadata: {
+        ipLocation: {
+          city: 'Bristol',
+          region: 'ENG',
+          country: 'GB',
+          source: 'vercel-ip-headers'
+        }
+      }
+    })))
 
     renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
 
@@ -136,6 +145,8 @@ describe('OrderDetailsPageClient', () => {
       signal: expect.any(AbortSignal)
     }))
     expect(screen.getByText('Jane Customer')).toBeInTheDocument()
+    expect(screen.getByText('Approx. submitted from')).toBeInTheDocument()
+    expect(screen.getByText('Bristol, ENG, GB')).toBeInTheDocument()
     expect(screen.getByText('Jane Customer - Chocolate Delicia Sponge Cake - Needed 26/07/2026')).toBeInTheDocument()
     expect(screen.getByText('Start production when ready. Payment is partial.')).toBeInTheDocument()
     expect(screen.getAllByText('Chocolate Delicia Sponge Cake').length).toBeGreaterThan(0)
@@ -404,6 +415,7 @@ describe('OrderDetailsPageClient', () => {
       status?: string
       paymentStatus?: string
       trackingNumber?: string
+      deliveryCourier?: string
       note?: string
       author?: string
     }
@@ -415,6 +427,55 @@ describe('OrderDetailsPageClient', () => {
     expect(requestBody.status).toBeUndefined()
     expect(requestBody.paymentStatus).toBeUndefined()
     expect(requestBody.trackingNumber).toBeUndefined()
+    expect(requestBody.deliveryCourier).toBeUndefined()
+  })
+
+  it('saves courier changes from the manage order form', async () => {
+    const initialOrder = makeOrder({
+      delivery: {
+        dateNeeded: '2026-07-26',
+        deliveryMethod: 'postal',
+        trackingNumber: 'TRACK-123'
+      },
+      metadata: {
+        deliveryCourier: 'royal-mail'
+      }
+    })
+    const updatedOrder = makeOrder({
+      ...initialOrder,
+      metadata: {
+        deliveryCourier: 'evri'
+      }
+    })
+
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse(initialOrder))
+      .mockResolvedValueOnce(jsonResponse({ success: true, order: updatedOrder }))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByLabelText('Courier')).toHaveValue('royal-mail')
+
+    fireEvent.change(screen.getByLabelText('Courier'), {
+      target: { value: 'evri' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    const requestBody = JSON.parse(String(mockFetch.mock.calls[1]?.[1]?.body)) as {
+      deliveryCourier?: string
+    }
+
+    expect(requestBody).toEqual({
+      deliveryCourier: 'evri'
+    })
   })
 
   it('edits the items section from the detail page', async () => {
@@ -610,6 +671,65 @@ describe('OrderDetailsPageClient', () => {
     })
 
     expect(screen.getAllByText(customerMessage)).toHaveLength(1)
+  })
+
+  it('shows clean cakes by post notes, image status, and missing location state', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Customer',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productType: 'gift-hamper',
+          productId: 'personalised-congratulations-cake-card',
+          productName: 'Personalised Congratulations Cake Card',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95,
+          designType: 'standard',
+          specialInstructions: 'test message'
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-26',
+        deliveryMethod: 'postal',
+        giftNote: 'gift note test'
+      },
+      messages: [
+        {
+          message: 'Product: Personalised Congratulations Cake Card\nProduct type: gift-hamper\nPrice: \u00A38.95\nMessage: test message',
+          attachments: []
+        }
+      ],
+      metadata: {
+        inlineOrderContext: {
+          customerMessage: 'test message'
+        }
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26051220022842' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('Approx. submitted from')).toBeInTheDocument()
+    expect(screen.getByText('Not captured')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Customer notes and images' })).toBeInTheDocument()
+    expect(screen.getByText('Customer notes')).toBeInTheDocument()
+    expect(screen.getAllByText('test message').length).toBeGreaterThan(0)
+    expect(screen.getByText('Gift note')).toBeInTheDocument()
+    expect(screen.getByText('gift note test')).toBeInTheDocument()
+    expect(screen.getByText('No images attached.')).toBeInTheDocument()
+    expect(screen.queryByText(/Product type: gift-hamper/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Price: \u00A38.95/)).not.toBeInTheDocument()
   })
 
   it('permanently deletes the order and returns to the orders list', async () => {

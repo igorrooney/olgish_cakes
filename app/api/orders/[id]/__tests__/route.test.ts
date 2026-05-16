@@ -141,6 +141,398 @@ describe('/api/orders/[id] PATCH', () => {
     })
   })
 
+  it('passes cakes by post status email fields for confirmed orders', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-05-12T18:00:00.000Z',
+      _updatedAt: '2026-05-12T18:00:00.000Z',
+      orderNumber: '26051220022842',
+      status: 'new',
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Ieromenko',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productName: 'Personalised Congratulations Cake Card',
+          productId: 'personalised-congratulations-cake-card',
+          productType: 'gift-hamper',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95,
+          designType: 'standard',
+          specialInstructions: 'test message'
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-26',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        giftNote: 'gift note test'
+      },
+      pricing: {
+        total: 8.95,
+        paymentStatus: 'pending',
+        paymentMethod: 'card'
+      },
+      messages: [],
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
+      ...order,
+      _updatedAt: '2026-05-12T18:10:00.000Z'
+    }))
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: 'confirmed'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall.templateId).toBe('orders-status-update')
+    expect(sendCall.input).toMatchObject({
+      productType: 'gift-hamper',
+      headingOverride: 'Order request confirmed',
+      titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
+      statusMessage: 'Great news, we\'ve confirmed your cakes by post request.',
+      customerMessage: 'test message',
+      giftNote: 'gift note test',
+      deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+      paymentStatus: 'pending'
+    })
+  })
+
+  it('passes cakes by post status email fields for in-progress orders', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-05-12T18:00:00.000Z',
+      _updatedAt: '2026-05-12T18:00:00.000Z',
+      orderNumber: '26051220022842',
+      status: 'confirmed',
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Ieromenko',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productName: 'Personalised Congratulations Cake Card',
+          productId: 'personalised-congratulations-cake-card',
+          productType: 'gift-hamper',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95,
+          designType: 'standard',
+          specialInstructions: 'test message'
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-26',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        giftNote: 'gift note test'
+      },
+      pricing: {
+        total: 8.95,
+        paymentStatus: 'paid',
+        paymentMethod: 'card'
+      },
+      messages: [],
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
+      ...order,
+      _updatedAt: '2026-05-12T18:10:00.000Z'
+    }))
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: 'in-progress'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall.templateId).toBe('orders-status-update')
+    expect(sendCall.input).toMatchObject({
+      productType: 'gift-hamper',
+      status: 'in-progress',
+      headingOverride: 'Order in progress',
+      titleOverride: 'Order In Progress #26051220022842 - Olgish Cakes',
+      statusMessage: 'Your cakes by post order is now being prepared.',
+      paymentStatus: 'paid'
+    })
+  })
+
+  it('saves courier metadata and passes it into cakes by post out-for-delivery emails', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-05-12T18:00:00.000Z',
+      _updatedAt: '2026-05-12T18:00:00.000Z',
+      orderNumber: '26051220022842',
+      status: 'in-progress',
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Ieromenko',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productName: 'Personalised Congratulations Cake Card',
+          productId: 'personalised-congratulations-cake-card',
+          productType: 'gift-hamper',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95,
+          specialInstructions: 'test message'
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-26',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        trackingNumber: ''
+      },
+      pricing: {
+        total: 8.95,
+        paymentStatus: 'paid',
+        paymentMethod: 'card'
+      },
+      messages: [],
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
+      ...order,
+      _updatedAt: '2026-05-12T18:10:00.000Z'
+    }))
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: 'out-delivery',
+        deliveryCourier: 'evri',
+        trackingNumber: 'H02X8A0022918652'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+    expect(mockUpdateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
+      delivery: expect.objectContaining({
+        trackingNumber: 'H02X8A0022918652'
+      }),
+      metadata: expect.objectContaining({
+        deliveryCourier: 'evri'
+      })
+    }))
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall.templateId).toBe('orders-status-update')
+    expect(sendCall.input).toMatchObject({
+      status: 'out-for-delivery',
+      deliveryCourier: 'evri',
+      trackingNumber: 'H02X8A0022918652',
+      headingOverride: 'Order dispatched',
+      titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
+      statusMessage: 'Great news, your cakes by post order has been dispatched with Evri.'
+    })
+  })
+
+  it('uses cakes by post delivered wording for delivered status emails', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-05-12T18:00:00.000Z',
+      _updatedAt: '2026-05-12T18:00:00.000Z',
+      orderNumber: '26051220022842',
+      status: 'out-delivery',
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Ieromenko',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productName: 'Personalised Congratulations Cake Card',
+          productId: 'personalised-congratulations-cake-card',
+          productType: 'gift-hamper',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95,
+          specialInstructions: 'test message'
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-26',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        trackingNumber: '1234567'
+      },
+      pricing: {
+        total: 8.95,
+        paymentStatus: 'paid',
+        paymentMethod: 'card'
+      },
+      messages: [],
+      notes: [],
+      metadata: {
+        deliveryCourier: 'royal-mail'
+      }
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
+      ...order,
+      _updatedAt: '2026-05-12T18:10:00.000Z'
+    }))
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: 'delivered'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall.templateId).toBe('orders-status-update')
+    expect(sendCall.input).toMatchObject({
+      productType: 'gift-hamper',
+      status: 'delivered',
+      deliveryCourier: 'royal-mail',
+      trackingNumber: '1234567',
+      headingOverride: 'Order delivered',
+      titleOverride: 'Order Delivered #26051220022842 - Olgish Cakes',
+      statusMessage: 'Your cakes by post order has been delivered. We hope it arrived safely and is enjoyed.'
+    })
+  })
+
+  it('uses cakes by post cancelled wording for cancelled status emails', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-05-12T18:00:00.000Z',
+      _updatedAt: '2026-05-12T18:00:00.000Z',
+      orderNumber: '26051219414558',
+      status: 'confirmed',
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Ieromenko',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '15 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productName: 'Personalised Congratulations Cake Card',
+          productId: 'personalised-congratulations-cake-card',
+          productType: 'gift-hamper',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-27',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        trackingNumber: '12345678'
+      },
+      pricing: {
+        total: 8.95,
+        paymentStatus: 'pending',
+        paymentMethod: 'card'
+      },
+      messages: [],
+      notes: [],
+      metadata: {
+        deliveryCourier: 'evri'
+      }
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+    mockUpdateSupabaseOrder.mockImplementation(async (order: typeof currentOrder) => ({
+      ...order,
+      _updatedAt: '2026-05-12T18:10:00.000Z'
+    }))
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: 'cancelled'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(200)
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall.templateId).toBe('orders-status-update')
+    expect(sendCall.input).toMatchObject({
+      productType: 'gift-hamper',
+      status: 'cancelled',
+      headingOverride: 'Order cancelled',
+      titleOverride: 'Order Cancelled #26051219414558 - Olgish Cakes',
+      statusMessage: 'Your cakes by post order has been cancelled. If you have any questions, please contact us and we\'ll help.'
+    })
+  })
+
   it('preserves additional order items when multipart admin edits include selected cake fields', async () => {
     const currentOrder = {
       _id: 'order-1',

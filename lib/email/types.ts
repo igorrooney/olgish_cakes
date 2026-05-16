@@ -55,6 +55,7 @@ export interface EmailTemplateCommonInput {
   servings?: string
   customerMessage?: string
   deliveryMethod?: string
+  deliveryCourier?: string
   deliveryAddress?: string
   paymentMethod?: string
   referrer?: string
@@ -67,7 +68,9 @@ export interface EmailTemplateCommonInput {
   nextSteps?: string[]
   intro?: string
   titleOverride?: string
+  headingOverride?: string
   statusMessage?: string
+  paymentStatus?: string
   orderItems?: Array<{
     productName?: string
     productId?: string
@@ -82,6 +85,7 @@ export interface EmailTemplateCommonInput {
   }>
   trackingNumber?: string
   adminUrl?: string
+  approximateSubmittedFrom?: string
 }
 
 export type ContactAdminInquiryInput = EmailTemplateCommonInput

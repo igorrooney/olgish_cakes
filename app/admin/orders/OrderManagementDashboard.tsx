@@ -69,11 +69,48 @@ type OrderImagePreview = {
 
 type OrderFocusFilter = 'all' | 'needs-action' | 'active';
 
+type StoredIpLocation = {
+  city?: string;
+  region?: string;
+  country?: string;
+};
+
 const needsActionStatuses = ['new', 'confirmed', 'in-progress'];
 const activeStatuses = [...needsActionStatuses, 'ready-pickup', 'out-delivery'];
 
 const isNeedsActionStatus = (status: string) => needsActionStatuses.includes(status);
 const isActiveStatus = (status: string) => activeStatuses.includes(status);
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const readStringField = (record: Record<string, unknown>, field: string) => {
+  const value = record[field];
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
+};
+
+const getOrderIpLocation = (order: Order): StoredIpLocation | null => {
+  if (!isRecord(order.metadata)) {
+    return null;
+  }
+
+  const ipLocation = order.metadata.ipLocation;
+
+  if (!isRecord(ipLocation)) {
+    return null;
+  }
+
+  const location = {
+    city: readStringField(ipLocation, 'city'),
+    region: readStringField(ipLocation, 'region'),
+    country: readStringField(ipLocation, 'country')
+  };
+
+  return Object.values(location).some(Boolean) ? location : null;
+};
+
+const formatIpLocation = (location: StoredIpLocation | null) =>
+  location ? [location.city, location.region, location.country].filter(Boolean).join(', ') : 'Not captured';
 
 function getOrderImagePreviews(order: Order): OrderImagePreview[] {
   const messageImages = (order.messages || []).flatMap((message) =>
@@ -1902,6 +1939,9 @@ export function OrderManagementDashboard() {
                       <strong>Postcode:</strong> {selectedOrder.customer.postcode}
                     </Typography>
                   )}
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>Approx. submitted from:</strong> {formatIpLocation(getOrderIpLocation(selectedOrder))}
+                  </Typography>
                 </Box>
 
                 <Typography variant="h6" gutterBottom>Order Items</Typography>
