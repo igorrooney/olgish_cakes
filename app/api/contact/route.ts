@@ -169,6 +169,31 @@ function getPostalOrderAddressValidationErrors(address: string, city: string, po
   return errors
 }
 
+function containsControlCharacter(value: string): boolean {
+  return Array.from(value).some((character) => {
+    const code = character.charCodeAt(0)
+    return code <= 31 || code === 127
+  })
+}
+
+function getPostalOrderRecipientNameValidationErrors(recipientName: string) {
+  const errors: string[] = []
+
+  if (recipientName.length === 0) {
+    errors.push('recipientName: Recipient name is required for cakes by post orders')
+  } else if (recipientName.length < 2) {
+    errors.push('recipientName: Recipient name must be at least 2 characters')
+  } else if (recipientName.length > 100) {
+    errors.push('recipientName: Recipient name must be 100 characters or fewer')
+  }
+
+  if (containsControlCharacter(recipientName)) {
+    errors.push('recipientName: Recipient name cannot contain control characters')
+  }
+
+  return errors
+}
+
 function getInlineGiftNoteValidationErrors(giftNote: string) {
   const errors: string[] = []
 
@@ -384,6 +409,7 @@ async function handlePOST(request: NextRequest) {
     const address = toNonEmptyString(formData.get('address'))
     const city = toNonEmptyString(formData.get('city'))
     const postcode = toNonEmptyString(formData.get('postcode'))
+    const recipientName = toNonEmptyString(formData.get('recipientName'))
     const dateNeeded = toNonEmptyString(formData.get('dateNeeded'))
     const cakeInterest = toNonEmptyString(formData.get('cakeInterest'))
     const note = toNonEmptyString(formData.get('note'))
@@ -439,21 +465,20 @@ async function handlePOST(request: NextRequest) {
     }
 
     if (isOrderInquiry && hasCompactOrderPayload) {
-      if (normalizedProductType === 'gift-hamper') {
-        const postalOrderAddressErrors = getPostalOrderAddressValidationErrors(address, city, postcode)
+      const compactOrderValidationErrors: string[] = []
 
-        if (postalOrderAddressErrors.length > 0) {
-          return NextResponse.json(
-            { error: 'Validation failed', details: postalOrderAddressErrors.join(', ') },
-            { status: 400 }
-          )
-        }
+      if (normalizedProductType === 'gift-hamper') {
+        compactOrderValidationErrors.push(
+          ...getPostalOrderRecipientNameValidationErrors(recipientName),
+          ...getPostalOrderAddressValidationErrors(address, city, postcode)
+        )
       }
 
       const giftNoteErrors = getInlineGiftNoteValidationErrors(giftNote)
-      if (giftNoteErrors.length > 0) {
+      compactOrderValidationErrors.push(...giftNoteErrors)
+      if (compactOrderValidationErrors.length > 0) {
         return NextResponse.json(
-          { error: 'Validation failed', details: giftNoteErrors.join(', ') },
+          { error: 'Validation failed', details: compactOrderValidationErrors.join(', ') },
           { status: 400 }
         )
       }
@@ -700,6 +725,7 @@ async function handlePOST(request: NextRequest) {
         delivery: {
           dateNeeded: dateNeeded || undefined,
           deliveryMethod: inferredDeliveryMethod,
+          recipientName: isCakesByPostOrder ? recipientName : undefined,
           deliveryAddress: inferredDeliveryAddress,
           deliveryNotes: '',
           giftNote: giftNote || ''
@@ -733,6 +759,7 @@ async function handlePOST(request: NextRequest) {
             designType,
             filling: filling || undefined,
             servings: servings || undefined,
+            deliveryRecipientName: isCakesByPostOrder ? recipientName : undefined,
             customerMessage: resolvedCustomerMessage || undefined
           }
         }
@@ -784,6 +811,7 @@ async function handlePOST(request: NextRequest) {
           servings: servings || undefined,
           customerMessage: resolvedCustomerMessage || undefined,
           giftNote: giftNote || undefined,
+          deliveryRecipientName: isCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           paymentMethod: inferredPaymentMethod,
@@ -833,6 +861,7 @@ async function handlePOST(request: NextRequest) {
           filling: filling || undefined,
           servings: servings || undefined,
           customerMessage: resolvedCustomerMessage || undefined,
+          deliveryRecipientName: isCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           paymentMethod: inferredPaymentMethod,
@@ -923,6 +952,7 @@ async function handlePOST(request: NextRequest) {
           filling: filling || undefined,
           servings: servings || undefined,
           customerMessage: customerMessage || undefined,
+          deliveryRecipientName: isFallbackCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: fallbackDeliveryMethod,
           deliveryAddress: fallbackDeliveryAddress,
           paymentMethod: fallbackPaymentMethod,
@@ -980,6 +1010,7 @@ async function handlePOST(request: NextRequest) {
           filling: filling || undefined,
           servings: servings || undefined,
           customerMessage: customerMessage || undefined,
+          deliveryRecipientName: isFallbackCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: fallbackDeliveryMethod,
           deliveryAddress: fallbackDeliveryAddress,
           paymentMethod: fallbackPaymentMethod,

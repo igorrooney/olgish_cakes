@@ -31,6 +31,8 @@ interface OrderDetailsFormState {
   paymentMethod: string
   deliveryMethod: string
   deliveryCourier: string
+  deliveryRecipientName: string
+  deliveryAddress: string
   dateNeeded: string
   trackingNumber: string
   note: string
@@ -65,6 +67,8 @@ interface OrderPatchPayload {
   paymentMethod?: string
   deliveryMethod?: string
   deliveryCourier?: string
+  deliveryRecipientName?: string
+  deliveryAddress?: string
   dateNeeded?: string | null
   trackingNumber?: string
   note?: string
@@ -141,8 +145,8 @@ const deliveryMethodOptions = [
 ]
 
 const deliveryCourierOptions = [
-  { value: 'royal-mail', label: 'Royal Mail' },
-  { value: 'evri', label: 'Evri' }
+  { value: 'evri', label: 'Evri' },
+  { value: 'royal-mail', label: 'Royal Mail' }
 ]
 
 const formatCurrency = (value: number) =>
@@ -197,11 +201,11 @@ const readStringField = (record: Record<string, unknown>, field: string) => {
 
 const getOrderDeliveryCourier = (order: Order) => {
   if (!isRecord(order.metadata)) {
-    return 'royal-mail'
+    return 'evri'
   }
 
   const deliveryCourier = readStringField(order.metadata, 'deliveryCourier')
-  return deliveryCourier === 'evri' || deliveryCourier === 'royal-mail' ? deliveryCourier : 'royal-mail'
+  return deliveryCourier === 'evri' || deliveryCourier === 'royal-mail' ? deliveryCourier : 'evri'
 }
 
 const getOrderIpLocation = (order: Order): StoredIpLocation | null => {
@@ -274,17 +278,66 @@ const getOrderGiftNote = (order: Order) => {
   return order.delivery?.giftNote?.trim() || metadataGiftNote
 }
 
+const getMetadataDeliveryRecipientName = (order: Order) => {
+  if (!isRecord(order.metadata)) {
+    return undefined
+  }
+
+  const inlineOrderContext = isRecord(order.metadata.inlineOrderContext)
+    ? order.metadata.inlineOrderContext
+    : {}
+
+  return readStringField(inlineOrderContext, 'deliveryRecipientName') ||
+    readStringField(inlineOrderContext, 'recipientName') ||
+    readStringField(order.metadata, 'deliveryRecipientName') ||
+    readStringField(order.metadata, 'recipientName')
+}
+
+const hasExplicitDeliveryRecipientName = (order: Order) =>
+  Boolean(order.delivery?.recipientName?.trim() || getMetadataDeliveryRecipientName(order))
+
+const getEffectiveDeliveryRecipientName = (order: Order) =>
+  order.delivery?.recipientName?.trim() || getMetadataDeliveryRecipientName(order) || order.customer.name || ''
+
+const getDeliveryRecipientFormValue = (order: Order) =>
+  order.delivery?.recipientName?.trim() || getMetadataDeliveryRecipientName(order) || (isCakesByPostOrder(order) ? order.customer.name : '')
+
+const getOrderDeliveryRecipientName = (order: Order) =>
+  getEffectiveDeliveryRecipientName(order) || 'Not specified'
+
+const getCustomerAddressText = (order: Order) =>
+  [order.customer.address, order.customer.city, order.customer.postcode]
+    .map((value) => value?.trim())
+    .filter(Boolean)
+    .join(', ')
+
+const shouldUseCustomerAddressAsDeliveryFallback = (order: Order) =>
+  isCakesByPostOrder(order) || !['collection', 'market-pickup'].includes(order.delivery?.deliveryMethod || '')
+
+const getOrderDeliveryAddress = (order: Order) => {
+  const deliveryAddress = order.delivery?.deliveryAddress?.trim()
+
+  if (deliveryAddress) {
+    return deliveryAddress
+  }
+
+  const customerAddress = getCustomerAddressText(order)
+  return shouldUseCustomerAddressAsDeliveryFallback(order) && customerAddress
+    ? customerAddress
+    : 'Not specified'
+}
+
+const getDeliveryAddressFormValue = (order: Order) => {
+  const deliveryAddress = getOrderDeliveryAddress(order)
+  return deliveryAddress === 'Not specified' ? '' : deliveryAddress
+}
+
 const getCustomerNoteRows = (order: Order): CustomerNoteRow[] => {
   const rows: CustomerNoteRow[] = []
   const customerMessage = getCustomerMessage(order)
-  const giftNote = getOrderGiftNote(order)
 
   if (customerMessage) {
-    rows.push({ label: 'Customer notes', value: customerMessage })
-  }
-
-  if (giftNote) {
-    rows.push({ label: 'Gift note', value: giftNote })
+    rows.push({ label: 'Customer notes for Olgish Cakes', value: customerMessage })
   }
 
   return rows
@@ -395,6 +448,8 @@ const createFormState = (order: Order): OrderDetailsFormState => ({
   paymentMethod: order.pricing?.paymentMethod || '',
   deliveryMethod: order.delivery?.deliveryMethod || 'collection',
   deliveryCourier: getOrderDeliveryCourier(order),
+  deliveryRecipientName: getDeliveryRecipientFormValue(order),
+  deliveryAddress: getDeliveryAddressFormValue(order),
   dateNeeded: getDateInputValue(order.delivery?.dateNeeded),
   trackingNumber: order.delivery?.trackingNumber || '',
   note: ''
@@ -498,6 +553,8 @@ const hasFormChanges = (current: OrderDetailsFormState | null, saved: OrderDetai
     current.paymentMethod !== saved.paymentMethod ||
     current.deliveryMethod !== saved.deliveryMethod ||
     current.deliveryCourier !== saved.deliveryCourier ||
+    current.deliveryRecipientName !== saved.deliveryRecipientName ||
+    current.deliveryAddress !== saved.deliveryAddress ||
     current.dateNeeded !== saved.dateNeeded ||
     current.trackingNumber !== saved.trackingNumber ||
     current.note.trim().length > 0
@@ -607,6 +664,14 @@ function buildOrderPatchPayload(
 
   if (formState.deliveryCourier !== savedFormState.deliveryCourier) {
     payload.deliveryCourier = formState.deliveryCourier
+  }
+
+  if (formState.deliveryRecipientName !== savedFormState.deliveryRecipientName) {
+    payload.deliveryRecipientName = formState.deliveryRecipientName.trim()
+  }
+
+  if (formState.deliveryAddress !== savedFormState.deliveryAddress) {
+    payload.deliveryAddress = formState.deliveryAddress.trim()
   }
 
   if (formState.dateNeeded !== savedFormState.dateNeeded) {
@@ -951,6 +1016,11 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   const ipLocation = getOrderIpLocation(order)
   const cakesByPostOrder = isCakesByPostOrder(order)
   const customerNoteRows = getCustomerNoteRows(order)
+  const explicitDeliveryRecipientName = hasExplicitDeliveryRecipientName(order)
+  const deliveryRecipientFallbackUsed = cakesByPostOrder && !explicitDeliveryRecipientName && getEffectiveDeliveryRecipientName(order).length > 0
+  const deliveryAddress = getOrderDeliveryAddress(order)
+  const showBuyerAddress = !cakesByPostOrder
+  const buyerPhone = (order.customer.phone || '').trim()
 
   return (
     <div className='flex flex-col gap-6'>
@@ -998,9 +1068,9 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
 
       <section className='grid gap-3 md:grid-cols-2 xl:grid-cols-4' aria-label='Order summary'>
         <article className='rounded-box border border-base-300 bg-base-100 p-4 shadow-sm'>
-          <p className='text-xs font-medium uppercase tracking-wide text-base-content/60'>Customer</p>
+          <p className='text-xs font-medium uppercase tracking-wide text-base-content/60'>Buyer</p>
           <p className='mt-2 font-semibold text-base-content'>{order.customer.name}</p>
-          <p className='mt-1 text-sm text-base-content/65'>{order.customer.phone}</p>
+          <p className='mt-1 text-sm text-base-content/65'>{buyerPhone || 'No phone provided'}</p>
         </article>
         <article className='rounded-box border border-base-300 bg-base-100 p-4 shadow-sm'>
           <p className='text-xs font-medium uppercase tracking-wide text-base-content/60'>Needed</p>
@@ -1023,6 +1093,8 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
         <aside id='manage-order' className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm xl:sticky xl:top-24 xl:order-2 xl:self-start'>
           <h2 className='text-lg font-semibold text-base-content'>Manage order</h2>
           <form className='mt-4 grid gap-4' onSubmit={handleSubmit}>
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+              <legend className='px-1 text-sm font-semibold text-base-content'>Order workflow</legend>
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Status</span>
               <select
@@ -1064,7 +1136,10 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                 ))}
               </select>
             </label>
+            </fieldset>
 
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+              <legend className='px-1 text-sm font-semibold text-base-content'>Delivery fulfilment</legend>
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Delivery method</span>
               <select
@@ -1076,6 +1151,33 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                   <option key={method} value={method}>{formatLabel(method)}</option>
                 ))}
               </select>
+            </label>
+
+            <label className='form-control w-full'>
+              <span className='label-text mb-2'>Recipient name</span>
+              <input
+                className='input input-bordered w-full'
+                maxLength={100}
+                value={formState.deliveryRecipientName}
+                onChange={(event) => updateField('deliveryRecipientName', event.target.value)}
+                placeholder='Recipient full name'
+                aria-label='Recipient name'
+              />
+              {deliveryRecipientFallbackUsed ? (
+                <span className='label-text-alt mt-2 text-base-content/60'>Using buyer name because no separate recipient was stored.</span>
+              ) : null}
+            </label>
+
+            <label className='form-control w-full'>
+              <span className='label-text mb-2'>Delivery address</span>
+              <input
+                className='input input-bordered w-full'
+                maxLength={500}
+                value={formState.deliveryAddress}
+                onChange={(event) => updateField('deliveryAddress', event.target.value)}
+                placeholder='Full delivery address'
+                aria-label='Delivery address'
+              />
             </label>
 
             <label className='form-control w-full'>
@@ -1109,6 +1211,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                 placeholder='Optional'
               />
             </label>
+            </fieldset>
 
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Add internal note</span>
@@ -1181,9 +1284,53 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
         </aside>
 
         <div className='flex flex-col gap-4 xl:order-1'>
+          <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='delivery-details-heading'>
+            <h2 id='delivery-details-heading' className='text-lg font-semibold text-base-content'>Delivery details</h2>
+            <dl className='mt-4 grid gap-3 text-sm sm:grid-cols-2'>
+              <div>
+                <dt className='text-base-content/60'>Recipient</dt>
+                <dd className='mt-1 flex flex-wrap items-center gap-2 text-base-content'>
+                  <span>{getOrderDeliveryRecipientName(order)}</span>
+                  {deliveryRecipientFallbackUsed ? (
+                    <span className='badge badge-outline badge-sm'>Same as buyer</span>
+                  ) : null}
+                </dd>
+              </div>
+              <div>
+                <dt className='text-base-content/60'>Date needed</dt>
+                <dd className='mt-1 text-base-content'>{formatDate(order.delivery?.dateNeeded)}</dd>
+              </div>
+              <div className='sm:col-span-2'>
+                <dt className='text-base-content/60'>Delivery address</dt>
+                <dd className='mt-1 text-base-content'>{deliveryAddress}</dd>
+              </div>
+              <div>
+                <dt className='text-base-content/60'>Delivery method</dt>
+                <dd className='mt-1 text-base-content'>{formatLabel(order.delivery?.deliveryMethod)}</dd>
+              </div>
+              <div>
+                <dt className='text-base-content/60'>Courier</dt>
+                <dd className='mt-1 text-base-content'>{deliveryCourierOptions.find((courier) => courier.value === getOrderDeliveryCourier(order))?.label || 'Evri'}</dd>
+              </div>
+              <div>
+                <dt className='text-base-content/60'>Tracking</dt>
+                <dd className='mt-1 text-base-content'>{order.delivery?.trackingNumber || 'Not specified'}</dd>
+              </div>
+              <div>
+                <dt className='text-base-content/60'>Gift note to include in parcel</dt>
+                <dd className='mt-1 whitespace-pre-wrap text-base-content'>{getOrderGiftNote(order) || 'Not specified'}</dd>
+              </div>
+            </dl>
+          </section>
+
           <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='customer-heading'>
             <div className='flex items-start justify-between gap-3'>
-              <h2 id='customer-heading' className='text-lg font-semibold text-base-content'>Customer</h2>
+              <div>
+                <h2 id='customer-heading' className='text-lg font-semibold text-base-content'>Ordered by</h2>
+                {cakesByPostOrder ? (
+                  <p className='mt-1 text-sm text-base-content/65'>Buyer contact details only. Delivery details are shown separately.</p>
+                ) : null}
+              </div>
               <button
                 type='button'
                 className='btn btn-outline btn-sm'
@@ -1192,7 +1339,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                   setCustomerForm(createCustomerFormState(order))
                 }}
               >
-                {editingCustomer ? 'Cancel' : 'Edit customer'}
+                {editingCustomer ? 'Cancel' : 'Edit buyer'}
               </button>
             </div>
             {editingCustomer && customerForm ? (
@@ -1208,9 +1355,8 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                     />
                   </label>
                   <label className='form-control w-full'>
-                    <span className='label-text mb-2'>Phone</span>
+                    <span className='label-text mb-2'>Phone <span className='text-base-content/60'>(optional)</span></span>
                     <input
-                      required
                       className='input input-bordered w-full'
                       value={customerForm.phone}
                       onChange={(event) => updateCustomerField('phone', event.target.value)}
@@ -1226,34 +1372,38 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                       onChange={(event) => updateCustomerField('email', event.target.value)}
                     />
                   </label>
-                  <label className='form-control w-full'>
-                    <span className='label-text mb-2'>Postcode</span>
-                    <input
-                      className='input input-bordered w-full'
-                      value={customerForm.postcode}
-                      onChange={(event) => updateCustomerField('postcode', event.target.value)}
-                    />
-                  </label>
-                  <label className='form-control w-full sm:col-span-2'>
-                    <span className='label-text mb-2'>Address</span>
-                    <input
-                      className='input input-bordered w-full'
-                      value={customerForm.address}
-                      onChange={(event) => updateCustomerField('address', event.target.value)}
-                    />
-                  </label>
-                  <label className='form-control w-full'>
-                    <span className='label-text mb-2'>City</span>
-                    <input
-                      className='input input-bordered w-full'
-                      value={customerForm.city}
-                      onChange={(event) => updateCustomerField('city', event.target.value)}
-                    />
-                  </label>
+                  {showBuyerAddress ? (
+                    <>
+                      <label className='form-control w-full'>
+                        <span className='label-text mb-2'>Postcode</span>
+                        <input
+                          className='input input-bordered w-full'
+                          value={customerForm.postcode}
+                          onChange={(event) => updateCustomerField('postcode', event.target.value)}
+                        />
+                      </label>
+                      <label className='form-control w-full sm:col-span-2'>
+                        <span className='label-text mb-2'>Address</span>
+                        <input
+                          className='input input-bordered w-full'
+                          value={customerForm.address}
+                          onChange={(event) => updateCustomerField('address', event.target.value)}
+                        />
+                      </label>
+                      <label className='form-control w-full'>
+                        <span className='label-text mb-2'>City</span>
+                        <input
+                          className='input input-bordered w-full'
+                          value={customerForm.city}
+                          onChange={(event) => updateCustomerField('city', event.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : null}
                 </div>
                 <div className='flex flex-wrap gap-2'>
                   <button type='submit' className='btn btn-primary btn-sm' disabled={customerMutation.isPending}>
-                    {customerMutation.isPending ? 'Saving...' : 'Save customer'}
+                    {customerMutation.isPending ? 'Saving...' : 'Save buyer'}
                   </button>
                   <button
                     type='button'
@@ -1270,6 +1420,10 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
             ) : (
               <dl className='mt-4 grid gap-3 text-sm sm:grid-cols-2'>
                 <div>
+                  <dt className='text-base-content/60'>Name</dt>
+                  <dd className='mt-1 text-base-content'>{order.customer.name}</dd>
+                </div>
+                <div>
                   <dt className='text-base-content/60'>Email</dt>
                   <dd className='mt-1'>
                     <a className='link link-primary break-all' href={`mailto:${order.customer.email}`}>{order.customer.email}</a>
@@ -1277,20 +1431,28 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                 </div>
                 <div>
                   <dt className='text-base-content/60'>Phone</dt>
-                  <dd className='mt-1'>
-                    <a className='link link-primary' href={`tel:${order.customer.phone}`}>{order.customer.phone}</a>
-                  </dd>
-                </div>
-                <div>
-                  <dt className='text-base-content/60'>Address</dt>
-                  <dd className='mt-1 text-base-content'>{order.customer.address || 'Not specified'}</dd>
-                </div>
-                <div>
-                  <dt className='text-base-content/60'>City / postcode</dt>
                   <dd className='mt-1 text-base-content'>
-                    {[order.customer.city, order.customer.postcode].filter(Boolean).join(', ') || 'Not specified'}
+                    {buyerPhone ? (
+                      <a className='link link-primary' href={`tel:${buyerPhone}`}>{buyerPhone}</a>
+                    ) : (
+                      'Not specified'
+                    )}
                   </dd>
                 </div>
+                {showBuyerAddress ? (
+                  <>
+                    <div>
+                      <dt className='text-base-content/60'>Address</dt>
+                      <dd className='mt-1 text-base-content'>{order.customer.address || 'Not specified'}</dd>
+                    </div>
+                    <div>
+                      <dt className='text-base-content/60'>City / postcode</dt>
+                      <dd className='mt-1 text-base-content'>
+                        {[order.customer.city, order.customer.postcode].filter(Boolean).join(', ') || 'Not specified'}
+                      </dd>
+                    </div>
+                  </>
+                ) : null}
                 <div>
                   <dt className='text-base-content/60'>Approx. submitted from</dt>
                   <dd className='mt-1 text-base-content'>{formatIpLocation(ipLocation)}</dd>
@@ -1437,7 +1599,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                           item.designType ? `Design ${formatLabel(item.designType)}` : ''
                         ].filter(Boolean).join(' - ') || 'No item options recorded'}
                       </p>
-                      {item.specialInstructions && !isInstructionDuplicatedInMessages(order, item.specialInstructions) ? (
+                      {!cakesByPostOrder && item.specialInstructions && !isInstructionDuplicatedInMessages(order, item.specialInstructions) ? (
                         <p className='mt-2 whitespace-pre-wrap text-sm text-base-content/75'>{item.specialInstructions}</p>
                       ) : null}
                     </div>
@@ -1455,7 +1617,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
 
           <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='messages-heading'>
             <h2 id='messages-heading' className='text-lg font-semibold text-base-content'>
-              {cakesByPostOrder ? 'Customer notes and images' : 'Messages and images'}
+              {cakesByPostOrder ? 'Customer instructions and images' : 'Messages and images'}
             </h2>
             {cakesByPostOrder ? (
               customerNoteRows.length > 0 ? (
@@ -1468,7 +1630,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                   ))}
                 </dl>
               ) : (
-                <p className='mt-4 text-sm text-base-content/65'>No customer notes recorded.</p>
+                <p className='mt-4 text-sm text-base-content/65'>No customer instructions recorded.</p>
               )
             ) : order.messages && order.messages.length > 0 ? (
               <div className='mt-4 grid gap-3'>

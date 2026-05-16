@@ -144,12 +144,15 @@ describe('OrderDetailsPageClient', () => {
       credentials: 'include',
       signal: expect.any(AbortSignal)
     }))
-    expect(screen.getByText('Jane Customer')).toBeInTheDocument()
+    expect(screen.getAllByText('Jane Customer').length).toBeGreaterThan(0)
+    expect(screen.getByRole('heading', { name: 'Delivery details' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ordered by' })).toBeInTheDocument()
     expect(screen.getByText('Approx. submitted from')).toBeInTheDocument()
     expect(screen.getByText('Bristol, ENG, GB')).toBeInTheDocument()
     expect(screen.getByText('Jane Customer - Chocolate Delicia Sponge Cake - Needed 26/07/2026')).toBeInTheDocument()
     expect(screen.getByText('Start production when ready. Payment is partial.')).toBeInTheDocument()
     expect(screen.getAllByText('Chocolate Delicia Sponge Cake').length).toBeGreaterThan(0)
+    expect(screen.getByLabelText('Courier')).toHaveValue('evri')
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeDisabled()
     expect(screen.getByAltText('Customer design')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Back to orders' })).toHaveAttribute('href', '/admin/orders')
@@ -256,14 +259,14 @@ describe('OrderDetailsPageClient', () => {
       expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit customer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit buyer' }))
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Jane Updated' }
     })
-    fireEvent.change(screen.getByLabelText('Phone'), {
+    fireEvent.change(screen.getByLabelText(/phone/i), {
       target: { value: '07999999999' }
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Save customer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save buyer' }))
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenLastCalledWith('/api/orders/26042009000001', expect.objectContaining({
@@ -283,7 +286,50 @@ describe('OrderDetailsPageClient', () => {
       customerPhone: '07999999999'
     })
     expect(await screen.findByText('Customer updated.')).toBeInTheDocument()
-    expect(screen.getByText('Jane Updated')).toBeInTheDocument()
+    expect(screen.getAllByText('Jane Updated').length).toBeGreaterThan(0)
+  })
+
+  it('allows managers to clear an optional buyer phone number', async () => {
+    const initialOrder = makeOrder()
+    const updatedOrder = makeOrder({
+      customer: {
+        ...initialOrder.customer,
+        phone: ''
+      }
+    })
+
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse(initialOrder))
+      .mockResolvedValueOnce(jsonResponse({ success: true, order: updatedOrder }))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit buyer' }))
+    fireEvent.change(screen.getByLabelText(/phone/i), {
+      target: { value: '' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save buyer' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenLastCalledWith('/api/orders/26042009000001', expect.objectContaining({
+        method: 'PATCH',
+        credentials: 'include',
+        signal: expect.any(AbortSignal)
+      }))
+    })
+
+    const requestBody = JSON.parse(String(mockFetch.mock.calls[1]?.[1]?.body)) as {
+      customerPhone?: string
+    }
+
+    expect(requestBody.customerPhone).toBe('')
+    expect(await screen.findByText('Customer updated.')).toBeInTheDocument()
+    expect(screen.getByText('No phone provided')).toBeInTheDocument()
+    expect(screen.getAllByText('Not specified').length).toBeGreaterThan(0)
   })
 
   it('preserves in-progress edits when the order query refetches', async () => {
@@ -333,7 +379,7 @@ describe('OrderDetailsPageClient', () => {
     fireEvent.change(screen.getByLabelText('Add internal note'), {
       target: { value: 'Draft note before refetch' }
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Edit customer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit buyer' }))
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Draft Customer' }
     })
@@ -475,6 +521,51 @@ describe('OrderDetailsPageClient', () => {
 
     expect(requestBody).toEqual({
       deliveryCourier: 'evri'
+    })
+  })
+
+  it('saves delivery address corrections from the manage order form', async () => {
+    const initialOrder = makeOrder({
+      delivery: {
+        dateNeeded: '2026-07-26',
+        deliveryMethod: 'postal',
+        deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+        trackingNumber: ''
+      }
+    })
+    const updatedOrder = makeOrder({
+      ...initialOrder,
+      delivery: {
+        ...initialOrder.delivery,
+        deliveryAddress: '17 Allerton Grange Avenue, Leeds, LS17 6PR'
+      }
+    })
+
+    mockFetch
+      .mockResolvedValueOnce(jsonResponse(initialOrder))
+      .mockResolvedValueOnce(jsonResponse({ success: true, order: updatedOrder }))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Delivery address'), {
+      target: { value: '17 Allerton Grange Avenue, Leeds, LS17 6PR' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+    })
+
+    const requestBody = JSON.parse(String(mockFetch.mock.calls[1]?.[1]?.body)) as {
+      deliveryAddress?: string
+    }
+
+    expect(requestBody).toEqual({
+      deliveryAddress: '17 Allerton Grange Avenue, Leeds, LS17 6PR'
     })
   })
 
@@ -632,11 +723,11 @@ describe('OrderDetailsPageClient', () => {
       expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit customer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit buyer' }))
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Jane Updated' }
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Save customer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save buyer' }))
 
     const message = await screen.findByText('Customer could not be updated.')
     const notice = message.closest('[role="status"]')
@@ -722,14 +813,64 @@ describe('OrderDetailsPageClient', () => {
 
     expect(screen.getByText('Approx. submitted from')).toBeInTheDocument()
     expect(screen.getByText('Not captured')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Customer notes and images' })).toBeInTheDocument()
-    expect(screen.getByText('Customer notes')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Customer instructions and images' })).toBeInTheDocument()
+    expect(screen.getByText('Buyer contact details only. Delivery details are shown separately.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Recipient name')).toHaveValue('Igor Customer')
+    expect(screen.getByText('Using buyer name because no separate recipient was stored.')).toBeInTheDocument()
+    expect(screen.getByText('Same as buyer')).toBeInTheDocument()
+    expect(screen.getByText('Customer notes for Olgish Cakes')).toBeInTheDocument()
     expect(screen.getAllByText('test message').length).toBeGreaterThan(0)
-    expect(screen.getByText('Gift note')).toBeInTheDocument()
-    expect(screen.getByText('gift note test')).toBeInTheDocument()
+    expect(screen.getByText('Gift note to include in parcel')).toBeInTheDocument()
+    expect(screen.getAllByText('gift note test').length).toBeGreaterThan(0)
     expect(screen.getByText('No images attached.')).toBeInTheDocument()
     expect(screen.queryByText(/Product type: gift-hamper/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Price: \u00A38.95/)).not.toBeInTheDocument()
+  })
+
+  it('uses metadata recipient before falling back to buyer name in cakes by post admin details', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      orderType: 'gift-hamper',
+      customer: {
+        name: 'Igor Customer',
+        email: 'igor@example.com',
+        phone: '07123456789',
+        address: '13 Allerton Grange Avenue',
+        city: 'Leeds',
+        postcode: 'LS17 6PR'
+      },
+      items: [
+        {
+          productType: 'gift-hamper',
+          productId: 'personalised-congratulations-cake-card',
+          productName: 'Personalised Congratulations Cake Card',
+          quantity: 1,
+          unitPrice: 8.95,
+          totalPrice: 8.95
+        }
+      ],
+      delivery: {
+        dateNeeded: '2026-05-25',
+        deliveryMethod: 'postal',
+        deliveryAddress: '13 Allerton Grange Avenue, Leeds, LS17 6PR'
+      },
+      metadata: {
+        inlineOrderContext: {
+          deliveryRecipientName: 'Olga'
+        }
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26051620391751' />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByLabelText('Recipient name')).toHaveValue('Olga')
+    expect(screen.getByText('Recipient')).toBeInTheDocument()
+    expect(screen.getByText('Olga')).toBeInTheDocument()
+    expect(screen.queryByText('Same as buyer')).not.toBeInTheDocument()
+    expect(screen.queryByText('Using buyer name because no separate recipient was stored.')).not.toBeInTheDocument()
   })
 
   it('permanently deletes the order and returns to the orders list', async () => {

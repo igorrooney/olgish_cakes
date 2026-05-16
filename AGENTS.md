@@ -7,6 +7,7 @@
 - Natural English tone (Ukrainian living in England)
 - Never use `any` in TypeScript
 - Always use Context7 MCP when working with libraries/APIs
+- Context7 MCP may be used for any project task where current external documentation improves accuracy, including implementation, debugging, refactoring, review, and verification
 
 ## Tech Stack
 - Next.js 16.2.3 (App Router)
@@ -123,6 +124,7 @@
 - Follow Next.js App Router conventions
 - Follow official Next.js best practices for architecture, rendering, data fetching, caching, and performance
 - Use Context7 MCP for library integration
+- Use Context7 MCP everywhere it is helpful, including code reviews and debugging, while keeping the local codebase as the source of truth for project-specific behavior
 - Use React Query for all data requests
 - For all `fetch` requests, always pass an `AbortSignal` via the `signal` option and support cancellation
 - Keep non-essential cookies/scripts blocked until consent, but keep the consent banner visible immediately on first load

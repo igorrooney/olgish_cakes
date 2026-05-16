@@ -90,7 +90,7 @@ describe('EmailTestPageClient', () => {
 
     expect(screen.getByLabelText('Order status')).toBeInTheDocument()
     expect(within(screen.getByLabelText('Order status')).getByRole('option', { name: 'Dispatched' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Courier')).toHaveValue('royal-mail')
+    expect(screen.getByLabelText('Courier')).toHaveValue('evri')
     expect(within(screen.getByLabelText('Courier')).getByRole('option', { name: 'Evri' })).toBeInTheDocument()
   })
 
@@ -352,22 +352,9 @@ describe('EmailTestPageClient', () => {
           input: {
             productType: 'gift-hamper',
             status: 'confirmed',
-            deliveryCourier: 'royal-mail'
+            deliveryCourier: 'evri'
           },
           subject: 'Cakes by post confirmed'
-        })
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => buildPreviewResponse({
-          templateId: 'orders-status-update',
-          input: {
-            productType: 'gift-hamper',
-            status: 'out-for-delivery',
-            deliveryCourier: 'royal-mail',
-            trackingNumber: 'TRACK-123456'
-          },
-          subject: 'Cakes by post out for delivery'
         })
       } as Response)
       .mockResolvedValueOnce({
@@ -380,7 +367,20 @@ describe('EmailTestPageClient', () => {
             deliveryCourier: 'evri',
             trackingNumber: 'TRACK-123456'
           },
-          subject: 'Evri preview'
+          subject: 'Cakes by post out for delivery'
+        })
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => buildPreviewResponse({
+          templateId: 'orders-status-update',
+          input: {
+            productType: 'gift-hamper',
+            status: 'out-for-delivery',
+            deliveryCourier: 'royal-mail',
+            trackingNumber: 'TRACK-123456'
+          },
+          subject: 'Royal Mail preview'
         })
       } as Response)
 
@@ -407,11 +407,11 @@ describe('EmailTestPageClient', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Courier')).toHaveValue('royal-mail')
+      expect(screen.getByLabelText('Courier')).toHaveValue('evri')
     })
 
     fireEvent.change(screen.getByLabelText('Courier'), {
-      target: { value: 'evri' }
+      target: { value: 'royal-mail' }
     })
 
     expect(screen.queryAllByLabelText('Courier')).toHaveLength(1)
@@ -419,7 +419,7 @@ describe('EmailTestPageClient', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Evri preview')).toBeInTheDocument()
+      expect(screen.getByText('Royal Mail preview')).toBeInTheDocument()
     })
 
     const previewCall = (global.fetch as jest.Mock).mock.calls.at(-1)
@@ -431,7 +431,7 @@ describe('EmailTestPageClient', () => {
       input: {
         productType: 'gift-hamper',
         status: 'out-for-delivery',
-        deliveryCourier: 'evri',
+        deliveryCourier: 'royal-mail',
         trackingNumber: 'TRACK-123456'
       }
     })

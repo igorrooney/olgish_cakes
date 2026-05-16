@@ -100,9 +100,9 @@ describe('ProductOrderInlineForm', () => {
   const scrollIntoViewMock = jest.fn()
 
   const fillRequiredFields = () => {
-    fireEvent.change(screen.getByLabelText(/full name:/i), { target: { value: 'John Doe' } })
-    fireEvent.change(screen.getByLabelText(/email address:/i), { target: { value: 'john@example.com' } })
-    fireEvent.change(screen.getByLabelText(/phone number:/i), { target: { value: '07911123456' } })
+    fireEvent.change(screen.getByLabelText(/^your full name:/i), { target: { value: 'John Doe' } })
+    fireEvent.change(screen.getByLabelText(/^your email address:/i), { target: { value: 'john@example.com' } })
+    fireEvent.change(screen.getByLabelText(/^your phone number:/i), { target: { value: '07911123456' } })
   }
 
   const selectOccasion = (optionName: string) => {
@@ -198,6 +198,7 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.getByLabelText(/postcode.*optional/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/when do you need it?.*optional/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/message.*optional/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^your phone number:.*optional/i)).toBeInTheDocument()
   })
 
   it('shows optional indicator for requirements in custom-design mode', () => {
@@ -267,9 +268,13 @@ describe('ProductOrderInlineForm', () => {
       />
     )
 
-    expect(screen.getByLabelText(/^address:$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^city:$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^postcode:$/i)).toBeInTheDocument()
+    expect(screen.getByText('Your details')).toBeInTheDocument()
+    expect(screen.getByText('Delivery details')).toBeInTheDocument()
+    expect(screen.getByLabelText(/^recipient full name:$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^delivery address:$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^delivery town or city:$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^delivery postcode:$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^deliver to me$/i)).toBeInTheDocument()
     expect(screen.queryByLabelText(/address.*optional/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/city.*optional/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/postcode.*optional/i)).not.toBeInTheDocument()
@@ -303,7 +308,7 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
-      expect(document.activeElement).toBe(screen.getByLabelText(/full name:/i))
+      expect(document.activeElement).toBe(screen.getByLabelText(/^your full name:/i))
     })
 
     expect(scrollIntoViewMock).toHaveBeenCalled()
@@ -442,7 +447,7 @@ describe('ProductOrderInlineForm', () => {
     })
   })
 
-  it('submits with only full name, email, and phone', async () => {
+  it('submits with only full name and email when phone is omitted', async () => {
     await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
@@ -452,7 +457,8 @@ describe('ProductOrderInlineForm', () => {
       />
     )
 
-    fillRequiredFields()
+    fireEvent.change(screen.getByLabelText(/^your full name:/i), { target: { value: 'John Doe' } })
+    fireEvent.change(screen.getByLabelText(/^your email address:/i), { target: { value: 'john@example.com' } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
@@ -465,6 +471,7 @@ describe('ProductOrderInlineForm', () => {
     const body = requestInit.body as FormData
 
     expect(body.get('csrfToken')).toBe('csrf-token-123')
+    expect(body.get('phone')).toBeNull()
     expect(body.get('address')).toBeNull()
     expect(body.get('city')).toBeNull()
     expect(body.get('postcode')).toBeNull()
@@ -605,9 +612,10 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     expect(screen.getByLabelText(/customer notes/i)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
@@ -644,7 +652,7 @@ describe('ProductOrderInlineForm', () => {
       expect(screen.getByText('Order request received')).toBeInTheDocument()
     })
 
-    fireEvent.change(screen.getByLabelText(/full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^your full name:/i), { target: { value: 'Jane Doe' } })
 
     await waitFor(() => {
       expect(screen.queryByText('Order request received')).not.toBeInTheDocument()
@@ -781,9 +789,10 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     fireEvent.change(screen.getByLabelText(/gift note/i), { target: { value: 'Happy birthday from us!' } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
@@ -796,6 +805,7 @@ describe('ProductOrderInlineForm', () => {
     const [, requestInit] = (global.fetch as jest.Mock).mock.calls[0]
     const body = requestInit.body as FormData
     expect(body.get('csrfToken')).toBe('csrf-token-123')
+    expect(body.get('recipientName')).toBe('Jane Doe')
     expect(body.get('giftNote')).toBe('Happy birthday from us!')
   })
 
@@ -827,9 +837,10 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
@@ -855,9 +866,10 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     fireEvent.change(screen.getByLabelText(/gift note/i), { target: { value: 'a'.repeat(501) } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
@@ -879,9 +891,10 @@ describe('ProductOrderInlineForm', () => {
     )
 
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
@@ -927,9 +940,10 @@ describe('ProductOrderInlineForm', () => {
 
     expect(screen.queryByLabelText(/what's the occasion\?/i)).not.toBeInTheDocument()
     fillRequiredFields()
-    fireEvent.change(screen.getByLabelText(/^address:/i), { target: { value: '7 Sample Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^recipient full name:/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^delivery address:/i), { target: { value: '7 Sample Street' } })
+    fireEvent.change(screen.getByLabelText(/^delivery town or city:/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^delivery postcode:/i), { target: { value: 'LS1 1AA' } })
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
@@ -972,8 +986,9 @@ describe('ProductOrderInlineForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit order/i }))
 
     await waitFor(() => {
+      expect(screen.getByText('Recipient name is required for cakes by post orders')).toBeVisible()
       expect(screen.getByText('Address is required for cakes by post orders')).toBeVisible()
-      expect(document.activeElement).toBe(screen.getByLabelText(/^address:$/i))
+      expect(document.activeElement).toBe(screen.getByLabelText(/^recipient full name:$/i))
     })
 
     expect(global.fetch).not.toHaveBeenCalled()

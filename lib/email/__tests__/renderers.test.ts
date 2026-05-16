@@ -85,6 +85,22 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('&lt;img src=x onerror=alert(1) /&gt;')
   })
 
+  it('escapes dangerous cakes by post recipient names in email HTML', () => {
+    const rendered = renderEmailTemplate('contact-inline-order-customer', {
+      customerName: 'Jane Buyer',
+      customerEmail: 'jane@example.com',
+      deliveryRecipientName: '<img src=x onerror=alert(1)>',
+      address: '7 Sample Street',
+      city: 'Leeds',
+      postcode: 'LS1 1AA',
+      orderType: 'gift-hamper',
+      productType: 'gift-hamper'
+    })
+
+    expect(rendered.html).toContain('&lt;img src=x onerror=alert(1)&gt;')
+    expect(rendered.html).not.toContain('<img src=x onerror=alert(1)>')
+  })
+
   it('renders gift note in customer inline order emails when provided', () => {
     const rendered = renderEmailTemplate('contact-inline-order-customer', {
       customerName: 'Jane',
@@ -101,6 +117,7 @@ describe('email renderers', () => {
       customerName: 'Jane',
       customerEmail: 'jane@example.com',
       customerPhone: '07123456789',
+      deliveryRecipientName: 'Jane Recipient',
       address: '7 Sample Street',
       city: 'Leeds',
       postcode: 'LS1 1AA',
@@ -117,9 +134,11 @@ describe('email renderers', () => {
       giftNote: 'Happy birthday!'
     })
 
-    expect(rendered.text).toContain('Contact Details')
-    expect(rendered.text).toContain('Address: 7 Sample Street')
-    expect(rendered.text).toContain('City: Leeds')
+    expect(rendered.text).toContain('Ordered by')
+    expect(rendered.text).toContain('Delivery Details')
+    expect(rendered.text).toContain('Recipient: Jane Recipient')
+    expect(rendered.text).toContain('Delivery address: 7 Sample Street')
+    expect(rendered.text).toContain('Town or city: Leeds')
     expect(rendered.text).toContain('Postcode: LS1 1AA')
     expect(rendered.text).toContain('Customer Notes')
     expect(rendered.text).toContain('Notes: Please write congratulations on the card')
@@ -135,7 +154,7 @@ describe('email renderers', () => {
     expect(rendered.text).not.toContain('Design type:')
     expect(rendered.text).not.toContain('Filling:')
     expect(rendered.text).not.toContain('Servings:')
-    expect(rendered.html).toContain('Contact details')
+    expect(rendered.html).toContain('Ordered by')
     expect(rendered.html).toContain('Gift Details')
     expect(rendered.html).toContain('Please write congratulations on the card')
     expect(rendered.html).toContain('7 Sample Street')
@@ -158,6 +177,7 @@ describe('email renderers', () => {
       customerName: 'Igor Ieromenko',
       customerEmail: 'igor@example.com',
       customerPhone: '+44 7867 218241',
+      deliveryRecipientName: 'Gift Recipient',
       address: '15 Allerton Grange Avenue',
       city: 'Leeds',
       postcode: 'LS17 6PR',
@@ -181,8 +201,9 @@ describe('email renderers', () => {
       adminUrl: 'https://olgishcakes.co.uk/admin/orders/26051219414558'
     })
 
-    expect(rendered.text).toContain('Customer details')
+    expect(rendered.text).toContain('Ordered by')
     expect(rendered.text).toContain('Delivery details')
+    expect(rendered.text).toContain('Recipient: Gift Recipient')
     expect(rendered.text).toContain('Order summary')
     expect(rendered.text).toContain('Customer notes')
     expect(rendered.text).toContain('Request context')
@@ -441,6 +462,29 @@ describe('email renderers', () => {
     expect(evri.text).toContain('Track your parcel: https://www.evri.com/track/parcel/H02X8A0022918652/details')
     expect(evri.text).toContain('Evri will update the tracking as your parcel moves through their network.')
     expect(evri.html).toContain('https://www.evri.com/track/parcel/H02X8A0022918652/details')
+  })
+
+  it('defaults cakes by post tracking emails to Evri when no courier is stored', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Igor Ieromenko',
+      orderNumber: '26051220022842',
+      productName: 'Personalised Congratulations Cake Card',
+      productType: 'gift-hamper',
+      quantity: 1,
+      totalPrice: 8.95,
+      status: 'out-for-delivery',
+      paymentStatus: 'paid',
+      deliveryMethod: 'postal',
+      trackingNumber: 'H02X8A0022918652',
+      deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+      headingOverride: 'Order dispatched',
+      titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
+      statusMessage: 'Great news, your cakes by post order has been dispatched with Evri.'
+    })
+
+    expect(rendered.text).toContain('Courier: Evri')
+    expect(rendered.text).toContain('Track your parcel: https://www.evri.com/track/parcel/H02X8A0022918652/details')
+    expect(rendered.text).toContain('Evri will update the tracking as your parcel moves through their network.')
   })
 
   it('renders concise cakes by post delivered updates with courier tracking and support next step', () => {

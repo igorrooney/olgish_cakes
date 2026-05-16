@@ -56,6 +56,7 @@ export interface EmailTemplateCommonInput {
   customerMessage?: string
   deliveryMethod?: string
   deliveryCourier?: string
+  deliveryRecipientName?: string
   deliveryAddress?: string
   paymentMethod?: string
   referrer?: string

@@ -43,8 +43,9 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRow[] {
 function buildDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[] {
   const rows: CustomerRow[] = []
 
+  row(rows, 'Recipient', input.deliveryRecipientName || input.customerName)
   row(rows, 'Address', input.address)
-  row(rows, 'City', input.city)
+  row(rows, 'Town or city', input.city)
   row(rows, 'Postcode', input.postcode)
   row(rows, 'Delivery method', input.deliveryMethod)
   row(rows, 'Delivery address', input.deliveryAddress)
@@ -103,14 +104,14 @@ export const buildCakesByPostAdminContent: AdminEmailContentBuilder = (input) =>
 
   return {
     bodyText: [
-      rowsText('Customer details', customerRows),
+      rowsText('Ordered by', customerRows),
       rowsText('Delivery details', deliveryRows),
       rowsText('Order summary', summaryRows),
       rowsText('Customer notes', notesRows),
       rowsText('Request context', contextRows)
     ].filter((section) => section.length > 0).join('\n\n'),
     bodyHtml: [
-      renderCustomerCard('Customer details', customerRows),
+      renderCustomerCard('Ordered by', customerRows),
       renderCustomerCard('Delivery details', deliveryRows),
       renderCustomerCard('Order summary', summaryRows),
       renderCustomerCard('Customer notes', notesRows),

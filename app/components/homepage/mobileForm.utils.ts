@@ -32,7 +32,7 @@ export const isDateOnOrAfterToday = (value: string, todayDate = getTodayDateInpu
 export const formSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().trim().min(1, 'Phone number is required'),
+  phone: z.string().trim(),
   address: z.string().min(5, 'Address must be at least 5 characters'),
   city: z.string().min(2, 'City must be at least 2 characters'),
   postcode: z
@@ -62,6 +62,7 @@ export const formFieldOrder = [
   'fullName',
   'email',
   'phone',
+  'recipientName',
   'address',
   'city',
   'postcode',

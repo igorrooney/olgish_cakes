@@ -27,6 +27,7 @@ export interface OrderCustomer {
 export interface OrderDelivery {
     dateNeeded?: string;
     deliveryMethod: string;
+    recipientName?: string;
     deliveryAddress?: string;
     trackingNumber?: string;
     deliveryNotes?: string;
@@ -113,6 +114,8 @@ export interface OrderUpdate {
     trackingNumber?: string;
     deliveryCourier?: string;
     deliveryMethod?: string;
+    deliveryRecipientName?: string;
+    deliveryAddress?: string;
     dateNeeded?: string | null;
     paymentStatus?: string;
     paymentMethod?: string;

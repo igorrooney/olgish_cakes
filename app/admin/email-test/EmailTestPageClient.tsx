@@ -491,8 +491,8 @@ const sections: FieldSection[] = [
         type: 'select',
         placeholder: '',
         options: [
-          { label: 'Royal Mail', value: 'royal-mail' },
-          { label: 'Evri', value: 'evri' }
+          { label: 'Evri', value: 'evri' },
+          { label: 'Royal Mail', value: 'royal-mail' }
         ]
       },
       { key: 'deliveryAddress', label: 'Delivery address', type: 'textarea', placeholder: '123 Example Street, London, SW1A 1AA' },
@@ -1054,11 +1054,11 @@ export function EmailTestPageClient() {
                   <span className='label-text font-semibold'>Courier</span>
                   <select
                     className='select select-bordered w-full'
-                    value={formValues.deliveryCourier || 'royal-mail'}
+                    value={formValues.deliveryCourier || 'evri'}
                     onChange={(event) => handleFieldChange('deliveryCourier', event.target.value)}
                   >
-                    <option value='royal-mail'>Royal Mail</option>
                     <option value='evri'>Evri</option>
+                    <option value='royal-mail'>Royal Mail</option>
                   </select>
                 </label>
               ) : null}

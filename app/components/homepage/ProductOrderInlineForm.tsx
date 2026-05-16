@@ -25,10 +25,27 @@ import {
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 
+function containsControlCharacter(value: string): boolean {
+  return Array.from(value).some((character) => {
+    const code = character.charCodeAt(0)
+    return code <= 31 || code === 127
+  })
+}
+
 const inlineOrderSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().trim().min(1, 'Phone number is required'),
+  phone: z.string().trim(),
+  recipientName: z.string().trim()
+    .refine((value) => value.length === 0 || value.length >= 2, {
+      message: 'Recipient name must be at least 2 characters'
+    })
+    .refine((value) => value.length <= 100, {
+      message: 'Recipient name must be 100 characters or fewer'
+    })
+    .refine((value) => !containsControlCharacter(value), {
+      message: 'Recipient name cannot contain control characters'
+    }),
   address: z.string().trim().refine((value) => value.length === 0 || value.length >= 5, {
     message: 'Address must be at least 5 characters'
   }),
@@ -66,6 +83,7 @@ interface InlineOrderEmailContext {
 }
 
 const postalOrderFieldMessages = {
+  recipientName: 'Recipient name is required for cakes by post orders',
   address: 'Address is required for cakes by post orders',
   city: 'City is required for cakes by post orders',
   postcode: 'Postcode is required for cakes by post orders'
@@ -100,6 +118,14 @@ function validateInlineOrderValues(values: InlineOrderValues, isPostalOrder: boo
         message: postalOrderFieldMessages.postcode
       })
     }
+
+    if (data.recipientName.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['recipientName'],
+        message: postalOrderFieldMessages.recipientName
+      })
+    }
   }).safeParse(values)
 }
 
@@ -120,6 +146,7 @@ const initialFormState: InlineOrderValues = {
   fullName: '',
   email: '',
   phone: '',
+  recipientName: '',
   address: '',
   city: '',
   postcode: '',
@@ -185,6 +212,7 @@ export function ProductOrderInlineForm({
 }: ProductOrderInlineFormProps) {
   const isPostalOrder = productType === 'gift-hamper'
   const [formData, setFormData] = useState<InlineOrderValues>(initialFormState)
+  const [deliverToMe, setDeliverToMe] = useState(false)
   const [designImage, setDesignImage] = useState<File | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -299,11 +327,23 @@ export function ProductOrderInlineForm({
 
     setFormData((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
+      ...(isPostalOrder && deliverToMe && field === 'fullName' ? { recipientName: value } : {})
     }))
 
     if (clearError) {
       clearFieldError(field)
+    }
+  }
+
+  const handleDeliverToMeChange = (checked: boolean) => {
+    setDeliverToMe(checked)
+    if (checked) {
+      setFormData((current) => ({
+        ...current,
+        recipientName: current.fullName
+      }))
+      clearFieldError('recipientName')
     }
   }
 
@@ -369,7 +409,14 @@ export function ProductOrderInlineForm({
       payload.append('csrfToken', csrfToken)
       payload.append('name', parsed.data.fullName)
       payload.append('email', parsed.data.email)
-      payload.append('phone', parsed.data.phone)
+      const normalizedPhone = parsed.data.phone.trim()
+      if (normalizedPhone.length > 0) {
+        payload.append('phone', normalizedPhone)
+      }
+      const normalizedRecipientName = parsed.data.recipientName.trim()
+      if (isPostalOrder && normalizedRecipientName.length > 0) {
+        payload.append('recipientName', normalizedRecipientName)
+      }
       const normalizedAddress = parsed.data.address.trim()
       if (normalizedAddress.length > 0) {
         payload.append('address', normalizedAddress)
@@ -426,8 +473,10 @@ export function ProductOrderInlineForm({
       })
 
       if (!response.ok) {
-        const errorData = (await response.json().catch(() => ({}))) as { error?: string }
-        const serverMessage = typeof errorData.error === 'string' ? errorData.error : ''
+        const errorData = (await response.json().catch(() => ({}))) as { error?: string, details?: string }
+        const serverMessage = typeof errorData.details === 'string' && errorData.details.length > 0
+          ? errorData.details
+          : typeof errorData.error === 'string' ? errorData.error : ''
 
         if (serverMessage.includes('Reference image')) {
           const fieldErrors = {
@@ -443,6 +492,7 @@ export function ProductOrderInlineForm({
 
       setHasSubmittedSuccessfully(true)
       setFormData(initialFormState)
+      setDeliverToMe(false)
       setDesignImage(null)
       if (designImageInputRef.current) {
         designImageInputRef.current.value = ''
@@ -466,12 +516,14 @@ export function ProductOrderInlineForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className={`flex w-full flex-col items-center gap-5 ${className}`}>
+      <fieldset className='w-full space-y-5'>
+        <legend className='mb-3 font-sans text-sm font-semibold text-base-content'>Your details</legend>
       <ValidatorInput
         id='fullName'
         type='text'
         placeholder='Enter name'
         value={formData.fullName}
-        label='Full Name:'
+        label='Your full name:'
         error={errors.fullName}
         required
         hintText='Enter your full name'
@@ -482,7 +534,7 @@ export function ProductOrderInlineForm({
         type='email'
         placeholder='johndoe@xyz.com'
         value={formData.email}
-        label='Email address:'
+        label='Your email address:'
         icon={<EmailIcon />}
         error={errors.email}
         required
@@ -494,19 +546,47 @@ export function ProductOrderInlineForm({
         type='tel'
         placeholder='+44 7123 456 789'
         value={formData.phone}
-        label='Phone number:'
+        label='Your phone number: (Optional)'
         icon={<PhoneIcon />}
         error={errors.phone}
-        required
-        hintText='Enter valid phone number'
+        hintText='Add a phone number if you would like us to call you'
         onValueChange={(value) => updateField('phone', value, true)}
       />
+      </fieldset>
+      <fieldset className='w-full space-y-5'>
+        <legend className='mb-3 font-sans text-sm font-semibold text-base-content'>
+          {isPostalOrder ? 'Delivery details' : 'Address details'}
+        </legend>
+      {isPostalOrder ? (
+        <div className='space-y-2'>
+          <ValidatorInput
+            id='recipientName'
+            type='text'
+            placeholder='Enter recipient name'
+            value={formData.recipientName}
+            label='Recipient full name:'
+            error={errors.recipientName}
+            required
+            hintText='Enter the full name for delivery'
+            onValueChange={(value) => updateField('recipientName', value, true)}
+          />
+          <label className='flex w-fit cursor-pointer items-center gap-2 px-1 text-sm text-base-content/70 transition-colors hover:text-base-content'>
+            <input
+              type='checkbox'
+              className='checkbox checkbox-primary checkbox-sm shrink-0'
+              checked={deliverToMe}
+              onChange={(event) => handleDeliverToMeChange(event.target.checked)}
+            />
+            <span className='leading-none'>Deliver to me</span>
+          </label>
+        </div>
+      ) : null}
       <ValidatorInput
         id='address'
         type='text'
         placeholder='Enter address line 1'
         value={formData.address}
-        label={isPostalOrder ? 'Address:' : 'Address: (Optional)'}
+        label={isPostalOrder ? 'Delivery address:' : 'Address: (Optional)'}
         icon={<AddressIcon />}
         error={errors.address}
         required={isPostalOrder}
@@ -518,7 +598,7 @@ export function ProductOrderInlineForm({
         type='text'
         placeholder='Enter city'
         value={formData.city}
-        label={isPostalOrder ? 'City:' : 'City: (Optional)'}
+        label={isPostalOrder ? 'Delivery town or city:' : 'City: (Optional)'}
         icon={<AddressIcon />}
         error={errors.city}
         required={isPostalOrder}
@@ -530,13 +610,14 @@ export function ProductOrderInlineForm({
         type='text'
         placeholder='Enter postcode'
         value={formData.postcode}
-        label={isPostalOrder ? 'Postcode:' : 'Postcode: (Optional)'}
+        label={isPostalOrder ? 'Delivery postcode:' : 'Postcode: (Optional)'}
         icon={<AddressIcon />}
         error={errors.postcode}
         required={isPostalOrder}
         hintText='Enter your postcode'
         onValueChange={(value) => updateField('postcode', value, true)}
       />
+      </fieldset>
       {showOccasionField ? (
         <ValidatorInput
           fieldType='select'
