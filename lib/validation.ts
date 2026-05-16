@@ -120,14 +120,6 @@ export const contactFormSchema = z.object({
 }, {
   message: 'Message must be at least 10 characters when not submitting an order',
   path: ['message']
-}).refine((data) => {
-  if (data.isOrderForm && data.phone.trim().length === 0) {
-    return false
-  }
-  return true
-}, {
-  message: 'Phone number is required for order enquiries',
-  path: ['phone']
 })
 
 // Quote form validation

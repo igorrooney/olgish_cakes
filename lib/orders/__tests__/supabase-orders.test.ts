@@ -195,6 +195,20 @@ describe('Supabase order row mapping', () => {
     expect(order.notes).toEqual(relationalNotes)
   })
 
+  it('maps delivery recipient from metadata when the structured column is empty', () => {
+    const order = mapSupabaseOrderRow({
+      ...row,
+      delivery_recipient_name: null,
+      metadata: {
+        inlineOrderContext: {
+          deliveryRecipientName: 'Olga Recipient'
+        }
+      }
+    }, [], [], [])
+
+    expect(order.delivery.recipientName).toBe('Olga Recipient')
+  })
+
   it('maps order item rows while preserving legacy unknown fields', () => {
     const item = mapSupabaseOrderItemRow({
       order_id: 'order-id',
@@ -357,6 +371,7 @@ describe('Supabase order payload builders', () => {
       delivery: {
         dateNeeded: '2026-07-26T12:00:00.000Z',
         deliveryMethod: 'postal',
+        recipientName: 'Jane Recipient',
         deliveryAddress: '10 Example Street, Leeds, LS1 1AA',
         deliveryNotes: 'Leave with reception',
         giftNote: 'Happy birthday',
@@ -378,6 +393,7 @@ describe('Supabase order payload builders', () => {
       customer_email: 'jane@example.com',
       date_needed: '2026-07-26',
       delivery_method: 'postal',
+      delivery_recipient_name: 'Jane Recipient',
       delivery_notes: 'Leave with reception',
       gift_note: 'Happy birthday',
       total_price: 50,

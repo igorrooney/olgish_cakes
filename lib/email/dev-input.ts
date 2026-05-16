@@ -78,7 +78,7 @@ function resolveBaseScenarioId<T extends EmailTemplateId>(
 }
 
 function resolveCourierLabel(value: unknown): string {
-  return value === 'evri' ? 'Evri' : 'Royal Mail'
+  return value === 'royal-mail' ? 'Royal Mail' : 'Evri'
 }
 
 function withDerivedCakesByPostCourierMessage(input: UnknownRecord): UnknownRecord {

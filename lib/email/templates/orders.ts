@@ -103,8 +103,8 @@ const statusUpdateScenarios = [
       status: 'out-for-delivery',
       titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
       headingOverride: 'Order dispatched',
-      statusMessage: 'Great news, your cakes by post order has been dispatched with Royal Mail.',
-      deliveryCourier: 'royal-mail',
+      statusMessage: 'Great news, your cakes by post order has been dispatched with Evri.',
+      deliveryCourier: 'evri',
       trackingNumber: 'TRACK-123456'
     }
   },

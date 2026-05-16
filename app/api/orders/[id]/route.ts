@@ -57,7 +57,7 @@ function getDeliveryCourier(order: Order): DeliveryCourier | undefined {
 }
 
 function getDeliveryCourierLabel(order: Order): string {
-  const courier = getDeliveryCourier(order) || 'royal-mail'
+  const courier = getDeliveryCourier(order) || 'evri'
 
   return deliveryCourierLabels[courier]
 }
@@ -65,6 +65,53 @@ function getDeliveryCourierLabel(order: Order): string {
 function getFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key)
   return typeof value === 'string' ? value : undefined
+}
+
+function containsControlCharacter(value: string): boolean {
+  return Array.from(value).some((character) => {
+    const code = character.charCodeAt(0)
+    return code <= 31 || code === 127
+  })
+}
+
+function getDeliveryRecipientNameError(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return 'Recipient name must be a string'
+  }
+
+  const trimmed = value.trim()
+
+  if (trimmed.length > 0 && trimmed.length < 2) {
+    return 'Recipient name must be at least 2 characters'
+  }
+
+  if (trimmed.length > 100) {
+    return 'Recipient name must be 100 characters or fewer'
+  }
+
+  if (containsControlCharacter(trimmed)) {
+    return 'Recipient name cannot contain control characters'
+  }
+
+  return null
+}
+
+function getDeliveryAddressError(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return 'Delivery address must be a string'
+  }
+
+  const trimmed = value.trim()
+
+  if (trimmed.length > 500) {
+    return 'Delivery address must be 500 characters or fewer'
+  }
+
+  if (containsControlCharacter(trimmed)) {
+    return 'Delivery address cannot contain control characters'
+  }
+
+  return null
 }
 
 function parseDeleteRequestBody(value: unknown): { password?: string, permanent?: boolean } {
@@ -110,6 +157,33 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
     nextOrder.delivery.deliveryMethod = updates.deliveryMethod
   }
 
+  if (updates.deliveryRecipientName !== undefined) {
+    const deliveryRecipientName = updates.deliveryRecipientName.trim()
+    nextOrder.delivery.recipientName = deliveryRecipientName || undefined
+
+    const nextMetadata = { ...(nextOrder.metadata || {}) }
+    const inlineOrderContext = isRecord(nextMetadata.inlineOrderContext)
+      ? { ...nextMetadata.inlineOrderContext }
+      : {}
+
+    delete inlineOrderContext.recipientName
+    delete nextMetadata.deliveryRecipientName
+    delete nextMetadata.recipientName
+
+    if (deliveryRecipientName.length > 0) {
+      inlineOrderContext.deliveryRecipientName = deliveryRecipientName
+    } else {
+      delete inlineOrderContext.deliveryRecipientName
+    }
+
+    nextMetadata.inlineOrderContext = inlineOrderContext
+    nextOrder.metadata = nextMetadata
+  }
+
+  if (updates.deliveryAddress !== undefined) {
+    nextOrder.delivery.deliveryAddress = updates.deliveryAddress.trim() || undefined
+  }
+
   if (updates.deliveryCourier !== undefined) {
     const deliveryCourier = normalizeDeliveryCourier(updates.deliveryCourier)
     const nextMetadata = { ...(nextOrder.metadata || {}) }
@@ -143,7 +217,7 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
     nextOrder.customer.email = updates.customerEmail
   }
 
-  if (updates.customerPhone) {
+  if (updates.customerPhone !== undefined) {
     nextOrder.customer.phone = updates.customerPhone
   }
 
@@ -299,6 +373,8 @@ export async function PATCH(
         trackingNumber: getFormString(formData, 'trackingNumber'),
         deliveryCourier: getFormString(formData, 'deliveryCourier'),
         deliveryMethod: getFormString(formData, 'deliveryMethod'),
+        deliveryRecipientName: getFormString(formData, 'deliveryRecipientName'),
+        deliveryAddress: getFormString(formData, 'deliveryAddress'),
         dateNeeded: (() => {
           const dateNeeded = getFormString(formData, 'dateNeeded')
           return dateNeeded && dateNeeded.trim() ? dateNeeded : null
@@ -325,6 +401,28 @@ export async function PATCH(
         .filter((value): value is File => value instanceof File && value.size > 0)
     } else {
       updates = await request.json() as OrderUpdate
+    }
+
+    if (updates.deliveryRecipientName !== undefined) {
+      const recipientNameError = getDeliveryRecipientNameError(updates.deliveryRecipientName)
+
+      if (recipientNameError) {
+        return NextResponse.json(
+          { error: 'Validation failed', details: recipientNameError },
+          { status: 400 }
+        )
+      }
+    }
+
+    if (updates.deliveryAddress !== undefined) {
+      const deliveryAddressError = getDeliveryAddressError(updates.deliveryAddress)
+
+      if (deliveryAddressError) {
+        return NextResponse.json(
+          { error: 'Validation failed', details: deliveryAddressError },
+          { status: 400 }
+        )
+      }
     }
 
     const currentOrder = await getSupabaseOrderByIdentifier(id)
@@ -598,11 +696,12 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
         servings: firstItem?.size,
         customerMessage: firstItem?.specialInstructions,
         deliveryMethod: order.delivery.deliveryMethod,
+        deliveryRecipientName: order.delivery.recipientName || order.customer.name,
         deliveryAddress: order.delivery.deliveryAddress,
         paymentMethod: order.pricing?.paymentMethod,
         paymentStatus: order.pricing?.paymentStatus,
         trackingNumber: order.delivery.trackingNumber || undefined,
-        deliveryCourier: getDeliveryCourier(order),
+        deliveryCourier: getDeliveryCourier(order) || 'evri',
         giftNote: order.delivery.giftNote || undefined,
         titleOverride: statusInfo.subject,
         headingOverride: statusInfo.heading,

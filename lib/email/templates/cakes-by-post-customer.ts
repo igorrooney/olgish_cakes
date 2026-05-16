@@ -70,11 +70,11 @@ function linkedRow(rows: CustomerRow[], label: string, value: string | null | un
 function getCourierMeta(value: string | null | undefined): DeliveryCourierMeta {
   const normalized = toTrimmed(value).toLowerCase()
 
-  if (normalized === 'evri') {
-    return deliveryCourierMeta.evri
+  if (normalized === 'royal-mail') {
+    return deliveryCourierMeta['royal-mail']
   }
 
-  return deliveryCourierMeta['royal-mail']
+  return deliveryCourierMeta.evri
 }
 
 function formatLabel(value: string | null | undefined): string {
@@ -106,9 +106,20 @@ function buildContactRows(input: EmailTemplateCommonInput): CustomerRow[] {
   row(rows, 'Name', input.customerName)
   row(rows, 'Email', input.customerEmail)
   row(rows, 'Phone', formatPhoneDisplay(input.customerPhone))
-  row(rows, 'Address', input.address)
-  row(rows, 'City', input.city)
-  row(rows, 'Postcode', input.postcode)
+
+  return rows
+}
+
+function buildDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[] {
+  const rows: CustomerRow[] = []
+
+  row(rows, 'Recipient', input.deliveryRecipientName || input.customerName)
+  row(rows, 'Delivery address', input.deliveryAddress || input.address)
+  if (!toTrimmed(input.deliveryAddress)) {
+    row(rows, 'Town or city', input.city)
+    row(rows, 'Postcode', input.postcode)
+  }
+  row(rows, 'Date needed', formatDate(input.dateNeeded))
 
   return rows
 }
@@ -119,7 +130,6 @@ function buildSummaryRows(input: EmailTemplateCommonInput): CustomerRow[] {
   row(rows, 'Order Number', input.orderNumber)
   row(rows, 'Product', input.productName)
   row(rows, 'Quantity', input.quantity ? String(input.quantity) : undefined)
-  row(rows, 'Date needed', formatDate(input.dateNeeded))
   row(rows, 'Total Amount', formatCurrency(input.totalPrice))
 
   return rows
@@ -192,6 +202,8 @@ function buildStatusDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[]
   const trackingNumber = toTrimmed(input.trackingNumber)
 
   row(rows, 'Delivery method', formatDeliveryMethod(input.deliveryMethod))
+  row(rows, 'Recipient', input.deliveryRecipientName || input.customerName)
+  row(rows, 'Date needed', formatDate(input.dateNeeded))
   if (courierValue.length > 0 || trackingNumber.length > 0 || normalizedStatus === 'out-for-delivery') {
     row(rows, 'Courier', courier.label)
   }
@@ -267,21 +279,24 @@ export const buildCakesByPostCustomerContent: CustomerEmailContentBuilder = (inp
   }
 
   const contactRows = buildContactRows(input)
+  const deliveryRows = buildDeliveryRows(input)
   const summaryRows = buildSummaryRows(input)
   const customerNotesRows = buildCustomerNotesRows(input)
   const giftRows = buildGiftRows(input)
 
   return {
     bodyText: [
-      renderRowsText('Contact Details', contactRows),
+      renderRowsText('Ordered by', contactRows),
       renderRowsText('Order Summary', summaryRows),
+      renderRowsText('Delivery Details', deliveryRows),
       renderRowsText('Customer Notes', customerNotesRows),
       renderRowsText('Gift Details', giftRows),
       buildNextStepsText()
     ].filter((section) => section.length > 0).join('\n\n'),
     bodyHtml: [
-      renderCustomerCard('Contact details', contactRows),
+      renderCustomerCard('Ordered by', contactRows),
       renderCustomerCard('Order Summary', summaryRows),
+      renderCustomerCard('Delivery Details', deliveryRows),
       renderCustomerCard('Customer Notes', customerNotesRows),
       renderCustomerCard('Gift Details', giftRows),
       buildNextStepsHtml(),

@@ -338,7 +338,7 @@ describe('/api/contact', () => {
       expect(json.details).toContain('phone')
     })
 
-    it('should return 400 when an order enquiry is missing a phone number', async () => {
+    it('should accept a legacy order enquiry without a phone number', async () => {
       const formData = new FormData()
       formData.append('name', 'John')
       formData.append('email', 'john@example.com')
@@ -349,9 +349,11 @@ describe('/api/contact', () => {
       const response = await POST(request)
       const json = await response.json()
 
-      expect(response.status).toBe(400)
-      expect(json.error).toBe('Validation failed')
-      expect(json.details).toContain('Phone number is required for order enquiries')
+      expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
+      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSupabaseInsert).not.toHaveBeenCalled()
+      expect(mockSendTelegramManagerNotification).not.toHaveBeenCalled()
     })
 
     it('should accept legacy order forms without compact v2 payload and send admin inquiry email only', async () => {
@@ -443,6 +445,7 @@ describe('/api/contact', () => {
       formData.append('name', 'Jane')
       formData.append('email', 'jane@example.com')
       formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane Recipient')
       formData.append('address', '7 Sample Street')
       formData.append('postcode', 'LS1 1AA')
       formData.append('isOrderForm', 'true')
@@ -466,6 +469,7 @@ describe('/api/contact', () => {
       formData.append('name', 'Jane')
       formData.append('email', 'jane@example.com')
       formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane Recipient')
       formData.append('address', '7 Sample Street')
       formData.append('city', 'Leeds')
       formData.append('postcode', 'BAD')
@@ -485,11 +489,37 @@ describe('/api/contact', () => {
       expect(json.details).toContain('postcode: Invalid UK postcode')
     })
 
+    it('should reject gift-hamper order when recipient name contains control characters', async () => {
+      const formData = new FormData()
+      formData.append('name', 'Jane')
+      formData.append('email', 'jane@example.com')
+      formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane\u0007Recipient')
+      formData.append('address', '7 Sample Street')
+      formData.append('city', 'Leeds')
+      formData.append('postcode', 'LS1 1AA')
+      formData.append('isOrderForm', 'true')
+      formData.append('productType', 'gift-hamper')
+      formData.append('productId', 'hamper-1')
+      formData.append('productName', 'Honey Hamper')
+      formData.append('totalPrice', '12.5')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(json.error).toBe('Validation failed')
+      expect(json.details).toContain('recipientName: Recipient name cannot contain control characters')
+    })
+
     it('should reject gift-hamper order when gift note is longer than 500 characters', async () => {
       const formData = new FormData()
       formData.append('name', 'Jane')
       formData.append('email', 'jane@example.com')
       formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane Recipient')
       formData.append('address', '7 Sample Street')
       formData.append('city', 'Leeds')
       formData.append('postcode', 'LS1 1AA')
@@ -787,7 +817,7 @@ describe('/api/contact', () => {
       const formData = new FormData()
       formData.append('name', 'Jane')
       formData.append('email', 'jane@example.com')
-      formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane Recipient')
       formData.append('address', '7 Sample Street')
       formData.append('city', 'Leeds')
       formData.append('postcode', 'LS1 1AA')
@@ -807,10 +837,19 @@ describe('/api/contact', () => {
       expect(mockCreateFromMock).toHaveBeenCalledWith(
         expect.objectContaining({
           orderType: 'gift-hamper',
+          customer: expect.objectContaining({
+            phone: ''
+          }),
           delivery: expect.objectContaining({
             deliveryMethod: 'postal',
+            recipientName: 'Jane Recipient',
             deliveryAddress: '7 Sample Street, Leeds, LS1 1AA',
             giftNote: 'Happy birthday!'
+          }),
+          metadata: expect.objectContaining({
+            inlineOrderContext: expect.objectContaining({
+              deliveryRecipientName: 'Jane Recipient'
+            })
           }),
           pricing: expect.objectContaining({
             paymentMethod: 'card',
@@ -818,6 +857,10 @@ describe('/api/contact', () => {
           })
         })
       )
+      expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'inline-order',
+        customerPhone: undefined
+      }))
 
       const customerEmailCall = mockSend.mock.calls.find((call) => call[0].to === 'jane@example.com')?.[0]
       const adminEmailCall = mockSend.mock.calls
@@ -826,14 +869,17 @@ describe('/api/contact', () => {
 
       expect(customerEmailCall?.text).toContain('Gift note: Happy birthday!')
       expect(customerEmailCall?.text).toContain('Thank you. We\'ve received your cakes by post request')
-      expect(customerEmailCall?.text).toContain('Contact Details')
-      expect(customerEmailCall?.text).toContain('Address: 7 Sample Street')
+      expect(customerEmailCall?.text).toContain('Ordered by')
+      expect(customerEmailCall?.text).toContain('Delivery Details')
+      expect(customerEmailCall?.text).toContain('Recipient: Jane Recipient')
+      expect(customerEmailCall?.text).toContain('Delivery address: 7 Sample Street, Leeds, LS1 1AA')
       expect(customerEmailCall?.text).toContain('Notes: Please write congratulations')
+      expect(customerEmailCall?.text).not.toContain('Phone:')
       expect(customerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
       expect(customerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
       expect(customerEmailCall?.text).not.toContain('Customer message:')
       expect(customerEmailCall?.html).toContain('Gift note')
-      expect(customerEmailCall?.html).toContain('Contact details')
+      expect(customerEmailCall?.html).toContain('Ordered by')
       expect(customerEmailCall?.subject).toMatch(/^Order request received #\d+ - Olgish Cakes$/)
       expect(adminEmailCall?.text).toContain('- Gift note: Happy birthday!')
       expect(adminEmailCall?.html).toContain('Gift note')
@@ -1035,6 +1081,7 @@ describe('/api/contact', () => {
       formData.append('name', 'Jane')
       formData.append('email', 'jane@example.com')
       formData.append('phone', '07123456789')
+      formData.append('recipientName', 'Jane Recipient')
       formData.append('address', '7 Sample Street')
       formData.append('city', 'Leeds')
       formData.append('postcode', 'LS1 1AA')
@@ -1057,8 +1104,10 @@ describe('/api/contact', () => {
       expect(response.status).toBe(200)
       expect(mockSend).toHaveBeenCalledTimes(2)
       expect(fallbackCustomerEmailCall?.subject).toBe('Order request received - Olgish Cakes')
-      expect(fallbackCustomerEmailCall?.text).toContain('Contact Details')
-      expect(fallbackCustomerEmailCall?.text).toContain('Address: 7 Sample Street')
+      expect(fallbackCustomerEmailCall?.text).toContain('Ordered by')
+      expect(fallbackCustomerEmailCall?.text).toContain('Delivery Details')
+      expect(fallbackCustomerEmailCall?.text).toContain('Recipient: Jane Recipient')
+      expect(fallbackCustomerEmailCall?.text).toContain('Delivery address: 7 Sample Street, Leeds, LS1 1AA')
       expect(fallbackCustomerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
       expect(fallbackCustomerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
       expect(fallbackCustomerEmailCall?.text).not.toContain('Customer message:')

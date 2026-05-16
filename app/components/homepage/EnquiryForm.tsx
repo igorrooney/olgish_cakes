@@ -232,12 +232,11 @@ export function EnquiryForm({
             type='tel'
             placeholder='+44 7123 456 789'
             value={formData.phone}
-            label='Phone number:'
+            label='Phone number: (Optional)'
             icon={<PhoneIcon />}
             showValidation={hasAttemptedSubmit}
             error={errors.phone}
-            required
-            hintText='Enter valid phone number'
+            hintText='Add a phone number if you would like us to call you'
             onValueChange={(value) => {
               updateField('phone', value, true)
             }}

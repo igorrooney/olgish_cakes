@@ -104,6 +104,7 @@ interface SupabaseOrderRow {
   customer_postcode?: string | null
   date_needed?: string | null
   delivery_method?: string | null
+  delivery_recipient_name?: string | null
   delivery_address?: string | null
   delivery_notes?: string | null
   gift_note?: string | null
@@ -241,6 +242,21 @@ const asOrderMetadata = (value: unknown): OrderMetadata | undefined => {
   return value as OrderMetadata
 }
 
+const getTrimmedStringField = (record: JsonObject, key: string): string | undefined => {
+  const value = getStringField(record, key)?.trim()
+  return value && value.length > 0 ? value : undefined
+}
+
+const getMetadataDeliveryRecipientName = (metadata: unknown): string | undefined => {
+  const metadataRecord = asRecord(metadata)
+  const inlineOrderContext = asRecord(metadataRecord.inlineOrderContext)
+
+  return getTrimmedStringField(inlineOrderContext, 'deliveryRecipientName') ||
+    getTrimmedStringField(inlineOrderContext, 'recipientName') ||
+    getTrimmedStringField(metadataRecord, 'deliveryRecipientName') ||
+    getTrimmedStringField(metadataRecord, 'recipientName')
+}
+
 const getOrderImageBucket = () => process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
 
 const isSupabaseFileAsset = (asset: { _type?: string } | undefined): boolean =>
@@ -267,6 +283,7 @@ function mapSupabaseOrderDelivery(row: SupabaseOrderRow): OrderDelivery {
   return {
     dateNeeded: row.date_needed || undefined,
     deliveryMethod: row.delivery_method || 'collection',
+    recipientName: row.delivery_recipient_name || getMetadataDeliveryRecipientName(row.metadata),
     deliveryAddress: row.delivery_address || undefined,
     deliveryNotes: row.delivery_notes || undefined,
     giftNote: row.gift_note || undefined,
@@ -425,6 +442,7 @@ function buildOrderStructuredPayload(params: {
     customer_postcode: params.customer.postcode ?? null,
     date_needed: normalizeDateForPostgres(params.delivery.dateNeeded),
     delivery_method: params.delivery.deliveryMethod,
+    delivery_recipient_name: params.delivery.recipientName ?? null,
     delivery_address: params.delivery.deliveryAddress ?? null,
     delivery_notes: params.delivery.deliveryNotes ?? null,
     gift_note: params.delivery.giftNote ?? null,
