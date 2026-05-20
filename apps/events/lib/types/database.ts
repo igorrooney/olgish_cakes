@@ -79,9 +79,32 @@ export interface EventPhotoRequestUpdate extends Record<string, unknown> {
   updated_at?: string
 }
 
+export interface AdminLoginAttemptRow extends Record<string, unknown> {
+  id: number
+  key_hash: string
+  failed_at: string
+}
+
+export interface AdminLoginAttemptInsert extends Record<string, unknown> {
+  id?: number
+  key_hash: string
+  failed_at?: string
+}
+
+export interface AdminLoginAttemptUpdate extends Record<string, unknown> {
+  key_hash?: string
+  failed_at?: string
+}
+
 export interface Database {
   public: {
     Tables: {
+      admin_login_attempts: {
+        Row: AdminLoginAttemptRow
+        Insert: AdminLoginAttemptInsert
+        Update: AdminLoginAttemptUpdate
+        Relationships: []
+      }
       event_photo_settings: {
         Row: EventPhotoSettingsRow
         Insert: EventPhotoSettingsInsert

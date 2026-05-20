@@ -17,16 +17,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const password = String(formData.get('password') ?? '')
   const throttleKey = getAdminLoginThrottleKey(request, username)
 
-  if (getAdminLoginThrottle(throttleKey).isLocked) {
+  if ((await getAdminLoginThrottle(throttleKey)).isLocked) {
     return NextResponse.redirect(new URL('/admin/login?error=locked', request.url), 303)
   }
 
   if (!validateAdminCredentials(username, password)) {
-    recordAdminLoginFailure(throttleKey)
+    await recordAdminLoginFailure(throttleKey)
     return NextResponse.redirect(new URL('/admin/login?error=1', request.url), 303)
   }
 
-  clearAdminLoginFailures(throttleKey)
+  await clearAdminLoginFailures(throttleKey)
 
   const response = NextResponse.redirect(new URL('/admin', request.url), 303)
   setAdminSessionCookie(response, createAdminSession(username))
