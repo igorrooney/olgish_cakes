@@ -7,8 +7,10 @@ import { getRequiredEnv, isProduction } from '@/lib/env'
 import {
   constantTimeEqual,
   decodeJsonToken,
-  encodeJsonToken
+  encodeJsonToken,
+  signValue
 } from '@/lib/crypto'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export const ADMIN_SESSION_COOKIE = 'events-admin-session'
 
@@ -16,14 +18,7 @@ const ADMIN_SESSION_TTL_MS = 8 * 60 * 60 * 1000
 const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000
 const ADMIN_LOGIN_LOCK_MS = 15 * 60 * 1000
 const ADMIN_LOGIN_MAX_FAILURES = 5
-
-interface AdminLoginAttempt {
-  failedCount: number
-  firstFailedAt: number
-  lockedUntil: number
-}
-
-const adminLoginAttempts = new Map<string, AdminLoginAttempt>()
+const ADMIN_LOGIN_ATTEMPTS_TABLE = 'admin_login_attempts'
 
 const adminSessionSchema = z.object({
   username: z.string().min(1),
@@ -59,25 +54,44 @@ export function getAdminLoginThrottleKey(request: NextRequest, username: string)
   return `${ipAddress}:${normalizedUsername}`
 }
 
-export function getAdminLoginThrottle(key: string, now = Date.now()): AdminLoginThrottle {
-  const attempt = adminLoginAttempts.get(key)
+function getAdminLoginKeyHash(key: string): string {
+  return signValue(key, getRequiredEnv('JWT_SECRET'))
+}
 
-  if (!attempt) {
+export async function getAdminLoginThrottle(key: string, now = Date.now()): Promise<AdminLoginThrottle> {
+  const supabase = getSupabaseAdmin()
+  const keyHash = getAdminLoginKeyHash(key)
+  const cutoffIso = new Date(now - ADMIN_LOGIN_WINDOW_MS).toISOString()
+  const { data, error } = await supabase
+    .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
+    .select('failed_at')
+    .eq('key_hash', keyHash)
+    .gte('failed_at', cutoffIso)
+    .order('failed_at', { ascending: false })
+    .limit(ADMIN_LOGIN_MAX_FAILURES)
+
+  if (error) {
+    throw new Error(`Could not load admin login attempts: ${error.message}`)
+  }
+
+  const failedAttempts = data ?? []
+
+  if (failedAttempts.length < ADMIN_LOGIN_MAX_FAILURES) {
     return {
       isLocked: false,
       retryAfterSeconds: 0
     }
   }
 
-  if (attempt.lockedUntil > now) {
+  const latestFailureAt = failedAttempts[0]?.failed_at
+  const latestFailureTime = latestFailureAt ? new Date(latestFailureAt).getTime() : 0
+  const lockedUntil = latestFailureTime + ADMIN_LOGIN_LOCK_MS
+
+  if (lockedUntil > now) {
     return {
       isLocked: true,
-      retryAfterSeconds: Math.ceil((attempt.lockedUntil - now) / 1000)
+      retryAfterSeconds: Math.ceil((lockedUntil - now) / 1000)
     }
-  }
-
-  if (attempt.firstFailedAt + ADMIN_LOGIN_WINDOW_MS <= now) {
-    adminLoginAttempts.delete(key)
   }
 
   return {
@@ -86,28 +100,42 @@ export function getAdminLoginThrottle(key: string, now = Date.now()): AdminLogin
   }
 }
 
-export function recordAdminLoginFailure(key: string, now = Date.now()): void {
-  const existing = adminLoginAttempts.get(key)
-  const shouldReset = !existing || existing.firstFailedAt + ADMIN_LOGIN_WINDOW_MS <= now
-  const attempt = shouldReset
-    ? {
-        failedCount: 0,
-        firstFailedAt: now,
-        lockedUntil: 0
-      }
-    : existing
+export async function recordAdminLoginFailure(key: string, now = Date.now()): Promise<void> {
+  const supabase = getSupabaseAdmin()
+  const keyHash = getAdminLoginKeyHash(key)
+  const cutoffIso = new Date(now - Math.max(ADMIN_LOGIN_WINDOW_MS, ADMIN_LOGIN_LOCK_MS)).toISOString()
+  const { error: deleteError } = await supabase
+    .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
+    .delete()
+    .eq('key_hash', keyHash)
+    .lt('failed_at', cutoffIso)
 
-  attempt.failedCount += 1
-
-  if (attempt.failedCount >= ADMIN_LOGIN_MAX_FAILURES) {
-    attempt.lockedUntil = now + ADMIN_LOGIN_LOCK_MS
+  if (deleteError) {
+    throw new Error(`Could not clear stale admin login attempts: ${deleteError.message}`)
   }
 
-  adminLoginAttempts.set(key, attempt)
+  const { error: insertError } = await supabase
+    .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
+    .insert({
+      key_hash: keyHash,
+      failed_at: new Date(now).toISOString()
+    })
+
+  if (insertError) {
+    throw new Error(`Could not record admin login failure: ${insertError.message}`)
+  }
 }
 
-export function clearAdminLoginFailures(key: string): void {
-  adminLoginAttempts.delete(key)
+export async function clearAdminLoginFailures(key: string): Promise<void> {
+  const supabase = getSupabaseAdmin()
+  const { error } = await supabase
+    .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
+    .delete()
+    .eq('key_hash', getAdminLoginKeyHash(key))
+
+  if (error) {
+    throw new Error(`Could not clear admin login attempts: ${error.message}`)
+  }
 }
 
 export function createAdminSession(username: string): string {
