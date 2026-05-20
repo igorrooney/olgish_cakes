@@ -21,6 +21,7 @@ const customJestConfig = {
     '!**/.next/**',
     '!**/coverage/**',
     '!**/dist/**',
+    '!apps/events/**',
     '!**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.spec.{ts,tsx}',
@@ -81,7 +82,8 @@ const customJestConfig = {
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
   moduleDirectories: ['node_modules', '<rootDir>/'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', '/apps/events/'],
+  modulePathIgnorePatterns: ['<rootDir>/apps/events/'],
   transformIgnorePatterns: [
     'node_modules/(?!(jose|@mui|@babel/runtime|@emotion|@sanity|next-sanity|nanoid)(?:/|$))',
     '^.+\\.module\\.(css|sass|scss)$',

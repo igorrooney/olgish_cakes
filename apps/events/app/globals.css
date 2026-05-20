@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "olgish";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #fff8e7;
+  --color-base-200: #fff5e6;
+  --color-base-300: #f1dfbc;
+  --color-base-content: #2d2d2d;
+  --color-primary: #2e3192;
+  --color-primary-content: #ffffff;
+  --color-secondary: #fef102;
+  --color-secondary-content: #2d2d2d;
+  --color-accent: #8b0000;
+  --color-accent-content: #ffffff;
+  --color-neutral: #2d2d2d;
+  --color-neutral-content: #ffffff;
+  --color-info: #2a7aaf;
+  --color-info-content: #ffffff;
+  --color-success: #1d8348;
+  --color-success-content: #ffffff;
+  --color-warning: #d68910;
+  --color-warning-content: #2d2d2d;
+  --color-error: #d04436;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@theme inline {
+  --font-sans: Georgia, "Times New Roman", ui-serif, serif;
+  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+html {
+  min-height: 100%;
+  background: #fff8e7;
+}
+
+body {
+  min-height: 100%;
+  color: #2d2d2d;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 231, 0.94), rgba(255, 255, 255, 0.98)),
+    #fff8e7;
+  font-family: Georgia, "Times New Roman", ui-serif, serif;
+  letter-spacing: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.event-shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline-color: #2e3192;
+}
