@@ -170,7 +170,6 @@
       "isomorphic-dompurify>dompurify": "3.4.1",
       "googleapis-common>qs": "6.15.1",
       "micromatch>picomatch": "2.3.2",
-      "minimatch>brace-expansion": "2.1.0",
       "next>postcss": "8.5.12",
       "readdirp>picomatch": "2.3.2",
       "sanity>uuid": "14.0.0",
