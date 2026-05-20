@@ -13,6 +13,17 @@ import {
 export const ADMIN_SESSION_COOKIE = 'events-admin-session'
 
 const ADMIN_SESSION_TTL_MS = 8 * 60 * 60 * 1000
+const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000
+const ADMIN_LOGIN_LOCK_MS = 15 * 60 * 1000
+const ADMIN_LOGIN_MAX_FAILURES = 5
+
+interface AdminLoginAttempt {
+  failedCount: number
+  firstFailedAt: number
+  lockedUntil: number
+}
+
+const adminLoginAttempts = new Map<string, AdminLoginAttempt>()
 
 const adminSessionSchema = z.object({
   username: z.string().min(1),
@@ -24,6 +35,11 @@ export interface AdminSession {
   expiresAt: number
 }
 
+export interface AdminLoginThrottle {
+  isLocked: boolean
+  retryAfterSeconds: number
+}
+
 export function validateAdminCredentials(username: string, password: string): boolean {
   const expectedUsername = getRequiredEnv('ADMIN_USERNAME')
   const expectedPassword = getRequiredEnv('ADMIN_PASSWORD')
@@ -32,6 +48,66 @@ export function validateAdminCredentials(username: string, password: string): bo
     constantTimeEqual(username, expectedUsername) &&
     constantTimeEqual(password, expectedPassword)
   )
+}
+
+export function getAdminLoginThrottleKey(request: NextRequest, username: string): string {
+  const forwardedFor = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  const ipAddress = forwardedFor || realIp || 'unknown'
+  const normalizedUsername = username.trim().toLowerCase() || 'unknown'
+
+  return `${ipAddress}:${normalizedUsername}`
+}
+
+export function getAdminLoginThrottle(key: string, now = Date.now()): AdminLoginThrottle {
+  const attempt = adminLoginAttempts.get(key)
+
+  if (!attempt) {
+    return {
+      isLocked: false,
+      retryAfterSeconds: 0
+    }
+  }
+
+  if (attempt.lockedUntil > now) {
+    return {
+      isLocked: true,
+      retryAfterSeconds: Math.ceil((attempt.lockedUntil - now) / 1000)
+    }
+  }
+
+  if (attempt.firstFailedAt + ADMIN_LOGIN_WINDOW_MS <= now) {
+    adminLoginAttempts.delete(key)
+  }
+
+  return {
+    isLocked: false,
+    retryAfterSeconds: 0
+  }
+}
+
+export function recordAdminLoginFailure(key: string, now = Date.now()): void {
+  const existing = adminLoginAttempts.get(key)
+  const shouldReset = !existing || existing.firstFailedAt + ADMIN_LOGIN_WINDOW_MS <= now
+  const attempt = shouldReset
+    ? {
+        failedCount: 0,
+        firstFailedAt: now,
+        lockedUntil: 0
+      }
+    : existing
+
+  attempt.failedCount += 1
+
+  if (attempt.failedCount >= ADMIN_LOGIN_MAX_FAILURES) {
+    attempt.lockedUntil = now + ADMIN_LOGIN_LOCK_MS
+  }
+
+  adminLoginAttempts.set(key, attempt)
+}
+
+export function clearAdminLoginFailures(key: string): void {
+  adminLoginAttempts.delete(key)
 }
 
 export function createAdminSession(username: string): string {
