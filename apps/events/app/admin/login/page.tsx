@@ -18,6 +18,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   const params = await searchParams
+  const errorMessage = params.error === 'locked'
+    ? 'Too many sign-in attempts. Please wait 15 minutes and try again.'
+    : 'Admin username or password is incorrect.'
 
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10">
@@ -40,7 +43,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         {params.error ? (
           <div className="alert alert-error mb-5 text-sm">
-            Admin username or password is incorrect.
+            {errorMessage}
           </div>
         ) : null}
 

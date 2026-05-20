@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { FALLBACK_ERROR_MESSAGE } from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import { jsonError, readJsonBody } from '@/lib/http'
+import { findInvalidImageDocument } from '@/lib/image-content'
 import {
   createEventPhotoRequest,
   updateTelegramStatus
@@ -78,6 +79,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const documents = await downloadTempDocuments(bucket, verifiedFiles)
+    const invalidDocument = await findInvalidImageDocument(documents)
+
+    if (invalidDocument) {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(
+        requestRow.id,
+        'failed',
+        [],
+        `Uploaded file content did not match a supported image type: ${invalidDocument.fileName}`,
+        true
+      )
+
+      return jsonError('Please upload a valid JPEG, PNG, WebP or HEIC image.', 400)
+    }
+
     const messageIds = await sendTelegramNotification({
       requestId: requestRow.id,
       eventName: requestRow.event_name,

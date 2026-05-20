@@ -115,33 +115,48 @@ export async function listOldTempImagePaths(
 ): Promise<string[]> {
   const supabase = getSupabaseAdmin()
   const paths: string[] = []
+  const pageSize = 1000
 
   async function visit(currentPrefix: string): Promise<void> {
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .list(currentPrefix, {
-        limit: 1000
-      })
+    let offset = 0
 
-    if (error) {
-      throw new Error(`Could not list temporary image files: ${error.message}`)
+    while (true) {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .list(currentPrefix, {
+          limit: pageSize,
+          offset,
+          sortBy: { column: 'name', order: 'asc' }
+        })
+
+      if (error) {
+        throw new Error(`Could not list temporary image files: ${error.message}`)
+      }
+
+      const entries = data ?? []
+
+      await Promise.all(entries.map(async (entry) => {
+        const childPath = `${currentPrefix}/${entry.name}`
+        const isFolder = entry.id === null
+
+        if (isFolder) {
+          await visit(childPath)
+          return
+        }
+
+        const timestamp = entry.updated_at ?? entry.created_at ?? entry.last_accessed_at
+
+        if (timestamp && new Date(timestamp) < cutoff) {
+          paths.push(childPath)
+        }
+      }))
+
+      if (entries.length < pageSize) {
+        break
+      }
+
+      offset += pageSize
     }
-
-    await Promise.all((data ?? []).map(async (entry) => {
-      const childPath = `${currentPrefix}/${entry.name}`
-      const isFolder = entry.id === null
-
-      if (isFolder) {
-        await visit(childPath)
-        return
-      }
-
-      const timestamp = entry.updated_at ?? entry.created_at ?? entry.last_accessed_at
-
-      if (timestamp && new Date(timestamp) < cutoff) {
-        paths.push(childPath)
-      }
-    }))
   }
 
   await visit(prefix)
