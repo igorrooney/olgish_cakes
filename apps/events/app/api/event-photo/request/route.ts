@@ -9,6 +9,10 @@ import { validateCsrfToken } from '@/lib/csrf'
 import { jsonError, readJsonBody } from '@/lib/http'
 import { findInvalidImageDocument } from '@/lib/image-content'
 import {
+  publicRateLimitError,
+  recordPublicRequestAttempt
+} from '@/lib/rate-limit'
+import {
   createEventPhotoRequest,
   updateTelegramStatus
 } from '@/lib/requests'
@@ -52,6 +56,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         : `Please upload no more than ${settings.maxImages} images.`,
       400
     )
+  }
+
+  const rateLimit = await recordPublicRequestAttempt(request, parsed.data.email)
+
+  if (rateLimit.isLimited) {
+    return publicRateLimitError(rateLimit)
   }
 
   const verifiedFiles: typeof parsed.data.files = []
