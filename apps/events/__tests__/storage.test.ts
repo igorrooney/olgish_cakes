@@ -1,8 +1,15 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MAX_FILE_BYTES } from '@/lib/constants'
 
-const { listMock, removeMock } = vi.hoisted(() => ({
+const {
+  createSignedUploadUrlMock,
+  downloadMock,
+  listMock,
+  removeMock
+} = vi.hoisted(() => ({
+  createSignedUploadUrlMock: vi.fn(),
+  downloadMock: vi.fn(),
   listMock: vi.fn(),
   removeMock: vi.fn()
 }))
@@ -12,6 +19,8 @@ vi.mock('@/lib/supabase/admin', () => ({
   getSupabaseAdmin: () => ({
     storage: {
       from: () => ({
+        createSignedUploadUrl: createSignedUploadUrlMock,
+        download: downloadMock,
         list: listMock,
         remove: removeMock
       })
@@ -20,14 +29,85 @@ vi.mock('@/lib/supabase/admin', () => ({
 }))
 
 import {
+  createSignedUploads,
+  deleteTempImages,
+  downloadTempDocuments,
   findInvalidTempDocumentSize,
   listOldTempImagePaths
 } from '@/lib/storage'
 
 describe('storage cleanup helpers', () => {
   beforeEach(() => {
+    process.env.CSRF_SECRET = 'test-csrf-secret-with-enough-length'
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-05-20T12:00:00.000Z'))
+    createSignedUploadUrlMock.mockReset()
+    downloadMock.mockReset()
     listMock.mockReset()
     removeMock.mockReset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('creates signed uploads with sanitized temporary paths and proof tokens', async () => {
+    createSignedUploadUrlMock.mockResolvedValue({
+      data: { token: 'signed-token' },
+      error: null
+    })
+
+    const uploads = await createSignedUploads([
+      {
+        fileName: 'My Cake.JPG',
+        mimeType: 'image/jpeg',
+        size: 1024
+      }
+    ])
+
+    expect(createSignedUploadUrlMock).toHaveBeenCalledWith(
+      expect.stringMatching(/^incoming\/2026-05-20\/.+-my-cake\.jpg$/)
+    )
+    expect(uploads[0]).toMatchObject({
+      fileName: 'My Cake.JPG',
+      mimeType: 'image/jpeg',
+      size: 1024,
+      token: 'signed-token'
+    })
+    expect(uploads[0]?.proof).toEqual(expect.any(String))
+  })
+
+  it('downloads temporary documents from their signed paths', async () => {
+    const blob = new Blob(['image-bytes'], { type: 'image/jpeg' })
+    downloadMock.mockResolvedValue({ data: blob, error: null })
+
+    await expect(downloadTempDocuments(
+      'event-photo-temp-uploads',
+      [
+        {
+          fileName: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          path: 'incoming/photo.jpg'
+        }
+      ]
+    )).resolves.toEqual([
+      {
+        fileName: 'photo.jpg',
+        mimeType: 'image/jpeg',
+        path: 'incoming/photo.jpg',
+        blob
+      }
+    ])
+  })
+
+  it('deletes temporary images in storage-sized batches', async () => {
+    removeMock.mockResolvedValue({ error: null })
+    const paths = Array.from({ length: 1001 }, (_, index) => `incoming/photo-${index}.jpg`)
+
+    await deleteTempImages('event-photo-temp-uploads', paths)
+
+    expect(removeMock).toHaveBeenNthCalledWith(1, paths.slice(0, 1000))
+    expect(removeMock).toHaveBeenNthCalledWith(2, paths.slice(1000))
   })
 
   it('paginates through large storage folders', async () => {
@@ -132,5 +212,46 @@ describe('storage cleanup helpers', () => {
       actualSize: MAX_FILE_BYTES + 1,
       reason: 'too_large'
     })
+  })
+
+  it('surfaces storage errors with user-safe context', async () => {
+    createSignedUploadUrlMock.mockResolvedValue({
+      data: null,
+      error: { message: 'sign denied' }
+    })
+    await expect(createSignedUploads([
+      {
+        fileName: 'photo.jpg',
+        mimeType: 'image/jpeg',
+        size: 1024
+      }
+    ])).rejects.toThrow('Could not create upload link: sign denied')
+
+    downloadMock.mockResolvedValue({
+      data: null,
+      error: { message: 'download denied' }
+    })
+    await expect(downloadTempDocuments(
+      'event-photo-temp-uploads',
+      [
+        {
+          fileName: 'photo.jpg',
+          mimeType: 'image/jpeg',
+          path: 'incoming/photo.jpg'
+        }
+      ]
+    )).rejects.toThrow('Could not download uploaded image: download denied')
+
+    removeMock.mockResolvedValue({ error: { message: 'remove denied' } })
+    await expect(deleteTempImages(
+      'event-photo-temp-uploads',
+      ['incoming/photo.jpg']
+    )).rejects.toThrow('Could not delete temporary image files: remove denied')
+
+    listMock.mockResolvedValue({ data: null, error: { message: 'list denied' } })
+    await expect(listOldTempImagePaths(
+      'event-photo-temp-uploads',
+      new Date('2026-05-20T00:00:00.000Z')
+    )).rejects.toThrow('Could not list temporary image files: list denied')
   })
 })

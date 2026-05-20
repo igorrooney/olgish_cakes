@@ -59,8 +59,8 @@ jobs:
           NEXT_PUBLIC_SANITY_API_VERSION: "2025-03-31"
           SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
 
-      - name: Run events app tests
-        run: pnpm --filter @olgish-cakes/events test
+      - name: Run events app tests with coverage
+        run: pnpm --filter @olgish-cakes/events test:coverage
 
       - name: Run schema validation (mock data)
         run: pnpm run validate:schemas
